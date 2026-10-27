@@ -1,0 +1,370 @@
+import { STORAGE_KEY, KINDS, WEEKDAYS, HOURS, pad, todayMonth, emptyState, newMonth, monthDates, weekday, shiftMonth, holiday, slotsForDate, slotsForMonth, slotKey, participantCode, totals, allAssignments, ruleIssues, structuralIssues, audit, serialize, parseBackup, anonymousState } from './core.mjs';
+import { CITIES, HOLIDAY_DATA, cityById, findCity, cityYearAvailable, holidayDetails } from './holidays.mjs';
+
+const $ = selector => document.querySelector(selector);
+const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
+const names = new Map(); // Never include this map in persistence, backups, worker messages, or URLs.
+const kindLabel = kind => ({ '24': '24 hours', day: 'Day · 12 hours', night: 'Night · 12 hours' }[kind]);
+const shortKind = kind => ({ '24': '24h', day: 'Day', night: 'Night' }[kind]);
+const timeLabel = kind => ({ '24': '09:00–09:00 +1', day: '09:00–21:00', night: '21:00–09:00 +1' }[kind]);
+const splitChoices = new Set(); // Temporary choices for editing an otherwise empty holiday place.
+const monthTitle = month => new Date(`${month}-01T12:00:00Z`).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const dateTitle = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+let state = emptyState(), month = todayMonth(), selectedId = null, openDate = null;
+let storageBlocked = false, worker = null, latestProposal = null;
+
+function notify(message, error = false) {
+  $('#message').textContent = message;
+  $('#message').classList.toggle('error', error);
+  $('#message').hidden = false;
+}
+try {
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) state = parseBackup(saved);
+} catch {
+  storageBlocked = true;
+  notify('Saved data could not be read. It has not been overwritten. Export this session as a backup, or import a valid backup to resume saving.', true);
+}
+function ensureMonth() {
+  state.months[month] ??= newMonth();
+  if (state.cityId) state.months[month].cityId = state.cityId;
+}
+function renderCity() {
+  const city = cityById(state.cityId);
+  $('#city-input').value = city?.label ?? '';
+  $('#city-highlight').textContent = city ? `${city.name} · Catalonia` : 'No city selected';
+  $('#city-highlight').classList.toggle('selected', Boolean(city));
+  $('#clear-city').disabled = !city;
+  const available = city && cityYearAvailable(city.id, month.slice(0, 4));
+  $('#city-status').classList.toggle('unavailable', Boolean(city && !available));
+  if (!city) $('#city-status').textContent = `Choose a listed city to mark local and public holidays. Official snapshot available for ${HOLIDAY_DATA.year}; weekends and manual dates work in every year.`;
+  else if (!available) $('#city-status').textContent = `Official dates for ${month.slice(0, 4)} are not available in the bundled snapshot. Mark dates manually; no dates are copied from ${HOLIDAY_DATA.year}.`;
+  else {
+    const count = HOLIDAY_DATA.cities[city.id].dates.length;
+    $('#city-status').textContent = `${HOLIDAY_DATA.year} official snapshot: ${count} local holiday date${count === 1 ? '' : 's'} plus Catalonia-wide public holidays. ${count < 2 ? 'Only one municipal date was published in this snapshot; verify the other with the council.' : 'Existing assignments are kept and rechecked against these dates.'}`;
+  }
+}
+function setCity(city) {
+  if (city) state.cityId = city.id; else delete state.cityId;
+  for (const config of Object.values(state.months)) {
+    if (city) config.cityId = city.id; else delete config.cityId;
+  }
+  changed();
+  notify(city ? `City set to ${city.name}. Official holidays now apply to scheduling and workload checks. Review any new warnings before regenerating.` : 'City cleared. Official city/public dates were removed; weekends and manually added holidays were kept.');
+}
+function personLabel(id) {
+  const p = state.participants.find(p => p.id === id);
+  return names.get(id)?.trim() || (p ? `Participant ${p.code}` : 'Unknown participant');
+}
+function save() {
+  if (storageBlocked) { $('#save-status').textContent = 'Not saved · export a backup'; return; }
+  try {
+    localStorage.setItem(STORAGE_KEY, serialize(state));
+    $('#save-status').textContent = 'Anonymous data saved';
+  } catch {
+    $('#save-status').textContent = 'Not saved · export a backup';
+    notify('Browser storage is unavailable or full. Export an anonymous backup before closing this page.', true);
+  }
+}
+function render() {
+  ensureMonth();
+  $('#month-title').textContent = monthTitle(month);
+  $('#month-input').value = month;
+  renderCity();
+  renderParticipants(); renderEditor(); renderCalendar(); renderTotals(); renderIssues();
+}
+function renderParticipants() {
+  $('#participant-count').textContent = state.participants.length;
+  $('#participants').innerHTML = state.participants.length ? state.participants.map(p => `<button class="participant-button ${p.id === selectedId ? 'active' : ''}" data-person="${p.id}" aria-pressed="${p.id === selectedId}"><span>${escape(personLabel(p.id))}</span><small>${participantCode(p)}</small></button>`).join('') : '<p class="empty-state">Start with your team.<br>Add participants, then set availability.</p>';
+}
+function renderEditor() {
+  const p = state.participants.find(p => p.id === selectedId);
+  if (!p) { $('#participant-editor').innerHTML = ''; return; }
+  const blockedDays = p.blockedDates.filter(d => d.startsWith(month)).map(d => Number(d.slice(-2))).sort((a, b) => a - b).join(', ');
+  $('#participant-editor').innerHTML = `<div class="participant-editor"><h3>${participantCode(p)} · Availability</h3><label>Name · session only<input id="person-name" type="text" maxlength="80" autocomplete="off" spellcheck="false" value="${escape(names.get(p.id) || '')}" placeholder="Participant ${p.code}"></label><fieldset><legend>Allowed shift types</legend><div class="checkbox-list">${KINDS.map(kind => `<label class="checkbox-label"><input type="checkbox" data-kind="${kind}" ${p.allowedKinds.includes(kind) ? 'checked' : ''}>${kindLabel(kind)}</label>`).join('')}</div></fieldset><fieldset><legend>Blocked weekdays · every month</legend><div class="checkbox-list weekday-choices">${[1, 2, 3, 4, 5, 6, 0].map(d => `<label class="checkbox-label"><input type="checkbox" data-weekday="${d}" ${p.blockedWeekdays.includes(d) ? 'checked' : ''}>${WEEKDAYS[d]}</label>`).join('')}</div></fieldset><label>Blocked dates · ${escape(monthTitle(month))}<input id="blocked-days" type="text" inputmode="numeric" value="${blockedDays}" placeholder="e.g. 5, 12, 23" autocomplete="off" aria-describedby="blocked-hint"></label><p id="blocked-hint" class="muted">Numbers apply only to this month. Separate with commas or spaces.</p><button class="danger remove-person" id="remove-person">Delete participant</button></div>`;
+}
+function currentToday() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
+function renderCalendar(proposal = null) {
+  const config = proposal ? { ...state.months[month], assignments: proposal } : state.months[month];
+  const view = { ...state, months: { ...state.months, [month]: config } };
+  const slots = slotsForMonth(month, config), issues = audit(view, month);
+  const issueKeys = new Set(issues.map(i => slotKey(i.assignment)));
+  const covered = slots.filter(s => config.assignments.some(a => slotKey(a) === slotKey(s))).length;
+  const hours = config.assignments.filter(a => slots.some(s => slotKey(a) === slotKey(s))).reduce((n, a) => n + HOURS[a.kind], 0);
+  $('#metrics').innerHTML = [[`${covered}/${slots.length}`, 'Shift seats covered'], [`${hours}/${monthDates(month).length * 48}`, 'Hours of cover'], [slots.length - covered, 'Unfilled seats'], [config.assignments.filter(a => a.fixed).length, 'Fixed assignments']].map(([n, label]) => `<div class="metric"><strong>${n}</strong><span>${label}</span></div>`).join('');
+  const dates = monthDates(month), offset = (weekday(dates[0]) + 6) % 7;
+  const cells = Array.from({ length: offset }, () => '<div class="empty-cell" aria-hidden="true"></div>');
+  for (const date of dates) {
+    const holidayInfo = holidayDetails(date, config);
+    const holidayBadge = holidayInfo.label ? `<span class="holiday-tag ${holidayInfo.local ? 'local' : holidayInfo.general ? 'public' : 'other'}">${escape(holidayInfo.label)}</span>` : '';
+    const daySlots = slotsForDate(date, config);
+    const assigned = config.assignments.filter(a => a.date === date);
+    const stale = assigned.filter(a => !daySlots.some(s => slotKey(s) === slotKey(a)));
+    const lines = daySlots.map(s => {
+      const a = assigned.find(a => slotKey(a) === slotKey(s));
+      return `<span class="slot-line ${a ? issueKeys.has(slotKey(a)) ? 'conflict' : '' : 'pending'}"><span class="slot-kind">${shortKind(s.kind)}</span><span class="slot-name">${a ? escape(personLabel(a.participantId)) : 'Unfilled'}</span>${a?.fixed ? '<span class="fixed-mark">Fixed</span>' : ''}</span>`;
+    }).join('');
+    const dayCovered = daySlots.filter(s => assigned.some(a => slotKey(a) === slotKey(s))).length;
+    const unfilled = dayCovered < daySlots.length;
+    cells.push(`<button class="day-cell ${holiday(date, config) ? 'holiday' : ''} ${holidayInfo.local ? 'local-holiday' : ''} ${holidayInfo.general ? 'public-holiday' : ''} ${unfilled ? 'unfilled' : ''} ${date === currentToday() ? 'today' : ''}" ${worker ? 'disabled' : ''} data-date="${date}" aria-label="${escape(dateTitle(date))}, ${escape(holidayInfo.name || 'non-holiday')}, ${dayCovered} of ${daySlots.length} seats filled${unfilled ? ', missing coverage' : ''}${stale.length ? ', incompatible assignments need attention' : ''}"><span class="date-row"><span class="date-number">${Number(date.slice(-2))}</span><span class="date-mode">${unfilled ? 'Needs cover' : 'Covered'}</span></span>${holidayBadge}${lines}${stale.length ? `<span class="slot-line conflict">${stale.length} incompatible</span>` : ''}</button>`);
+  }
+  while (cells.length % 7) cells.push('<div class="empty-cell" aria-hidden="true"></div>');
+  $('#month-grid').innerHTML = cells.join('');
+}
+function renderTotals() {
+  const t = totals(state, month), values = Object.values(t), hours = values.map(v => v.hours);
+  $('#balance-note').textContent = values.length ? `${Math.min(...hours)}–${Math.max(...hours)} hours per person` : 'No participants yet';
+  $('#workloads').innerHTML = state.participants.map(p => `<tr><td>${escape(personLabel(p.id))} <small class="muted">${participantCode(p)}</small></td><td><strong>${t[p.id].hours}</strong></td><td class="${t[p.id].holidays > 1 ? 'over-limit' : ''}">${t[p.id].holidays}</td><td class="${t[p.id].ordinary > 3 ? 'over-limit' : ''}">${t[p.id].ordinary}</td><td>${t[p.id].weekends}</td></tr>`).join('') || '<tr><td colspan="5">Add participants to see the workload.</td></tr>';
+}
+function renderIssues() {
+  const config = state.months[month], assignments = config.assignments;
+  const missing = slotsForMonth(month, config).filter(s => !assignments.some(a => slotKey(a) === slotKey(s)));
+  const issues = audit(state, month);
+  const dates = monthDates(month), holidayDates = dates.filter(d => holiday(d, config)).length;
+  const holidaySeats = holidayDates * 2;
+  const lines = [];
+  if (state.cityId && !cityYearAvailable(state.cityId, month.slice(0, 4))) lines.push(`<li class="warning">Official city/public holiday data for ${month.slice(0, 4)} is unavailable. Add holidays manually before generating.</li>`);
+  if (state.participants.length < holidaySeats) lines.push(`<li class="warning">${holidayDates} holidays require at least ${holidaySeats} participants with the one-holiday limit. Splitting duties into 12-hour shifts requires additional people. Current team: ${state.participants.length}.</li>`);
+  if (missing.length) lines.push(`<li>${missing.length} shift seats remain unfilled across ${new Set(missing.map(s => s.date)).size} dates. Open a date to review available people.</li>`);
+  if (issues.length) lines.push(...issues.map(i => `<li class="warning">${escape(i.assignment.date)} · ${escape(personLabel(i.assignment.participantId))}: ${escape(i.message)}${i.assignment.override ? ' · confirmed manual exception' : ''}.</li>`));
+  const hours = Object.values(totals(state, month)).map(t => t.hours);
+  if (hours.length && Math.max(...hours) - Math.min(...hours) > 24) lines.push('<li class="warning">Workloads differ by more than 24 hours. Review availability or generate another proposal to improve balance.</li>');
+  if (!state.months[shiftMonth(month, -1)] || !state.months[shiftMonth(month, 1)]) lines.push('<li>Rest checks include all saved adjacent months. Unsaved months have no known assignments.</li>');
+  $('#issues').innerHTML = lines.length ? `<ul class="issue-list">${lines.join('')}</ul>` : '<p class="muted">All seats are covered. No scheduling conflicts found.</p>';
+}
+function changed() { save(); render(); if (openDate && $('#day-dialog').open) renderDay(); }
+function otherAssignments(slot) { return allAssignments(state).filter(a => !(a.date === slot.date && a.kind === slot.kind && a.seat === slot.seat)); }
+function showDay(date) { openDate = date; renderDay(); $('#day-dialog').showModal(); }
+function renderDay() {
+  const config = state.months[month];
+  $('#day-title').textContent = dateTitle(openDate);
+  const weekend = [0, 6].includes(weekday(openDate));
+  const info = holidayDetails(openDate, config);
+  const official = info.local || info.general;
+  const slots = slotsForDate(openDate, config).flatMap(s => holiday(openDate, config) && s.kind === '24' && splitChoices.has(`${openDate}/${s.seat}`) && !config.assignments.some(a => a.date === openDate && a.seat === s.seat) ? [{ ...s, kind: 'day' }, { ...s, kind: 'night' }] : [s]);
+  const issues = audit(state, month);
+  $('#day-content').innerHTML = `<label class="checkbox-label holiday-toggle"><input id="mark-holiday" type="checkbox" ${holiday(openDate, config) ? 'checked' : ''} ${weekend || official ? 'disabled' : ''}>${official ? escape(`${info.label} · ${info.name}`) : weekend ? 'Weekend · always a holiday' : 'Mark as an additional holiday'}</label><p class="dialog-note">${holiday(openDate, config) ? 'Holiday · any combination of 24-hour and separate 12-hour duties is allowed' : 'Non-holiday · 24-hour shifts'}. Two people are required at all times. Selecting a person fixes this assignment.</p>` + slots.map(s => {
+    const a = config.assignments.find(a => slotKey(a) === slotKey(s));
+    const warnings = issues.filter(i => slotKey(i.assignment) === slotKey(s));
+    return `<div class="assignment-editor"><div class="assignment-row"><label>${kindLabel(s.kind)} · Seat ${s.seat + 1}<select data-assign="${s.kind}/${s.seat}"><option value="">Unfilled</option>${state.participants.map(p => {
+      const candidate = { ...s, participantId: p.id };
+      const structural = structuralIssues(state, month, candidate, otherAssignments(s));
+      const rules = ruleIssues(state, month, candidate, otherAssignments(s));
+      return `<option value="${p.id}" ${p.id === a?.participantId ? 'selected' : ''} ${structural.length ? 'disabled' : ''}>${escape(personLabel(p.id))} (${participantCode(p)})${structural.length ? ' · already on this date' : rules.length ? ` · ${rules.length} restriction(s)` : ''}</option>`;
+    }).join('')}</select></label></div><div class="assignment-meta"><span>${timeLabel(s.kind)} · ${a?.fixed ? 'Fixed' : 'Automatic / unfilled'}</span>${a ? `<button class="small" data-fix="${s.kind}/${s.seat}">${a.fixed ? 'Release fixed' : 'Keep fixed'}</button>` : ''}</div>${holiday(openDate, config) && s.kind !== 'night' ? `<button class="small" data-${s.kind === '24' ? 'split' : 'merge'}="${s.seat}">${s.kind === '24' ? 'Split into day and night shifts' : 'Use one 24-hour duty'}</button>` : ''}${warnings.length ? `<p class="assignment-warnings">${warnings.map(i => escape(i.message)).join(' · ')}${a?.override ? ' · confirmed manual exception' : ''}</p>` : ''}</div>`;
+  }).join('') + config.assignments.filter(a => a.date === openDate && !slots.some(s => slotKey(s) === slotKey(a))).map(a => `<div class="assignment-editor stale-assignment"><p>Incompatible ${kindLabel(a.kind)} assignment: ${escape(personLabel(a.participantId))}. The date’s shift mode has changed.</p><button class="danger" data-stale="${a.kind}/${a.seat}">Remove incompatible assignment</button></div>`).join('');
+}
+
+$('#add-participant').addEventListener('click', () => {
+  const count = Number($('#add-count').value);
+  if (!Number.isInteger(count) || count < 1 || count > 100 || state.participants.length + count > 500) return notify('Add between 1 and 100 people at once, up to 500 total.', true);
+  for (let i = 0; i < count; i++) {
+    const p = { id: crypto.randomUUID(), code: state.nextCode++, allowedKinds: [...KINDS], blockedWeekdays: [], blockedDates: [] };
+    state.participants.push(p); selectedId = p.id;
+  }
+  changed();
+});
+$('#participants').addEventListener('click', event => {
+  const button = event.target.closest('[data-person]');
+  if (!button) return;
+  selectedId = button.dataset.person; renderParticipants(); renderEditor();
+});
+$('#participant-editor').addEventListener('input', event => {
+  if (event.target.id !== 'person-name') return;
+  names.set(selectedId, event.target.value);
+  renderParticipants(); renderCalendar(); renderTotals(); renderIssues();
+});
+$('#participant-editor').addEventListener('change', event => {
+  const p = state.participants.find(p => p.id === selectedId);
+  if (!p || event.target.id === 'person-name') return;
+  if (event.target.dataset.kind) p.allowedKinds = [...$('#participant-editor').querySelectorAll('[data-kind]:checked')].map(el => el.dataset.kind);
+  else if (event.target.dataset.weekday !== undefined) p.blockedWeekdays = [...$('#participant-editor').querySelectorAll('[data-weekday]:checked')].map(el => Number(el.dataset.weekday));
+  else if (event.target.id === 'blocked-days') {
+    const text = event.target.value.trim();
+    const numbers = text ? text.split(/[\s,]+/).filter(Boolean).map(Number) : [];
+    if (numbers.some(n => !Number.isInteger(n) || n < 1 || n > monthDates(month).length)) {
+      event.target.setAttribute('aria-invalid', 'true');
+      return notify(`Use day numbers from 1 to ${monthDates(month).length}. Existing blocked dates were kept.`, true);
+    }
+    p.blockedDates = [...p.blockedDates.filter(d => !d.startsWith(month)), ...new Set(numbers.map(n => `${month}-${pad(n)}`))];
+  } else return;
+  event.target.removeAttribute('aria-invalid');
+  // Keep the focused editor mounted. Replacing an input during its change/blur
+  // sequence can re-enter the handler and also interrupts keyboard navigation.
+  save(); renderParticipants(); renderCalendar(); renderTotals(); renderIssues();
+});
+$('#participant-editor').addEventListener('click', event => {
+  if (event.target.id !== 'remove-person') return;
+  if (!confirm('Delete this participant and all their assignments in every saved month? This cannot be undone. Export an anonymous backup first if needed.')) return;
+  state.participants = state.participants.filter(p => p.id !== selectedId);
+  for (const config of Object.values(state.months)) config.assignments = config.assignments.filter(a => a.participantId !== selectedId);
+  names.delete(selectedId); selectedId = state.participants[0]?.id ?? null; changed();
+});
+function navigate(next) { if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(next) || Number(next.slice(0, 4)) < 1900 || Number(next.slice(0, 4)) > 2200) return notify('Choose a month between January 1900 and December 2200.', true); month = next; ensureMonth(); save(); render(); }
+$('#previous').addEventListener('click', () => navigate(shiftMonth(month, -1)));
+$('#next').addEventListener('click', () => navigate(shiftMonth(month, 1)));
+$('#today').addEventListener('click', () => navigate(todayMonth()));
+$('#month-input').addEventListener('change', event => navigate(event.target.value));
+$('#city-options').innerHTML = CITIES.map(city => `<option value="${escape(city.label)}"></option>`).join('');
+$('#apply-city').addEventListener('click', () => {
+  const city = findCity($('#city-input').value);
+  if (!city) {
+    $('#city-input').setAttribute('aria-invalid', 'true');
+    return notify('Choose a city or settlement from the list. No matching official municipal record was found; the previous city was kept.', true);
+  }
+  $('#city-input').removeAttribute('aria-invalid'); setCity(city);
+});
+$('#city-input').addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); $('#apply-city').click(); } });
+$('#clear-city').addEventListener('click', () => setCity(null));
+$('#month-grid').addEventListener('click', event => { const day = event.target.closest('[data-date]'); if (day) showDay(day.dataset.date); });
+$('#day-dialog').addEventListener('close', () => { openDate = null; });
+$('#day-content').addEventListener('change', event => {
+  const config = state.months[month];
+  if (event.target.id === 'mark-holiday') {
+    config.holidays = event.target.checked ? [...new Set([...config.holidays, openDate])] : config.holidays.filter(d => d !== openDate);
+    changed(); return;
+  }
+  if (!event.target.dataset.assign) return;
+  const [kind, seatString] = event.target.dataset.assign.split('/');
+  const slot = { date: openDate, kind, seat: Number(seatString) };
+  const participantId = event.target.value;
+  if (!participantId) { config.assignments = config.assignments.filter(a => slotKey(a) !== slotKey(slot)); changed(); return; }
+  const candidate = { ...slot, participantId, fixed: true, override: false };
+  const others = otherAssignments(slot);
+  const structural = structuralIssues(state, month, candidate, others);
+  if (structural.length) { notify(structural.join('. '), true); renderDay(); return; }
+  const issues = ruleIssues(state, month, candidate, others);
+  if (issues.length && !confirm(`This assignment breaks scheduling rules:\n\n${issues.join('\n')}\n\nKeep it as an explicit manual exception?`)) { renderDay(); return; }
+  candidate.override = issues.length > 0;
+  config.assignments = [...config.assignments.filter(a => slotKey(a) !== slotKey(slot)), candidate]; changed();
+});
+$('#day-content').addEventListener('click', event => {
+  const split = event.target.closest('[data-split]'), merge = event.target.closest('[data-merge]');
+  if (split || merge) {
+    const seat = Number(split?.dataset.split ?? merge.dataset.merge);
+    const config = state.months[month];
+    const assigned = config.assignments.filter(a => a.date === openDate && a.seat === seat);
+    if (assigned.length && !confirm('Replace the assignments for this place? Existing duties on this date and place will be cleared.')) return;
+    config.assignments = config.assignments.filter(a => a.date !== openDate || a.seat !== seat);
+    const key = `${openDate}/${seat}`;
+    if (split) splitChoices.add(key); else splitChoices.delete(key);
+    changed(); return;
+  }
+  const fixedButton = event.target.closest('[data-fix]'), staleButton = event.target.closest('[data-stale]');
+  const value = fixedButton?.dataset.fix ?? staleButton?.dataset.stale;
+  if (!value) return;
+  const [kind, seat] = value.split('/');
+  const config = state.months[month];
+  const a = config.assignments.find(a => a.date === openDate && a.kind === kind && a.seat === Number(seat));
+  if (!a) return;
+  if (staleButton) config.assignments = config.assignments.filter(other => other !== a);
+  else a.fixed = !a.fixed;
+  changed();
+});
+
+function busy(on) {
+  for (const el of document.querySelectorAll('.app-shell button, .app-shell input, .app-shell select')) {
+    if (el.id !== 'cancel') el.disabled = on;
+  }
+  $('#cancel').hidden = !on;
+  $('#generate').textContent = on ? 'Searching…' : 'Generate month';
+}
+function finishSearch(stopped = false) {
+  worker?.terminate(); worker = null;
+  if (latestProposal) state.months[month].assignments = latestProposal.assignments;
+  busy(false); changed();
+  $('#search-status').textContent = `${stopped ? 'Search stopped.' : 'Search finished.'} ${latestProposal?.complete ? 'All seats covered.' : 'Best proposal kept; unfilled seats remain.'} Review workload and restrictions. A time-limited search does not prove that a better proposal is impossible.`;
+}
+$('#generate').addEventListener('click', () => {
+  if (!state.participants.length) return notify('Add participants before generating a month.', true);
+  latestProposal = null;
+  try {
+    worker = new Worker(new URL('./scheduler.worker.mjs', import.meta.url), { type: 'module' });
+    worker.onmessage = ({ data }) => {
+      if (data.type === 'error') { worker.terminate(); worker = null; busy(false); notify(data.message, true); $('#search-status').hidden = true; return; }
+      latestProposal = data;
+      const coveredHours = data.assignments.reduce((sum, a) => sum + HOURS[a.kind], 0);
+      $('#search-status').textContent = `Searching for up to 10 seconds… Best coverage: ${coveredHours}/${monthDates(month).length * 48} hours. Yellow dates need coverage. You can stop and keep this proposal.`;
+      renderCalendar(data.assignments);
+      if (data.type === 'done') finishSearch();
+    };
+    worker.onerror = () => { worker?.terminate(); worker = null; busy(false); $('#search-status').hidden = true; notify('Search could not run. Serve this folder over HTTP and try again. Existing assignments were kept.', true); };
+    busy(true); $('#search-status').hidden = false; $('#search-status').textContent = 'Starting anonymous scheduling search…';
+    worker.postMessage({ state: anonymousState(state), month, timeMs: 10000 });
+  } catch {
+    worker?.terminate(); worker = null; busy(false);
+    notify('Your browser could not start the scheduling worker. Serve this folder over HTTP and use a current browser.', true);
+  }
+});
+$('#cancel').addEventListener('click', () => finishSearch(true));
+$('#backup').addEventListener('click', () => {
+  const blob = new Blob([serialize(state)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob), a = document.createElement('a');
+  a.href = url; a.download = 'duty-calendar-anonymous-backup.json'; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+  notify('Anonymous backup exported. Names are intentionally excluded.');
+});
+$('#restore').addEventListener('click', () => $('#import-file').click());
+$('#import-file').addEventListener('change', async event => {
+  const file = event.target.files[0];
+  if (!file) return;
+  try {
+    if (file.size > 5_000_000) throw new Error('Backup is too large. Choose a JSON backup smaller than 5 MB.');
+    const restored = parseBackup(await file.text());
+    if (!confirm('Replace all saved participants, restrictions, and months with this anonymous backup? Current session names will also be cleared.')) return;
+    state = restored; names.clear(); splitChoices.clear(); selectedId = state.participants[0]?.id ?? null;
+    storageBlocked = false; changed();
+    notify('Anonymous backup restored. Re-enter participant names for this session.');
+  } catch (error) { notify(error.message, true); }
+  finally { event.target.value = ''; }
+});
+
+function printCalendar(participantId = null) {
+  const config = state.months[month], dates = monthDates(month), offset = (weekday(dates[0]) + 6) % 7;
+  const cells = Array.from({ length: offset }, () => '<div class="print-day"></div>');
+  for (const date of dates) {
+    const info = holidayDetails(date, config);
+    const slots = slotsForDate(date, config);
+    const relevant = participantId ? config.assignments.filter(a => a.date === date && a.participantId === participantId) : slots;
+    const lines = relevant.map(s => {
+      const a = participantId ? s : config.assignments.find(a => slotKey(a) === slotKey(s));
+      const p = a && state.participants.find(p => p.id === a.participantId);
+      // Codes keep the global grid legible. The name legend and individual pages
+      // provide the full names without truncating duty identification.
+      const label = participantId ? `${kindLabel(s.kind)} · ${timeLabel(s.kind)}` : `${shortKind(s.kind)} · ${p ? participantCode(p) : 'UNFILLED'}`;
+      return `<div class="print-shift">${escape(label)}${a?.override ? ' [exception]' : ''}</div>`;
+    }).join('');
+    const incomplete = slots.some(s => !config.assignments.some(a => slotKey(a) === slotKey(s)));
+    cells.push(`<div class="print-day ${holiday(date, config) ? 'holiday' : ''} ${info.local ? 'local-holiday' : ''} ${incomplete && !participantId ? 'unfilled' : ''}"><strong>${Number(date.slice(-2))}${info.label ? ` · ${escape(info.label)}` : ''}</strong>${lines}</div>`);
+  }
+  while (cells.length % 7) cells.push('<div class="print-day"></div>');
+  return `<div class="print-weekdays">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<span>${d}</span>`).join('')}</div><div class="print-calendar">${cells.join('')}</div>`;
+}
+function buildPrintReport() {
+  const config = state.months[month], t = totals(state, month), issues = audit(state, month);
+  const unfilled = slotsForMonth(month, config).filter(s => !config.assignments.some(a => slotKey(a) === slotKey(s))).length;
+  const city = cityById(state.cityId);
+  const location = city ? `${city.name}, Catalonia` : 'No city selected';
+  const dataWarning = city && !cityYearAvailable(city.id, month.slice(0, 4)) ? ' Official holidays unavailable for this year; verify manual dates.' : '';
+  const foot = `<footer class="print-footer">${escape(location)} · Europe/Madrid · Day 09:00–21:00 · Night 21:00–09:00 next day · 24-hour duty 09:00–09:00 next day. H = holiday.${escape(dataWarning)} Hours are nominal duty hours. Names are included only in this explicitly requested print/PDF.</footer>`;
+  const notice = `${unfilled} unfilled seats · ${issues.length} rule warnings. ${issues.length ? 'Review flagged assignments in the application before using this rota.' : 'No rule conflicts found.'}`;
+  // Global totals remain compact; every participant always receives a full individual page.
+  const totalLimit = 40;
+  const globalTotals = state.participants.slice(0, totalLimit).map(p => `<div class="print-person-total"><strong>${participantCode(p)}</strong> · ${escape(personLabel(p.id))}<br>${t[p.id].hours}h · H ${t[p.id].holidays} / N ${t[p.id].ordinary}</div>`).join('');
+  const global = `<section class="print-page ${state.participants.length > 30 ? 'compact' : ''}"><header class="print-header"><div><h1>Duty calendar · ${escape(location)}</h1><p>Global rota · ${state.participants.length} participants · Flexible holiday duties · Yellow = missing coverage</p></div><h2>${escape(monthTitle(month))}</h2></header><p class="print-notice">${escape(notice + dataWarning)}</p>${printCalendar()}<div class="print-totals">${globalTotals}</div>${state.participants.length > totalLimit ? '<p class="print-notice">Additional workload summaries appear on the individual participant pages.</p>' : ''}${foot}</section>`;
+  const people = state.participants.map(p => {
+    const ownIssues = issues.filter(i => i.assignment.participantId === p.id);
+    const distinctWarnings = [...new Set(ownIssues.map(i => `${i.assignment.date}: ${i.message}`))];
+    const warningSummary = `${ownIssues.length} rule warning(s): ${distinctWarnings.slice(0, 4).join('; ')}${distinctWarnings.length > 4 ? '; additional warnings are listed in the application' : ''}`;
+    return `<section class="print-page"><header class="print-header"><div><h1>${escape(personLabel(p.id))}</h1><p>${participantCode(p)} · Individual duty rota</p></div><h2>${escape(monthTitle(month))}</h2></header><p class="print-person-metrics"><strong>${t[p.id].hours} hours</strong> · ${t[p.id].holidays} holiday / 1 · ${t[p.id].ordinary} non-holidays / 3 · ${t[p.id].weekends} weekend dates</p>${printCalendar(p.id)}<p class="print-notice">${ownIssues.length ? escape(warningSummary) : 'No scheduling conflicts for this participant.'}</p>${foot}</section>`;
+  }).join('');
+  $('#print-report').innerHTML = global + people;
+  $('#print-report').removeAttribute('aria-hidden');
+}
+$('#print').addEventListener('click', () => window.print());
+window.addEventListener('beforeprint', buildPrintReport);
+window.addEventListener('afterprint', () => { $('#print-report').replaceChildren(); $('#print-report').setAttribute('aria-hidden', 'true'); });
+ensureMonth(); selectedId = state.participants[0]?.id ?? null; render();
+if (storageBlocked) $('#save-status').textContent = 'Not saved · storage read failed';
+else $('#save-status').textContent = 'Anonymous data only';
+if (window.matchMedia('(max-width: 800px)').matches) $('#participant-panel').open = false;

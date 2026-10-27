@@ -1,0 +1,98 @@
+# Duty calendar
+
+A personal monthly duty planner. This folder is a complete static website: no build step, accounts, backend, or external scripts are needed. All interface and report content is in English.
+
+## Run locally
+
+Use a current browser and serve the folder over HTTP. Opening `index.html` directly as a file will not reliably load JavaScript modules or the scheduling worker.
+
+From this folder:
+
+```powershell
+python -m http.server 8000 --bind 127.0.0.1
+```
+
+Open `http://127.0.0.1:8000/`. Stop the server with Ctrl+C.
+
+## Use the planner
+
+1. Add participants individually or in a batch. Select a participant to enter their temporary name, permitted shift types, blocked weekdays, and blocked dates.
+2. Select a month and enter a city or settlement in Catalonia. Choose a listed result and press **Apply city** (or Enter). The selected city is highlighted; local and public holidays are marked automatically. Holiday coverage adapts per date; there is no monthly coverage filter. Open a date to mark an additional weekday holiday manually.
+3. Generate a proposal. Search runs for up to 10 seconds in a worker, prioritizing covered duty hours, similar monthly hours, and balanced holiday/weekend duties. Stop early to keep the best proposal found so far. This is a bounded heuristic, not a proof of optimality or infeasibility.
+4. Review yellow dates: these have missing coverage, both during generation and in the final proposal. Workload differences and warnings appear below the calendar. Open a date to change or clear an assignment. On holidays, each of the two coverage places can use one 24-hour duty or separate day/night duties; use the split/merge controls to edit these manually. Manual assignments are fixed; release their fixed status to let regeneration replace them.
+5. Export anonymous backups regularly. Use **Print / save PDF**, select **Save as PDF**, and keep A4 landscape paper. Turn off the browser's own headers/footers for the cleanest output. The report contains one global page plus one page for every participant, including participants with no assignments.
+
+The current month opens on each visit. Previously saved months remain available through navigation. Each holiday is independently flexible; participants initially allow all shift types and have no blocked dates.
+
+## Scheduling rules
+
+- Two people must be present at all times: 48 nominal duty hours per start date.
+- Non-holidays: two 24-hour duties, 09:00 to 09:00 the following day.
+- Holidays independently allow two 24-hour duties, four 12-hour shifts (two day and two night), or mixed coverage: one person works 24 hours, one works the 12-hour day, and a third works the 12-hour night. The 24-hour duty covers one continuous place; the two shorter duties cover the other. Different combinations can coexist in the same month, including additional weekday holidays, while maintaining two simultaneous people and 48 total hours.
+- Day is 09:00–21:00. Night is 21:00–09:00 the following day. A participant cannot cover both on the same date.
+- Saturdays, Sundays, and additional manually marked dates are holidays. A marked weekday allows the same flexible combinations.
+- With a city selected, its official local holidays and Catalonia-wide public holidays also count as holidays for shift coverage, monthly limits, and workload totals.
+- Each person may work at most one holiday and three non-holidays per month.
+- No consecutive start dates, including saved adjacent months. No unknown assignments are invented for an unsaved month.
+- Individual allowed shift types, recurring blocked weekdays, and month-specific blocked dates must be respected. Someone allowing only 12-hour shifts cannot cover a non-holiday 24-hour duty.
+- A confirmed manual exception can override availability, shift permissions, monthly limits, or consecutive-date rest. It remains flagged in the interface and report. Duplicate seats, two shifts for one person on the same date, and incompatible shift structures can never be forced.
+
+With 20 participants, complete coverage may be impossible. For example, eight holidays require at least 16 different people when covered entirely with 24-hour duties, 24 with three-person mixed coverage on every holiday, or 32 with only 12-hour duties, because each person can work only one holiday. The generator can combine these patterns across different dates, preserves the limits, and marks incomplete dates yellow.
+
+Changing availability or marking/unmarking a holiday does not silently regenerate the schedule. Existing conflicts are shown. If a holiday with 12-hour duties becomes a non-holiday, those duties are flagged. Incompatible automatic assignments can be replaced by generation; incompatible fixed assignments must first be removed or edited. Old anonymous backups remain readable; their monthly coverage preference is ignored and their assignments are preserved.
+
+Times are displayed in the intended Europe/Madrid duty convention. Hours are nominal (12/24); an actual clock-change date can contain a different elapsed duration. This app does not export timed calendar events.
+
+## Mandatory name privacy
+
+Participant names exist only in the live page and an in-memory map. They are never sent to a server, scheduling worker, URL, log, browser storage, or JSON backup. Anonymous participant identifiers and numeric codes are used for all saved data. The persistence/import boundary selects and validates known fields rather than serializing UI objects. No analytics, remote fonts, or third-party scripts are used.
+
+The selected city is saved as a recognized municipal code, including in anonymous backups. Its display name comes from the public dataset. Free text entered in the city field is never saved; unrecognized entries are rejected. The city search and holiday lookup work locally without online requests.
+
+**Reloading clears every entered name.** Re-enter names for each session. Anonymous restrictions, assignments, and participant codes remain available in the same browser. This is local storage, not cross-device synchronization; clearing site data removes it.
+
+**Explicitly printed/exported PDFs are the sole authorized exception:** they may contain participant names. Treat those files accordingly. Print-report DOM is removed after printing. Anonymous backups deliberately cannot restore names.
+
+Deleting a participant, after confirmation, deletes their assignments from every saved month. Imports replace the entire anonymous dataset after validation and confirmation and clear temporary names. Unreadable existing storage is not silently overwritten. Storage failures remain visible; export a backup before leaving.
+
+## Tests
+
+Run core tests with Node.js 20 or later:
+
+```powershell
+node --test tests/core.test.mjs tests/flexible.test.mjs tests/holidays.test.mjs
+```
+
+Optional browser tests require Playwright, a headless Edge installation (or set `BROWSER_CHANNEL`), and `pdf-lib` for PDF page checks. They use synthetic names only, run their own local server under a nested URL, and place screenshots/PDFs in the operating system's temporary folder:
+
+```powershell
+node tests/browser.test.mjs
+```
+
+## City holidays and data coverage
+
+The bundled official **2026** snapshot contains 1,398 municipal/settlement entries and 2,794 local holiday dates, together with the 12 Catalonia-wide public dates. Sources: [Generalitat municipal holiday dataset](https://analisi.transparenciacatalunya.cat/d/b4eh-r8up), [Generalitat general calendar dataset](https://analisi.transparenciacatalunya.cat/d/yf2b-mjr6), and [2026 calendar and Aran exception](https://treball.gencat.cat/ca/ambits/relacions_laborals/ci/calendari_laboral/calendari-festes-2026/). For Aran settlements, June 17 replaces December 26 as the general holiday; weekends remain holidays independently.
+
+Calendar badges distinguish **Local holiday**, **Public holiday**, **Added holiday**, and **Weekend**. A green local-holiday badge and border remain visible even when missing coverage makes the date yellow. PDFs include the city and holiday labels.
+
+Selecting another city rechecks all saved months without deleting assignments or manual dates. Official dates are not editable individually in the date dialog; clear/change the city to remove automatic dates. Manual dates remain independent.
+
+**Other years are not inferred.** When navigating outside 2026, the application prominently warns that official city/public dates are unavailable and asks you to add dates manually. A city/settlement absent from the snapshot cannot be auto-matched; consult its council and use manual dates. Entries containing only one published local date are explicitly flagged as incomplete.
+
+`holiday-data.mjs` is a local snapshot, not a live API. To refresh the 2026 source data, developers can run:
+
+```powershell
+python scripts/refresh-holidays.py
+```
+
+The refresh script reads only the public datasets and validates counts before overwriting the snapshot. Adding another supported year requires reviewing that year's official data, labels, and territorial exceptions and updating tests; changing the year constant alone is insufficient. This command is not needed to run the app. The data is reused under the Generalitat's open-data terms; see the [official catalogue licence](https://datos.gob.es/es/catalogo/a09002970-calendario-de-fiestas-locales-en-catalunya).
+
+## GitHub Pages
+
+The planner's public URL is **https://llopsa4.github.io/ai-public-utils/calendari/**. All asset and worker URLs are relative so the folder works under this project subpath.
+
+Repository Settings → Pages uses **Deploy from a branch**, with **main** and **/(root)** selected. The repository root contains `.nojekyll` to serve the static files without Jekyll processing, plus a homepage linking to this planner.
+
+To update the live planner, commit changes in `calendari/` and push `main` to `origin`. GitHub Pages deploys the new version automatically; check the Actions tab for its status. No build step or package installation is needed. See [GitHub's publishing-source documentation](https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site).
+
+QR codes, Google Calendar integration, calendar import links, and shared online storage are not included in this version.
