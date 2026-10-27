@@ -44,18 +44,48 @@ try {
   await page.locator('#add-participant').click();
   assert.equal(await page.locator('[data-person]').count(), 20);
   await page.locator('[data-person]').first().click();
+  const initialParticipantData = await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY);
+  await page.locator('[data-kind="night"]').uncheck();
+  assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData, 'Individual selections must wait for confirmation');
+  await page.locator('#cancel-participant').click();
+  assert.equal(await page.locator('[data-kind="night"]').isChecked(), true);
   const secret = 'QA_PRIVATE_SENTINEL <Name> & Test';
   await page.locator('#person-name').fill(secret);
   await page.locator('#blocked-days').fill('5, 12, 23');
   await page.locator('#blocked-days').dispatchEvent('change');
   await page.locator('[data-weekday="1"]').check();
   assert.equal(await page.locator('#person-name').inputValue(), secret);
+  assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData, 'Name and availability drafts must not be saved');
+  assert.ok(!(await page.locator('[data-person]').first().textContent()).includes('QA_PRIVATE_SENTINEL'), 'Name applies only after confirmation');
+  // Cancelling navigation keeps the pending editor intact.
+  page.once('dialog', dialog => dialog.dismiss());
+  await page.locator('[data-person]').nth(1).click();
+  assert.equal(await page.locator('#person-name').inputValue(), secret);
+  await page.locator('#generate').click();
+  assert.ok((await page.locator('#message').textContent()).includes('Confirm or cancel participant changes'));
+  assert.equal(await page.locator('#cancel').isHidden(), true);
+  // Invalid blocked dates reject the whole draft, including the name and checkboxes.
+  await page.locator('#blocked-days').fill('32');
+  await page.locator('#confirm-participant').click();
+  assert.equal(await page.locator('#blocked-days').getAttribute('aria-invalid'), 'true');
+  assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData);
+  await page.locator('#blocked-days').fill('5, 12, 23');
+  await page.locator('#blocked-days').press('Enter');
+  assert.equal(await page.locator('#confirm-participant').isDisabled(), true);
+  assert.ok((await page.locator('[data-person]').first().textContent()).includes('QA_PRIVATE_SENTINEL'));
   let stored = await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY);
   assert.ok(!stored.includes('QA_PRIVATE_SENTINEL'));
+  assert.deepEqual(JSON.parse(stored).participants[0].blockedWeekdays, [1]);
+  assert.deepEqual(JSON.parse(stored).participants[0].blockedDates, ['2026-10-05', '2026-10-12', '2026-10-23']);
   const firstId = JSON.parse(stored).participants[0].id;
   await page.locator('[data-date="2026-10-05"] .date-open').click();
   page.once('dialog', dialog => dialog.accept());
   await page.locator('[data-assign="24/0"]').selectOption(firstId);
+  assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), stored, 'Dropdown selection must remain pending');
+  await page.locator('[data-cancel-assign="24/0"]').click();
+  assert.equal(await page.locator('[data-assign="24/0"]').inputValue(), '');
+  await page.locator('[data-assign="24/0"]').selectOption(firstId);
+  await page.locator('[data-confirm-assign="24/0"]').click();
   assert.ok((await page.locator('#day-content').textContent()).includes('confirmed manual exception'));
   await page.getByRole('button', { name: 'Close date editor' }).click();
   await page.locator('#generate').click();
@@ -103,8 +133,11 @@ try {
   await page.locator('[data-split="1"]').click();
   assert.equal(await page.locator('[data-assign]').count(), 3);
   await page.locator('[data-assign="24/0"]').selectOption(firstId);
+  await page.locator('[data-confirm-assign="24/0"]').click();
   await page.locator('[data-assign="day/1"]').selectOption(saved.participants[1].id);
+  await page.locator('[data-confirm-assign="day/1"]').click();
   await page.locator('[data-assign="night/1"]').selectOption(saved.participants[2].id);
+  await page.locator('[data-confirm-assign="night/1"]').click();
   await page.getByRole('button', { name: 'Close date editor' }).click();
   const mixedStored = JSON.parse(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY));
   assert.equal(mixedStored.months['2026-08'].holidayMode, undefined);
@@ -118,7 +151,10 @@ try {
   await page.locator('[data-date="2026-08-08"] .date-open').click();
   await page.locator('[data-split="0"]').click();
   await page.locator('[data-split="1"]').click();
-  for (const [i, key] of ['day/0', 'night/0', 'day/1', 'night/1'].entries()) await page.locator(`[data-assign="${key}"]`).selectOption(saved.participants[i + 3].id);
+  for (const [i, key] of ['day/0', 'night/0', 'day/1', 'night/1'].entries()) {
+    await page.locator(`[data-assign="${key}"]`).selectOption(saved.participants[i + 3].id);
+    await page.locator(`[data-confirm-assign="${key}"]`).click();
+  }
   await page.getByRole('button', { name: 'Close date editor' }).click();
   await page.screenshot({ path: path.join(output, 'mixed-mode.png'), fullPage: true });
   await page.emulateMedia({ media: 'print' });
@@ -139,6 +175,7 @@ try {
   await page.locator('[data-split="0"]').click();
   page.once('dialog', dialog => dialog.accept());
   await page.locator('[data-assign="day/0"]').selectOption(firstId);
+  await page.locator('[data-confirm-assign="day/0"]').click();
   await page.locator('#mark-holiday').uncheck();
   assert.ok((await page.locator('#day-content').textContent()).includes('Incompatible'));
   await page.getByRole('button', { name: 'Close date editor' }).click();
@@ -182,6 +219,7 @@ try {
   await page.locator('[data-date="2026-10-29"] .date-open').click();
   assert.equal(await page.locator('#mark-holiday').isDisabled(), true);
   await page.locator('[data-assign="24/0"]').selectOption('');
+  await page.locator('[data-confirm-assign="24/0"]').click();
   await page.getByRole('button', { name: 'Close date editor' }).click();
   assert.equal(await page.locator('[data-date="2026-10-29"]').evaluate(el => el.classList.contains('unfilled')), true);
   assert.equal(await page.locator('[data-date="2026-10-29"] .holiday-tag').textContent(), 'Local holiday');

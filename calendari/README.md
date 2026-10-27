@@ -16,7 +16,7 @@ Open `http://127.0.0.1:8000/`. Stop the server with Ctrl+C.
 
 ## Use the planner
 
-1. Add participants individually or in a batch. Select a participant to enter their temporary name, permitted shift types, blocked weekdays, and blocked dates.
+1. Add participants individually or in a batch. Select a participant to enter their temporary name, permitted shift types, blocked weekdays, and blocked dates. Press **Confirm participant changes** (or Enter in a text field) to apply all of that participant's edits together. **Cancel changes** restores the last confirmed values. Names still clear on reload. Edits remain pending until confirmed; switching participants or months asks before discarding them, and generation asks you to confirm or cancel first.
 2. Select a month and enter a city or settlement in Catalonia. Choose a listed result and press **Apply city** (or Enter). The selected city is highlighted; local and public holidays are marked automatically. Holiday coverage adapts per date; there is no monthly coverage filter. Open a date to mark an additional weekday holiday manually.
 3. Generate a proposal. Search runs for up to 10 seconds in a worker, prioritizing covered duty hours, similar monthly hours, and balanced holiday/weekend duties. Stop early to keep the best proposal found so far. This is a bounded heuristic, not a proof of optimality or infeasibility.
 4. Review yellow dates: these have missing coverage, both during generation and in the final proposal. Workload differences and warnings appear below the calendar. Open a date to change or clear an assignment. On holidays, each of the two coverage places can use one 24-hour duty or separate day/night duties; use the split/merge controls to edit these manually. Manual assignments are fixed; release their fixed status to let regeneration replace them.
@@ -28,6 +28,8 @@ Moves stay within the displayed month and preserve the original shift type. High
 **Red means overstaffed / overlapping coverage**, including incompatible overlaps in older backups. Red takes priority over yellow, but missing-coverage text and holiday badges remain visible. The same warning appears in PDFs. Three or four people covering separate holiday shifts are valid and do not make a day red. Ordinary availability and monthly-limit conflicts retain their individual warnings. Moves cannot add extra people to occupied coverage places.
 
 The current month opens on each visit. Previously saved months remain available through navigation. Each holiday is independently flexible; participants initially allow all shift types and have no blocked dates.
+
+In the date popup, selecting a participant or **Unfilled** is a pending choice. Press **Confirm assignment** for that spot to apply it, or **Cancel selection** to restore its current assignment. Closing the popup also discards pending choices. Confirmation rechecks the scheduling rules; rule exceptions still require their explicit confirmation, and structural conflicts cannot be overridden. Drag-and-drop moves, holiday marking, and split/merge controls retain their existing behavior.
 
 ## Scheduling rules
 

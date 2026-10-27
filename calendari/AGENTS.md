@@ -11,6 +11,8 @@ This is a personal, static scheduling application. Keep implementation readable 
 - Names are authorized only in PDFs explicitly exported or printed by the user. Do not write temporary reports containing names to disk or upload them.
 - Do not add telemetry, remote fonts, or third-party scripts that could receive names.
 - Test name exclusion from storage and backups whenever persistence changes.
+- Participant names and availability edits remain in a session-only draft until the participant form is confirmed. Apply name, shift permissions, blocked weekdays, and this month's blocked dates together after validation. Cancellation restores confirmed values. Never persist participant drafts or their names.
+- Participant selections in the date editor, including selecting Unfilled, remain pending until Confirm assignment is pressed for that spot. Cancel selection or closing the popup discards unconfirmed selections. Validate again on confirmation and keep the explicit manual-exception prompt for rule violations. Structural conflicts cannot be overridden. Drag-and-drop moves keep their existing behavior.
 - A selected city is stored only as a recognized official municipal code. Never persist the free-text city input. City display names come from the bundled public dataset, not participant input.
 
 ## Scheduling requirements

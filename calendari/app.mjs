@@ -14,6 +14,8 @@ const dateTitle = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-G
 let state = emptyState(), month = todayMonth(), selectedId = null, openDate = null;
 let storageBlocked = false, worker = null, latestProposal = null;
 let moving = null, pointer = null, suppressClickUntil = 0;
+let participantDraft = null, participantDirty = false;
+const assignmentDrafts = new Map(); // Anonymous pending selections for the open date only.
 
 function notify(message, error = false) {
   $('#message').textContent = message;
@@ -81,9 +83,31 @@ function renderParticipants() {
 }
 function renderEditor() {
   const p = state.participants.find(p => p.id === selectedId);
-  if (!p) { $('#participant-editor').innerHTML = ''; return; }
-  const blockedDays = p.blockedDates.filter(d => d.startsWith(month)).map(d => Number(d.slice(-2))).sort((a, b) => a - b).join(', ');
-  $('#participant-editor').innerHTML = `<div class="participant-editor"><h3>${participantCode(p)} · Availability</h3><label>Name · session only<input id="person-name" type="text" maxlength="80" autocomplete="off" spellcheck="false" value="${escape(names.get(p.id) || '')}" placeholder="Participant ${p.code}"></label><fieldset><legend>Allowed shift types</legend><div class="checkbox-list">${KINDS.map(kind => `<label class="checkbox-label"><input type="checkbox" data-kind="${kind}" ${p.allowedKinds.includes(kind) ? 'checked' : ''}>${kindLabel(kind)}</label>`).join('')}</div></fieldset><fieldset><legend>Blocked weekdays · every month</legend><div class="checkbox-list weekday-choices">${[1, 2, 3, 4, 5, 6, 0].map(d => `<label class="checkbox-label"><input type="checkbox" data-weekday="${d}" ${p.blockedWeekdays.includes(d) ? 'checked' : ''}>${WEEKDAYS[d]}</label>`).join('')}</div></fieldset><label>Blocked dates · ${escape(monthTitle(month))}<input id="blocked-days" type="text" inputmode="numeric" value="${blockedDays}" placeholder="e.g. 5, 12, 23" autocomplete="off" aria-describedby="blocked-hint"></label><p id="blocked-hint" class="muted">Numbers apply only to this month. Separate with commas or spaces.</p><button class="danger remove-person" id="remove-person">Delete participant</button></div>`;
+  if (!p) { participantDraft = null; participantDirty = false; $('#participant-editor').innerHTML = ''; return; }
+  if (!participantDraft || participantDraft.id !== p.id || participantDraft.month !== month) {
+    participantDraft = { id: p.id, month, name: names.get(p.id) || '', allowedKinds: [...p.allowedKinds], blockedWeekdays: [...p.blockedWeekdays],
+      blockedDays: p.blockedDates.filter(d => d.startsWith(month)).map(d => Number(d.slice(-2))).sort((a, b) => a - b).join(', ') };
+    participantDirty = false;
+  }
+  const draft = participantDraft;
+  $('#participant-editor').innerHTML = `<form class="participant-editor" id="participant-form">
+    <h3>${participantCode(p)} · Availability</h3>
+    <label>Name · session only<input id="person-name" type="text" maxlength="80" autocomplete="off" spellcheck="false" value="${escape(draft.name)}" placeholder="Participant ${p.code}"></label>
+    <fieldset><legend>Allowed shift types</legend><div class="checkbox-list">${KINDS.map(kind => `<label class="checkbox-label"><input type="checkbox" data-kind="${kind}" ${draft.allowedKinds.includes(kind) ? 'checked' : ''}>${kindLabel(kind)}</label>`).join('')}</div></fieldset>
+    <fieldset><legend>Blocked weekdays · every month</legend><div class="checkbox-list weekday-choices">${[1, 2, 3, 4, 5, 6, 0].map(d => `<label class="checkbox-label"><input type="checkbox" data-weekday="${d}" ${draft.blockedWeekdays.includes(d) ? 'checked' : ''}>${WEEKDAYS[d]}</label>`).join('')}</div></fieldset>
+    <label>Blocked dates · ${escape(monthTitle(month))}<input id="blocked-days" type="text" inputmode="numeric" value="${escape(draft.blockedDays)}" placeholder="e.g. 5, 12, 23" autocomplete="off" aria-describedby="blocked-hint participant-edit-status"></label>
+    <p id="blocked-hint" class="muted">Numbers apply only to this month. Separate with commas or spaces.</p>
+    <p id="participant-edit-status" class="muted" role="status">${participantDirty ? 'Unconfirmed changes. Confirm to apply them.' : 'Changes apply only after confirmation. Names stay in this session.'}</p>
+    <div class="participant-edit-actions"><button type="submit" class="primary" id="confirm-participant" ${participantDirty ? '' : 'disabled'}>Confirm participant changes</button><button type="button" id="cancel-participant" ${participantDirty ? '' : 'disabled'}>Cancel changes</button></div>
+    <button type="button" class="danger remove-person" id="remove-person">Delete participant</button>
+  </form>`;
+}
+
+function discardParticipantDraft() {
+  if (participantDirty && !confirm('Discard unconfirmed participant changes? Confirm them first to keep them.')) {
+    $('#confirm-participant').focus(); return false;
+  }
+  participantDraft = null; participantDirty = false; return true;
 }
 function currentToday() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; }
 function renderCalendar(proposal = null) {
@@ -154,7 +178,7 @@ function renderIssues() {
 }
 function changed() { save(); render(); if (openDate && $('#day-dialog').open) renderDay(); }
 function otherAssignments(slot) { return allAssignments(state).filter(a => !(a.date === slot.date && a.kind === slot.kind && a.seat === slot.seat)); }
-function showDay(date) { openDate = date; renderDay(); $('#day-dialog').showModal(); }
+function showDay(date) { assignmentDrafts.clear(); openDate = date; renderDay(); $('#day-dialog').showModal(); }
 function renderDay() {
   const config = state.months[month];
   $('#day-title').textContent = dateTitle(openDate);
@@ -163,21 +187,24 @@ function renderDay() {
   const official = info.local || info.general;
   const slots = slotsForDate(openDate, config).flatMap(s => holiday(openDate, config) && s.kind === '24' && splitChoices.has(`${openDate}/${s.seat}`) && !config.assignments.some(a => a.date === openDate && a.seat === s.seat) ? [{ ...s, kind: 'day' }, { ...s, kind: 'night' }] : [s]);
   const issues = audit(state, month);
-  $('#day-content').innerHTML = `<label class="checkbox-label holiday-toggle"><input id="mark-holiday" type="checkbox" ${holiday(openDate, config) ? 'checked' : ''} ${weekend || official ? 'disabled' : ''}>${official ? escape(`${info.label} · ${info.name}`) : weekend ? 'Weekend · always a holiday' : 'Mark as an additional holiday'}</label><p class="dialog-note">${holiday(openDate, config) ? 'Holiday · any combination of 24-hour and separate 12-hour duties is allowed' : 'Non-holiday · 24-hour shifts'}. Two people are required at all times. Selecting a person fixes this assignment.</p>` + slots.map(s => {
+  $('#day-content').innerHTML = `<label class="checkbox-label holiday-toggle"><input id="mark-holiday" type="checkbox" ${holiday(openDate, config) ? 'checked' : ''} ${weekend || official ? 'disabled' : ''}>${official ? escape(`${info.label} · ${info.name}`) : weekend ? 'Weekend · always a holiday' : 'Mark as an additional holiday'}</label><p class="dialog-note">${holiday(openDate, config) ? 'Holiday · any combination of 24-hour and separate 12-hour duties is allowed' : 'Non-holiday · 24-hour shifts'}. Two people are required at all times. Select a participant, then confirm to apply and fix that assignment. Cancel or close to discard pending selections.</p>` + slots.map(s => {
     const a = config.assignments.find(a => slotKey(a) === slotKey(s));
+    const pending = assignmentDrafts.has(slotKey(s));
+    const selected = pending ? assignmentDrafts.get(slotKey(s)) : a?.participantId ?? '';
     const warnings = issues.filter(i => slotKey(i.assignment) === slotKey(s));
-    return `<div class="assignment-editor"><div class="assignment-row"><label>${kindLabel(s.kind)} · Seat ${s.seat + 1}<select data-assign="${s.kind}/${s.seat}"><option value="">Unfilled</option>${state.participants.map(p => {
+    return `<div class="assignment-editor"><div class="assignment-row"><label>${kindLabel(s.kind)} · Seat ${s.seat + 1}<select data-assign="${s.kind}/${s.seat}"><option value="" ${selected ? '' : 'selected'}>Unfilled</option>${state.participants.map(p => {
       const candidate = { ...s, participantId: p.id };
       const structural = structuralIssues(state, month, candidate, otherAssignments(s));
       const rules = ruleIssues(state, month, candidate, otherAssignments(s));
-      return `<option value="${p.id}" ${p.id === a?.participantId ? 'selected' : ''} ${structural.length ? 'disabled' : ''}>${escape(personLabel(p.id))} (${participantCode(p)})${structural.length ? ' · already on this date' : rules.length ? ` · ${rules.length} restriction(s)` : ''}</option>`;
-    }).join('')}</select></label></div><div class="assignment-meta"><span>${timeLabel(s.kind)} · ${a?.fixed ? 'Fixed' : 'Automatic / unfilled'}</span>${a ? `<button class="small" data-fix="${s.kind}/${s.seat}">${a.fixed ? 'Release fixed' : 'Keep fixed'}</button>` : ''}</div>${holiday(openDate, config) && s.kind !== 'night' ? `<button class="small" data-${s.kind === '24' ? 'split' : 'merge'}="${s.seat}">${s.kind === '24' ? 'Split into day and night shifts' : 'Use one 24-hour duty'}</button>` : ''}${warnings.length ? `<p class="assignment-warnings">${warnings.map(i => escape(i.message)).join(' · ')}${a?.override ? ' · confirmed manual exception' : ''}</p>` : ''}</div>`;
+      return `<option value="${p.id}" ${p.id === selected ? 'selected' : ''} ${structural.length ? 'disabled' : ''}>${escape(personLabel(p.id))} (${participantCode(p)})${structural.length ? ' · already on this date' : rules.length ? ` · ${rules.length} restriction(s)` : ''}</option>`;
+    }).join('')}</select></label></div><p class="assignment-pending muted" role="status">${pending ? 'Pending selection. Confirm to apply.' : 'Select a participant, then confirm.'}</p><div class="assignment-actions"><button type="button" class="primary" data-confirm-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Confirm assignment</button><button type="button" data-cancel-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Cancel selection</button></div><div class="assignment-meta"><span>${timeLabel(s.kind)} · ${a?.fixed ? 'Fixed' : 'Automatic / unfilled'}</span>${a ? `<button class="small" data-fix="${s.kind}/${s.seat}">${a.fixed ? 'Release fixed' : 'Keep fixed'}</button>` : ''}</div>${holiday(openDate, config) && s.kind !== 'night' ? `<button class="small" data-${s.kind === '24' ? 'split' : 'merge'}="${s.seat}">${s.kind === '24' ? 'Split into day and night shifts' : 'Use one 24-hour duty'}</button>` : ''}${warnings.length ? `<p class="assignment-warnings">${warnings.map(i => escape(i.message)).join(' · ')}${a?.override ? ' · confirmed manual exception' : ''}</p>` : ''}</div>`;
   }).join('') + config.assignments.filter(a => a.date === openDate && !slots.some(s => slotKey(s) === slotKey(a))).map(a => `<div class="assignment-editor stale-assignment"><p>Incompatible ${kindLabel(a.kind)} assignment: ${escape(personLabel(a.participantId))}. The date’s shift mode has changed.</p><button class="danger" data-stale="${a.kind}/${a.seat}">Remove incompatible assignment</button></div>`).join('');
 }
 
 $('#add-participant').addEventListener('click', () => {
   const count = Number($('#add-count').value);
   if (!Number.isInteger(count) || count < 1 || count > 100 || state.participants.length + count > 500) return notify('Add between 1 and 100 people at once, up to 500 total.', true);
+  if (!discardParticipantDraft()) return;
   for (let i = 0; i < count; i++) {
     const p = { id: crypto.randomUUID(), code: state.nextCode++, allowedKinds: [...KINDS], blockedWeekdays: [], blockedDates: [] };
     state.participants.push(p); selectedId = p.id;
@@ -187,40 +214,56 @@ $('#add-participant').addEventListener('click', () => {
 $('#participants').addEventListener('click', event => {
   const button = event.target.closest('[data-person]');
   if (!button) return;
+  if (button.dataset.person === selectedId) return;
+  if (!discardParticipantDraft()) return;
   selectedId = button.dataset.person; renderParticipants(); renderEditor();
 });
-$('#participant-editor').addEventListener('input', event => {
-  if (event.target.id !== 'person-name') return;
-  names.set(selectedId, event.target.value);
-  renderParticipants(); renderCalendar(); renderTotals(); renderIssues();
-});
-$('#participant-editor').addEventListener('change', event => {
+function updateParticipantDraft() {
+  if (!participantDraft) return;
+  participantDraft.name = $('#person-name').value;
+  participantDraft.allowedKinds = [...$('#participant-editor').querySelectorAll('[data-kind]:checked')].map(el => el.dataset.kind);
+  participantDraft.blockedWeekdays = [...$('#participant-editor').querySelectorAll('[data-weekday]:checked')].map(el => Number(el.dataset.weekday));
+  participantDraft.blockedDays = $('#blocked-days').value;
+  participantDirty = true;
+  $('#confirm-participant').disabled = false; $('#cancel-participant').disabled = false;
+  $('#blocked-days').removeAttribute('aria-invalid');
+  $('#participant-edit-status').textContent = 'Unconfirmed changes. Confirm to apply them.';
+}
+$('#participant-editor').addEventListener('input', updateParticipantDraft);
+$('#participant-editor').addEventListener('change', updateParticipantDraft);
+$('#participant-editor').addEventListener('submit', event => {
+  event.preventDefault();
   const p = state.participants.find(p => p.id === selectedId);
-  if (!p || event.target.id === 'person-name') return;
-  if (event.target.dataset.kind) p.allowedKinds = [...$('#participant-editor').querySelectorAll('[data-kind]:checked')].map(el => el.dataset.kind);
-  else if (event.target.dataset.weekday !== undefined) p.blockedWeekdays = [...$('#participant-editor').querySelectorAll('[data-weekday]:checked')].map(el => Number(el.dataset.weekday));
-  else if (event.target.id === 'blocked-days') {
-    const text = event.target.value.trim();
-    const numbers = text ? text.split(/[\s,]+/).filter(Boolean).map(Number) : [];
-    if (numbers.some(n => !Number.isInteger(n) || n < 1 || n > monthDates(month).length)) {
-      event.target.setAttribute('aria-invalid', 'true');
-      return notify(`Use day numbers from 1 to ${monthDates(month).length}. Existing blocked dates were kept.`, true);
-    }
-    p.blockedDates = [...p.blockedDates.filter(d => !d.startsWith(month)), ...new Set(numbers.map(n => `${month}-${pad(n)}`))];
-  } else return;
-  event.target.removeAttribute('aria-invalid');
-  // Keep the focused editor mounted. Replacing an input during its change/blur
-  // sequence can re-enter the handler and also interrupts keyboard navigation.
-  save(); renderParticipants(); renderCalendar(); renderTotals(); renderIssues();
+  if (!p || !participantDraft || !participantDirty || worker) return;
+  const text = participantDraft.blockedDays.trim();
+  const numbers = text ? text.split(/[\s,]+/).filter(Boolean).map(Number) : [];
+  if (numbers.some(n => !Number.isInteger(n) || n < 1 || n > monthDates(month).length)) {
+    $('#blocked-days').setAttribute('aria-invalid', 'true');
+    $('#participant-edit-status').textContent = `Use day numbers from 1 to ${monthDates(month).length}. No participant changes were applied.`;
+    $('#blocked-days').focus(); return;
+  }
+  names.set(p.id, participantDraft.name);
+  p.allowedKinds = [...participantDraft.allowedKinds];
+  p.blockedWeekdays = [...participantDraft.blockedWeekdays];
+  p.blockedDates = [...p.blockedDates.filter(d => !d.startsWith(month)), ...new Set(numbers.map(n => `${month}-${pad(n)}`))];
+  participantDraft = null; participantDirty = false;
+  changed();
+  $('#participant-edit-status').textContent = 'Participant changes confirmed. Names stay in this session.';
+  $('#person-name').focus({ preventScroll: true });
 });
 $('#participant-editor').addEventListener('click', event => {
+  if (event.target.id === 'cancel-participant') {
+    participantDraft = null; participantDirty = false; renderEditor();
+    $('#participant-edit-status').textContent = 'Unconfirmed changes cancelled.';
+    $('#person-name').focus({ preventScroll: true }); return;
+  }
   if (event.target.id !== 'remove-person') return;
   if (!confirm('Delete this participant and all their assignments in every saved month? This cannot be undone. Export an anonymous backup first if needed.')) return;
   state.participants = state.participants.filter(p => p.id !== selectedId);
   for (const config of Object.values(state.months)) config.assignments = config.assignments.filter(a => a.participantId !== selectedId);
-  names.delete(selectedId); selectedId = state.participants[0]?.id ?? null; changed();
+  names.delete(selectedId); participantDraft = null; participantDirty = false; selectedId = state.participants[0]?.id ?? null; changed();
 });
-function navigate(next) { if (moving || worker) return; if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(next) || Number(next.slice(0, 4)) < 1900 || Number(next.slice(0, 4)) > 2200) return notify('Choose a month between January 1900 and December 2200.', true); month = next; ensureMonth(); save(); render(); }
+function navigate(next) { if (moving || worker) return; if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(next) || Number(next.slice(0, 4)) < 1900 || Number(next.slice(0, 4)) > 2200) return notify('Choose a month between January 1900 and December 2200.', true); if (next === month) return; if (!discardParticipantDraft()) { $('#month-input').value = month; return; } month = next; ensureMonth(); save(); render(); }
 $('#previous').addEventListener('click', () => navigate(shiftMonth(month, -1)));
 $('#next').addEventListener('click', () => navigate(shiftMonth(month, 1)));
 $('#today').addEventListener('click', () => navigate(todayMonth()));
@@ -349,26 +392,47 @@ document.addEventListener('pointerup', event => {
 });
 document.addEventListener('pointercancel', () => { if (pointer?.active) cancelMove(); else clearPointer(); });
 window.addEventListener('blur', () => { if (pointer?.active) cancelMove(); else clearPointer(); });
-$('#day-dialog').addEventListener('close', () => { openDate = null; });
+$('#day-dialog').addEventListener('close', () => { openDate = null; assignmentDrafts.clear(); });
 $('#day-content').addEventListener('change', event => {
   const config = state.months[month];
   if (event.target.id === 'mark-holiday') {
+    assignmentDrafts.clear();
     config.holidays = event.target.checked ? [...new Set([...config.holidays, openDate])] : config.holidays.filter(d => d !== openDate);
     changed(); return;
   }
   if (!event.target.dataset.assign) return;
   const [kind, seatString] = event.target.dataset.assign.split('/');
   const slot = { date: openDate, kind, seat: Number(seatString) };
-  const participantId = event.target.value;
-  if (!participantId) { config.assignments = config.assignments.filter(a => slotKey(a) !== slotKey(slot)); changed(); return; }
+  assignmentDrafts.set(slotKey(slot), event.target.value);
+  const editor = event.target.closest('.assignment-editor');
+  editor.querySelector('[data-confirm-assign]').disabled = false;
+  editor.querySelector('[data-cancel-assign]').disabled = false;
+  editor.querySelector('.assignment-pending').textContent = 'Pending selection. Confirm to apply.';
+});
+$('#day-content').addEventListener('click', event => {
+  const confirmButton = event.target.closest('[data-confirm-assign]');
+  const cancelButton = event.target.closest('[data-cancel-assign]');
+  if (!confirmButton && !cancelButton) return;
+  const value = confirmButton?.dataset.confirmAssign ?? cancelButton.dataset.cancelAssign;
+  const [kind, seatString] = value.split('/');
+  const slot = { date: openDate, kind, seat: Number(seatString) };
+  const key = slotKey(slot), config = state.months[month];
+  const focusSelection = () => $(`#day-content [data-assign="${value}"]`)?.focus({ preventScroll: true });
+  if (cancelButton) { assignmentDrafts.delete(key); renderDay(); focusSelection(); return; }
+  if (!assignmentDrafts.has(key)) return;
+  const participantId = assignmentDrafts.get(key);
+  const status = confirmButton.closest('.assignment-editor').querySelector('.assignment-pending');
+  if (!participantId) { assignmentDrafts.delete(key); config.assignments = config.assignments.filter(a => slotKey(a) !== key); changed(); focusSelection(); return; }
   const candidate = { ...slot, participantId, fixed: true, override: false };
   const others = otherAssignments(slot);
   const structural = structuralIssues(state, month, candidate, others);
-  if (structural.length) { notify(structural.join('. '), true); renderDay(); return; }
+  if (structural.length) { status.textContent = `Not applied: ${structural.join('. ')}.`; return; }
   const issues = ruleIssues(state, month, candidate, others);
-  if (issues.length && !confirm(`This assignment breaks scheduling rules:\n\n${issues.join('\n')}\n\nKeep it as an explicit manual exception?`)) { renderDay(); return; }
+  if (issues.length && !confirm(`This assignment breaks scheduling rules:\n\n${issues.join('\n')}\n\nKeep it as an explicit manual exception?`)) { status.textContent = 'Exception declined. Change or cancel this pending selection.'; return; }
   candidate.override = issues.length > 0;
+  assignmentDrafts.delete(key);
   config.assignments = [...config.assignments.filter(a => slotKey(a) !== slotKey(slot)), candidate]; changed();
+  focusSelection();
 });
 $('#day-content').addEventListener('click', event => {
   const split = event.target.closest('[data-split]'), merge = event.target.closest('[data-merge]');
@@ -377,6 +441,7 @@ $('#day-content').addEventListener('click', event => {
     const config = state.months[month];
     const assigned = config.assignments.filter(a => a.date === openDate && a.seat === seat);
     if (assigned.length && !confirm('Replace the assignments for this place? Existing duties on this date and place will be cleared.')) return;
+    assignmentDrafts.clear();
     config.assignments = config.assignments.filter(a => a.date !== openDate || a.seat !== seat);
     const key = `${openDate}/${seat}`;
     if (split) splitChoices.add(key); else splitChoices.delete(key);
@@ -409,6 +474,7 @@ function finishSearch(stopped = false) {
 }
 $('#generate').addEventListener('click', () => {
   if (moving || worker) return;
+  if (participantDirty) { notify('Confirm or cancel participant changes before generating.', true); $('#confirm-participant').focus(); return; }
   if (!state.participants.length) return notify('Add participants before generating a month.', true);
   latestProposal = null;
   try {
@@ -445,7 +511,7 @@ $('#import-file').addEventListener('change', async event => {
     if (file.size > 5_000_000) throw new Error('Backup is too large. Choose a JSON backup smaller than 5 MB.');
     const restored = parseBackup(await file.text());
     if (!confirm('Replace all saved participants, restrictions, and months with this anonymous backup? Current session names will also be cleared.')) return;
-    state = restored; names.clear(); splitChoices.clear(); selectedId = state.participants[0]?.id ?? null;
+    state = restored; names.clear(); splitChoices.clear(); participantDraft = null; participantDirty = false; selectedId = state.participants[0]?.id ?? null;
     storageBlocked = false; changed();
     notify('Anonymous backup restored. Re-enter participant names for this session.');
   } catch (error) { notify(error.message, true); }

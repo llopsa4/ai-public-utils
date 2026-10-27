@@ -18,6 +18,8 @@ button.slot-line{width:100%;min-height:44px;text-align:left;font-weight:400;bord
 .move-cursor{position:fixed;top:0;left:0;pointer-events:none;z-index:100;background:var(--primary);color:white;border-radius:6px;padding:8px 12px;font-size:12px;box-shadow:0 3px 12px #0003}
 .day-cell.overstaffed,.day-cell.overstaffed:hover{background:#ffd6d0}
 .coverage-warning{font-size:10px;font-weight:750;color:var(--danger)}
+.participant-edit-actions{display:grid;gap:8px;grid-column:1/-1}.participant-edit-actions button{width:100%;white-space:normal}
+.assignment-actions{display:flex;gap:8px;flex-wrap:wrap}.assignment-actions button{flex:1;min-width:140px}.assignment-pending{line-height:1.5}
 @media(max-width:1100px){.move-entry{flex-wrap:wrap}.move-entry .slot-name{flex-basis:100%;order:-1;white-space:normal;overflow-wrap:anywhere;text-overflow:clip}.move-controls{align-items:flex-start;flex-wrap:wrap}}
 @media print{#print-report .print-day.overstaffed{background:#ffd6d0!important;print-color-adjust:exact}.print-coverage-warning{font-size:7px;line-height:1.15;font-weight:700;color:#7c241b}}
 @media(min-width:1450px){.day-cell,.empty-cell{min-height:142px}.slot-line{font-size:11px}}

@@ -91,6 +91,49 @@ try {
   assert(await page.locator('#move-controls').isHidden());
   assert(await page.locator('#move-cursor').isHidden());
 
+  // Date-popup choices require per-spot confirmation, including clearing a duty.
+  state.participants[2].blockedDates = ['2026-10-07'];
+  await seed(page, state);
+  const beforePopup = await stored(page);
+  await page.locator('[data-date="2026-10-07"] .date-open').click();
+  await page.locator('[data-assign="24/0"]').selectOption(state.participants[1].id);
+  assert.equal(await stored(page), beforePopup);
+  await page.locator('[data-cancel-assign="24/0"]').click();
+  assert.equal(await page.locator('[data-assign="24/0"]').inputValue(), '');
+  await page.locator('[data-assign="24/0"]').selectOption(state.participants[1].id);
+  await page.keyboard.press('Escape');
+  assert.equal(await stored(page), beforePopup);
+  await page.locator('[data-date="2026-10-07"] .date-open').click();
+  assert.equal(await page.locator('[data-assign="24/0"]').inputValue(), '');
+  await page.locator('[data-assign="24/0"]').selectOption(state.participants[1].id);
+  await page.locator('[data-confirm-assign="24/0"]').press('Enter');
+  const assignedPopup = await stored(page);
+  assert.equal(JSON.parse(assignedPopup).months['2026-10'].assignments.length, 2);
+  await page.locator('[data-assign="24/0"]').selectOption('');
+  assert.equal(await stored(page), assignedPopup);
+  await page.locator('[data-cancel-assign="24/0"]').click();
+  assert.equal(await page.locator('[data-assign="24/0"]').inputValue(), state.participants[1].id);
+  await page.locator('[data-assign="24/0"]').selectOption('');
+  await page.locator('[data-confirm-assign="24/0"]').click();
+  assert.equal(JSON.parse(await stored(page)).months['2026-10'].assignments.length, 1);
+  // A second pending spot must be revalidated after the first is confirmed.
+  await page.locator('[data-assign="24/0"]').selectOption(state.participants[1].id);
+  await page.locator('[data-assign="24/1"]').selectOption(state.participants[1].id);
+  await page.locator('[data-confirm-assign="24/0"]').click();
+  const beforeConflict = await stored(page);
+  await page.locator('[data-confirm-assign="24/1"]').click();
+  assert.equal(await stored(page), beforeConflict);
+  assert((await page.locator('#day-content').textContent()).includes('Not applied:'));
+  await page.locator('[data-cancel-assign="24/1"]').click();
+  await page.locator('[data-assign="24/1"]').selectOption(state.participants[2].id);
+  page.once('dialog', d => d.dismiss());
+  await page.locator('[data-confirm-assign="24/1"]').click();
+  assert.equal(await stored(page), beforeConflict);
+  page.once('dialog', d => d.accept());
+  await page.locator('[data-confirm-assign="24/1"]').click();
+  assert.equal(JSON.parse(await stored(page)).months['2026-10'].assignments.at(-1).override, true);
+  await page.getByRole('button', { name: 'Close date editor' }).click();
+
   // Short-shift previews never mutate storage until a destination is committed.
   const short = fixture('day', '2026-10-03');
   await seed(page, short); const before = await stored(page);
@@ -112,6 +155,7 @@ try {
   await seed(page, state);
   await page.locator('[data-person]').first().click();
   await page.locator('#person-name').fill('QA_MOVE_PRIVATE_SENTINEL');
+  await page.locator('#confirm-participant').click();
   await page.locator(`[data-move="${key}"]`).click();
   assert.equal(await page.locator('[data-date="2026-10-07"] [data-drop]').count(), 0);
   assert(!(await stored(page)).includes('QA_MOVE_PRIVATE_SENTINEL'));
