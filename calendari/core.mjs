@@ -95,7 +95,7 @@ export function movedAssignments(state, month, sourceKey, target) {
   if (!target || !monthDates(month).includes(target.date) || target.date === source.date)
     throw new Error('Choose another date in this month.');
   if (target.kind !== source.kind) throw new Error('Keep the original shift type.');
-  const candidate = { date: target.date, kind: target.kind, seat: target.seat, participantId: source.participantId, fixed: true, override: false };
+  const candidate = { date: target.date, kind: target.kind, seat: target.seat, participantId: source.participantId, fixed: false, override: false };
   const others = allAssignments(state).filter(a => a !== source);
   const issues = [...structuralIssues(state, month, candidate, others), ...ruleIssues(state, month, candidate, others)];
   if (issues.length) throw new Error([...new Set(issues)].join('. '));
@@ -169,27 +169,20 @@ export function generate(state, month, { timeMs = 10000, random = Math.random, o
   const hours = assignments => assignments.reduce((sum, a) => sum + HOURS[a.kind], 0);
   const proposal = (assignments, iterations) => ({ assignments, iterations, coveredHours: hours(assignments), requiredHours, complete: hours(assignments) === requiredHours });
   const outside = allAssignments(state).filter(a => !a.date.startsWith(month));
-  const fixed = config.assignments.filter(a => a.fixed);
-  for (const [i, a] of fixed.entries()) {
-    if (structuralIssues(state, month, a, fixed.filter((_, j) => j !== i)).length) throw new Error('Fixed assignments do not match the shift structure. Remove or edit them first.');
-  }
   const score = assignments => {
     const t = Object.values(totals(state, month, assignments));
     const variance = key => t.reduce((sum, v) => sum + v[key] ** 2, 0);
     return [-assignments.reduce((sum, a) => sum + HOURS[a.kind], 0), variance('hours'), variance('holidays') + variance('weekends')];
   };
   const better = (a, b) => { for (let i = 0; i < a.length; i++) { if (a[i] !== b[i]) return a[i] < b[i]; } return false; };
-  // Retain a valid existing automatic proposal as an incumbent, without inheriting stale violations.
-  let best = [...fixed];
-  for (const a of config.assignments.filter(a => !a.fixed)) {
-    if (!structuralIssues(state, month, a, [...outside, ...best]).length && !ruleIssues(state, month, a, [...outside, ...best]).length) best.push(a);
-  }
+  // Every run starts fresh. Legacy fixed flags and manual exceptions never pin duties.
+  let best = [];
   let bestScore = score(best), iterations = 0;
   const start = now();
   onProgress(proposal(best, iterations));
   do {
     // Alternate full restarts with partial repairs of the best proposal.
-    const assignments = iterations % 3 === 0 ? [...fixed] : best.filter(a => a.fixed || random() > 0.25);
+    const assignments = iterations % 3 === 0 ? [] : best.filter(() => random() > 0.25);
     let remaining = units.filter(unit => !assignments.some(a => covers(a, unit)));
     while (remaining.length) {
       let choice, candidates, choiceIndex;

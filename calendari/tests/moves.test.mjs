@@ -12,7 +12,7 @@ function fixture() {
 const duty = (state, date, kind = '24', seat = 0, person = 0) => ({ date, kind, seat, participantId: state.participants[person].id, fixed: false, override: false });
 const target = (date = '2026-10-05', kind = '24', seat = 0) => ({ date, kind, seat });
 
-test('moving is atomic, excludes the source from rules, fixes the result, and round-trips anonymously', () => {
+test('moving is atomic, excludes the source from rules, clears exceptions, and round-trips anonymously', () => {
   const state = fixture(), source = duty(state, '2026-10-01');
   source.override = true;
   state.months[month].assignments = [source, duty(state, '2026-10-08'), duty(state, '2026-10-12')];
@@ -21,7 +21,7 @@ test('moving is atomic, excludes the source from rules, fixes the result, and ro
   assert.equal(serialize(state), before, 'Core returns a proposal without editing state');
   assert.equal(result.length, 3);
   assert(!result.some(a => a.date === source.date));
-  assert.deepEqual(result.at(-1), { ...target('2026-10-02'), participantId: source.participantId, fixed: true, override: false });
+  assert.deepEqual(result.at(-1), { ...target('2026-10-02'), participantId: source.participantId, fixed: false, override: false });
   state.months[month].assignments = result;
   assert.equal(totals(state, month)[source.participantId].hours, hours);
   assert.deepEqual(parseBackup(serialize(state)), state);

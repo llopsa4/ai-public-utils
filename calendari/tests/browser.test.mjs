@@ -37,6 +37,12 @@ try {
   page.on('request', request => requests.push(request.url()));
   const origin = `http://127.0.0.1:${server.address().port}`;
   await page.goto(origin + prefix);
+  assert.equal(await page.locator('#participant-dialog').isVisible(), false);
+  assert.equal(await page.locator('.sidebar #participant-editor').count(), 0);
+  assert.deepEqual(await page.locator('.sidebar').evaluate(el => [...el.children].map(child => child.id || child.className)), ['participant-panel', 'issues-section', 'rules-card']);
+  assert.equal(await page.locator('.weekend-heading').textContent(), 'Weekend');
+  assert.equal(await page.locator('.day-cell.weekend .holiday-tag').filter({ hasText: /^Weekend$/ }).count(), 0);
+  assert.equal(await page.locator('.day-cell.weekend').count(), 9);
   assert.equal(await page.locator('#holiday-mode').count(), 0, 'Holiday coverage must not require a filter');
   await page.locator('#month-input').fill('2026-10');
   await page.locator('#month-input').dispatchEvent('change');
@@ -44,40 +50,70 @@ try {
   await page.locator('#add-participant').click();
   assert.equal(await page.locator('[data-person]').count(), 20);
   await page.locator('[data-person]').first().click();
+  assert.equal(await page.locator('#participant-dialog').isVisible(), true);
+  const participantDialogBox = await page.locator('#participant-dialog').boundingBox();
+  assert(Math.abs(participantDialogBox.x + participantDialogBox.width / 2 - 720) < 2, 'Participant dialog is horizontally centred');
+  assert(Math.abs(participantDialogBox.y + participantDialogBox.height / 2 - 540) < 2, 'Participant dialog is vertically centred');
+  await page.screenshot({ path: path.join(output, 'participant-dialog.png'), fullPage: false });
   const initialParticipantData = await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY);
   assert.equal(await page.locator('[data-kind="24"]').isChecked(), true);
+  assert.equal(await page.locator('[data-kind="day"]').isDisabled(), true);
+  assert.equal(await page.locator('[data-kind="night"]').isDisabled(), true);
+  await page.locator('[data-kind="24"]').uncheck();
   await page.locator('[data-kind="night"]').check();
+  assert.equal(await page.locator('[data-kind="24"]').isDisabled(), true);
   assert.equal(await page.locator('[data-kind="24"]').isChecked(), false);
   await page.locator('[data-kind="day"]').check();
   assert.equal(await page.locator('[data-kind="night"]').isChecked(), true);
+  await page.locator('[data-kind="day"]').uncheck();
+  assert.equal(await page.locator('[data-kind="24"]').isDisabled(), true);
+  await page.locator('[data-kind="night"]').uncheck();
+  assert.equal(await page.locator('[data-kind="24"]').isEnabled(), true);
   await page.locator('[data-kind="24"]').check();
   assert.equal(await page.locator('[data-kind="day"]').isChecked(), false);
   assert.equal(await page.locator('[data-kind="night"]').isChecked(), false);
   assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData, 'Individual selections must wait for confirmation');
   await page.locator('#cancel-participant').click();
+  assert.equal(await page.locator('#participant-dialog').isVisible(), false);
+  await page.locator('[data-person]').first().click();
   assert.equal(await page.locator('[data-kind="night"]').isChecked(), false);
   const secret = 'QA_PRIVATE_SENTINEL <Name> & Test';
   await page.locator('#person-name').fill(secret);
-  await page.locator('#blocked-days').fill('5, 12, 23');
-  await page.locator('#blocked-days').dispatchEvent('change');
+  assert.equal(await page.locator('#blocked-days').count(), 0);
+  assert.equal(await page.locator('[data-block-date]').count(), 31);
+  for (const day of ['05', '12', '23']) await page.locator(`[data-block-date="2026-10-${day}"]`).click();
   await page.locator('[data-weekday="1"]').check();
   assert.equal(await page.locator('#person-name').inputValue(), secret);
   assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData, 'Name and availability drafts must not be saved');
   assert.ok(!(await page.locator('[data-person]').first().textContent()).includes('QA_PRIVATE_SENTINEL'), 'Name applies only after confirmation');
-  // Cancelling navigation keeps the pending editor intact.
-  page.once('dialog', dialog => dialog.dismiss());
-  await page.locator('[data-person]').nth(1).click();
-  assert.equal(await page.locator('#person-name').inputValue(), secret);
-  await page.locator('#generate').click();
-  assert.ok((await page.locator('#message').textContent()).includes('Confirm or cancel participant changes'));
-  assert.equal(await page.locator('#cancel').isHidden(), true);
-  // Invalid blocked dates reject the whole draft, including the name and checkboxes.
-  await page.locator('#blocked-days').fill('32');
-  await page.locator('#confirm-participant').click();
-  assert.equal(await page.locator('#blocked-days').getAttribute('aria-invalid'), 'true');
+  // Escape and the close button cancel the modal without persisting drafts.
+  await page.keyboard.press('Escape');
+  assert.equal(await page.locator('#participant-dialog').isVisible(), false);
   assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData);
-  await page.locator('#blocked-days').fill('5, 12, 23');
-  await page.locator('#blocked-days').press('Enter');
+  await page.locator('[data-person]').first().click();
+  assert.equal(await page.locator('#person-name').inputValue(), '');
+  await page.locator('#person-name').fill(secret);
+  await page.getByRole('button', { name: 'Close participant settings' }).click();
+  assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData);
+  await page.locator('[data-person]').first().click();
+  await page.locator('#person-name').fill(secret);
+  await page.locator('[data-weekday="1"]').check();
+  // Dates toggle by pointer or keyboard and stay pending until confirmation.
+  const fifth = page.locator('[data-block-date="2026-10-05"]');
+  await fifth.click();
+  assert.equal(await fifth.getAttribute('aria-pressed'), 'true');
+  await fifth.click();
+  assert.equal(await fifth.getAttribute('aria-pressed'), 'false');
+  await fifth.press('Enter');
+  await fifth.press('ArrowDown');
+  assert.equal(await page.locator('[data-block-date="2026-10-12"]').evaluate(el => el === document.activeElement), true);
+  await page.keyboard.press('Space');
+  await page.locator('[data-block-date="2026-10-23"]').click();
+  assert.equal(await page.locator('#blocked-date-count').textContent(), '3 dates selected');
+  assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData);
+  await page.screenshot({ path: path.join(output, 'blocked-dates-picker.png'), fullPage: false });
+  await page.locator('#confirm-participant').click();
+  assert.equal(await page.locator('#participant-dialog').isVisible(), false, 'Confirmation applies changes and closes the dialog');
   assert.equal(await page.locator('#confirm-participant').isDisabled(), true);
   assert.ok((await page.locator('[data-person]').first().textContent()).includes('QA_PRIVATE_SENTINEL'));
   let stored = await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY);
@@ -107,7 +143,9 @@ try {
   assert.ok(!stored.includes('QA_PRIVATE_SENTINEL'));
   const saved = JSON.parse(stored);
   assert.ok(saved.months['2026-10'].assignments.length > 30);
-  assert.ok(saved.months['2026-10'].assignments.some(a => a.participantId === firstId && a.date === '2026-10-05' && a.fixed && a.override));
+  assert.ok(!saved.months['2026-10'].assignments.some(a => a.participantId === firstId && a.date === '2026-10-05'));
+  assert.ok(saved.months['2026-10'].assignments.every(a => !a.fixed && !a.override));
+  assert.equal(await page.locator('.fixed-mark, [data-fix]').count(), 0);
   const downloadPromise = page.waitForEvent('download');
   await page.locator('#backup').click();
   const download = await downloadPromise;
@@ -117,12 +155,16 @@ try {
 
   await page.emulateMedia({ media: 'print' });
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
-  assert.equal(await page.locator('.print-page').count(), 21);
+  assert.equal(await page.locator('.print-page').first().locator('.print-weekend-heading').textContent(), 'Weekend');
+  assert.equal(await page.locator('.print-page').first().locator('.print-day strong').filter({ hasText: /Weekend/ }).count(), 0);
+  assert.equal(await page.locator('.print-page').count(), 1);
+  assert.ok((await page.locator('.print-calendar').textContent()).includes('QA_PRIVATE_SENTINEL'), 'Printed slots must show the same participant names as the screen');
   const overflow = await page.locator('.print-page').evaluateAll(pages => pages.filter(p => p.scrollHeight > p.clientHeight + 1).length);
   assert.equal(overflow, 0, 'Print pages must not clip content');
+  assert.equal(await page.locator('.print-day').evaluateAll(cells => cells.filter(c => c.scrollHeight > c.clientHeight + 1).length), 0, 'Print dates must not clip assignments or warnings');
   const pdfBytes = await page.pdf({ path: path.join(output, 'calendar.pdf'), preferCSSPageSize: true, printBackground: true });
   const pdf = await PDFDocument.load(pdfBytes);
-  assert.equal(pdf.getPageCount(), 21);
+  assert.equal(pdf.getPageCount(), 1);
   // Six-week months must still fit exactly one page each.
   await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
   await page.emulateMedia({ media: 'screen' });
@@ -132,13 +174,14 @@ try {
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
   assert.equal(await page.locator('.print-page').evaluateAll(pages => pages.filter(p => p.scrollHeight > p.clientHeight + 1).length), 0);
   const sixWeekPdf = await page.pdf({ path: path.join(output, 'six-week-calendar.pdf'), preferCSSPageSize: true, printBackground: true });
-  assert.equal((await PDFDocument.load(sixWeekPdf)).getPageCount(), 21);
+  assert.equal((await PDFDocument.load(sixWeekPdf)).getPageCount(), 1);
   await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
   assert.equal(await page.locator('#print-report').textContent(), '');
   await page.emulateMedia({ media: 'screen' });
   // Configure short-shift participants before assigning their holiday duties.
   for (let i = 1; i <= 6; i++) {
     await page.locator('[data-person]').nth(i).click();
+    await page.locator('[data-kind="24"]').uncheck();
     await page.locator('[data-kind="day"]').check();
     await page.locator('[data-kind="night"]').check();
     await page.locator('#confirm-participant').click();
@@ -158,7 +201,8 @@ try {
   assert.equal(mixedStored.months['2026-08'].assignments.length, 3);
   assert.equal(new Set(mixedStored.months['2026-08'].assignments.map(a => a.participantId)).size, 3);
   assert.ok(!JSON.stringify(mixedStored).includes('QA_PRIVATE_SENTINEL'));
-  assert.ok((await page.locator('#metrics').textContent()).includes('48/1488'));
+  assert.equal(await page.locator('#metrics').count(), 0);
+  assert.equal(await page.locator('[data-date="2026-08-01"]').evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(223, 241, 231)');
   assert.equal(await page.locator('[data-date="2026-08-01"]').evaluate(el => el.classList.contains('unfilled')), false);
   assert.equal(await page.locator('[data-date="2026-08-02"]').evaluate(el => el.classList.contains('unfilled')), true);
   // A different holiday in the same month can use four 12-hour duties.
@@ -173,19 +217,24 @@ try {
   await page.screenshot({ path: path.join(output, 'mixed-mode.png'), fullPage: true });
   await page.emulateMedia({ media: 'print' });
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
-  assert.ok((await page.locator('.print-header').first().textContent()).includes('Flexible holiday duties'));
+  assert.ok((await page.locator('.print-header').first().textContent()).includes('All participants'));
   assert.equal(await page.locator('.print-page').evaluateAll(pages => pages.filter(p => p.scrollHeight > p.clientHeight + 1).length), 0);
+  assert.equal(await page.locator('.print-day').evaluateAll(cells => cells.filter(c => c.scrollHeight > c.clientHeight + 1).length), 0, 'Mixed holiday shifts must fit within dates');
   const mixedPdf = await page.pdf({ path: path.join(output, 'mixed-calendar.pdf'), preferCSSPageSize: true, printBackground: true });
-  assert.equal((await PDFDocument.load(mixedPdf)).getPageCount(), 21);
+  assert.equal((await PDFDocument.load(mixedPdf)).getPageCount(), 1);
   await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
   await page.emulateMedia({ media: 'screen' });
   await page.locator('#month-input').fill('2026-10');
   await page.locator('#month-input').dispatchEvent('change');
 
-  // A weekday changed from holiday back to non-holiday must flag fixed 12-hour duties.
+  // A weekday changed from holiday back to non-holiday is repaired by fresh generation.
   await page.locator('[data-date="2026-10-06"] .date-open').click();
   await page.locator('#mark-holiday').check();
-  page.once('dialog', dialog => dialog.accept());
+  // Fresh generation may place this participant in either coverage place.
+  for (const seat of [0, 1]) {
+    await page.locator(`[data-assign="24/${seat}"]`).selectOption('');
+    await page.locator(`[data-confirm-assign="24/${seat}"]`).click();
+  }
   await page.locator('[data-split="0"]').click();
   page.once('dialog', dialog => dialog.accept());
   await page.locator('[data-assign="day/0"]').selectOption(firstId);
@@ -194,7 +243,10 @@ try {
   assert.ok((await page.locator('#day-content').textContent()).includes('Incompatible'));
   await page.getByRole('button', { name: 'Close date editor' }).click();
   await page.locator('#generate').click();
-  await page.waitForFunction(() => document.querySelector('#message').textContent.includes('Fixed assignments do not match'));
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Best coverage:'));
+  await page.locator('#cancel').click();
+  const regenerated = JSON.parse(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY));
+  assert.ok(!regenerated.months['2026-10'].assignments.some(a => a.date === '2026-10-06' && a.kind !== '24'));
   assert.equal(await page.locator('#generate').isEnabled(), true);
 
   await page.reload();
@@ -206,6 +258,14 @@ try {
   const mobile = await context.newPage({ viewport: { width: 390, height: 844 } });
   await mobile.setViewportSize({ width: 390, height: 844 });
   await mobile.goto(origin + prefix);
+  await mobile.locator('#participant-panel summary').click();
+  await mobile.locator('[data-person]').first().click();
+  const mobileDialogBox = await mobile.locator('#participant-dialog').boundingBox();
+  assert(mobileDialogBox.x >= 0 && mobileDialogBox.x + mobileDialogBox.width <= 390);
+  assert(mobileDialogBox.y >= 0 && mobileDialogBox.y + mobileDialogBox.height <= 844);
+  await mobile.screenshot({ path: path.join(output, 'participant-mobile.png'), fullPage: false });
+  await mobile.locator('#cancel-participant').click();
+  assert.equal(await mobile.locator('#participant-dialog').isVisible(), false);
   const mobileOverflow = await mobile.evaluate(() => document.documentElement.scrollWidth > innerWidth);
   await mobile.screenshot({ path: path.join(output, 'mobile.png'), fullPage: true });
   if (mobileOverflow) console.log(await mobile.evaluate(() => [...document.querySelectorAll('body *')].filter(el => el.getBoundingClientRect().right > innerWidth + 1 && getComputedStyle(el).display !== 'none').map(el => `${el.tagName}.${el.className}: ${Math.round(el.getBoundingClientRect().right)}`).slice(0, 20)));
@@ -250,7 +310,7 @@ try {
   assert.ok((await page.locator('.print-page').first().textContent()).includes('Local holiday'));
   assert.equal(await page.locator('.print-page').evaluateAll(pages => pages.filter(p => p.scrollHeight > p.clientHeight + 1).length), 0);
   const cityPdf = await page.pdf({ path: path.join(output, 'city-calendar.pdf'), preferCSSPageSize: true, printBackground: true });
-  assert.equal((await PDFDocument.load(cityPdf)).getPageCount(), 21);
+  assert.equal((await PDFDocument.load(cityPdf)).getPageCount(), 1);
   await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
   await page.emulateMedia({ media: 'screen' });
   // Manual dates are independent of automatic municipal dates.

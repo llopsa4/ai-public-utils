@@ -7,15 +7,16 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; worker-src 'self'; connect-src 'none'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
   <title>Duty calendar</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="./styles.css">
-  <script type="module" src="./app.mjs"></script>
+  <link rel="stylesheet" href="./styles.css?v=cfb889cd1fd0">
+  <link rel="stylesheet" href="./theme.css?v=c523b9057aaf" media="screen">
+  <script type="module" src="./app.mjs?v=819c0e845203"></script>
 </head>
 <body>
   <a class="skip-link" href="#calendar">Skip to calendar</a>
   <div class="app-shell">
     <header class="topbar">
-      <div class="brand"><span class="brand-icon" aria-hidden="true">▦</span><div><p class="eyebrow">A little order, every month</p><h1>Duty calendar</h1></div></div>
-      <div class="header-actions"><span id="save-status" role="status">Loading…</span><button id="backup">Export backup</button><button id="restore">Import backup</button><button id="print" class="primary">Print / save PDF</button><input id="import-file" type="file" accept=".json,application/json" hidden></div>
+      <div class="brand"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="9" y="12" width="30" height="28" rx="9" stroke="currentColor" stroke-width="2.5"/><path d="M17 8v8m14-8v8M10 22h28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="m19 30 4 4 8-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><p class="eyebrow">Monthly duty planning</p><h1>Duty calendar<span class="brand-dot" aria-hidden="true">.</span></h1><p class="brand-subtitle">Clear schedules. Balanced teams.</p></div></div>
+      <div class="header-actions"><span id="save-status" role="status">Loading…</span><button id="backup">Export backup</button><button id="restore">Import backup</button><button id="print" class="primary">Print / save PDF</button><button id="restart" class="danger">Restart planner</button><input id="import-file" type="file" accept=".json,application/json" hidden></div>
     </header>
     <p class="privacy-note"><strong>Names stay in this session.</strong> Only anonymous codes and scheduling data are saved. Reloading clears names. Names may appear in PDFs you explicitly export.</p>
     <div id="message" class="message" role="status" aria-live="polite" hidden></div>
@@ -25,28 +26,33 @@
           <summary>Participants <span id="participant-count" class="pill">0</span></summary>
           <div class="sidebar-body"><p class="muted">Select a person to edit availability.</p><div class="add-row"><label for="add-count">Add people</label><input id="add-count" type="number" min="1" max="100" value="1"><button id="add-participant" class="primary">Add</button></div>
           <div id="participants" class="participants"></div>
-          <div id="participant-editor"></div></div>
+          </div>
         </details>
+        <section class="issues-section" aria-labelledby="issues-title"><h2 id="issues-title">Coverage & checks</h2><div id="issues"></div></section>
         <section class="rules-card"><p class="eyebrow">The ground rules</p><h2>Two people. Every hour.</h2><p>48 hours of cover per date.</p><ul><li>No consecutive work dates.</li><li>Holidays: one 24h duty or two 12h duties per person/month.</li><li>Up to 3 non-holidays per person/month.</li><li>One shift per person per date.</li></ul><p class="muted">Manual exceptions need confirmation. Adjacent saved months count toward rest.</p></section>
       </aside>
       <main id="calendar" tabindex="-1">
         <section class="calendar-section" aria-labelledby="month-title">
           <div class="calendar-toolbar"><div><p class="eyebrow">Monthly rota</p><div class="month-navigation"><button id="previous" aria-label="Previous month">‹</button><h2 id="month-title"></h2><button id="next" aria-label="Next month">›</button><button id="today">Current month</button></div></div><label class="month-jump">Jump to month<input id="month-input" type="month" min="1900-01" max="2200-12"></label></div>
-          <section class="city-panel" aria-labelledby="city-heading"><div class="city-heading"><div><p class="eyebrow">Local holiday calendar</p><h3 id="city-heading">Choose your city</h3></div><strong id="city-highlight" class="city-highlight" aria-live="polite">No city selected</strong></div><div class="city-controls"><label for="city-input">City or settlement · Catalonia, Spain<input id="city-input" type="text" list="city-options" autocomplete="off" spellcheck="false" maxlength="120" placeholder="e.g. Girona, Quart, Barcelona" aria-describedby="city-status"></label><datalist id="city-options"></datalist><button id="apply-city">Apply city</button><button id="clear-city">Clear city</button></div><p id="city-status" class="muted" role="status">Choose a listed city to mark its official holidays.</p><p class="city-source">Official sources: <a href="https://analisi.transparenciacatalunya.cat/d/b4eh-r8up" target="_blank" rel="noopener noreferrer">Municipal holidays</a> · <a href="https://analisi.transparenciacatalunya.cat/d/yf2b-mjr6" target="_blank" rel="noopener noreferrer">Catalonia-wide holidays</a>. Data is bundled locally; no city search is sent online.</p></section>
-          <div class="settings-row"><p class="coverage-note">Holiday shifts adapt automatically:<br><strong>24 + 24, 24 + 12 + 12, or four 12-hour shifts.</strong></p><div class="shift-hours"><span>Day <strong>09:00–21:00</strong></span><span>Night <strong>21:00–09:00 +1</strong></span></div><div class="generate-actions"><button id="generate" class="primary">Generate month</button><button id="cancel" hidden>Stop search</button></div></div>
+          <section class="city-panel" aria-label="City holiday settings">
+            <div class="city-controls"><label for="city-input">City<input id="city-input" type="text" list="city-options" autocomplete="off" spellcheck="false" maxlength="120" placeholder="Search a Catalan city" aria-describedby="city-status"></label><datalist id="city-options"></datalist><button id="apply-city">Apply</button><button id="clear-city">Clear</button><span id="city-highlight" class="city-highlight" aria-live="polite">No city selected</span></div>
+            <p id="city-status" class="muted" role="status">Choose a listed city to mark its official holidays.</p>
+            <details class="city-source"><summary>Holiday data &amp; sources</summary><p>Official sources: <a href="https://analisi.transparenciacatalunya.cat/d/b4eh-r8up" target="_blank" rel="noopener noreferrer">Municipal holidays</a> · <a href="https://analisi.transparenciacatalunya.cat/d/yf2b-mjr6" target="_blank" rel="noopener noreferrer">Catalonia-wide holidays</a>. Data is bundled locally; no city search is sent online.</p></details>
+          </section>
+          <div class="calendar-actions"><label class="calendar-view-control" for="participant-view">View<select id="participant-view"><option value="">All participants</option></select></label><ul id="coverage-legend" class="coverage-legend" aria-label="Calendar colour legend"><li><span class="legend-swatch legend-covered" aria-hidden="true"></span>Covered</li><li><span class="legend-swatch legend-missing" aria-hidden="true"></span>Needs cover</li><li><span class="legend-swatch legend-overlap" aria-hidden="true"></span>Overlapping</li></ul><div id="participant-view-legend" class="participant-view-legend" hidden><span class="legend-swatch legend-duty" aria-hidden="true"></span>On duty<span class="muted">Other dates: no duty</span></div><div class="generate-actions"><button id="generate" class="primary">Generate month</button><button id="cancel" hidden>Stop search</button></div></div>
+          <p id="participant-view-status" class="participant-view-status" role="status" hidden></p>
           <div id="search-status" class="search-status" role="status" aria-live="polite" hidden></div>
-          <div id="metrics" class="metrics"></div>
-          <p class="calendar-hint">Yellow = missing coverage. Holiday badges identify local, public, added holidays and weekends. <span>Fixed = kept when regenerating.</span></p>
-          <p class="move-instructions">Drag an assigned duty to move it, or select it and choose a highlighted spot. On touch screens, hold a duty briefly before dragging.</p>
+          <p class="move-instructions">Click a duty for move/cancel options, or drag it to move. Touch: hold to drag. Generate month replaces all assignments in the displayed month.</p>
           <div id="move-controls" class="move-controls" hidden><p id="move-status" role="status" aria-live="polite"></p><button type="button" id="cancel-move">Cancel move</button></div>
           <div id="move-cursor" class="move-cursor" hidden aria-hidden="true"></div>
-          <div class="calendar-scroll"><div class="weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div id="month-grid" class="month-grid" aria-label="Monthly duty calendar"></div></div>
+          <div class="calendar-scroll"><div class="calendar-board"><div class="weekend-heading" aria-hidden="true">Weekend</div><div class="weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div id="month-grid" class="month-grid" aria-label="Monthly duty calendar"></div></div></div>
         </section>
         <section class="summary-section" aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">Shared fairly</p><h2 id="summary-title">Workload overview</h2></div><p id="balance-note" class="muted"></p></div><div class="table-scroll"><table><thead><tr><th scope="col">Participant</th><th scope="col">Hours</th><th scope="col">Holiday duties / limit</th><th scope="col">Non-holidays / 3</th><th scope="col">Weekend dates</th></tr></thead><tbody id="workloads"></tbody></table></div></section>
-        <section class="issues-section" aria-labelledby="issues-title"><h2 id="issues-title">Coverage & checks</h2><div id="issues"></div></section>
       </main>
     </div>
   </div>
+  <dialog id="participant-dialog" aria-labelledby="participant-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Participant configuration</p><h2 id="participant-title">Participant settings</h2></div><button type="submit" aria-label="Close participant settings">✕</button></form><div id="participant-editor"></div></dialog>
+  <dialog id="assignment-dialog" aria-labelledby="assignment-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Assigned duty</p><h2 id="assignment-title">Assignment options</h2></div><button type="submit" aria-label="Close assignment options">✕</button></form><p id="assignment-context"></p><p class="muted assignment-options-hint">Move this duty to another date, or cancel the assignment to leave the spot unfilled.</p><div class="assignment-options-actions"><button type="button" class="primary" id="choose-move">Move assignment</button><button type="button" class="danger" id="cancel-assignment">Cancel assignment</button></div></dialog>
   <dialog id="day-dialog" aria-labelledby="day-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Daily assignments</p><h2 id="day-title"></h2></div><button aria-label="Close date editor">✕</button></form><div id="day-content"></div></dialog>
   <div id="print-report" aria-hidden="true"></div>
 </body>

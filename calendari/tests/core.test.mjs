@@ -56,21 +56,20 @@ test('mixed holidays have one 24-hour duty plus separate day and night duties', 
   config.assignments.push({ date: '2026-10-01', kind: 'day', seat: 1 });
   assert.deepEqual(slotsForDate('2026-10-01', config).map(s => s.kind), ['24', 'day', 'night']);
 });
-test('mixed holiday assignments survive backup round trip and generation', () => {
+test('legacy mixed holiday assignments remain readable but generation starts fresh', () => {
   const s = fixture(30);
   s.participants[1].allowedKinds = ['day']; s.participants[2].allowedKinds = ['night'];
-  const fixed = { ...assignment(s, '2026-10-03'), fixed: true };
-  s.months[month].assignments = [fixed, { ...assignment(s, '2026-10-03', 'day', 1, 1), fixed: true }, { ...assignment(s, '2026-10-03', 'night', 1, 2), fixed: true }];
+  const old = [assignment(s, '2026-10-03'), assignment(s, '2026-10-03', 'day', 1, 1), assignment(s, '2026-10-03', 'night', 1, 2)].map(a => ({ ...a, fixed: true }));
+  s.months[month].assignments = old;
   assert.deepEqual(parseBackup(serialize(s)), s);
-  const result = generate(s, month, searchOptions());
-  assert.ok(result.assignments.some(a => a === fixed));
+  const snapshots = [];
+  const result = generate(s, month, { ...searchOptions(), onProgress: p => snapshots.push(p.assignments.length) });
+  assert.equal(snapshots[0], 0);
+  assert(result.assignments.every(a => !old.includes(a) && !a.fixed && !a.override));
   s.months[month].assignments = result.assignments;
   assert.deepEqual(audit(s, month), []);
-  const duties = result.assignments.filter(a => a.date === '2026-10-03');
-  assert.deepEqual(duties.map(a => a.kind).sort(), ['24', 'day', 'night'].sort());
-  assert.equal(new Set(duties.map(a => a.participantId)).size, 3);
-  assert.equal(duties.reduce((sum, a) => sum + (a.kind === '24' ? 24 : 12), 0), 48);
 });
+
 test('individual shift permissions and blocked weekdays/dates are enforced', () => {
   const s = fixture(1), p = s.participants[0];
   p.allowedKinds = ['night']; p.blockedWeekdays = [4]; p.blockedDates = ['2026-10-01'];
@@ -181,15 +180,21 @@ test('malformed, unsupported, duplicate, dangling, or identifiable IDs are rejec
     const s = fixture(1); mutate(s); assert.throws(() => parseBackup(JSON.stringify(s)));
   }
 });
-test('bounded generation retains fixed assignments and introduces no rule violations', () => {
-  const s = fixture(20); const fixed = { ...assignment(s), fixed: true }; s.months[month].assignments = [fixed];
+test('generation replaces existing monthly duties without changing settings or other months', () => {
+  const s = fixture(20), old = { ...assignment(s), fixed: true, override: true };
+  s.participants[0].blockedDates = [old.date]; s.months[month].assignments = [old];
+  s.months['2026-09'] = { ...newMonth(), assignments: [assignment(s, '2026-09-28')] };
+  s.months[month].holidays = ['2026-10-07'];
+  const before = serialize(s);
   const result = generate(s, month, searchOptions());
-  assert.ok(result.assignments.some(a => a.fixed && a.participantId === fixed.participantId && a.date === fixed.date));
-  assert.ok(result.assignments.length > 20);
+  assert.equal(serialize(s), before, 'Generation is a proposal; settings and other months are untouched');
+  assert(!result.assignments.some(a => a.participantId === old.participantId && a.date === old.date));
+  assert(result.assignments.every(a => !a.fixed && !a.override));
+  assert(result.assignments.length > 20);
   s.months[month].assignments = result.assignments;
   assert.deepEqual(audit(s, month), []);
-  for (const t of Object.values(totals(s, month))) { assert.ok(t.holidays <= 1); assert.ok(t.ordinary <= 3); }
 });
+
 test('20 people allowing only 12-hour duties return a partial proposal without breaking caps', () => {
   const s = fixture(20); s.participants.forEach(p => { p.allowedKinds = ['day', 'night']; });
   const result = generate(s, month, searchOptions());
@@ -205,17 +210,20 @@ test('generator honors adjacent saved month and type-only participants', () => {
   assert.ok(!result.assignments.some(a => a.date === '2026-10-01' && a.participantId === s.participants[0].id));
   assert.ok(result.assignments.filter(a => a.participantId === s.participants[1].id).every(a => a.kind === 'night' && holiday(a.date, s.months[month])));
 });
-test('existing confirmed exceptions remain fixed, new automatic exceptions never appear', () => {
+test('generation discards confirmed manual exceptions instead of preserving them', () => {
   const s = fixture(8), a = { ...assignment(s), fixed: true, override: true };
   s.participants[0].blockedDates = [a.date]; s.months[month].assignments = [a];
   const result = generate(s, month, searchOptions());
-  assert.ok(result.assignments.includes(a));
-  assert.ok(result.assignments.filter(a => !a.fixed).every(a => !a.override));
+  assert(!result.assignments.includes(a));
+  assert(result.assignments.every(a => !a.fixed && !a.override));
   s.months[month].assignments = result.assignments;
-  assert.ok(audit(s, month).every(i => i.assignment.fixed));
+  assert.deepEqual(audit(s, month), []);
 });
-test('generation blocks fixed short duties after a weekday is no longer marked as a holiday', () => {
+test('generation replaces stale short duties on a non-holiday without blocking', () => {
   const s = fixture(2);
   s.months[month].assignments = [{ ...assignment(s, '2026-10-01', 'day'), fixed: true }];
-  assert.throws(() => generate(s, month, { timeMs: 1 }), /Fixed assignments/);
+  const result = generate(s, month, searchOptions());
+  assert(!result.assignments.some(a => a.kind !== '24'));
+  s.months[month].assignments = result.assignments;
+  assert.deepEqual(audit(s, month), []);
 });
