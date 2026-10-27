@@ -335,7 +335,7 @@ function printCalendar(participantId = null) {
       return `<div class="print-shift">${escape(label)}${a?.override ? ' [exception]' : ''}</div>`;
     }).join('');
     const incomplete = slots.some(s => !config.assignments.some(a => slotKey(a) === slotKey(s)));
-    cells.push(`<div class="print-day ${holiday(date, config) ? 'holiday' : ''} ${info.local ? 'local-holiday' : ''} ${incomplete && !participantId ? 'unfilled' : ''}"><strong>${Number(date.slice(-2))}${info.label ? ` · ${escape(info.label)}` : ''}</strong>${lines}</div>`);
+    cells.push(`<div class="print-day ${holiday(date, config) ? 'holiday' : ''} ${info.local ? 'local-holiday' : ''} ${info.general ? 'public-holiday' : ''} ${incomplete && !participantId ? 'unfilled' : ''}"><strong>${Number(date.slice(-2))}${info.label ? ` · ${escape(info.label)}` : ''}</strong>${lines}</div>`);
   }
   while (cells.length % 7) cells.push('<div class="print-day"></div>');
   return `<div class="print-weekdays">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<span>${d}</span>`).join('')}</div><div class="print-calendar">${cells.join('')}</div>`;

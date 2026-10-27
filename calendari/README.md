@@ -73,7 +73,7 @@ node tests/browser.test.mjs
 
 The bundled official **2026** snapshot contains 1,398 municipal/settlement entries and 2,794 local holiday dates, together with the 12 Catalonia-wide public dates. Sources: [Generalitat municipal holiday dataset](https://analisi.transparenciacatalunya.cat/d/b4eh-r8up), [Generalitat general calendar dataset](https://analisi.transparenciacatalunya.cat/d/yf2b-mjr6), and [2026 calendar and Aran exception](https://treball.gencat.cat/ca/ambits/relacions_laborals/ci/calendari_laboral/calendari-festes-2026/). For Aran settlements, June 17 replaces December 26 as the general holiday; weekends remain holidays independently.
 
-Calendar badges distinguish **Local holiday**, **Public holiday**, **Added holiday**, and **Weekend**. A green local-holiday badge and border remain visible even when missing coverage makes the date yellow. PDFs include the city and holiday labels.
+Calendar badges distinguish **Local holiday**, **Public holiday**, **Added holiday**, and **Weekend**. Local and public holidays share a dark green badge and border, with distinct text labels. Both remain visible even when missing coverage makes the date yellow. PDFs include the city and holiday labels.
 
 Selecting another city rechecks all saved months without deleting assignments or manual dates. Official dates are not editable individually in the date dialog; clear/change the city to remove automatic dates. Manual dates remain independent.
 
