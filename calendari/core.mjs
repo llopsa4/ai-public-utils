@@ -3,6 +3,9 @@ export const STORAGE_KEY = 'calendari.anonymous.v1';
 export const KINDS = ['24', 'day', 'night'];
 export const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 export const HOURS = { '24': 24, day: 12, night: 12 };
+// Legacy mixed permissions default to 24 hours. Short shifts remain independently selectable.
+export const exclusiveKinds = kinds => kinds.includes('24') ? ['24'] : ['day', 'night'].filter(kind => kinds.includes(kind));
+export const holidayDutyLimit = p => exclusiveKinds(p.allowedKinds).includes('24') ? 1 : exclusiveKinds(p.allowedKinds).length ? 2 : 0;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 export const pad = n => String(n).padStart(2, '0');
 export function todayMonth() { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}`; }
@@ -28,12 +31,13 @@ export function allAssignments(state) { return Object.values(state.months).flatM
 export function participantCode(p) { return `P${String(p.code).padStart(3, '0')}`; }
 export function totals(state, month, assignments = state.months[month]?.assignments ?? []) {
   const config = state.months[month] ?? newMonth();
-  const result = Object.fromEntries(state.participants.map(p => [p.id, { hours: 0, holidays: 0, ordinary: 0, weekends: 0 }]));
+  const result = Object.fromEntries(state.participants.map(p => [p.id, { hours: 0, holidayHours: 0, holidays: 0, ordinary: 0, weekends: 0 }]));
   for (const a of assignments) {
     const t = result[a.participantId];
     if (!t) continue;
     t.hours += HOURS[a.kind];
     t[holiday(a.date, config) ? 'holidays' : 'ordinary']++;
+    if (holiday(a.date, config)) t.holidayHours += HOURS[a.kind];
     if ([0, 6].includes(weekday(a.date))) t.weekends++;
   }
   return result;
@@ -43,14 +47,15 @@ export function ruleIssues(state, month, assignment, others) {
   if (!p) return ['Participant no longer exists'];
   const config = state.months[month] ?? newMonth();
   const issues = [];
-  if (!p.allowedKinds.includes(assignment.kind)) issues.push('Shift type is not allowed');
+  if (!exclusiveKinds(p.allowedKinds).includes(assignment.kind)) issues.push('Shift type is not allowed');
   if (p.blockedWeekdays.includes(weekday(assignment.date))) issues.push('Weekday is blocked');
   if (p.blockedDates.includes(assignment.date)) issues.push('Date is blocked');
   const own = others.filter(a => a.participantId === p.id);
   if (own.some(a => a.date === shiftDate(assignment.date, -1) || a.date === shiftDate(assignment.date, 1))) issues.push('Consecutive work dates');
   const isHoliday = holiday(assignment.date, config);
   const count = own.filter(a => a.date.startsWith(month) && holiday(a.date, config) === isHoliday).length;
-  if (count >= (isHoliday ? 1 : 3)) issues.push(isHoliday ? 'Monthly holiday limit exceeded' : 'Monthly non-holiday limit exceeded');
+  const holidayHours = own.filter(a => a.date.startsWith(month) && holiday(a.date, config)).reduce((sum, a) => sum + HOURS[a.kind], 0);
+  if (isHoliday ? holidayHours + HOURS[assignment.kind] > 24 : count >= 3) issues.push(isHoliday ? 'Monthly holiday limit exceeded' : 'Monthly non-holiday limit exceeded');
   return issues;
 }
 export function structuralIssues(state, month, assignment, others) {
@@ -118,7 +123,7 @@ export function anonymousState(input) {
   const participants = input.participants.map(p => {
     if (!p || !UUID.test(p.id) || ids.has(p.id) || !integer(p.code, 1, 1000000) || codes.has(p.code) || !Array.isArray(p.allowedKinds) || p.allowedKinds.some(k => !KINDS.includes(k)) || !Array.isArray(p.blockedWeekdays) || p.blockedWeekdays.some(d => !integer(d, 0, 6)) || !Array.isArray(p.blockedDates) || p.blockedDates.some(d => !dateOK(d))) fail();
     ids.add(p.id); codes.add(p.code);
-    return { id: p.id, code: p.code, allowedKinds: [...new Set(p.allowedKinds)], blockedWeekdays: [...new Set(p.blockedWeekdays)], blockedDates: [...new Set(p.blockedDates)] };
+    return { id: p.id, code: p.code, allowedKinds: exclusiveKinds(p.allowedKinds), blockedWeekdays: [...new Set(p.blockedWeekdays)], blockedDates: [...new Set(p.blockedDates)] };
   });
   const months = {};
   if (Object.keys(input.months).length > 1000) fail();

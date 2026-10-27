@@ -27,7 +27,7 @@ Moves stay within the displayed month and preserve the original shift type. High
 
 **Red means overstaffed / overlapping coverage**, including incompatible overlaps in older backups. Red takes priority over yellow, but missing-coverage text and holiday badges remain visible. The same warning appears in PDFs. Three or four people covering separate holiday shifts are valid and do not make a day red. Ordinary availability and monthly-limit conflicts retain their individual warnings. Moves cannot add extra people to occupied coverage places.
 
-The current month opens on each visit. Previously saved months remain available through navigation. Each holiday is independently flexible; participants initially allow all shift types and have no blocked dates.
+The current month opens on each visit. Previously saved months remain available through navigation. Each holiday is independently flexible; new participants default to 24-hour duties and have no blocked dates. Selecting 24 hours deselects both 12-hour options; selecting a 12-hour day or night option deselects 24 hours. Day and night may both be selected. Confirm participant changes to apply the choice. Existing mixed 24/12-hour permissions default to 24 hours on load/import; assignments remain intact and any new conflicts are flagged for review.
 
 In the date popup, selecting a participant or **Unfilled** is a pending choice. Press **Confirm assignment** for that spot to apply it, or **Cancel selection** to restore its current assignment. Closing the popup also discards pending choices. Confirmation rechecks the scheduling rules; rule exceptions still require their explicit confirmation, and structural conflicts cannot be overridden. Drag-and-drop moves, holiday marking, and split/merge controls retain their existing behavior.
 
@@ -39,12 +39,12 @@ In the date popup, selecting a participant or **Unfilled** is a pending choice. 
 - Day is 09:00–21:00. Night is 21:00–09:00 the following day. A participant cannot cover both on the same date.
 - Saturdays, Sundays, and additional manually marked dates are holidays. A marked weekday allows the same flexible combinations.
 - With a city selected, its official local holidays and Catalonia-wide public holidays also count as holidays for shift coverage, monthly limits, and workload totals.
-- Each person may work at most one holiday and three non-holidays per month.
+- Each person has a monthly holiday allowance of 24 hours: one 24-hour duty or two 12-hour duties on separate holiday dates, according to their permissions. Three non-holiday dates per month remain the limit. The one-duty-per-date and non-consecutive-date rules still apply.
 - No consecutive start dates, including saved adjacent months. No unknown assignments are invented for an unsaved month.
 - Individual allowed shift types, recurring blocked weekdays, and month-specific blocked dates must be respected. Someone allowing only 12-hour shifts cannot cover a non-holiday 24-hour duty.
 - A confirmed manual exception can override availability, shift permissions, monthly limits, or consecutive-date rest. It remains flagged in the interface and report. Duplicate seats, two shifts for one person on the same date, and incompatible shift structures can never be forced.
 
-With 20 participants, complete coverage may be impossible. For example, eight holidays require at least 16 different people when covered entirely with 24-hour duties, 24 with three-person mixed coverage on every holiday, or 32 with only 12-hour duties, because each person can work only one holiday. The generator can combine these patterns across different dates, preserves the limits, and marks incomplete dates yellow.
+With 20 participants, complete coverage may be impossible. Eight holidays require 384 hours of coverage, so at least 16 participants are needed with a 24-hour holiday allowance each. Participants choosing 12-hour shifts can contribute on two separate, non-consecutive holiday dates. Availability and permitted day/night shifts can require more people; 12-hour-only participants cannot cover ordinary dates, which still require 24-hour duties. The generator can combine holiday patterns across dates, respects each participant's allowance, and marks incomplete dates yellow.
 
 Changing availability or marking/unmarking a holiday does not silently regenerate the schedule. Existing conflicts are shown. If a holiday with 12-hour duties becomes a non-holiday, those duties are flagged. Incompatible automatic assignments can be replaced by generation; incompatible fixed assignments must first be removed or edited. Old anonymous backups remain readable; their monthly coverage preference is ignored and their assignments are preserved.
 

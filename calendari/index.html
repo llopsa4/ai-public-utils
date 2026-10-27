@@ -27,7 +27,7 @@
           <div id="participants" class="participants"></div>
           <div id="participant-editor"></div></div>
         </details>
-        <section class="rules-card"><p class="eyebrow">The ground rules</p><h2>Two people. Every hour.</h2><p>48 hours of cover per date.</p><ul><li>No consecutive work dates.</li><li>Up to 1 holiday per person/month.</li><li>Up to 3 non-holidays per person/month.</li><li>One shift per person per date.</li></ul><p class="muted">Manual exceptions need confirmation. Adjacent saved months count toward rest.</p></section>
+        <section class="rules-card"><p class="eyebrow">The ground rules</p><h2>Two people. Every hour.</h2><p>48 hours of cover per date.</p><ul><li>No consecutive work dates.</li><li>Holidays: one 24h duty or two 12h duties per person/month.</li><li>Up to 3 non-holidays per person/month.</li><li>One shift per person per date.</li></ul><p class="muted">Manual exceptions need confirmation. Adjacent saved months count toward rest.</p></section>
       </aside>
       <main id="calendar" tabindex="-1">
         <section class="calendar-section" aria-labelledby="month-title">
@@ -42,7 +42,7 @@
           <div id="move-cursor" class="move-cursor" hidden aria-hidden="true"></div>
           <div class="calendar-scroll"><div class="weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div id="month-grid" class="month-grid" aria-label="Monthly duty calendar"></div></div>
         </section>
-        <section class="summary-section" aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">Shared fairly</p><h2 id="summary-title">Workload overview</h2></div><p id="balance-note" class="muted"></p></div><div class="table-scroll"><table><thead><tr><th scope="col">Participant</th><th scope="col">Hours</th><th scope="col">Holidays / 1</th><th scope="col">Non-holidays / 3</th><th scope="col">Weekend dates</th></tr></thead><tbody id="workloads"></tbody></table></div></section>
+        <section class="summary-section" aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">Shared fairly</p><h2 id="summary-title">Workload overview</h2></div><p id="balance-note" class="muted"></p></div><div class="table-scroll"><table><thead><tr><th scope="col">Participant</th><th scope="col">Hours</th><th scope="col">Holiday duties / limit</th><th scope="col">Non-holidays / 3</th><th scope="col">Weekend dates</th></tr></thead><tbody id="workloads"></tbody></table></div></section>
         <section class="issues-section" aria-labelledby="issues-title"><h2 id="issues-title">Coverage & checks</h2><div id="issues"></div></section>
       </main>
     </div>

@@ -47,6 +47,10 @@ test('official local/public dates count toward the holiday cap and permit 12-hou
   const next = { ...first, date: '2026-10-29', kind: 'day' };
   assert.ok(ruleIssues(s, '2026-10', next, [first]).includes('Monthly holiday limit exceeded'));
   assert.deepEqual(structuralIssues(s, '2026-10', next, []), []);
+  s.participants[0].allowedKinds = ['day', 'night'];
+  const shortFirst = { ...first, kind: 'day' };
+  assert.deepEqual(ruleIssues(s, '2026-10', next, [shortFirst]), []);
+  assert(ruleIssues(s, '2026-10', { ...next, date: '2026-10-31' }, [shortFirst, next]).includes('Monthly holiday limit exceeded'));
 });
 test('missing years never reuse or predict the available municipal dates', () => {
   const id = findCity('Girona').id;

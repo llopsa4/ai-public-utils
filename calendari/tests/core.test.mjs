@@ -1,13 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { emptyState, newMonth, monthDates, shiftDate, shiftMonth, slotsForDate, slotsForMonth, holiday, ruleIssues, structuralIssues, audit, totals, serialize, parseBackup, generate, KINDS } from '../core.mjs';
+import { emptyState, newMonth, monthDates, shiftDate, shiftMonth, slotsForDate, slotsForMonth, holiday, ruleIssues, structuralIssues, audit, totals, serialize, parseBackup, generate, exclusiveKinds, holidayDutyLimit } from '../core.mjs';
 
 const month = '2026-10';
 function fixture(count = 20) {
   const state = emptyState();
   state.months[month] = newMonth();
-  for (let i = 0; i < count; i++) state.participants.push({ id: randomUUID(), code: state.nextCode++, allowedKinds: [...KINDS], blockedWeekdays: [], blockedDates: [] });
+  for (let i = 0; i < count; i++) state.participants.push({ id: randomUUID(), code: state.nextCode++, allowedKinds: ['24'], blockedWeekdays: [], blockedDates: [] });
   return state;
 }
 const assignment = (state, date = '2026-10-01', kind = '24', seat = 0, index = 0) => ({ date, kind, seat, participantId: state.participants[index].id, fixed: false, override: false });
@@ -58,6 +58,7 @@ test('mixed holidays have one 24-hour duty plus separate day and night duties', 
 });
 test('mixed holiday assignments survive backup round trip and generation', () => {
   const s = fixture(30);
+  s.participants[1].allowedKinds = ['day']; s.participants[2].allowedKinds = ['night'];
   const fixed = { ...assignment(s, '2026-10-03'), fixed: true };
   s.months[month].assignments = [fixed, { ...assignment(s, '2026-10-03', 'day', 1, 1), fixed: true }, { ...assignment(s, '2026-10-03', 'night', 1, 2), fixed: true }];
   assert.deepEqual(parseBackup(serialize(s)), s);
@@ -102,6 +103,50 @@ test('cannot double a seat or work day and night on the same date', () => {
   assert.ok(structuralIssues(s, month, assignment(s, '2026-10-03', '24', 0, 1), [day]).includes('Seat already occupied'));
   assert.ok(structuralIssues(s, month, assignment(s, '2026-10-01', 'day'), []).includes('Non-holidays require 24-hour duties'));
 });
+
+test('short-shift holiday allowance is two duties on separate dates, bounded by 24 hours', () => {
+  const s = fixture(1), p = s.participants[0]; p.allowedKinds = ['day', 'night'];
+  const first = assignment(s, '2026-10-03', 'day'), second = assignment(s, '2026-10-10', 'night'), third = assignment(s, '2026-10-17', 'day');
+  assert.equal(holidayDutyLimit(p), 2);
+  assert.deepEqual(ruleIssues(s, month, second, [first]), []);
+  assert(ruleIssues(s, month, third, [first, second]).includes('Monthly holiday limit exceeded'));
+  assert(structuralIssues(s, month, { ...first, kind: 'night' }, [first]).includes('A person cannot work two shifts on one date'));
+  assert(ruleIssues(s, month, { ...second, date: '2026-10-04' }, [first]).includes('Consecutive work dates'));
+  assert(!ruleIssues(s, '2026-11', { ...third, date: '2026-11-07' }, [first, second]).includes('Monthly holiday limit exceeded'));
+  // A retained old 24-hour duty already consumes the full holiday allowance.
+  assert(ruleIssues(s, month, second, [{ ...first, kind: '24' }]).includes('Monthly holiday limit exceeded'));
+  s.months[month].assignments = [first, second];
+  assert.equal(totals(s, month)[p.id].holidayHours, 24);
+  assert.equal(totals(s, month)[p.id].holidays, 2);
+  assert.deepEqual(parseBackup(serialize(s)), s);
+});
+
+test('mixed permissions migrate to 24 hours while saved assignments remain intact', () => {
+  const s = fixture(1); s.participants[0].allowedKinds = ['24', 'day', 'night'];
+  s.months[month].assignments = [{ ...assignment(s, '2026-10-03', 'day'), fixed: true }];
+  const migrated = parseBackup(JSON.stringify(s));
+  assert.deepEqual(migrated.participants[0].allowedKinds, ['24']);
+  assert.deepEqual(migrated.months[month].assignments, s.months[month].assignments);
+  assert(audit(migrated, month).some(i => i.message === 'Shift type is not allowed'));
+  assert.deepEqual(exclusiveKinds(['night', 'day', 'day']), ['day', 'night']);
+  assert.deepEqual(exclusiveKinds([]), []);
+  assert.equal(holidayDutyLimit(migrated.participants[0]), 1);
+  assert(ruleIssues(s, month, assignment(s, '2026-10-10', 'day'), []).includes('Shift type is not allowed'));
+});
+
+test('generation can assign two short holiday duties to each participant without exceptions', () => {
+  const s = fixture(4), dates = ['2026-10-03', '2026-10-10'];
+  for (const p of s.participants) {
+    p.allowedKinds = ['day', 'night'];
+    p.blockedDates = monthDates(month).filter(d => !dates.includes(d));
+  }
+  const result = generate(s, month, searchOptions());
+  s.months[month].assignments = result.assignments;
+  assert.equal(result.assignments.length, 8);
+  assert(result.assignments.every(a => a.kind !== '24' && !a.override));
+  assert.deepEqual(audit(s, month), []);
+  for (const t of Object.values(totals(s, month))) { assert.equal(t.holidays, 2); assert.equal(t.holidayHours, 24); }
+});
 test('audit exposes manual exceptions and stale shift structures', () => {
   const s = fixture(1), a = assignment(s); a.fixed = true; a.override = true;
   s.participants[0].blockedDates = [a.date]; s.months[month].assignments = [a];
@@ -111,7 +156,7 @@ test('audit exposes manual exceptions and stale shift structures', () => {
 });
 test('workload accounts for 12/24-hour duties and holiday categories', () => {
   const s = fixture(1); s.months[month].assignments = [assignment(s), assignment(s, '2026-10-03', 'day')];
-  assert.deepEqual(totals(s, month)[s.participants[0].id], { hours: 36, holidays: 1, ordinary: 1, weekends: 1 });
+  assert.deepEqual(totals(s, month)[s.participants[0].id], { hours: 36, holidayHours: 12, holidays: 1, ordinary: 1, weekends: 1 });
 });
 test('privacy allowlist removes names and arbitrary nested metadata', () => {
   const s = fixture(1);

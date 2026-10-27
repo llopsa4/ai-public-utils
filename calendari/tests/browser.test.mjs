@@ -45,10 +45,17 @@ try {
   assert.equal(await page.locator('[data-person]').count(), 20);
   await page.locator('[data-person]').first().click();
   const initialParticipantData = await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY);
-  await page.locator('[data-kind="night"]').uncheck();
+  assert.equal(await page.locator('[data-kind="24"]').isChecked(), true);
+  await page.locator('[data-kind="night"]').check();
+  assert.equal(await page.locator('[data-kind="24"]').isChecked(), false);
+  await page.locator('[data-kind="day"]').check();
+  assert.equal(await page.locator('[data-kind="night"]').isChecked(), true);
+  await page.locator('[data-kind="24"]').check();
+  assert.equal(await page.locator('[data-kind="day"]').isChecked(), false);
+  assert.equal(await page.locator('[data-kind="night"]').isChecked(), false);
   assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData, 'Individual selections must wait for confirmation');
   await page.locator('#cancel-participant').click();
-  assert.equal(await page.locator('[data-kind="night"]').isChecked(), true);
+  assert.equal(await page.locator('[data-kind="night"]').isChecked(), false);
   const secret = 'QA_PRIVATE_SENTINEL <Name> & Test';
   await page.locator('#person-name').fill(secret);
   await page.locator('#blocked-days').fill('5, 12, 23');
@@ -129,6 +136,13 @@ try {
   await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
   assert.equal(await page.locator('#print-report').textContent(), '');
   await page.emulateMedia({ media: 'screen' });
+  // Configure short-shift participants before assigning their holiday duties.
+  for (let i = 1; i <= 6; i++) {
+    await page.locator('[data-person]').nth(i).click();
+    await page.locator('[data-kind="day"]').check();
+    await page.locator('[data-kind="night"]').check();
+    await page.locator('#confirm-participant').click();
+  }
   await page.locator('[data-date="2026-08-01"] .date-open').click();
   await page.locator('[data-split="1"]').click();
   assert.equal(await page.locator('[data-assign]').count(), 3);

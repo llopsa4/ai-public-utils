@@ -25,7 +25,8 @@ const origin = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless: true, channel: process.env.BROWSER_CHANNEL || 'msedge' });
 function fixture(kind = '24', date = '2026-10-05') {
   const state = emptyState(); state.months['2026-10'] = newMonth();
-  for (let i = 0; i < 5; i++) state.participants.push({ id: randomUUID(), code: state.nextCode++, allowedKinds: [...KINDS], blockedWeekdays: [], blockedDates: [] });
+  for (let i = 0; i < 5; i++) state.participants.push({ id: randomUUID(), code: state.nextCode++, allowedKinds: ['24'], blockedWeekdays: [], blockedDates: [] });
+  state.participants[0].allowedKinds = [kind];
   state.months['2026-10'].assignments.push({ date, kind, seat: 0, participantId: state.participants[0].id, fixed: false, override: false });
   return state;
 }
@@ -217,6 +218,42 @@ try {
   assert.equal(await mobile.evaluate(() => document.documentElement.scrollWidth > innerWidth), false);
   await mobile.screenshot({ path: path.join(output, 'mobile.png'), fullPage: true });
   await context.close();
+
+  // Legacy mixed permissions migrate once without losing an existing short duty.
+  const legacy = fixture('day', '2026-10-03');
+  legacy.participants[0].allowedKinds = ['24', 'day', 'night'];
+  await page.evaluate(({ key, value }) => localStorage.setItem(key, value), { key: STORAGE_KEY, value: JSON.stringify(legacy) });
+  await page.reload();
+  await page.locator('#month-input').fill('2026-10'); await page.locator('#month-input').dispatchEvent('change');
+  let migrated = JSON.parse(await stored(page));
+  assert.deepEqual(migrated.participants[0].allowedKinds, ['24']);
+  assert.deepEqual(migrated.months['2026-10'].assignments, legacy.months['2026-10'].assignments);
+  assert((await page.locator('#message').textContent()).includes('mixed shift permissions now default'));
+  assert(await page.locator('[data-kind="24"]').isChecked());
+  await page.locator('[data-kind="day"]').check();
+  await page.locator('[data-kind="night"]').check();
+  assert.equal(await page.locator('[data-kind="24"]').isChecked(), false);
+  assert.deepEqual(JSON.parse(await stored(page)).participants[0].allowedKinds, ['24'], 'Exclusive settings still require confirmation');
+  await page.locator('#confirm-participant').click();
+  assert.deepEqual(JSON.parse(await stored(page)).participants[0].allowedKinds, ['day', 'night']);
+  await page.locator('[data-date="2026-10-10"] .date-open').click();
+  await page.locator('[data-split="0"]').click();
+  await page.locator('[data-assign="night/0"]').selectOption(legacy.participants[0].id);
+  await page.locator('[data-confirm-assign="night/0"]').click();
+  migrated = JSON.parse(await stored(page));
+  assert.equal(migrated.months['2026-10'].assignments.length, 2);
+  assert(migrated.months['2026-10'].assignments.every(a => !a.override), 'Two 12-hour holiday duties need no exception');
+  await page.getByRole('button', { name: 'Close date editor' }).click();
+  assert((await page.locator('#workloads tr').first().textContent()).includes('2 / 2'));
+  assert((await page.locator('#workloads tr').first().textContent()).includes('24 / 24h'));
+  await page.locator('[data-date="2026-10-17"] .date-open').click();
+  await page.locator('[data-split="0"]').click();
+  await page.locator('[data-assign="day/0"]').selectOption(legacy.participants[0].id);
+  const beforeThird = await stored(page);
+  page.once('dialog', d => { assert(d.message().includes('Monthly holiday limit exceeded')); return d.dismiss(); });
+  await page.locator('[data-confirm-assign="day/0"]').click();
+  assert.equal(await stored(page), beforeThird);
+  await page.getByRole('button', { name: 'Close date editor' }).click();
   assert(requests.every(url => url.startsWith(origin) || url.startsWith('blob:')));
   assert.deepEqual(errors, []);
   console.log('Move browser checks passed: mouse, touch hold/swipe, keyboard, focus, cancellation, previews, privacy, red overlap warnings, and print.');

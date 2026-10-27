@@ -5,7 +5,7 @@ import { newMonth, emptyState, slotsForDate, structuralIssues, audit, generate, 
 const month = '2026-10';
 function fixture(count = 8) {
   const state = emptyState(); state.months[month] = newMonth();
-  for (let i = 0; i < count; i++) state.participants.push({ id: randomUUID(), code: state.nextCode++, allowedKinds: ['24', 'day', 'night'], blockedWeekdays: [], blockedDates: [] });
+  for (let i = 0; i < count; i++) state.participants.push({ id: randomUUID(), code: state.nextCode++, allowedKinds: ['24'], blockedWeekdays: [], blockedDates: [] });
   return state;
 }
 const duty = (s, date, kind, seat, person) => ({ date, kind, seat, participantId: s.participants[person].id, fixed: true, override: false });
@@ -16,6 +16,7 @@ test('every holiday accepts all three coverage combinations without a mode', () 
     [duty(s, '2026-10-03', '24', 0, 0), duty(s, '2026-10-03', 'day', 1, 1), duty(s, '2026-10-03', 'night', 1, 2)],
     [duty(s, '2026-10-03', 'day', 0, 0), duty(s, '2026-10-03', 'night', 0, 1), duty(s, '2026-10-03', 'day', 1, 2), duty(s, '2026-10-03', 'night', 1, 3)],
   ]) {
+    for (const a of assignments) s.participants.find(p => p.id === a.participantId).allowedKinds = [a.kind];
     s.months[month].assignments = assignments;
     assert.deepEqual(audit(s, month), []);
     assert.equal(slotsForDate('2026-10-03', s.months[month]).length, assignments.length);

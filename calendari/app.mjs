@@ -1,6 +1,6 @@
 import { STORAGE_KEY, KINDS, WEEKDAYS, HOURS, pad, todayMonth, emptyState, newMonth, monthDates, weekday, shiftMonth, holiday, slotsForDate, slotsForMonth, slotKey, participantCode, totals, allAssignments, ruleIssues, structuralIssues, audit, serialize, parseBackup, anonymousState } from './core.mjs';
 import { CITIES, HOLIDAY_DATA, cityById, findCity, cityYearAvailable, holidayDetails } from './holidays.mjs';
-import { coverageStatus, movedAssignments, moveTargets } from './core.mjs';
+import { coverageStatus, movedAssignments, moveTargets, exclusiveKinds, holidayDutyLimit } from './core.mjs';
 
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -13,6 +13,7 @@ const monthTitle = month => new Date(`${month}-01T12:00:00Z`).toLocaleDateString
 const dateTitle = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 let state = emptyState(), month = todayMonth(), selectedId = null, openDate = null;
 let storageBlocked = false, worker = null, latestProposal = null;
+let migratedShiftPermissions = false;
 let moving = null, pointer = null, suppressClickUntil = 0;
 let participantDraft = null, participantDirty = false;
 const assignmentDrafts = new Map(); // Anonymous pending selections for the open date only.
@@ -24,7 +25,15 @@ function notify(message, error = false) {
 }
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
-  if (saved) state = parseBackup(saved);
+  if (saved) {
+    state = parseBackup(saved);
+    const oldParticipants = JSON.parse(saved).participants;
+    const mixed = oldParticipants.filter(p => p.allowedKinds.includes('24') && p.allowedKinds.some(kind => kind !== '24')).length;
+    if (mixed) {
+      migratedShiftPermissions = true;
+      notify(`${mixed} participant(s) with mixed shift permissions now default to 24 hours. Choose 12-hour day/night duties in their settings if needed. Existing assignments were kept; review any permission warnings.`);
+    }
+  }
 } catch {
   storageBlocked = true;
   notify('Saved data could not be read. It has not been overwritten. Export this session as a backup, or import a valid backup to resume saving.', true);
@@ -93,7 +102,7 @@ function renderEditor() {
   $('#participant-editor').innerHTML = `<form class="participant-editor" id="participant-form">
     <h3>${participantCode(p)} · Availability</h3>
     <label>Name · session only<input id="person-name" type="text" maxlength="80" autocomplete="off" spellcheck="false" value="${escape(draft.name)}" placeholder="Participant ${p.code}"></label>
-    <fieldset><legend>Allowed shift types</legend><div class="checkbox-list">${KINDS.map(kind => `<label class="checkbox-label"><input type="checkbox" data-kind="${kind}" ${draft.allowedKinds.includes(kind) ? 'checked' : ''}>${kindLabel(kind)}</label>`).join('')}</div></fieldset>
+    <fieldset><legend>Allowed shift types</legend><div class="checkbox-list">${KINDS.map(kind => `<label class="checkbox-label"><input type="checkbox" data-kind="${kind}" ${draft.allowedKinds.includes(kind) ? 'checked' : ''}>${kindLabel(kind)}</label>`).join('')}</div><p class="muted">Choose 24 hours or 12-hour day/night duties. Monthly holiday allowance: one 24-hour duty or two 12-hour duties on separate dates.</p></fieldset>
     <fieldset><legend>Blocked weekdays · every month</legend><div class="checkbox-list weekday-choices">${[1, 2, 3, 4, 5, 6, 0].map(d => `<label class="checkbox-label"><input type="checkbox" data-weekday="${d}" ${draft.blockedWeekdays.includes(d) ? 'checked' : ''}>${WEEKDAYS[d]}</label>`).join('')}</div></fieldset>
     <label>Blocked dates · ${escape(monthTitle(month))}<input id="blocked-days" type="text" inputmode="numeric" value="${escape(draft.blockedDays)}" placeholder="e.g. 5, 12, 23" autocomplete="off" aria-describedby="blocked-hint participant-edit-status"></label>
     <p id="blocked-hint" class="muted">Numbers apply only to this month. Separate with commas or spaces.</p>
@@ -156,7 +165,7 @@ function renderCalendar(proposal = null) {
 function renderTotals() {
   const t = totals(state, month), values = Object.values(t), hours = values.map(v => v.hours);
   $('#balance-note').textContent = values.length ? `${Math.min(...hours)}–${Math.max(...hours)} hours per person` : 'No participants yet';
-  $('#workloads').innerHTML = state.participants.map(p => `<tr><td>${escape(personLabel(p.id))} <small class="muted">${participantCode(p)}</small></td><td><strong>${t[p.id].hours}</strong></td><td class="${t[p.id].holidays > 1 ? 'over-limit' : ''}">${t[p.id].holidays}</td><td class="${t[p.id].ordinary > 3 ? 'over-limit' : ''}">${t[p.id].ordinary}</td><td>${t[p.id].weekends}</td></tr>`).join('') || '<tr><td colspan="5">Add participants to see the workload.</td></tr>';
+  $('#workloads').innerHTML = state.participants.map(p => `<tr><td>${escape(personLabel(p.id))} <small class="muted">${participantCode(p)}</small></td><td><strong>${t[p.id].hours}</strong></td><td class="${t[p.id].holidayHours > 24 ? 'over-limit' : ''}">${t[p.id].holidays} / ${holidayDutyLimit(p)}<br><small>${t[p.id].holidayHours} / 24h</small></td><td class="${t[p.id].ordinary > 3 ? 'over-limit' : ''}">${t[p.id].ordinary}</td><td>${t[p.id].weekends}</td></tr>`).join('') || '<tr><td colspan="5">Add participants to see the workload.</td></tr>';
 }
 function renderIssues() {
   const config = state.months[month], assignments = config.assignments;
@@ -166,7 +175,8 @@ function renderIssues() {
   const holidaySeats = holidayDates * 2;
   const lines = [];
   if (state.cityId && !cityYearAvailable(state.cityId, month.slice(0, 4))) lines.push(`<li class="warning">Official city/public holiday data for ${month.slice(0, 4)} is unavailable. Add holidays manually before generating.</li>`);
-  if (state.participants.length < holidaySeats) lines.push(`<li class="warning">${holidayDates} holidays require at least ${holidaySeats} participants with the one-holiday limit. Splitting duties into 12-hour shifts requires additional people. Current team: ${state.participants.length}.</li>`);
+  const eligible = state.participants.filter(p => exclusiveKinds(p.allowedKinds).length).length;
+  if (eligible < holidaySeats) lines.push(`<li class="warning">${holidayDates} holidays require at least ${holidaySeats} participants with a 24-hour holiday allowance each (one 24-hour duty or two 12-hour duties on separate dates). Current team with shift permissions: ${eligible}. Availability and day/night permissions may require more participants.</li>`);
   if (missing.length) lines.push(`<li>${missing.length} shift seats remain unfilled across ${new Set(missing.map(s => s.date)).size} dates. Open a date to review available people.</li>`);
   for (const date of monthDates(month)) if (coverageStatus(date, assignments).overstaffed)
     lines.push(`<li class="warning">${escape(date)} · Overstaffed / overlapping coverage. Open the date and remove overlapping or incompatible duties.</li>`);
@@ -206,7 +216,7 @@ $('#add-participant').addEventListener('click', () => {
   if (!Number.isInteger(count) || count < 1 || count > 100 || state.participants.length + count > 500) return notify('Add between 1 and 100 people at once, up to 500 total.', true);
   if (!discardParticipantDraft()) return;
   for (let i = 0; i < count; i++) {
-    const p = { id: crypto.randomUUID(), code: state.nextCode++, allowedKinds: [...KINDS], blockedWeekdays: [], blockedDates: [] };
+    const p = { id: crypto.randomUUID(), code: state.nextCode++, allowedKinds: ['24'], blockedWeekdays: [], blockedDates: [] };
     state.participants.push(p); selectedId = p.id;
   }
   changed();
@@ -218,8 +228,14 @@ $('#participants').addEventListener('click', event => {
   if (!discardParticipantDraft()) return;
   selectedId = button.dataset.person; renderParticipants(); renderEditor();
 });
-function updateParticipantDraft() {
+function updateParticipantDraft(event) {
   if (!participantDraft) return;
+  const kind = event.target.dataset.kind;
+  if (kind && event.target.checked) {
+    for (const input of $('#participant-editor').querySelectorAll('[data-kind]')) {
+      if ((kind === '24' && input.dataset.kind !== '24') || (kind !== '24' && input.dataset.kind === '24')) input.checked = false;
+    }
+  }
   participantDraft.name = $('#person-name').value;
   participantDraft.allowedKinds = [...$('#participant-editor').querySelectorAll('[data-kind]:checked')].map(el => el.dataset.kind);
   participantDraft.blockedWeekdays = [...$('#participant-editor').querySelectorAll('[data-weekday]:checked')].map(el => Number(el.dataset.weekday));
@@ -243,7 +259,7 @@ $('#participant-editor').addEventListener('submit', event => {
     $('#blocked-days').focus(); return;
   }
   names.set(p.id, participantDraft.name);
-  p.allowedKinds = [...participantDraft.allowedKinds];
+  p.allowedKinds = exclusiveKinds(participantDraft.allowedKinds);
   p.blockedWeekdays = [...participantDraft.blockedWeekdays];
   p.blockedDates = [...p.blockedDates.filter(d => !d.startsWith(month)), ...new Set(numbers.map(n => `${month}-${pad(n)}`))];
   participantDraft = null; participantDirty = false;
@@ -513,7 +529,7 @@ $('#import-file').addEventListener('change', async event => {
     if (!confirm('Replace all saved participants, restrictions, and months with this anonymous backup? Current session names will also be cleared.')) return;
     state = restored; names.clear(); splitChoices.clear(); participantDraft = null; participantDirty = false; selectedId = state.participants[0]?.id ?? null;
     storageBlocked = false; changed();
-    notify('Anonymous backup restored. Re-enter participant names for this session.');
+    notify('Anonymous backup restored. Re-enter participant names for this session. Any mixed shift permissions default to 24 hours; existing assignments are kept.');
   } catch (error) { notify(error.message, true); }
   finally { event.target.value = ''; }
 });
@@ -555,7 +571,7 @@ function buildPrintReport() {
     const ownIssues = issues.filter(i => i.assignment.participantId === p.id);
     const distinctWarnings = [...new Set(ownIssues.map(i => `${i.assignment.date}: ${i.message}`))];
     const warningSummary = `${ownIssues.length} rule warning(s): ${distinctWarnings.slice(0, 4).join('; ')}${distinctWarnings.length > 4 ? '; additional warnings are listed in the application' : ''}`;
-    return `<section class="print-page"><header class="print-header"><div><h1>${escape(personLabel(p.id))}</h1><p>${participantCode(p)} · Individual duty rota</p></div><h2>${escape(monthTitle(month))}</h2></header><p class="print-person-metrics"><strong>${t[p.id].hours} hours</strong> · ${t[p.id].holidays} holiday / 1 · ${t[p.id].ordinary} non-holidays / 3 · ${t[p.id].weekends} weekend dates</p>${printCalendar(p.id)}<p class="print-notice">${ownIssues.length ? escape(warningSummary) : 'No scheduling conflicts for this participant.'}</p>${foot}</section>`;
+    return `<section class="print-page"><header class="print-header"><div><h1>${escape(personLabel(p.id))}</h1><p>${participantCode(p)} · Individual duty rota</p></div><h2>${escape(monthTitle(month))}</h2></header><p class="print-person-metrics"><strong>${t[p.id].hours} hours</strong> · ${t[p.id].holidays} holiday duties / ${holidayDutyLimit(p)} (${t[p.id].holidayHours} / 24h) · ${t[p.id].ordinary} non-holidays / 3 · ${t[p.id].weekends} weekend dates</p>${printCalendar(p.id)}<p class="print-notice">${ownIssues.length ? escape(warningSummary) : 'No scheduling conflicts for this participant.'}</p>${foot}</section>`;
   }).join('');
   $('#print-report').innerHTML = global + people;
   $('#print-report').removeAttribute('aria-hidden');
@@ -566,4 +582,5 @@ window.addEventListener('afterprint', () => { $('#print-report').replaceChildren
 ensureMonth(); selectedId = state.participants[0]?.id ?? null; render();
 if (storageBlocked) $('#save-status').textContent = 'Not saved · storage read failed';
 else $('#save-status').textContent = 'Anonymous data only';
+if (migratedShiftPermissions) save();
 if (window.matchMedia('(max-width: 800px)').matches) $('#participant-panel').open = false;
