@@ -1,5 +1,6 @@
 import { STORAGE_KEY, KINDS, WEEKDAYS, HOURS, pad, todayMonth, emptyState, newMonth, monthDates, weekday, shiftMonth, holiday, slotsForDate, slotsForMonth, slotKey, participantCode, totals, allAssignments, ruleIssues, structuralIssues, audit, serialize, parseBackup, anonymousState } from './core.mjs';
 import { CITIES, HOLIDAY_DATA, cityById, findCity, cityYearAvailable, holidayDetails } from './holidays.mjs';
+import { coverageStatus, movedAssignments, moveTargets } from './core.mjs';
 
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -12,6 +13,7 @@ const monthTitle = month => new Date(`${month}-01T12:00:00Z`).toLocaleDateString
 const dateTitle = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 let state = emptyState(), month = todayMonth(), selectedId = null, openDate = null;
 let storageBlocked = false, worker = null, latestProposal = null;
+let moving = null, pointer = null, suppressClickUntil = 0;
 
 function notify(message, error = false) {
   $('#message').textContent = message;
@@ -93,23 +95,39 @@ function renderCalendar(proposal = null) {
   const hours = config.assignments.filter(a => slots.some(s => slotKey(a) === slotKey(s))).reduce((n, a) => n + HOURS[a.kind], 0);
   $('#metrics').innerHTML = [[`${covered}/${slots.length}`, 'Shift seats covered'], [`${hours}/${monthDates(month).length * 48}`, 'Hours of cover'], [slots.length - covered, 'Unfilled seats'], [config.assignments.filter(a => a.fixed).length, 'Fixed assignments']].map(([n, label]) => `<div class="metric"><strong>${n}</strong><span>${label}</span></div>`).join('');
   const dates = monthDates(month), offset = (weekday(dates[0]) + 6) % 7;
+  const targets = moving ? moveTargets(state, month, moving.key) : [];
+  const targetKeys = new Set(targets.map(slotKey));
   const cells = Array.from({ length: offset }, () => '<div class="empty-cell" aria-hidden="true"></div>');
   for (const date of dates) {
     const holidayInfo = holidayDetails(date, config);
     const holidayBadge = holidayInfo.label ? `<span class="holiday-tag ${holidayInfo.local ? 'local' : holidayInfo.general ? 'public' : 'other'}">${escape(holidayInfo.label)}</span>` : '';
-    const daySlots = slotsForDate(date, config);
+    const daySlots = slotsForDate(date, config).flatMap(s =>
+      moving && s.kind === '24' && targets.some(t => t.date === date && t.seat === s.seat && t.kind !== '24')
+        ? ['day', 'night'].map(kind => ({ ...s, kind })) : [s]);
     const assigned = config.assignments.filter(a => a.date === date);
     const stale = assigned.filter(a => !daySlots.some(s => slotKey(s) === slotKey(a)));
     const lines = daySlots.map(s => {
       const a = assigned.find(a => slotKey(a) === slotKey(s));
-      return `<span class="slot-line ${a ? issueKeys.has(slotKey(a)) ? 'conflict' : '' : 'pending'}"><span class="slot-kind">${shortKind(s.kind)}</span><span class="slot-name">${a ? escape(personLabel(a.participantId)) : 'Unfilled'}</span>${a?.fixed ? '<span class="fixed-mark">Fixed</span>' : ''}</span>`;
+      const key = slotKey(s), target = targetKeys.has(key);
+      const content = `<span class="slot-kind">${shortKind(s.kind)}</span><span class="slot-name">${a ? escape(personLabel(a.participantId)) : target ? 'Move here' : 'Unfilled'}</span>${a?.fixed ? '<span class="fixed-mark">Fixed</span>' : ''}`;
+      const label = `${dateTitle(date)}, ${kindLabel(s.kind)}, place ${s.seat + 1}`;
+      if (a) return `<button type="button" class="slot-line move-entry ${issueKeys.has(key) ? 'conflict' : ''} ${moving?.key === key ? 'move-source' : ''}" data-move="${key}" ${worker || moving ? 'disabled' : ''} aria-label="${escape(`Move assignment: ${personLabel(a.participantId)}, ${label}`)}">${content}<span class="move-hint" aria-hidden="true">↔</span></button>`;
+      if (target) return `<button type="button" class="slot-line pending drop-target" data-drop="${key}" aria-label="${escape(`Move here: ${label}`)}">${content}</button>`;
+      return `<span class="slot-line pending">${content}</span>`;
     }).join('');
     const dayCovered = daySlots.filter(s => assigned.some(a => slotKey(a) === slotKey(s))).length;
-    const unfilled = dayCovered < daySlots.length;
-    cells.push(`<button class="day-cell ${holiday(date, config) ? 'holiday' : ''} ${holidayInfo.local ? 'local-holiday' : ''} ${holidayInfo.general ? 'public-holiday' : ''} ${unfilled ? 'unfilled' : ''} ${date === currentToday() ? 'today' : ''}" ${worker ? 'disabled' : ''} data-date="${date}" aria-label="${escape(dateTitle(date))}, ${escape(holidayInfo.name || 'non-holiday')}, ${dayCovered} of ${daySlots.length} seats filled${unfilled ? ', missing coverage' : ''}${stale.length ? ', incompatible assignments need attention' : ''}"><span class="date-row"><span class="date-number">${Number(date.slice(-2))}</span><span class="date-mode">${unfilled ? 'Needs cover' : 'Covered'}</span></span>${holidayBadge}${lines}${stale.length ? `<span class="slot-line conflict">${stale.length} incompatible</span>` : ''}</button>`);
+    const staleLines = stale.map(a => `<button type="button" class="slot-line move-entry conflict" data-move="${slotKey(a)}" ${worker || moving ? 'disabled' : ''} aria-label="${escape(`Move assignment: ${personLabel(a.participantId)}, incompatible ${kindLabel(a.kind)}, ${dateTitle(date)}`)}"><span class="slot-kind">${shortKind(a.kind)}</span><span class="slot-name">${escape(personLabel(a.participantId))}</span><span class="move-hint" aria-hidden="true">↔</span></button>`).join('');
+    const { missing: unfilled, overstaffed } = coverageStatus(date, assigned);
+    cells.push(`<div class="day-cell ${holiday(date, config) ? 'holiday' : ''} ${holidayInfo.local ? 'local-holiday' : ''} ${holidayInfo.general ? 'public-holiday' : ''} ${unfilled ? 'unfilled' : ''} ${overstaffed ? 'overstaffed' : ''} ${date === currentToday() ? 'today' : ''}" data-date="${date}"><button type="button" class="date-row date-open" ${worker || moving ? 'disabled' : ''} aria-label="${escape(`Open ${dateTitle(date)}`)}, ${escape(holidayInfo.name || 'non-holiday')}, ${dayCovered} of ${daySlots.length} seats filled${unfilled ? ', missing coverage' : ''}${overstaffed ? ', overstaffed or overlapping coverage' : ''}${stale.length ? ', incompatible assignments need attention' : ''}"><span class="date-number">${Number(date.slice(-2))}</span><span class="date-mode">${unfilled ? 'Needs cover' : 'Covered'}</span></button>${holidayBadge}${overstaffed ? '<span class="coverage-warning">Overstaffed / overlapping coverage</span>' : ''}${lines}${stale.length ? `<span class="slot-line conflict">${stale.length} incompatible</span>${staleLines}` : ''}</div>`);
   }
   while (cells.length % 7) cells.push('<div class="empty-cell" aria-hidden="true"></div>');
   $('#month-grid').innerHTML = cells.join('');
+  $('#move-controls').hidden = !moving;
+  $('#move-status').textContent = moving ? `Moving ${kindLabel(moving.kind)} duty. Choose a highlighted spot. ${targets.length} valid spots. Escape cancels.` : '';
+  for (const id of ['previous', 'next', 'today', 'month-input', 'generate', 'apply-city', 'clear-city', 'city-input', 'restore', 'add-participant', 'print']) {
+    const el = $(`#${id}`);
+    el.disabled = Boolean(worker || moving) || (id === 'clear-city' && !state.cityId);
+  }
 }
 function renderTotals() {
   const t = totals(state, month), values = Object.values(t), hours = values.map(v => v.hours);
@@ -126,6 +144,8 @@ function renderIssues() {
   if (state.cityId && !cityYearAvailable(state.cityId, month.slice(0, 4))) lines.push(`<li class="warning">Official city/public holiday data for ${month.slice(0, 4)} is unavailable. Add holidays manually before generating.</li>`);
   if (state.participants.length < holidaySeats) lines.push(`<li class="warning">${holidayDates} holidays require at least ${holidaySeats} participants with the one-holiday limit. Splitting duties into 12-hour shifts requires additional people. Current team: ${state.participants.length}.</li>`);
   if (missing.length) lines.push(`<li>${missing.length} shift seats remain unfilled across ${new Set(missing.map(s => s.date)).size} dates. Open a date to review available people.</li>`);
+  for (const date of monthDates(month)) if (coverageStatus(date, assignments).overstaffed)
+    lines.push(`<li class="warning">${escape(date)} · Overstaffed / overlapping coverage. Open the date and remove overlapping or incompatible duties.</li>`);
   if (issues.length) lines.push(...issues.map(i => `<li class="warning">${escape(i.assignment.date)} · ${escape(personLabel(i.assignment.participantId))}: ${escape(i.message)}${i.assignment.override ? ' · confirmed manual exception' : ''}.</li>`));
   const hours = Object.values(totals(state, month)).map(t => t.hours);
   if (hours.length && Math.max(...hours) - Math.min(...hours) > 24) lines.push('<li class="warning">Workloads differ by more than 24 hours. Review availability or generate another proposal to improve balance.</li>');
@@ -200,7 +220,7 @@ $('#participant-editor').addEventListener('click', event => {
   for (const config of Object.values(state.months)) config.assignments = config.assignments.filter(a => a.participantId !== selectedId);
   names.delete(selectedId); selectedId = state.participants[0]?.id ?? null; changed();
 });
-function navigate(next) { if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(next) || Number(next.slice(0, 4)) < 1900 || Number(next.slice(0, 4)) > 2200) return notify('Choose a month between January 1900 and December 2200.', true); month = next; ensureMonth(); save(); render(); }
+function navigate(next) { if (moving || worker) return; if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(next) || Number(next.slice(0, 4)) < 1900 || Number(next.slice(0, 4)) > 2200) return notify('Choose a month between January 1900 and December 2200.', true); month = next; ensureMonth(); save(); render(); }
 $('#previous').addEventListener('click', () => navigate(shiftMonth(month, -1)));
 $('#next').addEventListener('click', () => navigate(shiftMonth(month, 1)));
 $('#today').addEventListener('click', () => navigate(todayMonth()));
@@ -216,7 +236,119 @@ $('#apply-city').addEventListener('click', () => {
 });
 $('#city-input').addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); $('#apply-city').click(); } });
 $('#clear-city').addEventListener('click', () => setCity(null));
-$('#month-grid').addEventListener('click', event => { const day = event.target.closest('[data-date]'); if (day) showDay(day.dataset.date); });
+function readSlot(key) { const [date, kind, seat] = key.split('/'); return { date, kind, seat: Number(seat) }; }
+function focusEntry(key) {
+  const entry = [...document.querySelectorAll('[data-move]')].find(el => el.dataset.move === key);
+  (entry ?? $('#calendar')).focus({ preventScroll: true });
+}
+function beginMove(key, keyboard = false) {
+  if (worker || moving) return false;
+  const source = state.months[month].assignments.find(a => slotKey(a) === key);
+  if (!source) return false;
+  moving = { key, kind: source.kind };
+  renderCalendar();
+  if (keyboard) ($('#month-grid [data-drop]') ?? $('#cancel-move')).focus({ preventScroll: true });
+  return true;
+}
+function clearPointer() {
+  if (pointer) { clearTimeout(pointer.timer); cancelAnimationFrame(pointer.frame); }
+  pointer = null;
+  $('#move-cursor').hidden = true;
+  document.querySelector('.drop-hover')?.classList.remove('drop-hover');
+}
+function cancelMove(message = 'Move cancelled. Original assignment kept.') {
+  const key = moving?.key;
+  clearPointer();
+  if (!moving) return;
+  moving = null; renderCalendar();
+  notify(message); focusEntry(key);
+}
+function completeMove(key) {
+  if (!moving || worker) return;
+  const original = moving.key;
+  try {
+    const assignments = movedAssignments(state, month, original, readSlot(key));
+    clearPointer(); moving = null;
+    state.months[month].assignments = assignments;
+    changed(); notify('Assignment moved and kept fixed.'); focusEntry(key);
+  } catch (error) { cancelMove(`Move rejected: ${error.message} Original assignment kept.`); }
+}
+$('#cancel-move').addEventListener('click', () => cancelMove());
+document.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && (moving || pointer)) { event.preventDefault(); cancelMove(); }
+});
+$('#month-grid').addEventListener('click', event => {
+  if (performance.now() < suppressClickUntil || worker) return;
+  const target = event.target.closest('[data-drop]');
+  if (target && moving) return completeMove(target.dataset.drop);
+  if (moving) return;
+  const entry = event.target.closest('[data-move]');
+  if (entry) return beginMove(entry.dataset.move, true);
+  const day = event.target.closest('[data-date]');
+  if (day) showDay(day.dataset.date);
+});
+
+// Pointer state contains anonymous assignment keys only, never participant names.
+function updateDrag() {
+  if (!pointer?.active) return;
+  const { x, y } = pointer;
+  const scroller = $('.calendar-scroll'), rect = scroller.getBoundingClientRect();
+  if (x < rect.left + 30) scroller.scrollLeft -= 12;
+  if (x > rect.right - 30) scroller.scrollLeft += 12;
+  if (y < 55) window.scrollBy(0, -14);
+  if (y > window.innerHeight - 55) window.scrollBy(0, 14);
+  $('#move-cursor').style.transform = `translate(${x + 14}px, ${y + 14}px)`;
+  document.querySelector('.drop-hover')?.classList.remove('drop-hover');
+  document.elementFromPoint(x, y)?.closest('[data-drop]')?.classList.add('drop-hover');
+  pointer.frame = requestAnimationFrame(updateDrag);
+}
+function activatePointer() {
+  if (!pointer || pointer.scrolling || !beginMove(pointer.key)) return;
+  pointer.active = true;
+  // Release touch's implicit capture before replacing/targeting individual spots.
+  $('#move-cursor').textContent = `${shortKind(moving.kind)} · moving duty`;
+  $('#move-cursor').hidden = false;
+  updateDrag();
+}
+$('#month-grid').addEventListener('pointerdown', event => {
+  const entry = event.target.closest('[data-move]');
+  if (!entry || worker || moving || !event.isPrimary || event.button !== 0) return;
+  clearPointer();
+  pointer = { id: event.pointerId, key: entry.dataset.move, x: event.clientX, y: event.clientY,
+    startX: event.clientX, startY: event.clientY, touch: event.pointerType === 'touch', active: false, scrolling: false };
+  if (entry.hasPointerCapture(event.pointerId)) entry.releasePointerCapture(event.pointerId);
+  if (pointer.touch) pointer.timer = setTimeout(activatePointer, 300);
+});
+$('#month-grid').addEventListener('contextmenu', event => {
+  if (event.target.closest('[data-move]') || pointer?.active) event.preventDefault();
+});
+document.addEventListener('pointermove', event => {
+  if (!pointer || pointer.id !== event.pointerId) return;
+  const dx = event.clientX - pointer.x, dy = event.clientY - pointer.y;
+  pointer.x = event.clientX; pointer.y = event.clientY;
+  const distance = Math.hypot(pointer.x - pointer.startX, pointer.y - pointer.startY);
+  if (!pointer.active && distance > 6) {
+    if (pointer.touch) { clearTimeout(pointer.timer); pointer.scrolling = true; }
+    else activatePointer();
+  }
+  if (pointer?.scrolling) {
+    // A swipe before the hold scrolls instead of picking up a duty.
+    $('.calendar-scroll').scrollLeft -= dx;
+    window.scrollBy(0, -dy);
+  }
+  if (pointer?.active && event.cancelable) event.preventDefault();
+}, { passive: false });
+document.addEventListener('pointerup', event => {
+  if (!pointer || pointer.id !== event.pointerId) return;
+  const { active, scrolling } = pointer;
+  if (active || scrolling) suppressClickUntil = performance.now() + 450;
+  if (!active) { clearPointer(); return; }
+  const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-drop]');
+  if (target) completeMove(target.dataset.drop);
+  else cancelMove('No valid spot selected. Original assignment kept.');
+});
+document.addEventListener('pointercancel', () => { if (pointer?.active) cancelMove(); else clearPointer(); });
+window.addEventListener('blur', () => { if (pointer?.active) cancelMove(); else clearPointer(); });
 $('#day-dialog').addEventListener('close', () => { openDate = null; });
 $('#day-content').addEventListener('change', event => {
   const config = state.months[month];
@@ -276,6 +408,7 @@ function finishSearch(stopped = false) {
   $('#search-status').textContent = `${stopped ? 'Search stopped.' : 'Search finished.'} ${latestProposal?.complete ? 'All seats covered.' : 'Best proposal kept; unfilled seats remain.'} Review workload and restrictions. A time-limited search does not prove that a better proposal is impossible.`;
 }
 $('#generate').addEventListener('click', () => {
+  if (moving || worker) return;
   if (!state.participants.length) return notify('Add participants before generating a month.', true);
   latestProposal = null;
   try {
@@ -334,8 +467,8 @@ function printCalendar(participantId = null) {
       const label = participantId ? `${kindLabel(s.kind)} · ${timeLabel(s.kind)}` : `${shortKind(s.kind)} · ${p ? participantCode(p) : 'UNFILLED'}`;
       return `<div class="print-shift">${escape(label)}${a?.override ? ' [exception]' : ''}</div>`;
     }).join('');
-    const incomplete = slots.some(s => !config.assignments.some(a => slotKey(a) === slotKey(s)));
-    cells.push(`<div class="print-day ${holiday(date, config) ? 'holiday' : ''} ${info.local ? 'local-holiday' : ''} ${info.general ? 'public-holiday' : ''} ${incomplete && !participantId ? 'unfilled' : ''}"><strong>${Number(date.slice(-2))}${info.label ? ` · ${escape(info.label)}` : ''}</strong>${lines}</div>`);
+    const { missing: incomplete, overstaffed } = coverageStatus(date, config.assignments);
+    cells.push(`<div class="print-day ${holiday(date, config) ? 'holiday' : ''} ${info.local ? 'local-holiday' : ''} ${info.general ? 'public-holiday' : ''} ${incomplete && !participantId ? 'unfilled' : ''} ${overstaffed ? 'overstaffed' : ''}"><strong>${Number(date.slice(-2))}${info.label ? ` · ${escape(info.label)}` : ''}</strong>${overstaffed ? '<div class="print-coverage-warning">Overstaffed / overlapping coverage</div>' : ''}${incomplete && !participantId ? '<div class="print-coverage-warning">Missing coverage</div>' : ''}${lines}</div>`);
   }
   while (cells.length % 7) cells.push('<div class="print-day"></div>');
   return `<div class="print-weekdays">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<span>${d}</span>`).join('')}</div><div class="print-calendar">${cells.join('')}</div>`;

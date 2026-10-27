@@ -20,7 +20,12 @@ Open `http://127.0.0.1:8000/`. Stop the server with Ctrl+C.
 2. Select a month and enter a city or settlement in Catalonia. Choose a listed result and press **Apply city** (or Enter). The selected city is highlighted; local and public holidays are marked automatically. Holiday coverage adapts per date; there is no monthly coverage filter. Open a date to mark an additional weekday holiday manually.
 3. Generate a proposal. Search runs for up to 10 seconds in a worker, prioritizing covered duty hours, similar monthly hours, and balanced holiday/weekend duties. Stop early to keep the best proposal found so far. This is a bounded heuristic, not a proof of optimality or infeasibility.
 4. Review yellow dates: these have missing coverage, both during generation and in the final proposal. Workload differences and warnings appear below the calendar. Open a date to change or clear an assignment. On holidays, each of the two coverage places can use one 24-hour duty or separate day/night duties; use the split/merge controls to edit these manually. Manual assignments are fixed; release their fixed status to let regeneration replace them.
-5. Export anonymous backups regularly. Use **Print / save PDF**, select **Save as PDF**, and keep A4 landscape paper. Turn off the browser's own headers/footers for the cleanest output. The report contains one global page plus one page for every participant, including participants with no assignments.
+5. Move an assigned duty by dragging its entry, or select it and choose a highlighted spot. On touch screens, hold for 300 ms before dragging; swipe before the hold to scroll. Keyboard users can focus an entry, press Enter, and Tab to a destination. Escape or **Cancel move** cancels without changing assignments. Use the date-number button to open the date editor.
+6. Export anonymous backups regularly. Use **Print / save PDF**, select **Save as PDF**, and keep A4 landscape paper. Turn off the browser's own headers/footers for the cleanest output. The report contains one global page plus one page for every participant, including participants with no assignments.
+
+Moves stay within the displayed month and preserve the original shift type. Highlighted spots are empty and satisfy every scheduling rule, evaluated after removing the original duty. While moving a short duty, matching 12-hour targets are revealed on empty holiday places; these previews do not save any changes. A successful move removes the original duty, fills the destination, and marks the assignment **Fixed**. Invalid drops leave the original duty in place. Month navigation and generation are disabled while moving; moves are disabled during generation.
+
+**Red means overstaffed / overlapping coverage**, including incompatible overlaps in older backups. Red takes priority over yellow, but missing-coverage text and holiday badges remain visible. The same warning appears in PDFs. Three or four people covering separate holiday shifts are valid and do not make a day red. Ordinary availability and monthly-limit conflicts retain their individual warnings. Moves cannot add extra people to occupied coverage places.
 
 The current month opens on each visit. Previously saved months remain available through navigation. Each holiday is independently flexible; participants initially allow all shift types and have no blocked dates.
 
@@ -60,13 +65,14 @@ Deleting a participant, after confirmation, deletes their assignments from every
 Run core tests with Node.js 20 or later:
 
 ```powershell
-node --test tests/core.test.mjs tests/flexible.test.mjs tests/holidays.test.mjs
+node --test tests/core.test.mjs tests/flexible.test.mjs tests/holidays.test.mjs tests/moves.test.mjs
 ```
 
 Optional browser tests require Playwright, a headless Edge installation (or set `BROWSER_CHANNEL`), and `pdf-lib` for PDF page checks. They use synthetic names only, run their own local server under a nested URL, and place screenshots/PDFs in the operating system's temporary folder:
 
 ```powershell
 node tests/browser.test.mjs
+node tests/moves.browser.test.mjs
 ```
 
 ## City holidays and data coverage

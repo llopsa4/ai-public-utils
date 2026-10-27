@@ -53,7 +53,7 @@ try {
   let stored = await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY);
   assert.ok(!stored.includes('QA_PRIVATE_SENTINEL'));
   const firstId = JSON.parse(stored).participants[0].id;
-  await page.locator('[data-date="2026-10-05"]').click();
+  await page.locator('[data-date="2026-10-05"] .date-open').click();
   page.once('dialog', dialog => dialog.accept());
   await page.locator('[data-assign="24/0"]').selectOption(firstId);
   assert.ok((await page.locator('#day-content').textContent()).includes('confirmed manual exception'));
@@ -99,7 +99,7 @@ try {
   await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
   assert.equal(await page.locator('#print-report').textContent(), '');
   await page.emulateMedia({ media: 'screen' });
-  await page.locator('[data-date="2026-08-01"]').click();
+  await page.locator('[data-date="2026-08-01"] .date-open').click();
   await page.locator('[data-split="1"]').click();
   assert.equal(await page.locator('[data-assign]').count(), 3);
   await page.locator('[data-assign="24/0"]').selectOption(firstId);
@@ -115,7 +115,7 @@ try {
   assert.equal(await page.locator('[data-date="2026-08-01"]').evaluate(el => el.classList.contains('unfilled')), false);
   assert.equal(await page.locator('[data-date="2026-08-02"]').evaluate(el => el.classList.contains('unfilled')), true);
   // A different holiday in the same month can use four 12-hour duties.
-  await page.locator('[data-date="2026-08-08"]').click();
+  await page.locator('[data-date="2026-08-08"] .date-open').click();
   await page.locator('[data-split="0"]').click();
   await page.locator('[data-split="1"]').click();
   for (const [i, key] of ['day/0', 'night/0', 'day/1', 'night/1'].entries()) await page.locator(`[data-assign="${key}"]`).selectOption(saved.participants[i + 3].id);
@@ -133,7 +133,7 @@ try {
   await page.locator('#month-input').dispatchEvent('change');
 
   // A weekday changed from holiday back to non-holiday must flag fixed 12-hour duties.
-  await page.locator('[data-date="2026-10-06"]').click();
+  await page.locator('[data-date="2026-10-06"] .date-open').click();
   await page.locator('#mark-holiday').check();
   page.once('dialog', dialog => dialog.accept());
   await page.locator('[data-split="0"]').click();
@@ -179,7 +179,7 @@ try {
   const citySaved = JSON.parse(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY));
   assert.equal(citySaved.cityId, '17079000');
   assert.equal(citySaved.months['2026-10'].cityId, '17079000');
-  await page.locator('[data-date="2026-10-29"]').click();
+  await page.locator('[data-date="2026-10-29"] .date-open').click();
   assert.equal(await page.locator('#mark-holiday').isDisabled(), true);
   await page.locator('[data-assign="24/0"]').selectOption('');
   await page.getByRole('button', { name: 'Close date editor' }).click();
@@ -202,7 +202,7 @@ try {
   await page.evaluate(() => window.dispatchEvent(new Event('afterprint')));
   await page.emulateMedia({ media: 'screen' });
   // Manual dates are independent of automatic municipal dates.
-  await page.locator('[data-date="2026-10-20"]').click();
+  await page.locator('[data-date="2026-10-20"] .date-open').click();
   await page.locator('#mark-holiday').check();
   await page.getByRole('button', { name: 'Close date editor' }).click();
   await page.locator('#city-input').fill('Barcelona');

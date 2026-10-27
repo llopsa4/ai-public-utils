@@ -37,6 +37,9 @@
           <div id="search-status" class="search-status" role="status" aria-live="polite" hidden></div>
           <div id="metrics" class="metrics"></div>
           <p class="calendar-hint">Yellow = missing coverage. Holiday badges identify local, public, added holidays and weekends. <span>Fixed = kept when regenerating.</span></p>
+          <p class="move-instructions">Drag an assigned duty to move it, or select it and choose a highlighted spot. On touch screens, hold a duty briefly before dragging.</p>
+          <div id="move-controls" class="move-controls" hidden><p id="move-status" role="status" aria-live="polite"></p><button type="button" id="cancel-move">Cancel move</button></div>
+          <div id="move-cursor" class="move-cursor" hidden aria-hidden="true"></div>
           <div class="calendar-scroll"><div class="weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div id="month-grid" class="month-grid" aria-label="Monthly duty calendar"></div></div>
         </section>
         <section class="summary-section" aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">Shared fairly</p><h2 id="summary-title">Workload overview</h2></div><p id="balance-note" class="muted"></p></div><div class="table-scroll"><table><thead><tr><th scope="col">Participant</th><th scope="col">Hours</th><th scope="col">Holidays / 1</th><th scope="col">Non-holidays / 3</th><th scope="col">Weekend dates</th></tr></thead><tbody id="workloads"></tbody></table></div></section>

@@ -71,6 +71,42 @@ export function audit(state, month) {
   });
 }
 
+// Count each nominal half-day independently: four separate short duties are valid.
+export function coverageStatus(date, assignments) {
+  const duties = assignments.filter(a => a.date === date);
+  const periods = ['day', 'night'].map(kind => [0, 1].map(seat =>
+    duties.filter(a => a.seat === seat && (a.kind === '24' || a.kind === kind)).length));
+  return {
+    missing: periods.some(seats => seats.some(count => count === 0)),
+    overstaffed: periods.some(seats => seats.some(count => count > 1) || seats.reduce((a, b) => a + b, 0) > 2)
+  };
+}
+
+// Return a new assignment list; callers commit it only after every check passes.
+export function movedAssignments(state, month, sourceKey, target) {
+  const config = state.months[month];
+  const source = config?.assignments.find(a => slotKey(a) === sourceKey);
+  if (!source) throw new Error('The original assignment no longer exists.');
+  if (!target || !monthDates(month).includes(target.date) || target.date === source.date)
+    throw new Error('Choose another date in this month.');
+  if (target.kind !== source.kind) throw new Error('Keep the original shift type.');
+  const candidate = { date: target.date, kind: target.kind, seat: target.seat, participantId: source.participantId, fixed: true, override: false };
+  const others = allAssignments(state).filter(a => a !== source);
+  const issues = [...structuralIssues(state, month, candidate, others), ...ruleIssues(state, month, candidate, others)];
+  if (issues.length) throw new Error([...new Set(issues)].join('. '));
+  return [...config.assignments.filter(a => a !== source), candidate];
+}
+
+export function moveTargets(state, month, sourceKey) {
+  const source = state.months[month]?.assignments.find(a => slotKey(a) === sourceKey);
+  if (!source) return [];
+  return monthDates(month).flatMap(date => [0, 1].flatMap(seat => {
+    const target = { date, kind: source.kind, seat };
+    try { movedAssignments(state, month, sourceKey, target); return [target]; }
+    catch { return []; }
+  }));
+}
+
 // Every persisted field is explicitly selected and validated. Names never enter this model.
 export function anonymousState(input) {
   const fail = () => { throw new Error('Backup format is invalid or unsupported. Existing data was kept.'); };
