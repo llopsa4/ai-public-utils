@@ -97,3 +97,18 @@ test('coverage distinguishes legitimate mixed holidays from overlaps, including 
   assert.deepEqual(coverageStatus(date, [mixed[0], mixed[0]]), { missing: true, overstaffed: true });
   assert.deepEqual(coverageStatus(date, []), { missing: true, overstaffed: false });
 });
+
+
+test('Friday moves remove the source allowance and reject other same or adjacent month Fridays', () => {
+  const s = fixture(), source = duty(s, '2026-10-02');
+  s.months[month].assignments = [source];
+  assert.doesNotThrow(() => movedAssignments(s, month, slotKey(source), target('2026-10-16')));
+  for (const date of ['2026-09-04', '2026-10-23', '2026-11-27']) {
+    const otherMonth = date.slice(0, 7);
+    if (!s.months[otherMonth]) s.months[otherMonth] = newMonth();
+    s.months[otherMonth].assignments.push(duty(s, date));
+    assert.throws(() => movedAssignments(s, month, slotKey(source), target('2026-10-16')), /Friday/);
+    assert(!moveTargets(s, month, slotKey(source)).some(a => a.date === '2026-10-16'));
+    s.months[otherMonth].assignments.pop();
+  }
+});

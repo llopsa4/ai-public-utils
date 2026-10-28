@@ -52,6 +52,12 @@ export function ruleIssues(state, month, assignment, others) {
   if (p.blockedDates.includes(assignment.date)) issues.push('Date is blocked');
   const own = others.filter(a => a.participantId === p.id);
   if (own.some(a => a.date === shiftDate(assignment.date, -1) || a.date === shiftDate(assignment.date, 1))) issues.push('Consecutive work dates');
+  // A Friday start reserves that participant's Friday allowance in this and both adjacent months.
+  if (weekday(assignment.date) === 5) {
+    const fridayMonths = [shiftMonth(month, -1), month, shiftMonth(month, 1)];
+    if (own.some(a => weekday(a.date) === 5 && fridayMonths.includes(a.date.slice(0, 7))))
+      issues.push('Only one Friday duty per person across two consecutive months');
+  }
   const isHoliday = holiday(assignment.date, config);
   const count = own.filter(a => a.date.startsWith(month) && holiday(a.date, config) === isHoliday).length;
   const holidayHours = own.filter(a => a.date.startsWith(month) && holiday(a.date, config)).reduce((sum, a) => sum + HOURS[a.kind], 0);

@@ -227,3 +227,36 @@ test('generation replaces stale short duties on a non-holiday without blocking',
   s.months[month].assignments = result.assignments;
   assert.deepEqual(audit(s, month), []);
 });
+
+
+test('Friday allowance covers the same and adjacent calendar months in both directions', () => {
+  const s = fixture(2), message = 'Only one Friday duty per person across two consecutive months';
+  const october = assignment(s, '2026-10-16');
+  for (const date of ['2026-09-04', '2026-10-02', '2026-11-27']) {
+    assert(ruleIssues(s, month, october, [assignment(s, date)]).includes(message), date);
+  }
+  for (const date of ['2026-08-28', '2026-12-04']) {
+    assert(!ruleIssues(s, month, october, [assignment(s, date)]).includes(message), date);
+  }
+  assert(!ruleIssues(s, month, october, [assignment(s, '2026-09-04', '24', 0, 1)]).includes(message));
+  assert(!ruleIssues(s, month, assignment(s, '2026-10-15'), [assignment(s, '2026-09-04')]).includes(message));
+  assert(ruleIssues(s, '2027-01', assignment(s, '2027-01-15'), [assignment(s, '2026-12-04')]).includes(message));
+  assert(ruleIssues(s, '2026-12', assignment(s, '2026-12-04'), [assignment(s, '2027-01-15')]).includes(message));
+  s.months[month].holidays = ['2026-10-16']; s.participants[0].allowedKinds = ['day', 'night'];
+  for (const kind of ['day', 'night']) assert(ruleIssues(s, month, assignment(s, '2026-10-16', kind), [assignment(s, '2026-09-04')]).includes(message));
+  s.months[month].assignments = [assignment(s, '2026-10-02'), october];
+  assert.equal(audit(s, month).filter(i => i.message === message).length, 2, 'Existing Friday conflicts remain visible');
+});
+
+test('generation respects Friday limits within the month and both saved neighbours', () => {
+  const s = fixture(24);
+  s.months['2026-09'] = { ...newMonth(), assignments: [assignment(s, '2026-09-04')] };
+  s.months['2026-11'] = { ...newMonth(), assignments: [assignment(s, '2026-11-27', '24', 0, 1)] };
+  const result = generate(s, month, searchOptions());
+  const fridays = result.assignments.filter(a => new Date(a.date + 'T12:00:00Z').getUTCDay() === 5);
+  assert(fridays.length > 0);
+  assert(!fridays.some(a => [s.participants[0].id, s.participants[1].id].includes(a.participantId)));
+  assert.equal(new Set(fridays.map(a => a.participantId)).size, fridays.length);
+  s.months[month].assignments = result.assignments;
+  assert.deepEqual(audit(s, month), []);
+});
