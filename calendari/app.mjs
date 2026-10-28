@@ -5,9 +5,9 @@ import { coverageStatus, movedAssignments, moveTargets, exclusiveKinds, holidayD
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const names = new Map(); // Never include this map in persistence, backups, worker messages, or URLs.
-const kindLabel = kind => ({ '24': '24 hours', day: 'Day Â· 12 hours', night: 'Night Â· 12 hours' }[kind]);
+const kindLabel = kind => ({ '24': '24 hours', day: 'Day · 12 hours', night: 'Night · 12 hours' }[kind]);
 const shortKind = kind => ({ '24': '24h', day: 'Day', night: 'Night' }[kind]);
-const timeLabel = kind => ({ '24': '09:00â€“09:00 +1', day: '09:00â€“21:00', night: '21:00â€“09:00 +1' }[kind]);
+const timeLabel = kind => ({ '24': '09:00–09:00 +1', day: '09:00–21:00', night: '21:00–09:00 +1' }[kind]);
 const splitChoices = new Set(); // Temporary choices for editing an otherwise empty holiday place.
 const monthTitle = month => new Date(`${month}-01T12:00:00Z`).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
 const dateTitle = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
@@ -47,7 +47,7 @@ function ensureMonth() {
 function renderCity() {
   const city = cityById(state.cityId);
   $('#city-input').value = city?.label ?? '';
-  $('#city-highlight').textContent = city ? `${city.name} Â· Catalonia` : 'No city selected';
+  $('#city-highlight').textContent = city ? `${city.name} · Catalonia` : 'No city selected';
   $('#city-highlight').classList.toggle('selected', Boolean(city));
   $('#clear-city').disabled = !city;
   const available = city && cityYearAvailable(city.id, month.slice(0, 4));
@@ -72,12 +72,12 @@ function personLabel(id) {
   return names.get(id)?.trim() || (p ? `Participant ${p.code}` : 'Unknown participant');
 }
 function save() {
-  if (storageBlocked) { $('#save-status').textContent = 'Not saved Â· export a backup'; return; }
+  if (storageBlocked) { $('#save-status').textContent = 'Not saved · export a backup'; return; }
   try {
     localStorage.setItem(STORAGE_KEY, serialize(state));
     $('#save-status').textContent = 'Anonymous data saved';
   } catch {
-    $('#save-status').textContent = 'Not saved Â· export a backup';
+    $('#save-status').textContent = 'Not saved · export a backup';
     notify('Browser storage is unavailable or full. Export an anonymous backup before closing this page.', true);
   }
 }
@@ -95,7 +95,7 @@ function renderParticipants() {
 function renderEditor() {
   const p = state.participants.find(p => p.id === selectedId);
   if (!p) { participantDraft = null; participantDirty = false; $('#participant-editor').innerHTML = ''; return; }
-  $('#participant-title').textContent = `${participantCode(p)} Â· Participant settings`;
+  $('#participant-title').textContent = `${participantCode(p)} · Participant settings`;
   if (!participantDraft || participantDraft.id !== p.id || participantDraft.month !== month) {
     participantDraft = { id: p.id, month, name: names.get(p.id) || '', allowedKinds: [...p.allowedKinds], blockedWeekdays: [...p.blockedWeekdays],
       blockedDates: p.blockedDates.filter(d => d.startsWith(month)).sort() };
@@ -104,10 +104,10 @@ function renderEditor() {
   const draft = participantDraft;
   const shiftChoice = kind => `<label class="checkbox-label"><input type="checkbox" data-kind="${kind}" ${draft.allowedKinds.includes(kind) ? 'checked' : ''} ${(kind === '24' ? draft.allowedKinds.some(k => k !== '24') : draft.allowedKinds.includes('24')) ? 'disabled' : ''}>${kindLabel(kind)}</label>`;
   $('#participant-editor').innerHTML = `<form class="participant-editor" id="participant-form">
-    <h3>${participantCode(p)} Â· Availability</h3>
-    <label>Name Â· session only<input id="person-name" type="text" maxlength="80" autocomplete="off" spellcheck="false" value="${escape(draft.name)}" placeholder="Participant ${p.code}"></label>
+    <h3>${participantCode(p)} · Availability</h3>
+    <label>Name · session only<input id="person-name" type="text" maxlength="80" autocomplete="off" spellcheck="false" value="${escape(draft.name)}" placeholder="Participant ${p.code}"></label>
     <fieldset><legend>Allowed shift types</legend><div class="shift-families" aria-describedby="shift-choice-hint"><div class="shift-family"><p class="shift-family-title">24-hour duty</p><div class="checkbox-list">${shiftChoice('24')}</div></div><div class="shift-family"><p class="shift-family-title">12-hour duties</p><div class="checkbox-list">${shiftChoice('day')}${shiftChoice('night')}</div></div></div><p class="muted" id="shift-choice-hint">Uncheck the current choice to switch between 24h and 12h. Day and night may both be selected. Monthly holiday allowance: one 24h duty or two 12h duties on separate dates.</p></fieldset>
-    <fieldset><legend>Blocked weekdays Â· every month</legend><div class="checkbox-list weekday-choices">${[1, 2, 3, 4, 5, 6, 0].map(d => `<label class="checkbox-label"><input type="checkbox" data-weekday="${d}" ${draft.blockedWeekdays.includes(d) ? 'checked' : ''}>${WEEKDAYS[d]}</label>`).join('')}</div></fieldset>
+    <fieldset><legend>Blocked weekdays · every month</legend><div class="checkbox-list weekday-choices">${[1, 2, 3, 4, 5, 6, 0].map(d => `<label class="checkbox-label"><input type="checkbox" data-weekday="${d}" ${draft.blockedWeekdays.includes(d) ? 'checked' : ''}>${WEEKDAYS[d]}</label>`).join('')}</div></fieldset>
     ${blockedDatePicker(draft)}
     <p id="participant-edit-status" class="muted" role="status">${participantDirty ? 'Unconfirmed changes. Confirm to apply them.' : 'Changes apply only after confirmation. Names stay in this session.'}</p>
     <div class="participant-edit-actions"><button type="submit" class="primary" id="confirm-participant" ${participantDirty ? '' : 'disabled'}>Confirm participant changes</button><button type="button" id="cancel-participant">Cancel changes</button></div>
@@ -119,7 +119,7 @@ function blockedDatePicker(draft) {
   const dates = monthDates(draft.month), selected = new Set(draft.blockedDates);
   const offset = (weekday(dates[0]) + 6) % 7;
   const first = draft.blockedDates[0] ?? dates[0];
-  return `<fieldset class="blocked-date-picker"><legend>Blocked dates Â· ${escape(monthTitle(draft.month))}</legend><div class="blocked-date-weekdays" aria-hidden="true">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<span>${d}</span>`).join('')}</div><div class="blocked-date-grid" role="group" aria-label="Choose blocked dates for ${escape(monthTitle(draft.month))}">${'<span aria-hidden="true"></span>'.repeat(offset)}${dates.map(date => `<button type="button" class="blocked-date ${selected.has(date) ? 'selected' : ''} ${[0, 6].includes(weekday(date)) ? 'weekend' : ''}" data-block-date="${date}" aria-pressed="${selected.has(date)}" aria-label="${escape(dateTitle(date))}, ${selected.has(date) ? 'blocked' : 'not selected'}" tabindex="${date === first ? 0 : -1}">${Number(date.slice(-2))}</button>`).join('')}</div><p class="muted" id="blocked-date-count">${selected.size} date${selected.size === 1 ? '' : 's'} selected</p><p id="blocked-hint" class="muted">Select dates to block for this month. Select again to unblock. Weekday restrictions above apply separately.</p></fieldset>`;
+  return `<fieldset class="blocked-date-picker"><legend>Blocked dates · ${escape(monthTitle(draft.month))}</legend><div class="blocked-date-weekdays" aria-hidden="true">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<span>${d}</span>`).join('')}</div><div class="blocked-date-grid" role="group" aria-label="Choose blocked dates for ${escape(monthTitle(draft.month))}">${'<span aria-hidden="true"></span>'.repeat(offset)}${dates.map(date => `<button type="button" class="blocked-date ${selected.has(date) ? 'selected' : ''} ${[0, 6].includes(weekday(date)) ? 'weekend' : ''}" data-block-date="${date}" aria-pressed="${selected.has(date)}" aria-label="${escape(dateTitle(date))}, ${selected.has(date) ? 'blocked' : 'not selected'}" tabindex="${date === first ? 0 : -1}">${Number(date.slice(-2))}</button>`).join('')}</div><p class="muted" id="blocked-date-count">${selected.size} date${selected.size === 1 ? '' : 's'} selected</p><p id="blocked-hint" class="muted">Select dates to block for this month. Select again to unblock. Weekday restrictions above apply separately.</p></fieldset>`;
 }
 
 function discardParticipantDraft() {
@@ -132,7 +132,7 @@ function currentToday() { const d = new Date(); return `${d.getFullYear()}-${pad
 function renderCalendar(proposal = null) {
   if (!state.participants.some(p => p.id === calendarParticipantId)) calendarParticipantId = null;
   const individual = Boolean(calendarParticipantId);
-  $('#participant-view').innerHTML = '<option value="">All participants</option>' + state.participants.map(p => `<option value="${p.id}">${escape(personLabel(p.id))} Â· ${participantCode(p)}</option>`).join('');
+  $('#participant-view').innerHTML = '<option value="">All participants</option>' + state.participants.map(p => `<option value="${p.id}">${escape(personLabel(p.id))} · ${participantCode(p)}</option>`).join('');
   $('#participant-view').value = calendarParticipantId ?? '';
   const config = proposal ? { ...state.months[month], assignments: proposal } : state.months[month];
   const view = { ...state, months: { ...state.months, [month]: config } };
@@ -158,12 +158,12 @@ function renderCalendar(proposal = null) {
       if (individual && !target && (!a || a.participantId !== calendarParticipantId)) return '';
       const content = `<span class="slot-kind">${shortKind(s.kind)}</span><span class="slot-name">${a ? escape(personLabel(a.participantId)) : target ? 'Move here' : 'Unfilled'}</span>`;
       const label = `${dateTitle(date)}, ${kindLabel(s.kind)}, place ${s.seat + 1}`;
-      if (a) return `<button type="button" class="slot-line move-entry ${issueKeys.has(key) ? 'conflict' : ''} ${moving?.key === key ? 'move-source' : ''}" data-move="${key}" ${worker || moving ? 'disabled' : ''} aria-haspopup="dialog" aria-controls="assignment-dialog" aria-label="${escape(`Assignment options: ${personLabel(a.participantId)}, ${label}`)}">${content}<span class="move-hint" aria-hidden="true">â†”</span></button>`;
+      if (a) return `<button type="button" class="slot-line move-entry ${issueKeys.has(key) ? 'conflict' : ''} ${moving?.key === key ? 'move-source' : ''}" data-move="${key}" ${worker || moving ? 'disabled' : ''} aria-haspopup="dialog" aria-controls="assignment-dialog" aria-label="${escape(`Assignment options: ${personLabel(a.participantId)}, ${label}`)}">${content}<span class="move-hint" aria-hidden="true">↔</span></button>`;
       if (target) return `<button type="button" class="slot-line pending drop-target" data-drop="${key}" aria-label="${escape(`Move here: ${label}`)}">${content}</button>`;
       return `<span class="slot-line pending">${content}</span>`;
     }).join('');
     const dayCovered = daySlots.filter(s => assigned.some(a => slotKey(a) === slotKey(s))).length;
-    const staleLines = stale.map(a => `<button type="button" class="slot-line move-entry conflict" data-move="${slotKey(a)}" ${worker || moving ? 'disabled' : ''} aria-haspopup="dialog" aria-controls="assignment-dialog" aria-label="${escape(`Assignment options: ${personLabel(a.participantId)}, incompatible ${kindLabel(a.kind)}, ${dateTitle(date)}`)}"><span class="slot-kind">${shortKind(a.kind)}</span><span class="slot-name">${escape(personLabel(a.participantId))}</span><span class="move-hint" aria-hidden="true">â†”</span></button>`).join('');
+    const staleLines = stale.map(a => `<button type="button" class="slot-line move-entry conflict" data-move="${slotKey(a)}" ${worker || moving ? 'disabled' : ''} aria-haspopup="dialog" aria-controls="assignment-dialog" aria-label="${escape(`Assignment options: ${personLabel(a.participantId)}, incompatible ${kindLabel(a.kind)}, ${dateTitle(date)}`)}"><span class="slot-kind">${shortKind(a.kind)}</span><span class="slot-name">${escape(personLabel(a.participantId))}</span><span class="move-hint" aria-hidden="true">↔</span></button>`).join('');
     const { missing: unfilled, overstaffed } = coverageStatus(date, assigned);
     cells.push(`<div class="day-cell ${holidayInfo.weekend ? 'weekend' : ''} ${holiday(date, config) ? 'holiday' : ''} ${holidayInfo.local ? 'local-holiday' : ''} ${holidayInfo.general ? 'public-holiday' : ''} ${individual ? `participant-day ${workday ? 'participant-workday' : ''}` : `${unfilled ? 'unfilled' : overstaffed ? '' : 'covered'} ${overstaffed ? 'overstaffed' : ''}`} ${date === currentToday() ? 'today' : ''}" data-date="${date}"><button type="button" class="date-row date-open" ${worker || moving ? 'disabled' : ''} aria-label="${escape(`Open ${dateTitle(date)}`)}, ${escape(holidayInfo.name || 'non-holiday')}, ${individual ? `${visibleAssigned.length} duties for ${escape(personLabel(calendarParticipantId))}` : `${dayCovered} of ${daySlots.length} seats filled${unfilled ? ', missing coverage' : ''}${overstaffed ? ', overstaffed or overlapping coverage' : ''}`}${stale.length ? ', incompatible assignments need attention' : ''}"><span class="date-number">${Number(date.slice(-2))}</span><span class="date-mode">${individual ? workday ? 'On duty' : 'No duty' : unfilled ? 'Needs cover' : 'Covered'}</span></button>${holidayBadge}${!individual && overstaffed ? '<span class="coverage-warning">Overstaffed / overlapping coverage</span>' : ''}${lines}${stale.length ? `<span class="slot-line conflict">${stale.length} incompatible</span>${staleLines}` : ''}</div>`);
   }
@@ -173,7 +173,7 @@ function renderCalendar(proposal = null) {
   $('#coverage-legend').hidden = individual; $('#participant-view-legend').hidden = !individual;
   const duties = config.assignments.filter(a => a.participantId === calendarParticipantId);
   $('#participant-view-status').hidden = !individual;
-  $('#participant-view-status').textContent = individual ? `${personLabel(calendarParticipantId)} Â· ${new Set(duties.map(a => a.date)).size} workdays in ${monthTitle(month)}. Only this participantâ€™s duties are shown.` : '';
+  $('#participant-view-status').textContent = individual ? `${personLabel(calendarParticipantId)} · ${new Set(duties.map(a => a.date)).size} workdays in ${monthTitle(month)}. Only this participant’s duties are shown.` : '';
   $('#move-controls').hidden = !moving;
   $('#move-status').textContent = moving ? `Moving ${kindLabel(moving.kind)} duty. Choose a highlighted spot. ${targets.length} valid spots. Escape cancels.` : '';
   for (const id of ['previous', 'next', 'today', 'month-input', 'generate', 'apply-city', 'clear-city', 'city-input', 'restore', 'add-participant', 'print', 'participant-view']) {
@@ -184,7 +184,7 @@ function renderCalendar(proposal = null) {
 }
 function renderTotals() {
   const t = totals(state, month), values = Object.values(t), hours = values.map(v => v.hours);
-  $('#balance-note').textContent = values.length ? `${Math.min(...hours)}â€“${Math.max(...hours)} hours per person` : 'No participants yet';
+  $('#balance-note').textContent = values.length ? `${Math.min(...hours)}–${Math.max(...hours)} hours per person` : 'No participants yet';
   $('#workloads').innerHTML = state.participants.map(p => `<tr><td>${escape(personLabel(p.id))} <small class="muted">${participantCode(p)}</small></td><td><strong>${t[p.id].hours}</strong></td><td class="${t[p.id].holidayHours > 24 ? 'over-limit' : ''}">${t[p.id].holidays} / ${holidayDutyLimit(p)}<br><small>${t[p.id].holidayHours} / 24h</small></td><td class="${t[p.id].ordinary > 3 ? 'over-limit' : ''}">${t[p.id].ordinary}</td><td>${t[p.id].weekends}</td></tr>`).join('') || '<tr><td colspan="5">Add participants to see the workload.</td></tr>';
 }
 function renderIssues() {
@@ -199,8 +199,8 @@ function renderIssues() {
   if (eligible < holidaySeats) lines.push(`<li class="warning">${holidayDates} holidays require at least ${holidaySeats} participants with a 24-hour holiday allowance each (one 24-hour duty or two 12-hour duties on separate dates). Current team with shift permissions: ${eligible}. Availability and day/night permissions may require more participants.</li>`);
   if (missing.length) lines.push(`<li>${missing.length} shift seats remain unfilled across ${new Set(missing.map(s => s.date)).size} dates. Open a date to review available people.</li>`);
   for (const date of monthDates(month)) if (coverageStatus(date, assignments).overstaffed)
-    lines.push(`<li class="warning">${escape(date)} Â· Overstaffed / overlapping coverage. Open the date and remove overlapping or incompatible duties.</li>`);
-  if (issues.length) lines.push(...issues.map(i => `<li class="warning">${escape(i.assignment.date)} Â· ${escape(personLabel(i.assignment.participantId))}: ${escape(i.message)}${i.assignment.override ? ' Â· confirmed manual exception' : ''}.</li>`));
+    lines.push(`<li class="warning">${escape(date)} · Overstaffed / overlapping coverage. Open the date and remove overlapping or incompatible duties.</li>`);
+  if (issues.length) lines.push(...issues.map(i => `<li class="warning">${escape(i.assignment.date)} · ${escape(personLabel(i.assignment.participantId))}: ${escape(i.message)}${i.assignment.override ? ' · confirmed manual exception' : ''}.</li>`));
   const hours = Object.values(totals(state, month)).map(t => t.hours);
   if (hours.length && Math.max(...hours) - Math.min(...hours) > 24) lines.push('<li class="warning">Workloads differ by more than 24 hours. Review availability or generate another proposal to improve balance.</li>');
   if (!state.months[shiftMonth(month, -1)] || !state.months[shiftMonth(month, 1)]) lines.push('<li>Rest checks include all saved adjacent months. Unsaved months have no known assignments.</li>');
@@ -217,18 +217,18 @@ function renderDay() {
   const official = info.local || info.general;
   const slots = slotsForDate(openDate, config).flatMap(s => holiday(openDate, config) && s.kind === '24' && splitChoices.has(`${openDate}/${s.seat}`) && !config.assignments.some(a => a.date === openDate && a.seat === s.seat) ? [{ ...s, kind: 'day' }, { ...s, kind: 'night' }] : [s]);
   const issues = audit(state, month);
-  $('#day-content').innerHTML = `<label class="checkbox-label holiday-toggle"><input id="mark-holiday" type="checkbox" ${holiday(openDate, config) ? 'checked' : ''} ${weekend || official ? 'disabled' : ''}>${official ? escape(`${info.label} Â· ${info.name}`) : weekend ? 'Weekend Â· always a holiday' : 'Mark as an additional holiday'}</label><p class="dialog-note">${holiday(openDate, config) ? 'Holiday Â· any combination of 24-hour and separate 12-hour duties is allowed' : 'Non-holiday Â· 24-hour shifts'}. Two people are required at all times. Select a participant, then confirm to apply that assignment. Cancel or close to discard pending selections.</p>` + slots.map(s => {
+  $('#day-content').innerHTML = `<label class="checkbox-label holiday-toggle"><input id="mark-holiday" type="checkbox" ${holiday(openDate, config) ? 'checked' : ''} ${weekend || official ? 'disabled' : ''}>${official ? escape(`${info.label} · ${info.name}`) : weekend ? 'Weekend · always a holiday' : 'Mark as an additional holiday'}</label><p class="dialog-note">${holiday(openDate, config) ? 'Holiday · any combination of 24-hour and separate 12-hour duties is allowed' : 'Non-holiday · 24-hour shifts'}. Two people are required at all times. Select a participant, then confirm to apply that assignment. Cancel or close to discard pending selections.</p>` + slots.map(s => {
     const a = config.assignments.find(a => slotKey(a) === slotKey(s));
     const pending = assignmentDrafts.has(slotKey(s));
     const selected = pending ? assignmentDrafts.get(slotKey(s)) : a?.participantId ?? '';
     const warnings = issues.filter(i => slotKey(i.assignment) === slotKey(s));
-    return `<div class="assignment-editor"><div class="assignment-row"><label>${kindLabel(s.kind)} Â· Seat ${s.seat + 1}<select data-assign="${s.kind}/${s.seat}"><option value="" ${selected ? '' : 'selected'}>Unfilled</option>${state.participants.map(p => {
+    return `<div class="assignment-editor"><div class="assignment-row"><label>${kindLabel(s.kind)} · Seat ${s.seat + 1}<select data-assign="${s.kind}/${s.seat}"><option value="" ${selected ? '' : 'selected'}>Unfilled</option>${state.participants.map(p => {
       const candidate = { ...s, participantId: p.id };
       const structural = structuralIssues(state, month, candidate, otherAssignments(s));
       const rules = ruleIssues(state, month, candidate, otherAssignments(s));
-      return `<option value="${p.id}" ${p.id === selected ? 'selected' : ''} ${structural.length ? 'disabled' : ''}>${escape(personLabel(p.id))} (${participantCode(p)})${structural.length ? ' Â· already on this date' : rules.length ? ` Â· ${rules.length} restriction(s)` : ''}</option>`;
-    }).join('')}</select></label></div><p class="assignment-pending muted" role="status">${pending ? 'Pending selection. Confirm to apply.' : 'Select a participant, then confirm.'}</p><div class="assignment-actions"><button type="button" class="primary" data-confirm-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Confirm assignment</button><button type="button" data-cancel-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Cancel selection</button></div><div class="assignment-meta"><span>${timeLabel(s.kind)}</span></div>${holiday(openDate, config) && s.kind !== 'night' ? `<button class="small" data-${s.kind === '24' ? 'split' : 'merge'}="${s.seat}">${s.kind === '24' ? 'Split into day and night shifts' : 'Use one 24-hour duty'}</button>` : ''}${warnings.length ? `<p class="assignment-warnings">${warnings.map(i => escape(i.message)).join(' Â· ')}${a?.override ? ' Â· confirmed manual exception' : ''}</p>` : ''}</div>`;
-  }).join('') + config.assignments.filter(a => a.date === openDate && !slots.some(s => slotKey(s) === slotKey(a))).map(a => `<div class="assignment-editor stale-assignment"><p>Incompatible ${kindLabel(a.kind)} assignment: ${escape(personLabel(a.participantId))}. The dateâ€™s shift mode has changed.</p><button class="danger" data-stale="${a.kind}/${a.seat}">Remove incompatible assignment</button></div>`).join('');
+      return `<option value="${p.id}" ${p.id === selected ? 'selected' : ''} ${structural.length ? 'disabled' : ''}>${escape(personLabel(p.id))} (${participantCode(p)})${structural.length ? ' · already on this date' : rules.length ? ` · ${rules.length} restriction(s)` : ''}</option>`;
+    }).join('')}</select></label></div><p class="assignment-pending muted" role="status">${pending ? 'Pending selection. Confirm to apply.' : 'Select a participant, then confirm.'}</p><div class="assignment-actions"><button type="button" class="primary" data-confirm-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Confirm assignment</button><button type="button" data-cancel-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Cancel selection</button></div><div class="assignment-meta"><span>${timeLabel(s.kind)}</span></div>${holiday(openDate, config) && s.kind !== 'night' ? `<button class="small" data-${s.kind === '24' ? 'split' : 'merge'}="${s.seat}">${s.kind === '24' ? 'Split into day and night shifts' : 'Use one 24-hour duty'}</button>` : ''}${warnings.length ? `<p class="assignment-warnings">${warnings.map(i => escape(i.message)).join(' · ')}${a?.override ? ' · confirmed manual exception' : ''}</p>` : ''}</div>`;
+  }).join('') + config.assignments.filter(a => a.date === openDate && !slots.some(s => slotKey(s) === slotKey(a))).map(a => `<div class="assignment-editor stale-assignment"><p>Incompatible ${kindLabel(a.kind)} assignment: ${escape(personLabel(a.participantId))}. The date’s shift mode has changed.</p><button class="danger" data-stale="${a.kind}/${a.seat}">Remove incompatible assignment</button></div>`).join('');
 }
 
 $('#add-participant').addEventListener('click', () => {
@@ -361,7 +361,7 @@ function showAssignmentOptions(key) {
   const assignment = state.months[month].assignments.find(a => slotKey(a) === key);
   if (!assignment) return;
   selectedAssignmentKey = key;
-  $('#assignment-context').textContent = `${personLabel(assignment.participantId)} Â· ${dateTitle(assignment.date)} Â· ${kindLabel(assignment.kind)} Â· Place ${assignment.seat + 1}`;
+  $('#assignment-context').textContent = `${personLabel(assignment.participantId)} · ${dateTitle(assignment.date)} · ${kindLabel(assignment.kind)} · Place ${assignment.seat + 1}`;
   $('#assignment-dialog').showModal();
   $('#choose-move').focus({ preventScroll: true });
 }
@@ -455,7 +455,7 @@ function activatePointer() {
   if (!pointer || pointer.scrolling || !beginMove(pointer.key)) return;
   pointer.active = true;
   // Release touch's implicit capture before replacing/targeting individual spots.
-  $('#move-cursor').textContent = `${shortKind(moving.kind)} Â· moving duty`;
+  $('#move-cursor').textContent = `${shortKind(moving.kind)} · moving duty`;
   $('#move-cursor').hidden = false;
   updateDrag();
 }
@@ -569,7 +569,7 @@ function busy(on) {
     if (el.id !== 'cancel' && el.id !== 'restart') el.disabled = on;
   }
   $('#cancel').hidden = !on;
-  $('#generate').textContent = on ? 'Searchingâ€¦' : 'Generate month';
+  $('#generate').textContent = on ? 'Searching…' : 'Generate month';
 }
 function finishSearch(stopped = false) {
   worker?.terminate(); worker = null;
@@ -588,12 +588,12 @@ $('#generate').addEventListener('click', () => {
       if (data.type === 'error') { worker.terminate(); worker = null; busy(false); notify(data.message, true); $('#search-status').hidden = true; return; }
       latestProposal = data;
       const coveredHours = data.assignments.reduce((sum, a) => sum + HOURS[a.kind], 0);
-      $('#search-status').textContent = `Searching for up to 10 secondsâ€¦ Best coverage: ${coveredHours}/${monthDates(month).length * 48} hours. Yellow dates need coverage. You can stop and keep this proposal.`;
+      $('#search-status').textContent = `Searching for up to 10 seconds… Best coverage: ${coveredHours}/${monthDates(month).length * 48} hours. Yellow dates need coverage. You can stop and keep this proposal.`;
       renderCalendar(data.assignments);
       if (data.type === 'done') finishSearch();
     };
     worker.onerror = () => { worker?.terminate(); worker = null; busy(false); $('#search-status').hidden = true; notify('Search could not run. Serve this folder over HTTP and try again. Existing assignments were kept.', true); };
-    busy(true); $('#search-status').hidden = false; $('#search-status').textContent = 'Starting anonymous scheduling searchâ€¦';
+    busy(true); $('#search-status').hidden = false; $('#search-status').textContent = 'Starting anonymous scheduling search…';
     worker.postMessage({ state: anonymousState(state), month, timeMs: 10000 });
   } catch {
     worker?.terminate(); worker = null; busy(false);
@@ -686,7 +686,7 @@ $('#print').addEventListener('click', () => window.print());
 window.addEventListener('beforeprint', buildPrintReport);
 window.addEventListener('afterprint', () => { $('#print-report').replaceChildren(); $('#print-report').setAttribute('aria-hidden', 'true'); });
 ensureMonth(); selectedId = state.participants[0]?.id ?? null; render();
-if (storageBlocked) $('#save-status').textContent = 'Not saved Â· storage read failed';
+if (storageBlocked) $('#save-status').textContent = 'Not saved · storage read failed';
 else $('#save-status').textContent = 'Anonymous data only';
 if (migratedShiftPermissions) save();
 if (window.matchMedia('(max-width: 800px)').matches) $('#participant-panel').open = false;

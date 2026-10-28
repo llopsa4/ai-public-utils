@@ -71,7 +71,7 @@ Deleting a participant, after confirmation, deletes their assignments from every
 Run core tests with Node.js 20 or later:
 
 ```powershell
-node --test tests/core.test.mjs tests/flexible.test.mjs tests/holidays.test.mjs tests/moves.test.mjs
+node --test tests/core.test.mjs tests/flexible.test.mjs tests/holidays.test.mjs tests/moves.test.mjs tests/encoding.test.mjs
 ```
 
 Optional browser tests require Playwright, a headless Edge installation (or set `BROWSER_CHANNEL`), and `pdf-lib` for PDF page checks. They use synthetic names only, run their own local server under a nested URL, and place screenshots/PDFs in the operating system's temporary folder:

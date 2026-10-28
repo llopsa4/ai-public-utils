@@ -42,6 +42,7 @@ This is a personal, static scheduling application. Keep implementation readable 
 ## Delivery and verification
 
 - Use relative URLs, native JavaScript modules, and no build step or backend.
+- Read and write all text files explicitly as UTF-8. Do not rely on platform-default encodings or round-trip existing Unicode through a shell code page; verify UI text after edits.
 - Keep entry-script and stylesheet URLs in `index.html` versioned with each asset's first 12 lowercase SHA-256 characters (`?v=...`). Refresh the relevant hash whenever that asset changes, so browser caches cannot mix new markup with an old script or theme.
 - Do not publish, push, or configure GitHub Pages without a separate request.
 - QR codes, Google Calendar integration, and calendar import links are deferred.
