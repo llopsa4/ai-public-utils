@@ -16,6 +16,13 @@ This is a personal, static scheduling application. Keep implementation readable 
 - Participant selections in the date editor, including selecting Unfilled, remain pending until Confirm assignment is pressed for that spot. Cancel selection or closing the popup discards unconfirmed selections. Validate again on confirmation and keep the explicit manual-exception prompt for rule violations. Structural conflicts cannot be overridden. Drag-and-drop moves keep their existing behavior.
 - A selected city is stored only as a recognized official municipal code. Never persist the free-text city input. City display names come from the bundled public dataset, not participant input.
 
+## Guided setup
+
+- On opening, successful import, and restart, require a recognised city and at least one participant through a centred native modal. Skip completed steps; returning users with both go straight to the planner even when names are absent. Do not persist a setup-completion flag.
+- Setup follows city confirmation, then a participant count from 1 to 100. New participants use existing anonymous 24-hour defaults and unrestricted availability. After the count is confirmed, ask whether to fill participant information or generate the calendar. Create the team once on either choice. Filling information visits each participant in the existing editor, permits confirming unchanged defaults or skipping, then returns to an explicit Generate calendar action. Escape/close discards the current draft and returns to the choice with confirmed edits kept; resume at that participant. Generation starts only from the explicit choice, using confirmed settings. Back changes the city without creating people. After search, show how to review gaps and edit availability.
+- Preserve existing teams and assignments when only city selection is missing; never generate automatically for an existing team. Clearing city or deleting the last participant during normal use does not reopen setup until a later visit. Do not close mandatory setup through Escape or backdrop clicks; keep keyboard focus inside it.
+- Keep Import backup accessible inside setup. Unreadable storage requires explicit recovery through Import or Restart and must never be overwritten. Failed writes permit session-only setup with a visible warning. Show validation, import errors, and unavailable-year notices within the popup; avoid stacked dialogs.
+
 ## Scheduling requirements
 
 - Cover two simultaneous people throughout each day: 48 nominal hours per date.

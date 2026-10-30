@@ -8,8 +8,8 @@
   <title>Duty calendar</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./styles.css?v=cfb889cd1fd0">
-  <link rel="stylesheet" href="./theme.css?v=c523b9057aaf" media="screen">
-  <script type="module" src="./app.mjs?v=137e82f8fbbf"></script>
+  <link rel="stylesheet" href="./theme.css?v=f54ff938a1da" media="screen">
+  <script type="module" src="./app.mjs?v=d96a44fe3405"></script>
 </head>
 <body>
   <a class="skip-link" href="#calendar">Skip to calendar</a>
@@ -51,7 +51,23 @@
       </main>
     </div>
   </div>
-  <dialog id="participant-dialog" aria-labelledby="participant-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Participant configuration</p><h2 id="participant-title">Participant settings</h2></div><button type="submit" aria-label="Close participant settings">✕</button></form><div id="participant-editor"></div></dialog>
+  <dialog id="setup-dialog" aria-labelledby="setup-title" aria-describedby="setup-description">
+    <p class="eyebrow" id="setup-progress">Step 1 of 2</p>
+    <h2 id="setup-title">Choose your city</h2>
+    <p id="setup-description">Start with your city so local and public holidays are included.</p>
+    <p id="setup-error" class="setup-error" role="alert" hidden></p>
+    <p id="setup-data-warning" class="setup-error" role="status" hidden></p>
+    <div id="setup-recovery" hidden><p>Saved data could not be read. Import a valid backup or restart the planner to continue. Your saved data has not been overwritten.</p></div>
+    <form id="setup-form" novalidate>
+      <div id="setup-city-step"><label for="setup-city">City<input id="setup-city" type="text" list="city-options" autocomplete="off" spellcheck="false" maxlength="120" placeholder="Search a Catalan city" aria-describedby="setup-city-help"></label><p id="setup-city-help" class="muted">Choose a recognised city from the list. Search stays on this device.</p></div>
+      <div id="setup-team-step" hidden><label for="setup-count">How many participants?<input id="setup-count" type="number" min="1" max="100" step="1" value="1" inputmode="numeric" aria-describedby="setup-team-help"></label><p id="setup-team-help" class="muted">Add 1 to 100 people. Everyone starts with 24-hour duties and no blocked dates. Next, choose whether to fill in their information or generate with these defaults.</p><p id="setup-month" class="setup-month"></p></div>
+      <div id="setup-choice-step" hidden><p id="setup-choice-description"></p><button id="setup-edit-people" type="button">Fill participant information</button><button id="setup-generate" type="button" class="primary">Generate calendar</button></div>
+      <div class="setup-actions"><button id="setup-back" type="button" hidden>Back</button><button id="setup-next" type="submit" class="primary">Confirm city</button></div>
+    </form>
+    <div class="setup-tools"><button id="setup-import" type="button">Import backup</button><button id="setup-restart" type="button" class="danger" hidden>Restart planner</button></div>
+    <p class="setup-privacy muted">Names are optional and stay in this session. Only anonymous planning data is saved.</p>
+  </dialog>
+  <dialog id="participant-dialog" aria-labelledby="participant-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Participant configuration</p><h2 id="participant-title">Participant settings</h2></div><button type="submit" aria-label="Close participant settings">✕</button></form><p id="participant-setup-progress" class="muted" role="status" hidden></p><div id="participant-editor"></div></dialog>
   <dialog id="assignment-dialog" aria-labelledby="assignment-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Assigned duty</p><h2 id="assignment-title">Assignment options</h2></div><button type="submit" aria-label="Close assignment options">✕</button></form><p id="assignment-context"></p><p class="muted assignment-options-hint">Move this duty to another date, or cancel the assignment to leave the spot unfilled.</p><div class="assignment-options-actions"><button type="button" class="primary" id="choose-move">Move assignment</button><button type="button" class="danger" id="cancel-assignment">Cancel assignment</button></div></dialog>
   <dialog id="day-dialog" aria-labelledby="day-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Daily assignments</p><h2 id="day-title"></h2></div><button aria-label="Close date editor">✕</button></form><div id="day-content"></div></dialog>
   <div id="print-report" aria-hidden="true"></div>

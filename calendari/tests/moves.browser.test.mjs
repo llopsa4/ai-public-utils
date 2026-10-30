@@ -24,7 +24,7 @@ await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
 const origin = `http://127.0.0.1:${server.address().port}`;
 const browser = await chromium.launch({ headless: true, channel: process.env.BROWSER_CHANNEL || 'msedge' });
 function fixture(kind = '24', date = '2026-10-05') {
-  const state = emptyState(); state.months['2026-10'] = newMonth();
+  const state = emptyState(); state.cityId = '17079000'; state.months['2026-10'] = { ...newMonth(), cityId: state.cityId };
   for (let i = 0; i < 5; i++) state.participants.push({ id: randomUUID(), code: state.nextCode++, allowedKinds: ['24'], blockedWeekdays: [], blockedDates: [] });
   state.participants[0].allowedKinds = [kind];
   state.months['2026-10'].assignments.push({ date, kind, seat: 0, participantId: state.participants[0].id, fixed: false, override: false });
@@ -375,9 +375,10 @@ try {
   assert.equal(await stored(page), null);
   assert.equal(await page.locator('[data-person]').count(), 0);
   // Codes restart at P001 and an active search can be terminated by restarting.
-  await page.locator('#add-participant').click();
+  await page.locator('#setup-city').fill('Girona'); await page.locator('#setup-next').click();
+  await page.locator('#setup-next').click();
+  await page.locator('#setup-generate').click();
   assert.equal(JSON.parse(await stored(page)).participants[0].code, 1);
-  await page.locator('#generate').click();
   await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Best coverage:'));
   assert(await page.locator('#restart').isEnabled());
   page.once('dialog', d => d.accept()); await page.locator('#restart').click();
@@ -389,9 +390,11 @@ try {
   // Explicit restart also recovers from previously unreadable saved data.
   await page.evaluate(key => localStorage.setItem(key, '{broken'), STORAGE_KEY);
   await page.reload();
-  page.once('dialog', d => d.accept()); await page.locator('#restart').click();
+  page.once('dialog', d => d.accept()); await page.locator('#setup-restart').click();
   assert.equal(await stored(page), null);
-  await page.locator('#add-participant').click();
+  await page.locator('#setup-city').fill('Girona'); await page.locator('#setup-next').click();
+  await page.locator('#setup-next').click();
+  await page.locator('#setup-generate').click();
   assert.equal(JSON.parse(await stored(page)).participants[0].code, 1);
   assert(requests.every(url => url.startsWith(origin) || url.startsWith('blob:')));
   assert.deepEqual(errors, []);

@@ -18,12 +18,15 @@ let moving = null, pointer = null, suppressClickUntil = 0;
 let selectedAssignmentKey = null;
 let calendarParticipantId = null; // View-only; never persist this filter or session names.
 let participantDraft = null, participantDirty = false;
+let setupStep = null, setupSubmitting = false, setupReviewPending = false, saveFailed = false;
+let setupCount = 0, setupCreatedIds = [], setupPeople = [], setupPersonIndex = 0;
 const assignmentDrafts = new Map(); // Anonymous pending selections for the open date only.
 
 function notify(message, error = false) {
   $('#message').textContent = message;
   $('#message').classList.toggle('error', error);
   $('#message').hidden = false;
+  if ($('#setup-dialog').open) { $('#setup-error').textContent = message; $('#setup-error').hidden = false; }
 }
 try {
   const saved = localStorage.getItem(STORAGE_KEY);
@@ -75,8 +78,10 @@ function save() {
   if (storageBlocked) { $('#save-status').textContent = 'Not saved · export a backup'; return; }
   try {
     localStorage.setItem(STORAGE_KEY, serialize(state));
+    saveFailed = false;
     $('#save-status').textContent = 'Anonymous data saved';
   } catch {
+    saveFailed = true;
     $('#save-status').textContent = 'Not saved · export a backup';
     notify('Browser storage is unavailable or full. Export an anonymous backup before closing this page.', true);
   }
@@ -101,6 +106,9 @@ function renderEditor() {
       blockedDates: p.blockedDates.filter(d => d.startsWith(month)).sort() };
     participantDirty = false;
   }
+  const guided = setupPeople.length > 0;
+  $('#participant-setup-progress').hidden = !guided;
+  $('#participant-setup-progress').textContent = guided ? `Participant ${setupPersonIndex + 1} of ${setupPeople.length}. Confirm to continue, or skip this person for now.` : '';
   const draft = participantDraft;
   const shiftChoice = kind => `<label class="checkbox-label"><input type="checkbox" data-kind="${kind}" ${draft.allowedKinds.includes(kind) ? 'checked' : ''} ${(kind === '24' ? draft.allowedKinds.some(k => k !== '24') : draft.allowedKinds.includes('24')) ? 'disabled' : ''}>${kindLabel(kind)}</label>`;
   $('#participant-editor').innerHTML = `<form class="participant-editor" id="participant-form">
@@ -110,8 +118,8 @@ function renderEditor() {
     <fieldset><legend>Blocked weekdays · every month</legend><div class="checkbox-list weekday-choices">${[1, 2, 3, 4, 5, 6, 0].map(d => `<label class="checkbox-label"><input type="checkbox" data-weekday="${d}" ${draft.blockedWeekdays.includes(d) ? 'checked' : ''}>${WEEKDAYS[d]}</label>`).join('')}</div></fieldset>
     ${blockedDatePicker(draft)}
     <p id="participant-edit-status" class="muted" role="status">${participantDirty ? 'Unconfirmed changes. Confirm to apply them.' : 'Changes apply only after confirmation. Names stay in this session.'}</p>
-    <div class="participant-edit-actions"><button type="submit" class="primary" id="confirm-participant" ${participantDirty ? '' : 'disabled'}>Confirm participant changes</button><button type="button" id="cancel-participant">Cancel changes</button></div>
-    <button type="button" class="danger remove-person" id="remove-person">Delete participant</button>
+    <div class="participant-edit-actions"><button type="submit" class="primary" id="confirm-participant" ${participantDirty || guided ? '' : 'disabled'}>${guided ? 'Confirm and continue' : 'Confirm participant changes'}</button><button type="button" id="cancel-participant">${guided ? 'Skip for now' : 'Cancel changes'}</button></div>
+    <button type="button" class="danger remove-person" id="remove-person" ${guided ? 'hidden' : ''}>Delete participant</button>
   </form>`;
 }
 
@@ -231,15 +239,18 @@ function renderDay() {
   }).join('') + config.assignments.filter(a => a.date === openDate && !slots.some(s => slotKey(s) === slotKey(a))).map(a => `<div class="assignment-editor stale-assignment"><p>Incompatible ${kindLabel(a.kind)} assignment: ${escape(personLabel(a.participantId))}. The date’s shift mode has changed.</p><button class="danger" data-stale="${a.kind}/${a.seat}">Remove incompatible assignment</button></div>`).join('');
 }
 
-$('#add-participant').addEventListener('click', () => {
-  const count = Number($('#add-count').value);
-  if (!Number.isInteger(count) || count < 1 || count > 100 || state.participants.length + count > 500) return notify('Add between 1 and 100 people at once, up to 500 total.', true);
-  if (!discardParticipantDraft()) return;
+function addParticipants(count) {
   for (let i = 0; i < count; i++) {
     const p = { id: crypto.randomUUID(), code: state.nextCode++, allowedKinds: ['24'], blockedWeekdays: [], blockedDates: [] };
     state.participants.push(p); selectedId = p.id;
   }
   changed();
+}
+$('#add-participant').addEventListener('click', () => {
+  const count = Number($('#add-count').value);
+  if (!Number.isInteger(count) || count < 1 || count > 100 || state.participants.length + count > 500) return notify('Add between 1 and 100 people at once, up to 500 total.', true);
+  if (!discardParticipantDraft()) return;
+  addParticipants(count);
 });
 $('#participants').addEventListener('click', event => {
   const button = event.target.closest('[data-person]');
@@ -250,7 +261,16 @@ $('#participants').addEventListener('click', event => {
   $('#person-name').focus({ preventScroll: true });
 });
 $('#participant-dialog').addEventListener('close', () => {
-  participantDraft = null; participantDirty = false; renderEditor();
+  if ($('#participant-dialog').open) return;
+  participantDraft = null; participantDirty = false;
+  if (setupPeople.length) {
+    const finished = setupPersonIndex >= setupPeople.length;
+    if (finished) { setupPeople = []; setupPersonIndex = 0; }
+    renderEditor(); renderSetup(finished ? 'ready' : 'choice');
+    $('#setup-dialog').showModal(); $('#setup-generate').focus(); return;
+  }
+  renderEditor();
+  if ($('#setup-dialog').open) return;
   const selected = [...$('#participants').querySelectorAll('[data-person]')].find(button => button.dataset.person === selectedId);
   (selected ?? $('#add-participant')).focus({ preventScroll: true });
 });
@@ -279,7 +299,7 @@ $('#participant-editor').addEventListener('change', updateParticipantDraft);
 $('#participant-editor').addEventListener('submit', event => {
   event.preventDefault();
   const p = state.participants.find(p => p.id === selectedId);
-  if (!p || !participantDraft || !participantDirty || worker) return;
+  if (!p || !participantDraft || (!participantDirty && !setupPeople.length) || worker) return;
   if (participantDraft.blockedDates.some(date => !monthDates(month).includes(date))) {
     $('#participant-edit-status').textContent = 'Choose dates within the displayed month. No participant changes were applied.';
     $('.blocked-date-grid button').focus(); return;
@@ -290,6 +310,7 @@ $('#participant-editor').addEventListener('submit', event => {
   p.blockedDates = [...p.blockedDates.filter(d => !d.startsWith(month)), ...new Set(participantDraft.blockedDates)].sort();
   participantDraft = null; participantDirty = false;
   changed();
+  if (setupPeople.length) { advanceSetupPerson(); return; }
   $('#participant-dialog').close();
   notify('Participant changes confirmed. Names stay in this session.');
 });
@@ -309,8 +330,9 @@ $('#participant-editor').addEventListener('click', event => {
     updateParticipantDraft(event); return;
   }
   if (event.target.id === 'cancel-participant') {
-    participantDraft = null; participantDirty = false; renderEditor();
-    $('#participant-dialog').close(); return;
+    participantDraft = null; participantDirty = false;
+    if (setupPeople.length) { advanceSetupPerson(); return; }
+    renderEditor(); $('#participant-dialog').close(); return;
   }
   if (event.target.id !== 'remove-person') return;
   if (!confirm('Delete this participant and all their assignments in every saved month? This cannot be undone. Export an anonymous backup first if needed.')) return;
@@ -576,8 +598,12 @@ function finishSearch(stopped = false) {
   if (latestProposal) state.months[month].assignments = latestProposal.assignments;
   busy(false); changed();
   $('#search-status').textContent = `${stopped ? 'Search stopped.' : 'Search finished.'} ${latestProposal?.complete ? 'All seats covered.' : 'Best proposal kept; unfilled seats remain.'} Review workload and restrictions. A time-limited search does not prove that a better proposal is impossible.`;
+  if (setupReviewPending) {
+    setupReviewPending = false;
+    notify('Next: review the highlighted dates. Select a participant to edit their name, shift preferences, or availability. Generate month again after making changes.');
+  }
 }
-$('#generate').addEventListener('click', () => {
+function startSearch() {
   if (moving || worker) return;
   if (participantDirty) { notify('Confirm or cancel participant changes before generating.', true); $('#confirm-participant').focus(); return; }
   if (!state.participants.length) return notify('Add participants before generating a month.', true);
@@ -599,7 +625,8 @@ $('#generate').addEventListener('click', () => {
     worker?.terminate(); worker = null; busy(false);
     notify('Your browser could not start the scheduling worker. Serve this folder over HTTP and use a current browser.', true);
   }
-});
+}
+$('#generate').addEventListener('click', startSearch);
 $('#cancel').addEventListener('click', () => finishSearch(true));
 $('#restart').addEventListener('click', () => {
   if (!confirm('Restart the planner? This deletes all participants, assignments, restrictions, added holidays, and the selected city for every saved month in this browser. Export a backup first if you want to keep them. This cannot be undone.')) return;
@@ -610,7 +637,8 @@ $('#restart').addEventListener('click', () => {
   state = emptyState(); calendarParticipantId = null; month = todayMonth(); selectedId = null; openDate = null;
   names.clear(); splitChoices.clear(); assignmentDrafts.clear();
   participantDraft = null; participantDirty = false; selectedAssignmentKey = null;
-  storageBlocked = false; migratedShiftPermissions = false;
+  storageBlocked = false; saveFailed = false; migratedShiftPermissions = false;
+  setupPeople = []; setupCreatedIds = []; setupPersonIndex = 0; setupCount = 0;
   for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close();
   $('#assignment-context').textContent = '';
   $('#participant-title').textContent = 'Participant settings';
@@ -626,6 +654,7 @@ $('#restart').addEventListener('click', () => {
   notify('Planner restarted. All saved planning data has been cleared.');
   window.scrollTo(0, 0);
   ($('#participant-panel').open ? $('#add-count') : $('#participant-panel summary')).focus({ preventScroll: true });
+  setupReviewPending = false; checkSetup();
 });
 $('#backup').addEventListener('click', () => {
   const blob = new Blob([serialize(state)], { type: 'application/json' });
@@ -643,10 +672,130 @@ $('#import-file').addEventListener('change', async event => {
     const restored = parseBackup(await file.text());
     if (!confirm('Replace all saved participants, restrictions, and months with this anonymous backup? Current session names will also be cleared.')) return;
     state = restored; calendarParticipantId = null; names.clear(); splitChoices.clear(); participantDraft = null; participantDirty = false; selectedId = state.participants[0]?.id ?? null;
-    storageBlocked = false; changed();
+    storageBlocked = false; setupPeople = []; setupCreatedIds = []; setupPersonIndex = 0; setupCount = 0;
+    for (const dialog of document.querySelectorAll('dialog[open]')) if (dialog.id !== 'setup-dialog') dialog.close();
+    assignmentDrafts.clear(); selectedAssignmentKey = null;
+    changed(); checkSetup();
     notify('Anonymous backup restored. Re-enter participant names for this session. Any mixed shift permissions default to 24 hours; existing assignments are kept.');
   } catch (error) { notify(error.message, true); }
   finally { event.target.value = ''; }
+});
+
+function renderSetup(step) {
+  setupStep = step;
+  const team = step === 'team', choice = step === 'choice' || step === 'ready';
+  $('#setup-progress').textContent = storageBlocked ? 'Recover your planner' : choice ? 'Choose your next step' : state.participants.length ? 'Finish setup - your team is already saved' : `Step ${team ? 2 : 1} of 2`;
+  $('#setup-title').textContent = storageBlocked ? 'Your saved planner needs attention' : step === 'ready' ? 'Your participants are ready' : choice ? 'What would you like to do?' : team ? 'Add your participants' : 'Choose your city';
+  $('#setup-description').textContent = storageBlocked ? 'Recover access without overwriting unreadable saved data.' : choice ? 'Fill participant information first, or generate the calendar now.' : team ? 'Enter your team size. Next, choose how to continue.' : state.participants.length ? 'Choose a city to finish setup. Your existing participants and assignments will be kept.' : 'Start with your city so local and public holidays are included.';
+  $('#setup-form').hidden = storageBlocked;
+  $('#setup-recovery').hidden = !storageBlocked;
+  $('#setup-restart').hidden = !storageBlocked;
+  $('#setup-city-step').hidden = team || choice;
+  $('#setup-team-step').hidden = !team;
+  $('#setup-choice-step').hidden = !choice;
+  $('#setup-choice-description').textContent = `${setupCreatedIds.length || setupCount} participants. ${step === 'ready' ? 'Confirmed settings will be used for generation.' : 'You can enter names, shift preferences, and availability one participant at a time. Names are optional.'}`;
+  $('#setup-edit-people').textContent = setupPeople.length ? 'Continue participant information' : step === 'ready' ? 'Review participant information' : 'Fill participant information';
+  $('#setup-back').hidden = !team && !(choice && !setupCreatedIds.length);
+  $('#setup-next').hidden = choice;
+  $('#setup-next').textContent = team ? 'Continue' : state.participants.length ? 'Confirm city and open planner' : 'Confirm city';
+  $('#setup-month').textContent = `Planning ${monthTitle(month)}. You can review information before generating.`;
+  $('#setup-error').textContent = saveFailed ? 'Saving is unavailable. You can continue in this session; export a backup before leaving.' : '';
+  $('#setup-error').hidden = !saveFailed;
+  const city = cityById(state.cityId);
+  $('#setup-data-warning').hidden = !city || cityYearAvailable(city.id, month.slice(0, 4));
+  $('#setup-data-warning').textContent = `Official holiday dates for ${month.slice(0, 4)} are unavailable. You can continue and mark holidays manually in the planner.`;
+  $('#setup-city').removeAttribute('aria-invalid'); $('#setup-count').removeAttribute('aria-invalid');
+  if (!team && !choice) $('#setup-city').value = cityById(state.cityId)?.label ?? '';
+}
+function closeSetup() {
+  setupStep = null; $('#setup-dialog').close();
+  $('#generate').focus({ preventScroll: true });
+}
+function checkSetup() {
+  setupPeople = []; setupCreatedIds = []; setupPersonIndex = 0; setupCount = 0;
+  if (!storageBlocked && cityById(state.cityId) && state.participants.length) {
+    if ($('#setup-dialog').open) closeSetup();
+    return;
+  }
+  for (const dialog of document.querySelectorAll('dialog[open]')) if (dialog.id !== 'setup-dialog') dialog.close();
+  participantDraft = null; participantDirty = false;
+  $('#setup-count').value = '1';
+  renderSetup(!storageBlocked && cityById(state.cityId) ? 'team' : 'city');
+  if (!$('#setup-dialog').open) $('#setup-dialog').showModal();
+  (storageBlocked ? $('#setup-import') : $(setupStep === 'team' ? '#setup-count' : '#setup-city')).focus();
+}
+$('#setup-dialog').addEventListener('cancel', event => event.preventDefault());
+document.addEventListener('keydown', event => {
+  if (!$('#setup-dialog').open || event.key !== 'Tab') return;
+  const controls = [...$('#setup-dialog').querySelectorAll('button, input, select, a[href]')].filter(el => !el.disabled && el.getClientRects().length);
+  const first = controls[0], last = controls.at(-1), active = document.activeElement;
+  if (!controls.includes(active) || (event.shiftKey && active === first) || (!event.shiftKey && active === last)) {
+    event.preventDefault(); (event.shiftKey ? last : first)?.focus();
+  }
+});
+$('#setup-back').addEventListener('click', () => {
+  const fromChoice = setupStep === 'choice';
+  renderSetup(fromChoice ? 'team' : 'city'); $(fromChoice ? '#setup-count' : '#setup-city').focus();
+});
+$('#setup-import').addEventListener('click', () => $('#import-file').click());
+$('#setup-restart').addEventListener('click', () => $('#restart').click());
+function createSetupTeam() {
+  if (setupCreatedIds.length) return;
+  const before = state.participants.length;
+  addParticipants(setupCount);
+  setupCreatedIds = state.participants.slice(before).map(p => p.id);
+}
+function openSetupPerson() {
+  selectedId = setupPeople[setupPersonIndex]; participantDraft = null; participantDirty = false;
+  renderParticipants(); renderEditor();
+  if (!$('#participant-dialog').open) $('#participant-dialog').showModal();
+  $('#person-name').focus({ preventScroll: true });
+}
+function advanceSetupPerson() {
+  setupPersonIndex++; participantDraft = null; participantDirty = false;
+  if (setupPersonIndex < setupPeople.length) openSetupPerson();
+  else $('#participant-dialog').close();
+}
+$('#setup-edit-people').addEventListener('click', () => {
+  if (!['choice', 'ready'].includes(setupStep) || setupSubmitting) return;
+  setupSubmitting = true;
+  try {
+    createSetupTeam();
+    if (!setupPeople.length) { setupPeople = [...setupCreatedIds]; setupPersonIndex = 0; }
+    closeSetup(); openSetupPerson();
+  } finally { setupSubmitting = false; }
+});
+$('#setup-generate').addEventListener('click', () => {
+  if (!['choice', 'ready'].includes(setupStep) || setupSubmitting) return;
+  setupSubmitting = true;
+  try {
+    createSetupTeam(); setupPeople = []; setupPersonIndex = 0;
+    closeSetup(); setupReviewPending = true; startSearch();
+    $('#cancel').focus({ preventScroll: true });
+  } finally { setupSubmitting = false; }
+});
+$('#setup-form').addEventListener('submit', event => {
+  event.preventDefault();
+  if (setupSubmitting || storageBlocked || !setupStep) return;
+  if (setupStep === 'city') {
+    const city = findCity($('#setup-city').value);
+    if (!city) {
+      $('#setup-city').setAttribute('aria-invalid', 'true');
+      notify('Choose a recognised city from the list before continuing.', true); $('#setup-city').focus(); return;
+    }
+    setCity(city);
+    if (state.participants.length) { closeSetup(); return; }
+    renderSetup('team'); $('#setup-count').focus(); return;
+  }
+  if (!cityById(state.cityId)) { renderSetup('city'); $('#setup-city').focus(); return; }
+  if (setupStep === 'choice' || setupStep === 'ready') return;
+  const count = Number($('#setup-count').value);
+  if (!Number.isInteger(count) || count < 1 || count > 100 || state.participants.length + count > 500) {
+    $('#setup-count').setAttribute('aria-invalid', 'true');
+    notify('Enter a whole number from 1 to 100 participants, up to 500 total.', true); $('#setup-count').focus(); return;
+  }
+  setupCount = count;
+  renderSetup('choice'); $('#setup-edit-people').focus();
 });
 
 function printCalendar(participantId = null) {
@@ -690,3 +839,5 @@ if (storageBlocked) $('#save-status').textContent = 'Not saved · storage read f
 else $('#save-status').textContent = 'Anonymous data only';
 if (migratedShiftPermissions) save();
 if (window.matchMedia('(max-width: 800px)').matches) $('#participant-panel').open = false;
+
+checkSetup();

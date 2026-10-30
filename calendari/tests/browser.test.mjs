@@ -44,10 +44,17 @@ try {
   assert.equal(await page.locator('.day-cell.weekend .holiday-tag').filter({ hasText: /^Weekend$/ }).count(), 0);
   assert.equal(await page.locator('.day-cell.weekend').count(), 9);
   assert.equal(await page.locator('#holiday-mode').count(), 0, 'Holiday coverage must not require a filter');
+  await page.locator('#setup-city').fill('Girona');
+  await page.locator('#setup-next').click();
+  await page.locator('#setup-count').fill('20');
+  await page.locator('#setup-next').click();
+  await page.locator('#setup-generate').click();
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Best coverage:'));
+  await page.locator('#cancel').click();
+  // The remainder exercises manual planning without official city dates.
+  await page.locator('#clear-city').click();
   await page.locator('#month-input').fill('2026-10');
   await page.locator('#month-input').dispatchEvent('change');
-  await page.locator('#add-count').fill('20');
-  await page.locator('#add-participant').click();
   assert.equal(await page.locator('[data-person]').count(), 20);
   await page.locator('[data-person]').first().click();
   assert.equal(await page.locator('#participant-dialog').isVisible(), true);
@@ -250,6 +257,8 @@ try {
   assert.equal(await page.locator('#generate').isEnabled(), true);
 
   await page.reload();
+  await page.locator('#setup-city').fill('Girona'); await page.locator('#setup-next').click();
+  await page.locator('#clear-city').click();
   await page.locator('#month-input').fill('2026-10');
   await page.locator('#month-input').dispatchEvent('change');
   assert.equal(await page.locator('#person-name').inputValue(), '');
@@ -258,6 +267,7 @@ try {
   const mobile = await context.newPage({ viewport: { width: 390, height: 844 } });
   await mobile.setViewportSize({ width: 390, height: 844 });
   await mobile.goto(origin + prefix);
+  await mobile.locator('#setup-city').fill('Girona'); await mobile.locator('#setup-next').click();
   await mobile.locator('#participant-panel summary').click();
   await mobile.locator('[data-person]').first().click();
   const mobileDialogBox = await mobile.locator('#participant-dialog').boundingBox();
@@ -276,6 +286,8 @@ try {
   page.once('dialog', dialog => dialog.accept());
   await page.locator('#import-file').setInputFiles({ name: 'anonymous.json', mimeType: 'application/json', buffer: Buffer.from(backup) });
   await page.waitForFunction(() => document.querySelector('#message').textContent.includes('backup restored'));
+  await page.locator('#setup-city').fill('Girona'); await page.locator('#setup-next').click();
+  await page.locator('#clear-city').click();
   assert.equal(await page.locator('#person-name').inputValue(), '');
   await page.locator('#generate').click();
   await page.waitForFunction(() => document.querySelector('#search-status').textContent.startsWith('Search finished.'), { timeout: 20000 });
@@ -345,7 +357,7 @@ try {
   assert.ok(Object.values(afterDelete.months).every(config => config.assignments.every(a => a.participantId !== firstId)));
   await page.evaluate(key => localStorage.setItem(key, '{broken'), STORAGE_KEY);
   await page.reload();
-  await page.locator('#add-participant').click();
+  assert.equal(await page.locator('#setup-recovery').isVisible(), true);
   assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), '{broken', 'Unreadable storage must never be silently overwritten');
   assert.ok(requests.every(url => url.startsWith(origin)), 'No remote requests are allowed');
   assert.deepEqual(errors, []);

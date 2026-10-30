@@ -16,6 +16,10 @@ Open `http://127.0.0.1:8000/`. Stop the server with Ctrl+C.
 
 ## Use the planner
 
+On the first visit, a centred popup guides you through **City**, then **Participants**. Confirm a recognised city, enter 1–100 participants, and choose **Fill participant information** or **Generate calendar**. Filling information guides you through each person’s optional name, shifts, and availability; Confirm and continue saves their choices, while Skip for now keeps existing defaults. Closing the editor discards the current draft and returns to the choice, where you can resume. After the last person, press Generate calendar to start. Direct generation uses 24-hour shifts with no blocked dates; edit availability and regenerate later if needed. Back lets you change the city before creating your team. Names are optional and remain session-only.
+
+Returning users with a saved city and team skip setup. Older planners missing only a city keep their participants and assignments when the city is confirmed. Setup is checked on opening, import, and restart. Clearing the city or deleting the last participant during normal use prompts setup on the next visit. Import backup remains accessible inside the popup; unreadable storage also offers Restart, while failed writes allow session-only planning with a warning.
+
 1. Add participants individually or in a batch. Click a participant to open their configuration in a centred popup, where you can edit their temporary name, permitted shift types, blocked weekdays, and blocked dates. Use the small calendar to select or deselect dates in the displayed month (arrow keys move between dates; Enter or Space toggles a date). Recurring weekday restrictions remain separate. Press **Confirm participant changes** (or Enter in a text field) to apply all edits together and close the popup. **Cancel changes**, Escape, or the close button discards pending edits and closes it. Invalid values keep the popup open for correction. Names still clear on reload. Coverage & checks sits below the participant list, followed by the ground rules.
 2. Select a month and enter a city or settlement in Catalonia. Choose a listed result and press **Apply city** (or Enter). The selected city is highlighted; local and public holidays are marked automatically. Holiday coverage adapts per date; there is no monthly coverage filter. Open a date to mark an additional weekday holiday manually.
 3. Generate a fresh proposal, replacing all assignments in the displayed month, including manual duties and exceptions. Participant settings, availability, city, holiday dates, and other months stay unchanged. Search runs for up to 10 seconds in a worker, prioritizing covered duty hours, similar monthly hours, and balanced holiday/weekend duties. Stop early to keep the best proposal found so far. This is a bounded heuristic, not a proof of optimality or infeasibility.
@@ -80,6 +84,7 @@ Optional browser tests require Playwright, a headless Edge installation (or set 
 ```powershell
 node tests/browser.test.mjs
 node tests/moves.browser.test.mjs
+node tests/setup.browser.test.mjs
 ```
 
 ## City holidays and data coverage
