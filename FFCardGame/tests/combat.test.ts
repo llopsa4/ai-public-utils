@@ -18,14 +18,15 @@ test('new battle has the complete deck, correct resources, and reproducible seed
   assert.equal(state.hero.hp, 60);
   assert.equal(state.enemy.hp, 72);
   assert.equal(state.energy, 3);
+  assert.equal(state.mp, 10);
   assert.equal(state.strain, 0);
   assert.equal(state.hero.block + state.enemy.block, 0);
   const counts = [...state.hand, ...state.draw].reduce<Partial<Record<CardType, number>>>((out, c) => ({ ...out, [c.type]: (out[c.type] ?? 0) + 1 }), {});
-  assert.deepEqual(counts, { strike: 4, guard: 3, piston: 2, vent: 1, shield: 1, cycle: 1 });
+  assert.deepEqual(counts, { strike: 3, guard: 3, piston: 2, vent: 1, shield: 1, cycle: 1, pulse: 1 });
 });
 
 test('card definitions match the agreed costs and effects', () => {
-  assert.deepEqual(Object.values(CARDS).map(c => c.cost), [1, 1, 1, 0, 1, 0]);
+  assert.deepEqual(Object.values(CARDS).map(c => c.cost), [1, 1, 1, 0, 1, 0, 2]);
   assert.deepEqual([CARDS.strike.damage, CARDS.piston.damage, CARDS.guard.block, CARDS.shield.block, CARDS.cycle.draw], [6, 10, 5, 9, 2]);
 });
 
@@ -173,12 +174,13 @@ test('complete seeded battles conserve all 12 cards and resources across shuffle
   for (let seed = 1; seed <= 40; seed++) {
     let state = newBattle(seed);
     for (let i = 0; i < 150 && !state.outcome; i++) {
-      const card = state.hand.find(c => CARDS[c.type].cost <= state.energy);
+      const card = state.hand.find(c => CARDS[c.type].cost <= state.energy && (CARDS[c.type].mpCost ?? 0) <= state.mp);
       state = card ? playCard(state, card.id) : endTurn(state);
       const cards = [...state.hand, ...state.draw, ...state.discard];
       assert.equal(cards.length, 12);
       assert.equal(new Set(cards.map(c => c.id)).size, 12);
       assert.ok(state.energy >= 0 && state.energy <= 3);
+      assert.ok(state.mp >= 0 && state.mp <= 10);
       assert.ok(state.strain >= 0 && state.strain < 10);
       assert.ok(state.hero.hp >= 0 && state.enemy.hp >= 0);
     }

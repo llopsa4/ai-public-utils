@@ -1,16 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { assets } from './assets';
 import { Battlefield } from './components/Battlefield';
-import { Resources } from './components/Resources';
+import { StrainGauge, EnergyOrb, EndTurn } from './components/Resources';
+import { CardArt } from './components/CardArt';
 import { Card } from './components/Card';
 import { EffectPreview } from './components/EffectPreview';
 import { GameDialog, type DialogKind } from './components/GameDialog';
 import { useBattle } from './hooks/useBattle';
 import { completeTutorial, tutorialComplete } from './persistence/preferences';
-import type { CardInstance } from './game/types';
+import type { CardInstance, BattleSetup } from './game/types';
 
-export function App() {
-  const battle = useBattle();
+export function App({ setup }: { setup?: BattleSetup }) {
+  const battle = useBattle(setup);
   const { state, busy, animation } = battle;
   const [dialog, setDialog] = useState<DialogKind | null>(null);
   const [teaching, setTeaching] = useState(() => !tutorialComplete());
@@ -55,26 +56,39 @@ export function App() {
 
   function confirmRestart() { if (!busy) setDialog('restart'); }
 
-  return <div onKeyDownCapture={event => {
+  return <div className="combat-screen" onKeyDownCapture={event => {
     if (event.repeat && ['Enter', ' '].includes(event.key) && event.target instanceof Element && event.target.closest('button')) event.preventDefault();
   }}>
     <link rel="icon" href={assets.mark} type="image/svg+xml" />
     <a className="skip" href="#hand">Skip to cards</a>
     <header className="masthead">
-      <a className="wordmark" href="./" aria-label="Kiln Courier, start a fresh battle" onClick={event => { event.preventDefault(); confirmRestart(); }}><img src={assets.mark} alt="" width={38} height={38} /><span>KILN<span className="wordmark-light">COURIER</span><small>THE FIRST DELIVERY</small></span></a>
-      <div className="chapter"><span className="chapter-line" /> THE FORGOTTEN WORKS <span className="chapter-line" /></div>
-      <nav aria-label="Game controls"><button className="quiet" id="help-button" onClick={() => setDialog('help')}>How to play <span aria-hidden="true">↗</span></button><button className="quiet" id="restart-button" onClick={confirmRestart}>Restart <span aria-hidden="true">↻</span></button></nav>
+      <a className="wordmark" href="./" aria-label="Kiln Courier, start a fresh battle" onClick={event => { event.preventDefault(); confirmRestart(); }}>KILN COURIER</a>
+      <h1 className="chapter">{state.config.encounter.title} <span aria-hidden="true">·</span> <span id="phase-label">{state.outcome === 'victory' ? 'VICTORY' : state.outcome === 'defeat' ? 'DEFEAT' : 'TURN'}</span> <span id="turn">{String(state.turn).padStart(2, '0')}</span></h1>
+      <nav aria-label="Game controls">
+        <button className="quiet" id="help-button" onClick={() => setDialog('help')}><span className="help-icon" aria-hidden="true">?</span> Help</button>
+        <button className="quiet icon-button" id="log-button" aria-label="Battle log" title="Battle log" onClick={() => setDialog('log')}>≡</button>
+        <button className="quiet icon-button" id="restart-button" aria-label="Restart" title="Restart battle" onClick={confirmRestart}>↻</button>
+      </nav>
     </header>
     <main className="game">
-      <section className="encounter-bar" aria-label="Encounter"><div><span className="eyebrow">ENCOUNTER 01 / THE KILN HALL</span><h1>A fire that never went out.</h1></div><div className="turn-label"><span className="status-dot" /><span id="phase-label">{state.outcome === 'victory' ? 'VICTORY' : state.outcome === 'defeat' ? 'DEFEAT' : 'YOUR TURN'}</span><strong id="turn">{String(state.turn).padStart(2, '0')}</strong></div></section>
       <Battlefield state={state} animation={animation} />
-      <Resources state={state} busy={busy} onEndTurn={endTurn} />
-      <section className="hand-area" aria-labelledby="hand-title"><div className="hand-heading"><h2 id="hand-title">Your hand <span id="hand-count">{state.hand.length} {state.hand.length === 1 ? 'CARD' : 'CARDS'}</span></h2><span id="play-hint">Choose a card. Make it count.</span></div>
-        <div ref={hand} id="hand" className="hand" tabIndex={-1} aria-busy={busy}>{state.hand.map(card => <Card key={card.id} card={card} state={state} busy={busy} onInspect={setInspected} onPlay={play} />)}</div>
-        <EffectPreview state={state} card={inspected} busy={busy} />
+      {teaching && <aside className="teaching" id="teaching" aria-label="Combat tip"><p>Play cards. Block the next attack. At 6–9 strain, attacks hit harder.</p><button id="dismiss-tip" className="quiet" onClick={() => { completeTutorial(); setTeaching(false); document.getElementById('help-button')?.focus(); }}>Got it ×</button></aside>}
+      <div className="resources-row"><StrainGauge state={state} /></div>
+      <section className="combat-deck" aria-label="Combat controls">
+        <aside className="deck-side left-controls">
+          <EnergyOrb energy={state.energy} maximum={state.config.encounter.energyPerTurn} />
+          <button className="pile-button" id="draw-button" aria-label={`Draw pile ${state.draw.length}`} onClick={() => setDialog('draw')}><span className="pile-stack"><CardArt type="draw-back" /></span><span>DRAW <strong id="draw-count">{state.draw.length}</strong></span></button>
+        </aside>
+        <section className="hand-area" aria-labelledby="hand-title">
+          <h2 className="sr-only" id="hand-title">Your hand <span id="hand-count">{state.hand.length} {state.hand.length === 1 ? 'card' : 'cards'}</span></h2>
+          <div ref={hand} id="hand" className="hand" tabIndex={-1} aria-busy={busy}>{state.hand.map(card => <Card key={card.id} card={card} state={state} busy={busy} onInspect={setInspected} onPlay={play} />)}</div>
+        </section>
+        <aside className="deck-side right-controls">
+          <EndTurn state={state} busy={busy} onEndTurn={endTurn} />
+          <button className="pile-button" id="discard-button" aria-label={`Discard pile ${state.discard.length}`} onClick={() => setDialog('discard')}><span className="pile-stack"><CardArt type="discard-back" /></span><span>DISCARD <strong id="discard-count">{state.discard.length}</strong></span></button>
+        </aside>
       </section>
-      <footer className="battle-footer"><div className="pile-controls"><button className="pile-button" id="draw-button" onClick={() => setDialog('draw')}><span aria-hidden="true">▱</span> Draw pile <strong id="draw-count">{state.draw.length}</strong></button><button className="pile-button" id="discard-button" onClick={() => setDialog('discard')}><span aria-hidden="true">▱</span> Discard <strong id="discard-count">{state.discard.length}</strong></button></div><button className="quiet log-button" id="log-button" onClick={() => setDialog('log')}>Battle log <span aria-hidden="true">↗</span></button><span className="footer-edition">KILN COURIER <span>COMBAT PROTOTYPE / 01</span></span></footer>
-      {teaching && <aside className="teaching" id="teaching" aria-label="Combat tip"><span className="tip-symbol" aria-hidden="true">✦</span><div><strong>A little heat goes a long way.</strong><p>Spend energy to play cards. Block the guardian’s next attack. Stay at 6–9 strain for stronger attacks, but reach 10 and your gauntlet overloads.</p></div><button id="dismiss-tip" className="quiet" onClick={() => { completeTutorial(); setTeaching(false); document.getElementById('help-button')?.focus(); }}>Got it <span aria-hidden="true">×</span></button></aside>}
+      <EffectPreview state={state} card={inspected} busy={busy} />
       <p className="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true">{battle.announcement}</p>
     </main>
     <GameDialog kind={dialog} state={state} onClose={() => setDialog(null)} onRestart={restart} />

@@ -13,6 +13,7 @@ const files = await readdir(resolve(project, 'dist/build'));
 assert.ok(files.some(name => name.startsWith('hero-') && name.endsWith('.png')));
 assert.ok(files.some(name => name.startsWith('guardian-') && name.endsWith('.png')));
 assert.ok(files.some(name => name.startsWith('kiln-hall-') && name.endsWith('.png')));
+assert.ok(files.some(name => name.startsWith('card-atlas-') && name.endsWith('.png')));
 assert.deepEqual((await readdir(resolve(project, 'dist'))).sort(), ['build', 'index.html']);
 for (const path of links) assert.ok(files.includes(path.slice('./build/'.length)));
 for (const name of files) {
@@ -21,6 +22,7 @@ for (const name of files) {
   assert.ok(built.equals(await readFile(resolve(project, 'build', name))), `Stale published asset: ${name}`);
   if (name.endsWith('.js') || name.endsWith('.css')) {
     assert.doesNotMatch(built.toString(), /(?:STORY|PLAN)\.md|\/local\/|sourceMappingURL=/);
+    assert.doesNotMatch(built.toString(), /cooling-rig-fixture|signature-practice-fixture|Development fixture controls/, 'Development fixtures leaked into the shipped runtime');
   }
 }
 console.log('Build verified: relative entry URLs, published assets match, private documents excluded.');
