@@ -6,3 +6,9 @@ credentials.json
 secrets/
 node_modules/
 __pycache__/
+
+# Private Kiln Courier story and development planning (never publish).
+/FFCardGame/STORY.md
+/FFCardGame/PLAN.md
+/FFCardGame/local/
+/FFCardGame/dist/
