@@ -15,6 +15,8 @@ import { encodeSave, decodeSave } from '../client/src/persistence/campaign';
 import { BRIDGE_ENCOUNTER } from '../client/src/content/bridge';
 import { attachSupport, useSupport } from '../client/src/game/support';
 
+// Run the authored opening matrix after the retained subsystem baselines below.
+
 function choose(state: BattleState, style: string) {
   const incoming = currentIntent(state).damage;
   return state.hand.map(card => {
@@ -167,3 +169,5 @@ for (const itemId of ['heavy-gauntlet','layered-armor','quick-harness']) {
   console.log(JSON.stringify({scenario:'workshop-scenes-and-support-route',itemId,routes:100,wins,meanWinningHP:wins?+(totalHP/wins).toFixed(2):0}));
   if(wins<90)throw Error('Expanded route survivability regression');
 }
+
+await import('./opening-playtest');

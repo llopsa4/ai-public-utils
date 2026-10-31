@@ -88,7 +88,7 @@ test('read failures and invalid stored saves preserve their original data and ol
 test('first-version fixture is stable and requires an explicit future migration', () => {
   const fixture = readFileSync(new URL('./fixtures/save-v1.json', import.meta.url), 'utf8');
   const save = decodeSave(fixture);
-  assert.equal(save.version, 5);
+  assert.equal(save.version, 6);
   assert.deepEqual(save.state, newCampaign(19, false));
   assert.deepEqual(decodeSave(encodeSave(save.state, save.savedAt)), save);
 });

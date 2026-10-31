@@ -1,6 +1,7 @@
+import type { OpeningProgress } from './opening';
 import type { CampaignCommand, CampaignState } from './campaign';
 import type { AllyId, EquippedItem } from './types';
-import { SCENES, type SceneId } from '../content/scenes';
+import { SCENES, sceneDefinition, type SceneId } from '../content/scenes';
 import { STARTING_EQUIPMENT } from '../content/equipment';
 import { BRIDGE_ENCOUNTER } from '../content/bridge';
 import { createBattle } from './combat';
@@ -8,6 +9,7 @@ import { attachSupport, useSupport } from './support';
 import { equipOwned, SHOP_PRICES, GEAR_UPGRADE_COST, CARD_UPGRADE_COST, CARD_REMOVE_COST, MIN_DECK } from './workshop';
 
 export interface SystemsState {
+  opening?: OpeningProgress;
   owned: EquippedItem[];
   stock: string[];
   reached: SceneId[];
@@ -31,9 +33,10 @@ function finishScene(state: CampaignState): CampaignState {
   const systems = state.systems!, scene = systems.scene!;
   if (scene.replay) return { ...state, systems: { ...systems, scene: null }, revision: state.revision + 1 };
   let next: CampaignState = { ...state, revision: state.revision + 1, systems: { ...systems, scene: null,
-    effects: systems.effects.includes(scene.id) ? systems.effects : [...systems.effects, scene.id], objective: SCENES[scene.id].objective } };
+    effects: systems.effects.includes(scene.id) ? systems.effects : [...systems.effects, scene.id], objective: sceneDefinition(scene.id,!!systems.opening).objective } };
   if (scene.id === 'home') next = openScene(next, 'regulator');
   if (scene.id === 'regulator') next = openScene(next, 'ashways');
+  if (scene.id === 'partnership' && systems.opening) next = {...next,phase:'complete',currentNode:'route-exit',completedNodes:[...next.completedNodes,'route-exit'],routeDecisions:[...next.routeDecisions,'route-exit'],systems:{...next.systems!,opening:{...systems.opening,complete:true,practiceProfile:null}}};
   return next;
 }
 // null means the command belongs to the pre-existing campaign transition.

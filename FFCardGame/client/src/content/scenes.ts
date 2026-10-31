@@ -31,3 +31,13 @@ export const SCENES = {
   ] },
 } as const;
 export type SceneId = keyof typeof SCENES;
+
+export function sceneDefinition(id:SceneId,opening=false) {
+  if(id==='hope'&&opening)return {...SCENES.hope,objective:'Find the return route beyond Hanging Crossing.',lines:[
+    ['Oren','This return line still answers. Your village isn’t beyond repair.'],
+    ['Mara','Then assessment might mean more than replacing a broken part.'],
+    ['Oren','I can’t promise what’s waiting.'],
+    ['Mara','I want to find out. Help me mark the route.'],
+  ] as const};
+  return SCENES[id];
+}

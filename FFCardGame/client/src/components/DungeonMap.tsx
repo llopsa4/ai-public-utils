@@ -1,6 +1,7 @@
+import { openingArt } from '../assets';
 import { useId, useRef, useState } from 'react';
 import { ROUTE_PREVIEW } from '../content/dungeon';
-import { destinationEvent, nodeById, nodeStatus, type NodeKind } from '../game/dungeon';
+import { destinationEvent, nodeById, nodeStatus, type DungeonDefinition, type NodeKind } from '../game/dungeon';
 import { FrameCorners } from './Ornaments';
 
 const icons: Record<NodeKind,string> = {
@@ -17,8 +18,8 @@ function RouteIcon({kind}:{kind:NodeKind}) {
 }
 const statusText = {current:'You are here',visited:'Visited',reachable:'Available',missed:'Passed by',locked:'Locked'};
 
-export function DungeonMap({path,complete,onTravel,functional=false,expanded=false}:{path:readonly string[];complete:boolean;onTravel:(id:string)=>void;functional?:boolean;expanded?:boolean}) {
-  const map=ROUTE_PREVIEW, marker=useId().replaceAll(':','');
+export function DungeonMap({path,complete,onTravel,functional=false,expanded=false,definition=ROUTE_PREVIEW}:{definition?:DungeonDefinition;path:readonly string[];complete:boolean;onTravel:(id:string)=>void;functional?:boolean;expanded?:boolean}) {
+  const map=definition, rows=Math.max(...definition.nodes.map(node=>node.row))+1, marker=useId().replaceAll(':','');
   const nodes=[...map.nodes].sort((a,b)=>a.row-b.row||a.lane-b.lane);
   const [selected,setSelected]=useState(()=>nodes.find(n=>nodeStatus(map,path,n.id)==='reachable')?.id??path.at(-1)??map.start);
   const preview=useRef<HTMLElement>(null);
@@ -32,11 +33,12 @@ export function DungeonMap({path,complete,onTravel,functional=false,expanded=fal
     if(scroll)preview.current?.scrollIntoView({block:'nearest',behavior:'instant'});
   }
   return <>
+    {map.id==='first-delivery'&&<><p className="route-section-label">1 · Ashways → 2 · Hanging Approach</p><img className="route-place-thumb" src={current.row<6?openingArt.ashways:openingArt['hanging-crossing']} alt={current.row<6?'The ashways return pipes':'The hanging approach and crossing'}/></>}
     <p className="route-intro">Inspect a stop, then choose Travel. Branches you pass are left behind.</p>
     <div className="route-legend" aria-label="Route states"><span>◇ Available</span><span>◆ You are here</span><span>✓ Visited</span><span>— Passed by</span><span>· Locked</span></div>
     <div className="route-layout">
-      <div className="route-canvas" role="group" aria-label="Connected kiln routes">
-        <svg className="route-lines" viewBox="0 0 600 700" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+      <div className="route-canvas" style={rows!==7?{height:rows*100,minHeight:rows*100,aspectRatio:'auto',gridTemplateRows:`repeat(${rows},1fr)`}:undefined} role="group" aria-label="Connected kiln routes">
+        <svg className="route-lines" viewBox={`0 0 600 ${rows*100}`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
           <defs><marker id={marker} viewBox="0 0 8 8" refX="7" refY="4" markerWidth="5" markerHeight="5" orient="auto"><path d="m0 0 8 4-8 4Z" fill="currentColor" /></marker></defs>
           {map.nodes.flatMap(from=>from.next.map(toId=>{
             const to=nodeById(map,toId)!;

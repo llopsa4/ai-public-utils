@@ -22,7 +22,7 @@ import { DungeonMap, DungeonDestination } from './components/DungeonMap';
 
 import { DeckCollection, ProgressionDestination, RewardChoice } from './components/ProgressionScreens';
 
-import { ROUTE_PREVIEW } from './content/dungeon';
+import { campaignMap } from './content/opening';
 
 import { dungeonPath, nodeById } from './game/dungeon';
 
@@ -126,7 +126,7 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
     if (current.current || original !== null) setPending({ kind: 'new' });
 
-    else { install(newCampaign(randomSeed(),true,true), true); setView('session'); }
+    else { install(newCampaign(randomSeed(),true,true,true), true); setView('session'); }
 
   }
 
@@ -144,7 +144,7 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
     if (pending.kind === 'reset') { if (current.current) dispatch({ type: 'reset-lesson', revision: current.current.revision }); }
 
-    else install(pending.kind === 'new' ? newCampaign(randomSeed(),true,true) : activateSystems(pending.state), true);
+    else install(pending.kind === 'new' ? newCampaign(randomSeed(),true,true,true) : activateSystems(pending.state), true);
 
     setPending(null); setView('session');
 
@@ -230,7 +230,7 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
   if (view === 'session' && !activeScene && (session?.phase === 'battle' || lesson) && controller && session) return <>
 
-    <App key={`${generation}-${session.replay ? 'replay' : session.phase}`} controller={controller} onMenu={menu}
+    <App key={`${generation}-${session.replay ? 'replay' : session.phase}`} controller={controller} suppressHints={session.guidedComplete} onMenu={menu}
 
       lesson={lesson ? { state: lesson, replay: !!session.replay, act: action => !!act(action), reset: () => setView('menu') } : undefined}
 
@@ -248,6 +248,8 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
   const stats = profile ? deriveStats(profile) : null;
 
+  const map=session?campaignMap(session):null;
+  const chapterComplete=!!session?.systems?.opening?.complete;
   const onRoute=view==='session'&&!!session?.dungeon&&['map','destination','route-complete'].includes(session.phase);
 
   const richReward=view==='session'&&session?.phase==='reward'&&session.pendingReward?.kind!=='checkpoint';
@@ -262,9 +264,9 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
       <FrameCorners />
 
-      <span className="eyebrow">{view === 'menu' ? 'AN INDUSTRIAL FANTASY' : 'CAMPAIGN PREVIEW'}</span>
+      <span className="eyebrow">{view === 'menu' ? 'AN INDUSTRIAL FANTASY' : session?.systems?.opening?'THE FIRST DELIVERY':'CAMPAIGN PREVIEW'}</span>
 
-      <h1 ref={focusHeading} tabIndex={-1}>{activeScene ? 'A courier’s road.' : view === 'menu' ? 'Carry the fire onward.' : onRoute ? session.phase==='route-complete'?'A route through the kiln.':session.phase==='destination'?'Along the chosen path.':ROUTE_PREVIEW.name : session?.phase === 'ready' ? 'The kiln checkpoint' : session?.phase === 'reward' ? 'A passage secured.' : 'Checkpoint recorded.'}</h1>
+      <h1 ref={focusHeading} tabIndex={-1}>{activeScene ? 'A courier’s road.' : view === 'menu' ? 'Carry the fire onward.' : onRoute ? session.phase==='route-complete'?'A route through the kiln.':session.phase==='destination'?'Along the chosen path.':map!.name : session?.phase === 'ready' ? 'The kiln checkpoint' : session?.phase === 'reward' ? 'A passage secured.' : chapterComplete?'Opening chapter complete.':'Checkpoint recorded.'}</h1>
 
       {activeScene && session ? <ScenePlayer state={session} dispatch={dispatch}/> : view === 'menu' ? <>
 
@@ -282,9 +284,9 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
         </div>
 
-        <p className="session-caption">Guided combat, branching routes, card rewards and training. Workshops, brief scenes and Iven’s support are playable. Full chapter integration is still ahead.</p>
+        <p className="session-caption">Guided combat, branching routes, card rewards and training. Workshops, brief scenes and Iven’s support are playable. New Story plays the complete opening chapter.</p>
 
-        {session && <p className="session-caption">Mara · {lesson ? `${session.replay ? 'Practice' : 'Combat lesson'} ${lesson.step + 1}/${LESSON_STEPS.length}` : ['map','destination','route-complete'].includes(session.phase) ? session.phase==='route-complete'?'Route preview complete':'Exploring the kiln routes' : session.phase === 'battle' ? `Turn ${session.battle!.turn}${session.battle!.outcome ? ` · ${session.battle!.outcome}` : ''}` : session.phase === 'ready' ? 'Before the checkpoint' : session.phase === 'reward' ? 'Checkpoint ready to record' : 'Checkpoint complete'}</p>}
+        {session && <p className="session-caption">Mara · {lesson ? `${session.replay ? 'Practice' : 'Combat lesson'} ${lesson.step + 1}/${LESSON_STEPS.length}` : ['map','destination','route-complete'].includes(session.phase) ? session.phase==='route-complete'?'Route preview complete':'Exploring the kiln routes' : session.phase === 'battle' ? `Turn ${session.battle!.turn}${session.battle!.outcome ? ` · ${session.battle!.outcome}` : ''}` : session.phase === 'ready' ? 'Before the checkpoint' : session.phase === 'reward' ? 'Checkpoint ready to record' : chapterComplete?'Opening chapter complete':'Checkpoint complete'}</p>}
 
         {session?.systems && betweenEncounters(session) && session.systems.reached.length>0 && <details className="scene-replays"><summary>Replay reached scenes</summary><div className="session-actions">{session.systems.reached.map(sceneId=><button className="quiet" key={sceneId} onClick={()=>{dispatch({type:'replay-scene',sceneId,revision:session.revision});setView('session');}}>{SCENES[sceneId].title}</button>)}</div></details>}
 
@@ -312,15 +314,15 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
         <div className="session-stats route-resources"><span>HP <strong>{profile!.hp}/{profile!.maxHp}</strong></span><span>MP <strong>{profile!.mp}/{stats!.maxMp}</strong></span><span>Salvage <strong>{session!.salvage}</strong></span></div>
 
-        {session!.phase==='destination'?(session!.systems&&session!.currentNode==='route-workshop'?<Workshop state={session!} dispatch={dispatch}/>:session!.systems&&session!.currentNode==='route-story'?<section><h2>Hanging Crossing</h2><p>A Cable Warden blocks the stranded carriers. Iven will cover you.</p><p className="session-caption">68 HP · Victory: 20 salvage and up to 2 MP. No card offer.</p><button className="modal-primary" onClick={()=>dispatch({type:'start-bridge',revision:session!.revision})}>Secure the crossing</button></section>:session!.progression&&['battle','teacher','rest','discovery'].includes(nodeById(ROUTE_PREVIEW,session!.currentNode!)!.kind)?<ProgressionDestination state={session!} dispatch={dispatch}/>:<DungeonDestination nodeId={session!.currentNode!} onContinue={()=>dispatch({type:'continue-route',nodeId:session!.currentNode!,revision:session!.revision})}/>):<>
+        {session!.phase==='destination'?(session!.systems&&session!.currentNode==='route-workshop'?<Workshop state={session!} dispatch={dispatch}/>:session!.systems&&session!.currentNode==='route-story'?<section><h2>Hanging Crossing</h2><p>A Cable Warden blocks the stranded carriers. Iven will cover you.</p><p className="session-caption">68 HP · Victory: 20 salvage and up to 2 MP. No card offer.</p><button className="modal-primary" onClick={()=>dispatch({type:'start-bridge',revision:session!.revision})}>Secure the crossing</button></section>:session!.progression&&['battle','teacher','rest','discovery'].includes(nodeById(map!,session!.currentNode!)!.kind)?<ProgressionDestination state={session!} dispatch={dispatch}/>:<DungeonDestination nodeId={session!.currentNode!} onContinue={()=>dispatch({type:'continue-route',nodeId:session!.currentNode!,revision:session!.revision})}/>):<>
 
           {session!.phase==='route-complete'&&<p className="session-caption">Your path is recorded. Continue to the checkpoint.</p>}
 
-          <DungeonMap path={dungeonPath(ROUTE_PREVIEW,session!.routeDecisions)} complete={session!.phase==='route-complete'} functional={!!session!.progression} expanded={!!session!.systems} onTravel={nodeId=>dispatch({type:'choose-node',nodeId,revision:session!.revision})}/>
+          <DungeonMap definition={map!} path={dungeonPath(map!,session!.routeDecisions)} complete={session!.phase==='route-complete'} functional={!!session!.progression} expanded={!!session!.systems} onTravel={nodeId=>dispatch({type:'choose-node',nodeId,revision:session!.revision})}/>
 
           <DeckCollection state={session!}/>
 
-          {session!.phase==='route-complete'&&<button className="modal-primary" onClick={()=>dispatch({type:'leave-map',revision:session!.revision})}>Return to checkpoint</button>}
+          {session!.phase==='route-complete'&&<button className="modal-primary" onClick={()=>dispatch({type:'leave-map',revision:session!.revision})}>{chapterComplete?'Return to chapter summary':'Return to checkpoint'}</button>}
 
         </>}
 
@@ -340,15 +342,16 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
       </> : <>
 
-        <p>{session?.phase === 'reward' ? 'Your remaining health and MP carry forward. Record this cleared checkpoint.' : 'Your passage is saved. The story continues in a future delivery.'}</p>
+        <p>{chapterComplete ? 'Mara and Iven carry the regulator onward together.' : session?.phase === 'reward' ? 'Your remaining health and MP carry forward. Record this cleared checkpoint.' : 'Your passage is saved. The story continues in a future delivery.'}</p>
 
         <div className="session-stats"><span>HP <strong>{profile!.hp}/{profile!.maxHp}</strong></span><span>MP <strong>{profile!.mp}/{stats!.maxMp}</strong></span></div>
 
         {session?.phase === 'reward' ? <button className="modal-primary" onClick={() => dispatch({ type: 'claim', claimId: session.pendingReward!.id, revision: session.revision })}>Record checkpoint</button> : <button className="modal-primary" onClick={menu}>Return to menu</button>}
 
+        {chapterComplete&&session&&<><p>Tempered Flow learned · Iven travelling · {session.profile.deck.length} cards · {session.salvage} salvage</p><p className="session-caption">{EQUIPMENT_SLOTS.map(slot=>{const item=(session.profile.equipment??STARTING_EQUIPMENT)[slot];return EQUIPMENT[item.id].name+(item.upgraded?' +':'');}).join(' · ')}</p><DeckCollection state={session}/></>}
         {session?.phase==='complete'&&<button className="session-secondary" onClick={()=>dispatch({type:'open-map',revision:session.revision})}>{session.dungeon?'Review route':'Explore route preview'}</button>}
 
-        <p className="session-caption">Your progress is recorded. Full chapter integration continues in the next delivery.</p>
+        <p className="session-caption">{chapterComplete?'The opening ends here. Your progress is saved; the next chapter is not yet playable.':'Your checkpoint is saved. Start New Story for the complete opening.'}</p>
 
       </>}
 

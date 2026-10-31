@@ -1,3 +1,5 @@
+import { campaignMap } from '../content/opening';
+import { openingTransition } from './opening';
 import { systemsTransition, systemsEvents, type SystemsState } from './systems';
 import type { SceneId } from '../content/scenes';
 import type { AllyId } from './types';
@@ -36,7 +38,7 @@ export interface CampaignState {
   battleStart: BattleState | null;
 }
 export type CampaignCommand = { revision: number } & (
-  { type: 'enable-systems' } | { type: 'buy' | 'upgrade-item' | 'equip'; itemId: string } |
+  { type: 'start-opening' } | { type: 'enable-systems' } | { type: 'buy' | 'upgrade-item' | 'equip'; itemId: string } |
   { type: 'refine-card' | 'remove-card'; cardId: string } | { type: 'scene-next' | 'scene-skip' } |
   { type: 'replay-scene'; sceneId: SceneId } | { type: 'start-bridge' } | { type: 'support'; ally: AllyId; battleRevision: number } |
   { type: 'enter'; nodeId: string } |
@@ -46,16 +48,17 @@ export type CampaignCommand = { revision: number } & (
   { type: 'lesson'; command: TutorialCommand } | { type: 'start-replay' } | { type: 'reset-lesson' } |
   { type: 'open-map' } | { type: 'choose-node'; nodeId: string } | { type: 'continue-route'; nodeId: string } | { type: 'leave-map' } |
   { type:'enable-progression' } | { type:'start-encounter';nodeId:string } | { type:'rest';nodeId:string } |
-  { type:'discover';nodeId:string;option:'salvage'|'cards'|'mp' } | { type:'choose-reward';claimId:string;card:RewardCardType|null }
+  { type:'discover';nodeId:string;option:'salvage'|'cards'|'mp'|'kit' } | { type:'choose-reward';claimId:string;card:RewardCardType|null }
 );
-export function newCampaign(seed: number, guided = true, expanded = false): CampaignState {
+export function newCampaign(seed: number, guided = true, expanded = false, opening = false): CampaignState {
   if (!Number.isInteger(seed) || seed < 0 || seed > 0xffffffff) throw new Error('Invalid campaign seed');
   const state:CampaignState = { systems:null, mode: 'story', chapter: 'systems-preview', phase: guided ? 'tutorial' : 'ready', tutorial: guided ? newTutorial() : null,
     replay: null, guidedComplete: false, salvage: 0, dungeon: null, revision: 0, rng: seed,
     profile: structuredClone(CAMPAIGN_PROFILE), currentNode: null, completedNodes: [], routeDecisions: [],
     claimedRewards: [], pendingReward: null, progression:null, battle: null, battleStart: null };
   const enabled=guided?enableProgression(state):state;
-  return expanded?activateSystems(enabled):enabled;
+  const active=expanded?activateSystems(enabled):enabled;
+  return opening?campaignTransition(active,{type:'start-opening',revision:active.revision}):active;
 }
 export function campaignTransition(previous: CampaignState, command: CampaignCommand): CampaignState {
   const next=systemsEvents(previous,transition(previous,command),command);
@@ -83,6 +86,9 @@ export function activateSystems(state:CampaignState):CampaignState {
 }
 function transition(previous:CampaignState,command:CampaignCommand):CampaignState {
   if (command.revision !== previous.revision) return previous;
+  const openingResult=openingTransition(previous,command);
+  if(openingResult!==null)return openingResult;
+  const map=campaignMap(previous);
   const systemResult=systemsTransition(previous,command);
   if(systemResult!==null)return systemResult;
   if(command.type==='enable-progression')return enableProgression(previous);
@@ -98,9 +104,9 @@ function transition(previous:CampaignState,command:CampaignCommand):CampaignStat
     if (next.step === LESSON_STEPS.length) {
       if (previous.replay) return { ...previous, replay: null, revision: previous.revision + 1 };
       if (previous.guidedComplete || previous.claimedRewards.includes(LESSON_CLAIM) || next.battle.outcome !== 'victory') return previous;
-      return { ...previous, phase: 'map', dungeon: { id: ROUTE_PREVIEW.id, origin: 'ready' }, currentNode: ROUTE_PREVIEW.start, tutorial: null, guidedComplete: true, revision: previous.revision + 1,
+      return { ...previous, phase: 'map', dungeon: { id: map.id, origin: 'ready' }, currentNode: map.start, tutorial: null, guidedComplete: true, revision: previous.revision + 1,
         profile: structuredClone(CAMPAIGN_PROFILE), salvage: previous.salvage + 12,
-        completedNodes: [...previous.completedNodes, LESSON_NODE, ROUTE_PREVIEW.start], routeDecisions: [...previous.routeDecisions, LESSON_NODE, ROUTE_PREVIEW.start],
+        completedNodes: [...previous.completedNodes, LESSON_NODE, map.start], routeDecisions: [...previous.routeDecisions, LESSON_NODE, map.start],
         claimedRewards: [...previous.claimedRewards, LESSON_CLAIM] };
     }
     return { ...previous, [previous.replay ? 'replay' : 'tutorial']: next, revision: previous.revision + 1 };
@@ -114,7 +120,7 @@ function transition(previous:CampaignState,command:CampaignCommand):CampaignStat
       return {...previous,phase:'battle',battle,battleStart:structuredClone(battle),progression:{...previous.progression,battleNode:command.nodeId},revision:previous.revision+1};
     }
     if(command.type==='rest'){
-      if(previous.phase!=='destination'||previous.currentNode!==command.nodeId||nodeById(ROUTE_PREVIEW,command.nodeId)?.kind!=='rest'||previous.completedNodes.includes(command.nodeId))return previous;
+      if(previous.phase!=='destination'||previous.currentNode!==command.nodeId||nodeById(map,command.nodeId)?.kind!=='rest'||previous.completedNodes.includes(command.nodeId))return previous;
       return finishDestination({...previous,profile:restProfile(previous.profile)},command.nodeId,`${command.nodeId}:rest`);
     }
     if(command.type==='discover'){
@@ -140,18 +146,18 @@ function transition(previous:CampaignState,command:CampaignCommand):CampaignStat
   if (command.type === 'open-map') {
     if (previous.phase !== 'ready' && previous.phase !== 'complete') return previous;
     if (previous.dungeon) {
-      if (!previous.completedNodes.includes(ROUTE_PREVIEW.exit)) return previous;
-      return { ...previous, dungeon: { ...previous.dungeon, origin: previous.phase }, phase: 'route-complete', currentNode: ROUTE_PREVIEW.exit, revision: previous.revision + 1 };
+      if (!previous.completedNodes.includes(map.exit)) return previous;
+      return { ...previous, dungeon: { ...previous.dungeon, origin: previous.phase }, phase: 'route-complete', currentNode: map.exit, revision: previous.revision + 1 };
     }
-    return { ...previous, phase: 'map', dungeon: { id: ROUTE_PREVIEW.id, origin: previous.phase }, currentNode: ROUTE_PREVIEW.start,
-      completedNodes: [...previous.completedNodes, ROUTE_PREVIEW.start], routeDecisions: [...previous.routeDecisions, ROUTE_PREVIEW.start], revision: previous.revision + 1 };
+    return { ...previous, phase: 'map', dungeon: { id: map.id, origin: previous.phase }, currentNode: map.start,
+      completedNodes: [...previous.completedNodes, map.start], routeDecisions: [...previous.routeDecisions, map.start], revision: previous.revision + 1 };
   }
   if (command.type === 'choose-node') {
     if (previous.phase !== 'map' || !previous.dungeon || !previous.currentNode) return previous;
-    const current = nodeById(ROUTE_PREVIEW,previous.currentNode);
+    const current = nodeById(map,previous.currentNode);
     if (!current?.next.includes(command.nodeId) || previous.routeDecisions.includes(command.nodeId)) return previous;
     const next:CampaignState={ ...previous, phase: 'destination', currentNode: command.nodeId, routeDecisions: [...previous.routeDecisions,command.nodeId], revision: previous.revision + 1 };
-    if(previous.progression&&nodeById(ROUTE_PREVIEW,command.nodeId)?.kind==='discovery'){
+    if(previous.progression&&nodeById(map,command.nodeId)?.kind==='discovery'){
       const roll=command.nodeId==='route-discovery'?rollCards(previous.rng):{rng:previous.rng,cards:[]};
       return {...next,rng:roll.rng,pendingReward:{id:rewardId(command.nodeId),nodeId:command.nodeId,kind:'discovery',rollSeed:command.nodeId==='route-discovery'?previous.rng:null,cards:roll.cards}};
     }
@@ -159,8 +165,8 @@ function transition(previous:CampaignState,command:CampaignCommand):CampaignStat
   }
   if (command.type === 'continue-route') {
     if (previous.phase !== 'destination' || !previous.dungeon || command.nodeId !== previous.currentNode || previous.completedNodes.includes(command.nodeId)) return previous;
-    if(previous.progression&&['battle','rest','discovery','teacher'].includes(nodeById(ROUTE_PREVIEW,command.nodeId)!.kind))return previous;
-    return { ...previous, phase: command.nodeId === ROUTE_PREVIEW.exit ? 'route-complete' : 'map', completedNodes: [...previous.completedNodes,command.nodeId], revision: previous.revision + 1 };
+    if(previous.progression&&['battle','rest','discovery','teacher'].includes(nodeById(map,command.nodeId)!.kind))return previous;
+    return { ...previous, phase: command.nodeId === map.exit ? 'route-complete' : 'map', completedNodes: [...previous.completedNodes,command.nodeId], revision: previous.revision + 1 };
   }
   if (command.type === 'leave-map') {
     if (previous.phase !== 'route-complete' || !previous.dungeon) return previous;

@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
-import { assets } from './assets';
+import { battleVisual } from './presentation';
+import { assets, openingArt } from './assets';
 import { Battlefield } from './components/Battlefield';
 import { StrainGauge, EnergyOrb, EndTurn } from './components/Resources';
 import { CardArt } from './components/CardArt';
@@ -15,10 +16,13 @@ import { tutorialMatches, type TutorialState } from './game/tutorial';
 
 export interface LessonView { state: TutorialState; replay: boolean; act: (action: LessonAction) => boolean; reset: () => void }
 
-export function App({ setup, controller, onMenu, onVictory, lesson, onReplay }: { setup?: BattleSetup; controller?: BattleController; onMenu?: () => void; onVictory?: () => void; lesson?: LessonView; onReplay?: () => void }) {
+export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, suppressHints = false }: { setup?: BattleSetup; controller?: BattleController; onMenu?: () => void; onVictory?: () => void; lesson?: LessonView; onReplay?: () => void; suppressHints?: boolean }) {
   const battle = useBattle(setup, controller);
   const { state, busy, animation } = battle;
+  const visual=battleVisual(state);
   const supportRequired=state.support?.required;
+  const practiceRequired=state.practice?.requiredCardId;
+  useEffect(()=>{if(practiceRequired)hand.current?.querySelector<HTMLElement>(`[data-card-id="${practiceRequired}"]`)?.focus();},[practiceRequired]);
   useEffect(()=>{if(supportRequired)document.getElementById('ally-support')?.focus();},[supportRequired]);
   const [dialog, setDialog] = useState<DialogKind | null>(null);
   const [teaching, setTeaching] = useState(() => !tutorialComplete());
@@ -84,7 +88,7 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay }: 
   }
   function confirmRestart() { openDialog('restart'); }
 
-  return <div className={`combat-screen${lesson ? ' guided-combat' : ''}`} onClickCapture={event => {
+  return <div data-arena={visual.arena?'opening':undefined} style={visual.arena?{backgroundImage:`url(${visual.arena})`}:undefined} className={`combat-screen${lesson ? ' guided-combat' : ''}`} onClickCapture={event => {
     if (lesson && event.detail > 1) { event.preventDefault(); event.stopPropagation(); }
   }} onKeyDownCapture={event => {
     if (event.repeat && ['Enter', ' '].includes(event.key) && event.target instanceof Element && event.target.closest('button')) event.preventDefault();
@@ -104,9 +108,10 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay }: 
     {lesson && <aside className="lesson-banner" aria-label="Combat lesson"><strong>◆ {lesson.replay ? 'Practice' : 'Combat lesson'} {lesson.state.step + 1}/{LESSON_STEPS.length}</strong><p id="lesson-instruction" role="status">{step?.prompt} Follow the outlined control.</p>{!validLesson && <p role="alert">The lesson state does not match. <button onClick={lesson.reset}>Restart lesson safely</button></p>}</aside>}
     <main className="game">
       <Battlefield state={state} animation={animation} onInspectIntent={() => openDialog('intent')} intentBlocked={blocked('intent')} intentHighlighted={marked('intent')} />
-      {teaching && !lesson && <aside className="teaching" id="teaching" aria-label="Combat tip"><p>Play cards. Block the next attack. At 6–9 strain, attacks hit harder.</p><button id="dismiss-tip" className="quiet" onClick={() => { completeTutorial(); setTeaching(false); document.getElementById('help-button')?.focus(); }}>Got it ×</button></aside>}
+      {teaching && !lesson && !suppressHints && <aside className="teaching" id="teaching" aria-label="Combat tip"><p>Play cards. Block the next attack. At 6–9 strain, attacks hit harder.</p><button id="dismiss-tip" className="quiet" onClick={() => { completeTutorial(); setTeaching(false); document.getElementById('help-button')?.focus(); }}>Got it ×</button></aside>}
       <div className="resources-row"><StrainGauge state={state} overloaded={battle.overloadFeedback} /><EquipmentSummary state={state} /></div>
-      {!!state.support?.present.length && <aside className={`support-panel${supportRequired?' support-introduction':''}`} aria-label="Ally support"><button id="ally-support" className={supportRequired?'session-secondary lesson-target':'session-secondary'} disabled={busy || !!state.outcome || state.support.spent.includes('iven')} onClick={event=>{if(event.detail<=1 && battle.support('iven',state.revision))focusRequest.current='end-turn';}}>Iven · {state.support.spent.includes('iven')?'Used this battle':'Brace · +8 block'}</button><p id="support-instruction" role="status">{supportRequired?'Iven can brace once each battle. Use his highlighted support before playing cards.':'One use per battle · no energy or MP cost.'}</p></aside>}
+      {!!state.support?.present.length && <aside className={`support-panel${supportRequired?' support-introduction':''}`} aria-label="Ally support"><button id="ally-support" className={supportRequired?'session-secondary lesson-target':'session-secondary'} disabled={busy || !!state.outcome || state.support.spent.includes('iven')} onClick={event=>{if(event.detail<=1 && battle.support('iven',state.revision))focusRequest.current='end-turn';}}><img className="support-portrait" src={openingArt.iven} alt=""/>Iven · {state.support.spent.includes('iven')?'Used this battle':'Brace · +8 block'}</button><p id="support-instruction" role="status">{supportRequired?'Iven can brace once each battle. Use his highlighted support before playing cards.':'One use per battle · no energy or MP cost.'}</p></aside>}
+      {state.practice&&<aside className="support-panel practice-banner" aria-label="Training practice"><strong>Practice only</strong><p id="practice-instruction">{practiceRequired?'Try highlighted Tempered Flow: 3 MP, +3 strain. Then practice freely.':'Tempered Flow: same strength, less pressure.'} Travel resources are protected.</p></aside>}
       <section className="combat-deck" aria-label="Combat controls">
         <aside className="deck-side left-controls">
           <EnergyOrb energy={state.energy} maximum={state.config.encounter.energyPerTurn} />
@@ -114,10 +119,10 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay }: 
         </aside>
         <section className="hand-area" aria-labelledby="hand-title">
           <h2 className="sr-only" id="hand-title">Your hand <span id="hand-count">{state.hand.length} {state.hand.length === 1 ? 'card' : 'cards'}</span></h2>
-          <div ref={hand} id="hand" className="hand" tabIndex={-1} aria-busy={busy}>{state.hand.map(card => <Card key={card.id} card={card} state={state} busy={busy || !!supportRequired} lessonBlocked={blocked(card.id)} highlighted={marked(card.id)} onInspect={setInspected} onPlay={play} />)}</div>
+          <div ref={hand} id="hand" className="hand" tabIndex={-1} aria-busy={busy}>{state.hand.map(card => <Card key={card.id} card={card} state={state} busy={busy || !!supportRequired || (!!practiceRequired && practiceRequired!==card.id)} lessonBlocked={blocked(card.id)} highlighted={marked(card.id)||practiceRequired===card.id} instructionId={practiceRequired?'practice-instruction':undefined} onInspect={setInspected} onPlay={play} />)}</div>
         </section>
         <aside className="deck-side right-controls">
-          <EndTurn state={state} busy={busy || !!supportRequired} onEndTurn={endTurn} lessonBlocked={blocked('end-turn')} highlighted={marked('end-turn')} />
+          <EndTurn state={state} busy={busy || !!supportRequired || !!practiceRequired} onEndTurn={endTurn} lessonBlocked={blocked('end-turn')} highlighted={marked('end-turn')} />
           <button className={`pile-button${highlighted('discard-button')}`} id="discard-button" disabled={blocked('discard-button')} aria-describedby={lesson ? 'lesson-instruction' : undefined} aria-label={`Discard pile ${state.discard.length}`} onClick={() => openDialog('discard')}><span className="pile-stack"><CardArt type="discard-back" /></span><span>DISCARD <strong id="discard-count">{state.discard.length}</strong></span></button>
         </aside>
       </section>

@@ -1,3 +1,5 @@
+import { battleVisual } from '../presentation';
+import { StoryDetails } from './StoryDetails';
 import { assets } from '../assets';
 import { currentIntent } from '../game/combat';
 import type { BattleState } from '../game/types';
@@ -7,9 +9,10 @@ import { ArtifactFrame, StatusCrest, ResourceSymbol, FrameCorners } from './Orna
 interface Props { state: BattleState; animation: BattleAnimation | null; onInspectIntent?: () => void; intentBlocked?: boolean; intentHighlighted?: boolean }
 
 export function Battlefield({ state, animation, onInspectIntent, intentBlocked, intentHighlighted }: Props) {
+  const visual=battleVisual(state),disabled=state.enemy.hp===0;
   const intent = currentIntent(state);
   const { hero, encounter } = state.config;
-  return <section className={`battlefield${animation?.overload ? ' overloaded' : ''}`} aria-label="Battlefield">
+  return <section data-machine={visual.machine} className={`battlefield${animation?.overload ? ' overloaded' : ''}`} aria-label="Battlefield">
     <div className="status-panel hero-status" aria-label={`${hero.name}'s status`}>
       <ArtifactFrame /><StatusCrest />
       <h2>{hero.name}</h2>
@@ -27,14 +30,15 @@ export function Battlefield({ state, animation, onInspectIntent, intentBlocked, 
       <span className="ground-shadow" />
       <img key={`hero-${state.revision}`} className={`fighter hero-art${animation ? animation.actor === 'hero' ? ' act' : ' hit' : ''}`} id="hero-art" src={assets.hero} alt="Mara, an ochre-cloaked courier in ceramic armor, standing on the kiln floor with a pressure gauntlet." />
     </div>
-    <div className="combatant enemy">
-      <button type="button" className={`intent${intentHighlighted ? ' lesson-target' : ''}`} id="intent" disabled={intentBlocked} onClick={onInspectIntent} aria-describedby={intentBlocked || intentHighlighted ? 'lesson-instruction' : undefined} aria-label={`Next enemy action: ${intent.name}. ${intent.damage} damage.${intent.block ? ` Gains ${intent.block} block before attacking.` : ''}`}>
+    <div className={`combatant enemy${disabled?' disabled-machine':''}`}>
+      <button type="button" className={`intent${intentHighlighted ? ' lesson-target' : ''}`} id="intent" disabled={intentBlocked} onClick={onInspectIntent} aria-describedby={intentBlocked || intentHighlighted ? 'lesson-instruction' : undefined} aria-label={disabled?'Machine disabled. Passage clear.':`Next enemy action: ${intent.name}. ${intent.damage} damage.${intent.block ? ` Gains ${intent.block} block before attacking.` : ''}`}>
         <FrameCorners />
-        <div><span className="intent-mark" aria-hidden="true">⚔</span><strong>{intent.damage} <span>ATTACK</span></strong>{intent.block > 0 && <span className="intent-block"> + {intent.block} BLOCK</span>}</div>
-        <small>{intent.name}</small>
+        {disabled?<strong className="disabled-label">DISABLED</strong>:<><div><span className="intent-mark" aria-hidden="true">⚔</span><strong>{intent.damage} <span>ATTACK</span></strong>{intent.block > 0 && <span className="intent-block"> + {intent.block} BLOCK</span>}</div>
+        <small>{intent.name}</small></>}
       </button>
       <span className="ground-shadow" />
-      <img key={`enemy-${state.revision}`} className={`fighter enemy-art${animation?.actor === 'enemy' ? ' act' : animation?.enemyHit ? ' hit' : ''}`} id="enemy-art" src={assets.guardian} alt="A six-legged ceramic furnace guardian standing on the stone floor, its core glowing orange." />
+      <img key={`enemy-${state.revision}`} style={visual.ink?{height:`calc(var(--enemy-size) / ${visual.ink.height})`,bottom:`calc(var(--floor) - 3px - var(--enemy-size) * ${visual.ink.gap/visual.ink.height})`,maxWidth:'none'}:undefined} className={`fighter enemy-art${animation?.actor === 'enemy' ? ' act' : animation?.enemyHit ? ' hit' : ''}`} id="enemy-art" src={visual.sprite} alt={`${encounter.enemy.name}, a grounded maintenance machine with all supports planted on the floor.`} />
+      {visual.training&&<StoryDetails kind="cage"/>}{visual.reinforced&&<StoryDetails kind="armor"/>}
     </div>
     <div key={state.revision} className={`action-flash${animation ? ' show' : ''}`} id="action-flash" aria-hidden="true">{animation?.text}</div>
   </section>;

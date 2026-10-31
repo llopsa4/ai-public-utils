@@ -14,6 +14,9 @@ assert.ok(files.some(name => name.startsWith('hero-') && name.endsWith('.png')))
 assert.ok(files.some(name => name.startsWith('guardian-') && name.endsWith('.png')));
 assert.ok(files.some(name => name.startsWith('kiln-hall-') && name.endsWith('.png')));
 assert.ok(files.some(name => name.startsWith('card-atlas-') && name.endsWith('.png')));
+for (const asset of ['iven','oren','ash-sweeper','pressure-scavenger','cable-warden','cinderfold','regulator-gallery','ashways','tempering-house','hanging-crossing','measured-drive','fitted-brace-v2','ember-hook','return-stroke-v2','pressure-return']) {
+  assert.ok(files.some(name => name.startsWith(`${asset}-`) && name.endsWith('.png')), `Missing opening illustration: ${asset}`);
+}
 for (const family of ['Cinzel', 'CormorantGaramond']) {
   assert.ok(files.some(name => name.startsWith(`${family}-`) && name.endsWith('.ttf')), `Missing font: ${family}`);
   assert.ok(files.some(name => name.startsWith(`${family}-OFL-`) && name.endsWith('.txt')), `Missing font license: ${family}`);

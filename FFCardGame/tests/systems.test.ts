@@ -79,7 +79,7 @@ test('support rejects stale/terminal input and resets only with a new battle set
 });
 
 test('v4 migration preserves offers and supports remaining new stops, with no retroactive purchases or scenes',()=>{
-  const raw=readFileSync(new URL('./fixtures/save-v4-reward.json',import.meta.url),'utf8'),old=JSON.parse(raw),loaded=decodeSave(raw);assert.equal(loaded.version,5);assert.deepEqual(loaded.state,{...old.state,systems:null});
+  const raw=readFileSync(new URL('./fixtures/save-v4-reward.json',import.meta.url),'utf8'),old=JSON.parse(raw),loaded=decodeSave(raw);assert.equal(loaded.version,6);assert.deepEqual(loaded.state,{...old.state,systems:null});
   const enabled=activateSystems(loaded.state);assert.deepEqual(enabled.pendingReward,old.state.pendingReward);assert.equal(enabled.salvage,old.state.salvage);assert.deepEqual(enabled.systems!.reached,[]);roundtrip(enabled);
 });
 

@@ -1,3 +1,5 @@
+import { openingArt } from '../assets';
+import { EquipmentIcon } from './EquipmentIcon';
 import { useEffect, useRef, useState } from 'react';
 import type { CampaignCommand, CampaignState } from '../game/campaign';
 import type { CharacterProfile, EquippedItem } from '../game/types';
@@ -20,7 +22,7 @@ export function EquipmentCollection({state,dispatch}:{state:CampaignState;dispat
   if (!state.systems) return null;
   return <details className="equipment-collection"><summary>Equipment · free swaps between encounters</summary><p className="session-caption">Equipped: {totals(state.profile)}. Swaps never restore HP or MP.</p><ul className="owned-equipment">{state.systems.owned.map(item=>{
     const data=EQUIPMENT[item.id],equipped=(state.profile.equipment??STARTING_EQUIPMENT)[data.slot].id===item.id;
-    return <li key={item.id}><div><strong>{data.name}{item.upgraded?' +':''}</strong><small>{data.slot} · {bonuses(item)} · {equipped?'Equipped':`If equipped: ${comparison(state,item)}`}</small></div><button className="quiet" disabled={equipped} onClick={event=>{if(event.detail<=1){dispatch({type:'equip',itemId:item.id,revision:state.revision});if(event.detail===0)event.currentTarget.closest('details')?.querySelector('summary')?.focus();}}}>{equipped?'Equipped':`Equip ${data.name}`}</button></li>;
+    return <li key={item.id}><div><EquipmentIcon id={item.id}/><strong>{data.name}{item.upgraded?' +':''}</strong><small>{data.slot} · {bonuses(item)} · {equipped?'Equipped':`If equipped: ${comparison(state,item)}`}</small></div><button className="quiet" disabled={equipped} onClick={event=>{if(event.detail<=1){dispatch({type:'equip',itemId:item.id,revision:state.revision});if(event.detail===0)event.currentTarget.closest('details')?.querySelector('summary')?.focus();}}}>{equipped?'Equipped':`Equip ${data.name}`}</button></li>;
   })}</ul></details>;
 }
 export function Workshop({state,dispatch}:{state:CampaignState;dispatch:Dispatch}) {
@@ -34,10 +36,10 @@ export function Workshop({state,dispatch}:{state:CampaignState;dispatch:Dispatch
   const card=state.profile.deck.find(card=>card.id===selected),protectedCard=card?.type==='pulse';
   const refined=card&&!card.upgrade&&!protectedCard?cardDefinition({...card,upgrade:'refined'}):null;
   function confirm(command:CampaignCommand){setPending(command);}
-  return <section className="workshop" aria-label="Workshop"><h2 ref={heading} tabIndex={-1}>Old workbench</h2><p>Invest salvage in your gear or deck. Leaving closes this workshop.</p><p className="session-caption">Current build: {totals(state.profile)}</p>
+  return <section className="workshop" aria-label="Workshop"><h2 ref={heading} tabIndex={-1}>{state.systems.opening?'Tempering workbench':'Old workbench'}</h2>{state.systems.opening&&<div className="workshop-location" style={{backgroundImage:`url(${openingArt['tempering-house']})`}} role="img" aria-label="The tempering workshop around the return pipe"/>}<p>Invest salvage in your gear or deck. Leaving closes this workshop.</p><p className="session-caption">Current build: {totals(state.profile)}</p>
     <h3>Equipment stock</h3><div className="shop-grid">{Object.entries(SHOP_PRICES).map(([id,cost])=>{
       const owned=state.systems!.owned.some(item=>item.id===id),available=state.systems!.stock.includes(id),short=state.salvage<cost;
-      return <article className="shop-item" key={id}><h4>{EQUIPMENT[id].name}</h4><small>{EQUIPMENT[id].slot} · {bonuses({id})}</small><p>If equipped: {comparison(state,{id})}</p><button className="session-secondary" disabled={owned||!available||short} onClick={()=>confirm({type:'buy',itemId:id,revision:state.revision})}>{owned?'Owned':!available?'Sold out':short?`Need ${cost-state.salvage} more salvage`:`Buy · ${cost} salvage`}</button></article>;
+      return <article className="shop-item" key={id}><EquipmentIcon id={id}/><h4>{EQUIPMENT[id].name}</h4><small>{EQUIPMENT[id].slot} · {bonuses({id})}</small><p>If equipped: {comparison(state,{id})}</p><button className="session-secondary" disabled={owned||!available||short} onClick={()=>confirm({type:'buy',itemId:id,revision:state.revision})}>{owned?'Owned':!available?'Sold out':short?`Need ${cost-state.salvage} more salvage`:`Buy · ${cost} salvage`}</button></article>;
     })}</div>
     <EquipmentCollection state={state} dispatch={dispatch}/>
     <h3>Owned-item upgrades · {GEAR_UPGRADE_COST} salvage</h3><div className="item-upgrades">{state.systems.owned.filter(item=>EQUIPMENT[item.id].upgradedBonuses).map(item=><div key={item.id}><strong>{EQUIPMENT[item.id].name}</strong><p className="session-caption">If equipped after upgrade: {comparison(state,{...item,upgraded:true})}</p><button className="session-secondary" disabled={item.upgraded||state.salvage<GEAR_UPGRADE_COST} onClick={()=>confirm({type:'upgrade-item',itemId:item.id,revision:state.revision})}>{item.upgraded?'Fully upgraded':state.salvage<GEAR_UPGRADE_COST?'Not enough salvage':`Upgrade ${EQUIPMENT[item.id].name}`}</button></div>)}</div>

@@ -1,0 +1,5 @@
+export function StoryDetails({kind}:{kind:'regulator'|'trace'|'cage'|'armor'}){
+  if(kind==='cage')return <svg className="training-cage" viewBox="0 0 260 180" aria-hidden="true"><path d="M8 170V12h244v158H8ZM8 30h244M35 15v155m47-155v155m48-155v155m48-155v155m47-155v155" fill="none" stroke="currentColor" strokeWidth="5"/></svg>;
+  if(kind==='armor')return <svg className="reinforcement-plate" viewBox="0 0 100 70" aria-hidden="true"><path d="M12 10 50 2l38 8-4 44-34 14-34-14Z" fill="#b6a27d" stroke="#40372a" strokeWidth="4"/>{[[23,19],[77,19],[27,48],[73,48]].map(([x,y])=><circle key={x+y} cx={x} cy={y} r="4" fill="#463722"/>)}</svg>;
+  return <svg className="story-detail" viewBox="0 0 100 70" role="img" aria-label={kind==='regulator'?'Released regulator and repair notebook':'A responding return line on the regulator trace'}><path d={kind==='regulator'?'M8 13h36v44H8Zm50 5h32v36H58ZM58 36h32M23 24h11m-11 9h11m-11 9h11':'M8 12h84v46H8Zm7 31 13-3 11-21 12 30 10-14 10 5 14-14'} fill="none" stroke="currentColor" strokeWidth="3"/>{kind==='regulator'&&<circle cx="74" cy="36" r="13" fill="none" stroke="currentColor" strokeWidth="3"/>}</svg>;
+}

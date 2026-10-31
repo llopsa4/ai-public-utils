@@ -9,10 +9,10 @@ import { ROUTE_PREVIEW } from '../content/dungeon';
 import { dungeonPath, validDungeonPath } from '../game/dungeon';
 
 export const SAVE_KEY = 'kiln-courier.story-save';
-export const SAVE_VERSION = 5;
-export const CONTENT_VERSION = 'systems-preview-5';
+export const SAVE_VERSION = 6;
+export const CONTENT_VERSION = 'systems-preview-6';
 export const MAX_SAVE_BYTES = 512 * 1024;
-export interface SaveEnvelope { version: 5; contentVersion: typeof CONTENT_VERSION; savedAt: string; state: CampaignState }
+export interface SaveEnvelope { version: 6; contentVersion: typeof CONTENT_VERSION; savedAt: string; state: CampaignState }
 export type StorageAccess = () => Pick<Storage, 'getItem' | 'setItem'> | undefined;
 export type SaveRead = { kind: 'empty' | 'unavailable' } | { kind: 'valid'; save: SaveEnvelope } | { kind: 'invalid'; raw: string; reason: string };
 
@@ -175,13 +175,13 @@ function validateCampaignV3(value: unknown) {
 
 function validateCommand(value:unknown):asserts value is CampaignCommand {
   record(value);integer(value.revision,1000000);
-  const fields:Record<string,string[]>={enter:['nodeId'],play:['cardId','battleRevision'],'end-turn':['battleRevision'],retry:[],resolve:[],claim:['claimId'],lesson:['command'],'start-replay':[],'reset-lesson':[],'open-map':[],'choose-node':['nodeId'],'continue-route':['nodeId'],'leave-map':[],'start-encounter':['nodeId'],rest:['nodeId'],discover:['nodeId','option'],'choose-reward':['claimId','card'],'enable-systems':[],buy:['itemId'],'upgrade-item':['itemId'],equip:['itemId'],'refine-card':['cardId'],'remove-card':['cardId'],'scene-next':[],'scene-skip':[],'replay-scene':['sceneId'],'start-bridge':[],support:['ally','battleRevision']};
+  const fields:Record<string,string[]>={enter:['nodeId'],play:['cardId','battleRevision'],'end-turn':['battleRevision'],retry:[],resolve:[],claim:['claimId'],lesson:['command'],'start-replay':[],'reset-lesson':[],'open-map':[],'choose-node':['nodeId'],'continue-route':['nodeId'],'leave-map':[],'start-encounter':['nodeId'],rest:['nodeId'],discover:['nodeId','option'],'choose-reward':['claimId','card'],'start-opening':[],'enable-systems':[],buy:['itemId'],'upgrade-item':['itemId'],equip:['itemId'],'refine-card':['cardId'],'remove-card':['cardId'],'scene-next':[],'scene-skip':[],'replay-scene':['sceneId'],'start-bridge':[],support:['ally','battleRevision']};
   requireValue(typeof value.type==='string'&&Object.hasOwn(fields,value.type),'Unknown saved action.');
   keys(value,['type','revision',...fields[value.type]]);
   for(const field of ['nodeId','cardId','claimId','itemId','sceneId'])if(Object.hasOwn(value,field))requireValue(typeof value[field]==='string','Invalid action reference.');
   if(Object.hasOwn(value,'battleRevision'))integer(value.battleRevision,100000);
   if(value.type==='support')requireValue(value.ally==='iven','Unknown ally.');
-  if(value.type==='discover')requireValue(['salvage','cards','mp'].includes(value.option as string),'Invalid discovery.');
+  if(value.type==='discover')requireValue(['salvage','cards','mp','kit'].includes(value.option as string),'Invalid discovery.');
   if(value.type==='choose-reward')requireValue(value.card===null||typeof value.card==='string','Invalid reward choice.');
   if(value.type==='lesson'){
     record(value.command);keys(value.command,['step','revision','action']);integer(value.command.step,18);integer(value.command.revision,1000000);
@@ -231,8 +231,9 @@ export function decodeSave(raw: string): SaveEnvelope {
   }
   if(value.version===4){
     requireValue(value.contentVersion==='systems-preview-4','This save belongs to unsupported game content.');
-    record(value.state);value={...value,version:SAVE_VERSION,contentVersion:CONTENT_VERSION,state:{...value.state,systems:null}};record(value);
+    record(value.state);value={...value,version:5,contentVersion:'systems-preview-5',state:{...value.state,systems:null}};record(value);
   }
+  if(value.version===5){requireValue(value.contentVersion==='systems-preview-5','Unsupported game content.');value={...value,version:SAVE_VERSION,contentVersion:CONTENT_VERSION};record(value);}
   requireValue(value.version === SAVE_VERSION, 'This save version is unsupported. Your existing progress is unchanged.');
   requireValue(value.contentVersion === CONTENT_VERSION, 'This save belongs to unsupported game content.');
   validateCampaign(value.state);

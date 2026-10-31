@@ -108,7 +108,7 @@ function log(state: BattleState, message: string): void {
 export function playCard(previous: BattleState, id: string, revision = previous.revision): BattleState {
   if (previous.outcome || previous.support?.required || revision !== previous.revision) return previous;
   const index = previous.hand.findIndex(card => card.id === id);
-  if (index < 0) return previous;
+  if (index < 0 || (previous.practice?.requiredCardId && previous.practice.requiredCardId !== id)) return previous;
   const card = previous.hand[index];
   const data = cardDefinition(card);
   if (!cardAvailability(previous, card).affordable) return previous;
@@ -118,6 +118,7 @@ export function playCard(previous: BattleState, id: string, revision = previous.
   next.mp -= data.mpCost ?? 0;
   // Keep the resolving card out of both piles until its draw effect completes.
   next.hand.splice(index, 1);
+  if(next.practice)next.practice.requiredCardId=null;
   if (effect.damage) hit(next.enemy, effect.damage);
   next.hero.block += effect.block;
   const handBeforeDraw = next.hand.length;
@@ -132,7 +133,7 @@ export function playCard(previous: BattleState, id: string, revision = previous.
   return next;
 }
 export function endTurn(previous: BattleState, revision = previous.revision): BattleState {
-  if (previous.outcome || previous.support?.required || revision !== previous.revision) return previous;
+  if (previous.outcome || previous.support?.required || previous.practice?.requiredCardId || revision !== previous.revision) return previous;
   const next = structuredClone(previous);
   next.discard.push(...next.hand.splice(0));
   const intent = currentIntent(next);

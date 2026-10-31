@@ -1,12 +1,26 @@
 # Kiln Courier
 
-An original, silent, desktop-first industrial-fantasy card combat prototype. Play Mara, a ceramic-armored courier with a pressure gauntlet, against the Hollow Kiln.
+An original, silent, desktop-first industrial-fantasy card game. Play Mara, a ceramic-armored courier with a pressure gauntlet, through the opening chapter or a standalone battle.
 
 The cinematic combat screen uses an expansive kiln-hall arena, compact HP/MP bars, illustrated cards, and separate energy and strain controls. The prototype uses TypeScript, React, and Vite. Its seeded combat rules run independently of the interface.
 
-Choose **New Story** for guided combat followed by branching routes with battles, card rewards, rest, discoveries and training, or **Standalone battle** for the original replayable fight. **Continue** resumes the saved lesson, choice or battle. After the route, the existing checkpoint battle remains playable. Equipment purchases, brief scenes and Iven’s bridge support are now connected. This is still a systems route rather than the complete opening chapter.
+Choose **New Story** for the complete opening: guided combat, two branching dungeon sections, card choices, discoveries, rest, a guaranteed workshop, Oren’s protected training and upgrade, and Iven’s bridge encounter. Six battles on a chosen route lead to a saved chapter summary. **Standalone battle** retains the original replayable fight; **Continue** resumes a saved lesson, choice or battle. Later chapters and roguelike expeditions are not yet playable.
 
 Campaign actions autosave on this browser. Use **Menu & backups** (or **Menu** during battle) to export a JSON backup or import one with replacement confirmation. Invalid imports preserve current progress. An unreadable stored save is preserved and can be downloaded before choosing to replace it. If storage is unavailable or full, play continues in memory with a session-only notice and backup export. There is no account or cloud save. Standalone battles do not change campaign progress.
+
+## Play the opening
+
+Choose **New Story** to begin; export an existing campaign before replacing it. Follow the highlighted tutorial controls. During ordinary combat, click a card to play it, or use Tab and Enter/Space; focus or hover previews its effects. Energy refills each turn. MP powers special techniques; strain persists until vented, overloaded or a new fight starts. Inspect Draw/Discard and the visible enemy intention before choosing End Turn.
+
+Between fights, choose one forward map branch, collect or skip card rewards, and compare equipment before confirming a purchase. Free equipment swaps never refill resources. Defeat offers an exact retry from the encounter’s saved starting state. Scenes can be skipped or replayed from reached-scene history. Use Menu to export/import progress; saves belong to this browser and origin, so localhost, GitHub Pages and another browser have separate progress.
+
+## Current limits
+
+- Only the opening chapter and standalone guardian battle are playable; later chapters and roguelike expeditions are unavailable.
+- First-time-player pacing and tutorial clarity remain under review; the 20–30 minute goal is not yet verified.
+- Desktop is the primary layout. Narrow screens use a fallback; phone-specific design is deferred. The game is silent.
+- Runtime files total approximately 52 MB, mostly original PNG illustrations and local fonts. Initial loading can be slower on limited connections. No offline cache or cloud sync is provided.
+- Earlier saves retain the legacy route. New Story starts the authored chapter; export first if you want to preserve an older campaign.
 
 ## Develop
 
@@ -62,7 +76,7 @@ Edit source files rather than generated index.html/build files. The build has no
 
 With `npm run dev` running, open `/fixtures.html` at its local URL (normally http://127.0.0.1:5173/fixtures.html). Select Original prototype or Cooling rig to exercise the same engine and interface. The synthetic rig uses existing artwork, a seven-card deck, partial 42/48 HP and 3/6 MP, two energy, three-card draws, and a different two-action intention cycle. It is test content, not an opening-chapter encounter. Fixture controls and definitions are absent from the generated production runtime and the normal entry has no fixture selector.
 
-Inputs are validated before starting, including resource bounds, nonempty intentions, nonnegative integer effects, known card types and unique instance IDs. Battle creation and transitions do not mutate the caller's profile, deck or encounter. Brief teacher scenes are connected; full authored chapter progression remains future work.
+Inputs are validated before starting, including resource bounds, nonempty intentions, nonnegative integer effects, known card types and unique instance IDs. Battle creation and transitions do not mutate the caller's profile, deck or encounter. The authored opening is connected; later chapters remain future work.
 
 ## Equipment and campaign preparation
 
@@ -72,7 +86,7 @@ The saved campaign starts with neutral equipment. Old workbench sells six altern
 
 `campaignTransition` owns accepted commands, revisions, current battle, immutable starting snapshot, completion and claim IDs. Campaign retry restores that exact snapshot, including RNG, grown statistics and deck order. Victory commits remaining HP/MP, then reward selection or Skip collects resources once. Standalone restart continues to create a fresh shuffle.
 
-The current save envelope is version 5, content version `systems-preview-5`, stored at `kiln-courier.story-save`. It validates known content, equipment, resources, piles, snapshots, phases, claims, lesson traces and route choices. New progression retains a validated immutable v3 starting snapshot and accepted commands; replay must reproduce the complete saved state, including card offers, growth, owned equipment, stock, scene effects and support charges. Existing v4 histories retain their original interpretation until an explicit systems-activation command. New Story activates all current systems; supported older saves activate remaining content on Continue or confirmed import. Imports remain limited to 512 KB, with at most 10,000 progression commands. Version 1–4 saves migrate without changing existing battles, resources or claims. Continue/import enables effects at remaining stops; completed preview stops do not grant retroactive rewards. Checked-in v1–v5 fixtures cover migration and pending choices. Unsupported versions are rejected without overwriting progress. The old hint-dismissal key is independent of guided training completion.
+The current save envelope is version 6, content version `systems-preview-6`, stored at `kiln-courier.story-save`. Validation replays accepted commands from the immutable starting snapshot and checks resources, piles, equipment, rewards, scenes, training and support. Imports are limited to 512 KB and 10,000 commands. Version 1–5 saves migrate without resetting battles or resources and retain their existing route; choose New Story to enter the authored opening. Checked-in v1–v6 fixtures cover migration and protected practice. Unsupported or altered saves are rejected without overwriting progress. The old hint-dismissal key remains independent of guided training completion.
 
 Development fixtures also simulate denied storage, full storage and a damaged save without altering the real campaign save. These controls remain excluded from production output.
 
@@ -133,7 +147,7 @@ Actions preserve revision guards and ignore double clicks, repeated keydown, or 
 
 ## Verification baseline
 
-The current 94 tests cover combat, heat/overload, reusable/upgraded Pulse, equipment, exact retry, rewards/growth, saves/storage failures, tutorial/replay, all eight map routes, graph validation, branch commitment and v1–v4→v5 migration. Reward coverage includes saved seeded offers, Skip, claim guards, discovery alternatives, rest/growth caps, new-card interactions and altered-save rejection. Workshop, scene and support tests also cover stock/ownership persistence, all eleven card refinements, legal deck limits, once-only effects, read-only reached-scene replay, support teaching gates, free costs, block expiry, exact retry and spent-charge reload. Type checking and production asset verification run with `npm run check`.
+The current 102 tests cover combat, heat/overload, reusable/upgraded Pulse, equipment, exact retry, rewards/growth, saves/storage failures, tutorial/replay, legacy routes and all sixteen authored opening paths, graph validation, branch commitment and v1–v5→v6 migration. Reward coverage includes saved seeded offers, Skip, claim guards, discovery alternatives, rest/growth caps, new-card interactions and altered-save rejection. Workshop, scene and support tests also cover stock/ownership persistence, all eleven card refinements, legal deck limits, once-only effects, read-only reached-scene replay, support teaching gates, free costs, block expiry, exact retry and spent-charge reload. Type checking and production asset verification run with `npm run check`.
 
 The original TypeScript migration matched every state across 100 seeded battles and 3,022 actions. The subsequent MP/signature addition intentionally changed the starting deck. With the former end-turn cooling rule, base simulations over 100 seeds per policy averaged aggressive 4.06 turns / 43.83 HP, defensive 4.66 / 52.21, and heat-aware 4.21 / 49.72. These are historical comparison values, not the current rules.
 
@@ -149,6 +163,12 @@ The 300 growing-deck route simulations finish successfully across three policies
 
 Additional integration simulations finish all 300 equipment/scenes/support routes: final HP means 40.30 (heavy gauntlet), 46.81 (layered armor) and 42.01 (quick harness). All 600 bridge comparisons finish; Iven improves mean remaining HP without adding a turn. These remain automated policy checks, not human pacing evidence.
 
+The authored-opening matrix completes 288 seeded routes across three policies and power, defense and speed builds, covering all sixteen paths. Three additional browser playthroughs completed New Story through the ending with different routes/builds, purchases, training and Iven support. These are agent-operated checks: unfamiliar-player completion time, tutorial clarity and the 20–30 minute target remain unverified.
+
+## Opening progression
+
+All paths reach the workshop, Oren and Iven. The guaranteed workshop budget is 36 salvage, or 46 after the first salvage discovery. Oren lends neutral practice equipment and protected HP/MP; play highlighted Tempered Flow first, then finish the rig. Practice spending and damage do not consume travel resources. Completion grants +6 maximum/current HP, +2 base maximum/current MP, and upgrades the owned Pulse once. The second discovery offers salvage or an owned Insulated Kit without equipping or refilling it. The ending records growth, deck, equipment, salvage and chosen route; the next chapter is explicitly unavailable.
+
 ## Artwork
 
-The hero, guardian, environment, and shared card-art atlas were generated for this project using the built-in OpenAI image-generation tool. The atlas contains seven card illustrations and two deck backs; all costs/effects are real rendered text, not baked into artwork. Status frames, character crests, resource gemstones, corner flourishes and the kiln mark use original SVG geometry. Cinzel headings and Cormorant Garamond body text are bundled locally with their SIL Open Font Licenses; the game makes no external font requests. No audio is bundled. See [asset provenance and prompts](assets/PROVENANCE.md).
+Fifteen additional opening assets illustrate Oren, Iven, three maintenance machines, five locations and five reward-card designs. Equipment and story details use original SVG. New machines have grounded silhouettes, proportional scaling and a disabled state after victory. The hero, guardian, environment, and shared card-art atlas were generated for this project using the built-in OpenAI image-generation tool. The atlas contains seven card illustrations and two deck backs; all costs/effects are real rendered text, not baked into artwork. Status frames, character crests, resource gemstones, corner flourishes and the kiln mark use original SVG geometry. Cinzel headings and Cormorant Garamond body text are bundled locally with their SIL Open Font Licenses; the game makes no external font requests. No audio is bundled. See [asset provenance and prompts](assets/PROVENANCE.md).

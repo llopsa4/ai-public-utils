@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.5.0 — 2026-10-31
+
+- Prepare local release evidence: repeatable build hashes, reviewed candidate manifest, setup/player notes and save-backup smoke checks. First-time-player timing and clarity remain unverified.
+- Connect the authored two-section opening, sixteen paths, six battles, workshop economy, protected teacher practice and chapter summary.
+- Preserve existing routes and resources when migrating saves to v6; new stories use the authored chapter.
+- Add fifteen original opening illustrations, card art, equipment icons, grounded enemy silhouettes and disabled-machine feedback, with recorded prompts.
+- Verify 102 tests, production asset parity, 288 authored seeded routes and three complete browser routes/builds. Human pacing and first-time-player clarity remain outstanding.
+
 ## 0.4.0 — 2026-10-31
 
 - Add a saved campaign with Continue, JSON backups, validated v1–v4 migration to save v5, exact battle retry and storage-failure fallback.

@@ -524,3 +524,30 @@ dialog h2 { font: normal 30px KilnSerif, Georgia, serif; margin: 20px 0; }
   .support-panel p { line-height:1.3; }
 }
 @media(max-width:650px) { .shop-grid { grid-template-columns:1fr; } .scene-player { grid-template-columns:1fr; } .scene-illustration { min-height:140px; } .scene-illustration img { height:140px; } .owned-equipment li { align-items:start; flex-direction:column; } .scene-lines p span { font-size:21px; } }
+
+/* Opening chapter art: fixed silhouettes, shared floor plane, no sprite stretching. */
+.combat-screen[data-arena] { background-position:center calc(var(--screen-height) - var(--hand-height) - 160px - 43.9vw); }
+.battlefield[data-machine="sweeper"] { --enemy-size:clamp(88px,12vh,120px); }
+.battlefield[data-machine="scavenger"] { --enemy-size:clamp(110px,15vh,150px); }
+.battlefield[data-machine="warden"] { --enemy-size:clamp(110px,15vh,150px); }
+.training-cage { position:absolute; left:50%; transform:translateX(-50%); bottom:calc(var(--floor) - 8px); height:calc(var(--enemy-size) + 25px); width:calc(var(--enemy-size) * 1.8); color:#a59372; z-index:3; pointer-events:none; filter:drop-shadow(2px 3px 2px #0009); }
+.reinforcement-plate { position:absolute; left:50%; transform:translateX(-50%); bottom:calc(var(--floor) + var(--enemy-size) * .33); width:calc(var(--enemy-size) * .55); z-index:3; pointer-events:none; }
+.disabled-machine .fighter { filter:grayscale(.75) brightness(.55); opacity:.8; animation:none; }
+.disabled-machine .reinforcement-plate,.disabled-machine .training-cage { filter:grayscale(.8) brightness(.65); }
+.disabled-label { font-size:17px!important; letter-spacing:1px; color:#e1c28c; }
+.support-portrait { height:40px; width:32px; object-fit:contain; margin-right:8px; vertical-align:middle; }
+.equipment-icon { width:32px; height:32px; color:var(--gold); vertical-align:middle; margin:0 9px 8px 0; flex-shrink:0; }
+.owned-equipment .equipment-icon { float:left; }
+.scene-illustration { background-size:cover; background-position:center; border:1px solid #614c2c; overflow:hidden; }
+.scene-illustration img { position:relative; z-index:1; filter:drop-shadow(0 3px 5px #0009); }
+.scene-illustration>span { z-index:2; background:#100c08c9; padding:6px 0; }
+.story-detail { display:block; width:90px; height:58px; color:var(--gold); margin:8px 0; }
+.route-section-label { font-family:KilnSerif,Georgia,serif; color:var(--gold); font-size:16px; }
+.route-place-thumb { display:block; width:100%; height:135px; object-fit:cover; border:1px solid #614c2c; margin:12px 0; }
+.workshop-location { height:150px; background-size:cover; background-position:center 60%; border:1px solid #614c2c; margin:12px 0 24px; }
+@media(max-width:900px) {
+ .combat-screen[data-arena] { background-position:center -45px; }
+ .battlefield[data-machine="sweeper"] { --enemy-size:80px; }
+ .battlefield[data-machine="scavenger"] { --enemy-size:95px; }
+ .battlefield[data-machine="warden"] { --enemy-size:min(90px,18vw); }
+}

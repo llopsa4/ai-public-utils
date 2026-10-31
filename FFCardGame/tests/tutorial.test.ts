@@ -132,7 +132,7 @@ test('version 1 checkpoints migrate without resetting active combat, pending cla
   for(const current of states){
     const {tutorial:_t,replay:_r,guidedComplete:_g,salvage:_s,dungeon:_d,progression:_p,systems:_x,...legacy}=current;
     const migrated=decodeSave(JSON.stringify({version:1,contentVersion:'systems-preview-1',savedAt:'2026-10-31T12:00:00.000Z',state:legacy}));
-    assert.equal(migrated.version,5);
+    assert.equal(migrated.version,6);
     assert.deepEqual(migrated.state,current);
     assert.equal(migrated.state.guidedComplete,false);
   }

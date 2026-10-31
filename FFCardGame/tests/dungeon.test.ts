@@ -108,7 +108,7 @@ test('route saves reject disconnected, bypassed, duplicated and half-completed h
 test('v2 tutorial fixture migrates to v3 without altering lesson or requiring a map reset', () => {
   const raw=readFileSync(new URL('./fixtures/save-v2-tutorial.json',import.meta.url),'utf8');
   const old=JSON.parse(raw), migrated=decodeSave(raw);
-  assert.equal(migrated.version,5);
+  assert.equal(migrated.version,6);
   assert.deepEqual(migrated.state,{...old.state,dungeon:null,progression:null,systems:null});
   roundtrip(migrated.state);
 });

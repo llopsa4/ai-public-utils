@@ -68,6 +68,7 @@ export interface BattleConfig {
 }
 
 export interface BattleState {
+  practice?: { requiredCardId: string | null };
   support?: { present: AllyId[]; spent: AllyId[]; required: AllyId | null };
   readonly config: BattleConfig;
   hero: FighterState;
