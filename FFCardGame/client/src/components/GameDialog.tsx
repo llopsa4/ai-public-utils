@@ -1,14 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { cardDefinition, cardLabel } from '../content/cards';
 import type { BattleState } from '../game/types';
 
-export type DialogKind = 'help' | 'restart' | 'draw' | 'discard' | 'log' | 'outcome';
-interface Props { kind: DialogKind | null; state: BattleState; onClose: () => void; onRestart: () => void }
+export type DialogKind = 'help' | 'restart' | 'draw' | 'discard' | 'log' | 'outcome' | 'intent';
+interface Props { kind: DialogKind | null; state: BattleState; onClose: () => void; onRestart: () => void; campaign?: boolean; onVictory?: () => void; lessonPrompt?: string; onReplay?: () => void }
 
-export function GameDialog({ kind, state, onClose, onRestart }: Props) {
+export function GameDialog({ kind, state, onClose, onRestart, campaign = false, onVictory, lessonPrompt, onReplay }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
-  useEffect(() => {
+  useLayoutEffect(() => {
     const element = dialog.current;
     if (!element) return;
     if (kind && !element.open) {
@@ -18,38 +18,43 @@ export function GameDialog({ kind, state, onClose, onRestart }: Props) {
   }, [kind]);
 
   const victory = state.outcome === 'victory';
-  const title = kind === 'help' ? 'Keep the fire in your hands.' : kind === 'restart' ? 'Start a fresh delivery?' : kind === 'draw' ? `Draw pile · ${state.draw.length}` : kind === 'discard' ? `Discard pile · ${state.discard.length}` : kind === 'log' ? 'Ashes of the battle' : kind === 'outcome' ? victory ? 'The delivery goes on.' : 'Even embers go cold.' : '';
+  const title = kind === 'intent' ? state.config.encounter.enemy.intents[state.intent].name : kind === 'help' ? 'Keep the fire in your hands.' : kind === 'restart' ? 'Start a fresh delivery?' : kind === 'draw' ? `Draw pile · ${state.draw.length}` : kind === 'discard' ? `Discard pile · ${state.discard.length}` : kind === 'log' ? 'Ashes of the battle' : kind === 'outcome' ? victory ? 'The delivery goes on.' : 'Even embers go cold.' : '';
   const closeLabel = kind === 'help' ? 'Back to the kiln' : kind === 'draw' || kind === 'discard' || kind === 'log' ? 'Back to battle' : 'Keep playing';
 
   return <dialog ref={dialog} id="modal" aria-labelledby="modal-title" onCancel={event => { event.preventDefault(); onClose(); }}
     onClose={() => {
+      if (lessonPrompt) return;
       const target = returnFocus.current;
       if (target?.isConnected && !target.matches(':disabled')) target.focus();
       else document.getElementById('help-button')?.focus();
     }}
     onClick={event => {
+      if (lessonPrompt) return;
       if (event.target !== dialog.current) return;
       const rect = dialog.current.getBoundingClientRect();
       if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) onClose();
     }}>
-    <div className="modal-top"><span className="eyebrow">KILN COURIER</span><button id="close-modal" className="quiet" aria-label="Close dialog" onClick={onClose}>Close ×</button></div>
+    <div className="modal-top"><span className="eyebrow">KILN COURIER</span><button id="close-modal" className={`quiet${lessonPrompt && kind !== 'restart' && kind !== 'outcome' ? ' lesson-target' : ''}`} disabled={!!lessonPrompt && (kind === 'restart' || kind === 'outcome')} aria-label="Close dialog" onClick={onClose}>Close ×</button></div>
     <h2 id="modal-title">{title}</h2>
+    {lessonPrompt && <p className="lesson-modal-prompt" role="status">◆ {lessonPrompt}</p>}
     <div id="modal-body">
-      {kind === 'help' && <Help state={state} />}
-      {kind === 'restart' && <p>Your current battle will be lost. A new battle starts with its original resources and a freshly shuffled deck.</p>}
+      {kind === 'intent' && <p>It will attack for <strong>{state.config.encounter.enemy.intents[state.intent].damage}</strong>.{state.config.encounter.enemy.intents[state.intent].block > 0 ? ` It gains ${state.config.encounter.enemy.intents[state.intent].block} block before attacking.` : ''} Gain block before ending your turn.</p>}
+      {kind === 'help' && <Help state={state} campaign={campaign} />}
+      {kind === 'restart' && <p>{lessonPrompt ? 'Cancel keeps this exact turn. To restart the whole lesson later, use Menu → Restart lesson.' : campaign ? 'Retry this encounter with exactly the same starting health, MP, deck order and seed. Your earlier progress stays.' : 'Your current battle will be lost. A new battle starts with its original resources and a freshly shuffled deck.'}</p>}
       {(kind === 'draw' || kind === 'discard') && <Pile state={state} which={kind} />}
       {kind === 'log' && <ol className="log-list">{state.log.map((entry, index) => <li key={index}>{entry}</li>)}</ol>}
       {kind === 'outcome' && <>
         <span className="outcome-kicker">{victory ? `${state.config.encounter.enemy.label.toUpperCase()} DEFEATED` : 'DELIVERY LOST'}</span>
         <p>{victory ? state.config.encounter.victoryText : 'The kiln keeps its silence. Take a breath, read its intentions, and give the gauntlet another chance.'}</p>
         <div className="summary-stats"><div><strong>{state.turn}</strong><span>TURNS</span></div><div><strong>{state.hero.hp}</strong><span>HEALTH LEFT</span></div><div><strong>{state.mp}</strong><span>MP LEFT</span></div><div><strong>{state.config.encounter.enemy.maxHp - state.enemy.hp}</strong><span>DAMAGE DEALT</span></div></div>
-        <p>This is the end of the combat prototype. Try a fresh shuffle and a different balance of heat and defense.</p>
+        <p>{lessonPrompt ? 'Lesson complete. Continue to return to your journey.' : campaign ? victory ? 'Continue to review the result and your reward. Your choices are saved.' : 'Retry from the exact saved starting state. Earlier progress stays.' : 'This is the end of the combat prototype. Try a fresh shuffle and a different balance of heat and defense.'}</p>
       </>}
     </div>
     <div id="modal-actions">
-      {kind === 'outcome' ? <><button className="quiet" onClick={onClose}>Inspect battlefield</button><button className="modal-primary" onClick={onRestart}>Play again</button></>
+      {lessonPrompt ? kind === 'restart' ? <><button id="lesson-cancel" className="modal-primary lesson-target" onClick={onClose}>Cancel restart</button><button disabled title="Cancel first to keep this teaching battle." className="quiet">Restart unavailable during this step</button></> : kind === 'outcome' ? <button id="lesson-continue" className="modal-primary lesson-target" onClick={onVictory}>Continue</button> : null : kind === 'outcome' ? <><button className="quiet" onClick={onClose}>Inspect battlefield</button><button className="modal-primary" onClick={campaign && victory ? onVictory : onRestart}>{campaign ? victory ? 'Continue' : 'Retry encounter' : 'Play again'}</button></>
         : kind === 'restart' ? <><button className="quiet" onClick={onClose}>Keep playing</button><button className="modal-primary" onClick={onRestart}>Restart battle</button></>
         : <button className="modal-primary" onClick={onClose}>{closeLabel}</button>}
+      {kind === 'help' && onReplay && <button className="quiet" onClick={onReplay}>Replay combat lesson</button>}
     </div>
   </dialog>;
 }
@@ -65,7 +70,7 @@ function Pile({ state, which }: { state: BattleState; which: 'draw' | 'discard' 
   </>;
 }
 
-function Help({ state }: { state: BattleState }) {
+function Help({ state, campaign }: { state: BattleState; campaign: boolean }) {
   const enemy = state.config.encounter.enemy.label.toLowerCase();
   const signature = [...state.hand, ...state.draw, ...state.discard].find(card => card.type === 'pulse');
   const pulse = cardDefinition(signature ?? { type: 'pulse', id: 'help-reference' });
@@ -81,6 +86,6 @@ function Help({ state }: { state: BattleState }) {
       <li><strong>End turn:</strong> discard your hand and let the {enemy} act. Then refill energy and draw {state.config.encounter.handSize}.</li>
       <li><strong>Keep cycling:</strong> when the draw pile empties, the discard pile is shuffled back in. Pressure Cycle cannot draw itself while resolving.</li>
     </ul>
-    <p>Defeat the {enemy} to win. If both fall on the same card, the delivery is lost. Reloading starts a fresh battle. This prototype has no audio.</p>
+    <p>Defeat the {enemy} to win. If both fall on the same card, the delivery is lost. {campaign ? 'Campaign actions autosave when storage is available; Continue resumes this exact state.' : 'Reloading the standalone battle returns to the menu without saving it.'} This prototype has no audio.</p>
   </>;
 }

@@ -1,5 +1,11 @@
 # Asset provenance
 
+Brief scene plates reuse the approved Mara cutout and kiln environment; no new generated art was created for scene playback or support. Iven is currently represented by his labeled support control and dialogue, while Cable Warden uses the guardian cutout as functional art. Distinct scene environments, Iven and the warden remain in the illustration delivery. Workshop frames, comparisons and controls are native HTML/CSS.
+
+The route-map symbols and connectors are original inline SVG geometry authored in the game components. They introduce no third-party image or icon dependency.
+
+The five reward techniques reuse the original seven-cell card illustration atlas: Measured Drive uses Knuckle Drive, Fitted Brace uses Ceramic Guard, Ember Hook uses Piston Strike, Return Stroke uses Pressure Cycle and Pressure Return uses Kiln Pulse. Names, costs and effects are rendered separately. The Ash Sweeper, Pressure Scavenger and Training Rig temporarily reuse the original guardian cutout; distinct encounter illustrations are deferred. No new generated artwork or third-party assets were added for rewards/progression.
+
 ## Fantasy interface and bundled fonts — 2026-10-31
 
 Status plaques, ceramic corners, pressure-gauntlet and furnace-eye crests, ruby HP stones, sapphire MP gems, block shields and corner flourishes were authored as original SVG/CSS in client/src/components/Ornaments.tsx and style.css. All labels and resource values remain rendered text with accessible meters. The approved private concept image is not a shipped asset; no character, environment or card illustration was replaced.

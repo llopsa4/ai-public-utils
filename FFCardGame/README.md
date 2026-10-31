@@ -2,7 +2,11 @@
 
 An original, silent, desktop-first industrial-fantasy card combat prototype. Play Mara, a ceramic-armored courier with a pressure gauntlet, against the Hollow Kiln.
 
-The cinematic combat screen uses an expansive kiln-hall arena, compact HP/MP bars, illustrated cards, and separate energy and strain controls. The prototype uses TypeScript, React, and Vite. Its seeded combat rules run independently of the interface. This refactor preserves the existing one-battle game; campaign features are developed separately.
+The cinematic combat screen uses an expansive kiln-hall arena, compact HP/MP bars, illustrated cards, and separate energy and strain controls. The prototype uses TypeScript, React, and Vite. Its seeded combat rules run independently of the interface.
+
+Choose **New Story** for guided combat followed by branching routes with battles, card rewards, rest, discoveries and training, or **Standalone battle** for the original replayable fight. **Continue** resumes the saved lesson, choice or battle. After the route, the existing checkpoint battle remains playable. Equipment purchases, brief scenes and Iven’s bridge support are now connected. This is still a systems route rather than the complete opening chapter.
+
+Campaign actions autosave on this browser. Use **Menu & backups** (or **Menu** during battle) to export a JSON backup or import one with replacement confirmation. Invalid imports preserve current progress. An unreadable stored save is preserved and can be downloaded before choosing to replace it. If storage is unavailable or full, play continues in memory with a session-only notice and backup export. There is no account or cloud save. Standalone battles do not change campaign progress.
 
 ## Develop
 
@@ -24,7 +28,7 @@ npm run playtest
 npm run build
 ```
 
-`npm run check` runs type checking, the test suite, and the production build together. Tests run directly against the TypeScript engine using Node's test runner through tsx. The playtest compares three policies over 100 seeded battles each for both base and trained signatures.
+`npm run check` runs type checking, the test suite, and the production build together. Tests run directly against the TypeScript engine using Node's test runner through tsx. The playtest compares three policies over 100 seeded battles each for both base and trained signatures, then 100 heat-aware battles for each of the six equipment alternatives (1,200 total), plus the scripted teaching battle and 300 growing-deck routes through training and the final checkpoint. Additional checks cover 300 refined-deck/equipment battles, 600 bridge battles with/without support and 300 complete routes that buy/equip power, defense or speed gear, play scenes, use Iven’s support and resume saved rewards.
 
 The Vite source entry is `client/index.html`. Production output is first generated in ignored `dist/`, then `scripts/build.mjs` updates the generated root `index.html` and `build/`. A build verifier checks asset parity, relative entry URLs, and exclusion of private documents.
 
@@ -41,11 +45,12 @@ Then open http://127.0.0.1:8765/FFCardGame/. Opening HTML through `file:` is uns
 ## Code layout
 
 - `client/src/game/`: typed battle state, seeded rules, and pure transitions; no React, DOM, or storage dependencies.
-- `client/src/content/`: card definitions and the explicit prototype profile/encounter fixture.
+- `client/src/content/`: card, equipment, profile, encounter and checkpoint definitions.
 - `client/src/components/`: battlefield, resources, cards, previews, and native dialogs rendered by React.
 - `client/src/hooks/useBattle.ts`: synchronous input guards, transient action feedback, and battle orchestration.
-- `client/src/persistence/`: optional tutorial preference storage, retaining its original key.
+- `client/src/persistence/`: versioned campaign save validation/storage and the unchanged optional hint preference.
 - `client/src/App.tsx`: screen composition, focus management, and modal selection.
+- `client/src/CampaignApp.tsx`: menu, campaign command dispatch, autosave boundaries and backup flows. Combat animations remain transient; they do not own campaign state.
 - `style.css`: shared visual layout and reduced-motion rules. Artwork source files and provenance remain in `assets/`; Vite bundles only imported assets.
 - `tests/`: combat, preferences, and reproducible balance simulation.
 
@@ -57,15 +62,57 @@ Edit source files rather than generated index.html/build files. The build has no
 
 With `npm run dev` running, open `/fixtures.html` at its local URL (normally http://127.0.0.1:5173/fixtures.html). Select Original prototype or Cooling rig to exercise the same engine and interface. The synthetic rig uses existing artwork, a seven-card deck, partial 42/48 HP and 3/6 MP, two energy, three-card draws, and a different two-action intention cycle. It is test content, not an opening-chapter encounter. Fixture controls and definitions are absent from the generated production runtime and the normal entry has no fixture selector.
 
-Inputs are validated before starting, including resource bounds, nonempty intentions, nonnegative integer effects, known card types and unique instance IDs. Battle creation and transitions do not mutate the caller's profile, deck or encounter. Equipment bonuses, campaign progression, teacher scenes and saves remain separate work.
+Inputs are validated before starting, including resource bounds, nonempty intentions, nonnegative integer effects, known card types and unique instance IDs. Battle creation and transitions do not mutate the caller's profile, deck or encounter. Brief teacher scenes are connected; full authored chapter progression remains future work.
+
+## Equipment and campaign preparation
+
+Profiles may supply a three-slot loadout: gauntlet, armor and utility. Missing gear defaults to neutral courier items. Power adds once to an attacking card; defense adds once to a block-granting card. Speed 0–1 draws the normal opening hand, 2–3 adds one card, and 4+ adds two; later turns retain the encounter's normal draw. Heavy Gauntlet adds one strain per attacking card. Maximum-MP gear raises the cap; equipping it never refills MP, and removing it clamps excess MP. Card values, accessible descriptions and effect previews use the same calculation as combat.
+
+The saved campaign starts with neutral equipment. Old workbench sells six alternatives for 24 or 32 salvage; buying adds ownership without equipping. Compare raw bonuses/penalties and resulting power, defense, speed, opening draw and MP cap. The owned collection allows free swaps between encounters. Stock and one-upgrade-per-item limits persist. An upgrade costs 20 salvage; ordinary card refinement costs 16 and removal costs 20, with an eight-card minimum. Pulse stays protected for teacher training. Transactions require confirmation and reject insufficient funds, stale input, duplicates and combat changes. Leaving closes this workshop. The development fixture's Build selector still previews statistics in isolation.
+
+`campaignTransition` owns accepted commands, revisions, current battle, immutable starting snapshot, completion and claim IDs. Campaign retry restores that exact snapshot, including RNG, grown statistics and deck order. Victory commits remaining HP/MP, then reward selection or Skip collects resources once. Standalone restart continues to create a fresh shuffle.
+
+The current save envelope is version 5, content version `systems-preview-5`, stored at `kiln-courier.story-save`. It validates known content, equipment, resources, piles, snapshots, phases, claims, lesson traces and route choices. New progression retains a validated immutable v3 starting snapshot and accepted commands; replay must reproduce the complete saved state, including card offers, growth, owned equipment, stock, scene effects and support charges. Existing v4 histories retain their original interpretation until an explicit systems-activation command. New Story activates all current systems; supported older saves activate remaining content on Continue or confirmed import. Imports remain limited to 512 KB, with at most 10,000 progression commands. Version 1–4 saves migrate without changing existing battles, resources or claims. Continue/import enables effects at remaining stops; completed preview stops do not grant retroactive rewards. Checked-in v1–v5 fixtures cover migration and pending choices. Unsupported versions are rejected without overwriting progress. The old hint-dismissal key is independent of guided training completion.
+
+Development fixtures also simulate denied storage, full storage and a damaged save without altering the real campaign save. These controls remain excluded from production output.
+
+## Guided combat lesson
+
+New Story starts a real, safe three-turn battle with one outlined control and a short prompt at a time. It teaches enemy intention, attack/energy, guard/block, End Turn, draw/discard inspection, Help, battle log, restart cancellation, and reusable Kiln Pulse/MP/strain. Unrelated actions are disabled and rejected by the pure transition layer; there is no generic Next button or scripted victory. The first draw order is teaching-specific; all twelve cards are conserved, the turn-three discard reshuffle uses seed 101, and ordinary encounter shuffles remain unchanged.
+
+Use the mouse or Tab/Enter/Space. Escape closes the required dialog; during restart confirmation it means Cancel. Focus and instant scrolling follow the required control after each step. The lesson, combat and stable dialog kind save atomically, including during an open modal. Menu → Restart lesson explicitly returns to its beginning. A state mismatch cannot award completion; a safe restart is available.
+
+The teaching sweeper has 30 HP and attacks for 4. Knuckle Drive, Guard, Pulse and Piston Strike produce an actual victory on turn three: 60 HP, 6 MP and 8 strain. First Continue records guided completion separately from hint dismissal, restores campaign starting resources to 60 HP/10 MP and grants 12 salvage exactly once. **Help → Replay combat lesson** unlocks after completion. Replay uses neutral starting resources and deck, pauses the campaign, saves its own lesson progress alongside it and awards nothing. On completion the original campaign resumes unchanged.
+
+The lesson leads directly to the route preview. The teaching machine temporarily reuses existing guardian art. No new character artwork or long narrative scenes are included.
+
+## Branching systems route
+
+The connected kiln map has ten stops and eight forward-only paths. Battle, rest, discovery, workshop, teacher, story and exit symbols show the kinds of stops ahead. Every path meets the teacher and story gates. Inspect any stop for its risk and reward category; only adjacent **Available** stops offer **Travel**. Travelling commits the branch. Visited stops and passed alternatives cannot be replayed or used to backtrack.
+
+Click a map button to inspect it. Arrow keys move between stops; Home/End inspect the first/last stop, and Tab reaches Travel. Node states are written as text as well as distinguished visually. SVG connectors show the chosen route and available connections; walking animation is not needed.
+
+Ashway and Pressure walk start actual machine battles. Victory offers 12 salvage, up to 2 MP recovery and a seeded choice of three cards, or Skip; the final checkpoint offers 20 salvage instead. Choosing or skipping collects those resources once. Five reward techniques add low-strain attacks, protection, hot damage, draw/venting and mixed MP-powered effects. No reward offers an extra Kiln Pulse. Inspect your persistent deck between stops.
+
+Quiet hearth restores 30% of maximum HP, rounded up and capped, and refills effective maximum MP. Forgotten alcove offers 10 salvage or a saved three-card choice; Ember overlook offers 10 salvage or up to 2 MP. The training rig restores pre-training HP/MP after victory, then adds 6 current/maximum HP and 2 current/base maximum MP and upgrades the owned Pulse to Tempered Flow. Gear MP bonuses apply once. Each stop can be completed once.
+
+Old workbench opens equipment and card services. Bridge watch introduces Iven and a 68-HP Cable Warden encounter; its victory grants 20 salvage and capped +2 MP without a card offer. The exit remains a route endpoint, followed by the original checkpoint. Pending destinations and card offers autosave before display, so reload cannot reroll them or reopen abandoned branches. At the exit, **Return to checkpoint** returns to the checkpoint context with earned resources. **Review route** never resets it. The map validator rejects missing edges, dead ends, cycles, unreachable nodes and bypassable/out-of-order gates. This synthetic route is not the full authored chapter; existing guardian artwork temporarily represents the route machines and warden. Distinct environment/character art and the final authored map belong to later integration.
 
 ## Signature technique and MP preparation hooks
 
 Kiln Pulse supports an optional `tempered-flow` upgrade on its existing instance. It retains its name, art, 2-energy cost, 16 damage and 6 block, while costing 3 MP and adding 3 strain instead of 4 each. The technique subtitle appears on the card, in piles and in the log. The engine, affordability checks, Help and previews resolve the same definition. Upgraded Pulse still shuffles and can be reused; it has no once-per-battle limit or guaranteed ordinary opening draw.
 
-`learnTemperedFlow(profile, instanceId)` returns an updated profile without changing its input or duplicating the card. Reapplying it to an already trained instance is a no-op. It grants no HP/MP, reward or story progress. `recoverMP(profile, amount)` provides explicit capped recovery; callers can request partial recovery or `profile.maxMp` for a full refill. Neither helper is automatically called after combat. Campaign eligibility, one-time claims, training scenes and recovery economy belong to later packages.
+`learnTemperedFlow(profile, instanceId)` returns an updated profile without changing its input or duplicating the card. Reapplying it to an already trained instance is a no-op. It grants no HP/MP, reward or story progress itself. `recoverMP(profile, amount)` provides explicit capped recovery. Campaign transitions own eligibility, one-time training growth and recovery; pure helpers supply the same calculations to screen previews.
 
-On the development fixture page, choose **Signature technique**, then **Start trained test battle**. It compares MP/strain costs and starts a fresh test with the same owned signature. Its normal seeded opening hand happens to contain Pulse; this does not change ordinary draws. At 3 MP the base card is disabled and its trained counterpart is playable. This is a development demonstration, not an implemented teacher encounter or player-facing upgrade menu. The normal prototype continues with the base signature.
+On the development fixture page, choose **Signature technique**, then **Start trained test battle** to compare MP/strain costs in isolation. At 3 MP the base card is disabled and its trained counterpart is playable. This fixture changes no campaign progress. Story mode earns the upgrade through the training rig; the standalone prototype continues with the base signature.
+
+## Brief scenes and ally support
+
+New Story begins with short exchanges and clear actions. Continue advances one exchange; Skip applies the same essential consequence once and never skips combat. Scene position and objective autosave. Menu offers read-only replay of reached scenes between encounters; unreached scenes are unavailable. The renderer is separate from opening scene data. Existing Mara/arena artwork is reused for these functional scene plates; this does not complete the later illustration delivery.
+
+At the bridge Iven arrives before the first player command. His highlighted **Brace · +8 block** button must be used once before ordinary card/End Turn actions unlock. It costs no energy or MP, causes no enemy action, and does not scale with equipment defense. The spent charge survives reload and later turns; normal block expiry applies. Retry restores the exact battle-start snapshot. Fresh subsequent battles grant one new support charge without repeating the first-use lock. Iven has no separate deck, HP or equipment.
+
+The present systems route has fewer battles than the final opening map, so it does not yet provide that map’s guaranteed workshop budget or 20–30 minute pacing. Prices and upgrade effects use the agreed specification; completing the authored route and its economy is the next delivery.
 
 ## Controls and rules
 
@@ -80,13 +127,13 @@ On the development fixture page, choose **Signature technique**, then **Start tr
 - Empty draw piles reshuffle the discard pile. Pressure Cycle cannot draw itself while resolving.
 - Complete the card and overload before checking the outcome. Simultaneous defeat is a loss.
 - Inspect piles without revealing draw order; the battle log keeps the latest 30 actions. Restart asks for confirmation.
-- Reloading starts a fresh battle. Only tutorial dismissal persists, using `kiln-courier.tutorial-complete.v1`. Unavailable storage does not interrupt play.
+- Reloading returns to the menu; Continue restores the saved campaign exactly. Standalone battles are not saved. The optional hint-dismissal preference retains `kiln-courier.tutorial-complete.v1`; it does not indicate completion of guided combat training.
 
 Actions preserve revision guards and ignore double clicks, repeated keydown, or input during short feedback animations. Motion follows the operating system's reduced-motion preference. Small screens receive a wrapping fallback; desktop remains the primary layout.
 
 ## Verification baseline
 
-The current 42 tests cover combat, turn-to-turn heat retention, nonnumeric/accessible strain feedback, resource costs, reusable Kiln Pulse, Tempered Flow identity/effects, capped MP preparation, configurable profiles/encounters, input isolation/validation, reshuffling, input revisions, terminal outcomes, card conservation, and optional storage. Type checking and production asset verification run with `npm run check`.
+The current 94 tests cover combat, heat/overload, reusable/upgraded Pulse, equipment, exact retry, rewards/growth, saves/storage failures, tutorial/replay, all eight map routes, graph validation, branch commitment and v1–v4→v5 migration. Reward coverage includes saved seeded offers, Skip, claim guards, discovery alternatives, rest/growth caps, new-card interactions and altered-save rejection. Workshop, scene and support tests also cover stock/ownership persistence, all eleven card refinements, legal deck limits, once-only effects, read-only reached-scene replay, support teaching gates, free costs, block expiry, exact retry and spent-charge reload. Type checking and production asset verification run with `npm run check`.
 
 The original TypeScript migration matched every state across 100 seeded battles and 3,022 actions. The subsequent MP/signature addition intentionally changed the starting deck. With the former end-turn cooling rule, base simulations over 100 seeds per policy averaged aggressive 4.06 turns / 43.83 HP, defensive 4.66 / 52.21, and heat-aware 4.21 / 49.72. These are historical comparison values, not the current rules.
 
@@ -95,6 +142,12 @@ The configurable-battle change preserved the pre-change prototype across 100 see
 With cooling still enabled, the optional technique also preserved base parity; trained means were 4.01/4.64/4.11 turns and 46.07/53.27/49.91 HP. Removing automatic cooling intentionally changes that behavior, so old transition parity is no longer an acceptance criterion for this rule change.
 
 Current simulations with strain retained between turns (100 seeds per policy, all 600 battles won): base aggressive 3.95 turns / 37.99 HP, defensive 4.57 / 45.14, heat-aware 4.46 / 44.18; trained aggressive 3.95 / 38.23, defensive 4.59 / 45.94, heat-aware 4.53 / 44.67. Mean overloads are now 1.84/1.45/1.28 for base and 1.86/1.32/1.17 for trained. Keeping heat makes hot attacks and overloads more frequent; deliberate venting is more valuable. No other card/enemy tuning was applied. Simulations do not establish human pacing or campaign balance.
+
+The equipment addition preserves all six neutral baseline results. Across 100 heat-aware seeds each, Heavy Gauntlet averaged 3.77 turns / 44.26 HP, Balanced Gauntlet 3.97 / 45.88, Layered Armor 4.64 / 49.21, Light Armor 4.55 / 46.51, Quick-release Harness 4.28 / 44.90, and Insulated Kit 4.55 / 46.51. All 600 equipped battles won. Power shortened fights, layered armor prevented more damage, and speed improved opening flexibility; these subsystem results do not establish campaign economy balance or player preference.
+
+The 300 growing-deck route simulations finish successfully across three policies. Mean total turns across the route battle, training and checkpoint are 7.74 aggressive, 8.48 defensive and 8.13 heat-aware; mean final HP is 43.14, 51.38 and 49.61 respectively. Existing 1,200 combat results remain unchanged. This validates subsystem compatibility, not the future chapter's human pacing or economy.
+
+Additional integration simulations finish all 300 equipment/scenes/support routes: final HP means 40.30 (heavy gauntlet), 46.81 (layered armor) and 42.01 (quick harness). All 600 bridge comparisons finish; Iven improves mean remaining HP without adding a turn. These remain automated policy checks, not human pacing evidence.
 
 ## Artwork
 

@@ -1,6 +1,7 @@
 // Pure preparation hooks. Campaign transitions own eligibility and one-time grants.
 import { cardDefinition } from '../content/cards';
 import type { CharacterProfile } from './types';
+import { deriveStats } from './equipment';
 
 export function learnTemperedFlow(profile: CharacterProfile, instanceId: string): CharacterProfile {
   const matches = profile.deck.filter(card => card.id === instanceId);
@@ -13,9 +14,10 @@ export function learnTemperedFlow(profile: CharacterProfile, instanceId: string)
 
 export function recoverMP(profile: CharacterProfile, amount: number): CharacterProfile {
   if (!Number.isSafeInteger(amount) || amount < 0) throw new Error('MP recovery must be a nonnegative integer');
-  if (!Number.isSafeInteger(profile.maxMp) || profile.maxMp < 0 || !Number.isSafeInteger(profile.mp) || profile.mp < 0 || profile.mp > profile.maxMp) {
+  const maximum = deriveStats(profile).maxMp;
+  if (!Number.isSafeInteger(profile.mp) || profile.mp < 0 || profile.mp > maximum) {
     throw new Error('Invalid profile MP');
   }
-  const mp = profile.mp + Math.min(amount, profile.maxMp - profile.mp);
+  const mp = profile.mp + Math.min(amount, maximum - profile.mp);
   return mp === profile.mp ? profile : { ...profile, mp };
 }

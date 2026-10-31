@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.4.0 — 2026-10-31
+
+- Add a saved campaign with Continue, JSON backups, validated v1–v4 migration to save v5, exact battle retry and storage-failure fallback.
+- Add guided combat with highlighted required controls and reward-free replay, plus a connected branching systems route.
+- Connect battles, seeded card choices, rest, discoveries, training restoration and permanent HP/MP/signature growth.
+- Add equipment statistics, persistent workshop stock, purchases/upgrades, free swaps and paid card refinement/removal.
+- Add brief skippable scenes, saved objectives and read-only replay of reached scenes.
+- Introduce Iven at the bridge with one free 8-block support use per battle and saved charge state.
+- Preserve standalone combat, existing saves and private planning exclusions. The full authored chapter, final economy and distinct new illustrations remain future work.
+- Verify 94 tests, production assets, seeded combat/build/route simulations and desktop/narrow browser flows.
+
 ## 0.3.0 — 2026-10-31
 
 - Implement fantasy serif typography with locally bundled fonts, sculpted status plaques, original crests and gemstone HP/MP icons in place of hearts.

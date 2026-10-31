@@ -1,7 +1,7 @@
 import { assets } from '../assets';
-import type { CardType } from '../game/types';
+import type { CardArtType } from '../game/types';
 
-export type ArtType = CardType | 'draw-back' | 'discard-back';
+export type ArtType = CardArtType | 'draw-back' | 'discard-back';
 const positions: Record<ArtType, string> = {
   strike: '0% 0%', guard: '50% 0%', pulse: '100% 0%',
   vent: '0% 50%', cycle: '50% 50%', piston: '100% 50%',

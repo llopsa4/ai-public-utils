@@ -4,9 +4,9 @@ import type { BattleState } from '../game/types';
 import type { BattleAnimation } from '../hooks/useBattle';
 import { ArtifactFrame, StatusCrest, ResourceSymbol, FrameCorners } from './Ornaments';
 
-interface Props { state: BattleState; animation: BattleAnimation | null }
+interface Props { state: BattleState; animation: BattleAnimation | null; onInspectIntent?: () => void; intentBlocked?: boolean; intentHighlighted?: boolean }
 
-export function Battlefield({ state, animation }: Props) {
+export function Battlefield({ state, animation, onInspectIntent, intentBlocked, intentHighlighted }: Props) {
   const intent = currentIntent(state);
   const { hero, encounter } = state.config;
   return <section className={`battlefield${animation?.overload ? ' overloaded' : ''}`} aria-label="Battlefield">
@@ -28,11 +28,11 @@ export function Battlefield({ state, animation }: Props) {
       <img key={`hero-${state.revision}`} className={`fighter hero-art${animation ? animation.actor === 'hero' ? ' act' : ' hit' : ''}`} id="hero-art" src={assets.hero} alt="Mara, an ochre-cloaked courier in ceramic armor, standing on the kiln floor with a pressure gauntlet." />
     </div>
     <div className="combatant enemy">
-      <div className="intent" id="intent" tabIndex={0} aria-label={`Next enemy action: ${intent.name}. ${intent.damage} damage.${intent.block ? ` Gains ${intent.block} block before attacking.` : ''}`}>
+      <button type="button" className={`intent${intentHighlighted ? ' lesson-target' : ''}`} id="intent" disabled={intentBlocked} onClick={onInspectIntent} aria-describedby={intentBlocked || intentHighlighted ? 'lesson-instruction' : undefined} aria-label={`Next enemy action: ${intent.name}. ${intent.damage} damage.${intent.block ? ` Gains ${intent.block} block before attacking.` : ''}`}>
         <FrameCorners />
         <div><span className="intent-mark" aria-hidden="true">⚔</span><strong>{intent.damage} <span>ATTACK</span></strong>{intent.block > 0 && <span className="intent-block"> + {intent.block} BLOCK</span>}</div>
         <small>{intent.name}</small>
-      </div>
+      </button>
       <span className="ground-shadow" />
       <img key={`enemy-${state.revision}`} className={`fighter enemy-art${animation?.actor === 'enemy' ? ' act' : animation?.enemyHit ? ' hit' : ''}`} id="enemy-art" src={assets.guardian} alt="A six-legged ceramic furnace guardian standing on the stone floor, its core glowing orange." />
     </div>

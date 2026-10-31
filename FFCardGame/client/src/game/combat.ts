@@ -1,19 +1,14 @@
 // Pure seeded combat rules; independent of React, the DOM, and storage.
 import { CARDS, cardDefinition, cardLabel } from '../content/cards';
 import { PROTOTYPE_PROFILE, PROTOTYPE_ENCOUNTER } from '../content/encounter';
+import { deriveStats, openingHandSize } from './equipment';
 import type { BattleState, CardInstance, CardPreview, FighterState, CharacterProfile, EncounterDefinition } from './types';
 export { CARDS } from '../content/cards';
 export { INTENTS } from '../content/encounter';
+import { random } from './random';
 
 export function randomSeed(): number {
   return globalThis.crypto?.getRandomValues(new Uint32Array(1))[0] ?? Date.now() >>> 0;
-}
-function random(state: BattleState): number {
-  state.rng = (state.rng + 0x6d2b79f5) >>> 0;
-  let t = state.rng;
-  t = Math.imul(t ^ t >>> 15, t | 1);
-  t ^= t + Math.imul(t ^ t >>> 7, t | 61);
-  return ((t ^ t >>> 14) >>> 0) / 4294967296;
 }
 function shuffle(state: BattleState, cards: CardInstance[]): void {
   for (let i = cards.length - 1; i > 0; i--) {
@@ -37,14 +32,15 @@ export function newBattle(seed: number = randomSeed()): BattleState {
 
 export function createBattle(profile: CharacterProfile, encounter: EncounterDefinition, seed: number = randomSeed()): BattleState {
   validateSetup(profile, encounter);
+  const stats = deriveStats(profile);
   const state: BattleState = { config: structuredClone({
-    hero: { id: profile.id, name: profile.name, maxHp: profile.maxHp, maxMp: profile.maxMp }, encounter,
+    stats, hero: { id: profile.id, name: profile.name, maxHp: profile.maxHp, maxMp: stats.maxMp }, encounter,
   }), hero: { hp: profile.hp, block: 0 }, enemy: { hp: encounter.enemy.maxHp, block: 0 }, energy: encounter.energyPerTurn, mp: profile.mp, strain: 0,
     turn: 1, intent: 0, revision: 0, outcome: null, rng: seed >>> 0,
     draw: profile.deck.map(card => ({ ...card })), hand: [], discard: [],
     log: [encounter.introduction] };
   shuffle(state, state.draw);
-  draw(state, encounter.handSize);
+  draw(state, openingHandSize(encounter.handSize, stats.speed));
   return state;
 }
 
@@ -56,7 +52,7 @@ function validateSetup(profile: CharacterProfile, encounter: EncounterDefinition
   integer('HP', profile.hp, 1);
   integer('maximum MP', profile.maxMp);
   integer('MP', profile.mp);
-  if (profile.hp > profile.maxHp || profile.mp > profile.maxMp) throw new Error('Invalid battle setup: resources exceed maxima');
+  if (profile.hp > profile.maxHp || profile.mp > deriveStats(profile).maxMp) throw new Error('Invalid battle setup: resources exceed maxima');
   integer('enemy maximum HP', encounter.enemy.maxHp, 1);
   integer('energy per turn', encounter.energyPerTurn);
   integer('hand size', encounter.handSize);
@@ -79,10 +75,12 @@ export function currentIntent(state: BattleState) {
 export function preview(state: BattleState, card: CardInstance): CardPreview {
   const data = cardDefinition(card);
   const hot = state.strain >= 6 && state.strain <= 9;
-  const damage = data.damage ? data.damage + (hot ? 2 : 0) : 0;
-  const overload = state.strain + (data.strain ?? 0) >= 10;
-  return { damage, block: data.block ?? 0, overload,
-    strain: overload ? 4 : Math.max(0, state.strain + (data.strain ?? 0)),
+  const stats = state.config.stats;
+  const damage = data.damage ? data.damage + stats.power + (hot ? 2 + (data.hotDamage ?? 0) : 0) : 0;
+  const strainDelta = (data.strain ?? 0) + (data.kind === 'Attack' ? stats.attackStrain : 0);
+  const overload = state.strain + strainDelta >= 10;
+  return { damage, block: data.block ? data.block + stats.defense : 0, overload, strainDelta,
+    strain: overload ? 4 : Math.max(0, state.strain + strainDelta),
     hpDamage: Math.max(0, damage - state.enemy.block), hot: !!data.damage && hot };
 }
 
@@ -108,7 +106,7 @@ function log(state: BattleState, message: string): void {
   state.log = state.log.slice(-30);
 }
 export function playCard(previous: BattleState, id: string, revision = previous.revision): BattleState {
-  if (previous.outcome || revision !== previous.revision) return previous;
+  if (previous.outcome || previous.support?.required || revision !== previous.revision) return previous;
   const index = previous.hand.findIndex(card => card.id === id);
   if (index < 0) return previous;
   const card = previous.hand[index];
@@ -129,12 +127,12 @@ export function playCard(previous: BattleState, id: string, revision = previous.
   if (effect.overload) next.hero.hp = Math.max(0, next.hero.hp - 6);
   next.discard.push(card);
   next.revision++;
-  log(next, `${cardLabel(card)}:${effect.damage ? ` ${effect.damage} damage${effect.hot ? ' (hot)' : ''}.` : ''}${effect.block ? ` ${effect.block} block.` : ''}${data.draw ? ` Drew ${drawn}.` : ''}${(data.strain ?? 0) < 0 ? ' Vented 4 strain.' : ''}${effect.overload ? ' OVERLOAD: lost 6 HP; strain reset to 4.' : ''}`);
+  log(next, `${cardLabel(card)}:${effect.damage ? ` ${effect.damage} damage${effect.hot ? ' (hot)' : ''}.` : ''}${effect.block ? ` ${effect.block} block.` : ''}${data.draw ? ` Drew ${drawn}.` : ''}${(data.strain ?? 0) < 0 ? ` Vented ${-(data.strain ?? 0)} strain.` : ''}${effect.overload ? ' OVERLOAD: lost 6 HP; strain reset to 4.' : ''}`);
   outcome(next);
   return next;
 }
 export function endTurn(previous: BattleState, revision = previous.revision): BattleState {
-  if (previous.outcome || revision !== previous.revision) return previous;
+  if (previous.outcome || previous.support?.required || revision !== previous.revision) return previous;
   const next = structuredClone(previous);
   next.discard.push(...next.hand.splice(0));
   const intent = currentIntent(next);

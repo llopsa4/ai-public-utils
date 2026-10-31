@@ -1,4 +1,6 @@
-export type CardType = 'strike' | 'guard' | 'piston' | 'vent' | 'shield' | 'cycle' | 'pulse';
+export type CardArtType = 'strike' | 'guard' | 'piston' | 'vent' | 'shield' | 'cycle' | 'pulse';
+export type RewardCardType = 'measured-drive' | 'fitted-brace' | 'ember-hook' | 'return-stroke' | 'pressure-return';
+export type CardType = CardArtType | RewardCardType;
 
 export interface CardDefinition {
   readonly name: string;
@@ -6,19 +8,25 @@ export interface CardDefinition {
   readonly cost: number;
   readonly mpCost?: number;
   readonly damage?: number;
+  readonly hotDamage?: number;
   readonly strain?: number;
   readonly block?: number;
   readonly draw?: number;
-  readonly icon: CardType;
+  readonly icon: CardArtType;
   readonly text: string;
   readonly technique?: string;
 }
 
-export type CardUpgrade = 'tempered-flow';
+export type CardUpgrade = 'tempered-flow' | 'refined';
+export type AllyId = 'iven';
 export interface CardInstance { type: CardType; id: string; upgrade?: CardUpgrade }
 export interface FighterState { hp: number; block: number }
 export interface EnemyIntent { readonly name: string; readonly damage: number; readonly block: number }
 export type BattleOutcome = 'victory' | 'defeat' | null;
+export type EquipmentSlot = 'gauntlet' | 'armor' | 'utility';
+export interface EquippedItem { readonly id: string; readonly upgraded?: boolean }
+export type Loadout = Readonly<Record<EquipmentSlot, EquippedItem>>;
+export interface BattleStats { power: number; defense: number; speed: number; maxMp: number; attackStrain: number }
 
 // Battle inputs only; campaign progression and save envelopes remain separate.
 export interface CharacterProfile {
@@ -29,6 +37,7 @@ export interface CharacterProfile {
   readonly maxMp: number;
   readonly mp: number;
   readonly deck: readonly Readonly<CardInstance>[];
+  readonly equipment?: Loadout;
 }
 
 export interface EncounterDefinition {
@@ -53,11 +62,13 @@ export interface BattleSetup {
 }
 
 export interface BattleConfig {
+  readonly stats: BattleStats;
   readonly hero: Pick<CharacterProfile, 'id' | 'name' | 'maxHp' | 'maxMp'>;
   readonly encounter: EncounterDefinition;
 }
 
 export interface BattleState {
+  support?: { present: AllyId[]; spent: AllyId[]; required: AllyId | null };
   readonly config: BattleConfig;
   hero: FighterState;
   enemy: FighterState;
@@ -76,6 +87,7 @@ export interface BattleState {
 }
 
 export interface CardPreview {
+  strainDelta: number;
   damage: number;
   block: number;
   overload: boolean;

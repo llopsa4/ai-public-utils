@@ -43,9 +43,9 @@ export function EnergyOrb({ energy, maximum }: { energy: number; maximum: number
   return <div className="energy-orb" aria-label={`${energy} of ${maximum} energy`}><div><strong id="energy">{energy}</strong><span> / {maximum}</span></div><span className="energy-label">ENERGY</span></div>;
 }
 
-export function EndTurn({ state, busy, onEndTurn }: { state: BattleState; busy: boolean; onEndTurn: (keyboard: boolean) => void }) {
+export function EndTurn({ state, busy, onEndTurn, lessonBlocked, highlighted }: { state: BattleState; busy: boolean; onEndTurn: (keyboard: boolean) => void; lessonBlocked?: boolean; highlighted?: boolean }) {
   const intent = currentIntent(state);
-  return <div className="end-turn-group"><button className="end-turn" id="end-turn" disabled={busy || !!state.outcome} onClick={event => { if (event.detail <= 1) onEndTurn(event.detail === 0); }}><FrameCorners />END TURN <span className="end-turn-arrow" aria-hidden="true">→</span></button>
+  return <div className="end-turn-group"><button className={`end-turn${highlighted ? ' lesson-target' : ''}`} id="end-turn" disabled={busy || !!state.outcome || lessonBlocked} aria-describedby={lessonBlocked || highlighted ? 'lesson-instruction' : undefined} title={lessonBlocked ? 'Follow the highlighted lesson control first.' : undefined} onClick={event => { if (event.detail <= 1) onEndTurn(event.detail === 0); }}><FrameCorners />END TURN <span className="end-turn-arrow" aria-hidden="true">→</span></button>
     <span className="enemy-reminder">{state.outcome ? 'Battle complete' : `Enemy attacks for ${intent.damage}.${intent.block ? ` Gains ${intent.block} block.` : ''}`}</span>
   </div>;
 }

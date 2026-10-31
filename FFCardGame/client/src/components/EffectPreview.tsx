@@ -11,7 +11,7 @@ export function EffectPreview({ state, card, busy }: { state: BattleState; card:
     const available = cardAvailability(state, active);
     if (available.energyReason) parts.push(available.energyReason.trim());
     if (available.mpReason) parts.push(available.mpReason.trim());
-    if (effect.damage) parts.push(`${effect.damage} damage${effect.hot ? ' (+2 hot bonus)' : ''} → ${effect.hpDamage} HP after block.`);
+    if (effect.damage) parts.push(`${effect.damage} damage${effect.hot ? ` (+${2+(data.hotDamage??0)} hot bonus)` : ''} → ${effect.hpDamage} HP after block.`);
     if (effect.block) parts.push(`Gain ${effect.block} block.`);
     if (data.draw) parts.push(`Draw ${data.draw} cards.`);
     if (data.mpCost) parts.push(available.affordable ? `MP ${state.mp} → ${available.mpAfter}.` : `MP stays at ${state.mp} until this card can be played.`);

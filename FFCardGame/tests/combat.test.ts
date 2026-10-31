@@ -26,7 +26,7 @@ test('new battle has the complete deck, correct resources, and reproducible seed
 });
 
 test('card definitions match the agreed costs and effects', () => {
-  assert.deepEqual(Object.values(CARDS).map(c => c.cost), [1, 1, 1, 0, 1, 0, 2]);
+  assert.deepEqual(['strike','guard','piston','vent','shield','cycle','pulse'].map(type => CARDS[type as CardType].cost), [1, 1, 1, 0, 1, 0, 2]);
   assert.deepEqual([CARDS.strike.damage, CARDS.piston.damage, CARDS.guard.block, CARDS.shield.block, CARDS.cycle.draw], [6, 10, 5, 9, 2]);
 });
 
