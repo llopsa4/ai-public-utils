@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 — 2026-10-31
+
+- Implement fantasy serif typography with locally bundled fonts, sculpted status plaques, original crests and gemstone HP/MP icons in place of hearts.
+- Keep strain between turns; fresh battles start at zero, while venting and overload pressure release retain their effects.
+- Replace the numeric strain panel with an original gauntlet emblem, heated-metal glow and red overload flames, including accessible values and reduced-motion support.
+
 ## 0.2.0 — 2026-10-30
 
 - Add the cinematic combat layout, original illustrated cards, and compact HP/MP displays.

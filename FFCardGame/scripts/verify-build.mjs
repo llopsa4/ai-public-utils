@@ -14,10 +14,14 @@ assert.ok(files.some(name => name.startsWith('hero-') && name.endsWith('.png')))
 assert.ok(files.some(name => name.startsWith('guardian-') && name.endsWith('.png')));
 assert.ok(files.some(name => name.startsWith('kiln-hall-') && name.endsWith('.png')));
 assert.ok(files.some(name => name.startsWith('card-atlas-') && name.endsWith('.png')));
+for (const family of ['Cinzel', 'CormorantGaramond']) {
+  assert.ok(files.some(name => name.startsWith(`${family}-`) && name.endsWith('.ttf')), `Missing font: ${family}`);
+  assert.ok(files.some(name => name.startsWith(`${family}-OFL-`) && name.endsWith('.txt')), `Missing font license: ${family}`);
+}
 assert.deepEqual((await readdir(resolve(project, 'dist'))).sort(), ['build', 'index.html']);
 for (const path of links) assert.ok(files.includes(path.slice('./build/'.length)));
 for (const name of files) {
-  assert.match(name, /^[\w.-]+\.(js|css|png|svg|webp)$/);
+  assert.match(name, /^[\w.-]+\.(js|css|png|svg|webp|ttf|txt)$/);
   const built = await readFile(resolve(project, 'dist/build', name));
   assert.ok(built.equals(await readFile(resolve(project, 'build', name))), `Stale published asset: ${name}`);
   if (name.endsWith('.js') || name.endsWith('.css')) {

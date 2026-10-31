@@ -2,6 +2,7 @@ import { cardDefinition, cardLabel } from '../content/cards';
 import { preview, cardAvailability } from '../game/combat';
 import type { BattleState, CardInstance } from '../game/types';
 import { CardArt } from './CardArt';
+import { FrameCorners, ResourceSymbol } from './Ornaments';
 
 interface Props {
   card: CardInstance;
@@ -20,8 +21,9 @@ export function Card({ card, state, busy, onInspect, onPlay }: Props) {
     onPointerEnter={() => onInspect(card)} onPointerLeave={() => onInspect(null)} onFocus={() => onInspect(card)} onBlur={() => onInspect(null)}
     onClick={event => { if (event.detail <= 1) onPlay(card, state.revision, event.detail === 0); }}>
     <CardArt type={card.type} className="card-illustration" />
+    <FrameCorners />
     <span className="card-cost" aria-hidden="true">{data.cost}</span>
-    {data.mpCost && <span className="card-mp" aria-hidden="true"><span>◆</span> {data.mpCost}<small>MP</small></span>}
+    {data.mpCost && <span className="card-mp" aria-hidden="true"><ResourceSymbol kind="mp" /> {data.mpCost}<small>MP</small></span>}
     <span className="card-name">{data.name}{data.technique && <small className="card-technique">{data.technique}</small>}</span>
     <span className="card-description">
       {effect.damage > 0 && <span>Deal <strong>{effect.damage}</strong> damage.</span>}

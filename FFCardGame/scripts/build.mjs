@@ -23,7 +23,7 @@ for (const name of files) await cp(join(dist, 'build', name), join(published, na
 // Publish HTML last. Existing Pages hosting continues to serve FFCardGame/ directly.
 await writeFile(join(project, 'index.html'), await readFile(join(dist, 'index.html')));
 for (const name of await readdir(published)) {
-  if (!files.includes(name) && /^[\w.-]+-[\w-]+\.(js|css|png|svg|webp)$/.test(name)) {
+  if (!files.includes(name) && /^[\w.-]+-[\w-]+\.(js|css|png|svg|webp|ttf|txt)$/.test(name)) {
     await rm(join(published, name));
   }
 }

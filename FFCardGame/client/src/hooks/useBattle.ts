@@ -21,6 +21,7 @@ export function useBattle(setup: BattleSetup = PROTOTYPE_SETUP) {
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [busy, setBusy] = useState(false);
   const [animation, setAnimation] = useState<BattleAnimation | null>(null);
+  const [overloadFeedback, setOverloadFeedback] = useState(false);
   const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => () => { if (timer.current) clearTimeout(timer.current); }, []);
@@ -35,9 +36,11 @@ export function useBattle(setup: BattleSetup = PROTOTYPE_SETUP) {
     setBusy(true);
     if (card) {
       const effect = preview(previous, card);
+      setOverloadFeedback(effect.overload);
       setAnimation({ actor: 'hero', enemyHit: effect.damage > 0, overload: effect.overload,
         text: effect.overload ? 'OVERLOAD −6 HP' : effect.damage ? `${effect.damage} DAMAGE` : effect.block ? `+${effect.block} BLOCK` : (cardDefinition(card).strain ?? 0) < 0 ? 'VENTED' : '+2 CARDS' });
     } else {
+      setOverloadFeedback(false);
       setAnimation({ actor: 'enemy', enemyHit: false, overload: false,
         text: previous.hero.hp > next.hero.hp ? `−${previous.hero.hp - next.hero.hp} HP` : 'BLOCKED' });
     }
@@ -68,9 +71,10 @@ export function useBattle(setup: BattleSetup = PROTOTYPE_SETUP) {
     current.current = fresh;
     setState(fresh);
     setAnimation(null);
+    setOverloadFeedback(false);
     setAnnouncement(`A fresh battle begins. ${fresh.hero.hp} health. ${fresh.mp} MP. ${fresh.energy} energy. ${fresh.hand.length} cards.`);
     return true;
   }
 
-  return { state, busy, animation, announcement, play, finishTurn, restart };
+  return { state, busy, animation, overloadFeedback, announcement, play, finishTurn, restart };
 }

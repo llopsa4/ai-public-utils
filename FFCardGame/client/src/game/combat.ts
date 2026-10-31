@@ -137,7 +137,6 @@ export function endTurn(previous: BattleState, revision = previous.revision): Ba
   if (previous.outcome || revision !== previous.revision) return previous;
   const next = structuredClone(previous);
   next.discard.push(...next.hand.splice(0));
-  next.strain = Math.max(0, next.strain - 3);
   const intent = currentIntent(next);
   next.enemy.block = intent.block;
   const before = next.hero.hp;

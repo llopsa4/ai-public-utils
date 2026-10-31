@@ -90,7 +90,7 @@ test('attack damage consumes enemy block first', () => {
   assert.equal(playFirst(defended).enemy.block, 4);
 });
 
-test('end turn cools, absorbs attack with block, clears block, refills energy and draws five', () => {
+test('end turn retains strain, absorbs attack with block, clears block, refills energy and draws five', () => {
   const state = newBattle(4);
   state.energy = 0;
   state.strain = 7;
@@ -98,13 +98,30 @@ test('end turn cools, absorbs attack with block, clears block, refills energy an
   const next = endTurn(state);
   assert.equal(next.hero.hp, 60);
   assert.equal(next.hero.block, 0);
-  assert.equal(next.strain, 4);
+  assert.equal(next.strain, 7);
   assert.equal(next.energy, 3);
   assert.equal(next.hand.length, 5);
   assert.equal(next.discard.length, 5);
   assert.equal(next.turn, 2);
   assert.equal(next.intent, 1);
   assert.equal(state.hero.block, 12);
+});
+
+test('strain and its hot bonus persist between turns; vents and fresh fights still release heat', () => {
+  let state = fixture(['strike'], { strain: 8 });
+  const before = structuredClone(state);
+  state = endTurn(state);
+  assert.equal(state.strain, 8);
+  assert.equal(before.strain, 8);
+  const attack = state.hand.find(card => card.type === 'strike')!;
+  assert.equal(preview(state, attack).damage, 8);
+  state = playCard(state, attack.id);
+  assert.equal(state.strain, 9);
+  state = endTurn(state);
+  assert.equal(state.strain, 9);
+  const vent = fixture(['vent'], { strain: 9 });
+  assert.equal(playFirst(vent).strain, 5);
+  assert.equal(newBattle(42).strain, 0);
 });
 
 test('enemy intentions rotate and its remaining block expires before its next action', () => {

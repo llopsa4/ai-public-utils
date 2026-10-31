@@ -1,5 +1,20 @@
 # Asset provenance
 
+## Fantasy interface and bundled fonts — 2026-10-31
+
+Status plaques, ceramic corners, pressure-gauntlet and furnace-eye crests, ruby HP stones, sapphire MP gems, block shields and corner flourishes were authored as original SVG/CSS in client/src/components/Ornaments.tsx and style.css. All labels and resource values remain rendered text with accessible meters. The approved private concept image is not a shipped asset; no character, environment or card illustration was replaced.
+
+Unmodified variable font binaries downloaded from the official Google Fonts repository at commit `3dd78844021e948ceb633d1dcee3f7885561b5d9`, with their complete license texts preserved in assets/fonts/ and included in generated output through the HTML license links:
+
+- **Cinzel**, Natanael Gama / The Cinzel Project Authors. [Source](https://github.com/google/fonts/tree/3dd78844021e948ceb633d1dcee3f7885561b5d9/ofl/cinzel). Original filename `Cinzel[wght].ttf`; local `Cinzel.ttf`. SHA-256 `f4d83d34d1f6c741193e4acf4b3dff9531e5a67b6aa65228d00a7db72a4e0f34`. License: [Cinzel-OFL.txt](fonts/Cinzel-OFL.txt).
+- **Cormorant Garamond**, Christian Thalmann / The Cormorant Project Authors. [Source](https://github.com/google/fonts/tree/3dd78844021e948ceb633d1dcee3f7885561b5d9/ofl/cormorantgaramond). Original filename `CormorantGaramond[wght].ttf`; local `CormorantGaramond.ttf`. SHA-256 `b20b7d9626dd956b2c5e558692ad328b1f19e3275e2782db4fa07670d83f35e0`. License: [CormorantGaramond-OFL.txt](fonts/CormorantGaramond-OFL.txt).
+
+Both families identify SIL Open Font License 1.1 in their supplied license files. Font downloads are development inputs only; runtime URLs are relative/local. The complete fonts are used without subsetting or changes to their internal names.
+
+## Gauntlet strain instrument
+
+Original code-native SVG and CSS authored for this project on 2026-10-30 in client/src/components/Resources.tsx and style.css. Ceramic gauntlet medallion, pressure vents, metal gradients and flame outlines use original geometry; no external image, font, model or generated raster asset was added. Heat and overload presentation follows resolved combat state; reduced-motion preferences disable movement.
+
 ## card-atlas.png — cinematic interface
 
 Generated on 2026-10-30 using the built-in OpenAI image-generation tool. References were the project's original hero and the approved internal combat-interface concept. One square 3×3 atlas contains seven card illustrations plus two pile backs. The interface samples its cells with CSS; no generated text is used for card names, costs, or effects. The atlas was visually inspected and copied unchanged into the project. Original output: exec-81206561-6179-417a-bd96-d4fbd0f710d1.png.

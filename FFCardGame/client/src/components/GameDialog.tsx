@@ -77,7 +77,8 @@ function Help({ state }: { state: BattleState }) {
       <li><strong>Spend MP:</strong> Kiln Pulse{pulse.technique ? ` (${pulse.technique})` : ''} costs {pulse.mpCost} MP and {pulse.cost} energy. MP lasts for the battle; normal cards need no MP. Pulse can return after reshuffling.</li>
       <li><strong>Read the intention:</strong> the {enemy} tells you its next action. Block absorbs damage, then expires at the start of your next turn.</li>
       <li><strong>Run hot:</strong> attacks played at 6–9 strain gain 2 damage, before the card adds strain. At 10 strain, lose 6 HP ignoring block, then reset to 4 strain.</li>
-      <li><strong>End turn:</strong> discard your hand, cool 3 strain, and let the {enemy} act. Then refill energy and draw {state.config.encounter.handSize}.</li>
+      <li><strong>Keep your heat:</strong> strain carries between turns. Use vent cards to cool it; each fresh battle starts with no strain.</li>
+      <li><strong>End turn:</strong> discard your hand and let the {enemy} act. Then refill energy and draw {state.config.encounter.handSize}.</li>
       <li><strong>Keep cycling:</strong> when the draw pile empties, the discard pile is shuffled back in. Pressure Cycle cannot draw itself while resolving.</li>
     </ul>
     <p>Defeat the {enemy} to win. If both fall on the same card, the delivery is lost. Reloading starts a fresh battle. This prototype has no audio.</p>

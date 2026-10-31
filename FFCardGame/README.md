@@ -73,7 +73,9 @@ On the development fixture page, choose **Signature technique**, then **Start tr
 - Start with 60 HP, 10 MP, 3 energy, and 5 cards. Guardian starts with 72 HP.
 - Kiln Pulse is a normal reusable card: 2 energy, 4 MP, 16 damage, 6 block, and +4 strain. It is not guaranteed in the opening hand. MP persists between turns and resets on a fresh battle; basic cards need no MP.
 - At 6–9 strain, attacks gain 2 damage, evaluated before adding the card's strain. At 10 strain, lose 6 unblockable HP and reset strain to 4.
-- End turn discards your hand, cools 3 strain, and resolves the enemy intention. Then your block expires, energy refills, and you draw 5.
+- Strain stays between turns. Vent cards reduce it; overload still releases pressure back to 4. Each fresh battle starts at zero.
+- The gauntlet indicator uses a ceramic emblem and heat glow instead of visible numeric readings. Heated and Critical states empower attacks; a resolved overload shows red flames and “Pressure released” until your next accepted action. Exact values remain available to screen readers and in card/rule descriptions. Reduced motion keeps the effects static.
+- End turn discards your hand and resolves the enemy intention. Then your block expires, energy refills, and you draw 5.
 - Guardian repeats 8 attack -> 6 block and 4 attack -> 14 attack. Its block lasts through your turn, then expires before its next action.
 - Empty draw piles reshuffle the discard pile. Pressure Cycle cannot draw itself while resolving.
 - Complete the card and overload before checking the outcome. Simultaneous defeat is a loss.
@@ -84,14 +86,16 @@ Actions preserve revision guards and ignore double clicks, repeated keydown, or 
 
 ## Verification baseline
 
-The current 39 tests cover combat, resource costs, reusable Kiln Pulse, Tempered Flow identity/effects, capped MP preparation, configurable profiles/encounters, input isolation/validation, reshuffling, input revisions, terminal outcomes, card conservation, and optional storage. Type checking and production asset verification run with `npm run check`.
+The current 42 tests cover combat, turn-to-turn heat retention, nonnumeric/accessible strain feedback, resource costs, reusable Kiln Pulse, Tempered Flow identity/effects, capped MP preparation, configurable profiles/encounters, input isolation/validation, reshuffling, input revisions, terminal outcomes, card conservation, and optional storage. Type checking and production asset verification run with `npm run check`.
 
-The original TypeScript migration matched every state across 100 seeded battles and 3,022 actions. The subsequent MP/signature addition intentionally changes the starting deck. Current balance simulations over 100 seeds per policy: aggressive 4.06 turns / 43.83 HP remaining; defensive 4.66 turns / 52.21 HP; heat-aware 4.21 turns / 49.72 HP. All three policies won 100 battles. These simulations do not establish human pacing.
+The original TypeScript migration matched every state across 100 seeded battles and 3,022 actions. The subsequent MP/signature addition intentionally changed the starting deck. With the former end-turn cooling rule, base simulations over 100 seeds per policy averaged aggressive 4.06 turns / 43.83 HP, defensive 4.66 / 52.21, and heat-aware 4.21 / 49.72. These are historical comparison values, not the current rules.
 
 The configurable-battle change preserved the pre-change prototype across 100 seeds and 2,593 transitions, including previews, RNG, piles, logs and outcomes. Its three playtest policies also retained identical results.
 
-After adding the optional technique, base-signature results and that transition parity remain unchanged. Trained-signature simulations at the same HP/MP maxima: aggressive 4.01 turns / 46.07 HP, defensive 4.64 / 53.27, heat-aware 4.11 / 49.91; all won 100/100. Mean overloads fell from 0.70/0.37/0.35 to 0.43/0.15/0.22 respectively. These compare the technique alone, without milestone growth, and do not establish human pacing or campaign balance.
+With cooling still enabled, the optional technique also preserved base parity; trained means were 4.01/4.64/4.11 turns and 46.07/53.27/49.91 HP. Removing automatic cooling intentionally changes that behavior, so old transition parity is no longer an acceptance criterion for this rule change.
+
+Current simulations with strain retained between turns (100 seeds per policy, all 600 battles won): base aggressive 3.95 turns / 37.99 HP, defensive 4.57 / 45.14, heat-aware 4.46 / 44.18; trained aggressive 3.95 / 38.23, defensive 4.59 / 45.94, heat-aware 4.53 / 44.67. Mean overloads are now 1.84/1.45/1.28 for base and 1.86/1.32/1.17 for trained. Keeping heat makes hot attacks and overloads more frequent; deliberate venting is more valuable. No other card/enemy tuning was applied. Simulations do not establish human pacing or campaign balance.
 
 ## Artwork
 
-The hero, guardian, environment, and shared card-art atlas were generated for this project using the built-in OpenAI image-generation tool. The atlas contains seven card illustrations and two deck backs; all costs/effects are real rendered text, not baked into artwork. The kiln mark is original SVG geometry. No third-party fonts or audio are bundled. See [asset provenance and prompts](assets/PROVENANCE.md).
+The hero, guardian, environment, and shared card-art atlas were generated for this project using the built-in OpenAI image-generation tool. The atlas contains seven card illustrations and two deck backs; all costs/effects are real rendered text, not baked into artwork. Status frames, character crests, resource gemstones, corner flourishes and the kiln mark use original SVG geometry. Cinzel headings and Cormorant Garamond body text are bundled locally with their SIL Open Font Licenses; the game makes no external font requests. No audio is bundled. See [asset provenance and prompts](assets/PROVENANCE.md).

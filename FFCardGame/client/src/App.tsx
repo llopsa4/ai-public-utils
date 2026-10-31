@@ -73,7 +73,7 @@ export function App({ setup }: { setup?: BattleSetup }) {
     <main className="game">
       <Battlefield state={state} animation={animation} />
       {teaching && <aside className="teaching" id="teaching" aria-label="Combat tip"><p>Play cards. Block the next attack. At 6–9 strain, attacks hit harder.</p><button id="dismiss-tip" className="quiet" onClick={() => { completeTutorial(); setTeaching(false); document.getElementById('help-button')?.focus(); }}>Got it ×</button></aside>}
-      <div className="resources-row"><StrainGauge state={state} /></div>
+      <div className="resources-row"><StrainGauge state={state} overloaded={battle.overloadFeedback} /></div>
       <section className="combat-deck" aria-label="Combat controls">
         <aside className="deck-side left-controls">
           <EnergyOrb energy={state.energy} maximum={state.config.encounter.energyPerTurn} />
