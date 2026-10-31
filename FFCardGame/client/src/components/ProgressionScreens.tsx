@@ -1,4 +1,4 @@
-import { CARDS, cardLabel } from '../content/cards';
+import { CARDS, TEMPERED_FLOW, cardLabel } from '../content/cards';
 import { ROUTE_ENCOUNTERS } from '../content/rewards';
 import type { CampaignState, CampaignCommand } from '../game/campaign';
 import { restProfile, trainingProfile, victoryProfile } from '../game/rewards';
@@ -22,14 +22,15 @@ export function RewardChoice({state,dispatch}:{state:CampaignState;dispatch:Disp
   const after=training?(practice?trainingProfile(practice,practice.hp,practice.mp):trainingProfile(state.profile,state.battleStart!.hero.hp,state.battleStart!.mp)):victory?victoryProfile(state.profile):state.profile;
   const salvage=victory?(state.systems?.opening?openingEncounter(reward.nodeId)?.salvage??0:reward.nodeId==='kiln-checkpoint'||reward.nodeId==='route-story'?20:12):0;
   function choose(card:RewardCardType|null){dispatch({type:'choose-reward',claimId:reward!.id,card,revision:state.revision});}
-  return <section aria-label={training?'Training milestone':'Card reward'}>
+  return <section className={training?'training-milestone':'reward-stage'} aria-label={training?'Training milestone':'Card reward'}>
+    {training&&<div className="milestone-seal" aria-hidden="true">✧</div>}
     <p>{training?'A steadier gauntlet. A stronger courier.':victory?(reward.cards.length?'Keep one technique, or leave the cards.':'The passage is clear. Collect your resources.'):'Choose one technique, or leave it behind.'}</p>
     <div className="session-stats reward-summary">
       {!!salvage&&<span>Salvage <strong>{state.salvage} → {state.salvage+salvage}</strong></span>}
       <span>MP <strong>{state.profile.mp} → {after.mp}/{deriveStats(after).maxMp}</strong></span>
       {training&&<><span>HP <strong>{state.profile.hp} → {after.hp}/{after.maxHp}</strong></span><span>Max HP <strong>+6</strong> · Max MP <strong>+2</strong></span></>}
     </div>
-    {training?<><p className="session-caption">Restore pre-training resources, then grow. Kiln Pulse gains Tempered Flow: 3 MP and +3 strain, with the same damage, block and energy cost.</p><button className="modal-primary" onClick={()=>choose(null)}>Complete training</button></>:<>
+    {training?<><div className="technique-change"><span>Kiln Pulse<small>{CARDS.pulse.mpCost} MP · +{CARDS.pulse.strain} strain</small></span><span aria-hidden="true">→</span><span><strong>Tempered Flow</strong><small>{TEMPERED_FLOW.mpCost} MP · +{TEMPERED_FLOW.strain} strain</small></span></div><p className="session-caption">Restore pre-training resources, then grow. Kiln Pulse gains Tempered Flow: 3 MP and +3 strain, with the same damage, block and energy cost.</p><button className="modal-primary" onClick={()=>choose(null)}>Complete training</button></>:<>
       <div className="reward-options">{reward.cards.map(type=>{const card=CARDS[type];return <button key={type} className="reward-option" aria-label={`Choose ${card.name}. ${card.cost} energy.${card.mpCost?` ${card.mpCost} MP.`:''} ${card.text}`} onClick={event=>{if(event.detail<=1)choose(type);}}>
         <CardArt type={type} className="reward-art"/><span className="reward-name">{card.name}</span><small>{card.cost} energy{card.mpCost?` · ${card.mpCost} MP`:''}</small><span className="reward-effect">{card.text}</span><span className="reward-pick">Add to deck</span>
       </button>;})}</div>

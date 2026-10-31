@@ -158,3 +158,55 @@ test('version 2 modal fixture resumes its required Cancel without changing comba
   assert.deepEqual(next.tutorial!.battle,before);
   assert.equal(next.tutorial!.step,15);
 });
+
+
+test('skipping any tutorial step gives the same journey start once and survives save replay', () => {
+  for (const opening of [false, true]) {
+    let state = newCampaign(31, true, opening, opening);
+    while (state.systems?.scene) state = campaignTransition(state, {type:'scene-skip', revision:state.revision});
+    let completed = state;
+    for (const step of LESSON_STEPS) completed = campaignTransition(completed, {type:'lesson', revision:completed.revision, command:{step:completed.tutorial!.step, revision:completed.tutorial!.revision, action:step.action}});
+    for (const step of LESSON_STEPS) {
+      const snapshot = structuredClone(state);
+      const command = {type:'skip-lesson' as const, revision:state.revision};
+      assert.equal(campaignTransition(state, {...command, revision:state.revision + 1}), state);
+      const skipped = campaignTransition(state, command);
+      assert.notEqual(skipped, state);
+      assert.deepEqual(state, snapshot);
+      assert.deepEqual({...skipped, revision:completed.revision, progression:completed.progression}, completed);
+      assert.deepEqual(decodeSave(encodeSave(skipped)).state, skipped);
+      assert.equal(campaignTransition(skipped, command), skipped);
+      assert.equal(campaignTransition(skipped, {type:'skip-lesson', revision:skipped.revision}), skipped);
+      assert.equal(skipped.salvage, 12);
+      assert.equal(skipped.profile.hp, 60); assert.equal(skipped.profile.mp, 10);
+      state = campaignTransition(state, {type:'lesson', revision:state.revision, command:{step:state.tutorial!.step, revision:state.tutorial!.revision, action:step.action}});
+    }
+  }
+});
+
+test('leaving tutorial replay preserves an active campaign battle and grants no reward', () => {
+  let before = newCampaign(9);
+  before = campaignTransition(before, {type:'skip-lesson', revision:before.revision});
+  before = finishRoute(before);
+  before = campaignTransition(before, {type:'leave-map', revision:before.revision});
+  before = campaignTransition(before, {type:'enter', nodeId:CHECKPOINT_NODE, revision:before.revision});
+  let replay = campaignTransition(before, {type:'start-replay', revision:before.revision});
+  for (const step of LESSON_STEPS) {
+    const exited = campaignTransition(replay, {type:'skip-lesson', revision:replay.revision});
+    assert.equal(exited.replay, null);
+    assert.deepEqual({...exited, revision:before.revision, progression:before.progression}, before);
+    assert.deepEqual(decodeSave(encodeSave(exited)).state, exited);
+    replay = campaignTransition(replay, {type:'lesson', revision:replay.revision, command:{step:replay.replay!.step, revision:replay.replay!.revision, action:step.action}});
+  }
+  assert.equal(campaignTransition(before, {type:'skip-lesson', revision:before.revision}), before);
+});
+
+test('tutorial skipping does not bypass introductory story scenes or affect non-tutorial saves', () => {
+  const intro = newCampaign(13, true, true, true);
+  assert.equal(campaignTransition(intro, {type:'skip-lesson', revision:intro.revision}), intro);
+  const legacy = newCampaign(13, false);
+  assert.equal(campaignTransition(legacy, {type:'skip-lesson', revision:legacy.revision}), legacy);
+  const forged = JSON.parse(encodeSave(newCampaign(13)));
+  forged.state.progression.commands.push({type:'skip-lesson', revision:999});
+  assert.throws(() => decodeSave(JSON.stringify(forged)));
+});

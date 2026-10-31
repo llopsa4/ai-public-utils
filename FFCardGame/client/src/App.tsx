@@ -1,3 +1,6 @@
+import { Atmosphere } from './components/Atmosphere';
+import { cardLabel } from './content/cards';
+import type { CSSProperties } from 'react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { battleVisual } from './presentation';
 import { assets, openingArt } from './assets';
@@ -14,9 +17,9 @@ import type { CardInstance, BattleSetup } from './game/types';
 import { LESSON_STEPS, type LessonAction } from './content/tutorial';
 import { tutorialMatches, type TutorialState } from './game/tutorial';
 
-export interface LessonView { state: TutorialState; replay: boolean; act: (action: LessonAction) => boolean; reset: () => void }
+export interface LessonView { state: TutorialState; replay: boolean; act: (action: LessonAction) => boolean; reset: () => void; skip?: () => void }
 
-export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, suppressHints = false }: { setup?: BattleSetup; controller?: BattleController; onMenu?: () => void; onVictory?: () => void; lesson?: LessonView; onReplay?: () => void; suppressHints?: boolean }) {
+export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, onNavigate, suppressHints = false }: { setup?: BattleSetup; controller?: BattleController; onMenu?: () => void; onVictory?: () => void; lesson?: LessonView; onReplay?: () => void; onNavigate?: (update: () => void) => void; suppressHints?: boolean }) {
   const battle = useBattle(setup, controller);
   const { state, busy, animation } = battle;
   const visual=battleVisual(state);
@@ -26,8 +29,14 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, su
   useEffect(()=>{if(supportRequired)document.getElementById('ally-support')?.focus();},[supportRequired]);
   const [dialog, setDialog] = useState<DialogKind | null>(null);
   const [teaching, setTeaching] = useState(() => !tutorialComplete());
+  const [departure, setDeparture] = useState<{card:CardInstance;left:number;top:number;width:number;height:number;x:number;y:number}|null>(null);
+  useEffect(()=>{if(!busy)setDeparture(null);},[busy]);
   const [inspected, setInspected] = useState<CardInstance | null>(null);
   const hand = useRef<HTMLDivElement>(null);
+  const arrivalHeading = useRef<HTMLHeadingElement>(null);
+  useLayoutEffect(() => {
+    if (!lesson && !supportRequired && !practiceRequired) arrivalHeading.current?.focus();
+  }, []);
   const focusRequest = useRef<number | 'end-turn' | null>(null);
   const step = lesson ? LESSON_STEPS[lesson.state.step] : undefined;
   const validLesson = !lesson || tutorialMatches(lesson.state);
@@ -57,7 +66,10 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, su
 
   function play(card: CardInstance, revision: number, keyboard: boolean) {
     const index = state.hand.findIndex(item => item.id === card.id);
+    const source=hand.current?.querySelector<HTMLElement>(`[data-card-id="${card.id}"]`)?.getBoundingClientRect();
+    const destination=document.getElementById('discard-button')?.getBoundingClientRect();
     if (battle.play(card.id, revision)) {
+      if(source&&destination)setDeparture({card,left:source.left,top:source.top,width:source.width,height:source.height,x:destination.left-source.left,y:destination.top-source.top});
       setInspected(null);
       focusRequest.current = keyboard && !lesson ? index : null;
     }
@@ -71,10 +83,11 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, su
   }
 
   function restart() {
-    if (!battle.restart()) return;
-    setDialog(null);
-    setInspected(null);
-    focusRequest.current = 0;
+    const update=()=>{
+      if (!battle.restart()) return;
+      setDialog(null); setInspected(null); setDeparture(null); focusRequest.current = 0;
+    };
+    if(onNavigate)onNavigate(update);else update();
   }
 
   function openDialog(kind: Exclude<DialogKind, 'outcome'>) {
@@ -93,11 +106,13 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, su
   }} onKeyDownCapture={event => {
     if (event.repeat && ['Enter', ' '].includes(event.key) && event.target instanceof Element && event.target.closest('button')) event.preventDefault();
   }}>
+    <Atmosphere combat/>
+    {departure&&<div className="played-card" aria-hidden="true" style={{left:departure.left,top:departure.top,width:departure.width,height:departure.height,'--fly-x':`${departure.x}px`,'--fly-y':`${departure.y}px`} as CSSProperties}><CardArt type={departure.card.type}/><span>{cardLabel(departure.card)}</span></div>}
     <link rel="icon" href={assets.mark} type="image/svg+xml" />
     <a className="skip" href="#hand">Skip to cards</a>
     <header className="masthead">
       <a className="wordmark" href="./" aria-disabled={!!lesson || undefined} tabIndex={lesson ? -1 : undefined} aria-label={controller ? 'Kiln Courier, retry this encounter' : 'Kiln Courier, start a fresh battle'} onClick={event => { event.preventDefault(); if (!lesson) confirmRestart(); }}>KILN COURIER</a>
-      <h1 className="chapter">{state.config.encounter.title} <span aria-hidden="true">·</span> <span id="phase-label">{state.outcome === 'victory' ? 'VICTORY' : state.outcome === 'defeat' ? 'DEFEAT' : 'TURN'}</span> <span id="turn">{String(state.turn).padStart(2, '0')}</span></h1>
+      <h1 ref={arrivalHeading} tabIndex={-1} className="chapter">{state.config.encounter.title} <span aria-hidden="true">·</span> <span id="phase-label">{state.outcome === 'victory' ? 'VICTORY' : state.outcome === 'defeat' ? 'DEFEAT' : 'TURN'}</span> <span id="turn">{String(state.turn).padStart(2, '0')}</span></h1>
       <nav aria-label="Game controls">
         {onMenu && <button className="quiet" onClick={onMenu}>Menu</button>}
         <button className={`quiet${highlighted('help-button')}`} id="help-button" disabled={blocked('help-button')} aria-describedby={lesson ? 'lesson-instruction' : undefined} onClick={() => openDialog('help')}><span className="help-icon" aria-hidden="true">?</span> Help</button>
@@ -105,7 +120,7 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, su
         <button className={`quiet icon-button${highlighted('restart-button')}`} id="restart-button" disabled={blocked('restart-button')} aria-label="Restart" title="Restart battle" aria-describedby={lesson ? 'lesson-instruction' : undefined} onClick={confirmRestart}>↻</button>
       </nav>
     </header>
-    {lesson && <aside className="lesson-banner" aria-label="Combat lesson"><strong>◆ {lesson.replay ? 'Practice' : 'Combat lesson'} {lesson.state.step + 1}/{LESSON_STEPS.length}</strong><p id="lesson-instruction" role="status">{step?.prompt} Follow the outlined control.</p>{!validLesson && <p role="alert">The lesson state does not match. <button onClick={lesson.reset}>Restart lesson safely</button></p>}</aside>}
+    {lesson && <aside className="lesson-banner" aria-label="Combat lesson"><strong>◆ {lesson.replay ? 'Practice' : 'Combat lesson'} {lesson.state.step + 1}/{LESSON_STEPS.length}</strong><p id="lesson-instruction" role="status">{step?.prompt} Follow the outlined control.</p>{lesson.skip && <button className="quiet" onClick={lesson.skip}>{lesson.replay ? 'Leave practice' : 'Skip tutorial'}</button>}{!validLesson && <p role="alert">The lesson state does not match. <button onClick={lesson.reset}>Restart lesson safely</button></p>}</aside>}
     <main className="game">
       <Battlefield state={state} animation={animation} onInspectIntent={() => openDialog('intent')} intentBlocked={blocked('intent')} intentHighlighted={marked('intent')} />
       {teaching && !lesson && !suppressHints && <aside className="teaching" id="teaching" aria-label="Combat tip"><p>Play cards. Block the next attack. At 6–9 strain, attacks hit harder.</p><button id="dismiss-tip" className="quiet" onClick={() => { completeTutorial(); setTeaching(false); document.getElementById('help-button')?.focus(); }}>Got it ×</button></aside>}
@@ -130,6 +145,6 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, su
       {controller && !lesson && state.outcome && !dialog && !busy && <div className="battle-result-action"><button className="modal-primary" onClick={state.outcome === 'victory' ? onVictory : restart}>{state.outcome === 'victory' ? 'Continue' : 'Retry encounter'}</button></div>}
       <p className="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true">{battle.announcement}</p>
     </main>
-    <GameDialog kind={activeDialog} state={state} campaign={!!controller} lessonPrompt={step?.prompt} onReplay={onReplay} onVictory={onVictory} onClose={closeDialog} onRestart={restart} />
+    <GameDialog kind={activeDialog} state={state} campaign={!!controller} lessonPrompt={step?.prompt} onSkipLesson={lesson?.skip} onReplay={onReplay} onVictory={onVictory} onClose={closeDialog} onRestart={restart} />
   </div>;
 }

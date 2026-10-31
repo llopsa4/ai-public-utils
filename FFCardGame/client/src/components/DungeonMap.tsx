@@ -50,7 +50,7 @@ export function DungeonMap({path,complete,onTravel,functional=false,expanded=fal
         {nodes.map((stop,index)=>{
           const state=nodeStatus(map,path,stop.id), gate=map.gates.includes(stop.id);
           return <button key={stop.id} ref={element=>{if(element)buttons.current.set(stop.id,element);else buttons.current.delete(stop.id);}}
-            className={`route-node ${state}${selected===stop.id?' selected':''}`} style={{gridRow:stop.row+1,gridColumn:stop.lane+1}}
+            data-kind={stop.kind} data-gate={gate || undefined} className={`route-node ${state}${selected===stop.id?' selected':''}`} style={{gridRow:stop.row+1,gridColumn:stop.lane+1}}
             tabIndex={selected===stop.id?0:-1} aria-current={state==='current'?'step':undefined} aria-pressed={selected===stop.id}
             aria-label={`${stop.name}. ${stop.kind}${gate?', mandatory gate':''}. ${statusText[state]}. Inspect stop.`}
             onFocus={()=>inspect(stop.id,false)} onClick={()=>inspect(stop.id,true)} onKeyDown={event=>{

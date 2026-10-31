@@ -3,9 +3,9 @@ import { cardDefinition, cardLabel } from '../content/cards';
 import type { BattleState } from '../game/types';
 
 export type DialogKind = 'help' | 'restart' | 'draw' | 'discard' | 'log' | 'outcome' | 'intent';
-interface Props { kind: DialogKind | null; state: BattleState; onClose: () => void; onRestart: () => void; campaign?: boolean; onVictory?: () => void; lessonPrompt?: string; onReplay?: () => void }
+interface Props { kind: DialogKind | null; state: BattleState; onClose: () => void; onRestart: () => void; campaign?: boolean; onVictory?: () => void; lessonPrompt?: string; onReplay?: () => void; onSkipLesson?: () => void }
 
-export function GameDialog({ kind, state, onClose, onRestart, campaign = false, onVictory, lessonPrompt, onReplay }: Props) {
+export function GameDialog({ kind, state, onClose, onRestart, campaign = false, onVictory, lessonPrompt, onReplay, onSkipLesson }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   useLayoutEffect(() => {
@@ -54,6 +54,7 @@ export function GameDialog({ kind, state, onClose, onRestart, campaign = false, 
       {lessonPrompt ? kind === 'restart' ? <><button id="lesson-cancel" className="modal-primary lesson-target" onClick={onClose}>Cancel restart</button><button disabled title="Cancel first to keep this teaching battle." className="quiet">Restart unavailable during this step</button></> : kind === 'outcome' ? <button id="lesson-continue" className="modal-primary lesson-target" onClick={onVictory}>Continue</button> : null : kind === 'outcome' ? <><button className="quiet" onClick={onClose}>Inspect battlefield</button><button className="modal-primary" onClick={campaign && victory ? onVictory : onRestart}>{campaign ? victory ? 'Continue' : 'Retry encounter' : 'Play again'}</button></>
         : kind === 'restart' ? <><button className="quiet" onClick={onClose}>Keep playing</button><button className="modal-primary" onClick={onRestart}>Restart battle</button></>
         : <button className="modal-primary" onClick={onClose}>{closeLabel}</button>}
+      {lessonPrompt && onSkipLesson && <button className="quiet" onClick={onSkipLesson}>Leave tutorial</button>}
       {kind === 'help' && onReplay && <button className="quiet" onClick={onReplay}>Replay combat lesson</button>}
     </div>
   </dialog>;

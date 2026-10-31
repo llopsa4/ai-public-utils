@@ -45,7 +45,7 @@ export type CampaignCommand = { revision: number } & (
   { type: 'play'; cardId: string; battleRevision: number } |
   { type: 'end-turn'; battleRevision: number } |
   { type: 'retry' } | { type: 'resolve' } | { type: 'claim'; claimId: string } |
-  { type: 'lesson'; command: TutorialCommand } | { type: 'start-replay' } | { type: 'reset-lesson' } |
+  { type: 'lesson'; command: TutorialCommand } | { type: 'start-replay' } | { type: 'reset-lesson' } | { type: 'skip-lesson' } |
   { type: 'open-map' } | { type: 'choose-node'; nodeId: string } | { type: 'continue-route'; nodeId: string } | { type: 'leave-map' } |
   { type:'enable-progression' } | { type:'start-encounter';nodeId:string } | { type:'rest';nodeId:string } |
   { type:'discover';nodeId:string;option:'salvage'|'cards'|'mp'|'kit' } | { type:'choose-reward';claimId:string;card:RewardCardType|null }
@@ -96,6 +96,11 @@ function transition(previous:CampaignState,command:CampaignCommand):CampaignStat
     if (!previous.guidedComplete || previous.replay || previous.tutorial) return previous;
     return { ...previous, replay: newTutorial(), revision: previous.revision + 1 };
   }
+  if (command.type === 'skip-lesson') {
+    if (previous.replay) return { ...previous, replay: null, revision: previous.revision + 1 };
+    if (!previous.tutorial || previous.phase !== 'tutorial' || previous.guidedComplete || previous.claimedRewards.includes(LESSON_CLAIM)) return previous;
+    return finishLesson(previous);
+  }
   const lesson = previous.replay ?? previous.tutorial;
   if (command.type === 'lesson' || command.type === 'reset-lesson') {
     if (!lesson) return previous;
@@ -104,10 +109,7 @@ function transition(previous:CampaignState,command:CampaignCommand):CampaignStat
     if (next.step === LESSON_STEPS.length) {
       if (previous.replay) return { ...previous, replay: null, revision: previous.revision + 1 };
       if (previous.guidedComplete || previous.claimedRewards.includes(LESSON_CLAIM) || next.battle.outcome !== 'victory') return previous;
-      return { ...previous, phase: 'map', dungeon: { id: map.id, origin: 'ready' }, currentNode: map.start, tutorial: null, guidedComplete: true, revision: previous.revision + 1,
-        profile: structuredClone(CAMPAIGN_PROFILE), salvage: previous.salvage + 12,
-        completedNodes: [...previous.completedNodes, LESSON_NODE, map.start], routeDecisions: [...previous.routeDecisions, LESSON_NODE, map.start],
-        claimedRewards: [...previous.claimedRewards, LESSON_CLAIM] };
+      return finishLesson(previous);
     }
     return { ...previous, [previous.replay ? 'replay' : 'tutorial']: next, revision: previous.revision + 1 };
   }
@@ -213,4 +215,12 @@ function finishDestination(state:CampaignState,nodeId:string,claimId:string):Cam
   if(state.completedNodes.includes(nodeId)||state.claimedRewards.includes(claimId))return state;
   return {...state,phase:'map',pendingReward:null,completedNodes:[...state.completedNodes,nodeId],claimedRewards:[...state.claimedRewards,claimId],battle:null,battleStart:null,
     progression:state.progression?{...state.progression,battleNode:null}:null,revision:state.revision+1};
+}
+
+function finishLesson(previous: CampaignState): CampaignState {
+  const map = campaignMap(previous);
+  return { ...previous, phase: 'map', dungeon: { id: map.id, origin: 'ready' }, currentNode: map.start, tutorial: null, guidedComplete: true, revision: previous.revision + 1,
+        profile: structuredClone(CAMPAIGN_PROFILE), salvage: previous.salvage + 12,
+        completedNodes: [...previous.completedNodes, LESSON_NODE, map.start], routeDecisions: [...previous.routeDecisions, LESSON_NODE, map.start],
+        claimedRewards: [...previous.claimedRewards, LESSON_CLAIM] };
 }

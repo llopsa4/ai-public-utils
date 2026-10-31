@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.6.0 — 2026-10-31
+
+- Add restrained lighting, ember/steam atmosphere, tactile cards and shared brass/ceramic frames, engraved route nodes, workshop ownership states, training comparisons and chapter-arrival detail. Preserve original artwork and game rules.
+
+- Correct action labels to show actual HP damage, absorbed block and cards drawn, retaining combined effects during overload.
+
+- Verify 109 tests, production assets, a complete browser opening, purchase/upgrade and save/retry flows, desktop/narrow layouts and a reduced-motion development fixture. Native OS motion-preference switching and first-time-player pacing remain unverified.
+
+- Add grounded attack lunges, anticipation/recovery, moving contact shadows, timed recoil and pressure impacts. Distinguish Piston Strike and Kiln Pulse while preserving the existing action window and combat rules.
+
+- Add short charcoal fades across story, menu, route, encounter, reward and retry navigation, with duplicate-input protection and immediate reduced-motion transitions.
+
+- Allow skipping guided combat from the lesson banner, menu or open tutorial dialogs, preserving starting resources and one-time salvage. Keep replay available with a resource-preserving exit. Validate skip/replay saves and duplicate-action guards.
+
 ## 0.5.0 — 2026-10-31
 
 - Prepare local release evidence: repeatable build hashes, reviewed candidate manifest, setup/player notes and save-backup smoke checks. First-time-player timing and clarity remain unverified.

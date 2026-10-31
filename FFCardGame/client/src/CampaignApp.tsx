@@ -1,3 +1,5 @@
+import { Atmosphere } from './components/Atmosphere';
+import { useSceneTransition } from './hooks/useSceneTransition';
 import { Workshop, EquipmentCollection } from './components/Workshop';
 
 import { ScenePlayer } from './components/ScenePlayer';
@@ -60,6 +62,8 @@ type Pending = { kind: 'new' } | { kind: 'reset' } | { kind: 'import'; state: Ca
 
 export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
+  const sceneTransition = useSceneTransition();
+
   const [loaded] = useState(() => readSave(storage));
 
   const [session, setSession] = useState<CampaignState | null>(() => loaded.kind === 'valid' ? loaded.save.state : null);
@@ -88,7 +92,7 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
   const [helpBattle] = useState(() => newBattle(1));
 
-  useEffect(() => { focusHeading.current?.focus(); }, [view, session?.phase, session?.currentNode, !!session?.replay, generation]);
+  useEffect(() => { if (view === 'menu' || !session?.systems?.scene) focusHeading.current?.focus(); }, [view, session?.phase, session?.currentNode, !!session?.replay, !!session?.systems?.scene, generation]);
 
 
 
@@ -122,19 +126,25 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
   }
 
+  function screenDispatch(command: CampaignCommand) {
+    if (['choose-node','start-encounter','start-bridge','continue-route','leave-map','open-map','choose-reward','rest','discover','claim','enter'].includes(command.type)) { sceneTransition.navigate(() => { dispatch(command); }); return null; }
+    return dispatch(command);
+  }
+
   function startNew() {
 
     if (current.current || original !== null) setPending({ kind: 'new' });
 
-    else { install(newCampaign(randomSeed(),true,true,true), true); setView('session'); }
+    else sceneTransition.navigate(() => { install(newCampaign(randomSeed(),true,true,true), true); setView('session'); });
 
   }
 
   function continueSession() {
 
-    if(current.current&&!current.current.systems)install(activateSystems(current.current));
-
-    setView('session');
+    sceneTransition.navigate(() => {
+      if(current.current&&!current.current.systems)install(activateSystems(current.current));
+      setView('session');
+    });
 
   }
 
@@ -142,11 +152,11 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
     if (!pending) return;
 
-    if (pending.kind === 'reset') { if (current.current) dispatch({ type: 'reset-lesson', revision: current.current.revision }); }
-
-    else install(pending.kind === 'new' ? newCampaign(randomSeed(),true,true,true) : activateSystems(pending.state), true);
-
-    setPending(null); setView('session');
+    sceneTransition.navigate(() => {
+      if (pending.kind === 'reset') { if (current.current) dispatch({ type: 'reset-lesson', revision: current.current.revision }); }
+      else install(pending.kind === 'new' ? newCampaign(randomSeed(),true,true,true) : activateSystems(pending.state), true);
+      setPending(null); setView('session');
+    });
 
   }
 
@@ -188,9 +198,15 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
     if (!session) return;
 
-    if (dispatch({ type: 'start-replay', revision: session.revision })) { setMenuHelp(false); setView('session'); }
+    sceneTransition.navigate(() => { if (dispatch({ type: 'start-replay', revision: session.revision })) { setMenuHelp(false); setView('session'); } });
 
   }
+
+  function skipLesson() {
+    sceneTransition.navigate(() => { if (current.current && dispatch({ type: 'skip-lesson', revision: current.current.revision })) setView('session'); });
+  }
+
+  function sceneDispatch(command: CampaignCommand) { sceneTransition.navigate(() => { dispatch(command); }); }
 
   const activeScene = view === 'session' && session?.systems?.scene;
 
@@ -222,21 +238,23 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
   } : undefined;
 
-  const menu = () => { setView('menu'); setNotice(''); };
+  const menu = () => sceneTransition.navigate(() => { setView('menu'); setNotice(''); });
 
 
 
-  if (view === 'standalone') return <><App key={`standalone-${generation}`} onMenu={menu} onReplay={session?.guidedComplete ? replay : undefined} /><div className="save-ribbon">Standalone battle · campaign progress is unchanged.</div></>;
+  if (view === 'standalone') return <>{sceneTransition.overlay}<App key={`standalone-${generation}`} onNavigate={sceneTransition.navigate} onMenu={menu} onReplay={session?.guidedComplete ? replay : undefined} /><div className="save-ribbon">Standalone battle · campaign progress is unchanged.</div></>;
 
   if (view === 'session' && !activeScene && (session?.phase === 'battle' || lesson) && controller && session) return <>
 
-    <App key={`${generation}-${session.replay ? 'replay' : session.phase}`} controller={controller} suppressHints={session.guidedComplete} onMenu={menu}
+    {sceneTransition.overlay}
 
-      lesson={lesson ? { state: lesson, replay: !!session.replay, act: action => !!act(action), reset: () => setView('menu') } : undefined}
+    <App key={`${generation}-${session.replay ? 'replay' : session.phase}`} controller={controller} suppressHints={session.guidedComplete} onNavigate={sceneTransition.navigate} onMenu={menu}
+
+      lesson={lesson ? { state: lesson, replay: !!session.replay, act: action => !!act(action), reset: () => setView('menu'), skip: skipLesson } : undefined}
 
       onReplay={!lesson && session.guidedComplete ? replay : undefined}
 
-      onVictory={() => lesson ? act({ type: 'finish' }) : dispatch({ type: 'resolve', revision: session.revision })} />
+      onVictory={() => sceneTransition.navigate(() => { lesson ? act({ type: 'finish' }) : dispatch({ type: 'resolve', revision: session.revision }); })} />
 
     <div className={`save-ribbon${sessionOnly ? ' warning' : ''}`} role="status">{saveMessage}{sessionOnly && <button className="quiet" onClick={() => download('kiln-courier-backup.json', encodeSave(current.current!))}>Export backup</button>}</div>
 
@@ -256,11 +274,14 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
   return <div className="session-screen" onKeyDownCapture={event => { if (event.repeat && ['Enter', ' '].includes(event.key)) event.preventDefault(); }}>
 
+    {sceneTransition.overlay}
+    <Atmosphere/>
+
     <link rel="icon" href={assets.mark} type="image/svg+xml" />
 
     <header className="session-header"><span className="wordmark">KILN COURIER</span>{view !== 'menu' ? <button className="quiet" onClick={menu}>Menu &amp; backups</button> : <button className="quiet" onClick={() => setMenuHelp(true)}>Help</button>}</header>
 
-    <main className={`session-panel${onRoute&&session?.phase!=='destination'?' route-panel':''}${richReward?' reward-panel':''}`}>
+    <main className={`session-panel${onRoute&&session?.phase!=='destination'?' route-panel':''}${richReward?' reward-panel':''}${chapterComplete&&view==='session'?' chapter-complete':''}`}>
 
       <FrameCorners />
 
@@ -268,7 +289,7 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
       <h1 ref={focusHeading} tabIndex={-1}>{activeScene ? 'A courier’s road.' : view === 'menu' ? 'Carry the fire onward.' : onRoute ? session.phase==='route-complete'?'A route through the kiln.':session.phase==='destination'?'Along the chosen path.':map!.name : session?.phase === 'ready' ? 'The kiln checkpoint' : session?.phase === 'reward' ? 'A passage secured.' : chapterComplete?'Opening chapter complete.':'Checkpoint recorded.'}</h1>
 
-      {activeScene && session ? <ScenePlayer state={session} dispatch={dispatch}/> : view === 'menu' ? <>
+      {activeScene && session ? <ScenePlayer state={session} dispatch={sceneDispatch}/> : view === 'menu' ? <>
 
         <p>One courier. A restless kiln. Keep your heat.</p>
 
@@ -278,9 +299,10 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
           <button className={session ? 'session-secondary' : 'modal-primary'} onClick={startNew}>New Story</button>
 
-          <button className="session-secondary" onClick={() => setView('standalone')}>Standalone battle</button>
+          <button className="session-secondary" onClick={() => sceneTransition.navigate(() => setView('standalone'))}>Standalone battle</button>
 
           {lesson && <button className="session-secondary" onClick={() => setPending({ kind: 'reset' })}>Restart lesson</button>}
+          {lesson && !session?.systems?.scene && <button className="session-secondary" onClick={skipLesson}>{session?.replay ? 'Leave practice' : 'Skip tutorial'}</button>}
 
         </div>
 
@@ -288,7 +310,7 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
         {session && <p className="session-caption">Mara · {lesson ? `${session.replay ? 'Practice' : 'Combat lesson'} ${lesson.step + 1}/${LESSON_STEPS.length}` : ['map','destination','route-complete'].includes(session.phase) ? session.phase==='route-complete'?'Route preview complete':'Exploring the kiln routes' : session.phase === 'battle' ? `Turn ${session.battle!.turn}${session.battle!.outcome ? ` · ${session.battle!.outcome}` : ''}` : session.phase === 'ready' ? 'Before the checkpoint' : session.phase === 'reward' ? 'Checkpoint ready to record' : chapterComplete?'Opening chapter complete':'Checkpoint complete'}</p>}
 
-        {session?.systems && betweenEncounters(session) && session.systems.reached.length>0 && <details className="scene-replays"><summary>Replay reached scenes</summary><div className="session-actions">{session.systems.reached.map(sceneId=><button className="quiet" key={sceneId} onClick={()=>{dispatch({type:'replay-scene',sceneId,revision:session.revision});setView('session');}}>{SCENES[sceneId].title}</button>)}</div></details>}
+        {session?.systems && betweenEncounters(session) && session.systems.reached.length>0 && <details className="scene-replays"><summary>Replay reached scenes</summary><div className="session-actions">{session.systems.reached.map(sceneId=><button className="quiet" key={sceneId} onClick={()=>sceneTransition.navigate(()=>{dispatch({type:'replay-scene',sceneId,revision:session.revision});setView('session');})}>{SCENES[sceneId].title}</button>)}</div></details>}
 
         <section className="backup-section" aria-label="Save backups">
 
@@ -310,19 +332,19 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
         </section>
 
-      </> : richReward&&session ? <RewardChoice state={session} dispatch={dispatch}/> : onRoute ? <>
+      </> : richReward&&session ? <RewardChoice state={session} dispatch={screenDispatch}/> : onRoute ? <>
 
         <div className="session-stats route-resources"><span>HP <strong>{profile!.hp}/{profile!.maxHp}</strong></span><span>MP <strong>{profile!.mp}/{stats!.maxMp}</strong></span><span>Salvage <strong>{session!.salvage}</strong></span></div>
 
-        {session!.phase==='destination'?(session!.systems&&session!.currentNode==='route-workshop'?<Workshop state={session!} dispatch={dispatch}/>:session!.systems&&session!.currentNode==='route-story'?<section><h2>Hanging Crossing</h2><p>A Cable Warden blocks the stranded carriers. Iven will cover you.</p><p className="session-caption">68 HP · Victory: 20 salvage and up to 2 MP. No card offer.</p><button className="modal-primary" onClick={()=>dispatch({type:'start-bridge',revision:session!.revision})}>Secure the crossing</button></section>:session!.progression&&['battle','teacher','rest','discovery'].includes(nodeById(map!,session!.currentNode!)!.kind)?<ProgressionDestination state={session!} dispatch={dispatch}/>:<DungeonDestination nodeId={session!.currentNode!} onContinue={()=>dispatch({type:'continue-route',nodeId:session!.currentNode!,revision:session!.revision})}/>):<>
+        {session!.phase==='destination'?(session!.systems&&session!.currentNode==='route-workshop'?<Workshop state={session!} dispatch={screenDispatch}/>:session!.systems&&session!.currentNode==='route-story'?<section><h2>Hanging Crossing</h2><p>A Cable Warden blocks the stranded carriers. Iven will cover you.</p><p className="session-caption">68 HP · Victory: 20 salvage and up to 2 MP. No card offer.</p><button className="modal-primary" onClick={()=>screenDispatch({type:'start-bridge',revision:session!.revision})}>Secure the crossing</button></section>:session!.progression&&['battle','teacher','rest','discovery'].includes(nodeById(map!,session!.currentNode!)!.kind)?<ProgressionDestination state={session!} dispatch={screenDispatch}/>:<DungeonDestination nodeId={session!.currentNode!} onContinue={()=>screenDispatch({type:'continue-route',nodeId:session!.currentNode!,revision:session!.revision})}/>):<>
 
           {session!.phase==='route-complete'&&<p className="session-caption">Your path is recorded. Continue to the checkpoint.</p>}
 
-          <DungeonMap definition={map!} path={dungeonPath(map!,session!.routeDecisions)} complete={session!.phase==='route-complete'} functional={!!session!.progression} expanded={!!session!.systems} onTravel={nodeId=>dispatch({type:'choose-node',nodeId,revision:session!.revision})}/>
+          <DungeonMap definition={map!} path={dungeonPath(map!,session!.routeDecisions)} complete={session!.phase==='route-complete'} functional={!!session!.progression} expanded={!!session!.systems} onTravel={nodeId=>screenDispatch({type:'choose-node',nodeId,revision:session!.revision})}/>
 
           <DeckCollection state={session!}/>
 
-          {session!.phase==='route-complete'&&<button className="modal-primary" onClick={()=>dispatch({type:'leave-map',revision:session!.revision})}>{chapterComplete?'Return to chapter summary':'Return to checkpoint'}</button>}
+          {session!.phase==='route-complete'&&<button className="modal-primary" onClick={()=>screenDispatch({type:'leave-map',revision:session!.revision})}>{chapterComplete?'Return to chapter summary':'Return to checkpoint'}</button>}
 
         </>}
 
@@ -336,9 +358,9 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
         <p className="session-caption">Equipment changes attacks, block and opening draws. Free swaps never restore resources.</p>
 
-        <button className="modal-primary" onClick={() => dispatch({ type: 'enter', nodeId: CHECKPOINT_NODE, revision: session.revision })}>Enter the kiln</button>
+        <button className="modal-primary" onClick={() => screenDispatch({ type: 'enter', nodeId: CHECKPOINT_NODE, revision: session.revision })}>Enter the kiln</button>
 
-        <button className="session-secondary" onClick={()=>dispatch({type:'open-map',revision:session.revision})}>{session.dungeon?'Review route':'Explore route preview'}</button>
+        <button className="session-secondary" onClick={()=>screenDispatch({type:'open-map',revision:session.revision})}>{session.dungeon?'Review route':'Explore route preview'}</button>
 
       </> : <>
 
@@ -346,10 +368,10 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
         <div className="session-stats"><span>HP <strong>{profile!.hp}/{profile!.maxHp}</strong></span><span>MP <strong>{profile!.mp}/{stats!.maxMp}</strong></span></div>
 
-        {session?.phase === 'reward' ? <button className="modal-primary" onClick={() => dispatch({ type: 'claim', claimId: session.pendingReward!.id, revision: session.revision })}>Record checkpoint</button> : <button className="modal-primary" onClick={menu}>Return to menu</button>}
+        {session?.phase === 'reward' ? <button className="modal-primary" onClick={() => screenDispatch({ type: 'claim', claimId: session.pendingReward!.id, revision: session.revision })}>Record checkpoint</button> : <button className="modal-primary" onClick={menu}>Return to menu</button>}
 
-        {chapterComplete&&session&&<><p>Tempered Flow learned · Iven travelling · {session.profile.deck.length} cards · {session.salvage} salvage</p><p className="session-caption">{EQUIPMENT_SLOTS.map(slot=>{const item=(session.profile.equipment??STARTING_EQUIPMENT)[slot];return EQUIPMENT[item.id].name+(item.upgraded?' +':'');}).join(' · ')}</p><DeckCollection state={session}/></>}
-        {session?.phase==='complete'&&<button className="session-secondary" onClick={()=>dispatch({type:'open-map',revision:session.revision})}>{session.dungeon?'Review route':'Explore route preview'}</button>}
+        {chapterComplete&&session&&<><div className="arrival-seal" aria-hidden="true">✦</div><p>Tempered Flow learned · Iven travelling · {session.profile.deck.length} cards · {session.salvage} salvage</p><p className="session-caption">{EQUIPMENT_SLOTS.map(slot=>{const item=(session.profile.equipment??STARTING_EQUIPMENT)[slot];return EQUIPMENT[item.id].name+(item.upgraded?' +':'');}).join(' · ')}</p><DeckCollection state={session}/></>}
+        {session?.phase==='complete'&&<button className="session-secondary" onClick={()=>screenDispatch({type:'open-map',revision:session.revision})}>{session.dungeon?'Review route':'Explore route preview'}</button>}
 
         <p className="session-caption">{chapterComplete?'The opening ends here. Your progress is saved; the next chapter is not yet playable.':'Your checkpoint is saved. Start New Story for the complete opening.'}</p>
 
@@ -357,7 +379,7 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
       {view==='session' && session?.systems && !activeScene && <p className="current-objective" role="status">Objective: {session.systems.objective}</p>}
 
-      {view==='session' && session && betweenEncounters(session) && session.currentNode!=='route-workshop' && <EquipmentCollection state={session} dispatch={dispatch}/>}
+      {view==='session' && session && betweenEncounters(session) && session.currentNode!=='route-workshop' && <EquipmentCollection state={session} dispatch={screenDispatch}/>}
 
     </main>
 
