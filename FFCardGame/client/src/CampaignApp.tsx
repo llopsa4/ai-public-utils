@@ -281,7 +281,7 @@ export function CampaignApp({ storage }: { storage?: StorageAccess }) {
 
     <header className="session-header"><span className="wordmark">KILN COURIER</span>{view !== 'menu' ? <button className="quiet" onClick={menu}>Menu &amp; backups</button> : <button className="quiet" onClick={() => setMenuHelp(true)}>Help</button>}</header>
 
-    <main className={`session-panel${onRoute&&session?.phase!=='destination'?' route-panel':''}${richReward?' reward-panel':''}${chapterComplete&&view==='session'?' chapter-complete':''}`}>
+    <main className={`session-panel${onRoute&&session?.phase!=='destination'?' route-panel':''}${richReward?' reward-panel':''}${view==='session'&&session?.phase==='destination'&&session.currentNode==='route-workshop'&&session.systems?' workshop-panel':''}${chapterComplete&&view==='session'?' chapter-complete':''}`}>
 
       <FrameCorners />
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0 — 2026-10-31
+
+- Illustrate all nine equipment items and six reinforced variants, using local WebP derivatives with recorded generation prompts.
+- Replace the workshop form layout with an equipment showroom, three-slot loadout, focused current/result comparisons and illustrated spending confirmations. Owned upgrades are compared at their actual strength.
+- Replace the refinement dropdown with a card-instance gallery and before/after technique previews, preserving costs, protections and duplicate-input guards.
+- Illustrate training growth and equipment discovery while keeping permanent growth separate from temporary practice resources.
+- Validate 111 tests, a complete browser opening, purchase/refinement/upgrade and backup/reload flows, plus static 390px layout checks. Native narrow-device interaction and OS motion-preference switching remain unverified.
+
 ## 0.6.0 — 2026-10-31
 
 - Add restrained lighting, ember/steam atmosphere, tactile cards and shared brass/ceramic frames, engraved route nodes, workshop ownership states, training comparisons and chapter-arrival detail. Preserve original artwork and game rules.

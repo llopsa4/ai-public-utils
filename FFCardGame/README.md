@@ -20,12 +20,20 @@ Short charcoal fades connect scenes and major navigation; combat actions retain 
 
 The system’s **Reduce motion** preference removes fades, lunges, flying cards and ambient movement, retaining readable action results and static heat highlights. No animation controls game rules or save data. The release passed 109 automated tests and a complete opening in the browser; reduced-motion checks used a private development fixture. Native preference changes and first-time-player timing remain unverified. Original PNGs are retained; local loading measurements do not establish performance on slow networks.
 
+## Illustrated workbench
+
+The workshop has separate **Equipment** and **Techniques** views. Inspect an illustrated shelf item beside your current equipment; changed stats and tradeoffs appear at the bench. The three equipped slots remain visible. Buying adds ownership, while Equip is a separate free action. Reinforcement has a base/upgrade art preview and retains the existing one-upgrade limit and spending confirmation.
+
+Techniques uses an illustrated card gallery instead of a dropdown. Copy numbers distinguish duplicate cards; selection targets that exact instance. Compare its original and refined effects before spending. Pulse remains reserved for teacher training, and deck removal retains its confirmation and eight-card minimum. Oren's result illustrates Pulse and Tempered Flow alongside permanent HP/MP growth and restored travel resources.
+
+Fifteen original gear images and their prompts are recorded in [equipment provenance](assets/equipment/PROVENANCE.json). Runtime uses precomputed 512 px WebP derivatives (1.15 MB combined versus 29.86 MB of preserved originals). Ordinary builds need no image tooling. To regenerate those derivatives after intentionally editing art, the optional `python scripts/prepare-equipment.py` step requires Pillow. Equipping gear does not change Mara's combat sprite.
+
 ## Current limits
 
 - Only the opening chapter and standalone guardian battle are playable; later chapters and roguelike expeditions are unavailable.
 - First-time-player pacing and tutorial clarity remain under review; the 20–30 minute goal is not yet verified.
 - Desktop is the primary layout. Narrow screens use a fallback; phone-specific design is deferred. The game is silent.
-- Runtime files total approximately 52 MB, mostly original PNG illustrations and local fonts. Initial loading can be slower on limited connections. No offline cache or cloud sync is provided.
+- Runtime files total approximately 53 MB, mostly original PNG illustrations and local fonts. Initial loading can be slower on limited connections. No offline cache or cloud sync is provided.
 - Earlier saves retain the legacy route. New Story starts the authored chapter; export first if you want to preserve an older campaign.
 
 ## Develop

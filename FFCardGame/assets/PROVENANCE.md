@@ -208,3 +208,8 @@ Exact prompt:
 ## mark.svg and card icons
 
 Hand-authored SVG geometry: a kiln doorway and flame; pressure gauntlet, shield, piston, vents, heat shield, and pressure-cycle motifs. No icon libraries or external assets used.
+
+
+## Equipment catalogue and reinforcements
+
+Fifteen original isolated object illustrations (nine items and six upgraded variants) were generated with the built-in image_gen tool on 2026-10-31. [equipment/PROVENANCE.json](equipment/PROVENANCE.json) records every exact prompt, output identifier and reference. Original RGBA PNGs are preserved; runtime uses 512 × 512 WebP derivatives prepared by scripts/prepare-equipment.py (Lanczos, quality 88, method 6, alpha retained). The new Tempered Flow presentation reuses the approved Pulse illustration with hand-authored SVG pressure-channel lines; refined cards reuse approved art with engraved frames. No new franchise assets, external icon libraries or runtime services are used.

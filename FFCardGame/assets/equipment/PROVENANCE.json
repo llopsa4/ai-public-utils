@@ -1,0 +1,99 @@
+{
+  "generator": "OpenAI built-in image_gen tool",
+  "date": "2026-10-31",
+  "scope": "Original Kiln Courier gear, no franchise references",
+  "originals": "1254 x 1254 RGBA; preserved as generated",
+  "runtime": "512 x 512 WebP, Lanczos resize, quality 88, method 6; alpha preserved; scripts/prepare-equipment.py",
+  "assets": [
+    {
+      "id": "balanced-gauntlet",
+      "file": "exec-d464bf72-5b3a-4c74-80d7-7ae82c3db5aa.png",
+      "prompt": "Generate one new original equipment object for Kiln Courier. Reference image is STYLE/MATERIAL ONLY, not an edit target; draw the described different object. Painterly industrial fantasy, worn ivory ceramic, warm antique brass, charcoal iron and ochre leather, warm upper-left light, hand-repaired practical construction. Square composition, whole object centered and filling 75% of frame, no cropping, transparent background, no wearer/body, no text, logos or frame. No franchise references. One balanced compact wearable brass-and-ivory ceramic fist gauntlet, narrow forearm housing, small circular pressure gauge, articulated rounded fingers, a single slim pressure tube, lighter and more agile than the reference heavy gauntlet.",
+      "reference": "heavy-gauntlet.png"
+    },
+    {
+      "id": "layered-armor",
+      "file": "exec-f6fe9df5-7e1b-4c16-bfd1-d88c66990c1a.png",
+      "prompt": "Generate one new original equipment object for Kiln Courier. Reference image is STYLE/MATERIAL ONLY, not an edit target; draw the described different object. Painterly industrial fantasy, worn ivory ceramic, warm antique brass, charcoal iron and ochre leather, warm upper-left light, hand-repaired practical construction. Square composition, whole object centered and filling 75% of frame, no cropping, transparent background, no wearer/body, no text, logos or frame. No franchise references. One torso armor cuirass with shoulder caps only, no person, thick overlapping rounded ivory ceramic plates over quilted charcoal cloth, ochre leather straps and heavy brass rivets, substantial broad silhouette, a double row of protective plates.",
+      "reference": "heavy-gauntlet.png"
+    },
+    {
+      "id": "light-armor",
+      "file": "exec-6a24b4f2-0343-4dc1-94d3-60e95cc66042.png",
+      "prompt": "Generate one new original equipment object for Kiln Courier. Reference image is STYLE/MATERIAL ONLY, not an edit target; draw the described different object. Painterly industrial fantasy, worn ivory ceramic, warm antique brass, charcoal iron and ochre leather, warm upper-left light, hand-repaired practical construction. Square composition, whole object centered and filling 75% of frame, no cropping, transparent background, no wearer/body, no text, logos or frame. No franchise references. One light sleeveless torso armor vest with small shoulder guards, no person, thin spaced ivory ceramic scales on supple ochre leather, narrow graceful silhouette, open joints, small brass fasteners, visibly lighter than heavy armor.",
+      "reference": "heavy-gauntlet.png"
+    },
+    {
+      "id": "quick-harness",
+      "file": "exec-3dc8b31a-3aec-458c-848c-195e29fd4ff0.png",
+      "prompt": "Generate one new original equipment object for Kiln Courier. Reference image is STYLE/MATERIAL ONLY, not an edit target; draw the described different object. Painterly industrial fantasy, worn ivory ceramic, warm antique brass, charcoal iron and ochre leather, warm upper-left light, hand-repaired practical construction. Square composition, whole object centered and filling 75% of frame, no cropping, transparent background, no wearer/body, no text, logos or frame. No franchise references. One wearable quick-release courier shoulder-and-waist harness displayed empty, no person, ochre leather straps forming a clear open harness silhouette, brass quick-release buckle, two compact spring reels and a side climbing loop, utilitarian kiln machinery gear.",
+      "reference": "heavy-gauntlet.png"
+    },
+    {
+      "id": "courier-gauntlet",
+      "file": "exec-3cb4d5b4-15a0-438f-925e-7f59cba7c557.png",
+      "prompt": "Generate one new original equipment object for Kiln Courier. Reference is STYLE/MATERIAL ONLY, not an edit target. Painterly industrial fantasy, worn ivory ceramic, warm antique brass, charcoal iron and ochre leather, warm upper-left light, practical repairable construction. Square canvas with whole object centered filling 75 percent with generous transparent margin. Genuinely transparent background. No wearer, body, text, logos, frame or franchise references. One humble courier's wearable pressure gauntlet, compact ivory ceramic knuckles, scratched brass wrist ring and small amber pressure vial, ochre leather cuff, visible repair stitches and one patched ceramic plate. A simple practical starting item, no oversized pistons.",
+      "reference": "heavy-gauntlet.png"
+    },
+    {
+      "id": "patched-coat",
+      "file": "exec-40c989c4-c125-4fbc-9c90-496563e578d1.png",
+      "prompt": "Generate one new original equipment object for Kiln Courier. Reference is STYLE/MATERIAL ONLY, not an edit target. Painterly industrial fantasy, worn ivory ceramic, warm antique brass, charcoal iron and ochre leather, warm upper-left light, practical repairable construction. Square canvas with whole object centered filling 75 percent with generous transparent margin. Genuinely transparent background. No wearer, body, text, logos, frame or franchise references. One humble patched long ceramic courier coat, no person, ochre cloth under worn ivory ceramic chest and shoulder plates, repaired hems, leather straps and brass buttons. Torso garment with short skirt, clearly different from a heavy cuirass, recognizable empty coat silhouette.",
+      "reference": "heavy-gauntlet.png"
+    },
+    {
+      "id": "plain-carrier",
+      "file": "exec-c32308c7-efc0-4288-8dc9-d1c47baeedb1.png",
+      "prompt": "Generate one new original equipment object for Kiln Courier. Reference is STYLE/MATERIAL ONLY, not an edit target. Painterly industrial fantasy, worn ivory ceramic, warm antique brass, charcoal iron and ochre leather, warm upper-left light, practical repairable construction. Square canvas with whole object centered filling 75 percent with generous transparent margin. Genuinely transparent background. No wearer, body, text, logos, frame or franchise references. One simple worn ochre leather courier satchel with single shoulder strap, repaired seams, brass buckle and small ivory ceramic strap fastener. Humble starting carrier, no weapons, no machine reels.",
+      "reference": "heavy-gauntlet.png"
+    },
+    {
+      "id": "insulated-kit",
+      "file": "exec-07fe0251-6201-40bc-a6dc-6b85ced72b3d.png",
+      "prompt": "Generate one new original equipment object for Kiln Courier. Reference is STYLE/MATERIAL ONLY, not an edit target. Painterly industrial fantasy, worn ivory ceramic, warm antique brass, charcoal iron and ochre leather, warm upper-left light, practical repairable construction. Square canvas with whole object centered filling 75 percent with generous transparent margin. Genuinely transparent background. No wearer, body, text, logos, frame or franchise references. One compact insulated maintenance kit: a closed ochre leather tool case with thick ivory ceramic insulated shell, round brass pressure gauge and two short capped copper tubes secured to its outside. A self-contained wearable waist kit, no loose separate objects.",
+      "reference": "heavy-gauntlet.png"
+    },
+    {
+      "id": "balanced-gauntlet-upgraded",
+      "file": "exec-b571668f-8edc-4ccd-b736-843e2e77307f.png",
+      "prompt": "Edit the reference object into its single reinforced upgraded version for Kiln Courier. Preserve identity, composition, lighting, worn ivory ceramic/brass/ochre materials, painterly rendering and scale. Whole isolated object on transparent square canvas with clear margins. No text, logos, wearer or frame. A physical construction improvement, not just glow. Add a slim second ceramic-lined pressure channel along the forearm and a compact brass stabilization brace at the wrist. Keep it agile and smaller in construction than the heavy gauntlet.",
+      "reference": "balanced-gauntlet.png"
+    },
+    {
+      "id": "layered-armor-upgraded",
+      "file": "exec-a7d1c45b-1b3c-41fa-9726-34536939c8a9.png",
+      "prompt": "Edit the reference object into its single reinforced upgraded version for Kiln Courier. Preserve identity, composition, lighting, worn ivory ceramic/brass/ochre materials, painterly rendering and scale. Whole isolated object on transparent square canvas with clear margins. No text, logos, wearer or frame. A physical construction improvement, not just glow. Add a clearly visible second overlapping ceramic chest collar and extra lower-rib plates secured by a new riveted brass cross-brace. Keep the existing armor recognizable, more reinforced.",
+      "reference": "layered-armor.png"
+    },
+    {
+      "id": "light-armor-upgraded",
+      "file": "exec-27470d9b-f73e-4ab2-bb01-38294639ff7e.png",
+      "prompt": "Edit the reference object into its single reinforced upgraded version for Kiln Courier. Preserve identity, composition, lighting, worn ivory ceramic/brass/ochre materials, painterly rendering and scale. Whole isolated object on transparent square canvas with clear margins. No text, logos, wearer or frame. A physical construction improvement, not just glow. Add a neat layer of small articulated ceramic scales along the upper chest and side ribs, plus two narrow brass seam reinforcements. Retain the lightweight open-joint silhouette.",
+      "reference": "light-armor.png"
+    },
+    {
+      "id": "quick-harness-upgraded",
+      "file": "exec-6f2e1a1f-f338-486a-a28b-0d3e5d1dbfe5.png",
+      "prompt": "Edit the reference object into its single reinforced upgraded version for Kiln Courier. Preserve identity, composition, lighting, worn ivory ceramic/brass/ochre materials, painterly rendering and scale. Whole isolated object on transparent square canvas with clear margins. No text, logos, wearer or frame. A physical construction improvement, not just glow. Add a second small spring reel on each shoulder, stronger quick-release brass clasps and a doubled lower tension cable. Preserve the empty harness silhouette, with no body.",
+      "reference": "quick-harness.png"
+    },
+    {
+      "id": "insulated-kit-upgraded",
+      "file": "exec-30813393-205b-43a4-b67a-845ba41f3b71.png",
+      "prompt": "Edit this exact original Insulated Kit into its one reinforced upgraded version for Kiln Courier. Preserve the same leather case, ceramic shell, two external copper pressure tubes, round gauge, strap, angle, scale, light and painterly material. Add a visible double ceramic insulating rib around the case sides and a bolted brass protective cage around the gauge, with a second leather securing band. A clear physical reinforcement, no generic glow. One isolated whole object centered on transparent square background, generous margin, no wearer, text, frame, logos or franchise references.",
+      "reference": "insulated-kit.png"
+    },
+    {
+      "id": "heavy-gauntlet",
+      "file": "exec-65d065e8-788d-40a7-943b-e8697f72b7ca.png",
+      "prompt": "Create a single original game equipment illustration, square, isolated object on genuinely transparent background. Heavy Gauntlet for Kiln Courier, painterly industrial fantasy matching worn ivory ceramic armor and antique brass, charcoal iron, ochre leather, warm ember pressure chamber. One oversized wearable pressure-powered fist/forearm gauntlet, mechanical piston along its top, heavy rounded ceramic knuckles and one circular orange pressure reservoir. No wearer/body, no hands outside the object, no text, no logos, no frame. Entire object centered in three-quarter view, wrist at upper left and closed knuckles lower right, fills 78% square with generous clear margin, warm upper-left light. Practical repairable machine construction, distinct silhouette, detailed painterly texture readable at 100px, original design with no franchise references. Base unupgraded item, no extra bracing ring.",
+      "reference": null
+    },
+    {
+      "id": "heavy-gauntlet-upgraded",
+      "file": "exec-d1466276-81a3-4109-b76d-a4f9d763f307.png",
+      "prompt": "Edit this reference base Heavy Gauntlet into its single upgraded variant for the same original Kiln Courier game. Preserve the exact object identity, ivory ceramic knuckles, warm brass, charcoal iron, orange pressure cylinder, painterly texture, orientation, lighting and generous transparent margins. Add a clearly visible reinforced external brass support ring around the forearm plus a second short parallel piston beside the main piston and a riveted knuckle brace. A practical physical upgrade, not a color/glow change. One whole isolated gauntlet only, no wearer, no text/logos/frame; genuinely transparent background. Square canvas, object fills 78 percent, maintain base scale/composition.",
+      "reference": "heavy-gauntlet.png"
+    }
+  ]
+}

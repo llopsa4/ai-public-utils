@@ -21,6 +21,12 @@ for (const family of ['Cinzel', 'CormorantGaramond']) {
   assert.ok(files.some(name => name.startsWith(`${family}-`) && name.endsWith('.ttf')), `Missing font: ${family}`);
   assert.ok(files.some(name => name.startsWith(`${family}-OFL-`) && name.endsWith('.txt')), `Missing font license: ${family}`);
 }
+for (const item of ['courier-gauntlet','patched-coat','plain-carrier','heavy-gauntlet','balanced-gauntlet','layered-armor','light-armor','quick-harness','insulated-kit']) {
+  assert.ok(files.some(name => new RegExp(`^${item}-(?!upgraded-)[\\w-]+\\.webp$`).test(name)), `Missing illustrated equipment: ${item}`);
+  if (!['courier-gauntlet','patched-coat','plain-carrier'].includes(item)) {
+    assert.ok(files.some(name => name.startsWith(`${item}-upgraded-`) && name.endsWith('.webp')), `Missing reinforced equipment: ${item}`);
+  }
+}
 assert.deepEqual((await readdir(resolve(project, 'dist'))).sort(), ['build', 'index.html']);
 for (const path of links) assert.ok(files.includes(path.slice('./build/'.length)));
 for (const name of files) {
