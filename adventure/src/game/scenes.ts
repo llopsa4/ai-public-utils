@@ -12,6 +12,8 @@ import { sound } from '../audio/sound';
 import { SECRET_FLAGS, applyCommand } from '../engine/state';
 import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Verb } from '../engine/types';
 import { Actor, SHADOW_DEPTH } from './Actor';
+import { Atmosphere, createAtmosphereTextures, highQuality } from './atmosphere';
+import { addLight, localLight, mixColor } from '../engine/lighting';
 import { FOREGROUND_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
@@ -75,6 +77,7 @@ export class BootScene extends Phaser.Scene {
       ctx.fillRect(0, 0, 128, 128);
       glow.refresh();
     }
+    createAtmosphereTextures(this);
     // Contact shadow: a soft dark ellipse, stretched per actor and prop.
     const shadow = this.textures.createCanvas('fx-shadow', 128, 32);
     if (shadow) {
@@ -160,6 +163,11 @@ export class RoomScene extends Phaser.Scene {
   private foreground: Phaser.GameObjects.Image[] = [];
   private ambient: Phaser.GameObjects.GameObject[] = [];
   private ambientCold: boolean | null = null;
+  private atmosphere!: Atmosphere;
+  /** Last cold state seen, to animate the shutdown when it happens in this room (null until created). */
+  private knownCold: boolean | null = null;
+  /** Cold factor last applied to the background tint (Low quality). */
+  private tintedCold = -1;
   private lastExitClick = { id: '', time: 0 };
   /** Keyboard play: index into focusTargets(), -1 = nothing focused. */
   private focusIndex = -1;
@@ -197,6 +205,8 @@ export class RoomScene extends Phaser.Scene {
       this.add.image(f.x, f.y, `fg-${f.image}`).setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(f.depth));
     this.ambient = [];
     this.ambientCold = null;
+    this.knownCold = null;
+    this.tintedCold = -1;
     this.focusIndex = -1;
     this.focusRing = this.add.graphics().setDepth(99999);
     this.busy = false;
@@ -204,6 +214,8 @@ export class RoomScene extends Phaser.Scene {
 
     this.cameras.main.setZoom(ART_SCALE).centerOn(LOGICAL_W / 2, LOGICAL_H / 2);
     this.background = this.add.image(0, 0, this.room.background).setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-10000);
+    this.atmosphere = new Atmosphere(this, this.room, this.isCold());
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.atmosphere.destroy());
     for (const def of this.room.objects) {
       const sprite = this.add.sprite(def.x, def.y, def.sheet, SHEETS[def.sheet].json.frames[0].filename).setOrigin(0.5, 1).setScale(1 / ART_SCALE).setDepth(def.depth ?? def.y);
       if (def.anim) sprite.play(`${def.sheet}:${def.anim}`);
@@ -507,14 +519,17 @@ export class RoomScene extends Phaser.Scene {
     return this.room.coldIf ? conditionsHold(this.session.state, this.room.coldIf) : false;
   }
 
+  /**
+   * The kiln's cold: on High the camera grade shifts (Atmosphere); on Low the scenery is tinted.
+   * Either way it fades in over three seconds when it happens in front of the player.
+   */
   private applyTint(): void {
     const cold = this.isCold();
-    const targets: (Phaser.GameObjects.Image | Phaser.GameObjects.Sprite)[] = [this.background, ...this.objects.values(), ...this.foreground];
-    for (const o of targets) {
-      if (cold) o.setTint(this.coldTint());
-      else o.clearTint();
-    }
-    this.refreshAmbient(cold);
+    const animate = this.knownCold === false && cold;
+    this.knownCold = cold;
+    this.atmosphere.setCold(cold, animate);
+    this.tintScenery();
+    this.refreshAmbient(cold, animate);
     sound.ambience(this.room.id === 'ashways' ? 'wind' : cold ? 'cold' : 'kiln');
     sound.music(cold ? 'cold' : this.room.music ?? 'warm');
   }
@@ -523,9 +538,22 @@ export class RoomScene extends Phaser.Scene {
     return this.room.coldTint ?? COLD_TINT;
   }
 
-  update(): void {
+  /** Low quality: tints the background, props and foreground by the (animated) cold factor. */
+  private tintScenery(): void {
+    const k = this.atmosphere.enabled ? 0 : this.atmosphere.cold;
+    if (k === this.tintedCold) return;
+    this.tintedCold = k;
+    const tint = mixColor(0xffffff, this.coldTint(), k);
+    for (const o of [this.background, ...this.objects.values(), ...this.foreground]) {
+      if (k === 0) o.clearTint(); else o.setTint(tint);
+    }
+  }
+
+  update(time: number): void {
     this.updateLighting();
     if (!this.hero?.sprite.active) return;
+    this.tintScenery();
+    if (this.atmosphere.enabled) this.atmosphere.updateReflections([...this.actors.values()].map(a => a.sprite), time);
     for (const [id, actor] of this.actors) {
       if (id === 'hero' || this.busy) continue;
       const d = Math.hypot(actor.sprite.x - this.hero.sprite.x, actor.sprite.y - this.hero.sprite.y);
@@ -533,27 +561,47 @@ export class RoomScene extends Phaser.Scene {
     }
   }
 
-  /** Characters take the room's light, darker toward the back, cooled once the kiln is cold. */
+  /**
+   * Characters take the room's light, darker toward the back, warmer near kiln mouths, hearths and
+   * lanterns (the room's glows), cooled once the kiln is cold (on Low; High grades the whole camera).
+   */
   private updateLighting(): void {
     const light = this.room?.light;
-    if (!light) return;
-    const cold = this.isCold();
+    if (!light || !this.atmosphere) return;
+    const cold = this.atmosphere.cold;
+    const coldTint = this.atmosphere.enabled ? 0xffffff : mixColor(0xffffff, this.coldTint(), cold);
+    const sources = this.room.ambient?.glows ?? [];
     const { farY, nearY } = this.room.scale;
     for (const actor of this.actors.values()) {
       const t = Phaser.Math.Clamp((actor.sprite.y - farY) / (nearY - farY), 0, 1);
       const dim = light.farDim + (1 - light.farDim) * t;
-      actor.sprite.setTint(multiplyColor(light.tint, dim, cold ? this.coldTint() : 0xffffff));
+      const chest = { x: actor.sprite.x, y: actor.sprite.y - 40 * actor.sprite.scaleY * ART_SCALE };
+      actor.sprite.setTint(addLight(multiplyColor(light.tint, dim, coldTint), localLight(chest, sources, cold)));
     }
   }
 
-  /** Particles and flickering light pools; warm ones go out with the kiln. Off with reduced motion. */
-  private refreshAmbient(cold: boolean): void {
+  /**
+   * Particles and flickering light pools; warm ones go out with the kiln (fading over three seconds
+   * when it happens in front of the player). Off with reduced motion. On High each glow also gets a
+   * wide, faint bloom halo.
+   */
+  private refreshAmbient(cold: boolean, animate = false): void {
     if (this.ambientCold === cold && this.ambient.length) return;
     this.ambientCold = cold;
-    for (const o of this.ambient) o.destroy();
+    const old = this.ambient;
     this.ambient = [];
+    if (animate) {
+      for (const o of old) {
+        if (o instanceof Phaser.GameObjects.Particles.ParticleEmitter) o.stop();
+        else this.tweens.killTweensOf(o);
+        this.tweens.add({ targets: o, alpha: 0, duration: 3000, onComplete: () => o.destroy() });
+      }
+    } else {
+      for (const o of old) o.destroy();
+    }
     const def = this.room.ambient;
     if (!def || settings().reducedMotion) return;
+    const bloom = highQuality(this);
     for (const p of def.particles ?? []) {
       if (cold && p.warm) continue;
       this.ambient.push(this.add.particles(p.x, p.y, 'fx-dot', particleConfig(p.kind, p.w, p.h)).setDepth(p.kind === 'dust' ? 9000 : -5000));
@@ -564,6 +612,12 @@ export class RoomScene extends Phaser.Scene {
         .setScale((g.r * 2) / 128).setAlpha(0.35).setDepth(-5000);
       this.tweens.add({ targets: light, alpha: { from: 0.22, to: 0.42 }, duration: Phaser.Math.Between(180, 420), yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: Phaser.Math.Between(0, 300) });
       this.ambient.push(light);
+      if (bloom) {
+        const halo = this.add.image(g.x, g.y, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setTint(g.color)
+          .setScale((g.r * 5) / 128).setAlpha(0.1).setDepth(8500);
+        this.tweens.add({ targets: halo, alpha: { from: 0.07, to: 0.13 }, duration: Phaser.Math.Between(600, 1100), yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+        this.ambient.push(halo);
+      }
     }
   }
 

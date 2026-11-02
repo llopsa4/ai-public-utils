@@ -304,6 +304,7 @@ export class Ui {
     const s = settings();
     (form.elements.namedItem('textSpeed') as HTMLSelectElement).value = s.textSpeed;
     (form.elements.namedItem('textSize') as HTMLSelectElement).value = s.textSize;
+    (form.elements.namedItem('visualQuality') as HTMLSelectElement).value = s.visualQuality;
     (form.elements.namedItem('volume') as HTMLInputElement).value = String(s.volume);
     (form.elements.namedItem('musicVolume') as HTMLInputElement).value = String(s.musicVolume);
     for (const k of ['muted', 'autoAdvance', 'reducedMotion', 'highContrast'] as const) (form.elements.namedItem(k) as HTMLInputElement).checked = s[k];
@@ -323,6 +324,7 @@ export class Ui {
         autoAdvance: el('autoAdvance').checked,
         reducedMotion: el('reducedMotion').checked,
         textSize: (form.elements.namedItem('textSize') as HTMLSelectElement).value as Settings['textSize'],
+        visualQuality: (form.elements.namedItem('visualQuality') as HTMLSelectElement).value as Settings['visualQuality'],
         highContrast: el('highContrast').checked,
       });
     });

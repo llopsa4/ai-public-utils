@@ -408,5 +408,8 @@
   "ui.size.m": "Medium",
   "ui.size.l": "Large",
   "ui.highContrast": "High-contrast text panels",
-  "ui.fullscreen": "Full screen"
+  "ui.fullscreen": "Full screen",
+  "ui.quality": "Visual quality",
+  "ui.quality.high": "High (lighting effects)",
+  "ui.quality.low": "Low (faster)"
 }

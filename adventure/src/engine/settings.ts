@@ -13,17 +13,21 @@ export interface Settings {
   textSize: 's' | 'm' | 'l';
   /** Solid, high-contrast panels and labels. */
   highContrast: boolean;
+  /** High: shaders (colour grading, haze, reflections, glows) and full particles. Low: none of that. */
+  visualQuality: 'high' | 'low';
 }
 
 const STORAGE_KEY = 'cinderfold.settings';
 const SPEEDS: Settings['textSpeed'][] = ['slow', 'normal', 'fast'];
 const SIZES: Settings['textSize'][] = ['s', 'm', 'l'];
+const QUALITIES: Settings['visualQuality'][] = ['high', 'low'];
 /** Interface text scale per size setting. */
 export const TEXT_SCALE: Record<Settings['textSize'], number> = { s: 0.85, m: 1, l: 1.3 };
 const SPEED_FACTOR: Record<Settings['textSpeed'], number> = { slow: 1.5, normal: 1, fast: 0.65 };
 
-export function defaultSettings(prefersReducedMotion = false): Settings {
-  return { textSpeed: 'normal', volume: 0.7, musicVolume: 0.5, muted: false, autoAdvance: true, reducedMotion: prefersReducedMotion, textSize: 'm', highContrast: false };
+export function defaultSettings(prefersReducedMotion = false, touch = false): Settings {
+  return {
+    visualQuality: touch ? 'low' : 'high', textSpeed: 'normal', volume: 0.7, musicVolume: 0.5, muted: false, autoAdvance: true, reducedMotion: prefersReducedMotion, textSize: 'm', highContrast: false };
 }
 
 /** Accepts only well-formed values; anything missing or invalid falls back to the default. */
@@ -39,6 +43,7 @@ export function parseSettings(raw: unknown, fallback: Settings): Settings {
     reducedMotion: typeof r.reducedMotion === 'boolean' ? r.reducedMotion : fallback.reducedMotion,
     textSize: SIZES.includes(r.textSize as Settings['textSize']) ? (r.textSize as Settings['textSize']) : fallback.textSize,
     highContrast: typeof r.highContrast === 'boolean' ? r.highContrast : fallback.highContrast,
+    visualQuality: QUALITIES.includes(r.visualQuality as Settings['visualQuality']) ? (r.visualQuality as Settings['visualQuality']) : fallback.visualQuality,
   };
 }
 
@@ -52,9 +57,11 @@ const listeners = new Set<(s: Settings) => void>();
 
 export function loadSettings(): Settings {
   const reduce = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+  // Phones and tablets start on Low quality (shaders drain batteries and drop frames there).
+  const touch = globalThis.matchMedia?.('(pointer: coarse)').matches ?? false;
   let raw: unknown = null;
   try { raw = JSON.parse(globalThis.localStorage?.getItem(STORAGE_KEY) ?? 'null'); } catch { /* blocked or corrupt: defaults */ }
-  current = parseSettings(raw, defaultSettings(reduce));
+  current = parseSettings(raw, defaultSettings(reduce, touch));
   return current;
 }
 

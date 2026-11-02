@@ -1,4 +1,5 @@
 import { readAutosave, writeAutosave } from '../engine/autosave';
+import { onSettingsChange, settings } from '../engine/settings';
 import { newGame } from '../engine/state';
 import type { GameState } from '../engine/types';
 import { Ui } from '../ui/ui';
@@ -38,6 +39,13 @@ export class Session {
       toTitle: () => this.toTitle(),
       cycleFocus: direction => (!this.onTitle && this.scene?.cycleFocus(direction)) ?? false,
       activateFocus: () => (!this.onTitle && this.scene?.activateFocus()) ?? false,
+    });
+    // Effects are built when a room starts: rebuild the current room when the quality changes.
+    let quality = settings().visualQuality;
+    onSettingsChange(s => {
+      if (s.visualQuality === quality) return;
+      quality = s.visualQuality;
+      if (!this.onTitle && this.scene && !this.scene.isBusy()) this.scene.scene.restart();
     });
   }
 

@@ -73,6 +73,11 @@ export const ROOMS: Record<string, RoomDef> = {
     music: 'warm',
     coldIf: COLD,
     light: { tint: 0xffe4c4, farDim: 0.82 },
+    look: {
+      grade: { saturation: 1.05, brightness: 1.02, contrast: 1.05, warmth: 0.3 },
+      haze: [{ x: 234, y: 8, w: 36, h: 32 }, { x: 478, y: 46, w: 34, h: 30 }],
+      vignette: 0.32,
+    },
     foreground: [{ image: 'tent-stool', x: 73, y: 204, depth: 300 }],
     ambient: {
       particles: [{ kind: 'dust', x: 440, y: 150, w: 170, h: 180 }],
@@ -100,6 +105,15 @@ export const ROOMS: Record<string, RoomDef> = {
     music: 'warm',
     coldIf: COLD,
     light: { tint: 0xffd4a8, farDim: 0.86 },
+    look: {
+      grade: { saturation: 1.08, brightness: 1.03, contrast: 1.06, warmth: 0.4 },
+      haze: [{ x: 300, y: 150, w: 244, h: 70 }],
+      shafts: [
+        { x: 446, y: 0, angle: 14, length: 250, width: 70, color: 0xffc890 },
+        { x: 330, y: 10, angle: 8, length: 210, width: 44, color: 0xffb070 },
+      ],
+      vignette: 0.35,
+    },
     foreground: [{ image: 'hall-left', x: 0, y: 248, depth: 400 }, { image: 'hall-right', x: 552, y: 280, depth: 400 }],
     ambient: {
       particles: [{ kind: 'embers', x: 300, y: 150, w: 250, h: 80, warm: true }],
@@ -132,6 +146,16 @@ export const ROOMS: Record<string, RoomDef> = {
     coldTint: 0xb4bed8,
     coldIf: COLD,
     light: { tint: 0xf2c49a, farDim: 0.78 },
+    look: {
+      grade: { saturation: 1.06, brightness: 1.08, contrast: 1.05, warmth: 0.35 },
+      coldGrade: { saturation: 0.6, brightness: 1.02, contrast: 1.02, warmth: -0.5 },
+      haze: [{ x: 0, y: 178, w: 70, h: 64 }, { x: 160, y: 130, w: 70, h: 40 }],
+      shafts: [
+        { x: 372, y: 150, angle: -62, length: 150, width: 34, color: 0xffb070 },
+        { x: 300, y: 0, angle: 6, length: 190, width: 40, color: 0xffb070 },
+      ],
+      vignette: 0.3,
+    },
     ambient: {
       particles: [{ kind: 'embers', x: 0, y: 190, w: 70, h: 60, warm: true }, { kind: 'steam', x: 236, y: 186, w: 30, h: 14, warm: true }],
       glows: [
@@ -163,6 +187,12 @@ export const ROOMS: Record<string, RoomDef> = {
     scale: { farY: 268, farScale: 0.96, nearY: 358, nearScale: 1.06 },
     surface: 'metal',
     music: 'tension',
+    look: {
+      grade: { saturation: 1.04, brightness: 1, contrast: 1.07, warmth: 0.2 },
+      haze: [{ x: 360, y: 0, w: 80, h: 70 }],
+      vignette: 0.38,
+      reflective: { polygon: [{ x: 372, y: 270 }, { x: 640, y: 266 }, { x: 640, y: 360 }, { x: 384, y: 360 }], alpha: 0.2 },
+    },
     coldIf: COLD,
     light: { tint: 0xffdcb8, farDim: 0.9 },
     foreground: [{ image: 'gallery-railing', x: 278, y: 206, depth: 300 }],
@@ -189,6 +219,10 @@ export const ROOMS: Record<string, RoomDef> = {
     scale: { farY: 226, farScale: 0.72, nearY: 358, nearScale: 1.02 },
     surface: 'ash',
     music: 'wind',
+    look: {
+      grade: { saturation: 0.96, brightness: 1, contrast: 1.04, warmth: -0.05 },
+      vignette: 0.4,
+    },
     light: { tint: 0xffe6c8, farDim: 0.84 },
     ambient: {
       particles: [{ kind: 'ash', x: 0, y: 0, w: 640, h: 220 }],

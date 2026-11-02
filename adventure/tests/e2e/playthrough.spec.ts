@@ -93,3 +93,28 @@ test('keyboard play: Tab focuses things in the room and Enter opens the action r
   await expect(page.locator('#radial')).toBeHidden();
   expect(errors, errors.join('\n')).toEqual([]);
 });
+
+for (const quality of ['high', 'low'] as const) {
+  test(`${quality} visual quality: every room renders and the kiln goes cold without errors`, async ({ page }) => {
+    const errors: string[] = [];
+    await page.addInitScript(q => localStorage.setItem('cinderfold.settings', JSON.stringify({ visualQuality: q })), quality);
+    await open(page, errors, { clear: false });
+    await page.getByRole('button', { name: 'New game' }).click();
+    await idle(page);
+    for (const room of ['tent', 'maraRoom', 'firingHouse', 'gallery', 'ashways']) {
+      await page.evaluate(r => {
+        const s = (window as any).adventure.session;
+        const st = structuredClone(s.state);
+        st.room = r;
+        st.hero = { x: 400, y: 300, face: 'left', pose: 'stand' };
+        st.flags = { hasGauntlet: true, latchFixed: true, alarm: true, patchFailed: true, decided: true, procedureKnown: true };
+        st.inventory = ['gauntlet'];
+        s.replaceState(st);
+      }, room);
+      await idle(page);
+      await page.evaluate(() => (window as any).adventure.session.scene.runScript([{ type: 'setFlag', flag: 'kilnCold', value: true }]));
+      await page.waitForTimeout(400);
+    }
+    expect(errors, errors.join('\n')).toEqual([]);
+  });
+}

@@ -99,6 +99,8 @@ export interface RoomDef {
   music?: 'warm' | 'tension' | 'wind';
   /** Tint once the room is cold, instead of the default cold blue (lighter for rooms that got too dark). */
   coldTint?: number;
+  /** Colour grade, haze, light shafts, vignette and reflections. */
+  look?: RoomLook;
   /** When these hold the room is drawn with the cold tint (kiln shut down). */
   coldIf?: Condition[];
   entries: Record<string, { x: number; y: number; face: Facing }>;
@@ -110,6 +112,24 @@ export interface RoomDef {
 export interface ActorState {
   pose: Pose;
   face: Facing;
+}
+
+/** A room's colour grade (camera colour matrix on High quality). 1 / 0 are neutral. */
+export interface Grade { saturation: number; brightness: number; contrast: number; warmth: number }
+
+/** Visual-only room settings (High quality unless noted). World coordinates. */
+export interface RoomLook {
+  grade?: Grade;
+  /** Grade once the room is cold (default COLD_GRADE). */
+  coldGrade?: Grade;
+  /** Heat shimmer over hot spots (stops when cold). */
+  haze?: { x: number; y: number; w: number; h: number }[];
+  /** Drifting light beams from (x, y), angle in degrees from straight down. Dim when cold. */
+  shafts?: { x: number; y: number; angle: number; length: number; width: number; color: number }[];
+  /** Darkened edges, 0..1 (default 0.3). */
+  vignette?: number;
+  /** A wet floor that shows faint reflections of the characters. */
+  reflective?: { polygon: Polygon; alpha: number };
 }
 
 export interface GameState {
