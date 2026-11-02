@@ -67,6 +67,17 @@ html, body {
   white-space: nowrap;
 }
 
+#hover.follow {
+  top: 0;
+  left: 0;
+  transform: translate(14px, -130%);
+  font-size: 0.85em;
+}
+
+#hover.follow.flip {
+  transform: translate(calc(-100% - 14px), -130%);
+}
+
 /* Dialogue panel: small portrait with the name and line beside it. */
 #dialogue:not([hidden]) {
   position: absolute;
@@ -296,6 +307,86 @@ button.verb:hover, button.verb:focus-visible {
   cursor: pointer;
 }
 
+/* ------------------------------------------------------------- title --- */
+#title:not([hidden]) {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 0 0 7%;
+  max-width: 62%;
+  font-size: max(13px, 2.2vmin);
+  animation: fade-in 1.2s ease-out both;
+}
+
+#title h1 {
+  margin: 0;
+  font-size: 3.4em;
+  letter-spacing: 0.06em;
+  color: #ffd79a;
+  text-shadow: 0 0 0.5em rgb(255 120 40 / 0.55), 0 2px 0 #1a1014;
+}
+
+#title .title-sub {
+  margin: 0 0 1em;
+  font-style: italic;
+  opacity: 0.9;
+}
+
+.title-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5em;
+}
+
+.title-actions button {
+  min-height: 44px;
+  min-width: 12em;
+  padding: 0 1.2em;
+  text-align: left;
+  background: rgb(36 26 38 / 0.85);
+  border: 1px solid var(--panel-edge);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.title-actions button[hidden] {
+  display: none;
+}
+
+.title-actions button:hover, .title-actions button:focus-visible {
+  border-color: var(--gold);
+}
+
+#title .title-note {
+  margin-top: 1.2em;
+  max-width: 30em;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+
+#app.on-title #bar > :not(#mute-btn) {
+  visibility: hidden;
+}
+
+#hint-box {
+  margin-top: 0.8rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--panel-edge);
+}
+
+#hint-box[hidden], #hint-btn[hidden], #hint-text[hidden] {
+  display: none;
+}
+
+.hint {
+  font-style: italic;
+  color: #ffd79a;
+}
+
 @keyframes fade-in {
   from { opacity: 0; }
   to { opacity: 1; }
@@ -502,7 +593,7 @@ button:focus-visible {
   white-space: nowrap;
 }
 
-.reduce-motion button.verb, .reduce-motion #end, .reduce-motion #dialogue {
+.reduce-motion button.verb, .reduce-motion #end, .reduce-motion #dialogue, .reduce-motion #title {
   animation: none;
 }
 

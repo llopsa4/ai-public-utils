@@ -3,6 +3,7 @@ import { LANGUAGES, language, onLanguageChange, setLanguage, t, type Language } 
 import { MAX_SAVE_BYTES, parseSave, saveFileName, serializeSave } from '../engine/saveFile';
 import { lineDuration, onSettingsChange, settings, updateSettings, type Settings } from '../engine/settings';
 import { objectives } from '../content/objectives';
+import { readAutosave } from '../engine/autosave';
 import type { ActorId, GameState, Point, Verb } from '../engine/types';
 
 /** World size in logical units; all content coordinates use it. */
@@ -26,6 +27,10 @@ export interface UiHost {
   newGame(): GameState;
   /** Labels for everything interactive in the room, in world coordinates. */
   hotspotLabels(): { text: string; x: number; y: number }[];
+  /** Title screen: load the autosave and start playing. */
+  continueGame(): void;
+  /** Leave the room for the title screen (the game is autosaved first). */
+  toTitle(): void;
 }
 
 /**
@@ -41,6 +46,8 @@ export class Ui {
   private readonly dialogue = $('dialogue');
   private readonly labels = $('labels');
   private readonly history: { actor: ActorId; text: string }[] = [];
+  /** How many hints were shown per notebook goal (0, 1 or 2), for this play session. */
+  private readonly hintStage = new Map<string, number>();
   private revealTimer = 0;
   private readonly radial = $('radial');
   private readonly choices = $('choices');
@@ -79,6 +86,15 @@ export class Ui {
     $('menu-new').addEventListener('click', () => {
       if (window.confirm(t('ui.confirmNew'))) { this.host.replaceState(this.host.newGame()); this.menu.close(); }
     });
+    $('menu-title').addEventListener('click', () => { this.menu.close(); this.host.toTitle(); });
+    $('title-continue').addEventListener('click', () => this.host.continueGame());
+    $('title-new').addEventListener('click', () => {
+      if (readAutosave().kind === 'ok' && !window.confirm(t('ui.confirmNewTitle'))) return;
+      this.host.replaceState(this.host.newGame());
+    });
+    $('title-import').addEventListener('click', () => this.fileInput.click());
+    $('title-settings').addEventListener('click', () => this.openSettings());
+    $('hint-btn').addEventListener('click', () => this.nextHint());
     this.fileInput.addEventListener('change', () => void this.importSave());
     this.menu.addEventListener('click', e => { if (e.target === this.menu) this.menu.close(); });
     window.addEventListener('keydown', e => {
@@ -147,8 +163,30 @@ export class Ui {
     });
   }
 
-  clearHistory(): void {
+  /** Forgets the dialogue history and hint stages (new, imported or continued game). */
+  resetSession(): void {
     this.history.length = 0;
+    this.hintStage.clear();
+  }
+
+  text(key: string): string {
+    return t(key);
+  }
+
+  // ------------------------------------------------------------- title ---
+  showTitle(canContinue: boolean): void {
+    $('app').classList.add('on-title');
+    $('title').hidden = false;
+    const cont = $<HTMLButtonElement>('title-continue');
+    cont.hidden = !canContinue;
+    (canContinue ? cont : $<HTMLButtonElement>('title-new')).focus({ preventScroll: true });
+    this.setHover('');
+    this.hideLabels();
+  }
+
+  hideTitle(): void {
+    $('app').classList.remove('on-title');
+    $('title').hidden = true;
   }
 
   // ---------------------------------------------- notebook, history, settings ---
@@ -165,7 +203,35 @@ export class Ui {
       li.classList.toggle('done', o.done);
       list.append(li);
     }
+    this.renderHint();
     $<HTMLDialogElement>('notebook').showModal();
+  }
+
+  /** The first unfinished required goal: the one hints are about. */
+  private currentGoal(): string | null {
+    return objectives(this.host.getState()).find(o => !o.done && !o.optional)?.key ?? null;
+  }
+
+  /** Hints come in two stages per goal: a nudge, then the plain answer. */
+  private renderHint(): void {
+    const goal = this.currentGoal();
+    const button = $<HTMLButtonElement>('hint-btn');
+    const text = $('hint-text');
+    $('hint-box').hidden = !goal;
+    if (!goal) return;
+    const stage = this.hintStage.get(goal) ?? 0;
+    text.textContent = stage > 0 ? t(`hint.${goal.slice(4)}.${stage}`) : '';
+    text.hidden = stage === 0;
+    button.hidden = stage >= 2;
+    button.textContent = t(stage === 0 ? 'ui.hint' : 'ui.hintMore');
+  }
+
+  private nextHint(): void {
+    const goal = this.currentGoal();
+    if (!goal) return;
+    this.hintStage.set(goal, Math.min(2, (this.hintStage.get(goal) ?? 0) + 1));
+    this.renderHint();
+    this.live.textContent = $('hint-text').textContent ?? '';
   }
 
   private openHistory(): void {
@@ -190,7 +256,7 @@ export class Ui {
     list.lastElementChild?.scrollIntoView({ block: 'end' });
   }
 
-  private openSettings(): void {
+  openSettings(): void {
     const form = $<HTMLFormElement>('settings-form');
     const s = settings();
     (form.elements.namedItem('textSpeed') as HTMLSelectElement).value = s.textSpeed;
@@ -351,9 +417,17 @@ export class Ui {
   }
 
   // ------------------------------------------------------ hover, toast ---
-  setHover(text: string): void {
+  /** The name under the pointer, shown beside it (or at the top centre without a position). */
+  setHover(text: string, at?: Point): void {
     this.hover.textContent = text;
     this.hover.hidden = text === '';
+    if (!text) return;
+    if (!at) { this.hover.classList.remove('follow'); this.hover.style.left = ''; this.hover.style.top = ''; return; }
+    const p = this.toScreen(at);
+    this.hover.classList.add('follow');
+    this.hover.classList.toggle('flip', p.x > LOGICAL_W * this.zoom * 0.75);
+    this.hover.style.left = `${p.x}px`;
+    this.hover.style.top = `${p.y}px`;
   }
 
   toast(text: string, ms = 3500): void {
@@ -461,7 +535,7 @@ export class Ui {
     if (!file) return;
     const result = file.size > MAX_SAVE_BYTES ? { ok: false as const, error: 'save.error.tooLarge' } : parseSave(await file.text());
     if (!result.ok) { this.toast(t(result.error), 6000); return; }
-    if (!window.confirm(t('ui.confirmImport'))) return;
+    if (!$('app').classList.contains('on-title') && !window.confirm(t('ui.confirmImport'))) return;
     this.host.replaceState(result.state);
     this.menu.close();
     this.toast(t('ui.imported'));

@@ -14,6 +14,7 @@ import { Actor } from './Actor';
 import { FOREGROUND_IMAGES, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
+import { cursorFor, type CursorKind } from '../ui/cursors';
 
 const FADE_MS = 280;
 /** How far Mara walks past a doorway on leaving, and in from it on arriving (world units). */
@@ -65,7 +66,30 @@ export class BootScene extends Phaser.Scene {
       }
     }
     document.getElementById('loading')?.remove();
-    this.scene.start('room');
+    this.scene.start('title');
+  }
+}
+
+/** The title screen: the kiln hall in low light, Mara, drifting embers and the DOM title menu. */
+export class TitleScene extends Phaser.Scene {
+  constructor(private readonly session: Session) { super('title'); }
+
+  /** The kiln-hall backdrop, and the room the game will open in so it is ready behind the menu. */
+  preload(): void {
+    const start = ROOMS[this.session.state.room].background;
+    for (const key of new Set(['room-mara', start])) if (!this.textures.exists(key)) this.load.image(key, ROOM_IMAGES[key]);
+  }
+
+  create(): void {
+    this.cameras.main.setZoom(ART_SCALE).centerOn(LOGICAL_W / 2, LOGICAL_H / 2);
+    this.add.image(0, 0, 'room-mara').setOrigin(0, 0).setScale(1 / ART_SCALE).setTint(0x6a5a58);
+    const mara = new Actor(this, 'hero', 'mara-gauntlet', 470, 352, 'left', 'stand', { farY: 0, farScale: 1.45, nearY: 360, nearScale: 1.45 });
+    mara.sprite.setTint(0xe8c8a8);
+    if (!settings().reducedMotion) {
+      this.add.particles(0, 120, 'fx-dot', particleConfig('embers', LOGICAL_W, 240)).setDepth(1000);
+    }
+    this.cameras.main.fadeIn(600, 0, 0, 0);
+    this.session.onTitleShown();
   }
 }
 
@@ -80,7 +104,7 @@ function multiplyColor(color: number, factor: number, other: number): number {
   return (r << 16) | (g << 8) | b;
 }
 
-function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash', w: number, h: number): Phaser.Types.GameObjects.Particles.ParticleEmitterConfig {
+export function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash', w: number, h: number): Phaser.Types.GameObjects.Particles.ParticleEmitterConfig {
   const area = { x: { min: 0, max: w }, y: { min: 0, max: h } };
   switch (kind) {
     case 'embers':
@@ -177,6 +201,7 @@ export class RoomScene extends Phaser.Scene {
     this.session.ui.renderInventory();
     this.cameras.main.fadeIn(FADE_MS, 0, 0, 0);
     if (this.session.arrival) this.walkIn(this.session.arrival);
+    else this.session.autosave();
     this.session.arrival = null;
   }
 
@@ -194,6 +219,7 @@ export class RoomScene extends Phaser.Scene {
       if (this.leaving) return;
       this.busy = false;
       this.session.ui.setBusy(false);
+      this.session.autosave();
     });
   }
 
@@ -288,16 +314,28 @@ export class RoomScene extends Phaser.Scene {
 
   private onPointerMove(pointer: Phaser.Input.Pointer): void {
     if (pointer.wasTouch) return;
-    const target = this.isBusy() ? null : this.hitTest({ x: pointer.worldX, y: pointer.worldY });
+    const at = { x: pointer.worldX, y: pointer.worldY };
+    const target = this.isBusy() ? null : this.hitTest(at);
     const item = this.session.selectedItem;
     const name = target ? this.targetName(target) : '';
     if (item) {
       const itemName = t(`name.${item}`);
-      this.session.ui.setHover(name ? t('ui.useWith', { item: itemName, target: name }) : t('ui.useWithNothing', { item: itemName }));
+      this.session.ui.setHover(name ? t('ui.useWith', { item: itemName, target: name }) : t('ui.useWithNothing', { item: itemName }), at);
     } else {
-      this.session.ui.setHover(name);
+      this.session.ui.setHover(name, at);
     }
-    this.input.setDefaultCursor(target && !item ? 'pointer' : '');
+    // While an item is carried, the stage shows the item's icon as the cursor instead.
+    this.input.setDefaultCursor(item ? '' : cursorFor(target ? this.cursorKind(target) : null));
+  }
+
+  /** What a click on the target will most likely do: talk, leave, handle or look. */
+  private cursorKind(target: Target): CursorKind {
+    if (target.kind === 'actor') return target.actor.id === 'hero' ? 'look' : 'talk';
+    const verbs = target.hotspot.verbs;
+    if (verbs.includes('go')) return 'exit';
+    if (verbs.includes('talk')) return 'talk';
+    if (verbs.some(v => v === 'take' || v === 'use' || v === 'open')) return 'hand';
+    return 'look';
   }
 
   private hitTest(p: Point): Target | null {
@@ -322,8 +360,12 @@ export class RoomScene extends Phaser.Scene {
   private async walkTo(target: Point): Promise<void> {
     const state = this.session.state;
     if (this.hero.pose !== 'stand') { this.hero.setPose('stand'); state.hero.pose = 'stand'; }
-    await this.hero.walk(this.area.findPath(this.hero.position, target));
-    this.syncHero();
+    if (await this.hero.walk(this.area.findPath(this.hero.position, target))) {
+      this.syncHero();
+      this.session.autosave();
+    } else {
+      this.syncHero();
+    }
   }
 
   private syncHero(): void {
@@ -434,6 +476,7 @@ export class RoomScene extends Phaser.Scene {
         this.busy = false;
         this.session.ui.setBusy(false);
         this.session.ui.renderInventory();
+        this.session.autosave();
       }
     }
   }

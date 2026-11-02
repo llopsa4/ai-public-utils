@@ -11,9 +11,11 @@ Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 - **Satchel:** click an item for Look at / Use. Use carries it, so you then click what to use it on. Right-click or Esc puts it back.
 - **Poses:** click Mara, Oren or Nell for Crouch, Lie down and Stand up.
 - **Talk:** choose a reply with the mouse or the number keys. Lines appear in the panel at the bottom with the speaker's portrait. Click to skip a line.
-- **Hints:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
+- **Labels:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
 - **Exits:** double-click a doorway to go straight through.
-- **Menu:** saves, **History** (everything said so far) and **Settings** (text speed, volume, mute, auto-advance, reduced motion). Settings are remembered in this browser; progress is not.
+- **Menu:** saves, **History** (everything said so far), **Settings** (text speed, volume, mute, auto-advance, reduced motion) and **Title screen**.
+- **Hints:** the notebook's **Hint** button gives a nudge for the current goal, then the plain answer.
+- **Cursor:** the pointer shows the name of what it is over and what a click will do (look, handle, talk, leave).
 
 The scene covers: Mara's tent → the kiln hall → the firing house (Nell's latch, then the alarm) → the regulator gallery (the failed patch, the conversation with Oren, his mother's notebook, the shutdown) → the cold firing house (goodbyes) → the ashways (the ash sweeper and the steam valve) → "To be continued".
 
@@ -21,7 +23,7 @@ Text is **English only** for now. Languages can be added back by dropping a `str
 
 ### Saves
 
-Progress is **not saved automatically**, so reloading starts a new game. Use **Menu → Export save** to download a `.json` file and **Import save** to continue. Imports are fully validated: a damaged, foreign or older-version file is rejected and the current game is kept.
+Progress is **autosaved in this browser** (localStorage, one slot) after each walk, action and room change; the title screen offers **Continue**. Use **Menu → Export save** to download a `.json` copy and **Import save** to load one. Autosaves and imports go through the same validation: a damaged, foreign or older-version save is rejected and never loaded.
 
 ## Develop
 
@@ -68,5 +70,5 @@ Character sheets follow the Aseprite/LibreSprite JSON-array format with the tags
 - One scene: four rooms, two neighbours and one machine. Tobi is mentioned but not shown, since there is no child art.
 - Rig animation is stiff compared with drawn animation, and the characters always show their three-quarter view.
 - Nell uses Iven's illustration from Kiln Courier, shield included. In this game the shield is her old counter shutter.
-- Sound is synthesized, so it is simple rather than recorded. No autosave and no cloud sync. English only.
+- Sound is synthesized, so it is simple rather than recorded. No cloud sync. English only.
 - Tested in desktop Chrome. Touch input uses the same pointer events but hasn't been tested on a phone.

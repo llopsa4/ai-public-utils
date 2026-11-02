@@ -32,6 +32,17 @@
         <p data-i18n="ui.endText"></p>
         <button id="end-new" type="button" data-i18n="ui.newGame">New game</button>
       </section>
+      <section id="title" hidden aria-labelledby="title-name">
+        <h1 id="title-name" data-i18n="ui.titleName">Cinderfold</h1>
+        <p class="title-sub" data-i18n="ui.endTitle">A delivery he does not want</p>
+        <div class="title-actions">
+          <button id="title-continue" type="button" data-i18n="ui.continue" hidden>Continue</button>
+          <button id="title-new" type="button" data-i18n="ui.newGame">New game</button>
+          <button id="title-import" type="button" data-i18n="ui.import">Import save</button>
+          <button id="title-settings" type="button" data-i18n="ui.settings">Settings</button>
+        </div>
+        <p class="title-note" data-i18n="ui.notice"></p>
+      </section>
       <p id="loading" data-i18n="ui.loading">Loading…</p>
     </div>
     <nav id="bar">
@@ -54,6 +65,7 @@
       <button id="menu-new" type="button" data-i18n="ui.newGame">New game</button>
       <button id="menu-history" type="button" data-i18n="ui.history">History</button>
       <button id="menu-settings" type="button" data-i18n="ui.settings">Settings</button>
+      <button id="menu-title" type="button" data-i18n="ui.toTitle">Title screen</button>
       <button id="menu-close" type="button" data-i18n="ui.close">Close</button>
     </div>
     <input id="import-file" type="file" accept=".json,application/json" hidden>
@@ -62,6 +74,10 @@
   <dialog id="notebook">
     <h1 data-i18n="ui.notebookTitle">Mara's notebook</h1>
     <ol id="objectives"></ol>
+    <div id="hint-box">
+      <p id="hint-text" class="hint" hidden></p>
+      <button id="hint-btn" type="button" data-i18n="ui.hint">Hint</button>
+    </div>
     <div class="menu-actions"><button type="button" class="dialog-close" data-i18n="ui.close">Close</button></div>
   </dialog>
 

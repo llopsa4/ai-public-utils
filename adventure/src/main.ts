@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
-import { initLanguage, t } from './engine/i18n';
+import { initLanguage } from './engine/i18n';
 import { loadSettings, onSettingsChange, settings } from './engine/settings';
 import { sound } from './audio/sound';
-import { BootScene, RoomScene } from './game/scenes';
+import { BootScene, RoomScene, TitleScene } from './game/scenes';
 import { Session } from './game/session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from './ui/ui';
 import './style.css';
@@ -12,6 +12,8 @@ loadSettings();
 const session = new Session();
 const room = new RoomScene(session);
 session.scene = room;
+const title = new TitleScene(session);
+session.title = title;
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,
@@ -25,7 +27,7 @@ const game = new Phaser.Game({
   banner: false,
   scale: { mode: Phaser.Scale.NONE, zoom: session.ui.layout() / ART_SCALE },
   input: { activePointers: 2 },
-  scene: [BootScene, room],
+  scene: [BootScene, title, room],
 });
 
 function relayout(): void {
@@ -33,8 +35,6 @@ function relayout(): void {
 }
 window.addEventListener('resize', relayout);
 window.addEventListener('orientationchange', relayout);
-
-session.ui.toast(t('ui.notice'), 9000);
 
 // Browsers only allow audio after a user gesture: start it on the first click or key.
 const unlockAudio = () => sound.unlock();
