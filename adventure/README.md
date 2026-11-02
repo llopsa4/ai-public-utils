@@ -64,6 +64,8 @@ Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, 
 
 ## Art pipeline
 
+**Replacing the art:** [art/REPLACING.md](art/REPLACING.md) lists every image the game loads, its size, frames, animation tags and anchor point, with a reference image of each room showing where the clickable areas, walk area and anchors are. Replace files in `art/src/`, run `npm run webp` and `npm run art:check`. Do not run `npm run art` afterwards: it rebuilds the current art and would overwrite the new files. `npm run art:guide` regenerates the guide after changing rooms or sheets.
+
 The world is 640×360 logical units. The art and the canvas are 2× that (1280×720), and the stage scales to fit the window. All art comes from Kiln Courier's illustrations except Mara's tent, which is painted in code ([provenance](art/PROVENANCE.md)). Run `npm run art` to rebuild everything, or one script at a time:
 
 - `npm run pixelate`: rooms, the ash sweeper, item icons and objects (crop, mask, area-average downscale, palette reduction).
