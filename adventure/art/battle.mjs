@@ -7,12 +7,13 @@ import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { isFinal } from './guard.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const source = join(here, '..', '..', 'FFCardGame', 'assets', 'opening', 'pressure-scavenger.png');
 mkdirSync(join(here, 'src', 'battle'), { recursive: true });
 // Battle sprites are drawn at 2x the world like everything else: 300 px wide is 150 world units.
-await sharp(source).trim().resize({ width: 300, kernel: 'lanczos3' })
+if (!isFinal('battle/scavenger.png')) await sharp(source).trim().resize({ width: 300, kernel: 'lanczos3' })
   .png({ palette: true, colours: 64, dither: 0.4, effort: 10 })
   .toFile(join(here, 'src', 'battle', 'scavenger.png'));
 console.log('Battle art written to art/src/battle (scavenger).');

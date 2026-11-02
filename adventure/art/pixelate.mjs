@@ -8,10 +8,12 @@
 // Method: crop -> optional mask -> area-average downscale (alpha-weighted) -> light grade ->
 // k-means palette reduction -> hard alpha -> optional 1px outline.
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
 import { encodeIndexed } from './png.mjs';
+import { isFinal } from './guard.mjs';
+import { MANIFEST } from './manifest.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const kiln = join(here, '..', '..', 'FFCardGame', 'assets');
@@ -148,6 +150,8 @@ function shrink(src, crop, w, h, { colors = 48, alphaCut = 128, grading, line = 
 }
 
 function save(png, path) {
+  // Final (Codex) art is never overwritten by a placeholder.
+  if (isFinal(relative(out, path).replaceAll('\\', '/'))) { console.log(`  ${relative(out, path).replaceAll('\\', '/')}: final art, kept.`); return; }
   mkdirSync(dirname(path), { recursive: true });
   writeFileSync(path, encodeIndexed(png));
 }
@@ -164,6 +168,7 @@ function blit(dst, src, dx, dy) {
 
 /** Writes an Aseprite JSON-array sheet from same-size frame PNGs laid out in one row. */
 function writeSheet(dir, id, frames, tags, durations = []) {
+  if (isFinal(`${dir}/${id}.png`)) { console.log(`  ${dir}/${id}: final art, kept.`); return; }
   const FW = frames[0].width, FH = frames[0].height;
   const sheet = new PNG({ width: FW * frames.length, height: FH });
   frames.forEach((f, i) => blit(sheet, f, i * FW, 0));
@@ -232,14 +237,11 @@ function foregroundPiece(room, name, polygons, [x0, y0, x1, y1]) {
   }
   save(piece, join(out, 'foreground', `${name}.png`));
 }
-const rect = (x, y, w, h) => [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
-foregroundPiece('mara-room', 'hall-left', [[[0, 500], [110, 520], [190, 600], [200, 720], [0, 720]]], [0, 496, 202, 720]);
-foregroundPiece('mara-room', 'hall-right', [[[1110, 620], [1180, 570], [1280, 560], [1280, 720], [1100, 720]]], [1104, 560, 1280, 720]);
-foregroundPiece('gallery', 'gallery-railing', [
-  [[620, 415], [945, 432], [945, 450], [620, 435]],
-  [[560, 474], [945, 478], [945, 492], [560, 490]],
-  rect(615, 415, 45, 155), rect(762, 420, 20, 212), rect(840, 420, 16, 130), rect(918, 430, 14, 170),
-], [556, 412, 946, 634]);
+// The cut shapes live in the art manifest (the importer cuts the same pieces from Codex rooms).
+const ROOM_NAME = { 'room-mara': 'mara-room', 'room-gallery': 'gallery' };
+for (const entry of MANIFEST.filter(e => e.kind === 'foreground' && ROOM_NAME[e.room])) {
+  foregroundPiece(ROOM_NAME[entry.room], entry.id, entry.cut.polygons, entry.cut.box);
+}
 
 // --------------------------------------------------------------- props ---
 // Animated pieces cut from the rooms (the game moves them; see `props` in src/content/rooms.ts).

@@ -11,6 +11,7 @@ import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { isFinal } from './guard.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const out = join(here, 'src');
@@ -324,8 +325,8 @@ const stoolOnly = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="
 mkdirSync(join(out, 'rooms'), { recursive: true });
 mkdirSync(join(out, 'foreground'), { recursive: true });
 // Palette-reduced like the painted rooms (pixel-art grain, no banding thanks to dithering).
-await sharp(Buffer.from(scene)).png({ palette: true, colours: 128, dither: 0.7, effort: 10 }).toFile(join(out, 'rooms', 'tent.png'));
+if (!isFinal('rooms/tent.png')) await sharp(Buffer.from(scene)).png({ palette: true, colours: 128, dither: 0.7, effort: 10 }).toFile(join(out, 'rooms', 'tent.png'));
 // The stool, cropped to the same box the room def places it at (world 73,204 → art 146,408).
-await sharp(Buffer.from(stoolOnly)).extract({ left: 146, top: 408, width: 194, height: 198 })
+if (!isFinal('foreground/tent-stool.png')) await sharp(Buffer.from(stoolOnly)).extract({ left: 146, top: 408, width: 194, height: 198 })
   .png({ palette: true, colours: 48, dither: 0.5, effort: 10 }).toFile(join(out, 'foreground', 'tent-stool.png'));
 console.log('Painted the tent: art/src/rooms/tent.png and foreground/tent-stool.png.');

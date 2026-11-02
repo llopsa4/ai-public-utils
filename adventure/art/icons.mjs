@@ -4,6 +4,7 @@
 //
 // Everything else in art/src comes from Kiln Courier's illustrations (see PROVENANCE.md).
 import { mkdirSync, writeFileSync } from 'node:fs';
+import { unlessFinal } from './guard.mjs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
@@ -48,7 +49,7 @@ class Icon {
     }
     for (const [x, y] of marks) this.px(x, y, '#1b1420');
     mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, `${name}.png`), PNG.sync.write(this.png));
+    unlessFinal(`icons/${name}.png`, () => writeFileSync(join(dir, `${name}.png`), PNG.sync.write(this.png)));
   }
 }
 

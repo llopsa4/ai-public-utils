@@ -13,7 +13,8 @@ export async function open(page: Page, errors: string[], { clear = true } = {}):
 export async function idle(page: Page): Promise<void> {
   await page.waitForFunction(() => {
     const a = (window as any).adventure;
-    return a && !a.session.onTitle && a.game.scene.isActive('room') && !a.session.scene.isBusy();
+    // The room that is running must be the one the state is in (a room change restarts the scene).
+    return a && !a.session.onTitle && a.game.scene.isActive('room') && a.session.scene.room?.id === a.session.state.room && !a.session.scene.isBusy();
   });
 }
 
@@ -78,8 +79,9 @@ export async function startNewGame(page: Page, tap = false): Promise<void> {
  */
 export async function fightStep(page: Page): Promise<void> {
   const root = page.locator('#kc-root');
-  const target = root.locator('.lesson-target:not(:disabled)').first();
-  if (await target.count()) { await target.click(); await page.waitForTimeout(250); return; }
+  // Visible only: FFCardGame's closed dialog keeps an outlined Close button in the page.
+  const target = root.locator('.lesson-target:not(:disabled):visible').first();
+  if (await target.count()) { await target.click({ timeout: 3000 }).catch(() => {}); await page.waitForTimeout(250); return; }
   const cont = root.locator('#modal-actions .modal-primary, .battle-result-action .modal-primary').first();
   if (await cont.isVisible().catch(() => false)) { await cont.click(); await page.waitForTimeout(250); return; }
   const card = root.locator('button.card:not(:disabled)').first();

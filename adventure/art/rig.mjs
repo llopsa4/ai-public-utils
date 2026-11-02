@@ -12,6 +12,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
 import { encodeIndexed } from './png.mjs';
+import { RIGS } from './manifest.mjs';
+import { isFinal } from './guard.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const kiln = join(here, '..', '..', 'FFCardGame', 'assets');
@@ -19,54 +21,32 @@ const out = join(here, 'src');
 
 const FW = 256, FH = 256, COLS = 5;
 
-/**
- * Rig settings in source-image pixels.
- * hipY: rows below are legs. splitX: near leg (x < splitX) vs far leg. eyes: blink patches.
- * height: target standing height in output pixels (art is drawn at 2x the 640x360 world).
- */
-const MARA = {
-    source: 'hero.png', height: 232, walks: true,
-    hipY: 860, splitX: 560, hips: { near: [400, 860], far: [650, 860] }, knees: { near: [313, 1040], far: [800, 1060] },
-    arm: { minX: 790, minY: 300, maxY: 900, pivot: [800, 380] },
-    eyes: [{ x: 673, y: 109, rx: 13, ry: 7, skinAt: [668, 124] }],
-    portrait: [470, 0, 420, 420],
-    // Talking portraits: the mouth that opens and the brows that move with the mood (inner = end nearest the nose).
-    face: { mouth: { x: 682, y: 160, rx: 10, ry: 4 }, brows: [{ x0: 652, x1: 702, y0: 82, y1: 110, inner: 'right' }] },
-};
+// Rig settings (joints, eyes, face, portrait crop) live in the art manifest (art/manifest.mjs),
+// keyed by character. A source is `kiln:<path>` (Kiln Courier's illustrations, placeholders) or a
+// path under art/ (art/sources/characters/<id>/body.png from Codex, with an optional arm.png layer).
+const CHARACTERS = RIGS;
 
-const CHARACTERS = {
-  // Before the ember cell is fitted the gauntlet is cold: its glow is painted dark.
-  mara: { ...MARA, unpowered: { minX: 700, minY: 430, maxX: 1024, maxY: 900 } },
-  'mara-gauntlet': MARA,
-  oren: {
-    source: 'opening/oren.png', height: 226, walks: false,
-    hipY: 1050, splitX: 515, hips: { near: [400, 1040], far: [630, 1040] }, knees: { near: [370, 1230], far: [620, 1215] },
-    // Fidget: the hands and gauge lift a little toward his eyes.
-    fidgetPart: { minX: 560, minY: 300, maxY: 600, pivot: [600, 520], angle: -9 },
-    eyes: [{ x: 553, y: 116, rx: 9, ry: 5, skinAt: [553, 130] }, { x: 588, y: 112, rx: 8, ry: 5, skinAt: [590, 126] }],
-    portrait: [390, 0, 330, 330],
-    face: {
-      mouth: { x: 570, y: 166, rx: 15, ry: 4 },
-      brows: [{ x0: 530, x1: 566, y0: 84, y1: 110, inner: 'right' }, { x0: 572, x1: 600, y0: 82, y1: 108, inner: 'left' }],
-    },
-  },
-  nell: {
-    source: 'opening/iven.png', height: 220, walks: false,
-    hipY: 1000, splitX: 480, hips: { near: [420, 1000], far: [640, 1000] }, knees: { near: [360, 1240], far: [760, 1250] },
-    // Fidget: she shifts her weight and leans on the shutter.
-    fidgetLean: -3,
-    // The big shield covers the near leg: it moves with the upper body, and crouching is a bow.
-    nearIsUpper: true, crouchSquash: 1,
-    eyes: [{ x: 452, y: 129, rx: 15, ry: 8, skinAt: [452, 148] }, { x: 507, y: 123, rx: 14, ry: 8, skinAt: [505, 142] }],
-    portrait: [320, 0, 340, 340],
-    // Nell's illustration smiles, so brow moods read wrong on her: she only gets the talking mouth.
-    moods: ['neutral'],
-    face: {
-      mouth: { x: 486, y: 174, rx: 17, ry: 5 },
-      brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }],
-    },
-  },
-};
+/** The source image, with the arm layer composited in (its pixels become the arm part). */
+function loadSource(cfg) {
+  const path = cfg.source.startsWith('kiln:') ? join(kiln, cfg.source.slice(5)) : join(here, cfg.source);
+  const img = load(path);
+  if (cfg.armLayer) {
+    const arm = load(join(here, cfg.armLayer));
+    if (arm.width !== img.width || arm.height !== img.height) throw new Error(`${cfg.armLayer} must match ${cfg.source} in size`);
+    const mask = new Uint8Array(img.width * img.height);
+    for (let i = 0; i < mask.length; i++) {
+      const al = arm.data[i * 4 + 3];
+      if (al < 16) continue;
+      mask[i] = 1;
+      const t = al / 255;
+      for (let c = 0; c < 3; c++) img.data[i * 4 + c] = Math.round(img.data[i * 4 + c] * (1 - t) + arm.data[i * 4 + c] * t);
+      img.data[i * 4 + 3] = Math.max(img.data[i * 4 + 3], al);
+    }
+    cfg.armMask = mask;
+    cfg.armWidth = img.width;
+  }
+  return img;
+}
 
 function load(path) {
   if (!existsSync(path)) throw new Error(`Missing source ${path}. The Kiln Courier folder must sit next to adventure/.`);
@@ -166,8 +146,11 @@ const OVERLAP = 26;
  */
 function partsOf(cfg, x, y) {
   if (cfg.nearIsUpper && x < cfg.splitX) return ['upper'];
-  const a = cfg.arm;
-  if (a && x >= a.minX && y >= a.minY && y <= a.maxY) return a && x < a.minX + OVERLAP ? ['arm', 'upper'] : ['arm'];
+  if (cfg.armMask) { if (cfg.armMask[y * cfg.armWidth + x]) return ['arm']; }
+  else {
+    const a = cfg.arm;
+    if (a && x >= a.minX && y >= a.minY && y <= a.maxY) return a && x < a.minX + OVERLAP ? ['arm', 'upper'] : ['arm'];
+  }
   const f = cfg.fidgetPart;
   if (f && x >= f.minX && y >= f.minY && y <= f.maxY) return ['fidget'];
   const parts = [];
@@ -409,7 +392,8 @@ function buildExtra(id) {
   const v = EXTRAS[id];
   const base = { ...CHARACTERS[v.base], walks: true, height: v.height };
   delete base.unpowered;
-  const raw = load(join(kiln, base.source));
+  if (isFinal(`characters/${id}.png`)) { console.log(`  ${id}: final art, kept.`); return; }
+  const raw = loadSource(base);
   const open = variantImage(raw, base, v);
   const closed = withClosedEyes(open, base.eyes);
   const { k, hipC, walkPose, squashLegs } = rigOf(base, open);
@@ -480,8 +464,9 @@ function writeSheet(id, frames, tags, duration, colours) {
 }
 
 function buildCharacter(id) {
-  const cfg = CHARACTERS[id];
-  const raw = load(join(kiln, cfg.source));
+  const cfg = { ...CHARACTERS[id] };
+  if (isFinal(`characters/${id}.png`)) { console.log(`  ${id}: final art, kept.`); return; }
+  const raw = loadSource(cfg);
   const open = cfg.unpowered ? dimGlow(raw, cfg.unpowered) : raw;
   const closed = withClosedEyes(open, cfg.eyes);
   const { k, hipC, walkPose, squashLegs } = rigOf(cfg, open);

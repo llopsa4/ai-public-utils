@@ -4,7 +4,10 @@
 //   npm run art:check
 //
 // See art/REPLACING.md (npm run art:guide) for what each file must contain.
-import { existsSync, readFileSync, statSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
+import { PNG } from 'pngjs';
+import { MANIFEST } from '../art/manifest.mjs';
+import { paletteConformity } from '../art/normalize.mjs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PORTRAIT_MOODS, ROOM_FILES } from '../src/content/art';
@@ -148,6 +151,32 @@ export function checkArt(): Problem[] {
     const s = needPng(file);
     if (s && (s.w !== ICON_SIZE || s.h !== ICON_SIZE)) warn(file, `is ${s.w}x${s.h}; the ring shows icons at ${ICON_SIZE}x${ICON_SIZE} CSS pixels (a larger square is fine)`);
   }
+  problems.push(...checkManifest());
+  return problems;
+}
+
+/**
+ * The art manifest against the files: every listed image exists (unless only requested), every
+ * file under art/src is listed, and every final (Codex) image keeps to the master palette.
+ */
+export function checkManifest(): Problem[] {
+  const problems: Problem[] = [];
+  const listed = new Set<string>();
+  for (const e of MANIFEST) {
+    for (const f of [e.file, e.sheet, e.webp ? e.file.replace(/\.png$/, '.webp') : undefined]) if (f) listed.add(f);
+    if (e.status === 'requested') continue;
+    const path = join(ART, e.file);
+    if (!existsSync(path)) { problems.push({ file: `art/src/${e.file}`, message: `listed in the manifest (${e.id}) but missing` }); continue; }
+    if (e.status === 'final' && e.file.endsWith('.png')) {
+      const png = PNG.sync.read(readFileSync(path));
+      const share = paletteConformity(png.data);
+      if (share < 0.999) problems.push({ file: `art/src/${e.file}`, message: `final art off the master palette (${(share * 100).toFixed(1)}% conforming): re-import it` });
+      if (e.size && (png.width !== e.size.w || png.height !== e.size.h)) problems.push({ file: `art/src/${e.file}`, message: `final art is ${png.width}x${png.height}, the manifest says ${e.size.w}x${e.size.h}` });
+    }
+  }
+  const walk = (dir: string): string[] => readdirSync(join(ART, dir), { withFileTypes: true })
+    .flatMap(d => (d.isDirectory() ? walk(`${dir}${d.name}/`) : [`${dir}${d.name}`]));
+  for (const f of walk('')) if (!listed.has(f)) problems.push({ file: `art/src/${f}`, message: 'not in the art manifest (art/manifest.mjs)' });
   return problems;
 }
 

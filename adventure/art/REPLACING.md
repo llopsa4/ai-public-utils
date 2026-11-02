@@ -6,12 +6,14 @@ Every image the game loads, what it must contain and where things go in it. Repl
 
 ## Workflow
 
-1. Put the new PNG in `art/src/<folder>/` under the same name (and its `.json` next to it, for sheets).
-2. `npm run webp`: rooms, foreground pieces, props and the background people ship as WebP copies of the PNGs.
-3. `npm run art:check`: checks sizes, frame layouts, animation tags and strips against what the code expects.
-4. `npm run dev` to look at it, then `npm run check` and `npm run e2e`.
+All new art follows the style bible, [art/STYLE.md](STYLE.md) (palette, scale, light, formats), and every image is listed in the art manifest (`art/manifest.mjs`).
 
-**Do not run `npm run art` (or `pixelate`, `rig`, `node art/tent.mjs`, `icons`) after replacing images**: those scripts rebuild the current art from Kiln Courier's illustrations and would overwrite the new files. Only `npm run webp` is safe. Once everything is replaced, the generator scripts can be retired.
+1. `npm run art:briefs` writes a Codex brief per image in `art/briefs/` (start with [the pilot pack](briefs/PILOT.md)).
+2. Give the brief and its attachments to Codex; put what it delivers in `art/inbox/` under the name the brief gives.
+3. `npm run art:import` fits it to size, snaps it to the master palette, outlines sprites, re-cuts walk-behind pieces from rooms, writes the WebP copies and a before/after preview (`art/inbox/preview/`), and marks it final (`art/status.json`).
+4. `npm run art:check`, then look at it in the game (`npm run dev`), then `npm run check` and `npm run e2e`.
+
+Final art is safe: the generator scripts (`npm run art`) only make placeholders and skip anything final. Characters come as layers and need their joints measured once in the manifest (`RIGS`) before `npm run rig`.
 
 ## Conventions
 

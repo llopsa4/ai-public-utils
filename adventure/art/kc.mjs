@@ -8,18 +8,19 @@ import { mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { isFinal } from './guard.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const kc = join(here, '..', '..', 'FFCardGame', 'assets');
 const out = join(here, 'src', 'kc');
 mkdirSync(join(out, 'equipment'), { recursive: true });
-const webp = (src, file, width, quality = 80) =>
+const webp = async (src, file, width, quality = 80) => isFinal(`kc/${file}`) ? null :
   sharp(join(kc, src)).resize({ width, withoutEnlargement: true }).webp({ quality, alphaQuality: 90, effort: 6 }).toFile(join(out, file));
 await webp('hero.png', 'hero.webp', 512);
 await webp('opening/pressure-scavenger.png', 'pressure-scavenger.webp', 768);
 await webp('card-atlas.png', 'card-atlas.webp', 768, 74);
 await webp('opening/regulator-gallery.png', 'regulator-gallery.webp', 1280, 72);
 for (const id of ['courier-gauntlet', 'patched-coat', 'plain-carrier', 'light-armor', 'quick-harness']) {
-  await sharp(join(kc, 'equipment', 'runtime', `${id}.webp`)).resize({ width: 320 }).webp({ quality: 80, alphaQuality: 90, effort: 6 }).toFile(join(out, 'equipment', `${id}.webp`));
+  if (!isFinal(`kc/equipment/${id}.webp`)) await sharp(join(kc, 'equipment', 'runtime', `${id}.webp`)).resize({ width: 320 }).webp({ quality: 80, alphaQuality: 90, effort: 6 }).toFile(join(out, 'equipment', `${id}.webp`));
 }
 console.log('Kiln Courier battle art written to art/src/kc.');
