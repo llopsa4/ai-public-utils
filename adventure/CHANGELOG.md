@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased: background people and room names
+## Unreleased: background people, room names, an opening and a new tent
+
+- A new story opens with a slow fade to black and four lines of context (a world of ash and wind, people holding on, Cinderfold inside its kiln, Mara's ordinary morning), one after another: click, Enter or Space for the next, Skip or Esc for all. The tent then fades in slowly.
+- Mara's tent is repainted from scratch (`art/tent.mjs`): canvas walls and ridge pole, a hanging lantern, the workbench and tools, the water jar, the old brush drum, a cot, a rug and the door flap. The puzzle spots are where they were. It is also about 120 KB smaller.
 
 - Every room has its name on a board hanging from a rope (an iron shield-plate in the regulator gallery). The boards sway, jolt when the kiln groans, and take the room's light.
 - Four workers in the kiln hall: Hollis the stoker, Wren the hoist hand, Dace the clay hauler and old Ansel the tally-keeper. Each walks a routine of stations with random waits and detours, and works there with a pose, a held thing (shovel, slate, sack) and a small effect: sparks at the kiln mouths, the pulley swinging, chalk taps, scraping. Dace and Ansel leave and come back now and then.

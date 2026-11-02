@@ -214,57 +214,9 @@ for (const room of ROOMS) {
   save(roomPngs[room.name], join(out, 'rooms', `${room.name}.png`));
 }
 
-// ------------------------------------------------------------------ tent ---
-// Mara's tent: the left of the tempering-house painting under a canvas ceiling, with a doorway flap.
-// The canvas is textured with the painting's own ochre awning cloth so it matches the room.
+// The tent room (and its stool cut-out) is painted from scratch by art/tent.mjs. The tempering-house
+// painting is still used for the tent seen from the kiln hall (below).
 const awning = load('opening/tempering-house.png');
-// Fabric colour sampled from the painting's ochre awning; folds and sag are shaded procedurally.
-const CLOTH = (() => {
-  const c = resample(awning, [1210, 2, 220, 46], 1, 1);
-  return [c[0], c[1], c[2]];
-})();
-const noise = (x, y) => { const n = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453; return n - Math.floor(n); };
-function fabric(x, y, light) {
-  const folds = 0.8 + 0.14 * Math.sin(x / 26 + 0.5 * Math.sin(y / 70)) + 0.06 * Math.sin(x / 9 + y / 40);
-  const k = folds * light * (0.96 + 0.08 * noise(x, y));
-  return [CLOTH[0] * k, CLOTH[1] * k, CLOTH[2] * k];
-}
-function paintCanvas(px, W, points, lightFn) {
-  const inside = polygonMask(points);
-  const H = px.length / 4 / W;
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
-    if (!inside(x, y)) continue;
-    const [r, g, b] = fabric(x, y, lightFn(x, y));
-    const o = (y * W + x) * 4;
-    px[o] = r; px[o + 1] = g; px[o + 2] = b; px[o + 3] = 255;
-  }
-}
-{
-  const W = 1280, H = 720;
-  const px = resample(awning, [0, 100, 1250, 703], W, H);
-  grade(px, { saturation: 1.04, contrast: 1.04, lift: 2 });
-  // Ceiling: canvas sagging from a ridge pole down to the side poles; darker toward the top.
-  const ceiling = [];
-  for (let x = 0; x <= W; x += 20) ceiling.push([x, 70 + 150 * ((x - 640) / 640) ** 2 + 18 * Math.sin((x / W) * Math.PI)]);
-  paintCanvas(px, W, [[0, 0], [W, 0], ...ceiling.reverse()], (x, y) => 0.55 + 0.45 * Math.min(1, y / 230));
-  for (let y = 0; y < 26; y++) for (let x = 0; x < W; x++) { // ridge pole shadow
-    const o = (y * W + x) * 4, t = 0.45 + 0.3 * (y / 26);
-    px[o] *= t; px[o + 1] *= t; px[o + 2] *= t;
-  }
-  // Right canvas wall with a doorway, flap tied back, warm light from the kiln hall beyond.
-  paintCanvas(px, W, [[1095, 150], [W, 170], [W, H], [1095, H]], (x, y) => 0.7 + 0.15 * (1 - (x - 1095) / 185));
-  const door = polygonMask([[1150, 330], [1232, 322], [1252, H], [1132, H]]);
-  for (let y = 300; y < H; y++) for (let x = 1120; x < 1260; x++) {
-    if (!door(x, y)) continue;
-    const o = (y * W + x) * 4, t = (y - 320) / 400;
-    px[o] = 250 - 70 * t; px[o + 1] = 160 - 60 * t; px[o + 2] = 78 - 30 * t;
-  }
-  paintCanvas(px, W, [[1150, 330], [1100, 420], [1118, 560], [1140, 560]], () => 0.62); // tied-back flap
-  for (let y = 330; y < H; y++) for (const x of [1146, 1236]) { const o = (y * W + x) * 4; px[o] = 70; px[o + 1] = 44; px[o + 2] = 26; } // poles
-  const png = toPng(px, W, H, palette(px, 128, 1), 1, 10);
-  roomPngs.tent = png;
-  save(png, join(out, 'rooms', 'tent.png'));
-}
 
 // ------------------------------------------------------------ foreground ---
 // Pieces of a room cut out (same pixels) and drawn in front of characters standing behind them.
@@ -281,7 +233,6 @@ function foregroundPiece(room, name, polygons, [x0, y0, x1, y1]) {
   save(piece, join(out, 'foreground', `${name}.png`));
 }
 const rect = (x, y, w, h) => [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
-foregroundPiece('tent', 'tent-stool', [[[150, 412], [336, 412], [338, 470], [332, 604], [146, 604], [150, 470]]], [146, 408, 340, 606]);
 foregroundPiece('mara-room', 'hall-left', [[[0, 500], [110, 520], [190, 600], [200, 720], [0, 720]]], [0, 496, 202, 720]);
 foregroundPiece('mara-room', 'hall-right', [[[1110, 620], [1180, 570], [1280, 560], [1280, 720], [1100, 720]]], [1104, 560, 1280, 720]);
 foregroundPiece('gallery', 'gallery-railing', [

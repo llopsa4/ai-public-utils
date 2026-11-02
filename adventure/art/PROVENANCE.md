@@ -4,7 +4,7 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 
 | Output | Source (FFCardGame/assets) | Script | Processing |
 | --- | --- | --- | --- |
-| `rooms/tent.png` (Mara's tent) | `opening/tempering-house.png` | `pixelate.mjs` | left crop 0,100 1250×703; canvas ceiling, side wall and doorway painted in the awning's sampled ochre; 128 colours with ordered dither (no banding) |
+| `rooms/tent.png` (Mara's tent), `foreground/tent-stool.png` | — (original) | `tent.mjs` | painted from scratch as an SVG scene (canvas, poles, lantern, workbench, jar, brush drum, cot, rug, door flap), rendered with sharp, 128 colours with dithering; the stool rendered alone for the walk-behind piece |
 | `objects/tent.*` (the tent seen in the kiln hall) | `opening/tempering-house.png` (cloth over the workbench) | `pixelate.mjs` | the painted cloth mapped onto a tent silhouette (mirrored on the far slope, shaded by side), dark entrance and pole drawn |
 | `rooms/mara-room.png` (kiln hall) | `kiln-hall.png` | `pixelate.mjs` | 1280×720 area downscale, light grade, 96-colour palette |
 | `rooms/firing-house.png` | `opening/cinderfold.png` | `pixelate.mjs` | as above |
@@ -18,7 +18,7 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 | `objects/rack.*` (charging cradle) | `opening/regulator-gallery.png` (lantern) | `pixelate.mjs` | lantern mask; the empty frame has the glow dimmed |
 | `props/gauge-face.png` | `rooms/gallery.png` (the gauge dial) | `pixelate.mjs` | disc cut-out; the painted needle is refilled from the dial at the same radius (the game draws a live needle) |
 | `props/pulley.png` | `rooms/mara-room.png` (hoist chains and pot) | `pixelate.mjs` | polygon cut-out, swung by the game |
-| `foreground/*.png` | the rendered rooms above | `pixelate.mjs` | polygon cut-outs of the same pixels (tent stool, kiln-hall rubble, gallery railing) |
+| `foreground/*.png` | the rendered rooms above | `pixelate.mjs` | polygon cut-outs of the same pixels (kiln-hall rubble, gallery railing) |
 | `items/gauntlet.png` | `equipment/courier-gauntlet.png` | `pixelate.mjs` | 64×64 icon |
 | `items/regulator.png` | `opening/regulator-gallery.png` | `pixelate.mjs` | circular mask, 64×64 |
 | `items/bread.png` | `opening/cinderfold.png` (bread basket) | `pixelate.mjs` | mask, 64×64 |

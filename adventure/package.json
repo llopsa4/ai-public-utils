@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "art": "node art/pixelate.mjs && node art/rig.mjs && node art/icons.mjs && node art/webp.mjs",
+    "art": "node art/pixelate.mjs && node art/tent.mjs && node art/rig.mjs && node art/icons.mjs && node art/webp.mjs",
     "webp": "node art/webp.mjs",
     "pixelate": "node art/pixelate.mjs",
     "rig": "node art/rig.mjs",

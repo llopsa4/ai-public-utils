@@ -8,7 +8,7 @@ const COLD = [{ flag: 'kilnCold' }];
 
 // Hotspots are tested in list order: put small things before large ones they overlap.
 
-// Mara's tent: his starting room (tempering-house painting under a canvas ceiling).
+// Mara's tent: his starting room (painted from scratch by art/tent.mjs to fit these spots).
 const tentHotspots: HotspotDef[] = [
   { id: 'notebook', name: 'name.notebook', polygon: rect(126, 148, 48, 22), verbs: ['look', 'take', 'open'], walkTo: pt(222, 274), face: 'left',
     visibleIf: [{ notFlag: 'hasNotebook' }] },
@@ -75,16 +75,17 @@ export const ROOMS: Record<string, RoomDef> = {
     light: { tint: 0xffe4c4, farDim: 0.82 },
     look: {
       grade: { saturation: 1.05, brightness: 1.02, contrast: 1.05, warmth: 0.3 },
-      haze: [{ x: 234, y: 8, w: 36, h: 32 }, { x: 478, y: 46, w: 34, h: 30 }],
+      // Heat shimmer over the hanging lantern.
+      haze: [{ x: 394, y: 6, w: 32, h: 30 }],
       vignette: 0.32,
     },
     foreground: [{ image: 'tent-stool', x: 73, y: 204, depth: 300 }],
     // The cell's flame in the charging cradle, until it goes into the gauntlet.
     props: [{ kind: 'flame', x: 470, y: 230, size: 14, color: 0xffb050, depth: 263, visibleIf: [{ notFlag: 'hasGauntlet' }] }],
-    sign: { x: 420, y: 6, drop: 14, w: 92, h: 20, style: 'wood' },
+    sign: { x: 170, y: 6, drop: 14, w: 92, h: 20, style: 'wood' },
     ambient: {
       particles: [{ kind: 'dust', x: 440, y: 150, w: 170, h: 180 }],
-      glows: [{ x: 596, y: 270, r: 60, color: 0xffa040, warm: true }],
+      glows: [{ x: 596, y: 270, r: 60, color: 0xffa040, warm: true }, { x: 410, y: 56, r: 56, color: 0xffc070 }],
     },
     entries: {
       start: { x: 360, y: 300, face: 'down' },

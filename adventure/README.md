@@ -6,6 +6,7 @@ A point-and-click adventure built from the first scene of **Kiln Courier**'s sto
 
 Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 
+- **New game** opens with a few lines of context over black (click for the next, or Skip).
 - **Walk:** click or tap the floor.
 - **Act:** click or tap a person or object to open the action ring, then choose an action (Look at, Open, Close, Pick up, Use, Talk to, Go to). Arrow keys move around the ring and Esc closes it.
 - **Satchel:** click an item for Look at / Use. Use carries it, so you then click what to use it on. Right-click or Esc puts it back.
@@ -63,9 +64,10 @@ Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, 
 
 ## Art pipeline
 
-The world is 640×360 logical units. The art and the canvas are 2× that (1280×720), and the stage scales to fit the window. All art comes from Kiln Courier's illustrations ([provenance](art/PROVENANCE.md)). Run `npm run art` to rebuild everything, or one script at a time:
+The world is 640×360 logical units. The art and the canvas are 2× that (1280×720), and the stage scales to fit the window. All art comes from Kiln Courier's illustrations except Mara's tent, which is painted in code ([provenance](art/PROVENANCE.md)). Run `npm run art` to rebuild everything, or one script at a time:
 
 - `npm run pixelate`: rooms, the ash sweeper, item icons and objects (crop, mask, area-average downscale, palette reduction).
+- `node art/tent.mjs`: Mara's tent, painted from scratch as an SVG scene and rendered with sharp (also the stool walk-behind piece).
 - `npm run rig`: animated characters and dialogue portraits. Legs are split at the hip and knee for a six-frame step; NPCs get a `fidget` frame. Each Kiln illustration is a single three-quarter pose, so `art/rig.mjs` cuts it into parts (upper body, near leg, far leg) and poses them per frame. That gives a walk sway, a crouch (legs folded), lying down (the figure rotated, eyes closed) and a blink (eyelids painted over). There are no back or side views, so every direction reuses the three-quarter pose, mirrored for left. Joints, eyes and portrait crops are set per character at the top of the script.
 - `npm run rig` also builds the **background people** (`EXTRAS` in `art/rig.mjs`, `node art/rig.mjs extras` for just those). They are placeholder variants of the three bodies: clothes recoloured, pale armour turned to leather, skin tone and height changed, and a cap, hood or kerchief painted on. Each has 13 frames: stand, blink, a six-frame walk, work (two frames, crouched), carry, reach and sit. Replace any `characters/extra-<id>.png/.json` pair with real art using the same tags.
 - `art/icons.mjs`: the drawn 24×24 action-ring icons.
