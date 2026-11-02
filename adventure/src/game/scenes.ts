@@ -14,7 +14,8 @@ import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Verb } fr
 import { Actor, SHADOW_DEPTH } from './Actor';
 import { Atmosphere, createAtmosphereTextures, highQuality } from './atmosphere';
 import { addLight, localLight, mixColor } from '../engine/lighting';
-import { FOREGROUND_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
+import { Props, createParticleTextures } from './props';
+import { FOREGROUND_IMAGES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
 import { cursorFor, type CursorKind } from '../ui/cursors';
@@ -78,6 +79,7 @@ export class BootScene extends Phaser.Scene {
       glow.refresh();
     }
     createAtmosphereTextures(this);
+    createParticleTextures(this);
     // Contact shadow: a soft dark ellipse, stretched per actor and prop.
     const shadow = this.textures.createCanvas('fx-shadow', 128, 32);
     if (shadow) {
@@ -124,6 +126,17 @@ export class TitleScene extends Phaser.Scene {
 
 type Target = { kind: 'hotspot'; hotspot: HotspotDef } | { kind: 'actor'; actor: Actor };
 
+/**
+ * For hands-on verbs that walk up to something first, marks the moment Mara arrives (right after
+ * the approach walk) so the scene can show him handling it.
+ */
+function withHandling(commands: Command[], verb: Verb, target: string): Command[] {
+  if (verb !== 'take' && verb !== 'use' && verb !== 'open') return commands;
+  const arrive = commands.findIndex(c => c.type !== 'walk' && c.type !== 'face');
+  if (arrive <= 0 || commands[arrive - 1].type !== 'walk') return commands;
+  return [...commands.slice(0, arrive), { type: 'handle', target }, ...commands.slice(arrive)];
+}
+
 /** Multiplies a colour by a brightness factor and a second colour (both as 0xRRGGBB). */
 function multiplyColor(color: number, factor: number, other: number): number {
   const ch = (c: number, shift: number) => ((c >> shift) & 255) / 255;
@@ -133,8 +146,28 @@ function multiplyColor(color: number, factor: number, other: number): number {
   return (r << 16) | (g << 8) | b;
 }
 
-export function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash', w: number, h: number): Phaser.Types.GameObjects.Particles.ParticleEmitterConfig {
+/**
+ * Ambient particles. `rich` (High quality) uses the textured puff and ember streak, with turning
+ * smoke and wobbling embers; otherwise plain dots at a lower rate.
+ */
+export function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash', w: number, h: number, rich = false): Phaser.Types.GameObjects.Particles.ParticleEmitterConfig {
   const area = { x: { min: 0, max: w }, y: { min: 0, max: h } };
+  if (rich) {
+    switch (kind) {
+      case 'embers':
+        return { ...area, lifespan: { min: 2200, max: 4200 }, speedY: { min: -30, max: -10 }, speedX: { min: -8, max: 8 }, scale: { start: 0.5, end: 0.1 },
+          alpha: { start: 1, end: 0 }, tint: [0xffd070, 0xff9a3a, 0xff6a1a], frequency: 200, blendMode: 'ADD', accelerationX: { min: -6, max: 6 } };
+      case 'steam':
+        return { ...area, lifespan: { min: 2800, max: 4400 }, speedY: { min: -11, max: -4 }, speedX: { min: -4, max: 4 }, scale: { start: 0.35, end: 1.5 },
+          alpha: { start: 0.22, end: 0 }, tint: 0xf4efe6, frequency: 300, rotate: { start: 0, end: 90 } };
+      case 'dust':
+        return { ...area, lifespan: { min: 5000, max: 8000 }, speedY: { min: -2, max: 2 }, speedX: { min: -3, max: 3 }, scale: { min: 0.03, max: 0.07 },
+          alpha: { start: 0.7, end: 0 }, tint: 0xffe2b0, frequency: 340, blendMode: 'ADD' };
+      case 'ash':
+        return { ...area, lifespan: { min: 6000, max: 9000 }, speedY: { min: 2, max: 7 }, speedX: { min: 4, max: 14 }, scale: { min: 0.05, max: 0.12 },
+          alpha: { start: 0.6, end: 0 }, tint: [0xd8d0c8, 0xffb070], frequency: 200, rotate: { start: 0, end: 360 } };
+    }
+  }
   switch (kind) {
     case 'embers':
       return { ...area, lifespan: { min: 2200, max: 4200 }, speedY: { min: -26, max: -8 }, speedX: { min: -6, max: 6 }, scale: { start: 0.22, end: 0 },
@@ -164,6 +197,7 @@ export class RoomScene extends Phaser.Scene {
   private ambient: Phaser.GameObjects.GameObject[] = [];
   private ambientCold: boolean | null = null;
   private atmosphere!: Atmosphere;
+  private props!: Props;
   /** Last cold state seen, to animate the shutdown when it happens in this room (null until created). */
   private knownCold: boolean | null = null;
   /** Cold factor last applied to the background tint (Low quality). */
@@ -188,6 +222,9 @@ export class RoomScene extends Phaser.Scene {
     if (state.flags.hasGauntlet) queueSheet(this, 'mara-gauntlet');
     for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, NPC_SHEETS[a.id]);
     if (!this.textures.exists(room.background)) this.load.image(room.background, ROOM_IMAGES[room.background]);
+    for (const p of room.props ?? []) {
+      if ('image' in p && !this.textures.exists(`prop-${p.image}`)) this.load.image(`prop-${p.image}`, PROP_IMAGES[p.image]);
+    }
     for (const f of room.foreground ?? []) {
       if (!this.textures.exists(`fg-${f.image}`)) this.load.image(`fg-${f.image}`, FOREGROUND_IMAGES[f.image]);
     }
@@ -216,6 +253,7 @@ export class RoomScene extends Phaser.Scene {
     this.background = this.add.image(0, 0, this.room.background).setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-10000);
     this.atmosphere = new Atmosphere(this, this.room, this.isCold());
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.atmosphere.destroy());
+    this.props = new Props(this, this.room, () => this.session.state, () => this.atmosphere.cold);
     for (const def of this.room.objects) {
       const sprite = this.add.sprite(def.x, def.y, def.sheet, SHEETS[def.sheet].json.frames[0].filename).setOrigin(0.5, 1).setScale(1 / ART_SCALE).setDepth(def.depth ?? def.y);
       if (def.anim) sprite.play(`${def.sheet}:${def.anim}`);
@@ -246,7 +284,11 @@ export class RoomScene extends Phaser.Scene {
     this.input.on(Phaser.Input.Events.POINTER_MOVE, (p: Phaser.Input.Pointer) => this.onPointerMove(p));
     this.input.on(Phaser.Input.Events.GAME_OUT, () => this.session.ui.setHover(''));
 
-    this.hero.onStep = () => sound.step(this.room.surface ?? 'stone');
+    this.hero.onStep = () => {
+      const surface = this.room.surface ?? 'stone';
+      sound.step(surface);
+      this.props.step(this.hero.sprite.x, this.hero.sprite.y);
+    };
     if (!state.flags.hasGauntlet) this.preloadGauntletSheet();
     for (const [id, actor] of this.actors) if (id !== 'hero') this.scheduleFidget(actor);
 
@@ -356,7 +398,7 @@ export class RoomScene extends Phaser.Scene {
     const verbs: Verb[] = target.kind === 'actor' ? ACTOR_VERBS[target.actor.id] : target.hotspot.verbs;
     sound.blip();
     this.session.ui.openRadial(at, this.targetName(target), verbs, verb => {
-      void this.runScript(interact(this.session.state, verb, id));
+      void this.runScript(withHandling(interact(this.session.state, verb, id), verb, id));
     });
   }
 
@@ -552,6 +594,7 @@ export class RoomScene extends Phaser.Scene {
   update(time: number): void {
     this.updateLighting();
     if (!this.hero?.sprite.active) return;
+    this.props.update(time);
     this.tintScenery();
     if (this.atmosphere.enabled) this.atmosphere.updateReflections([...this.actors.values()].map(a => a.sprite), time);
     for (const [id, actor] of this.actors) {
@@ -604,7 +647,8 @@ export class RoomScene extends Phaser.Scene {
     const bloom = highQuality(this);
     for (const p of def.particles ?? []) {
       if (cold && p.warm) continue;
-      this.ambient.push(this.add.particles(p.x, p.y, 'fx-dot', particleConfig(p.kind, p.w, p.h)).setDepth(p.kind === 'dust' ? 9000 : -5000));
+      const texture = !bloom ? 'fx-dot' : p.kind === 'embers' ? 'fx-ember' : 'fx-puff';
+      this.ambient.push(this.add.particles(p.x, p.y, texture, particleConfig(p.kind, p.w, p.h, bloom)).setDepth(p.kind === 'dust' ? 9000 : -5000));
     }
     for (const g of def.glows ?? []) {
       if (cold && g.warm) continue;
@@ -697,11 +741,15 @@ export class RoomScene extends Phaser.Scene {
       case 'looked':
         applyCommand(state, command);
         return true;
+      case 'handle':
+        this.props.swing(command.target);
+        return true;
       case 'wait':
         await this.wait(command.ms);
         return true;
       case 'shake':
         sound.rumble(command.ms);
+        if (!this.isCold()) this.props.burst((this.room.ambient?.glows ?? []).filter(g => g.warm));
         if (!settings().reducedMotion) this.cameras.main.shake(command.ms, 0.004);
         await this.wait(Math.min(command.ms, 400));
         return true;

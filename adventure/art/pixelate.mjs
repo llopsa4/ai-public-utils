@@ -290,6 +290,54 @@ foregroundPiece('gallery', 'gallery-railing', [
   rect(615, 415, 45, 155), rect(762, 420, 20, 212), rect(840, 420, 16, 130), rect(918, 430, 14, 170),
 ], [556, 412, 946, 634]);
 
+// --------------------------------------------------------------- props ---
+// Animated pieces cut from the rooms (the game moves them; see `props` in src/content/rooms.ts).
+mkdirSync(join(out, 'props'), { recursive: true });
+
+// The gallery gauge without its painted needle: the dial is cut out as a disc and the needle's dark
+// pixels are refilled from the same radius a little further round the dial. The game draws a live needle.
+{
+  const src = roomPngs.gallery;
+  const cx = 360, cy = 66.5, R = 37;            // dial centre and radius, room-image pixels
+  const tail = [343.5, 89], tip = [369.75, 52.75]; // the painted needle
+  const size = R * 2 + 2, x0 = Math.round(cx - R - 1), y0 = Math.round(cy - R - 1);
+  const face = new PNG({ width: size, height: size });
+  const at = (x, y) => (Math.round(y) * src.width + Math.round(x)) * 4;
+  const segDist = (px, py) => {
+    const [ax, ay] = tail, [bx, by] = tip;
+    const t = Math.max(0, Math.min(1, ((px - ax) * (bx - ax) + (py - ay) * (by - ay)) / ((bx - ax) ** 2 + (by - ay) ** 2)));
+    return Math.hypot(px - (ax + t * (bx - ax)), py - (ay + t * (by - ay)));
+  };
+  for (let y = 0; y < size; y++) for (let x = 0; x < size; x++) {
+    const sx = x0 + x, sy = y0 + y, r = Math.hypot(sx - cx, sy - cy);
+    if (r > R) continue;
+    let s = at(sx, sy);
+    if (r < 30 && segDist(sx, sy) < 3.6) {
+      // Sample the dial at the same radius, rotated 50 degrees away from the needle.
+      const a = Math.atan2(sy - cy, sx - cx) - (50 * Math.PI) / 180;
+      s = at(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+    }
+    const d = (y * size + x) * 4;
+    src.data.copy(face.data, d, s, s + 3);
+    face.data[d + 3] = 255;
+  }
+  save(face, join(out, 'props', 'gauge-face.png'));
+}
+
+// The kiln hall's hanging hoist pot and chains, swung by the game from the wheel axle.
+{
+  const src = roomPngs['mara-room'];
+  const [x0, y0, x1, y1] = [138, 168, 236, 334];
+  const mask = polygonMask([[176, 168], [200, 168], [236, 250], [236, 334], [138, 334], [138, 250]]);
+  const piece = new PNG({ width: x1 - x0, height: y1 - y0 });
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    if (!mask(x, y)) continue;
+    const s = (y * src.width + x) * 4, d = ((y - y0) * piece.width + (x - x0)) * 4;
+    src.data.copy(piece.data, d, s, s + 4);
+  }
+  save(piece, join(out, 'props', 'pulley.png'));
+}
+
 // The tent seen from the kiln hall: the tempering-house workbench cloth (painted folds and wear)
 // mapped onto each side of a tent silhouette, shaded by side, with a dark entrance and a pole.
 {

@@ -101,6 +101,8 @@ export interface RoomDef {
   coldTint?: number;
   /** Colour grade, haze, light shafts, vignette and reflections. */
   look?: RoomLook;
+  /** Animated set pieces: gauge needle, bubbles, swinging hoist, lantern flames. */
+  props?: PropDef[];
   /** When these hold the room is drawn with the cold tint (kiln shut down). */
   coldIf?: Condition[];
   entries: Record<string, { x: number; y: number; face: Facing }>;
@@ -113,6 +115,19 @@ export interface ActorState {
   pose: Pose;
   face: Facing;
 }
+
+/**
+ * Moving set pieces (presentation only). Images are `art/src/props/<image>`; coordinates are world
+ * units. `warm` props stop once the kiln is cold.
+ */
+export type PropDef = { visibleIf?: Condition[]; warm?: boolean } & (
+  /** A live needle over a needle-less dial: `angle` running (degrees from straight up), `rest` when cold. */
+  | { kind: 'gauge'; image: string; x: number; y: number; length: number; angle: number; rest: number }
+  /** An image hung from its top edge at (x, y), swaying; it swings when its hotspot is used. */
+  | { kind: 'swing'; image: string; x: number; y: number; pivotX: number; hotspot: string; depth?: number }
+  | { kind: 'bubbles'; x: number; y: number; w: number; h: number; color: number }
+  | { kind: 'flame'; x: number; y: number; size: number; color: number; depth?: number }
+);
 
 /** A room's colour grade (camera colour matrix on High quality). 1 / 0 are neutral. */
 export interface Grade { saturation: number; brightness: number; contrast: number; warmth: number }
@@ -157,6 +172,8 @@ export type Command =
   | { type: 'wait'; ms: number }
   | { type: 'shake'; ms: number }
   | { type: 'moveObject'; id: string; x: number; y: number; ms: number }
+  /** Presentation only, inserted by the scene: Mara's hands reach the target (reach pose, swinging props). */
+  | { type: 'handle'; target: string }
   /** Counts a look at a target, so repeated looks cycle through their lines. */
   | { type: 'looked'; id: string }
   | { type: 'end' };

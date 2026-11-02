@@ -11,7 +11,7 @@ import sharp from 'sharp';
 
 const here = dirname(fileURLToPath(import.meta.url));
 let total = 0;
-for (const folder of ['rooms', 'foreground']) {
+for (const folder of ['rooms', 'foreground', 'props']) {
   const dir = join(here, 'src', folder);
   for (const name of readdirSync(dir).filter(n => n.endsWith('.png'))) {
     const out = join(dir, name.replace(/\.png$/, '.webp'));

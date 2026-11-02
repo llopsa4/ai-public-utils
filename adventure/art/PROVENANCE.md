@@ -16,6 +16,8 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 | `objects/pantry-door.*` | `card-atlas.png` (door tile) | `pixelate.mjs` | arch mask, downscale; latch drawn on top |
 | `objects/valve.*` | `card-atlas.png` (valve wheel and steam-stack tiles) | `pixelate.mjs` | circular mask on the wheel, stack crop as the pipe; steam drawn |
 | `objects/rack.*` (charging cradle) | `opening/regulator-gallery.png` (lantern) | `pixelate.mjs` | lantern mask; the empty frame has the glow dimmed |
+| `props/gauge-face.png` | `rooms/gallery.png` (the gauge dial) | `pixelate.mjs` | disc cut-out; the painted needle is refilled from the dial at the same radius (the game draws a live needle) |
+| `props/pulley.png` | `rooms/mara-room.png` (hoist chains and pot) | `pixelate.mjs` | polygon cut-out, swung by the game |
 | `foreground/*.png` | the rendered rooms above | `pixelate.mjs` | polygon cut-outs of the same pixels (tent stool, kiln-hall rubble, gallery railing) |
 | `items/gauntlet.png` | `equipment/courier-gauntlet.png` | `pixelate.mjs` | 64×64 icon |
 | `items/regulator.png` | `opening/regulator-gallery.png` | `pixelate.mjs` | circular mask, 64×64 |
@@ -28,4 +30,4 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 | `icons/*.png` | — | `icons.mjs` | drawn 24×24 action-ring icons |
 
 All outputs are palette-indexed PNGs (`art/png.mjs`, upng-js).
-Room backgrounds and foreground cut-outs are also written as WebP (`art/webp.mjs`, sharp 0.35, which bundles libvips under the LGPL-3.0); the game loads the WebP copies.
+Room backgrounds, foreground cut-outs and props are also written as WebP (`art/webp.mjs`, sharp 0.35, which bundles libvips under the LGPL-3.0); the game loads the WebP copies.

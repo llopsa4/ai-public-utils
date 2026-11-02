@@ -79,6 +79,8 @@ export const ROOMS: Record<string, RoomDef> = {
       vignette: 0.32,
     },
     foreground: [{ image: 'tent-stool', x: 73, y: 204, depth: 300 }],
+    // The cell's flame in the charging cradle, until it goes into the gauntlet.
+    props: [{ kind: 'flame', x: 470, y: 230, size: 14, color: 0xffb050, depth: 263, visibleIf: [{ notFlag: 'hasGauntlet' }] }],
     ambient: {
       particles: [{ kind: 'dust', x: 440, y: 150, w: 170, h: 180 }],
       glows: [{ x: 596, y: 270, r: 60, color: 0xffa040, warm: true }],
@@ -115,6 +117,7 @@ export const ROOMS: Record<string, RoomDef> = {
       vignette: 0.35,
     },
     foreground: [{ image: 'hall-left', x: 0, y: 248, depth: 400 }, { image: 'hall-right', x: 552, y: 280, depth: 400 }],
+    props: [{ kind: 'swing', image: 'pulley', x: 94, y: 84, pivotX: 0.5, hotspot: 'pulleys' }],
     ambient: {
       particles: [{ kind: 'embers', x: 300, y: 150, w: 250, h: 80, warm: true }],
       glows: [
@@ -176,6 +179,7 @@ export const ROOMS: Record<string, RoomDef> = {
     actors: [
       { id: 'nell', x: 292, y: 292 },
     ],
+    props: [{ kind: 'bubbles', x: 228, y: 192, w: 22, h: 4, color: 0xf0d090, warm: true }],
   },
   gallery: {
     id: 'gallery',
@@ -208,6 +212,11 @@ export const ROOMS: Record<string, RoomDef> = {
     ],
     hotspots: galleryHotspots,
     actors: [{ id: 'oren', x: 520, y: 300 }],
+    props: [
+      // Running: shivering near the red. Cold: at rest, near the dial's zero.
+      { kind: 'gauge', image: 'gauge-face', x: 180, y: 33.25, length: 12, angle: 36, rest: -128 },
+      { kind: 'flame', x: 22, y: 210, size: 12, color: 0xffc060, depth: 9000 },
+    ],
   },
   ashways: {
     id: 'ashways',

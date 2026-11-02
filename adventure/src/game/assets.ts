@@ -75,6 +75,12 @@ export const FOREGROUND_IMAGES: Record<string, string> = Object.fromEntries(
   Object.entries(foregroundFiles).map(([path, url]) => [path.replace(/^.*\/([\w-]+)\.webp$/, '$1'), url]),
 );
 
+const propFiles = import.meta.glob('../../art/src/props/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+/** Animated set pieces keyed by file name (texture key `prop-<name>`). */
+export const PROP_IMAGES: Record<string, string> = Object.fromEntries(
+  Object.entries(propFiles).map(([path, url]) => [path.replace(/^.*\/([\w-]+)\.webp$/, '$1'), url]),
+);
+
 const portraitFiles = import.meta.glob('../../art/src/portraits/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 /** Portrait moods in strip order; each mood has a closed-mouth and an open-mouth frame (art/rig.mjs). */
 export type Mood = 'neutral' | 'worried' | 'angry';
