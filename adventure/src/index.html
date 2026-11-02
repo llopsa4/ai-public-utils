@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="referrer" content="no-referrer">
+  <meta name="theme-color" content="#120d14">
+  <title>Adventure pilot</title>
+</head>
+<body>
+  <main id="app">
+    <div id="stage">
+      <div id="game"></div>
+      <div id="overlay">
+        <div id="hover" hidden></div>
+        <div id="speech" hidden></div>
+        <div id="radial" hidden></div>
+        <div id="choices" role="group" hidden></div>
+        <div id="toast" role="status" hidden></div>
+      </div>
+      <p id="loading">Loading…</p>
+    </div>
+    <nav id="bar">
+      <div id="inventory" role="toolbar" data-i18n-label="ui.inventory"></div>
+      <div id="lang" role="group" data-i18n-label="ui.language"></div>
+      <button id="menu-btn" type="button" data-i18n="ui.menu">Menu</button>
+    </nav>
+  </main>
+
+  <dialog id="menu">
+    <h1 data-i18n="ui.title">Adventure pilot</h1>
+    <p data-i18n="ui.notice"></p>
+    <p class="help" data-i18n="ui.help"></p>
+    <div class="menu-actions">
+      <button id="menu-export" type="button" data-i18n="ui.export">Export save</button>
+      <button id="menu-import" type="button" data-i18n="ui.import">Import save</button>
+      <button id="menu-new" type="button" data-i18n="ui.newGame">New game</button>
+      <button id="menu-close" type="button" data-i18n="ui.close">Close</button>
+    </div>
+    <input id="import-file" type="file" accept=".json,application/json" hidden>
+  </dialog>
+
+  <div id="rotate" data-i18n="ui.rotate">Turn your device sideways to play.</div>
+  <div id="live" class="sr-only" aria-live="polite"></div>
+  <script type="module" src="./main.ts"></script>
+</body>
+</html>

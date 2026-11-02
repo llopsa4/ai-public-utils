@@ -1,0 +1,286 @@
+import Phaser from 'phaser';
+import { DIALOGUES } from '../content/dialogue';
+import { ACTOR_VERBS, interact } from '../content/interactions';
+import { ROOMS } from '../content/rooms';
+import { resolveNode } from '../engine/dialogue';
+import { conditionsHold, pointInPolygon } from '../engine/geometry';
+import { t } from '../engine/i18n';
+import { WalkArea } from '../engine/pathfinding';
+import { applyCommand } from '../engine/state';
+import type { ActorId, Command, HotspotDef, Point, RoomDef, Verb } from '../engine/types';
+import { Actor } from './Actor';
+import { ROOM_IMAGES, SHEETS, tagFrame } from './assets';
+import type { Session } from './session';
+
+const FADE_MS = 280;
+
+/** Loads every sheet and builds one animation per frame tag, keyed `<sheet>:<tag>`. */
+export class BootScene extends Phaser.Scene {
+  constructor() { super('boot'); }
+
+  preload(): void {
+    for (const [key, sheet] of Object.entries(SHEETS)) this.load.atlas(key, sheet.png, sheet.json);
+    for (const [key, url] of Object.entries(ROOM_IMAGES)) this.load.image(key, url);
+  }
+
+  create(): void {
+    for (const [key, { json }] of Object.entries(SHEETS)) {
+      for (const tag of json.meta.frameTags) {
+        const frames = json.frames.slice(tag.from, tag.to + 1);
+        if (tag.direction === 'reverse') frames.reverse();
+        const average = frames.reduce((sum, f) => sum + f.duration, 0) / frames.length;
+        this.anims.create({
+          key: `${key}:${tag.name}`,
+          frames: frames.map(f => ({ key, frame: f.filename })),
+          frameRate: 1000 / average,
+          repeat: frames.length > 1 ? -1 : 0,
+          yoyo: tag.direction === 'pingpong',
+        });
+      }
+    }
+    document.getElementById('loading')?.remove();
+    this.scene.start('room');
+  }
+}
+
+type Target = { kind: 'hotspot'; hotspot: HotspotDef } | { kind: 'actor'; actor: Actor };
+
+/** One room: background, objects, characters, input and the command/dialogue runner. */
+export class RoomScene extends Phaser.Scene {
+  private room!: RoomDef;
+  private area!: WalkArea;
+  private hero!: Actor;
+  private actors = new Map<ActorId, Actor>();
+  private objects = new Map<string, Phaser.GameObjects.Sprite>();
+  private busy = false;
+  private leaving = false;
+
+  constructor(private readonly session: Session) { super('room'); }
+
+  isBusy(): boolean {
+    return this.busy || this.leaving;
+  }
+
+  create(): void {
+    const state = this.session.state;
+    this.room = ROOMS[state.room];
+    this.area = new WalkArea(this.room.walkable.outer, this.room.walkable.holes);
+    this.actors = new Map();
+    this.objects = new Map();
+    this.busy = false;
+    this.leaving = false;
+
+    this.add.image(0, 0, this.room.background).setOrigin(0, 0).setDepth(-10000);
+    for (const def of this.room.objects) {
+      const sprite = this.add.sprite(def.x, def.y, def.sheet, SHEETS[def.sheet].json.frames[0].filename).setOrigin(0.5, 1).setDepth(def.depth ?? def.y);
+      this.objects.set(def.id, sprite);
+    }
+    this.refreshObjects();
+
+    const start = this.area.clamp(state.hero);
+    state.hero.x = start.x;
+    state.hero.y = start.y;
+    this.hero = new Actor(this, 'hero', start.x, start.y, state.hero.face, state.hero.pose, this.room.scale);
+    this.actors.set('hero', this.hero);
+    for (const a of this.room.actors) {
+      if (!conditionsHold(state, a.visibleIf)) continue;
+      const s = state[a.id];
+      this.actors.set(a.id, new Actor(this, a.id, a.x, a.y, s.face, s.pose, this.room.scale));
+    }
+
+    this.input.mouse?.disableContextMenu();
+    this.input.on(Phaser.Input.Events.POINTER_DOWN, (p: Phaser.Input.Pointer) => this.onPointerDown(p));
+    this.input.on(Phaser.Input.Events.POINTER_MOVE, (p: Phaser.Input.Pointer) => this.onPointerMove(p));
+    this.input.on(Phaser.Input.Events.GAME_OUT, () => this.session.ui.setHover(''));
+
+    this.session.ui.setHover('');
+    this.session.ui.setBusy(false);
+    this.session.ui.renderInventory();
+    this.cameras.main.fadeIn(FADE_MS, 0, 0, 0);
+  }
+
+  // ------------------------------------------------------------------ input ---
+  private onPointerDown(pointer: Phaser.Input.Pointer): void {
+    const ui = this.session.ui;
+    if (this.isBusy()) { ui.skip(); return; }
+    if (pointer.rightButtonDown()) {
+      this.session.selectItem(null);
+      return;
+    }
+    const at = { x: pointer.worldX, y: pointer.worldY };
+    const target = this.hitTest(at);
+    const item = this.session.selectedItem;
+
+    if (item) {
+      this.session.selectItem(null);
+      if (target) void this.runScript(interact(this.session.state, 'use', this.targetId(target), item));
+      else void this.walkTo(at);
+      return;
+    }
+    if (target) {
+      const id = this.targetId(target);
+      const verbs: Verb[] = target.kind === 'actor' ? ACTOR_VERBS[target.actor.id] : target.hotspot.verbs;
+      ui.openRadial(at, this.targetName(target), verbs, verb => {
+        void this.runScript(interact(this.session.state, verb, id));
+      });
+      return;
+    }
+    void this.walkTo(at);
+  }
+
+  private onPointerMove(pointer: Phaser.Input.Pointer): void {
+    if (pointer.wasTouch) return;
+    const target = this.isBusy() ? null : this.hitTest({ x: pointer.worldX, y: pointer.worldY });
+    const item = this.session.selectedItem;
+    const name = target ? this.targetName(target) : '';
+    if (item) {
+      const itemName = t(`name.${item}`);
+      this.session.ui.setHover(name ? t('ui.useWith', { item: itemName, target: name }) : t('ui.useWithNothing', { item: itemName }));
+    } else {
+      this.session.ui.setHover(name);
+    }
+    this.input.setDefaultCursor(target && !item ? 'pointer' : '');
+  }
+
+  private hitTest(p: Point): Target | null {
+    const actors = [...this.actors.values()].sort((a, b) => b.sprite.depth - a.sprite.depth);
+    for (const actor of actors) if (actor.hitBox().contains(p.x, p.y)) return { kind: 'actor', actor };
+    for (const hotspot of this.room.hotspots) {
+      if (conditionsHold(this.session.state, hotspot.visibleIf) && pointInPolygon(p, hotspot.polygon)) return { kind: 'hotspot', hotspot };
+    }
+    return null;
+  }
+
+  private targetId(target: Target): string {
+    return target.kind === 'actor' ? target.actor.id : target.hotspot.id;
+  }
+
+  private targetName(target: Target): string {
+    return t(target.kind === 'actor' ? `name.${target.actor.id}` : target.hotspot.name);
+  }
+
+  // --------------------------------------------------------------- movement ---
+  /** Free walking from a click; a new click interrupts it. */
+  private async walkTo(target: Point): Promise<void> {
+    const state = this.session.state;
+    if (this.hero.pose !== 'stand') { this.hero.setPose('stand'); state.hero.pose = 'stand'; }
+    await this.hero.walk(this.area.findPath(this.hero.position, target));
+    this.syncHero();
+  }
+
+  private syncHero(): void {
+    const h = this.session.state.hero;
+    h.x = Math.round(this.hero.position.x);
+    h.y = Math.round(this.hero.position.y);
+    h.face = this.hero.face;
+    h.pose = this.hero.pose;
+  }
+
+  private refreshObjects(): void {
+    const state = this.session.state;
+    for (const def of this.room.objects) {
+      const sprite = this.objects.get(def.id)!;
+      sprite.setVisible(conditionsHold(state, def.visibleIf));
+      if (def.flag) {
+        const tag = state.flags[def.flag] ? def.whenTrue : def.whenFalse;
+        if (tag) sprite.setFrame(tagFrame(def.sheet, tag));
+      }
+    }
+  }
+
+  // ----------------------------------------------------------------- script ---
+  /** Plays interaction commands in order. Input only skips speech until it finishes. */
+  async runScript(commands: Command[]): Promise<void> {
+    if (this.isBusy() || commands.length === 0) return;
+    this.busy = true;
+    this.hero.stop();
+    this.syncHero();
+    this.session.ui.setBusy(true);
+    this.session.ui.setHover('');
+    try {
+      for (const command of commands) {
+        if (!(await this.exec(command))) return;
+      }
+    } finally {
+      if (this.sys.isActive() && !this.leaving) {
+        this.busy = false;
+        this.session.ui.setBusy(false);
+        this.session.ui.renderInventory();
+      }
+    }
+  }
+
+  private wait(ms: number): Promise<void> {
+    return new Promise(resolve => this.time.delayedCall(ms, resolve));
+  }
+
+  private async say(actorId: ActorId, key: string): Promise<void> {
+    const actor = this.actors.get(actorId) ?? this.hero;
+    await this.session.ui.say(actorId, t(key), actor.headPoint());
+  }
+
+  /** Executes one command. Returns false when the script must stop (the room is changing). */
+  private async exec(command: Command): Promise<boolean> {
+    const state = this.session.state;
+    switch (command.type) {
+      case 'walk': {
+        if (this.hero.pose !== 'stand') this.hero.setPose('stand');
+        await this.hero.walk(this.area.findPath(this.hero.position, command.to));
+        if (command.face) this.hero.setFacing(command.face);
+        this.syncHero();
+        return true;
+      }
+      case 'face':
+        this.actors.get(command.actor)?.setFacing(command.face);
+        applyCommand(state, command);
+        return true;
+      case 'pose':
+        this.actors.get(command.actor)?.setPose(command.pose);
+        applyCommand(state, command);
+        return true;
+      case 'say':
+        await this.say(command.actor, command.text);
+        return true;
+      case 'setFlag':
+      case 'addItem':
+      case 'removeItem':
+        applyCommand(state, command);
+        this.refreshObjects();
+        this.session.ui.renderInventory();
+        return true;
+      case 'wait':
+        await this.wait(command.ms);
+        return true;
+      case 'dialogue':
+        await this.runDialogue(command.id);
+        return true;
+      case 'room':
+        this.leaving = true;
+        this.session.ui.closeRadial();
+        this.cameras.main.fadeOut(FADE_MS, 0, 0, 0);
+        await this.wait(FADE_MS + 20);
+        applyCommand(state, command);
+        this.scene.restart();
+        return false;
+    }
+  }
+
+  private async runDialogue(id: string): Promise<void> {
+    const tree = DIALOGUES[id];
+    const state = this.session.state;
+    let nodeId: string | null = tree.start;
+    while (nodeId) {
+      const node = resolveNode(tree, nodeId, state);
+      for (const line of node.lines) await this.say(line.actor, line.text);
+      for (const [flag, value] of Object.entries(node.set)) applyCommand(state, { type: 'setFlag', flag, value });
+      if (node.choices.length > 0) {
+        const index = await this.session.ui.choose(node.choices.map(c => t(c.text)));
+        const choice = node.choices[index];
+        await this.say('hero', choice.text);
+        nodeId = choice.next;
+      } else {
+        nodeId = node.next;
+      }
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+ "frames": [
+  {
+   "filename": "0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 20,
+    "h": 12
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 20,
+    "h": 12
+   },
+   "sourceSize": {
+    "w": 20,
+    "h": 12
+   },
+   "duration": 100
+  }
+ ],
+ "meta": {
+  "app": "adventure placeholder generator (Aseprite JSON-array compatible)",
+  "version": "1",
+  "image": "key.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 20,
+   "h": 12
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "idle",
+    "from": 0,
+    "to": 0,
+    "direction": "forward"
+   }
+  ]
+ }
+}
