@@ -32,7 +32,7 @@ Each room is one painting, 1280×720, in `art/src/rooms/`. The reference image n
 - pink: where Mara enters the room; orange crosses: objects drawn over the room (their foot point); white dots: story characters' feet; small green dots: background people's stations
 - cyan dashed: walk-behind pieces (see below); white dashed: the hanging name board
 
-A new painting should put the things on the list where the reference image shows them, or the positions in `src/content/rooms.ts` must be moved to match the new painting (hotspot polygons, `walkTo`, the walk area, entries, objects, foreground pieces, `look` effects, crowd stations in `src/content/crowd.ts`). `npm test` checks that the walk area, approach points and stations stay consistent.
+A new painting should put the things on the list where the reference image shows them, or the positions in `src/chapters/<chapter>/rooms.ts` must be moved to match the new painting (hotspot polygons, `walkTo`, the walk area, entries, objects, foreground pieces, `look` effects, crowd stations in `src/chapters/<chapter>/crowd.ts`). `npm test` checks that the walk area, approach points and stations stay consistent.
 
 ### Mara's Tent: `rooms/tent.png`
 

@@ -1,6 +1,7 @@
 import { ROOMS } from './rooms';
 import { SECRET_FLAGS } from './flags';
-import type { ActorId, Command, GameState, NpcId, Point, Verb } from '../../engine/types';
+import { applyRules, cycleLook, type Rule } from '../../engine/rules';
+import type { ActorId, Command, Condition, GameState, NpcId, Point, Verb } from '../../engine/types';
 
 /**
  * What follows the release: the hatch blows, the fight, Oren's advice and the gear menu, then his
@@ -37,16 +38,14 @@ export const ITEM_VERBS: Verb[] = ['look', 'use'];
 /** Off-screen voice position for Oren calling down the stairs. */
 const STAIRS_VOICE = { x: 560, y: 120 };
 
+/** The sweeper by the valve, and the same creature once it has moved to the pipe. */
+const SWEEPER = ['sweeper', 'sweeperAtPipe'];
+
 const say = (text: string, actor: ActorId = 'hero', at?: Point): Command => (at ? { type: 'say', actor, text, at } : { type: 'say', actor, text });
 const flag = (name: string, value = true): Command => ({ type: 'setFlag', flag: name, value });
 const pose = (actor: ActorId, p: 'stand' | 'crouch' | 'dead'): Command => ({ type: 'pose', actor, pose: p });
 const wait = (ms: number): Command => ({ type: 'wait', ms });
 const go = (room: string, entry: string): Command => ({ type: 'room', room, entry });
-
-function approach(state: GameState, target: string): Command[] {
-  const spot = ROOMS[state.room].hotspots.find(h => h.id === target);
-  return spot?.walkTo ? [{ type: 'walk', to: spot.walkTo, face: spot.face }] : [];
-}
 
 function toNpc(id: NpcId): Command[] {
   const s = TALK_SPOTS[id];
@@ -81,350 +80,189 @@ function fallback(verb: Verb, item?: string): Command[] {
   return [say('line.cannot')];
 }
 
+const F = (name: string): Condition[] => [{ flag: name }];
+const NOT = (name: string): Condition[] => [{ notFlag: name }];
+const addItem = (item: string): Command => ({ type: 'addItem', item });
+const shake = (ms: number): Command => ({ type: 'shake', ms });
+
+/** An inventory item: its look line; anything else done to it can't be. */
+const inventoryItem = (id: string, look: Rule['do']): Rule[] => [
+  { target: `item:${id}`, verb: 'look', do: look },
+  { target: `item:${id}`, do: [say('line.cannot')] },
+  { target: `item:${id}`, item: '*', do: [say('line.cannot')] },
+];
+
+/** A line that changes once a flag is set: `[when set, otherwise]`. */
+const either = (target: string, verb: Verb | Verb[], name: string, set: string, unset: string, walk = false): Rule[] => [
+  { target, verb, when: F(name), walk, do: [say(set)] },
+  { target, verb, walk, do: [say(unset)] },
+];
+
+/** Talking to, posing and handing things to Nell and Oren. */
+function npcRules(id: NpcId): Rule[] {
+  const getUp = (s: GameState): Command[] => (s.npcs[id].pose === 'stand' ? [] : [pose(id, 'stand')]);
+  return [
+    { target: id, item: '*', do: ({ state }) => [...toNpc(id), ...getUp(state), say(`line.${id}Item`, id)] },
+    { target: id, verb: 'look', do: ({ state }) => [say(state.npcs[id].pose === 'dead' ? `line.${id}LookDown` : `line.${id}Look${state.flags.kilnCold ? 'Cold' : ''}`)] },
+    { target: id, verb: 'talk', do: ({ state }) => [...toNpc(id), ...getUp(state), { type: 'dialogue', id }] },
+    { target: id, verb: 'crouch', do: ({ state }) => [...toNpc(id), ...getUp(state), say(`line.askCrouch.${id}`), pose(id, 'crouch'), say(`line.${id}Crouch`, id)] },
+    { target: id, verb: 'lie', do: ({ state }) => [...toNpc(id), ...getUp(state), say(`line.askLie.${id}`), say(`line.${id}Lie`, id), pose(id, 'dead')] },
+    { target: id, verb: 'stand', do: ({ state }) => (state.npcs[id].pose === 'stand' ? [say('line.alreadyStanding')]
+      : [...toNpc(id), say('line.askStand'), pose(id, 'stand'), say(`line.${id}Stand`, id)]) },
+  ];
+}
+
+/** Chapter 1's click rules, first match wins (src/engine/rules.ts); unmatched clicks get `fallback`. */
+export const RULES: readonly Rule[] = [
+  // ------------------------------------------------------------ secrets ---
+  ...Object.entries(SECRETS).flatMap(([target, s]): Rule[] => [
+    { target, verb: 'look', when: F(s.flag), do: [say(s.again)] },
+    { target, verb: 'look', walk: true, do: [say(s.line), flag(s.flag)] },
+  ]),
+
+  // ---------------------------------------------------------- inventory ---
+  ...inventoryItem('gauntlet', [say('line.gauntletLook')]),
+  ...inventoryItem('notebook', ({ state }) => [say(state.flags.procedureKnown ? 'line.notebookLookAfter' : 'line.notebookLook')]),
+  ...inventoryItem('regulator', [say('line.regulatorItemLook')]),
+  ...inventoryItem('bread', [say('line.breadLook')]),
+  ...inventoryItem('scarf', [say('line.scarfLook')]),
+
+  // ---------------------------------------------------------------- Mara ---
+  { target: 'hero', item: 'bread', do: [say('line.breadEat')] },
+  { target: 'hero', item: 'scarf', do: [say('line.scarfWear')] },
+  { target: 'hero', item: '*', do: [say('line.heroUseItem')] },
+  ...either('hero', 'look', 'kilnCold', 'line.heroLookCold', 'line.heroLook'),
+  { target: 'hero', verb: 'talk', do: [say('line.heroTalk')] },
+  { target: 'hero', verb: 'crouch', do: [pose('hero', 'crouch')] },
+  { target: 'hero', verb: 'lie', do: [pose('hero', 'dead'), wait(400), say('line.heroLie')] },
+  { target: 'hero', verb: 'stand', do: ({ state }) => (state.hero.pose === 'stand' ? [say('line.heroAlreadyStanding')] : [pose('hero', 'stand')]) },
+
+  // --------------------------------------------------------- Mara's tent ---
+  ...either('rack', 'look', 'hasGauntlet', 'line.rackLookEmpty', 'line.rackLook'),
+  { target: 'rack', verb: ['take', 'use'], when: F('hasGauntlet'), do: [say('line.rackEmpty')] },
+  { target: 'rack', verb: ['take', 'use'], walk: true, do: [wait(150), flag('hasGauntlet'), addItem('gauntlet'), wait(250), say('line.rackTake')] },
+  { target: 'notebook', verb: 'look', do: [say('line.notebookOnBench')] },
+  { target: 'notebook', verb: 'open', walk: true, do: [say('line.notebookOpen')] },
+  { target: 'notebook', verb: 'take', walk: true, do: [flag('hasNotebook'), addItem('notebook'), say('line.notebookTake')] },
+  { target: 'tentFlap', verb: 'look', do: [say('line.tentFlapLook')] },
+  { target: 'tentFlap', verb: ['go', 'open'], when: NOT('hasGauntlet'), walk: true, do: [say('line.tentNotYet')] },
+  { target: 'tentFlap', verb: ['go', 'open'], walk: true, do: [go('maraRoom', 'fromTent')] },
+  { target: 'workbench', verb: 'look', do: [say('line.workbenchLook')] },
+  { target: 'workbench', verb: 'use', walk: true, do: [say('line.workbenchUse')] },
+  { target: 'jar', verb: 'look', do: [say('line.jarLook')] },
+  { target: 'jar', verb: 'take', do: [say('line.jarTake')] },
+  { target: 'stool', verb: 'look', do: [say('line.stoolLook')] },
+  { target: 'stool', verb: 'use', do: [say('line.stoolUse')] },
+  { target: 'drum', verb: 'look', do: [say('line.drumLook')] },
+  { target: 'drum', verb: 'use', walk: true, do: [say('line.drumUse')] },
+
+  // ------------------------------------------------------------ kiln hall ---
+  { target: 'toTent', verb: 'look', do: [say('line.toTentLook')] },
+  { target: 'toTent', verb: 'go', walk: true, do: [go('tent', 'fromKilnHall')] },
+  ...either('niche', 'look', 'kilnCold', 'line.nicheLookCold', 'line.nicheLook'), // the kiln mouths
+  ...either('niche', 'use', 'kilnCold', 'line.nicheUseCold', 'line.nicheUse'),
+  { target: 'pulleys', verb: 'look', do: [say('line.pulleysLook')] },
+  { target: 'pulleys', verb: 'use', walk: true, do: [say('line.pulleysUse')] },
+  { target: 'jars', verb: 'look', do: [say('line.jarsLook')] },
+  { target: 'jars', verb: 'take', do: [say('line.jarsTake')] },
+  { target: 'cart', verb: 'look', do: [say('line.cartLook')] },
+  { target: 'cart', verb: 'use', do: [say('line.cartUse')] },
+  { target: 'roomCurtain', verb: 'look', do: [say('line.roomCurtainLook')] },
+  { target: 'roomCurtain', verb: 'go', walk: true, do: [go('firingHouse', 'fromMaraRoom')] },
+
+  // -------------------------------------------------------- firing house ---
+  { target: 'pantryDoor', item: 'gauntlet', when: F('latchFixed'), do: [say('line.latchAlreadyFixed')] },
+  { target: 'pantryDoor', item: 'gauntlet', walk: true, do: [
+    pose('hero', 'crouch'), wait(350), flag('latchFixed'), wait(250), pose('hero', 'stand'),
+    { type: 'face', actor: 'nell', face: 'right' },
+    say('line.nellFixed', 'nell'), say('line.maraLatch'), say('line.nellSoup', 'nell'), say('line.maraNightShift'),
+    wait(400), shake(700), say('line.kilnGroans'),
+    say('line.orenCalls', 'oren', STAIRS_VOICE), flag('alarm'), say('line.maraAlarm'),
+  ] },
+  ...either('pantryDoor', 'look', 'latchFixed', 'line.latchLookFixed', 'line.latchLook'),
+  { target: 'pantryDoor', verb: ['open', 'use'], when: F('latchFixed'), do: [say('line.latchOpenFixed')] },
+  ...either('pantryDoor', ['open', 'use'], 'hasGauntlet', 'line.latchStuckHint', 'line.latchStuck', true),
+  { target: 'soup', item: 'bread', do: [say('line.soupBread')] },
+  ...either('soup', 'look', 'kilnCold', 'line.soupLookCold', 'line.soupLook'),
+  { target: 'soup', verb: 'take', do: [say('line.soupTake')] },
+  { target: 'soup', verb: 'use', do: [say('line.soupUse')] },
+  ...either('shoes', 'look', 'kilnCold', 'line.shoesLookCold', 'line.shoesLook'),
+  { target: 'shoes', verb: 'take', do: [say('line.shoesTake')] },
+  ...either('hearth', 'look', 'kilnCold', 'line.hearthLookCold', 'line.hearthLook'),
+  ...either('hearth', 'use', 'kilnCold', 'line.hearthUseCold', 'line.hearthUse'),
+  ...either('stairs', 'look', 'alarm', 'line.stairsLookAlarm', 'line.stairsLook'),
+  { target: 'stairs', verb: 'go', when: NOT('alarm'), do: [say('line.stairsNotYet')] },
+  { target: 'stairs', verb: 'go', walk: true, do: [go('gallery', 'fromFiringHouse')] },
+  { target: 'kilnGate', verb: 'look', when: [{ has: 'regulator' }], do: [say('line.gateLookReady')] },
+  { target: 'kilnGate', verb: 'look', do: [say('line.gateLook')] },
+  { target: 'kilnGate', verb: ['open', 'go'], when: [{ has: 'regulator' }], walk: true, do: [say('line.gateLeave'), go('ashways', 'fromFiringHouse')] },
+  { target: 'kilnGate', verb: ['open', 'go'], walk: true, do: [say('line.gateNotYet')] },
+  { target: 'toRoom', verb: 'look', do: [say('line.toRoomLook')] },
+  { target: 'toRoom', verb: 'go', walk: true, do: [go('maraRoom', 'fromFiringHouse')] },
+
+  // ---------------------------------------------------- regulator gallery ---
+  { target: 'regulator', item: 'gauntlet', when: F('kilnCold'), do: [say('line.regulatorGone')] },
+  { target: 'regulator', item: 'gauntlet', when: NOT('patchFailed'), walk: true, do: [
+    pose('hero', 'crouch'), wait(500), shake(300), pose('hero', 'stand'), say('line.maraPatch'), say('line.orenLockingRing', 'oren'), flag('patchFailed'),
+  ] },
+  { target: 'regulator', item: 'gauntlet', when: NOT('decided'), do: [say('line.notReady')] },
+  { target: 'regulator', item: 'gauntlet', when: NOT('procedureKnown'), do: [say('line.needProcedure')] },
+  { target: 'regulator', item: 'gauntlet', walk: true, do: ({ state }) => [
+    pose('hero', 'crouch'), wait(500), say('line.releaseOne'), wait(300),
+    shake(900), flag('kilnCold'), addItem('regulator'), wait(400), pose('hero', 'stand'),
+    say('line.releaseDone'), say('line.maraPulse'), ...afterRelease(state.flags),
+  ] },
+  { target: 'regulator', item: 'notebook', when: F('kilnCold'), do: [say('line.regulatorGone')] },
+  { target: 'regulator', item: 'notebook', when: NOT('patchFailed'), do: [say('line.notebookTooSoon')] },
+  { target: 'regulator', item: 'notebook', when: NOT('decided'), do: [say('line.notebookNotReady')] },
+  { target: 'regulator', item: 'notebook', when: F('procedureKnown'), do: [say('line.procedureAlready')] },
+  { target: 'regulator', item: 'notebook', walk: true, do: [say('line.notebookProcedure1'), say('line.notebookProcedure2'), flag('procedureKnown')] },
+  { target: 'regulator', verb: 'look', when: F('kilnCold'), do: [say('line.regulatorLookCold')] },
+  ...either('regulator', 'look', 'patchFailed', 'line.regulatorLookRing', 'line.regulatorLook'),
+  ...either('regulator', ['use', 'take', 'open'], 'kilnCold', 'line.regulatorGone', 'line.regulatorBareHands'),
+  ...either('gauge', 'look', 'kilnCold', 'line.gaugeLookCold', 'line.gaugeLook'),
+  { target: 'gauge', verb: 'use', do: [say('line.gaugeUse')] },
+  { target: 'logbook', verb: 'look', do: [say('line.logbookLook')] },
+  { target: 'logbook', verb: 'take', do: [say('line.logbookTake')] },
+  { target: 'lantern', verb: 'look', do: [say('line.lanternLook')] },
+  { target: 'lantern', verb: 'take', do: [say('line.lanternTake')] },
+  { target: 'galleryStairs', verb: 'look', do: [say('line.galleryStairsLook')] },
+  { target: 'galleryStairs', verb: 'go', walk: true, do: [go('firingHouse', 'fromGallery')] },
+
+  // ------------------------------------------------------------- ashways ---
+  { target: SWEEPER, item: 'gauntlet', do: [say('line.sweeperFight')] },
+  { target: SWEEPER, item: 'regulator', do: [say('line.sweeperRegulator')] },
+  { target: SWEEPER, verb: 'look', when: F('valveVented'), do: [say('line.sweeperLookPipe')] },
+  { target: SWEEPER, verb: 'look', do: [say('line.sweeperLook1'), flag('sawSweeper'), say('line.sweeperLook2')] },
+  { target: SWEEPER, verb: 'talk', do: [say('line.sweeperTalk')] },
+  { target: SWEEPER, verb: 'use', do: [say('line.sweeperUse')] },
+  { target: 'valve', item: 'gauntlet', when: F('valveVented'), do: [say('line.valveAlready')] },
+  { target: 'valve', item: 'gauntlet', walk: true, do: [wait(200), shake(250), flag('valveVented'),
+    { type: 'moveObject', id: 'sweeper', x: 172, y: 266, ms: 1600 }, say('line.valveVented')] },
+  ...either('valve', 'look', 'valveVented', 'line.valveLookVented', 'line.valveLook'),
+  ...either('valve', ['open', 'use'], 'valveVented', 'line.valveAlready', 'line.valveStiff', true),
+  { target: 'valve', verb: 'close', do: [say('line.valveClose')] },
+  ...either('passage', 'look', 'valveVented', 'line.passageLookClear', 'line.passageLook'),
+  { target: 'passage', verb: 'go', when: NOT('valveVented'), do: [say('line.passageBlocked')] },
+  { target: 'passage', verb: 'go', walk: true, do: [say('line.farewell'), wait(300), { type: 'end' }] },
+  { target: 'pipes', verb: 'look', do: [say('line.pipesLook')] },
+  { target: 'pipes', verb: 'use', do: [say('line.pipesUse')] },
+  { target: 'wayBack', verb: 'look', do: [say('line.wayBackLook')] },
+  { target: 'wayBack', verb: 'go', do: [say('line.wayBackGo')] },
+
+  // -------------------------------------------------------------- people ---
+  ...npcRules('oren'),
+  ...npcRules('nell'),
+];
+
 /**
  * Resolves what happens when the player applies a verb (or an inventory item) to a target.
  * Pure: it reads the state and returns commands; the scene plays them and applies their effects.
  * Targets are hotspot ids, character ids, or `item:<id>` for things in the inventory.
  */
 export function interact(state: GameState, verb: Verb, target: string, item?: string): Command[] {
-  const commands = resolve(state, verb, target, item);
-  return verb === 'look' && !item ? cycleLook(state, target, commands) : commands;
-}
-
-/** Swaps a varied look line for the next variant and counts the look. */
-function cycleLook(state: GameState, target: string, commands: Command[]): Command[] {
-  const i = commands.findIndex(c => c.type === 'say' && VARIED_LOOKS.includes(c.text));
-  if (i < 0) return commands;
-  const line = commands[i] as Extract<Command, { type: 'say' }>;
-  const n = (state.looks[target] ?? 0) % 3;
-  const text = n === 0 ? line.text : `${line.text}.${n + 1}`;
-  return [...commands.slice(0, i), { ...line, text }, ...commands.slice(i + 1), { type: 'looked', id: target }];
-}
-
-function resolve(state: GameState, verb: Verb, target: string, item?: string): Command[] {
-  const f = state.flags;
-  const secret = SECRETS[target];
-  if (secret) {
-    if (item || verb !== 'look') return fallback(verb, item);
-    if (f[secret.flag]) return [say(secret.again)];
-    return [...approach(state, target), say(secret.line), flag(secret.flag)];
-  }
-  const has = (i: string) => state.inventory.includes(i);
-
-  switch (target) {
-    // ---------------------------------------------------------- inventory ---
-    case 'item:gauntlet': return [say(verb === 'look' ? 'line.gauntletLook' : 'line.cannot')];
-    case 'item:notebook': return [say(verb === 'look' ? (f.procedureKnown ? 'line.notebookLookAfter' : 'line.notebookLook') : 'line.cannot')];
-    case 'item:regulator': return [say(verb === 'look' ? 'line.regulatorItemLook' : 'line.cannot')];
-    case 'item:bread': return [say(verb === 'look' ? 'line.breadLook' : 'line.cannot')];
-    case 'item:scarf': return [say(verb === 'look' ? 'line.scarfLook' : 'line.cannot')];
-
-    // ---------------------------------------------------------------- Mara ---
-    case 'hero':
-      if (item === 'bread') return [say('line.breadEat')];
-      if (item === 'scarf') return [say('line.scarfWear')];
-      if (item) return [say('line.heroUseItem')];
-      switch (verb) {
-        case 'look': return [say(f.kilnCold ? 'line.heroLookCold' : 'line.heroLook')];
-        case 'talk': return [say('line.heroTalk')];
-        case 'crouch': return [pose('hero', 'crouch')];
-        case 'lie': return [pose('hero', 'dead'), wait(400), say('line.heroLie')];
-        case 'stand': return state.hero.pose === 'stand' ? [say('line.heroAlreadyStanding')] : [pose('hero', 'stand')];
-      }
-      break;
-
-    // --------------------------------------------------------- Mara's room ---
-    case 'rack':
-      if (item) break;
-      switch (verb) {
-        case 'look': return [say(f.hasGauntlet ? 'line.rackLookEmpty' : 'line.rackLook')];
-        case 'take':
-        case 'use':
-          if (f.hasGauntlet) return [say('line.rackEmpty')];
-          return [...approach(state, target), wait(150), flag('hasGauntlet'), { type: 'addItem', item: 'gauntlet' }, wait(250), say('line.rackTake')];
-      }
-      break;
-
-    case 'notebook':
-      if (item) break;
-      switch (verb) {
-        case 'look': return [say('line.notebookOnBench')];
-        case 'open': return [...approach(state, target), say('line.notebookOpen')];
-        case 'take': return [...approach(state, target), flag('hasNotebook'), { type: 'addItem', item: 'notebook' }, say('line.notebookTake')];
-      }
-      break;
-
-    case 'tentFlap':
-      if (item) break;
-      if (verb === 'look') return [say('line.tentFlapLook')];
-      if (verb === 'go' || verb === 'open') {
-        if (!f.hasGauntlet) return [...approach(state, target), say('line.tentNotYet')];
-        return [...approach(state, target), go('maraRoom', 'fromTent')];
-      }
-      break;
-
-    case 'workbench':
-      if (item) break;
-      if (verb === 'look') return [say('line.workbenchLook')];
-      if (verb === 'use') return [...approach(state, target), say('line.workbenchUse')];
-      break;
-
-    case 'jar':
-      if (item) break;
-      if (verb === 'look') return [say('line.jarLook')];
-      if (verb === 'take') return [say('line.jarTake')];
-      break;
-
-    case 'stool':
-      if (item) break;
-      if (verb === 'look') return [say('line.stoolLook')];
-      if (verb === 'use') return [say('line.stoolUse')];
-      break;
-
-    case 'drum':
-      if (item) break;
-      if (verb === 'look') return [say('line.drumLook')];
-      if (verb === 'use') return [...approach(state, target), say('line.drumUse')];
-      break;
-
-    case 'toTent':
-      if (item) break;
-      if (verb === 'look') return [say('line.toTentLook')];
-      if (verb === 'go') return [...approach(state, target), go('tent', 'fromKilnHall')];
-      break;
-
-    case 'niche': // the kiln mouths
-      if (item) break;
-      if (verb === 'look') return [say(f.kilnCold ? 'line.nicheLookCold' : 'line.nicheLook')];
-      if (verb === 'use') return [say(f.kilnCold ? 'line.nicheUseCold' : 'line.nicheUse')];
-      break;
-
-    case 'pulleys':
-      if (item) break;
-      if (verb === 'look') return [say('line.pulleysLook')];
-      if (verb === 'use') return [...approach(state, target), say('line.pulleysUse')];
-      break;
-
-    case 'jars':
-      if (item) break;
-      if (verb === 'look') return [say('line.jarsLook')];
-      if (verb === 'take') return [say('line.jarsTake')];
-      break;
-
-    case 'cart':
-      if (item) break;
-      if (verb === 'look') return [say('line.cartLook')];
-      if (verb === 'use') return [say('line.cartUse')];
-      break;
-
-    case 'roomCurtain':
-      if (item) break;
-      if (verb === 'look') return [say('line.roomCurtainLook')];
-      if (verb === 'go') return [...approach(state, target), go('firingHouse', 'fromMaraRoom')];
-      break;
-
-    // -------------------------------------------------------- firing house ---
-    case 'pantryDoor':
-      if (item === 'gauntlet') {
-        if (f.latchFixed) return [say('line.latchAlreadyFixed')];
-        return [
-          ...approach(state, target), pose('hero', 'crouch'), wait(350), flag('latchFixed'), wait(250), pose('hero', 'stand'),
-          { type: 'face', actor: 'nell', face: 'right' },
-          say('line.nellFixed', 'nell'), say('line.maraLatch'), say('line.nellSoup', 'nell'), say('line.maraNightShift'),
-          wait(400), { type: 'shake', ms: 700 }, say('line.kilnGroans'),
-          say('line.orenCalls', 'oren', STAIRS_VOICE), flag('alarm'), say('line.maraAlarm'),
-        ];
-      }
-      if (item) break;
-      switch (verb) {
-        case 'look': return [say(f.latchFixed ? 'line.latchLookFixed' : 'line.latchLook')];
-        case 'open':
-        case 'use':
-          if (f.latchFixed) return [say('line.latchOpenFixed')];
-          return [...approach(state, target), say(f.hasGauntlet ? 'line.latchStuckHint' : 'line.latchStuck')];
-      }
-      break;
-
-    case 'soup':
-      if (item === 'bread') return [say('line.soupBread')];
-      if (item) break;
-      switch (verb) {
-        case 'look': return [say(f.kilnCold ? 'line.soupLookCold' : 'line.soupLook')];
-        case 'take': return [say('line.soupTake')];
-        case 'use': return [say('line.soupUse')];
-      }
-      break;
-
-    case 'shoes':
-      if (item) break;
-      if (verb === 'look') return [say(f.kilnCold ? 'line.shoesLookCold' : 'line.shoesLook')];
-      if (verb === 'take') return [say('line.shoesTake')];
-      break;
-
-    case 'hearth':
-      if (item) break;
-      if (verb === 'look') return [say(f.kilnCold ? 'line.hearthLookCold' : 'line.hearthLook')];
-      if (verb === 'use') return [say(f.kilnCold ? 'line.hearthUseCold' : 'line.hearthUse')];
-      break;
-
-    case 'stairs':
-      if (item) break;
-      if (verb === 'look') return [say(f.alarm ? 'line.stairsLookAlarm' : 'line.stairsLook')];
-      if (verb === 'go') {
-        if (!f.alarm) return [say('line.stairsNotYet')];
-        return [...approach(state, target), go('gallery', 'fromFiringHouse')];
-      }
-      break;
-
-    case 'kilnGate':
-      if (item) break;
-      switch (verb) {
-        case 'look': return [say(has('regulator') ? 'line.gateLookReady' : 'line.gateLook')];
-        case 'open':
-        case 'go':
-          if (!has('regulator')) return [...approach(state, target), say('line.gateNotYet')];
-          return [...approach(state, target), say('line.gateLeave'), go('ashways', 'fromFiringHouse')];
-      }
-      break;
-
-    case 'toRoom':
-      if (item) break;
-      if (verb === 'look') return [say('line.toRoomLook')];
-      if (verb === 'go') return [...approach(state, target), go('maraRoom', 'fromFiringHouse')];
-      break;
-
-    // ---------------------------------------------------- regulator gallery ---
-    case 'regulator':
-      if (item === 'gauntlet') {
-        if (f.kilnCold) return [say('line.regulatorGone')];
-        if (!f.patchFailed) {
-          return [...approach(state, target), pose('hero', 'crouch'), wait(500), { type: 'shake', ms: 300 }, pose('hero', 'stand'),
-            say('line.maraPatch'), say('line.orenLockingRing', 'oren'), flag('patchFailed')];
-        }
-        if (!f.decided) return [say('line.notReady')];
-        if (!f.procedureKnown) return [say('line.needProcedure')];
-        return [
-          ...approach(state, target), pose('hero', 'crouch'), wait(500), say('line.releaseOne'), wait(300),
-          { type: 'shake', ms: 900 }, flag('kilnCold'), { type: 'addItem', item: 'regulator' }, wait(400), pose('hero', 'stand'),
-          say('line.releaseDone'), say('line.maraPulse'), ...afterRelease(state.flags),
-        ];
-      }
-      if (item === 'notebook') {
-        if (f.kilnCold) return [say('line.regulatorGone')];
-        if (!f.patchFailed) return [say('line.notebookTooSoon')];
-        if (!f.decided) return [say('line.notebookNotReady')];
-        if (f.procedureKnown) return [say('line.procedureAlready')];
-        return [...approach(state, target), say('line.notebookProcedure1'), say('line.notebookProcedure2'), flag('procedureKnown')];
-      }
-      if (item) break;
-      switch (verb) {
-        case 'look':
-          if (f.kilnCold) return [say('line.regulatorLookCold')];
-          return [say(f.patchFailed ? 'line.regulatorLookRing' : 'line.regulatorLook')];
-        case 'use':
-        case 'take':
-        case 'open':
-          if (f.kilnCold) return [say('line.regulatorGone')];
-          return [say('line.regulatorBareHands')];
-      }
-      break;
-
-    case 'gauge':
-      if (item) break;
-      if (verb === 'look') return [say(f.kilnCold ? 'line.gaugeLookCold' : 'line.gaugeLook')];
-      if (verb === 'use') return [say('line.gaugeUse')];
-      break;
-
-    case 'logbook':
-      if (item) break;
-      if (verb === 'look') return [say('line.logbookLook')];
-      if (verb === 'take') return [say('line.logbookTake')];
-      break;
-
-    case 'lantern':
-      if (item) break;
-      if (verb === 'look') return [say('line.lanternLook')];
-      if (verb === 'take') return [say('line.lanternTake')];
-      break;
-
-    case 'galleryStairs':
-      if (item) break;
-      if (verb === 'look') return [say('line.galleryStairsLook')];
-      if (verb === 'go') return [...approach(state, target), go('firingHouse', 'fromGallery')];
-      break;
-
-    // ------------------------------------------------------------- ashways ---
-    case 'sweeper':
-    case 'sweeperAtPipe':
-      if (item === 'gauntlet') return [say('line.sweeperFight')];
-      if (item === 'regulator') return [say('line.sweeperRegulator')];
-      if (item) break;
-      if (verb === 'look') {
-        if (f.valveVented) return [say('line.sweeperLookPipe')];
-        return [say('line.sweeperLook1'), flag('sawSweeper'), say('line.sweeperLook2')];
-      }
-      if (verb === 'talk') return [say('line.sweeperTalk')];
-      if (verb === 'use') return [say('line.sweeperUse')];
-      break;
-
-    case 'valve':
-      if (item === 'gauntlet') {
-        if (f.valveVented) return [say('line.valveAlready')];
-        return [...approach(state, target), wait(200), { type: 'shake', ms: 250 }, flag('valveVented'),
-          { type: 'moveObject', id: 'sweeper', x: 172, y: 266, ms: 1600 }, say('line.valveVented')];
-      }
-      if (item) break;
-      switch (verb) {
-        case 'look': return [say(f.valveVented ? 'line.valveLookVented' : 'line.valveLook')];
-        case 'open':
-        case 'use': return [...approach(state, target), say(f.valveVented ? 'line.valveAlready' : 'line.valveStiff')];
-        case 'close': return [say('line.valveClose')];
-      }
-      break;
-
-    case 'passage':
-      if (item) break;
-      if (verb === 'look') return [say(f.valveVented ? 'line.passageLookClear' : 'line.passageLook')];
-      if (verb === 'go') {
-        if (!f.valveVented) return [say('line.passageBlocked')];
-        return [...approach(state, target), say('line.farewell'), wait(300), { type: 'end' }];
-      }
-      break;
-
-    case 'pipes':
-      if (item) break;
-      if (verb === 'look') return [say('line.pipesLook')];
-      if (verb === 'use') return [say('line.pipesUse')];
-      break;
-
-    case 'wayBack':
-      if (item) break;
-      if (verb === 'look') return [say('line.wayBackLook')];
-      if (verb === 'go') return [say('line.wayBackGo')];
-      break;
-
-    // -------------------------------------------------------------- people ---
-    case 'oren':
-    case 'nell':
-      return npc(state, target, verb, item);
-  }
-  return fallback(verb, item);
-}
-
-function npc(state: GameState, id: NpcId, verb: Verb, item?: string): Command[] {
-  const npcPose = state.npcs[id].pose;
-  const getUp: Command[] = npcPose === 'stand' ? [] : [pose(id, 'stand')];
-  if (item) return [...toNpc(id), ...getUp, say(`line.${id}Item`, id)];
-  switch (verb) {
-    case 'look': return [say(npcPose === 'dead' ? `line.${id}LookDown` : `line.${id}Look${state.flags.kilnCold ? 'Cold' : ''}`)];
-    case 'talk': return [...toNpc(id), ...getUp, { type: 'dialogue', id }];
-    case 'crouch': return [...toNpc(id), ...getUp, say(`line.askCrouch.${id}`), pose(id, 'crouch'), say(`line.${id}Crouch`, id)];
-    case 'lie': return [...toNpc(id), ...getUp, say(`line.askLie.${id}`), say(`line.${id}Lie`, id), pose(id, 'dead')];
-    case 'stand':
-      if (npcPose === 'stand') return [say('line.alreadyStanding')];
-      return [...toNpc(id), say('line.askStand'), pose(id, 'stand'), say(`line.${id}Stand`, id)];
-  }
-  return fallback(verb, item);
+  const commands = applyRules(RULES, ROOMS, state, verb, target, item) ?? fallback(verb, item);
+  return verb === 'look' && !item ? cycleLook(state, target, commands, VARIED_LOOKS) : commands;
 }
 
 const NPC_KEYS = ['Item', 'Look', 'LookCold', 'LookDown', 'Crouch', 'Lie', 'Stand'];

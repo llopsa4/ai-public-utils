@@ -105,7 +105,7 @@ p('- yellow: clickable things (purple: hidden secrets) with their ids; blue dots
 p('- pink: where Mara enters the room; orange crosses: objects drawn over the room (their foot point); white dots: story characters\' feet; small green dots: background people\'s stations');
 p('- cyan dashed: walk-behind pieces (see below); white dashed: the hanging name board');
 p();
-p('A new painting should put the things on the list where the reference image shows them, or the positions in `src/content/rooms.ts` must be moved to match the new painting (hotspot polygons, `walkTo`, the walk area, entries, objects, foreground pieces, `look` effects, crowd stations in `src/content/crowd.ts`). `npm test` checks that the walk area, approach points and stations stay consistent.');
+p('A new painting should put the things on the list where the reference image shows them, or the positions in `src/chapters/<chapter>/rooms.ts` must be moved to match the new painting (hotspot polygons, `walkTo`, the walk area, entries, objects, foreground pieces, `look` effects, crowd stations in `src/chapters/<chapter>/crowd.ts`). `npm test` checks that the walk area, approach points and stations stay consistent.');
 p();
 for (const room of Object.values(ROOMS)) {
   const file = ROOM_FILES[room.background];

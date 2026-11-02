@@ -54,8 +54,9 @@ Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, 
 
 | Path | Contents |
 | --- | --- |
-| `src/engine/` | Pure, Phaser-free logic: types, geometry, pathfinding (visibility graph + A*), state, save files, dialogue runner, i18n |
-| `src/content/` | Rooms (walk polygons, hotspots, objects, entries), interactions, dialogue trees, `strings/en.json` |
+| `src/engine/` | Pure, Phaser-free logic: types, geometry, pathfinding (visibility graph + A*), state, save files, dialogue runner, click rules (`rules.ts`), story rules (`story.ts`), i18n |
+| `src/chapters/` | One folder per chapter behind the `Chapter` interface (`types.ts`, registry in `index.ts`). `ch1/`: rooms, click rules (`interactions.ts`), story rules (`story.ts`), dialogue trees, crowds, the fight, objectives, flags and `strings.en.json` |
+| `src/content/` | What every chapter shares: Mara's kit (`kit.ts`), the interface strings (`strings/en.json`), art lists |
 | `src/game/` | Phaser scenes, the `Actor` (pose/walk/blink/task poses), the background people (`Crowd`), room name boards (`sign.ts`), asset list, session |
 | `src/ui/` | DOM interface over the canvas: dialogue panel, action ring, choices, hotspot labels, satchel, menu, notebook, history, settings, end card |
 | `src/audio/` | Web Audio synthesizer for ambience, effects, footsteps per floor surface, and a generative score per room mood (no sound files) |
@@ -75,9 +76,9 @@ The world is 640×360 logical units. The art and the canvas are 2× that (1280×
 - `art/icons.mjs`: the drawn 24×24 action-ring icons.
 - `npm run webp` (`art/webp.mjs`, sharp): WebP copies of the rooms, foreground cut-outs and background people's sheets, which are what the game loads.
 - Outputs are palette-indexed PNGs (`art/png.mjs`), plus the WebP rooms. Rooms, Oren, Nell and the lit gauntlet load the first time they are needed, and the background people load in the background once play starts; `scripts/verify-build.mjs` enforces a size budget (3.6 MB total, 1.75 MB counted before the title screen), and `npm run e2e` measures the real first load (under 1 MB as GitHub Pages serves it).
-- Background people live in `CROWDS` in `src/content/crowd.ts`, by room id: stations, exits, routines per mood (warm, alarm, cold), held things and line counts; the routine logic is `src/engine/crowd.ts` (pure, unit-tested) and the on-screen behaviour is `src/game/Crowd.ts`. Stations must stay clear of the spots Mara walks to (a test checks this).
+- Background people live in `CROWDS` in `src/chapters/ch1/crowd.ts`, by room id: stations, exits, routines per mood (warm, alarm, cold), held things and line counts; the routine logic is `src/engine/crowd.ts` (pure, unit-tested) and the on-screen behaviour is `src/game/Crowd.ts`. Stations must stay clear of the spots Mara walks to (a test checks this).
 - A room's `sign` (hook point, rope length, board size, `wood` or `iron`) hangs its name (`room.<id>` in `en.json`); the board is painted in code in `src/game/sign.ts`.
-- Rooms can declare `foreground` cut-outs (drawn in front of characters standing behind them), `light` (character tint and depth dimming) and `ambient` (particles and flickering glows) in `src/content/rooms.ts`.
+- Rooms can declare `foreground` cut-outs (drawn in front of characters standing behind them), `light` (character tint and depth dimming) and `ambient` (particles and flickering glows) in `src/chapters/ch1/rooms.ts`.
 
 Character sheets follow the Aseprite/LibreSprite JSON-array format with the tags `stand_down`, `blink_down`, `stand_side`, `blink_side`, `stand_up`, `walk_down`, `walk_side`, `walk_up` (six frames each, plants on frames 0 and 3), `crouch`, `dead` and optionally `fidget`. Frames are 256×256, anchored bottom-centre at the feet, and side frames face right. Hand-made sheets with the same tags can replace any of them.
 
