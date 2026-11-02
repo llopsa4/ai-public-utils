@@ -45,7 +45,9 @@ export interface ExtraDef {
   talk: LineCounts;
   chat: LineCounts;
   /** Flag set the first time Mara talks to them (the notebook counts the people met). */
-  met: (typeof MET_FLAGS)[number];
+  met?: (typeof MET_FLAGS)[number];
+  /** Talking opens the merchant's stall after their line. */
+  shop?: boolean;
   /** Kids tag along a few steps when Mara walks past. */
   curious?: boolean;
   /** How many lines they may say on their way out (`line.<id>.leaving.n`). */
@@ -166,8 +168,26 @@ const FIRING_HOUSE: CrowdDef = {
   ],
 };
 
+// ------------------------------------------------------------------ the ashways' peddler ---
+const ASHWAYS: CrowdDef = {
+  // Near the way back, out of the way of the valve and the sweeper.
+  stations: byId([
+    st('stall', 112, 296, 'left', 'stand', [8000, 16000]),
+    st('stall2', 128, 318, 'right', 'stand', [5000, 9000]),
+  ]),
+  exits: {},
+  wander: { x: 100, y: 290, w: 40, h: 30 },
+  extras: [
+    {
+      id: 'extra-merchant', sheet: 'extra-merchant', body: 0.95, speed: 0.6, color: '#c8d890', shop: true,
+      routines: { warm: { stations: ['stall', 'stall2'] }, cold: { stations: ['stall', 'stall2'] } },
+      talk: { warm: 3, cold: 1 }, chat: { warm: 2, cold: 1 },
+    },
+  ],
+};
+
 /** Rooms with background people, by room id. */
-export const CROWDS: Record<string, CrowdDef> = { maraRoom: HALL, firingHouse: FIRING_HOUSE };
+export const CROWDS: Record<string, CrowdDef> = { maraRoom: HALL, firingHouse: FIRING_HOUSE, ashways: ASHWAYS };
 
 /** Everyone, in every room. */
 export const EXTRAS: ExtraDef[] = Object.values(CROWDS).flatMap(c => c.extras);

@@ -161,6 +161,7 @@ Tags (the frames each one plays):
 | `extra-tally` (ships as WebP) | background person (tally) | 13 tags | 1280×768, 13 frames |
 | `extra-runner` (ships as WebP) | background person (runner) | 13 tags | 1280×768, 13 frames |
 | `extra-kid` (ships as WebP) | background person (kid) | 13 tags | 1280×768, 13 frames |
+| `extra-merchant` (ships as WebP) | background person (merchant) | 13 tags | 1280×768, 13 frames |
 
 Mara has two sheets: before and after the ember cell is fitted to his gauntlet (unlit and glowing).
 

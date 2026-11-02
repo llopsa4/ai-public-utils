@@ -499,7 +499,9 @@ export class Ui {
     const status = document.createElement('p');
     status.className = 'shop-note';
     status.setAttribute('role', 'status');
-    status.textContent = note || (bag.tonics >= TONIC.max ? t('ui.shopFull', { max: String(TONIC.max) }) : bag.salvage < TONIC.price ? t('ui.shopPoor') : '');
+    // What just happened, then why another can't be bought (if so).
+    const limit = bag.tonics >= TONIC.max ? t('ui.shopFull', { max: String(TONIC.max) }) : bag.salvage < TONIC.price ? t('ui.shopPoor') : '';
+    status.textContent = [note, limit].filter((s, i, all) => s && all.indexOf(s) === i).join(' ');
     body.replaceChildren(item, buy, have, status);
   }
 

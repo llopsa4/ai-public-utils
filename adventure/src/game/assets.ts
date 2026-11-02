@@ -19,6 +19,8 @@ import extraRunnerJson from '../../art/src/characters/extra-runner.json';
 import extraRunnerPng from '../../art/src/characters/extra-runner.webp';
 import extraHoistJson from '../../art/src/characters/extra-hoist.json';
 import extraHoistPng from '../../art/src/characters/extra-hoist.webp';
+import extraMerchantJson from '../../art/src/characters/extra-merchant.json';
+import extraMerchantPng from '../../art/src/characters/extra-merchant.webp';
 import extraKidJson from '../../art/src/characters/extra-kid.json';
 import extraKidPng from '../../art/src/characters/extra-kid.webp';
 import notebookJson from '../../art/src/objects/notebook.json';
@@ -67,6 +69,7 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   'extra-runner': { png: extraRunnerPng, json: extraRunnerJson },
   'extra-hoist': { png: extraHoistPng, json: extraHoistJson },
   'extra-kid': { png: extraKidPng, json: extraKidJson },
+  'extra-merchant': { png: extraMerchantPng, json: extraMerchantJson },
 };
 
 /** Sheets loaded only when a room needs them (the rest load at boot): saves ~550 KB before the title. */

@@ -611,5 +611,16 @@
   "ui.shopHave": "You have {salvage} salvage and {tonics} of {max} tonics.",
   "ui.shopBought": "Bought a Kiln Tonic.",
   "ui.shopFull": "Mara can't carry more than {max}.",
-  "ui.shopPoor": "Not enough salvage."
+  "ui.shopPoor": "Not enough salvage.",
+  "name.extra-merchant": "Corvin, a peddler",
+  "speaker.extra-merchant": "Corvin",
+  "line.extra-merchant.look": "A peddler with a pack of clinking bottles, waiting where the road starts. Waiting for anyone leaving.",
+  "line.extra-merchant.lookCold": "The peddler again, stamping warmth into his feet.",
+  "line.extra-merchant.talk.1": "Cold back there, is it? Then you're leaving. Everyone leaving buys a tonic. The ones who come back bought two.",
+  "line.extra-merchant.talk.2": "Kiln Tonic: bitter as ash, but it puts the heat back in you when a fight goes wrong.",
+  "line.extra-merchant.talk.3": "Salvage only. Coins don't keep out here; salvage always finds a use.",
+  "line.extra-merchant.talkCold.1": "Tonics, for the road.",
+  "line.extra-merchant.chat.1": "Tonics! Warm in the belly!",
+  "line.extra-merchant.chat.2": "Long road ahead, friend.",
+  "line.extra-merchant.chatCold.1": "Tonics..."
 }

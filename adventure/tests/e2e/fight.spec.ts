@@ -88,3 +88,45 @@ test('falling in the fight is not a game over: it starts again with a hint', asy
   expect(after.hero).toBeGreaterThanOrEqual(36);
   expect(errors, errors.join('\n')).toEqual([]);
 });
+
+test('the peddler in the ashways sells tonics for salvage, and a tonic heals in a fight', async ({ page }) => {
+  const errors: string[] = [];
+  await open(page, errors);
+  await startNewGame(page);
+  await page.evaluate(() => {
+    const s = (window as any).adventure.session;
+    const st = structuredClone(s.state);
+    st.room = 'ashways';
+    st.hero = { x: 300, y: 300, face: 'left', pose: 'stand' };
+    st.flags = { hasGauntlet: true, hasNotebook: true, latchFixed: true, alarm: true, kilnCold: true, fought: true, gearChecked: true };
+    st.inventory = ['gauntlet', 'notebook', 'regulator'];
+    st.bag = { salvage: 12, materials: { 'pressure-coil': 1 }, tonics: 0 };
+    s.replaceState(st);
+  });
+  await idle(page);
+  await expect.poll(() => page.evaluate(() => (window as any).adventure.session.scene.crowd?.visible().length ?? 0), { timeout: 15_000 }).toBe(1);
+  // Click the peddler, then Talk: his line, then his stall.
+  const at = await page.evaluate(() => {
+    const crowd = (window as any).adventure.session.scene.crowd;
+    const m = crowd.visible()[0];
+    crowd.hold(m);
+    const b = m.actor.hitBox();
+    return { x: b.centerX, y: b.centerY };
+  });
+  const canvas = page.locator('#game canvas');
+  const box = (await canvas.boundingBox())!;
+  await canvas.click({ position: { x: (at.x / 640) * box.width, y: (at.y / 360) * box.height } });
+  await page.locator('.verb[data-verb="talk"]').click();
+  await expect.poll(async () => {
+    await page.evaluate(() => (window as any).adventure.session.ui.skip());
+    return page.locator('#shop[open]').count();
+  }, { timeout: 60_000, intervals: [300] }).toBe(1);
+  await page.locator('#shop-buy').click();
+  await page.locator('#shop-buy').click();
+  await expect(page.locator('#shop-buy')).toBeDisabled(); // 2 salvage left
+  await expect(page.locator('.shop-note')).toContainText('Not enough salvage');
+  await page.locator('#shop .dialog-close').click();
+  const bag = await page.evaluate(() => (window as any).adventure.session.state.bag);
+  expect(bag).toEqual({ salvage: 2, materials: { 'pressure-coil': 1 }, tonics: 2 });
+  expect(errors, errors.join('\n')).toEqual([]);
+});

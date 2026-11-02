@@ -336,7 +336,8 @@ export class RoomScene extends Phaser.Scene {
     for (const e of EXTRAS) this.loadLazySheet(e.sheet);
     for (const [id, actor] of this.actors) if (id !== 'hero') { this.scheduleFidget(actor); this.scheduleGlance(actor); }
     // Voices and work noises where people are about.
-    sound.crowd(this.crowd ? (this.room.id === 'maraRoom' ? 1 : 0.55) * (this.isCold() ? 0.45 : 1) : 0);
+    const murmur: Record<string, number> = { maraRoom: 1, firingHouse: 0.55 };
+    sound.crowd((murmur[this.room.id] ?? 0) * (this.isCold() ? 0.45 : 1));
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => sound.crowd(0));
 
     this.session.ui.setHover('');
@@ -478,10 +479,12 @@ export class RoomScene extends Phaser.Scene {
       if (verb === 'look') { void this.runScript([{ type: 'say', actor: 'hero', text: crowd.lookLine(m) }]); return; }
       crowd.hold(m);
       const spot = crowd.talkSpot(m);
+      const met = m.def.met;
       void this.runScript([
         { type: 'walk', to: spot.at, face: spot.face },
         { type: 'say', actor: m.def.id, text: crowd.nextLine(m) },
-        ...(this.session.state.flags[m.def.met] ? [] : [{ type: 'setFlag', flag: m.def.met, value: true } as Command]),
+        ...(!met || this.session.state.flags[met] ? [] : [{ type: 'setFlag', flag: met, value: true } as Command]),
+        ...(m.def.shop ? [{ type: 'shop' } as Command, { type: 'setFlag', flag: 'metMerchant', value: true } as Command] : []),
       ]).finally(() => crowd.release(m));
     });
   }

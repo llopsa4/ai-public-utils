@@ -319,6 +319,8 @@ const EXTRAS = {
   'extra-hauler': { base: 'mara', height: 224, hue: 0, sat: 0.55, light: 0.7, skin: 0.62, noArm: true, headgear: { kind: 'kerchief', color: [140, 60, 44] } },
   'extra-runner': { base: 'mara', height: 150, hue: 340, sat: 0.65, light: 0.95, skin: 1.05, noArm: true, headgear: { kind: 'cap', color: [70, 84, 104] } },
   'extra-hoist': { base: 'nell', height: 222, hue: 150, sat: 0.35, light: 0.85, skin: 1.12, headgear: { kind: 'kerchief', color: [70, 100, 84] } },
+  // The peddler in the ashways (sells Kiln Tonics).
+  'extra-merchant': { base: 'oren', height: 214, hue: 120, sat: 0.35, light: 0.78, skin: 0.85, headgear: { kind: 'hood', color: [64, 56, 46] } },
   // A firing-house kid: Nell's body, small, the shield now a board carried like a toy shield.
   'extra-kid': { base: 'nell', height: 146, hue: 200, sat: 0.55, light: 1.0, skin: 0.9, headgear: { kind: 'cap', color: [120, 70, 50] } },
 };

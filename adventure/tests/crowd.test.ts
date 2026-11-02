@@ -10,8 +10,10 @@ import { WalkArea } from '../src/engine/pathfinding';
 
 const HALL = CROWDS.maraRoom;
 
-test('crowds are in the kiln hall (four workers) and the firing house (two kids)', () => {
-  assert.deepEqual(Object.keys(CROWDS).sort(), ['firingHouse', 'maraRoom']);
+test('crowds are in the kiln hall (four workers), the firing house (two kids) and the ashways (the peddler)', () => {
+  assert.deepEqual(Object.keys(CROWDS).sort(), ['ashways', 'firingHouse', 'maraRoom']);
+  assert.equal(CROWDS.ashways.extras.length, 1);
+  assert.ok(CROWDS.ashways.extras[0].shop);
   assert.equal(CROWDS.maraRoom.extras.length, 4);
   assert.equal(CROWDS.firingHouse.extras.length, 2);
   assert.equal(new Set(EXTRAS.map(e => e.id)).size, EXTRAS.length, 'nobody is in two rooms');
@@ -127,7 +129,7 @@ test('a schedule switches routine when the kiln goes cold, and can leave for goo
 });
 
 test('each background person has their own "met" flag, counted in the notebook and accepted by saves', () => {
-  assert.deepEqual(EXTRAS.map(e => e.met).sort(), [...MET_FLAGS].sort());
+  assert.deepEqual(EXTRAS.map(e => e.met).filter(Boolean).sort(), [...MET_FLAGS].sort());
   for (const f of MET_FLAGS) assert.ok((FLAGS as readonly string[]).includes(f));
   for (const key of ['ui.met', 'ui.metFound']) assert.ok(TABLES.en[key]);
 });

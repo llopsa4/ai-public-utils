@@ -30,7 +30,7 @@ for (const room of ['tent', 'mara-room', 'firing-house', 'gallery', 'ashways', '
   if (room !== 'tent') assert.ok(!has(room, 'png'), `PNG copy of ${room} shipped`);
 }
 // Background people (placeholders) ship as WebP only.
-for (const extra of ['extra-stoker', 'extra-tally', 'extra-hauler', 'extra-runner', 'extra-hoist', 'extra-kid']) {
+for (const extra of ['extra-stoker', 'extra-tally', 'extra-hauler', 'extra-runner', 'extra-hoist', 'extra-kid', 'extra-merchant']) {
   assert.ok(has(extra, 'webp'), `missing WebP: ${extra}`);
   assert.ok(!has(extra, 'png'), `PNG copy of ${extra} shipped`);
 }
