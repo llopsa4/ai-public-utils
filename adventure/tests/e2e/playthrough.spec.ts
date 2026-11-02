@@ -1,6 +1,6 @@
 import { gzipSync } from 'node:zlib';
 import { expect, test } from '@playwright/test';
-import { act, idle, open, state } from './helpers';
+import { act, idle, open, state, startNewGame } from './helpers';
 
 test('the whole scene plays in the browser, from the title screen to "To be continued"', async ({ page }) => {
   const errors: string[] = [];
@@ -22,6 +22,18 @@ test('the whole scene plays in the browser, from the title screen to "To be cont
 
   // A real click on the title screen, then a real click on the floor.
   await page.getByRole('button', { name: 'New game' }).click();
+  // The opening: lines of context over black, one per click, then the first room fades in.
+  const intro = page.locator('#intro');
+  await expect(intro).toBeVisible();
+  await expect(page.locator('#intro-text p')).toHaveCount(1, { timeout: 10_000 });
+  await expect(page.locator('#intro-text p').first()).toContainText('ash and wind');
+  for (let n = 2; n <= 4; n++) {
+    await intro.click({ position: { x: 40, y: 40 } });
+    await expect(page.locator('#intro-text p')).toHaveCount(n);
+  }
+  await expect(page.locator('#intro-more')).toHaveClass(/in/, { timeout: 10_000 });
+  await intro.click({ position: { x: 40, y: 40 } });
+  await expect(intro).toBeHidden({ timeout: 10_000 });
   await idle(page);
   expect((await state(page)).room).toBe('tent');
   const before = await page.evaluate(() => ({ ...(window as any).adventure.session.state.hero }));
@@ -79,7 +91,7 @@ test('the whole scene plays in the browser, from the title screen to "To be cont
 test('keyboard play: Tab focuses things in the room and Enter opens the action ring', async ({ page }) => {
   const errors: string[] = [];
   await open(page, errors);
-  await page.getByRole('button', { name: 'New game' }).click();
+  await startNewGame(page);
   await idle(page);
   await page.evaluate(() => (document.activeElement as HTMLElement | null)?.blur());
   await page.keyboard.press('Tab');
@@ -99,7 +111,7 @@ for (const quality of ['high', 'low'] as const) {
     const errors: string[] = [];
     await page.addInitScript(q => localStorage.setItem('cinderfold.settings', JSON.stringify({ visualQuality: q })), quality);
     await open(page, errors, { clear: false });
-    await page.getByRole('button', { name: 'New game' }).click();
+    await startNewGame(page);
     await idle(page);
     for (const room of ['tent', 'maraRoom', 'firingHouse', 'gallery', 'ashways']) {
       await page.evaluate(r => {

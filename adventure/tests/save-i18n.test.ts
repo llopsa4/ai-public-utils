@@ -79,6 +79,7 @@ test('every key used by the content exists', () => {
     ...VERBS.map(v => `verb.${v}`),
     ...Object.values(ROOMS).filter(r => r.sign).map(r => `room.${r.id}`),
     'name.hero', 'name.oren', 'name.nell', ...ITEMS.map(i => `name.${i}`),
+    'intro.1', 'intro.2', 'intro.3', 'intro.4',
     'ui.endTag', 'ui.endTitle', 'ui.endText', 'speaker.hero', 'speaker.oren', 'speaker.nell',
     'save.error.tooLarge', 'save.error.notJson', 'save.error.notSave', 'save.error.version', 'save.error.invalid',
   ];

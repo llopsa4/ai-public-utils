@@ -529,5 +529,12 @@
   "room.maraRoom": "The Kiln Hall",
   "room.firingHouse": "The Firing House",
   "room.gallery": "Regulator Gallery",
-  "room.ashways": "The Ashways"
+  "room.ashways": "The Ashways",
+  "ui.introLabel": "Before the story",
+  "ui.introMore": "Click to continue",
+  "ui.introSkip": "Skip",
+  "intro.1": "Beyond the walls the land is ash and wind. Little grows there, and the roads are long and empty.",
+  "intro.2": "Still, here and there, people hold on: around a fire, a well, a machine that still works. They patch what breaks, and they keep each other going.",
+  "intro.3": "Cinderfold is one of those places: a village built inside an old kiln, warm for as long as its fire burns.",
+  "intro.4": "Mara keeps its valves and carries its errands. This morning starts like any other."
 }

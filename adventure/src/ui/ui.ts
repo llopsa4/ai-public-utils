@@ -34,6 +34,8 @@ export interface UiHost {
   itemClicked(item: string, index: number): void;
   replaceState(state: GameState): void;
   newGame(): GameState;
+  /** Starts a new story after the opening (the first room fades in slowly). */
+  startStory(): void;
   /** Labels for everything interactive in the room, in world coordinates. */
   hotspotLabels(): { text: string; x: number; y: number }[];
   /** Title screen: load the autosave and start playing. */
@@ -81,7 +83,7 @@ export class Ui {
     $('menu-help').addEventListener('click', () => $<HTMLDialogElement>('help').showModal());
     $('menu-export').addEventListener('click', () => this.exportSave());
     $('menu-import').addEventListener('click', () => this.fileInput.click());
-    $('end-new').addEventListener('click', () => { this.hideEnd(); this.host.replaceState(this.host.newGame()); });
+    $('end-new').addEventListener('click', () => { this.hideEnd(); void this.newStory(); });
     $('menu-history').addEventListener('click', () => this.openHistory()); // stacks over the pause menu; Back returns to it
     $('menu-settings').addEventListener('click', () => this.openSettings());
     $('notebook-btn').addEventListener('click', () => this.openNotebook());
@@ -100,12 +102,12 @@ export class Ui {
     this.dialogue.addEventListener('pointerdown', () => this.skip());
     this.bindSettingsForm();
     $('menu-new').addEventListener('click', () => {
-      void this.confirm(t('ui.confirmNew')).then(yes => { if (yes) { this.menu.close(); this.host.replaceState(this.host.newGame()); } });
+      void this.confirm(t('ui.confirmNew')).then(yes => { if (yes) { this.menu.close(); void this.newStory(); } });
     });
     $('menu-title').addEventListener('click', () => { this.menu.close(); this.host.toTitle(); });
     $('title-continue').addEventListener('click', () => this.host.continueGame());
     $('title-new').addEventListener('click', () => {
-      const start = () => this.host.replaceState(this.host.newGame());
+      const start = () => void this.newStory();
       if (readAutosave().kind !== 'ok') { start(); return; }
       void this.confirm(t('ui.confirmNewTitle')).then(yes => { if (yes) start(); });
     });
@@ -115,6 +117,7 @@ export class Ui {
     this.fileInput.addEventListener('change', () => void this.importSave());
     this.menu.addEventListener('click', e => { if (e.target === this.menu) this.menu.close(); });
     window.addEventListener('keydown', e => {
+      if (this.introActive) return;
       // Keyboard play: with nothing else focused, Tab walks through the room before the bar buttons.
       const free = (document.activeElement === document.body || document.activeElement === null)
         && !this.anyDialogOpen() && !this.radialOpen && this.choices.hidden && $('title').hidden;
@@ -371,6 +374,83 @@ export class Ui {
       dialog.addEventListener('close', onClose);
       dialog.showModal();
       no.focus();
+    });
+  }
+
+  private introActive = false;
+
+  /**
+   * A new story: the screen fades slowly to black, a few lines of context appear one after
+   * another (click, Enter or Space for the next, Skip or Esc for all), then the game starts and
+   * its first room fades in slowly.
+   */
+  private async newStory(): Promise<void> {
+    if (this.introActive) return;
+    this.introActive = true;
+    this.setHover('');
+    await this.playIntro();
+    this.host.startStory();
+    this.introActive = false;
+    const intro = $('intro');
+    // The black fades away over the room's own slow fade-in; play can start at once.
+    intro.classList.add('leaving');
+    window.setTimeout(() => {
+      intro.style.setProperty('--intro-fade', '1.6s');
+      intro.classList.remove('shown');
+      window.setTimeout(() => { intro.hidden = true; intro.classList.remove('leaving'); }, settings().reducedMotion ? 0 : 1700);
+    }, 50);
+  }
+
+  private playIntro(): Promise<void> {
+    const intro = $('intro'), text = $('intro-text'), more = $('intro-more');
+    const calm = settings().reducedMotion;
+    const lines = [1, 2, 3, 4].map(n => t(`intro.${n}`));
+    text.replaceChildren();
+    text.classList.remove('out');
+    more.classList.remove('in');
+    intro.style.setProperty('--intro-fade', '1.8s');
+    intro.hidden = false;
+    void intro.offsetWidth; // start the fade from transparent
+    intro.classList.add('shown');
+    return new Promise(resolve => {
+      let shown = 0, timer = 0, done = false;
+      const wait = (ms: number, then: () => void) => { window.clearTimeout(timer); timer = window.setTimeout(then, calm ? Math.min(ms, 400) : ms); };
+      const finish = () => {
+        if (done) return;
+        done = true;
+        window.clearTimeout(timer);
+        intro.removeEventListener('click', onClick);
+        window.removeEventListener('keydown', onKey, true);
+        $('intro-skip').removeEventListener('click', onSkip);
+        more.classList.remove('in');
+        text.classList.add('out');
+        window.setTimeout(resolve, calm ? 0 : 1300);
+      };
+      const next = () => {
+        if (done) return;
+        if (shown >= lines.length) { finish(); return; }
+        for (const p of text.children) p.classList.add('past');
+        const p = document.createElement('p');
+        p.textContent = lines[shown++];
+        text.append(p);
+        void p.offsetWidth;
+        p.classList.add('in');
+        // Each line stays for its reading time unless the player moves on; the last one waits.
+        if (shown === lines.length) wait(1500, () => more.classList.add('in'));
+        else wait(Math.max(4200, lineDuration(p.textContent, settings().textSpeed) * 1.2), next);
+      };
+      const onClick = (e: Event) => { if (e.target !== $('intro-skip')) next(); };
+      const onSkip = (e: Event) => { e.stopPropagation(); finish(); };
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') { e.preventDefault(); finish(); }
+        else if ((e.key === 'Enter' || e.key === ' ') && document.activeElement !== $('intro-skip')) { e.preventDefault(); next(); }
+      };
+      intro.addEventListener('click', onClick);
+      $('intro-skip').addEventListener('click', onSkip);
+      window.addEventListener('keydown', onKey, true);
+      $<HTMLButtonElement>('intro-skip').focus({ preventScroll: true });
+      // The first line comes in once the screen is black.
+      wait(1900, next);
     });
   }
 

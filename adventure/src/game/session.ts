@@ -20,6 +20,8 @@ export class Session {
   onTitle = true;
   /** Entry Mara is walking in through after a room change (null on load / new game). */
   arrival: string | null = null;
+  /** The next room fades in slowly (a new story, after the opening). */
+  slowFadeIn = false;
   /** `?debug`: draw walk areas and hotspots. */
   readonly debug = new URLSearchParams(location.search).has('debug');
   readonly ui: Ui;
@@ -35,6 +37,7 @@ export class Session {
       replaceState: state => this.replaceState(state),
       hotspotLabels: () => (this.onTitle ? [] : this.scene?.hotspotLabels() ?? []),
       newGame,
+      startStory: () => { this.slowFadeIn = true; this.replaceState(newGame()); },
       continueGame: () => this.continueGame(),
       toTitle: () => this.toTitle(),
       cycleFocus: direction => (!this.onTitle && this.scene?.cycleFocus(direction)) ?? false,

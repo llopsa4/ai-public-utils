@@ -6,8 +6,8 @@
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#120d14">
   <title>Cinderfold</title>
-  <script type="module" crossorigin src="./build/index-C6Y3fBYt.js"></script>
-  <link rel="stylesheet" crossorigin href="./build/index-D11lcYXQ.css">
+  <script type="module" crossorigin src="./build/index-CDFNX4Cj.js"></script>
+  <link rel="stylesheet" crossorigin href="./build/index-qC9DgBux.css">
 </head>
 <body>
   <main id="app">
@@ -58,6 +58,14 @@
       <button id="menu-btn" class="btn" type="button" data-i18n="ui.menu">Menu</button>
     </nav>
   </main>
+
+  <!-- The opening: a few lines of context over black before a new story starts. -->
+  <section id="intro" hidden aria-live="polite" aria-labelledby="intro-label">
+    <h1 id="intro-label" class="visually-hidden" data-i18n="ui.introLabel">Before the story</h1>
+    <div id="intro-text"></div>
+    <p id="intro-more" data-i18n="ui.introMore">Click to continue</p>
+    <button id="intro-skip" type="button" class="btn" data-i18n="ui.introSkip">Skip</button>
+  </section>
 
   <!-- Pause menu: a game menu, not a form. -->
   <dialog id="menu" class="panel" aria-labelledby="menu-heading">

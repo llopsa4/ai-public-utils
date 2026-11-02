@@ -50,3 +50,13 @@ export async function act(page: Page, verb: string, target: string, item?: strin
 export async function state(page: Page): Promise<{ room: string; flags: Record<string, boolean>; inventory: string[] }> {
   return page.evaluate(() => structuredClone((window as any).adventure.session.state));
 }
+
+/** Title screen → New game → skips the opening, and waits for the first room. */
+export async function startNewGame(page: Page, tap = false): Promise<void> {
+  const button = page.getByRole('button', { name: 'New game' });
+  if (tap) await button.tap(); else await button.click();
+  const skip = page.locator('#intro-skip');
+  await expect(skip).toBeVisible();
+  if (tap) await skip.tap(); else await skip.click();
+  await idle(page);
+}

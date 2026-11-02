@@ -1,11 +1,11 @@
 import { expect, test } from '@playwright/test';
-import { act, idle, open, state } from './helpers';
+import { act, idle, open, state, startNewGame } from './helpers';
 
 test('progress is autosaved: reload, Continue, and the game resumes where it was', async ({ page }) => {
   const errors: string[] = [];
   await open(page, errors);
   await expect(page.getByRole('button', { name: 'Continue' })).toBeHidden();
-  await page.getByRole('button', { name: 'New game' }).click();
+  await startNewGame(page);
   await act(page, 'take', 'rack');
   await act(page, 'go', 'tentFlap');
   await idle(page);

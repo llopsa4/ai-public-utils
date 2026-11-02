@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { idle, open } from './helpers';
+import { idle, open, startNewGame } from './helpers';
 
 type Snap = { id: string; x: number; y: number; task: string | null; away: boolean; gone: boolean; walking: boolean };
 
@@ -10,7 +10,7 @@ const snapshot = (page: Page): Promise<Snap[]> =>
 async function enterHall(page: Page, errors: string[], quality: 'high' | 'low' = 'high'): Promise<void> {
   await page.addInitScript(q => localStorage.setItem('cinderfold.settings', JSON.stringify({ visualQuality: q })), quality);
   await open(page, errors, { clear: false });
-  await page.getByRole('button', { name: 'New game' }).click();
+  await startNewGame(page);
   await idle(page);
   await page.evaluate(() => {
     const s = (window as any).adventure.session;
@@ -78,7 +78,7 @@ test('entering the hall after the kiln died: only the ones who stayed are there'
   const errors: string[] = [];
   await page.addInitScript(() => localStorage.setItem('cinderfold.settings', JSON.stringify({ visualQuality: 'low' })));
   await open(page, errors, { clear: false });
-  await page.getByRole('button', { name: 'New game' }).click();
+  await startNewGame(page);
   await idle(page);
   await page.evaluate(() => {
     const s = (window as any).adventure.session;
@@ -99,7 +99,7 @@ test('two kids play in the firing house and run to Nell when the alarm goes up',
   const errors: string[] = [];
   await page.addInitScript(() => localStorage.setItem('cinderfold.settings', JSON.stringify({ visualQuality: 'high' })));
   await open(page, errors, { clear: false });
-  await page.getByRole('button', { name: 'New game' }).click();
+  await startNewGame(page);
   await idle(page);
   await page.evaluate(() => {
     const s = (window as any).adventure.session;
@@ -121,7 +121,7 @@ test('coming back to a room shows its whole background (High quality)', async ({
   const errors: string[] = [];
   await page.addInitScript(() => localStorage.setItem('cinderfold.settings', JSON.stringify({ visualQuality: 'high' })));
   await open(page, errors, { clear: false });
-  await page.getByRole('button', { name: 'New game' }).click();
+  await startNewGame(page);
   await idle(page);
   const frame = () => page.evaluate(() => (window as any).adventure.session.scene.background.frame.name);
   for (const room of ['maraRoom', 'firingHouse', 'tent', 'maraRoom', 'firingHouse', 'tent']) {

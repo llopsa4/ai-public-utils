@@ -330,7 +330,8 @@ export class RoomScene extends Phaser.Scene {
     this.session.ui.setHover('');
     this.session.ui.setBusy(false);
     this.session.ui.renderInventory();
-    this.cameras.main.fadeIn(FADE_MS, 0, 0, 0);
+    this.cameras.main.fadeIn(this.session.slowFadeIn ? 1800 : FADE_MS, 0, 0, 0);
+    this.session.slowFadeIn = false;
     if (this.session.arrival) this.walkIn(this.session.arrival);
     else this.session.autosave();
     this.session.arrival = null;

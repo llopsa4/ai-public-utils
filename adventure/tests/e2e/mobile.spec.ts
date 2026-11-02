@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { idle, open } from './helpers';
+import { idle, open, startNewGame } from './helpers';
 
 test('a phone held upright is asked to turn sideways', async ({ page }) => {
   await page.goto('?debug');
@@ -11,7 +11,7 @@ test('on a phone held sideways the game fits, tap targets are large enough and t
   await page.setViewportSize({ width: 915, height: 412 });
   await open(page, errors);
   await expect(page.locator('#rotate')).toBeHidden();
-  await page.getByRole('button', { name: 'New game' }).tap();
+  await startNewGame(page, true);
   await idle(page);
   for (const id of ['#mute-btn', '#reveal-btn', '#notebook-btn', '#menu-btn']) {
     const box = (await page.locator(id).boundingBox())!;
