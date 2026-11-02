@@ -2,9 +2,8 @@ import { ROOMS } from '../content/rooms';
 import { FLAGS, ITEMS } from './state';
 import { NPC_IDS, type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
 
-export const SAVE_FORMAT = 'adventure-pilot-save';
-/** Version 2: Cinderfold (scene 1). Version 1 saves belonged to the engine pilot's hotel rooms. */
-export const SAVE_VERSION = 2;
+const SAVE_FORMAT = 'cinderfold-save';
+const SAVE_VERSION = 2;
 export const MAX_SAVE_BYTES = 64 * 1024;
 
 const FACINGS: Facing[] = ['down', 'up', 'left', 'right'];

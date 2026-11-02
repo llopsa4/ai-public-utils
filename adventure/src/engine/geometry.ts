@@ -40,17 +40,11 @@ export function segmentsCross(a: Point, b: Point, c: Point, d: Point): boolean {
   return ((d1 > EPS && d2 < -EPS) || (d1 < -EPS && d2 > EPS)) && ((d3 > EPS && d4 < -EPS) || (d3 < -EPS && d4 > EPS));
 }
 
-export function polygonBounds(poly: Polygon) {
-  const xs = poly.map(p => p.x), ys = poly.map(p => p.y);
-  return { minX: Math.min(...xs), minY: Math.min(...ys), maxX: Math.max(...xs), maxY: Math.max(...ys) };
-}
-
 export function conditionsHold(state: GameState, conditions: Condition[] | undefined): boolean {
   if (!conditions) return true;
   return conditions.every(c =>
     (c.flag === undefined || state.flags[c.flag] === true) &&
     (c.notFlag === undefined || state.flags[c.notFlag] !== true) &&
     (c.has === undefined || state.inventory.includes(c.has)) &&
-    (c.lacks === undefined || !state.inventory.includes(c.lacks)) &&
     (c.atLeast === undefined || c.atLeast.flags.filter(f => state.flags[f] === true).length >= c.atLeast.count));
 }

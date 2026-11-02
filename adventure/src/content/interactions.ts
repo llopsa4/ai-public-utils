@@ -9,7 +9,7 @@ export const ACTOR_VERBS: Record<ActorId, Verb[]> = {
 };
 
 /** Where Mara stands to talk to each character. */
-export const TALK_SPOTS: Record<NpcId, { at: Point; face: 'left' | 'right'; npcFace: 'left' | 'right' }> = {
+const TALK_SPOTS: Record<NpcId, { at: Point; face: 'left' | 'right'; npcFace: 'left' | 'right' }> = {
   oren: { at: { x: 470, y: 304 }, face: 'right', npcFace: 'left' },
   nell: { at: { x: 346, y: 298 }, face: 'left', npcFace: 'right' },
 };

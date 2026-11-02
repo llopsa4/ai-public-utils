@@ -128,6 +128,5 @@ export const ROOMS: Record<string, RoomDef> = {
   },
 };
 
-export const ROOM_IDS = Object.keys(ROOMS);
 export const START_ROOM = 'maraRoom';
 export const START_ENTRY = 'start';

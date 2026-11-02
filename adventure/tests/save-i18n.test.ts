@@ -38,7 +38,7 @@ test('invalid saves are rejected with a reason', () => {
     [variant(d => { d.state.flags.doorOpen = 'yes'; }), 'save.error.invalid'],
     [variant(d => { d.state.inventory = ['gauntlet', 'gauntlet']; }), 'save.error.invalid'],
     [variant(d => { d.version = 1; }), 'save.error.version'],
-    [variant(d => { d.state.npcs.keeper = { pose: 'stand', face: 'left' }; }), 'save.error.invalid'],
+    [variant(d => { d.state.npcs.stranger = { pose: 'stand', face: 'left' }; }), 'save.error.invalid'],
     [variant(d => { delete d.state.npcs.nell; }), 'save.error.invalid'],
     [variant(d => { d.state.npcs.nell.pose = 'sleeping'; }), 'save.error.invalid'],
     [variant(d => { d.state.inventory = ['crown']; }), 'save.error.invalid'],

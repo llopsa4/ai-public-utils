@@ -20,7 +20,6 @@ export interface Condition {
   flag?: string;
   notFlag?: string;
   has?: string;
-  lacks?: string;
   atLeast?: { count: number; flags: string[] };
 }
 
