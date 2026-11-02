@@ -1,3 +1,5 @@
+import type { Loadout } from '../combat/types';
+
 export interface Point {
   x: number;
   y: number;
@@ -156,6 +158,22 @@ export interface RoomLook {
   reflective?: { polygon: Polygon; alpha: number };
 }
 
+/** Mara's fighting kit: health, MP and gear (the card rules live in src/combat). */
+export interface Kit {
+  hp: number;
+  mp: number;
+  equipment: Loadout;
+  /** Gear Mara can choose from. */
+  owned: string[];
+}
+
+/** What Mara carries besides story items: salvage (money), materials and Kiln Tonics. */
+export interface Bag {
+  salvage: number;
+  materials: Record<string, number>;
+  tonics: number;
+}
+
 export interface GameState {
   room: string;
   hero: { x: number; y: number } & ActorState;
@@ -164,6 +182,8 @@ export interface GameState {
   inventory: string[];
   /** How many times each target was looked at (repeated looks cycle through its lines). */
   looks: Record<string, number>;
+  kit: Kit;
+  bag: Bag;
 }
 
 /** One step of a scripted interaction. The scene plays them in order. */
@@ -185,4 +205,12 @@ export type Command =
   | { type: 'handle'; target: string }
   /** Counts a look at a target, so repeated looks cycle through their lines. */
   | { type: 'looked'; id: string }
+  /** A fight (shatter transition, battle, return). Continues the script once it is won. */
+  | { type: 'fight'; id: string }
+  /** Opens the gear menu and waits for it to close. */
+  | { type: 'gear' }
+  /** Oren's spares become Mara's to choose from. */
+  | { type: 'giveSpares' }
+  /** Opens the merchant's shop and waits for it to close. */
+  | { type: 'shop' }
   | { type: 'end' };

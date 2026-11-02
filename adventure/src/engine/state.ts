@@ -1,4 +1,5 @@
 import { ROOMS, START_ENTRY, START_ROOM } from '../content/rooms';
+import { newBag, newKit, giveSpares } from './kit';
 import type { ActorId, ActorState, Command, GameState } from './types';
 
 export const FLAGS = [
@@ -12,6 +13,8 @@ export const FLAGS = [
   'valveVented', 'sawSweeper',
   // optional secrets (none gate progress)
   'secretTally', 'secretChalk', 'secretSign', 'secretRail',
+  // the first fight and what follows it
+  'fought', 'gearChecked', 'metMerchant',
   // optional: background people Mara has talked to
   'metHollis', 'metWren', 'metDace', 'metAnsel', 'metPip', 'metBea',
 ] as const;
@@ -34,6 +37,8 @@ export function newGame(): GameState {
     flags: {},
     inventory: [],
     looks: {},
+    kit: newKit(),
+    bag: newBag(),
   };
 }
 
@@ -53,6 +58,9 @@ export function applyCommand(state: GameState, command: Command): void {
       break;
     case 'removeItem':
       state.inventory = state.inventory.filter(i => i !== command.item);
+      break;
+    case 'giveSpares':
+      giveSpares(state.kit);
       break;
     case 'pose':
       actorState(state, command.actor).pose = command.pose;

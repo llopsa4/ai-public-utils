@@ -1,0 +1,111 @@
+import { createBattle } from '../combat/combat';
+import { cardDefinition } from '../combat/cards';
+import { EQUIPMENT_SLOTS, deriveStats, withEquipment } from '../combat/equipment';
+import { EQUIPMENT } from '../combat/gear';
+import type { BattleState, BattleStats, EquipmentSlot } from '../combat/types';
+import {
+  ENCOUNTERS, HERO_MAX_HP, LOCKED_SLOTS, MAX_SALVAGE, OREN_SPARES, REWARDS, STARTING_EQUIPMENT, STARTING_OWNED, TONIC, TUTORIAL, maraProfile,
+} from '../content/combat';
+import type { Bag, GameState, Kit } from './types';
+
+/** Mara's fighting kit and bag at the start of a game (and for saves from before fights existed). */
+export function newKit(): Kit {
+  return { hp: HERO_MAX_HP, mp: maraProfile({ hp: 1, mp: 0, equipment: STARTING_EQUIPMENT }).maxMp, equipment: structuredClone(STARTING_EQUIPMENT), owned: [...STARTING_OWNED] };
+}
+export function newBag(): Bag {
+  return { salvage: 0, materials: {}, tonics: 0 };
+}
+
+/** The battle for an encounter, from Mara's current kit. The first fight is the guided one. */
+export function startBattle(state: GameState, encounterId: string, seed: number, guided: boolean): BattleState {
+  const profile = maraProfile(state.kit);
+  const battle = createBattle(profile, ENCOUNTERS[encounterId], seed);
+  if (!guided) return battle;
+  const card = (id: string) => ({ ...profile.deck.find(c => c.id === id)! });
+  battle.hand = TUTORIAL.hand.map(card);
+  // draw() takes from the end of the pile.
+  battle.draw = [...TUTORIAL.draws].reverse().map(card);
+  battle.discard = [];
+  battle.practice = { requiredCardId: TUTORIAL.steps[0].play ?? null };
+  return battle;
+}
+
+/** Ends a fight: health and MP carry over; a win pays out. */
+export function finishBattle(state: GameState, battle: BattleState, encounterId: string): void {
+  state.kit.hp = Math.max(1, battle.hero.hp);
+  state.kit.mp = battle.mp;
+  if (battle.outcome !== 'victory') return;
+  const reward = REWARDS[encounterId];
+  if (!reward) return;
+  state.bag.salvage = Math.min(MAX_SALVAGE, state.bag.salvage + reward.salvage);
+  for (const [id, n] of Object.entries(reward.materials)) state.bag.materials[id] = (state.bag.materials[id] ?? 0) + n;
+}
+
+/** Drinks a Kiln Tonic in a fight (costs no energy). Returns the same state if there is none or HP is full. */
+export function drinkTonic(battle: BattleState, bag: Bag): BattleState {
+  if (battle.outcome || bag.tonics <= 0 || battle.hero.hp >= battle.config.hero.maxHp) return battle;
+  bag.tonics--;
+  const next = structuredClone(battle);
+  next.hero.hp = Math.min(next.config.hero.maxHp, next.hero.hp + TONIC.heal);
+  next.revision++;
+  next.log.push(`Kiln Tonic: +${TONIC.heal} HP.`);
+  return next;
+}
+
+export type PurchaseResult = 'bought' | 'noSalvage' | 'full';
+export function buyTonic(bag: Bag): PurchaseResult {
+  if (bag.tonics >= TONIC.max) return 'full';
+  if (bag.salvage < TONIC.price) return 'noSalvage';
+  bag.salvage -= TONIC.price;
+  bag.tonics++;
+  return 'bought';
+}
+
+/** Oren's spares join the gear Mara can choose from. */
+export function giveSpares(kit: Kit): void {
+  for (const id of OREN_SPARES) if (!kit.owned.includes(id)) kit.owned.push(id);
+}
+
+export function isLocked(slot: EquipmentSlot): boolean {
+  return (LOCKED_SLOTS as readonly string[]).includes(slot);
+}
+
+/** Puts an owned item in its slot. False if it is not owned, not for that slot, or the slot is locked. */
+export function equip(kit: Kit, slot: EquipmentSlot, id: string): boolean {
+  const item = EQUIPMENT[id];
+  if (!item || item.slot !== slot || !kit.owned.includes(id) || isLocked(slot)) return false;
+  const profile = withEquipment(maraProfile(kit), { ...kit.equipment, [slot]: { id } });
+  kit.equipment = structuredClone(profile.equipment!);
+  kit.mp = profile.mp;
+  return true;
+}
+
+/** Stats with the current gear, and with one slot changed (for the before/after comparison). */
+export function statsWith(kit: Kit, slot?: EquipmentSlot, id?: string): BattleStats {
+  const equipment = slot && id ? { ...kit.equipment, [slot]: { id } } : kit.equipment;
+  return deriveStats(maraProfile({ ...kit, equipment }));
+}
+
+/** Owned items that fit a slot. */
+export function optionsFor(kit: Kit, slot: EquipmentSlot): string[] {
+  return kit.owned.filter(id => EQUIPMENT[id]?.slot === slot);
+}
+
+/** True if a saved kit only holds known, owned, correctly slotted gear and sane numbers. */
+export function validKit(kit: Kit): boolean {
+  if (!Number.isInteger(kit.hp) || kit.hp < 1 || kit.hp > HERO_MAX_HP) return false;
+  if (!kit.owned.every(id => Object.hasOwn(EQUIPMENT, id)) || new Set(kit.owned).size !== kit.owned.length) return false;
+  for (const slot of EQUIPMENT_SLOTS) {
+    const e = kit.equipment[slot];
+    if (!e || !Object.hasOwn(EQUIPMENT, e.id) || EQUIPMENT[e.id].slot !== slot || !kit.owned.includes(e.id) || e.upgraded) return false;
+  }
+  try {
+    const stats = deriveStats(maraProfile(kit));
+    return Number.isInteger(kit.mp) && kit.mp >= 0 && kit.mp <= stats.maxMp;
+  } catch {
+    return false;
+  }
+}
+
+/** The text of a card, for the battle UI. */
+export { cardDefinition };

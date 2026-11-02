@@ -933,6 +933,13 @@ export class RoomScene extends Phaser.Scene {
         this.scene.restart();
         return false;
       }
+      case 'giveSpares':
+        applyCommand(state, command);
+        return true;
+      case 'fight':
+      case 'gear':
+      case 'shop':
+        return true; // wired up with the battle scene, gear menu and shop
       case 'end':
         this.leaving = true;
         this.cameras.main.fadeOut(900, 0, 0, 0);

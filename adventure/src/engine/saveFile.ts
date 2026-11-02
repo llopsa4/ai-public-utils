@@ -1,11 +1,13 @@
 import { ROOMS } from '../content/rooms';
+import { MATERIALS, TONIC, MAX_SALVAGE } from '../content/combat';
+import { newBag, newKit, validKit } from './kit';
 import { FLAGS, ITEMS } from './state';
 import { NPC_IDS, type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
 
 const SAVE_FORMAT = 'cinderfold-save';
-/** Version 4: look counters (cycling lines) and secret flags. Version 3 saves still load. */
-const SAVE_VERSION = 4;
-const READABLE_VERSIONS = [3, 4];
+/** Version 5: Mara's kit (health, gear) and bag (salvage, materials, tonics). Versions 3 and 4 still load. */
+const SAVE_VERSION = 5;
+const READABLE_VERSIONS = [3, 4, 5];
 const MAX_LOOK_KEYS = 64;
 export const MAX_SAVE_BYTES = 64 * 1024;
 
@@ -86,5 +88,33 @@ export function parseSave(text: string): ImportResult {
     }
   }
 
-  return { ok: true, state: { room: s.room, hero: { x: hero.x, y: hero.y, ...heroPose }, npcs, flags, inventory, looks } };
+  // Kit and bag: absent before version 5 (a fresh kit and an empty bag).
+  const kit = newKit();
+  if (s.kit !== undefined) {
+    const k = s.kit;
+    if (!isObject(k) || !isObject(k.equipment) || !Array.isArray(k.owned) || k.owned.length > 32) return invalid;
+    const equipment = {} as Record<string, { id: string }>;
+    for (const slot of ['gauntlet', 'armor', 'utility']) {
+      const e = k.equipment[slot];
+      if (!isObject(e) || typeof e.id !== 'string' || (e.upgraded !== undefined && e.upgraded !== false)) return invalid;
+      equipment[slot] = { id: e.id };
+    }
+    if (!k.owned.every((id: unknown) => typeof id === 'string')) return invalid;
+    Object.assign(kit, { hp: k.hp, mp: k.mp, equipment, owned: [...k.owned] });
+    if (!validKit(kit)) return invalid;
+  }
+  const bag = newBag();
+  if (s.bag !== undefined) {
+    const b = s.bag;
+    const count = (n: unknown, max: number) => typeof n === 'number' && Number.isInteger(n) && n >= 0 && n <= max;
+    if (!isObject(b) || !count(b.salvage, MAX_SALVAGE) || !count(b.tonics, TONIC.max) || !isObject(b.materials)) return invalid;
+    for (const [id, n] of Object.entries(b.materials)) {
+      if (!Object.hasOwn(MATERIALS, id) || !count(n, 99)) return invalid;
+      if ((n as number) > 0) bag.materials[id] = n as number;
+    }
+    bag.salvage = b.salvage as number;
+    bag.tonics = b.tonics as number;
+  }
+
+  return { ok: true, state: { room: s.room, hero: { x: hero.x, y: hero.y, ...heroPose }, npcs, flags, inventory, looks, kit, bag } };
 }
