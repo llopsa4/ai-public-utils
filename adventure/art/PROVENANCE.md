@@ -4,8 +4,8 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 
 | Output | Source (FFCardGame/assets) | Script | Processing |
 | --- | --- | --- | --- |
-| `rooms/tent.png` (Mara's tent) | `opening/tempering-house.png` | `pixelate.mjs` | left crop 0,100 1250×703; canvas ceiling, side wall and doorway painted in the awning's sampled ochre; 128 colours |
-| `objects/tent.*` (the tent seen in the kiln hall) | `opening/tempering-house.png` (awning colour) | `pixelate.mjs` | drawn tent silhouette in the sampled cloth colour |
+| `rooms/tent.png` (Mara's tent) | `opening/tempering-house.png` | `pixelate.mjs` | left crop 0,100 1250×703; canvas ceiling, side wall and doorway painted in the awning's sampled ochre; 128 colours with ordered dither (no banding) |
+| `objects/tent.*` (the tent seen in the kiln hall) | `opening/tempering-house.png` (cloth over the workbench) | `pixelate.mjs` | the painted cloth mapped onto a tent silhouette (mirrored on the far slope, shaded by side), dark entrance and pole drawn |
 | `rooms/mara-room.png` (kiln hall) | `kiln-hall.png` | `pixelate.mjs` | 1280×720 area downscale, light grade, 96-colour palette |
 | `rooms/firing-house.png` | `opening/cinderfold.png` | `pixelate.mjs` | as above |
 | `rooms/gallery.png` | `opening/regulator-gallery.png` | `pixelate.mjs` | as above |

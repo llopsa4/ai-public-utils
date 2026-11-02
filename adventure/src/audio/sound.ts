@@ -2,7 +2,11 @@
  * All game sound, synthesized with Web Audio: no audio files, nothing to license or download.
  * The context starts on the first user gesture (browsers block audio before that).
  */
+import { Music, type MusicMood } from './music';
+
 export type Ambience = 'kiln' | 'cold' | 'wind' | 'none';
+/** What Mara is walking on: changes the footstep's filter, pitch and length. */
+export type Surface = 'stone' | 'metal' | 'ash';
 
 class Sound {
   private ctx: AudioContext | null = null;
@@ -12,7 +16,11 @@ class Sound {
   private ambienceKind: Ambience = 'none';
   private crackleTimer = 0;
   private volume = 0.7;
+  private musicVolume = 0.5;
   private muted = false;
+  private musicBus: GainNode | null = null;
+  private musicPlayer: Music | null = null;
+  private musicMood: MusicMood = 'none';
 
   /** Creates the audio context; call from a user gesture. Safe to call repeatedly. */
   unlock(): void {
@@ -22,6 +30,9 @@ class Sound {
     this.ctx = new Ctx();
     this.master = this.ctx.createGain();
     this.master.connect(this.ctx.destination);
+    this.musicBus = this.ctx.createGain();
+    this.musicBus.connect(this.ctx.destination);
+    this.musicPlayer = new Music(this.ctx, this.musicBus);
     this.applyVolume();
     const length = this.ctx.sampleRate * 2;
     this.noise = this.ctx.createBuffer(1, length, this.ctx.sampleRate);
@@ -30,16 +41,27 @@ class Sound {
     const wanted = this.ambienceKind;
     this.ambienceKind = 'none';
     this.ambience(wanted);
+    this.musicPlayer.play(this.musicMood);
   }
 
-  setVolume(volume: number, muted: boolean): void {
+  /** Effects (and ambience) volume, music volume, and mute for both. */
+  setVolume(volume: number, muted: boolean, musicVolume = this.musicVolume): void {
     this.volume = volume;
     this.muted = muted;
+    this.musicVolume = musicVolume;
     this.applyVolume();
   }
 
   private applyVolume(): void {
-    if (this.master && this.ctx) this.master.gain.setTargetAtTime(this.muted ? 0 : this.volume * 0.8, this.ctx.currentTime, 0.05);
+    if (!this.ctx) return;
+    this.master?.gain.setTargetAtTime(this.muted ? 0 : this.volume * 0.8, this.ctx.currentTime, 0.05);
+    this.musicBus?.gain.setTargetAtTime(this.muted ? 0 : this.musicVolume * 0.9, this.ctx.currentTime, 0.05);
+  }
+
+  /** The score for the current room; remembered until audio is unlocked. */
+  music(mood: MusicMood): void {
+    this.musicMood = mood;
+    this.musicPlayer?.play(mood);
   }
 
   private source(): AudioBufferSourceNode | null {
@@ -115,7 +137,22 @@ class Sound {
     }
   }
 
-  step(depth = 1): void { this.burst('lowpass', 500, 0.16 * depth, 0.004, 0.09); this.tone('sine', 110, 60, 0.05 * depth, 0.07); }
+  step(surface: Surface = 'stone', depth = 1): void {
+    const v = 0.85 + Math.random() * 0.3; // no two steps quite alike
+    switch (surface) {
+      case 'metal': // grating: a ringing tap
+        this.burst('bandpass', 1700 * v, 0.12 * depth, 0.002, 0.07, 5);
+        this.tone('triangle', 320 * v, 260 * v, 0.025 * depth, 0.16);
+        break;
+      case 'ash': // soft, crunchy and muffled
+        this.burst('lowpass', 320 * v, 0.14 * depth, 0.012, 0.16);
+        this.burst('highpass', 3800 * v, 0.03 * depth, 0.006, 0.08);
+        break;
+      default: // stone: a dull heel strike
+        this.burst('lowpass', 500 * v, 0.16 * depth, 0.004, 0.09);
+        this.tone('sine', 110 * v, 60, 0.05 * depth, 0.07);
+    }
+  }
   blip(): void { this.tone('sine', 660, 720, 0.05, 0.06); }
   choose(): void { this.tone('triangle', 880, 640, 0.06, 0.12); }
   pickup(): void { this.tone('triangle', 520, 1040, 0.07, 0.18); this.tone('sine', 1040, 1300, 0.03, 0.2, 0.08); }

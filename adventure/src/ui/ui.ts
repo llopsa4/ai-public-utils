@@ -293,6 +293,7 @@ export class Ui {
     const s = settings();
     (form.elements.namedItem('textSpeed') as HTMLSelectElement).value = s.textSpeed;
     (form.elements.namedItem('volume') as HTMLInputElement).value = String(s.volume);
+    (form.elements.namedItem('musicVolume') as HTMLInputElement).value = String(s.musicVolume);
     for (const k of ['muted', 'autoAdvance', 'reducedMotion'] as const) (form.elements.namedItem(k) as HTMLInputElement).checked = s[k];
     $<HTMLDialogElement>('settings').showModal();
   }
@@ -305,6 +306,7 @@ export class Ui {
       updateSettings({
         textSpeed: (form.elements.namedItem('textSpeed') as HTMLSelectElement).value as Settings['textSpeed'],
         volume: Number(el('volume').value),
+        musicVolume: Number(el('musicVolume').value),
         muted: el('muted').checked,
         autoAdvance: el('autoAdvance').checked,
         reducedMotion: el('reducedMotion').checked,

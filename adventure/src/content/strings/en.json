@@ -279,7 +279,7 @@
   "ui.speed.slow": "Slow",
   "ui.speed.normal": "Normal",
   "ui.speed.fast": "Fast",
-  "ui.volume": "Volume",
+  "ui.volume": "Effects volume",
   "ui.mute": "Mute",
   "ui.autoAdvance": "Advance lines automatically",
   "ui.reducedMotion": "Reduce motion",
@@ -401,5 +401,6 @@
   "line.secretRail": "Names scratched into the rail by everyone who ever minded this kiln. Oren's is near the top, very neat. Mine is near the bottom, very crooked.",
   "line.secretRailAgain": "There's space under mine. Someone will put their name there one day. I hope I get to meet them.",
   "ui.secretFound": "Secret found ({found}/{total}).",
-  "ui.secrets": "Small things noticed: {found} of {total}."
+  "ui.secrets": "Small things noticed: {found} of {total}.",
+  "ui.musicVolume": "Music volume"
 }

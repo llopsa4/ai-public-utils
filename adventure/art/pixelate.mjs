@@ -99,17 +99,27 @@ function palette(px, k, alphaCut) {
   return centers.map(c => c.map(Math.round));
 }
 
-function toPng(px, w, h, pal, alphaCut) {
+/** 4x4 Bayer matrix, centred on 0 (-0.5..0.5). */
+const BAYER = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5].map(v => (v + 0.5) / 16 - 0.5);
+
+/**
+ * Maps pixels to the nearest palette colour. `dither` (in colour levels) adds an ordered-dither
+ * offset first, which breaks smooth gradients into fine texture instead of visible bands.
+ */
+function toPng(px, w, h, pal, alphaCut, dither = 0) {
   const png = new PNG({ width: w, height: h });
   const cache = new Map();
   for (let i = 0; i < w * h; i++) {
     const o = i * 4;
     if (px[o + 3] < alphaCut) { png.data[o + 3] = 0; continue; }
-    const key = (Math.round(px[o]) << 16) | (Math.round(px[o + 1]) << 8) | Math.round(px[o + 2]);
+    const d = dither ? BAYER[((Math.floor(i / w) & 3) << 2) | (i % w & 3)] * dither : 0;
+    // Without dither the exact (unrounded) values are matched, as before; the key is rounded.
+    const v = dither ? c => Math.max(0, Math.min(255, Math.round(px[o + c] + d))) : c => px[o + c];
+    const key = (Math.round(v(0)) << 16) | (Math.round(v(1)) << 8) | Math.round(v(2));
     let best = cache.get(key);
     if (!best) {
       let bestD = Infinity;
-      for (const c of pal) { const d = (px[o] - c[0]) ** 2 + (px[o + 1] - c[1]) ** 2 + (px[o + 2] - c[2]) ** 2; if (d < bestD) { bestD = d; best = c; } }
+      for (const c of pal) { const e = (v(0) - c[0]) ** 2 + (v(1) - c[1]) ** 2 + (v(2) - c[2]) ** 2; if (e < bestD) { bestD = e; best = c; } }
       cache.set(key, best);
     }
     png.data[o] = best[0]; png.data[o + 1] = best[1]; png.data[o + 2] = best[2]; png.data[o + 3] = 255;
@@ -251,7 +261,7 @@ function paintCanvas(px, W, points, lightFn) {
   }
   paintCanvas(px, W, [[1150, 330], [1100, 420], [1118, 560], [1140, 560]], () => 0.62); // tied-back flap
   for (let y = 330; y < H; y++) for (const x of [1146, 1236]) { const o = (y * W + x) * 4; px[o] = 70; px[o + 1] = 44; px[o + 2] = 26; } // poles
-  const png = toPng(px, W, H, palette(px, 128, 1), 1);
+  const png = toPng(px, W, H, palette(px, 128, 1), 1, 10);
   roomPngs.tent = png;
   save(png, join(out, 'rooms', 'tent.png'));
 }
@@ -280,15 +290,27 @@ foregroundPiece('gallery', 'gallery-railing', [
   rect(615, 415, 45, 155), rect(762, 420, 20, 212), rect(840, 420, 16, 130), rect(918, 430, 14, 170),
 ], [556, 412, 946, 634]);
 
-// The tent seen from the kiln hall: the same cloth in a tent silhouette with a dark entrance.
+// The tent seen from the kiln hall: the tempering-house workbench cloth (painted folds and wear)
+// mapped onto each side of a tent silhouette, shaded by side, with a dark entrance and a pole.
 {
   const W = 200, H = 140;
+  // The ochre cloth draped over the painting's workbench: folds and wear, no timber or sky in it.
+  const cloth = resample(awning, [8, 445, 112, 190], 100, H);
   const px = new Float64Array(W * H * 4);
-  paintCanvas(px, W, [[100, 4], [196, 136], [4, 136]], (x, y) => 0.85 + 0.15 * (y / H));
-  const entrance = polygonMask([[100, 46], [132, 136], [68, 136]]);
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (entrance(x, y)) { const o = (y * W + x) * 4; px[o] = 34; px[o + 1] = 20; px[o + 2] = 14; }
+  const body = polygonMask([[100, 4], [196, 136], [4, 136]]);
+  const entrance = polygonMask([[100, 46], [130, 136], [70, 136]]);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    if (!body(x, y)) continue;
+    const o = (y * W + x) * 4;
+    const onLeft = x < 100;
+    // The right slope is the same cloth mirrored, so the folds meet at the ridge.
+    const s = ((y * 100) + (onLeft ? x : 199 - x)) * 4, tex = cloth;
+    const shade = (onLeft ? 0.92 : 0.74) * (0.82 + 0.18 * (y / H)); // the far side is in shadow
+    px[o] = tex[s] * shade; px[o + 1] = tex[s + 1] * shade; px[o + 2] = tex[s + 2] * shade; px[o + 3] = 255;
+    if (entrance(x, y)) { const t = 0.25 + 0.1 * (y / H); px[o] = 60 * t + 20; px[o + 1] = 36 * t + 12; px[o + 2] = 24 * t + 8; }
+  }
   for (let y = 0; y < 140; y++) { const o = (y * W + 100) * 4; px[o] = 70; px[o + 1] = 44; px[o + 2] = 26; px[o + 3] = 255; } // pole
-  const png = toPng(px, W, H, palette(px, 24, 128), 128);
+  const png = toPng(px, W, H, palette(px, 32, 128), 128);
   outline(png);
   writeSheet('objects', 'tent', [png], [['idle', 0, 0]]);
 }

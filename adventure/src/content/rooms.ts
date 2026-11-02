@@ -70,6 +70,7 @@ export const ROOMS: Record<string, RoomDef> = {
       holes: [rect(78, 282, 92, 22), rect(450, 256, 40, 10)],
     },
     scale: { farY: 206, farScale: 0.78, nearY: 358, nearScale: 1.22 },
+    music: 'warm',
     coldIf: COLD,
     light: { tint: 0xffe4c4, farDim: 0.82 },
     foreground: [{ image: 'tent-stool', x: 73, y: 204, depth: 300 }],
@@ -96,6 +97,7 @@ export const ROOMS: Record<string, RoomDef> = {
       holes: [rect(200, 236, 90, 14)],
     },
     scale: { farY: 234, farScale: 0.82, nearY: 358, nearScale: 1.02 },
+    music: 'warm',
     coldIf: COLD,
     light: { tint: 0xffd4a8, farDim: 0.86 },
     foreground: [{ image: 'hall-left', x: 0, y: 248, depth: 400 }, { image: 'hall-right', x: 552, y: 280, depth: 400 }],
@@ -125,6 +127,9 @@ export const ROOMS: Record<string, RoomDef> = {
       holes: [rect(274, 284, 36, 14)],
     },
     scale: { farY: 228, farScale: 0.72, nearY: 358, nearScale: 0.96 },
+    music: 'warm',
+    // The painting is dark already: the default cold tint made it almost black.
+    coldTint: 0xb4bed8,
     coldIf: COLD,
     light: { tint: 0xf2c49a, farDim: 0.78 },
     ambient: {
@@ -156,6 +161,8 @@ export const ROOMS: Record<string, RoomDef> = {
       holes: [rect(500, 292, 40, 14)],
     },
     scale: { farY: 268, farScale: 0.96, nearY: 358, nearScale: 1.06 },
+    surface: 'metal',
+    music: 'tension',
     coldIf: COLD,
     light: { tint: 0xffdcb8, farDim: 0.9 },
     foreground: [{ image: 'gallery-railing', x: 278, y: 206, depth: 300 }],
@@ -180,6 +187,8 @@ export const ROOMS: Record<string, RoomDef> = {
       holes: [],
     },
     scale: { farY: 226, farScale: 0.72, nearY: 358, nearScale: 1.02 },
+    surface: 'ash',
+    music: 'wind',
     light: { tint: 0xffe6c8, farDim: 0.84 },
     ambient: {
       particles: [{ kind: 'ash', x: 0, y: 0, w: 640, h: 220 }],
@@ -190,7 +199,7 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     objects: [
       { id: 'valve', sheet: 'valve', x: 96, y: 238, flag: 'valveVented', whenTrue: 'venting', whenFalse: 'closed' },
-      { id: 'sweeper', sheet: 'sweeper', x: 420, y: 274, anim: 'idle', movedTo: { flag: 'valveVented', x: 172, y: 266 } },
+      { id: 'sweeper', sheet: 'sweeper', x: 420, y: 274, anim: 'idle', movedTo: { flag: 'valveVented', x: 172, y: 266 }, shadow: 118 },
     ],
     hotspots: ashwaysHotspots,
     actors: [],

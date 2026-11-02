@@ -11,7 +11,7 @@ import { settings } from '../engine/settings';
 import { sound } from '../audio/sound';
 import { SECRET_FLAGS, applyCommand } from '../engine/state';
 import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Verb } from '../engine/types';
-import { Actor } from './Actor';
+import { Actor, SHADOW_DEPTH } from './Actor';
 import { FOREGROUND_IMAGES, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
@@ -52,6 +52,19 @@ export class BootScene extends Phaser.Scene {
       ctx.fillRect(0, 0, 128, 128);
       glow.refresh();
     }
+    // Contact shadow: a soft dark ellipse, stretched per actor and prop.
+    const shadow = this.textures.createCanvas('fx-shadow', 128, 32);
+    if (shadow) {
+      const ctx = shadow.getContext();
+      ctx.setTransform(1, 0, 0, 0.25, 0, 0);
+      const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0, 'rgba(0,0,0,0.85)');
+      g.addColorStop(0.6, 'rgba(0,0,0,0.45)');
+      g.addColorStop(1, 'rgba(0,0,0,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 128, 128);
+      shadow.refresh();
+    }
     for (const [key, { json }] of Object.entries(SHEETS)) {
       for (const tag of json.meta.frameTags) {
         const frames = json.frames.slice(tag.from, tag.to + 1);
@@ -90,6 +103,8 @@ export class TitleScene extends Phaser.Scene {
       this.add.particles(0, 120, 'fx-dot', particleConfig('embers', LOGICAL_W, 240)).setDepth(1000);
     }
     this.cameras.main.fadeIn(600, 0, 0, 0);
+    sound.ambience('kiln');
+    sound.music('warm');
     this.session.onTitleShown();
   }
 }
@@ -131,6 +146,7 @@ export class RoomScene extends Phaser.Scene {
   private background!: Phaser.GameObjects.Image;
   private actors = new Map<ActorId, Actor>();
   private objects = new Map<string, Phaser.GameObjects.Sprite>();
+  private objectShadows = new Map<string, Phaser.GameObjects.Image>();
   private foreground: Phaser.GameObjects.Image[] = [];
   private ambient: Phaser.GameObjects.GameObject[] = [];
   private ambientCold: boolean | null = null;
@@ -159,6 +175,7 @@ export class RoomScene extends Phaser.Scene {
     this.area = new WalkArea(this.room.walkable.outer, this.room.walkable.holes);
     this.actors = new Map();
     this.objects = new Map();
+    this.objectShadows = new Map();
     this.foreground = (this.room.foreground ?? []).map(f =>
       this.add.image(f.x, f.y, `fg-${f.image}`).setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(f.depth));
     this.ambient = [];
@@ -172,6 +189,10 @@ export class RoomScene extends Phaser.Scene {
       const sprite = this.add.sprite(def.x, def.y, def.sheet, SHEETS[def.sheet].json.frames[0].filename).setOrigin(0.5, 1).setScale(1 / ART_SCALE).setDepth(def.depth ?? def.y);
       if (def.anim) sprite.play(`${def.sheet}:${def.anim}`);
       this.objects.set(def.id, sprite);
+      if (def.shadow) {
+        this.objectShadows.set(def.id, this.add.image(def.x, def.y, 'fx-shadow').setDisplaySize(def.shadow, def.shadow * 0.18)
+          .setAlpha(0.5).setDepth(SHADOW_DEPTH));
+      }
     }
 
     const start = this.area.clamp(state.hero);
@@ -194,7 +215,7 @@ export class RoomScene extends Phaser.Scene {
     this.input.on(Phaser.Input.Events.POINTER_MOVE, (p: Phaser.Input.Pointer) => this.onPointerMove(p));
     this.input.on(Phaser.Input.Events.GAME_OUT, () => this.session.ui.setHover(''));
 
-    this.hero.onStep = () => sound.step();
+    this.hero.onStep = () => sound.step(this.room.surface ?? 'stone');
     for (const [id, actor] of this.actors) if (id !== 'hero') this.scheduleFidget(actor);
 
     this.session.ui.setHover('');
@@ -395,6 +416,7 @@ export class RoomScene extends Phaser.Scene {
         const p = this.objectPosition(def);
         sprite.setPosition(p.x, p.y).setDepth(def.depth ?? p.y);
       }
+      this.objectShadows.get(def.id)?.setVisible(sprite.visible).setPosition(sprite.x, sprite.y - 1);
     }
     if (this.hero?.sprite.active) this.hero.setSheet(this.heroSheet());
     this.applyTint();
@@ -408,11 +430,16 @@ export class RoomScene extends Phaser.Scene {
     const cold = this.isCold();
     const targets: (Phaser.GameObjects.Image | Phaser.GameObjects.Sprite)[] = [this.background, ...this.objects.values(), ...this.foreground];
     for (const o of targets) {
-      if (cold) o.setTint(COLD_TINT);
+      if (cold) o.setTint(this.coldTint());
       else o.clearTint();
     }
     this.refreshAmbient(cold);
     sound.ambience(this.room.id === 'ashways' ? 'wind' : cold ? 'cold' : 'kiln');
+    sound.music(cold ? 'cold' : this.room.music ?? 'warm');
+  }
+
+  private coldTint(): number {
+    return this.room.coldTint ?? COLD_TINT;
   }
 
   update(): void {
@@ -434,7 +461,7 @@ export class RoomScene extends Phaser.Scene {
     for (const actor of this.actors.values()) {
       const t = Phaser.Math.Clamp((actor.sprite.y - farY) / (nearY - farY), 0, 1);
       const dim = light.farDim + (1 - light.farDim) * t;
-      actor.sprite.setTint(multiplyColor(light.tint, dim, cold ? COLD_TINT : 0xffffff));
+      actor.sprite.setTint(multiplyColor(light.tint, dim, cold ? this.coldTint() : 0xffffff));
     }
   }
 
@@ -551,7 +578,8 @@ export class RoomScene extends Phaser.Scene {
         if (sheet === 'sweeper') sound.brushes(command.ms);
         await new Promise<void>(resolve => this.tweens.add({
           targets: sprite, x: command.x, y: command.y, duration: command.ms, ease: 'Sine.easeInOut',
-          onUpdate: () => sprite.setDepth(sprite.y), onComplete: () => resolve(),
+          onUpdate: () => { sprite.setDepth(sprite.y); this.objectShadows.get(command.id)?.setPosition(sprite.x, sprite.y - 1); },
+          onComplete: () => resolve(),
         }));
         if (idle) sprite.play(idle);
         return true;

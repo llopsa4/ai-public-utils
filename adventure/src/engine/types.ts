@@ -39,6 +39,8 @@ export interface HotspotDef {
 
 export interface ObjectDef {
   id: string;
+  /** Width of a contact shadow under the prop (world units); omitted for wall and table props. */
+  shadow?: number;
   /** Sprite sheet key (art/src/objects/<sheet>.png + .json). */
   sheet: string;
   /** Foot point (bottom centre of the sprite). */
@@ -91,6 +93,12 @@ export interface RoomDef {
   /** Outer walkable polygon followed by optional holes (obstacles). */
   walkable: { outer: Polygon; holes: Polygon[] };
   scale: DepthScale;
+  /** What the floor sounds like underfoot (default stone). */
+  surface?: 'stone' | 'metal' | 'ash';
+  /** Background score mood (warm hearth, gallery tension, ashways wind); cold rooms use the cold score. */
+  music?: 'warm' | 'tension' | 'wind';
+  /** Tint once the room is cold, instead of the default cold blue (lighter for rooms that got too dark). */
+  coldTint?: number;
   /** When these hold the room is drawn with the cold tint (kiln shut down). */
   coldIf?: Condition[];
   entries: Record<string, { x: number; y: number; face: Facing }>;

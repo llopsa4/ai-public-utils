@@ -1,8 +1,10 @@
 /** Player preferences (not game progress), kept in localStorage like the language choice. */
 export interface Settings {
   textSpeed: 'slow' | 'normal' | 'fast';
-  /** 0..1 */
+  /** Effects and ambience, 0..1 */
   volume: number;
+  /** Music, 0..1 */
+  musicVolume: number;
   muted: boolean;
   /** When false, each spoken line waits for a click. */
   autoAdvance: boolean;
@@ -14,7 +16,7 @@ const SPEEDS: Settings['textSpeed'][] = ['slow', 'normal', 'fast'];
 const SPEED_FACTOR: Record<Settings['textSpeed'], number> = { slow: 1.5, normal: 1, fast: 0.65 };
 
 export function defaultSettings(prefersReducedMotion = false): Settings {
-  return { textSpeed: 'normal', volume: 0.7, muted: false, autoAdvance: true, reducedMotion: prefersReducedMotion };
+  return { textSpeed: 'normal', volume: 0.7, musicVolume: 0.5, muted: false, autoAdvance: true, reducedMotion: prefersReducedMotion };
 }
 
 /** Accepts only well-formed values; anything missing or invalid falls back to the default. */
@@ -24,6 +26,7 @@ export function parseSettings(raw: unknown, fallback: Settings): Settings {
   return {
     textSpeed: SPEEDS.includes(r.textSpeed as Settings['textSpeed']) ? (r.textSpeed as Settings['textSpeed']) : fallback.textSpeed,
     volume: typeof r.volume === 'number' && Number.isFinite(r.volume) ? Math.min(1, Math.max(0, r.volume)) : fallback.volume,
+    musicVolume: typeof r.musicVolume === 'number' && Number.isFinite(r.musicVolume) ? Math.min(1, Math.max(0, r.musicVolume)) : fallback.musicVolume,
     muted: typeof r.muted === 'boolean' ? r.muted : fallback.muted,
     autoAdvance: typeof r.autoAdvance === 'boolean' ? r.autoAdvance : fallback.autoAdvance,
     reducedMotion: typeof r.reducedMotion === 'boolean' ? r.reducedMotion : fallback.reducedMotion,

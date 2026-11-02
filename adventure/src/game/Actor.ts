@@ -12,6 +12,9 @@ const PLANT_FRAMES = [0, 3];
 
 /** Art is drawn at 2x the world: sprites are shown at half size. */
 const ART_SCALE = 2;
+/** Contact shadows sit on the floor: above the background, below everything standing on it. */
+export const SHADOW_DEPTH = -4000;
+const SHADOW_ALPHA = 0.5;
 
 /** Visible body size per pose in world units at depth scale 1 (hit testing and speech placement). */
 const BODY: Record<Pose, { w: number; h: number }> = {
@@ -26,6 +29,8 @@ const BODY: Record<Pose, { w: number; h: number }> = {
  */
 export class Actor {
   readonly sprite: Phaser.GameObjects.Sprite;
+  /** Soft ellipse under the feet (the 'fx-shadow' texture made in BootScene). */
+  private readonly shadow: Phaser.GameObjects.Image | null;
   pose: Pose;
   face: Facing;
   private side: 'left' | 'right';
@@ -58,13 +63,16 @@ export class Actor {
   ) {
     this.sheet = sheet;
     this.sprite = scene.add.sprite(x, y, sheet).setOrigin(0.5, 1);
+    this.shadow = scene.textures.exists('fx-shadow')
+      ? scene.add.image(x, y, 'fx-shadow').setAlpha(SHADOW_ALPHA).setDepth(SHADOW_DEPTH)
+      : null;
     this.face = face;
     this.side = face === 'left' ? 'left' : 'right';
     this.pose = pose;
     this.place();
     this.refresh();
     this.scheduleBlink();
-    this.sprite.once(Phaser.GameObjects.Events.DESTROY, () => this.blinkTimer?.remove());
+    this.sprite.once(Phaser.GameObjects.Events.DESTROY, () => { this.blinkTimer?.remove(); this.shadow?.destroy(); });
   }
 
   get position(): Point {
@@ -84,6 +92,7 @@ export class Actor {
   setPose(pose: Pose): void {
     this.pose = pose;
     this.refresh();
+    this.placeShadow();
   }
 
   /** Swaps the sprite sheet (e.g. Mara with or without the gauntlet), keeping pose and facing. */
@@ -162,6 +171,16 @@ export class Actor {
     this.depth = farScale + (nearScale - farScale) * t;
     this.sprite.setScale(this.depth / ART_SCALE);
     this.sprite.setDepth(this.sprite.y);
+    this.placeShadow();
+  }
+
+  /** The shadow follows the feet and the pose: a wide pool when lying down, a small one standing. */
+  private placeShadow(): void {
+    if (!this.shadow) return;
+    const body = BODY[this.pose];
+    const w = (this.pose === 'dead' ? body.w * 1.05 : body.w * 0.82) * this.depth * this.bodyScale;
+    const h = (this.pose === 'dead' ? 16 : 11) * this.depth * this.bodyScale;
+    this.shadow.setPosition(this.sprite.x, this.sprite.y - h * 0.15).setDisplaySize(w, h);
   }
 
   private direction(): 'down' | 'up' | 'side' {

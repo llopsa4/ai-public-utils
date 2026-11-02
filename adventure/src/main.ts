@@ -40,7 +40,7 @@ window.addEventListener('orientationchange', relayout);
 const unlockAudio = () => sound.unlock();
 window.addEventListener('pointerdown', unlockAudio, { once: true });
 window.addEventListener('keydown', unlockAudio, { once: true });
-const applyVolume = () => sound.setVolume(settings().volume, settings().muted);
+const applyVolume = () => sound.setVolume(settings().volume, settings().muted, settings().musicVolume);
 applyVolume();
 onSettingsChange(applyVolume);
 

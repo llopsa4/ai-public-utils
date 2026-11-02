@@ -14,7 +14,7 @@ Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 - **Explore:** looking at something again often gets a different line, and four small secrets are hidden around Cinderfold (the notebook counts the ones you've found).
 - **Labels:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
 - **Exits:** double-click a doorway to go straight through.
-- **Menu:** saves, **History** (everything said so far), **Settings** (text speed, volume, mute, auto-advance, reduced motion) and **Title screen**.
+- **Menu:** saves, **History** (everything said so far), **Settings** (text speed, effects and music volume, mute, auto-advance, reduced motion) and **Title screen**.
 - **Hints:** the notebook's **Hint** button gives a nudge for the current goal, then the plain answer.
 - **Cursor:** the pointer shows the name of what it is over and what a click will do (look, handle, talk, leave).
 
@@ -50,7 +50,7 @@ Add `?debug` to the URL to draw the walk areas (green), obstacles (red), hotspot
 | `src/content/` | Rooms (walk polygons, hotspots, objects, entries), interactions, dialogue trees, `strings/en.json` |
 | `src/game/` | Phaser scenes, the `Actor` (pose/walk/blink), asset list, session |
 | `src/ui/` | DOM interface over the canvas: dialogue panel, action ring, choices, hotspot labels, satchel, menu, notebook, history, settings, end card |
-| `src/audio/` | Web Audio synthesizer for ambience and effects (no sound files) |
+| `src/audio/` | Web Audio synthesizer for ambience, effects, footsteps per floor surface, and a generative score per room mood (no sound files) |
 | `art/` | Art scripts and their output in `art/src/` (see [PROVENANCE](art/PROVENANCE.md)) |
 | `tests/` | `node:test` suites run with tsx |
 
