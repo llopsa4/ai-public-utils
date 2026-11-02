@@ -109,7 +109,12 @@ export class Atmosphere {
     const bg = scene.textures.get(this.room.background);
     (this.room.look?.haze ?? []).forEach((h, i) => {
       const frame = `haze-${i}`;
-      if (!bg.has(frame)) bg.add(frame, 0, h.x * ART_SCALE, h.y * ART_SCALE, h.w * ART_SCALE, h.h * ART_SCALE);
+      if (!bg.has(frame)) {
+        bg.add(frame, 0, h.x * ART_SCALE, h.y * ART_SCALE, h.w * ART_SCALE, h.h * ART_SCALE);
+        // Phaser makes the first added frame the texture's default; keep the whole room as the default,
+        // or the next visit to this room would draw only this crop.
+        bg.firstFrame = '__BASE';
+      }
       const img = scene.add.image(h.x, h.y, this.room.background, frame).setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-9990);
       img.setAlpha(0.75 * (1 - this.cold));
       const fx = img.preFX?.addDisplacement('fx-noise0', 0.004, 0.006);
