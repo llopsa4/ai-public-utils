@@ -7,13 +7,10 @@ import { readAutosave } from '../engine/autosave';
 import { MET_FLAGS, SECRET_FLAGS } from '../engine/state';
 import type { GameState, Point, Speaker, Verb } from '../engine/types';
 import { EXTRAS } from '../content/crowd';
-import { BattleUi, type BattleHandlers } from './battle';
 import { sound } from '../audio/sound';
-import { EQUIPMENT_SLOTS, openingHandSize } from '../combat/equipment';
 import { EQUIPMENT } from '../combat/gear';
-import type { BattleStats, EquipmentSlot } from '../combat/types';
-import { HERO_MAX_HP, MATERIALS, TONIC } from '../content/combat';
-import { buyTonic, equip, isLocked, optionsFor, statsWith } from '../engine/kit';
+import { HERO_MAX_HP, LOCKED_SLOTS, MATERIALS, TONIC, maraProfile } from '../content/combat';
+import { buyTonic, equip } from '../engine/kit';
 
 /** World size in logical units; all content coordinates use it. */
 export const LOGICAL_W = 640;
@@ -96,7 +93,7 @@ export class Ui {
     $('menu-history').addEventListener('click', () => this.openHistory()); // stacks over the pause menu; Back returns to it
     $('menu-settings').addEventListener('click', () => this.openSettings());
     $('notebook-btn').addEventListener('click', () => this.openNotebook());
-    $('gear-btn').addEventListener('click', () => void this.openGear());
+    $('gear-btn').addEventListener('click', () => { if (!this.forcingGear) void this.openGear(); });
     $('reveal-btn').addEventListener('click', () => this.revealFor(3000));
     this.bindFullscreen();
     this.bindLongPress();
@@ -127,7 +124,7 @@ export class Ui {
     this.fileInput.addEventListener('change', () => void this.importSave());
     this.menu.addEventListener('click', e => { if (e.target === this.menu) this.menu.close(); });
     window.addEventListener('keydown', e => {
-      if (this.introActive || this.battle.open) return;
+      if (this.introActive || !$('kc-root').hidden) return;
       // Keyboard play: with nothing else focused, Tab walks through the room before the bar buttons.
       const free = (document.activeElement === document.body || document.activeElement === null)
         && !this.anyDialogOpen() && !this.radialOpen && this.choices.hidden && $('title').hidden;
@@ -371,100 +368,62 @@ export class Ui {
   }
 
   // ------------------------------------------------------------- gear ---
-  /** Mara's gear: a choice per slot with its stats, and what he carries. Resolves when closed. */
-  openGear(): Promise<void> {
-    const dialog = $<HTMLDialogElement>('gear');
-    this.renderGear();
-    dialog.showModal();
-    return new Promise(resolve => dialog.addEventListener('close', () => { this.host.autosave(); resolve(); }, { once: true }));
-  }
+  private forcingGear = false;
 
-  private renderGear(preview?: { slot: EquipmentSlot; id: string }): void {
-    const state = this.host.getState();
-    const kit = state.kit;
-    const describe = (id: string) => {
-      const b = EQUIPMENT[id].bonuses;
-      const parts = (Object.keys(b) as (keyof BattleStats)[]).filter(k => b[k]).map(k => `${b[k]! > 0 ? '+' : ''}${b[k]} ${t(`ui.stat.${k}`).toLowerCase()}`);
-      return parts.length ? parts.join(', ') : t('ui.noBonus');
+  /**
+   * Oren's advice: the Gear button appears and is the only thing that can be used (the screen is
+   * dimmed around it, other keys and clicks do nothing) until it is pressed; then the gear screen
+   * opens. Resolves when it is closed.
+   */
+  async forceGear(): Promise<void> {
+    const button = $<HTMLButtonElement>('gear-btn');
+    button.hidden = false;
+    button.disabled = false;
+    button.dataset.call = t('ui.gearCall');
+    button.classList.add('forced');
+    const veil = document.createElement('div');
+    veil.id = 'force-veil';
+    document.body.append(veil);
+    this.forcingGear = true;
+    const keys = (e: KeyboardEvent) => {
+      if (document.activeElement === button && (e.key === 'Enter' || e.key === ' ' || e.key === 'Tab')) { if (e.key === 'Tab') { e.preventDefault(); } return; }
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      button.focus({ preventScroll: true });
     };
-    const slots = $('gear-slots');
-    slots.replaceChildren();
-    for (const slot of EQUIPMENT_SLOTS) {
-      const row = document.createElement('div');
-      row.className = 'gear-slot';
-      const label = document.createElement('span');
-      label.className = 'row-label';
-      label.textContent = t(`ui.slot.${slot}`);
-      row.append(label);
-      const current = kit.equipment[slot].id;
-      if (isLocked(slot)) {
-        const p = document.createElement('p');
-        p.className = 'gear-locked';
-        p.textContent = `${EQUIPMENT[current].name}: ${t('ui.slotLocked')}`;
-        row.append(p);
-      } else {
-        const group = document.createElement('div');
-        group.className = 'segmented';
-        group.setAttribute('role', 'radiogroup');
-        group.setAttribute('aria-label', t(`ui.slot.${slot}`));
-        for (const id of optionsFor(kit, slot)) {
-          const l = document.createElement('label');
-          const input = document.createElement('input');
-          input.type = 'radio';
-          input.name = `gear-${slot}`;
-          input.value = id;
-          input.checked = id === current;
-          input.addEventListener('change', () => { if (equip(kit, slot, id)) { this.host.autosave(); this.renderGear(); } });
-          const text = document.createElement('span');
-          text.append(EQUIPMENT[id].name);
-          const small = document.createElement('small');
-          small.textContent = describe(id);
-          text.append(small);
-          l.append(input, text);
-          l.addEventListener('pointerenter', () => this.renderGearStats(slot, id));
-          l.addEventListener('pointerleave', () => this.renderGearStats());
-          input.addEventListener('focus', () => this.renderGearStats(slot, id));
-          group.append(l);
-        }
-        row.append(group);
-      }
-      slots.append(row);
-    }
-    this.renderGearStats(preview?.slot, preview?.id);
-    const bag = state.bag;
-    const mats = Object.entries(bag.materials).filter(([, n]) => n > 0).map(([id, n]) => `${n} ${t(MATERIALS[id].name)}`);
-    const lines = [
-      t('ui.health', { hp: String(kit.hp), max: String(HERO_MAX_HP) }),
-      t('ui.salvage', { n: String(bag.salvage) }),
-      t('ui.tonics', { n: String(bag.tonics) }),
-      mats.length ? t('ui.materials', { list: mats.join(', ') }) : t('ui.noMaterials'),
-    ];
-    $('gear-bag').replaceChildren(...lines.map(text => { const p = document.createElement('p'); p.textContent = text; return p; }));
+    window.addEventListener('keydown', keys, true);
+    button.focus({ preventScroll: true });
+    await new Promise<void>(resolve => button.addEventListener('click', () => resolve(), { once: true }));
+    window.removeEventListener('keydown', keys, true);
+    this.forcingGear = false;
+    button.classList.remove('forced');
+    veil.remove();
+    await this.openGear();
   }
 
-  /** The stats now, and (while hovering or focusing an option) what they would become. */
-  private renderGearStats(slot?: EquipmentSlot, id?: string): void {
-    const kit = this.host.getState().kit;
-    const now = statsWith(kit);
-    const then = slot && id ? statsWith(kit, slot, id) : now;
-    const box = $('gear-stats');
-    box.replaceChildren();
-    for (const key of ['power', 'defense', 'speed', 'maxMp'] as const) {
-      const name = document.createElement('span');
-      name.textContent = t(`ui.stat.${key}`);
-      const value = document.createElement('span');
-      const diff = then[key] - now[key];
-      value.className = `value${diff > 0 ? ' up' : diff < 0 ? ' down' : ''}`;
-      value.textContent = diff ? `${now[key]} → ${then[key]}` : String(now[key]);
-      const help = document.createElement('span');
-      help.className = 'help';
-      help.textContent = t(`ui.statHelp.${key}`);
-      box.append(name, value, help);
-    }
-    const hand = document.createElement('span');
-    hand.className = 'hand';
-    hand.textContent = t('ui.openingHand', { n: String(openingHandSize(5, then.speed)) });
-    box.append(hand);
+  /**
+   * Mara's gear on Kiln Courier's workshop screen (equip-only, src/kc/Armory.tsx), loaded on first
+   * use. Resolves when Done is pressed.
+   */
+  async openGear(): Promise<void> {
+    const kc = await import('../kc/mount');
+    const el = $('kc-root');
+    el.hidden = false;
+    await new Promise<void>(resolve => {
+      const close = kc.mountArmory(el, {
+        title: t('ui.gearTitle'), eyebrow: t('ui.gearEyebrow'), locked: [...LOCKED_SLOTS],
+        read: () => {
+          const { kit, bag } = this.host.getState();
+          const mats = Object.entries(bag.materials).filter(([, n]) => n > 0).map(([id, n]) => `${n} ${t(MATERIALS[id].name)}`);
+          return {
+            profile: maraProfile(kit), owned: [...kit.owned], salvage: bag.salvage,
+            carried: [t('ui.health', { hp: String(kit.hp), max: String(HERO_MAX_HP) }), t('ui.tonics', { n: String(bag.tonics) }), mats.length ? t('ui.materials', { list: mats.join(', ') }) : t('ui.noMaterials')],
+          };
+        },
+        onEquip: id => { equip(this.host.getState().kit, EQUIPMENT[id].slot, id); this.host.autosave(); },
+        onClose: () => { close(); el.hidden = true; this.host.autosave(); resolve(); },
+      });
+    });
   }
 
   // ------------------------------------------------------------- shop ---
@@ -505,6 +464,11 @@ export class Ui {
     body.replaceChildren(item, buy, have, status);
   }
 
+  /** Opens the pause menu (also from Kiln Courier's battle screen). */
+  openMenu(): void {
+    if (!this.menu.open) this.menu.showModal();
+  }
+
   /** True while the action ring is open. */
   ringOpen(): boolean {
     return this.radialOpen;
@@ -533,14 +497,7 @@ export class Ui {
   }
 
   private introActive = false;
-  /** The fight's controls (the battle scene sets the handlers). */
-  readonly battle: BattleUi = new BattleUi($('overlay'), {
-    play: id => this.battleHandlers?.play(id),
-    endTurn: () => this.battleHandlers?.endTurn(),
-    tonic: () => this.battleHandlers?.tonic(),
-    skipGuide: () => this.battleHandlers?.skipGuide(),
-  });
-  battleHandlers: BattleHandlers | null = null;
+
 
   /**
    * A new story: the screen fades slowly to black, a few lines of context appear one after

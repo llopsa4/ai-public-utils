@@ -223,7 +223,7 @@ export const ROOMS: Record<string, RoomDef> = {
     ],
     sign: { x: 476, y: 70, drop: 10, w: 74, h: 50, style: 'iron' },
     // The maintenance hatch at the foot of the regulator housing.
-    hatch: { x: 356, y: 262 },
+    hatch: { x: 462, y: 286 },
   },
   ashways: {
     id: 'ashways',

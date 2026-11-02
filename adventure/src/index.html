@@ -58,6 +58,9 @@
     </nav>
   </main>
 
+  <!-- Kiln Courier's battle and workshop screens (React, loaded with the first fight). -->
+  <div id="kc-root" hidden></div>
+
   <!-- The opening: a few lines of context over black before a new story starts. -->
   <section id="intro" hidden aria-live="polite" aria-labelledby="intro-label">
     <h1 id="intro-label" class="visually-hidden" data-i18n="ui.introLabel">Before the story</h1>
@@ -159,15 +162,6 @@
       <dt data-i18n="ui.help.touchKey">Touch: press and hold</dt><dd data-i18n="ui.help.touch">Show everything you can interact with</dd>
     </dl>
     <div class="panel-actions"><button type="button" class="btn dialog-close" data-i18n="ui.back">Back</button></div>
-  </dialog>
-
-  <!-- Mara's gear: one choice per slot, the stats it gives, and what he carries. -->
-  <dialog id="gear" class="panel" aria-labelledby="gear-heading">
-    <h1 id="gear-heading" class="plaque" data-i18n="ui.gearTitle">Gear</h1>
-    <div id="gear-slots" class="gear-slots"></div>
-    <div id="gear-stats" class="gear-stats" aria-live="polite"></div>
-    <div id="gear-bag" class="gear-bag"></div>
-    <div class="panel-actions"><button type="button" class="btn primary dialog-close" data-i18n="ui.done">Done</button></div>
   </dialog>
 
   <!-- The merchant's stall. -->

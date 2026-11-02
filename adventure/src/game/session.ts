@@ -111,11 +111,13 @@ export class Session {
     writeAutosave(this.state);
   }
 
+  /** Removes Kiln Courier's battle screen if a fight is on (set by the room while it runs). */
+  closeBattle: (() => void) | null = null;
+
   /** Stops a fight in progress (new game, import, title screen). */
   private endBattle(): void {
-    const game = this.scene?.game ?? this.title?.game;
-    if (game?.scene.isActive('battle') || game?.scene.isPaused('battle')) game.scene.stop('battle');
-    this.ui.battle.hide();
+    this.closeBattle?.();
+    this.closeBattle = null;
   }
 
   autosave(): void {

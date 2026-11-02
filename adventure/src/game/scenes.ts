@@ -1,8 +1,7 @@
 import Phaser from 'phaser';
 import { DIALOGUES } from '../content/dialogue';
 import { ACTOR_VERBS, ITEM_VERBS, afterRelease, interact } from '../content/interactions';
-import { finishBattle } from '../engine/kit';
-import type { BattleRequest } from './battle';
+import { drinkTonic, finishBattle } from '../engine/kit';
 import { LINE_MOODS } from '../content/moods';
 import { ROOMS } from '../content/rooms';
 import { resolveNode } from '../engine/dialogue';
@@ -18,7 +17,8 @@ import { Atmosphere, createAtmosphereTextures, highQuality } from './atmosphere'
 import { addLight, localLight, mixColor } from '../engine/lighting';
 import { Props, createParticleTextures } from './props';
 import { Crowd, type Member } from './Crowd';
-import { BATTLE_IMAGES } from './battle';
+import SCAVENGER_SPRITE from '../../art/src/battle/scavenger.png';
+import { ENCOUNTERS, MATERIALS, REWARDS, maraProfile } from '../content/combat';
 import { RoomSign } from './sign';
 import { CROWDS, EXTRAS, type Mood } from '../content/crowd';
 import { FOREGROUND_IMAGES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
@@ -345,6 +345,7 @@ export class RoomScene extends Phaser.Scene {
     this.session.ui.renderInventory();
     this.cameras.main.fadeIn(this.session.slowFadeIn ? 1800 : FADE_MS, 0, 0, 0);
     this.session.slowFadeIn = false;
+    sound.hush(!!this.session.state.flags.fought);
     if (this.session.arrival) this.walkIn(this.session.arrival);
     else this.session.autosave();
     this.session.arrival = null;
@@ -961,6 +962,9 @@ export class RoomScene extends Phaser.Scene {
       case 'gear':
         await this.session.ui.openGear();
         return true;
+      case 'awaitGear':
+        await this.session.ui.forceGear();
+        return true;
       case 'shop':
         await this.session.ui.openShop();
         return true;
@@ -973,58 +977,153 @@ export class RoomScene extends Phaser.Scene {
     }
   }
 
-  /** The creature drawn by the pulse: the hatch bursts with sparks and smoke and it crawls out. */
+  /**
+   * The hatch in the gallery floor blows: its cover spins away, smoke and sparks pour out of the
+   * dark hole, and the scavenger drawn by the pulse climbs up out of it, then steps toward Mara.
+   * (Hole and cover are drawn in code: placeholders until replaced.)
+   */
   private hatchCreature: Phaser.GameObjects.Image | null = null;
+  private hatchHole: Phaser.GameObjects.Graphics | null = null;
   private async blowHatch(): Promise<void> {
     const at = this.room.hatch ?? { x: 360, y: 260 };
+    const calm = settings().reducedMotion;
     sound.rumble(500);
     sound.shatter();
-    if (!settings().reducedMotion) this.cameras.main.shake(450, 0.008);
-    this.props.burst([{ x: at.x, y: at.y - 10 }, { x: at.x + 6, y: at.y - 4 }]);
-    for (let i = 0; i < 4; i++) this.time.delayedCall(i * 90, () => this.props.step(at.x + (Math.random() - 0.5) * 20, at.y));
+    if (!calm) this.cameras.main.shake(450, 0.008);
+    // The hole: a dark oval with a ragged metal rim, drawn on the floor.
+    const hole = this.add.graphics().setDepth(at.y - 2);
+    hole.fillStyle(0x060404, 1).fillEllipse(at.x, at.y, 64, 15);
+    hole.lineStyle(2, 0x5a4a3c, 1).strokeEllipse(at.x, at.y, 66, 16);
+    hole.fillStyle(0xff8a3a, 0.35).fillEllipse(at.x, at.y + 1, 34, 6);
+    this.hatchHole = hole;
+    // The cover flies off, spinning, and clatters down to one side.
+    const cover = this.add.graphics().setDepth(at.y + 40).setPosition(at.x, at.y);
+    cover.fillStyle(0x4a4038, 1).fillEllipse(0, 0, 60, 14);
+    cover.lineStyle(2, 0x2a2420, 1).strokeEllipse(0, 0, 60, 14);
+    cover.fillStyle(0x6a5a4a, 1).fillRect(-14, -2, 28, 4);
+    if (calm) cover.setPosition(at.x - 70, at.y + 18);
+    else {
+      this.tweens.add({ targets: cover, x: at.x - 70, duration: 900, ease: 'Linear' });
+      this.tweens.add({ targets: cover, y: at.y - 70, duration: 420, ease: 'Quad.easeOut', yoyo: false,
+        onComplete: () => this.tweens.add({ targets: cover, y: at.y + 18, duration: 480, ease: 'Bounce.easeOut' }) });
+      this.tweens.add({ targets: cover, angle: 540, duration: 900, ease: 'Quad.easeOut' });
+    }
+    this.props.burst([{ x: at.x, y: at.y - 6 }, { x: at.x + 8, y: at.y - 4 }, { x: at.x - 8, y: at.y - 4 }]);
+    for (let i = 0; i < 8; i++) this.time.delayedCall(i * 110, () => this.props.step(at.x + (Math.random() - 0.5) * 30, at.y - Math.random() * 6));
+    await this.wait(calm ? 200 : 700);
+    // The scavenger climbs out: only what is above the rim shows while it rises.
     await new Promise<void>(resolve => {
-      const load = () => {
-        const crawler = this.add.image(at.x, at.y, 'battle-scavenger').setOrigin(0.5, 1).setScale(0.32 / 2).setFlipX(true).setDepth(at.y).setAlpha(0);
+      const climb = () => {
+        const crawler = this.add.image(at.x, at.y, 'battle-scavenger').setOrigin(0.5, 1).setScale(0.42).setFlipX(true).setDepth(at.y);
+        const full = crawler.displayHeight;
+        crawler.setY(at.y + full);
+        const rim = this.make.graphics({}, false).fillRect(at.x - 120, 0, 240, at.y);
+        crawler.setMask(rim.createGeometryMask());
         this.hatchCreature = crawler;
-        this.tweens.add({ targets: crawler, alpha: 1, x: at.x + 14, duration: 500, ease: 'Quad.easeOut' });
-        this.tweens.add({ targets: crawler, y: at.y + 6, scale: 0.38 / 2, x: at.x + 26, delay: 500, duration: 500, ease: 'Sine.easeInOut', onComplete: () => resolve() });
+        sound.scrape(1);
+        this.tweens.add({
+          targets: crawler, y: at.y, duration: calm ? 300 : 1100, ease: 'Quad.easeOut',
+          onComplete: () => {
+            crawler.clearMask(true);
+            sound.strike(4);
+            this.tweens.add({ targets: crawler, x: at.x - 12, y: at.y + 6, duration: calm ? 200 : 600, ease: 'Sine.easeInOut', onComplete: () => resolve() });
+          },
+        });
       };
-      if (this.textures.exists('battle-scavenger')) load();
-      else { this.load.image('battle-scavenger', BATTLE_IMAGES.scavenger); this.load.once(Phaser.Loader.Events.COMPLETE, load); this.load.start(); }
+      if (this.textures.exists('battle-scavenger')) climb();
+      else { this.load.image('battle-scavenger', SCAVENGER_SPRITE); this.load.once(Phaser.Loader.Events.COMPLETE, climb); this.load.start(); }
     });
     this.hero.setFacing('left');
   }
 
   /**
-   * A fight: save first (a reload restarts it), shatter the room into the battle scene, wait for
-   * the win, pay out, and fade back in.
+   * A fight: save first (a reload restarts it), shatter the room, then Kiln Courier's battle screen
+   * (React, src/kc) over everything. The script carries on once it is won.
    */
   private async fight(id: string): Promise<void> {
     const state = this.session.state;
     this.syncHero();
     this.session.saveNow();
+    sound.hush(true);
     sound.music('combat');
     this.session.ui.setHover('');
-    const shatter = settings().reducedMotion ? null : await this.snapshot();
+    const kcModule = import('../kc/mount');
+    const cover = await this.shatter();
+    const kc = await kcModule;
     this.hatchCreature?.destroy();
     this.hatchCreature = null;
+    const el = document.getElementById('kc-root')!;
+    el.hidden = false;
+    this.scene.pause();
     await new Promise<void>(resolve => {
-      const req: BattleRequest = {
-        encounterId: id, guided: !state.flags.fought, backdrop: this.room.background, shatter, heroSheet: this.heroSheet(),
+      const reward = REWARDS[id];
+      const rewards = reward ? [t('battle.rewardSalvage', { n: String(reward.salvage) }),
+        ...Object.entries(reward.materials).map(([m, n]) => t('battle.rewardMaterial', { n: String(n), name: t(MATERIALS[m].name) }))] : [];
+      const close = kc.mountBattle(el, {
+        profile: maraProfile(state.kit), guided: !state.flags.fought, encounter: ENCOUNTERS[id], rewards,
+        tonics: () => state.bag.tonics,
+        drink: battle => { const next = drinkTonic(battle, state.bag); return next === battle ? null : next; },
+        onMenu: () => this.session.ui.openMenu(),
         onWin: battle => {
           finishBattle(state, battle, id);
-          this.scene.stop('battle');
-          this.scene.resume();
+          this.session.closeBattle = null;
+          close();
+          el.hidden = true;
           resolve();
         },
-      };
-      this.scene.launch('battle', req);
-      this.scene.pause();
+      });
+      this.session.closeBattle = () => { close(); el.hidden = true; };
     });
+    this.scene.resume();
+    cover.destroy();
+    this.hatchHole?.setAlpha(0.6);
     this.session.ui.renderInventory();
     sound.music('nervous');
-    this.cameras.main.fadeIn(600, 0, 0, 0);
-    await this.wait(400);
+    this.cameras.main.fadeIn(700, 0, 0, 0);
+    await this.wait(500);
+  }
+
+  /**
+   * The room breaks into shards that fall away with a white flash, leaving black (the battle screen
+   * then appears over it). Returns the black cover, removed after the fight.
+   */
+  private async shatter(): Promise<Phaser.GameObjects.Graphics> {
+    const black = this.add.graphics().setDepth(100000).setScrollFactor(0);
+    if (settings().reducedMotion) {
+      this.cameras.main.fadeOut(400, 0, 0, 0);
+      await this.wait(420);
+      black.fillStyle(0x000000, 1).fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+      this.cameras.main.resetFX();
+      return black;
+    }
+    const key = await this.snapshot();
+    black.fillStyle(0x000000, 1).fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+    const tex = this.textures.get(key);
+    const src = tex.getSourceImage() as HTMLImageElement;
+    const cols = 8, rows = 5, w = src.width / cols, h = src.height / rows, k = LOGICAL_W / src.width;
+    const centre = { x: this.hero.position.x, y: this.hero.position.y - 60 };
+    const shards: Phaser.GameObjects.Image[] = [];
+    sound.shatter();
+    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
+      const name = `shard-${r}-${c}`;
+      if (!tex.has(name)) tex.add(name, 0, c * w, r * h, w, h);
+      const x = (c + 0.5) * w * k, y = (r + 0.5) * h * k;
+      const shard = this.add.image(x, y, key, name).setScale(k).setDepth(100001).setScrollFactor(0);
+      shards.push(shard);
+      const d = Math.hypot(x - centre.x, y - centre.y);
+      this.tweens.add({
+        targets: shard, delay: 120 + d * 1.2, duration: 700 + Math.random() * 300, ease: 'Quad.easeIn',
+        y: y + 260 + Math.random() * 120, x: x + (x - centre.x) * 0.35, angle: (Math.random() - 0.5) * 70, alpha: 0,
+      });
+    }
+    const flash = this.add.graphics().setDepth(100002).setScrollFactor(0);
+    flash.fillStyle(0xffffff, 0.85).fillRect(0, 0, LOGICAL_W, LOGICAL_H);
+    this.tweens.add({ targets: flash, alpha: 0, duration: 260 });
+    await this.wait(1500);
+    for (const shard of shards) shard.destroy();
+    flash.destroy();
+    if (this.textures.exists(key)) this.textures.remove(key);
+    return black;
   }
 
   /** The canvas as it is now, as a texture (for the shatter). */

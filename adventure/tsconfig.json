@@ -11,6 +11,7 @@
     "noFallthroughCasesInSwitch": true,
     "isolatedModules": true,
     "skipLibCheck": true,
+    "jsx": "react-jsx",
     "noEmit": true,
     "types": ["vite/client", "node"]
   },

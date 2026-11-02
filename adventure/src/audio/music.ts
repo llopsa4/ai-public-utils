@@ -44,21 +44,22 @@ const MOODS: Record<Exclude<MusicMood, 'none'>, MoodDef> = {
   cold: { scale: [0, 7, 12, 14], chords: [[0, 7], [-5, 7]], root: 130.81, barSeconds: 8, pluck: 0.09, padLevel: 0.035, cutoff: 600 },
   // A fight: the warm theme's own notes (D major pentatonic, the same chords) at a run, with drums.
   combat: {
-    scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 1.9, pluck: 0, padLevel: 0.03, cutoff: 1800,
+    scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 1.9, pluck: 0, padLevel: 0, cutoff: 1800,
     groove: {
       steps: 16, stabLevel: 0.045, hat: 2,
       motif: [12, 14, 16, 19, 16, 14, 12, 9, 12, 14, 16, 21, 19, 16, 14, 12],
       kick: [0, 4, 8, 10, 12], snare: [4, 12],
     },
   },
-  // After the fight, until the chapter ends: the same notes, slower and broken up, over a ticking
-  // clock and a low drone. Uneasy rather than frantic.
+  // After the fight, until the chapter ends: the combat track's motif and drums, a little slower
+  // (about 116 bpm against 126) and thinner, over a ticking clock and a low drone. The fight could
+  // start again at any moment.
   nervous: {
-    scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 3.4, pluck: 0, padLevel: 0.028, cutoff: 750,
+    scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 2.07, pluck: 0, padLevel: 0, cutoff: 900,
     groove: {
-      steps: 8, stabLevel: 0.035, tick: true, drone: true,
-      motif: [12, null, 14, null, null, 16, 14, null],
-      kick: [0, 5],
+      steps: 16, stabLevel: 0.036, hat: 4, tick: true, drone: true,
+      motif: [12, null, 16, 19, null, 14, 12, null, 12, null, 16, 21, null, 16, 14, null],
+      kick: [0, 6, 8, 14], snare: [12],
     },
   },
   // The ashways: open, high and airy, A minor pentatonic.
@@ -110,7 +111,8 @@ export class Music {
     const t = ctx.currentTime + 0.05;
     if (def.groove) this.playGroove(def, bus, t, this.bar);
     const chord = def.chords[this.bar++ % def.chords.length];
-    for (const n of chord) this.pad(bus, semis(def.root, n), t, def.barSeconds, def.padLevel, def.cutoff);
+    // The fight and nervous moods have no soft background chords: only their rhythmic layer.
+    if (def.padLevel > 0) for (const n of chord) this.pad(bus, semis(def.root, n), t, def.barSeconds, def.padLevel, def.cutoff);
     const beat = def.barSeconds / 4;
     for (let b = 0; b < 4; b++) {
       if (Math.random() >= def.pluck) continue;

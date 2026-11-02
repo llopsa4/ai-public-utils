@@ -13,7 +13,7 @@ export function afterRelease(f: Record<string, boolean>): Command[] {
       say('line.orenAfterFight', 'oren'), say('line.maraAfterFight'));
   }
   if (!f.gearChecked) {
-    out.push(say('line.orenGear', 'oren'), { type: 'giveSpares' }, { type: 'gear' }, flag('gearChecked'), say('line.orenShelter', 'oren'));
+    out.push(say('line.orenGear', 'oren'), { type: 'giveSpares' }, { type: 'awaitGear' }, flag('gearChecked'), say('line.orenShelter', 'oren'));
   }
   return out;
 }

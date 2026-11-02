@@ -106,8 +106,25 @@ class Sound {
     osc.stop(t + duration + 0.05);
   }
 
+  private hushed = false;
+  private wantedAmbience: Ambience = 'none';
+  private wantedCrowd = 0;
+
+  /**
+   * From the fight to the end of the chapter only the music plays: the kiln, the wind and the
+   * crowd murmur go quiet (footsteps and effects stay). Off again for a new game.
+   */
+  hush(on: boolean): void {
+    if (on === this.hushed) return;
+    this.hushed = on;
+    if (on) { const a = this.wantedAmbience, c = this.wantedCrowd; this.ambience('none'); this.crowd(0); this.wantedAmbience = a; this.wantedCrowd = c; }
+    else { this.ambience(this.wantedAmbience); this.crowd(this.wantedCrowd); }
+  }
+
   /** Room background: kiln hum with crackles, the cold kiln's near silence, or ashways wind. */
   ambience(kind: Ambience): void {
+    this.wantedAmbience = kind;
+    if (this.hushed) kind = 'none';
     if (kind === this.ambienceKind) return;
     this.ambienceKind = kind;
     for (const n of this.ambienceNodes) { try { (n as AudioScheduledSourceNode).stop?.(); } catch { /* already stopped */ } n.disconnect(); }
@@ -169,6 +186,8 @@ class Sound {
    * noise whose formant wanders like speech) and the odd distant clank or knock.
    */
   crowd(level: number): void {
+    this.wantedCrowd = level;
+    if (this.hushed) level = 0;
     if (Math.abs(level - this.crowdLevel) < 0.01 && (level === 0 || this.crowdNodes.length)) return;
     this.crowdLevel = level;
     for (const n of this.crowdNodes) { try { (n as AudioScheduledSourceNode).stop?.(); } catch { /* already stopped */ } n.disconnect(); }

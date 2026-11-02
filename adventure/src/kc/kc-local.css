@@ -1,0 +1,16 @@
+/* Cinderfold additions to Kiln Courier's screens (kc.css is generated: do not edit it). */
+#kc-root:not([hidden]) {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  overflow: auto;
+  background: #100d09;
+}
+.kc.kc-screen { min-height: 100%; }
+.kc .kc-tonic { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 10px; }
+.kc .kc-tonic small { font-size: 12px; opacity: 0.8; }
+.kc .kc-rewards { list-style: none; margin: 10px 0; padding: 0; display: flex; gap: 14px; justify-content: center; font-family: 'Cinzel', Georgia, serif; color: var(--gold); }
+.kc .kc-rewards li { padding: 4px 12px; border: 1px solid var(--brass); border-radius: 999px; background: #241a10; }
+.kc.kc-armory-screen { padding: 24px clamp(12px, 4vw, 48px); background: linear-gradient(#100d09f0, #100d09f8), url('../../art/src/kc/regulator-gallery.webp') center / cover; }
+.kc .kc-armory { max-width: 1180px; margin: 0 auto; }
+.kc .kc-build, .kc .kc-carried { text-align: center; }

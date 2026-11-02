@@ -22,70 +22,69 @@ async function releaseIntoFight(page: Page): Promise<void> {
   await page.evaluate(() => { const { session, interact } = (window as any).adventure; void session.scene.runScript(interact(session.state, 'use', 'regulator', 'gauntlet')); });
   await expect.poll(async () => {
     await page.evaluate(() => (window as any).adventure.session.ui.skip());
-    return page.locator('#battle').isVisible();
+    return page.locator('#kc-root .combat-screen').isVisible();
   }, { timeout: 120_000, intervals: [300] }).toBe(true);
 }
 
-const battleState = (page: Page) => page.evaluate(() => {
-  const b = (window as any).adventure.game.scene.getScene('battle').battle;
-  return { hero: b.hero.hp, enemy: b.enemy.hp, turn: b.turn, outcome: b.outcome };
-});
+/** The enemy's health as Kiln Courier's battle screen shows it. */
+const enemyHp = async (page: Page) => Number((await page.locator('#kc-root .enemy-status').textContent())?.match(/(\d+)\s*\/\s*30/)?.[1]);
 
-test('a reload in the middle of the fight starts the fight again; winning it pays out once', async ({ page }) => {
+test('the first fight is Kiln Courier\'s lesson: only the outlined control works; a reload starts it again; winning pays out once', async ({ page }) => {
   const errors: string[] = [];
   await readyToRelease(page, errors);
   await releaseIntoFight(page);
-  await expect(page.locator('.battle-guide')).toBeVisible();
-  await page.locator('.battle-card.asked').click();
-  await expect.poll(async () => (await battleState(page)).enemy).toBeLessThan(26);
+  await expect(page.locator('#kc-root .lesson-banner')).toContainText('1/19');
+  // Only the lesson's control works: the cards wait.
+  await expect(page.locator('#kc-root button.card').first()).toBeDisabled();
+  for (let i = 0; i < 4; i++) await fightStep(page); // intent, close, Knuckle Drive, Ceramic Guard
+  await expect.poll(() => enemyHp(page)).toBeLessThan(30);
 
-  // Reload: Continue brings back the gallery after the release, and the fight starts over.
+  // Reload: Continue brings back the gallery after the release, and the lesson starts over.
   await page.reload();
   await page.getByRole('button', { name: 'Continue' }).click();
   await expect.poll(async () => {
     await page.evaluate(() => (window as any).adventure.session.ui.skip());
-    return page.locator('#battle').isVisible();
+    return page.locator('#kc-root .combat-screen').isVisible();
   }, { timeout: 120_000, intervals: [300] }).toBe(true);
-  expect((await battleState(page)).enemy).toBe(26);
+  await expect(page.locator('#kc-root .lesson-banner')).toContainText('1/19');
+  expect(await enemyHp(page)).toBe(30);
 
-  // Win it (the guide, then any playable card) and Continue.
-  for (let i = 0; i < 300 && await page.locator('#battle').isVisible(); i++) await fightStep(page);
-  await expect(page.locator('#battle')).toBeHidden();
+  // Follow the lesson to the end.
+  for (let i = 0; i < 200 && !(await page.locator('#force-veil').count()); i++) {
+    if (await page.locator('#kc-root .combat-screen').isVisible().catch(() => false)) await fightStep(page);
+    else { await page.evaluate(() => (window as any).adventure.session.ui.skip()); await page.waitForTimeout(250); }
+  }
 
-  // Oren's advice opens the gear menu: put on his light coat.
-  await expect.poll(async () => {
-    await page.evaluate(() => (window as any).adventure.session.ui.skip());
-    return page.locator('#gear[open]').count();
-  }, { timeout: 60_000, intervals: [300] }).toBe(1);
-  await page.locator('#gear label', { hasText: 'Light Armor' }).click();
-  await expect(page.locator('#gear-stats')).toContainText('Defense');
-  await page.locator('#gear .dialog-close').click();
+  // Oren's advice: everything is dimmed but the Gear button, which has to be pressed.
+  await expect(page.locator('#force-veil')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#force-veil')).toBeVisible();
+  await page.locator('#gear-btn').click();
+  await expect(page.locator('#kc-root .kc-armory')).toBeVisible({ timeout: 30_000 });
+  await page.locator('#kc-root .gear-tile', { hasText: 'Light Armor' }).click();
+  await page.locator('#armory-equip').click();
+  await page.locator('#armory-done').click();
   await expect.poll(async () => {
     await page.evaluate(() => (window as any).adventure.session.ui.skip());
     return page.evaluate(() => !(window as any).adventure.session.scene.isBusy());
   }, { timeout: 60_000, intervals: [300] }).toBe(true);
-  await expect(page.locator('#gear-btn')).toBeVisible();
   const state = await page.evaluate(() => (window as any).adventure.session.state);
+  expect(state.flags.fought && state.flags.gearChecked).toBe(true);
   expect(state.kit.equipment.armor.id).toBe('light-armor');
-  expect(state.flags.gearChecked).toBe(true);
-  expect(state.flags.fought).toBe(true);
   expect(state.bag.salvage).toBe(12);
   expect(state.bag.materials).toEqual({ 'pressure-coil': 1 });
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
-test('falling in the fight is not a game over: it starts again with a hint', async ({ page }) => {
+test('Skip tutorial turns the lesson into a free fight on the same screen', async ({ page }) => {
   const errors: string[] = [];
   await readyToRelease(page, errors);
   await releaseIntoFight(page);
-  await page.locator('.battle-guide .ink-btn').click(); // skip the guide
-  await page.evaluate(() => { (window as any).adventure.game.scene.getScene('battle').battle.hero.hp = 1; });
-  await page.locator('#battle-end').click();
-  await expect(page.locator('.battle-banner', { hasText: 'Again' })).toBeVisible({ timeout: 30_000 });
-  await expect.poll(async () => (await battleState(page)).enemy, { timeout: 30_000 }).toBe(26);
-  const after = await battleState(page);
-  expect(after.outcome).toBeNull();
-  expect(after.hero).toBeGreaterThanOrEqual(36);
+  await page.locator('#kc-root .lesson-banner button', { hasText: 'Skip tutorial' }).click();
+  await expect(page.locator('#kc-root .lesson-banner')).toHaveCount(0);
+  await expect(page.locator('#kc-root button.card:not(:disabled)').first()).toBeVisible();
+  for (let i = 0; i < 300 && await page.locator('#kc-root .combat-screen').isVisible().catch(() => false); i++) await fightStep(page);
+  await expect.poll(() => page.evaluate(() => (window as any).adventure.session.state.flags.fought), { timeout: 60_000 }).toBe(true);
   expect(errors, errors.join('\n')).toEqual([]);
 });
 

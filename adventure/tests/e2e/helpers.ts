@@ -36,12 +36,12 @@ export async function act(page: Page, verb: string, target: string, item?: strin
     });
     if (done) return;
     // A fight: follow the guide, else play the first playable card, else end the turn; then Continue.
-    // The gear menu and the shop wait for the player: take what is offered and close.
-    for (const id of ['gear', 'shop']) {
-      const dialog = page.locator(`#${id}[open]`);
-      if (await dialog.count()) await dialog.locator('.dialog-close').click();
-    }
-    if (await page.locator('#battle').isVisible()) {
+    // Oren's forced Gear button, the gear screen and the shop wait for the player.
+    if (await page.locator('#force-veil').count()) { await page.locator('#gear-btn').click(); continue; }
+    if (await page.locator('#armory-done').isVisible().catch(() => false)) { await page.locator('#armory-done').click(); continue; }
+    if (await page.locator('#shop[open]').count()) { await page.locator('#shop .dialog-close').click(); continue; }
+    // A fight (Kiln Courier's screen): follow the lesson, or play on.
+    if (await page.locator('#kc-root .combat-screen').isVisible().catch(() => false)) {
       await fightStep(page);
       continue;
     }
@@ -71,18 +71,20 @@ export async function startNewGame(page: Page, tap = false): Promise<void> {
   await idle(page);
 }
 
-/** One move in a fight, as a player would make it (clicks on the real buttons). */
+/**
+ * One move on Kiln Courier's battle screen, as a player would make it: the lesson's outlined
+ * control if there is one; otherwise Continue after a win, else the first playable card, else
+ * End turn.
+ */
 export async function fightStep(page: Page): Promise<void> {
-  const cont = page.locator('#battle-continue');
-  if (await cont.isVisible()) { await cont.click(); return; }
-  const askedEnd = page.locator('#battle-end.asked:not(:disabled)');
-  if (await askedEnd.count()) { await askedEnd.click(); await page.waitForTimeout(250); return; }
-  const asked = page.locator('.battle-card.asked:not(:disabled)');
-  const card = (await asked.count()) ? asked.first() : page.locator('.battle-card:not(:disabled)').first();
-  if (await card.count()) { await card.click(); }
-  else {
-    const end = page.locator('#battle-end:not(:disabled)');
-    if (await end.count()) await end.click();
-  }
+  const root = page.locator('#kc-root');
+  const target = root.locator('.lesson-target:not(:disabled)').first();
+  if (await target.count()) { await target.click(); await page.waitForTimeout(250); return; }
+  const cont = root.locator('#modal-actions .modal-primary, .battle-result-action .modal-primary').first();
+  if (await cont.isVisible().catch(() => false)) { await cont.click(); await page.waitForTimeout(250); return; }
+  const card = root.locator('button.card:not(:disabled)').first();
+  if (await card.count()) { await card.click(); await page.waitForTimeout(250); return; }
+  const end = root.locator('#end-turn:not(:disabled)');
+  if (await end.count()) await end.click();
   await page.waitForTimeout(250);
 }

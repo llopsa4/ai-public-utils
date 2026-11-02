@@ -4,7 +4,7 @@ import { EQUIPMENT_SLOTS, deriveStats, withEquipment } from '../combat/equipment
 import { EQUIPMENT } from '../combat/gear';
 import type { BattleState, BattleStats, EquipmentSlot } from '../combat/types';
 import {
-  ENCOUNTERS, HERO_MAX_HP, LOCKED_SLOTS, MAX_SALVAGE, OREN_SPARES, REWARDS, STARTING_EQUIPMENT, STARTING_OWNED, TONIC, TUTORIAL, maraProfile,
+  ENCOUNTERS, HERO_MAX_HP, LOCKED_SLOTS, MAX_SALVAGE, OREN_SPARES, REWARDS, STARTING_EQUIPMENT, STARTING_OWNED, TONIC, maraProfile,
 } from '../content/combat';
 import type { Bag, GameState, Kit } from './types';
 
@@ -16,18 +16,9 @@ export function newBag(): Bag {
   return { salvage: 0, materials: {}, tonics: 0 };
 }
 
-/** The battle for an encounter, from Mara's current kit. The first fight is the guided one. */
-export function startBattle(state: GameState, encounterId: string, seed: number, guided: boolean): BattleState {
-  const profile = maraProfile(state.kit);
-  const battle = createBattle(profile, ENCOUNTERS[encounterId], seed);
-  if (!guided) return battle;
-  const card = (id: string) => ({ ...profile.deck.find(c => c.id === id)! });
-  battle.hand = TUTORIAL.hand.map(card);
-  // draw() takes from the end of the pile.
-  battle.draw = [...TUTORIAL.draws].reverse().map(card);
-  battle.discard = [];
-  battle.practice = { requiredCardId: TUTORIAL.steps[0].play ?? null };
-  return battle;
+/** A free battle for an encounter, from Mara's current kit (the first fight is Kiln Courier's lesson, src/kc). */
+export function startBattle(state: GameState, encounterId: string, seed: number): BattleState {
+  return createBattle(maraProfile(state.kit), ENCOUNTERS[encounterId], seed);
 }
 
 /** Ends a fight: health and MP carry over; a win pays out. */

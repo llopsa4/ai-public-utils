@@ -42,17 +42,18 @@ for (const name of js) assert.doesNotMatch(await readFile(resolve(project, 'buil
 // Size budget: everything, and what is downloaded before the title screen is usable (code, sheets,
 // portraits, icons, Mara's unlit sheet, plus the two rooms the title loads: the kiln-hall backdrop
 // and the start room). Oren, Nell and the lit gauntlet load with the rooms that need them; the kiln
-// hall's background people load in the background once play starts.
+// hall's background people load in the background once play starts; Kiln Courier's battle screen
+// (React, its art and fonts: the `mount` chunk) loads with the first fight.
 const { statSync } = await import('node:fs');
 const size = name => statSync(resolve(project, 'build', name)).size;
 const total = built.reduce((sum, n) => sum + size(n), 0);
-const later = /^(firing-house|gallery|ashways|hall-left|hall-right|gallery-railing|mara-gauntlet|oren|nell|scavenger|extra-[a-z]+)-[\w-]{8}\./;
+const later = /^(firing-house|gallery|ashways|hall-left|hall-right|gallery-railing|mara-gauntlet|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
 // .woff fonts are fallbacks for browsers without WOFF2; current browsers never fetch them.
 const firstLoad = built.filter(n => !later.test(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;
 // Static count: it also includes portraits and icons that are only fetched when first shown, so the
 // real first load (measured by npm run e2e) is lower.
-const TOTAL_BUDGET = 3.6, FIRST_BUDGET = 1.75;
+const TOTAL_BUDGET = 4.6, FIRST_BUDGET = 1.75;
 assert.ok(total < TOTAL_BUDGET * MB, `build is ${(total / MB).toFixed(2)} MB (budget ${TOTAL_BUDGET} MB)`);
 assert.ok(firstLoad < FIRST_BUDGET * MB, `first load is ${(firstLoad / MB).toFixed(2)} MB (budget ${FIRST_BUDGET} MB)`);
 console.log(`Build verified: ${built.length} assets, relative URLs only, ${(total / MB).toFixed(2)} MB total, ${(firstLoad / MB).toFixed(2)} MB before the title screen.`);

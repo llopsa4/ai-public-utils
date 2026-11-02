@@ -213,6 +213,8 @@ export type Command =
   | { type: 'fight'; id: string }
   /** Opens the gear menu and waits for it to close. */
   | { type: 'gear' }
+  /** Shows the Gear button and makes the player press it (then the gear screen, until closed). */
+  | { type: 'awaitGear' }
   /** Oren's spares become Mara's to choose from. */
   | { type: 'giveSpares' }
   /** Opens the merchant's shop and waits for it to close. */
