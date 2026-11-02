@@ -74,17 +74,18 @@ export class Ui {
     this.buildLanguageButtons();
     this.menuButton.addEventListener('click', () => this.menu.showModal());
     $('menu-close').addEventListener('click', () => this.menu.close());
+    $('menu-help').addEventListener('click', () => $<HTMLDialogElement>('help').showModal());
     $('menu-export').addEventListener('click', () => this.exportSave());
     $('menu-import').addEventListener('click', () => this.fileInput.click());
     $('end-new').addEventListener('click', () => { this.hideEnd(); this.host.replaceState(this.host.newGame()); });
-    $('menu-history').addEventListener('click', () => { this.menu.close(); this.openHistory(); });
-    $('menu-settings').addEventListener('click', () => { this.menu.close(); this.openSettings(); });
+    $('menu-history').addEventListener('click', () => this.openHistory()); // stacks over the pause menu; Back returns to it
+    $('menu-settings').addEventListener('click', () => this.openSettings());
     $('notebook-btn').addEventListener('click', () => this.openNotebook());
     $('reveal-btn').addEventListener('click', () => this.revealFor(3000));
     this.bindFullscreen();
     this.bindLongPress();
     const mute = $('mute-btn');
-    const showMute = (s: Settings) => { mute.setAttribute('aria-pressed', String(s.muted)); mute.innerHTML = s.muted ? '&#128263;' : '&#128264;'; };
+    const showMute = (s: Settings) => mute.setAttribute('aria-pressed', String(s.muted));
     mute.addEventListener('click', () => updateSettings({ muted: !settings().muted }));
     onSettingsChange(showMute);
     showMute(settings());
@@ -95,13 +96,14 @@ export class Ui {
     this.dialogue.addEventListener('pointerdown', () => this.skip());
     this.bindSettingsForm();
     $('menu-new').addEventListener('click', () => {
-      if (window.confirm(t('ui.confirmNew'))) { this.host.replaceState(this.host.newGame()); this.menu.close(); }
+      void this.confirm(t('ui.confirmNew')).then(yes => { if (yes) { this.menu.close(); this.host.replaceState(this.host.newGame()); } });
     });
     $('menu-title').addEventListener('click', () => { this.menu.close(); this.host.toTitle(); });
     $('title-continue').addEventListener('click', () => this.host.continueGame());
     $('title-new').addEventListener('click', () => {
-      if (readAutosave().kind === 'ok' && !window.confirm(t('ui.confirmNewTitle'))) return;
-      this.host.replaceState(this.host.newGame());
+      const start = () => this.host.replaceState(this.host.newGame());
+      if (readAutosave().kind !== 'ok') { start(); return; }
+      void this.confirm(t('ui.confirmNewTitle')).then(yes => { if (yes) start(); });
     });
     $('title-import').addEventListener('click', () => this.fileInput.click());
     $('title-settings').addEventListener('click', () => this.openSettings());
@@ -114,7 +116,7 @@ export class Ui {
         && !this.anyDialogOpen() && !this.radialOpen && this.choices.hidden && $('title').hidden;
       if (free && e.key === 'Tab' && this.host.cycleFocus(e.shiftKey ? -1 : 1)) e.preventDefault();
       if (free && e.key === 'Enter' && this.host.activateFocus()) e.preventDefault();
-      if (e.key === ' ' && !e.repeat && !this.anyDialogOpen() && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement)) {
+      if (e.key === ' ' && !e.repeat && !this.anyDialogOpen() && !(e.target instanceof HTMLInputElement)) {
         e.preventDefault();
         this.showLabels();
       }
@@ -302,29 +304,38 @@ export class Ui {
   openSettings(): void {
     const form = $<HTMLFormElement>('settings-form');
     const s = settings();
-    (form.elements.namedItem('textSpeed') as HTMLSelectElement).value = s.textSpeed;
-    (form.elements.namedItem('textSize') as HTMLSelectElement).value = s.textSize;
-    (form.elements.namedItem('visualQuality') as HTMLSelectElement).value = s.visualQuality;
+    (form.elements.namedItem('textSpeed') as RadioNodeList).value = s.textSpeed;
+    (form.elements.namedItem('textSize') as RadioNodeList).value = s.textSize;
+    (form.elements.namedItem('visualQuality') as RadioNodeList).value = s.visualQuality;
     (form.elements.namedItem('volume') as HTMLInputElement).value = String(s.volume);
     (form.elements.namedItem('musicVolume') as HTMLInputElement).value = String(s.musicVolume);
     for (const k of ['muted', 'autoAdvance', 'reducedMotion', 'highContrast'] as const) (form.elements.namedItem(k) as HTMLInputElement).checked = s[k];
+    this.paintSliders();
     $<HTMLDialogElement>('settings').showModal();
+  }
+
+  /** Ember fill up to each slider's knob (Chromium has no native progress part). */
+  private paintSliders(): void {
+    for (const r of document.querySelectorAll<HTMLInputElement>('#settings-form input[type="range"]')) {
+      r.style.setProperty('--fill', `${Number(r.value) * 100}%`);
+    }
   }
 
   private bindSettingsForm(): void {
     const form = $<HTMLFormElement>('settings-form');
+    form.addEventListener('input', () => this.paintSliders());
     form.addEventListener('submit', e => e.preventDefault());
     form.addEventListener('input', () => {
       const el = (name: string) => form.elements.namedItem(name) as HTMLInputElement;
       updateSettings({
-        textSpeed: (form.elements.namedItem('textSpeed') as HTMLSelectElement).value as Settings['textSpeed'],
+        textSpeed: (form.elements.namedItem('textSpeed') as RadioNodeList).value as Settings['textSpeed'],
         volume: Number(el('volume').value),
         musicVolume: Number(el('musicVolume').value),
         muted: el('muted').checked,
         autoAdvance: el('autoAdvance').checked,
         reducedMotion: el('reducedMotion').checked,
-        textSize: (form.elements.namedItem('textSize') as HTMLSelectElement).value as Settings['textSize'],
-        visualQuality: (form.elements.namedItem('visualQuality') as HTMLSelectElement).value as Settings['visualQuality'],
+        textSize: (form.elements.namedItem('textSize') as RadioNodeList).value as Settings['textSize'],
+        visualQuality: (form.elements.namedItem('visualQuality') as RadioNodeList).value as Settings['visualQuality'],
         highContrast: el('highContrast').checked,
       });
     });
@@ -335,6 +346,28 @@ export class Ui {
     };
     onSettingsChange(apply);
     apply(settings());
+  }
+
+  /** An in-game yes/no panel (the browser's confirm() looks like a form and blocks the page). */
+  confirm(text: string): Promise<boolean> {
+    const dialog = $<HTMLDialogElement>('confirm');
+    $('confirm-text').textContent = text;
+    return new Promise(resolve => {
+      const yes = $('confirm-yes'), no = $('confirm-no');
+      const done = (answer: boolean) => {
+        yes.removeEventListener('click', onYes);
+        no.removeEventListener('click', onNo);
+        dialog.removeEventListener('close', onClose);
+        if (dialog.open) dialog.close();
+        resolve(answer);
+      };
+      const onYes = () => done(true), onNo = () => done(false), onClose = () => done(false);
+      yes.addEventListener('click', onYes);
+      no.addEventListener('click', onNo);
+      dialog.addEventListener('close', onClose);
+      dialog.showModal();
+      no.focus();
+    });
   }
 
   /** Says something to screen readers only (focus moves on the canvas). */
@@ -499,7 +532,11 @@ export class Ui {
       options.forEach((text, i) => {
         const b = document.createElement('button');
         b.type = 'button';
-        b.textContent = text;
+        const n = document.createElement('span');
+        n.className = 'choice-n';
+        n.textContent = `${i + 1}`;
+        n.setAttribute('aria-hidden', 'true');
+        b.append(n, text);
         b.addEventListener('click', () => finish(i));
         box.append(b);
       });
@@ -628,7 +665,7 @@ export class Ui {
     if (!file) return;
     const result = file.size > MAX_SAVE_BYTES ? { ok: false as const, error: 'save.error.tooLarge' } : parseSave(await file.text());
     if (!result.ok) { this.toast(t(result.error), 6000); return; }
-    if (!$('app').classList.contains('on-title') && !window.confirm(t('ui.confirmImport'))) return;
+    if (!$('app').classList.contains('on-title') && !(await this.confirm(t('ui.confirmImport')))) return;
     this.host.replaceState(result.state);
     this.menu.close();
     this.toast(t('ui.imported'));

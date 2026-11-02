@@ -31,3 +31,5 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 
 All outputs are palette-indexed PNGs (`art/png.mjs`, upng-js).
 Room backgrounds, foreground cut-outs and props are also written as WebP (`art/webp.mjs`, sharp 0.35, which bundles libvips under the LGPL-3.0); the game loads the WebP copies.
+
+The interface font is Zilla Slab (Mozilla / Typotheque), SIL Open Font License 1.1, bundled from `@fontsource/zilla-slab` (Latin subset). The interface frames, rivets, toggles and icons are drawn in CSS and inline SVG.

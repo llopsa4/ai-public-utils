@@ -6,7 +6,12 @@ import { interact } from './content/interactions';
 import { BootScene, RoomScene, TitleScene } from './game/scenes';
 import { Session } from './game/session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from './ui/ui';
+import '@fontsource/zilla-slab/latin-400.css';
+import '@fontsource/zilla-slab/latin-400-italic.css';
+import '@fontsource/zilla-slab/latin-600.css';
+import '@fontsource/zilla-slab/latin-700.css';
 import './style.css';
+import './theme.css';
 
 initLanguage();
 loadSettings();

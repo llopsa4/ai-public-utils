@@ -1,6 +1,6 @@
 # Cinderfold: A delivery he does not want
 
-A point-and-click adventure built from the first scene of **Kiln Courier**'s story. Mara, a courier and kiln-minder in Cinderfold (a village built inside an old industrial kiln), must shut down the cracked regulator and carry it away for assessment. He doesn't want to go. The game runs entirely in the browser as static files on GitHub Pages: no server, no accounts, no tracking. It uses only free software: Phaser 3 (MIT), TypeScript and Vite; the art and test tools (pngjs, upng-js, sharp, Playwright) are development-only.
+A point-and-click adventure built from the first scene of **Kiln Courier**'s story. Mara, a courier and kiln-minder in Cinderfold (a village built inside an old industrial kiln), must shut down the cracked regulator and carry it away for assessment. He doesn't want to go. The game runs entirely in the browser as static files on GitHub Pages: no server, no accounts, no tracking. It uses only free software: Phaser 3 (MIT), TypeScript, Vite and the Zilla Slab font (OFL); the art and test tools (pngjs, upng-js, sharp, Playwright) are development-only.
 
 ## Play
 
@@ -16,7 +16,7 @@ Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 - **Exits:** double-click a doorway to go straight through.
 - **Keyboard:** Tab moves between the things in the room (then on to the bar), Enter opens the action ring, arrow keys move around it, number keys pick replies.
 - **Touch:** press and hold on the scene to label everything. The ⛶ button switches to full screen where the browser allows it.
-- **Menu:** saves, **History** (everything said so far), **Settings** (text speed, effects and music volume, mute, auto-advance, reduced motion, text size, high contrast) and **Title screen**.
+- **Menu** (pause): Resume, **History** (everything said so far), **How to play**, saves, **Settings** (text speed, effects and music volume, mute, auto-advance, reduced motion, text size, high contrast) and **Title screen**.
 - **Hints:** the notebook's **Hint** button gives a nudge for the current goal, then the plain answer.
 - **Cursor:** the pointer shows the name of what it is over and what a click will do (look, handle, talk, leave).
 

@@ -5,7 +5,7 @@
   --panel-edge: #4a3a4c;
   --text: #f4ead8;
   --gold: #e7c046;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Zilla Slab", Georgia, "Times New Roman", serif;
 }
 
 * { box-sizing: border-box; }
@@ -303,15 +303,6 @@ button.verb:hover, button.verb:focus-visible {
   line-height: 1.5;
 }
 
-#end button {
-  min-height: 44px;
-  padding: 0 18px;
-  background: var(--panel);
-  border: 1px solid var(--gold);
-  border-radius: 6px;
-  cursor: pointer;
-}
-
 /* ------------------------------------------------------------- title --- */
 #title:not([hidden]) {
   position: absolute;
@@ -340,32 +331,6 @@ button.verb:hover, button.verb:focus-visible {
   opacity: 0.9;
 }
 
-.title-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5em;
-}
-
-.title-actions button {
-  min-height: 44px;
-  min-width: 12em;
-  padding: 0 1.2em;
-  text-align: left;
-  background: rgb(36 26 38 / 0.85);
-  border: 1px solid var(--panel-edge);
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.title-actions button[hidden] {
-  display: none;
-}
-
-.title-actions button:hover, .title-actions button:focus-visible {
-  border-color: var(--gold);
-}
-
 #title .title-note {
   margin-top: 1.2em;
   max-width: 30em;
@@ -375,31 +340,6 @@ button.verb:hover, button.verb:focus-visible {
 
 #app.on-title #bar > :not(#mute-btn) {
   visibility: hidden;
-}
-
-.secrets {
-  margin: 0.4rem 0 0;
-  font-size: 0.9em;
-  opacity: 0.8;
-}
-
-.secrets[hidden] {
-  display: none;
-}
-
-#hint-box {
-  margin-top: 0.8rem;
-  padding-top: 0.6rem;
-  border-top: 1px solid var(--panel-edge);
-}
-
-#hint-box[hidden], #hint-btn[hidden], #hint-text[hidden] {
-  display: none;
-}
-
-.hint {
-  font-style: italic;
-  color: #ffd79a;
 }
 
 @keyframes fade-in {
@@ -464,16 +404,6 @@ button {
   gap: 2px;
 }
 
-#lang button, #menu-btn, #notebook-btn, #reveal-btn, #mute-btn, #fs-btn, .menu-actions button {
-  min-height: 44px;
-  min-width: 44px;
-  padding: 0 12px;
-  background: var(--panel);
-  border: 1px solid var(--panel-edge);
-  border-radius: 6px;
-  cursor: pointer;
-}
-
 #lang button[aria-pressed="true"] {
   border-color: var(--gold);
   color: var(--gold);
@@ -482,99 +412,6 @@ button {
 #menu-btn:disabled {
   opacity: 0.5;
   cursor: default;
-}
-
-/* -------------------------------------------------------------- menu --- */
-dialog {
-  max-width: min(32rem, 92vw);
-  padding: 1.2rem 1.4rem;
-  color: var(--text);
-  background: var(--panel);
-  border: 1px solid var(--panel-edge);
-  border-radius: 10px;
-}
-
-dialog::backdrop {
-  background: rgb(0 0 0 / 0.6);
-}
-
-dialog h1 {
-  margin: 0 0 0.6rem;
-  font-size: 1.3rem;
-}
-
-#objectives li {
-  margin: 0.35em 0;
-}
-
-#objectives li.done {
-  opacity: 0.55;
-  text-decoration: line-through;
-}
-
-#history-list {
-  max-height: 55vh;
-  overflow-y: auto;
-  padding-left: 1.2em;
-}
-
-#history-list li {
-  margin: 0.3em 0;
-}
-
-#history-list li.empty {
-  list-style: none;
-  opacity: 0.7;
-}
-
-.settings {
-  display: grid;
-  gap: 0.7rem;
-}
-
-.settings label {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.settings label.check {
-  justify-content: flex-start;
-}
-
-.settings select, .settings input[type="range"] {
-  min-height: 32px;
-}
-
-#menu {
-  max-width: min(32rem, 92vw);
-  padding: 1.2rem 1.4rem;
-  color: var(--text);
-  background: var(--panel);
-  border: 1px solid var(--panel-edge);
-  border-radius: 10px;
-}
-
-#menu::backdrop {
-  background: rgb(0 0 0 / 0.6);
-}
-
-#menu h1 {
-  margin: 0 0 0.6rem;
-  font-size: 1.3rem;
-}
-
-#menu .help {
-  opacity: 0.85;
-  font-size: 0.92em;
-}
-
-.menu-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 1rem;
 }
 
 button:focus-visible {

@@ -17,7 +17,7 @@ assert.deepEqual(published.sort(), built.sort(), 'build/ differs from dist/build
 for (const name of built) {
   const a = await readFile(resolve(project, 'dist/build', name));
   assert.ok(a.equals(await readFile(resolve(project, 'build', name))), `stale asset ${name}`);
-  assert.match(name, /\.(js|css|png|webp)$/, `unexpected asset type ${name}`);
+  assert.match(name, /\.(js|css|png|webp|woff2?)$/, `unexpected asset type ${name}`);
 }
 // Vite names assets <name>-<8-character hash>.<ext>.
 const has = (name, ext) => built.some(n => new RegExp(`^${name}-[\\w-]{8}\\.${ext}$`).test(n));
@@ -41,11 +41,12 @@ const { statSync } = await import('node:fs');
 const size = name => statSync(resolve(project, 'build', name)).size;
 const total = built.reduce((sum, n) => sum + size(n), 0);
 const later = /^(firing-house|gallery|ashways|hall-left|hall-right|gallery-railing|mara-gauntlet|oren|nell)-[\w-]{8}\./;
-const firstLoad = built.filter(n => !later.test(n)).reduce((sum, n) => sum + size(n), 0);
+// .woff fonts are fallbacks for browsers without WOFF2; current browsers never fetch them.
+const firstLoad = built.filter(n => !later.test(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;
 // Static count: it also includes portraits and icons that are only fetched when first shown, so the
 // real first load (measured by npm run e2e) is lower.
-const TOTAL_BUDGET = 3, FIRST_BUDGET = 1.65;
+const TOTAL_BUDGET = 3.1, FIRST_BUDGET = 1.75;
 assert.ok(total < TOTAL_BUDGET * MB, `build is ${(total / MB).toFixed(2)} MB (budget ${TOTAL_BUDGET} MB)`);
 assert.ok(firstLoad < FIRST_BUDGET * MB, `first load is ${(firstLoad / MB).toFixed(2)} MB (budget ${FIRST_BUDGET} MB)`);
 console.log(`Build verified: ${built.length} assets, relative URLs only, ${(total / MB).toFixed(2)} MB total, ${(firstLoad / MB).toFixed(2)} MB before the title screen.`);

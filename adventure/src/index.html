@@ -30,12 +30,12 @@
         <p class="end-tag" data-i18n="ui.endTag">To be continued</p>
         <h2 id="end-title" data-i18n="ui.endTitle"></h2>
         <p data-i18n="ui.endText"></p>
-        <button id="end-new" type="button" data-i18n="ui.newGame">New game</button>
+        <button id="end-new" class="btn primary" type="button" data-i18n="ui.newGame">New game</button>
       </section>
       <section id="title" hidden aria-labelledby="title-name">
         <h1 id="title-name" data-i18n="ui.titleName">Cinderfold</h1>
         <p class="title-sub" data-i18n="ui.endTitle">A delivery he does not want</p>
-        <div class="title-actions">
+        <div class="title-actions menu-list">
           <button id="title-continue" type="button" data-i18n="ui.continue" hidden>Continue</button>
           <button id="title-new" type="button" data-i18n="ui.newGame">New game</button>
           <button id="title-import" type="button" data-i18n="ui.import">Import save</button>
@@ -48,78 +48,114 @@
     <nav id="bar">
       <div id="inventory" role="toolbar" data-i18n-label="ui.inventory"></div>
       <div id="lang" role="group" data-i18n-label="ui.language"></div>
-      <button id="mute-btn" type="button" data-i18n-label="ui.mute" aria-pressed="false">&#128264;</button>
-      <button id="reveal-btn" type="button" data-i18n-label="ui.reveal" aria-pressed="false">&#128065;</button>
-      <button id="fs-btn" type="button" data-i18n-label="ui.fullscreen" aria-pressed="false" hidden>&#x26F6;</button>
-      <button id="notebook-btn" type="button" data-i18n="ui.notebook">Notebook</button>
-      <button id="menu-btn" type="button" data-i18n="ui.menu">Menu</button>
+      <button id="mute-btn" class="btn icon-btn" type="button" data-i18n-label="ui.mute" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on" d="M16 9c1.3 1.6 1.3 4.4 0 6M18.5 6.5c2.8 3 2.8 8 0 11" fill="none"/><path class="off" d="M16 9l5 6M21 9l-5 6" fill="none"/></svg></button>
+      <button id="reveal-btn" class="btn icon-btn" type="button" data-i18n-label="ui.reveal" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z" fill="none"/><circle cx="12" cy="12" r="3"/></svg></button>
+      <button id="fs-btn" class="btn icon-btn" type="button" data-i18n-label="ui.fullscreen" aria-pressed="false" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none"/></svg></button>
+      <button id="notebook-btn" class="btn" type="button" data-i18n="ui.notebook">Notebook</button>
+      <button id="menu-btn" class="btn" type="button" data-i18n="ui.menu">Menu</button>
     </nav>
   </main>
 
-  <dialog id="menu">
-    <h1 data-i18n="ui.title">Cinderfold</h1>
-    <p data-i18n="ui.notice"></p>
-    <p class="help" data-i18n="ui.help"></p>
-    <div class="menu-actions">
+  <!-- Pause menu: a game menu, not a form. -->
+  <dialog id="menu" class="panel" aria-labelledby="menu-heading">
+    <h1 id="menu-heading" class="plaque" data-i18n="ui.paused">Paused</h1>
+    <div class="menu-list">
+      <button id="menu-close" type="button" data-i18n="ui.resume">Resume</button>
+      <button id="menu-history" type="button" data-i18n="ui.history">History</button>
+      <button id="menu-settings" type="button" data-i18n="ui.settings">Settings</button>
+      <button id="menu-help" type="button" data-i18n="ui.howToPlay">How to play</button>
+      <span class="menu-sep" aria-hidden="true"></span>
       <button id="menu-export" type="button" data-i18n="ui.export">Export save</button>
       <button id="menu-import" type="button" data-i18n="ui.import">Import save</button>
       <button id="menu-new" type="button" data-i18n="ui.newGame">New game</button>
-      <button id="menu-history" type="button" data-i18n="ui.history">History</button>
-      <button id="menu-settings" type="button" data-i18n="ui.settings">Settings</button>
       <button id="menu-title" type="button" data-i18n="ui.toTitle">Title screen</button>
-      <button id="menu-close" type="button" data-i18n="ui.close">Close</button>
     </div>
+    <p class="panel-note" data-i18n="ui.notice"></p>
     <input id="import-file" type="file" accept=".json,application/json" hidden>
   </dialog>
 
-  <dialog id="notebook">
-    <h1 data-i18n="ui.notebookTitle">Mara's notebook</h1>
+  <!-- Mara's notebook: a page, not a list box. -->
+  <dialog id="notebook" class="paper" aria-labelledby="notebook-heading">
+    <h1 id="notebook-heading" data-i18n="ui.notebookTitle">Mara's notebook</h1>
     <ol id="objectives"></ol>
-    <p id="secrets" class="secrets" hidden></p>
     <div id="hint-box">
       <p id="hint-text" class="hint" hidden></p>
-      <button id="hint-btn" type="button" data-i18n="ui.hint">Hint</button>
+      <button id="hint-btn" class="ink-btn" type="button" data-i18n="ui.hint">Hint</button>
     </div>
-    <div class="menu-actions"><button type="button" class="dialog-close" data-i18n="ui.close">Close</button></div>
+    <p id="secrets" class="secrets" hidden></p>
+    <button type="button" class="dialog-close corner-close" data-i18n-label="ui.close" aria-label="Close">&times;</button>
   </dialog>
 
-  <dialog id="history">
-    <h1 data-i18n="ui.historyTitle">What was said</h1>
+  <dialog id="history" class="panel" aria-labelledby="history-heading">
+    <h1 id="history-heading" class="plaque" data-i18n="ui.historyTitle">What was said</h1>
     <ol id="history-list"></ol>
-    <div class="menu-actions"><button type="button" class="dialog-close" data-i18n="ui.close">Close</button></div>
+    <div class="panel-actions"><button type="button" class="btn dialog-close" data-i18n="ui.back">Back</button></div>
   </dialog>
 
-  <dialog id="settings">
-    <h1 data-i18n="ui.settings">Settings</h1>
+  <dialog id="settings" class="panel" aria-labelledby="settings-heading">
+    <h1 id="settings-heading" class="plaque" data-i18n="ui.settings">Settings</h1>
     <form id="settings-form" class="settings">
-      <label><span data-i18n="ui.textSpeed">Text speed</span>
-        <select name="textSpeed">
-          <option value="slow" data-i18n="ui.speed.slow">Slow</option>
-          <option value="normal" data-i18n="ui.speed.normal">Normal</option>
-          <option value="fast" data-i18n="ui.speed.fast">Fast</option>
-        </select>
-      </label>
-      <label><span data-i18n="ui.volume">Effects volume</span><input name="volume" type="range" min="0" max="1" step="0.05"></label>
-      <label><span data-i18n="ui.musicVolume">Music volume</span><input name="musicVolume" type="range" min="0" max="1" step="0.05"></label>
-      <label class="check"><input name="muted" type="checkbox"><span data-i18n="ui.mute">Mute</span></label>
-      <label class="check"><input name="autoAdvance" type="checkbox"><span data-i18n="ui.autoAdvance">Advance lines automatically</span></label>
-      <label class="check"><input name="reducedMotion" type="checkbox"><span data-i18n="ui.reducedMotion">Reduce motion</span></label>
-      <label><span data-i18n="ui.textSize">Text size</span>
-        <select name="textSize">
-          <option value="s" data-i18n="ui.size.s">Small</option>
-          <option value="m" data-i18n="ui.size.m">Medium</option>
-          <option value="l" data-i18n="ui.size.l">Large</option>
-        </select>
-      </label>
-      <label><span data-i18n="ui.quality">Visual quality</span>
-        <select name="visualQuality">
-          <option value="high" data-i18n="ui.quality.high">High</option>
-          <option value="low" data-i18n="ui.quality.low">Low</option>
-        </select>
-      </label>
-      <label class="check"><input name="highContrast" type="checkbox"><span data-i18n="ui.highContrast">High-contrast text panels</span></label>
+      <fieldset>
+        <legend data-i18n="ui.group.text">Text</legend>
+        <div class="row"><span class="row-label" data-i18n="ui.textSpeed">Text speed</span>
+          <div class="segmented" role="radiogroup">
+            <label><input type="radio" name="textSpeed" value="slow"><span data-i18n="ui.speed.slow">Slow</span></label>
+            <label><input type="radio" name="textSpeed" value="normal"><span data-i18n="ui.speed.normal">Normal</span></label>
+            <label><input type="radio" name="textSpeed" value="fast"><span data-i18n="ui.speed.fast">Fast</span></label>
+          </div>
+        </div>
+        <div class="row"><span class="row-label" data-i18n="ui.textSize">Text size</span>
+          <div class="segmented" role="radiogroup">
+            <label><input type="radio" name="textSize" value="s"><span data-i18n="ui.size.s">Small</span></label>
+            <label><input type="radio" name="textSize" value="m"><span data-i18n="ui.size.m">Medium</span></label>
+            <label><input type="radio" name="textSize" value="l"><span data-i18n="ui.size.l">Large</span></label>
+          </div>
+        </div>
+        <label class="row toggle"><span class="row-label" data-i18n="ui.autoAdvance">Advance lines automatically</span><input name="autoAdvance" type="checkbox" role="switch"></label>
+        <label class="row toggle"><span class="row-label" data-i18n="ui.highContrast">High-contrast text panels</span><input name="highContrast" type="checkbox" role="switch"></label>
+      </fieldset>
+      <fieldset>
+        <legend data-i18n="ui.group.sound">Sound</legend>
+        <label class="row"><span class="row-label" data-i18n="ui.volume">Effects volume</span><input name="volume" type="range" min="0" max="1" step="0.05"></label>
+        <label class="row"><span class="row-label" data-i18n="ui.musicVolume">Music volume</span><input name="musicVolume" type="range" min="0" max="1" step="0.05"></label>
+        <label class="row toggle"><span class="row-label" data-i18n="ui.mute">Mute</span><input name="muted" type="checkbox" role="switch"></label>
+      </fieldset>
+      <fieldset>
+        <legend data-i18n="ui.group.picture">Picture</legend>
+        <div class="row"><span class="row-label" data-i18n="ui.quality">Visual quality</span>
+          <div class="segmented" role="radiogroup">
+            <label><input type="radio" name="visualQuality" value="high"><span data-i18n="ui.qualityShort.high">High</span></label>
+            <label><input type="radio" name="visualQuality" value="low"><span data-i18n="ui.qualityShort.low">Low</span></label>
+          </div>
+        </div>
+        <label class="row toggle"><span class="row-label" data-i18n="ui.reducedMotion">Reduce motion</span><input name="reducedMotion" type="checkbox" role="switch"></label>
+      </fieldset>
     </form>
-    <div class="menu-actions"><button type="button" class="dialog-close" data-i18n="ui.close">Close</button></div>
+    <div class="panel-actions"><button type="button" class="btn dialog-close" data-i18n="ui.back">Back</button></div>
+  </dialog>
+
+  <dialog id="help" class="panel" aria-labelledby="help-heading">
+    <h1 id="help-heading" class="plaque" data-i18n="ui.howToPlay">How to play</h1>
+    <dl class="controls">
+      <dt data-i18n="ui.help.walkKey">Click the floor</dt><dd data-i18n="ui.help.walk">Walk there</dd>
+      <dt data-i18n="ui.help.actKey">Click a person or thing</dt><dd data-i18n="ui.help.act">Open the action ring, then choose</dd>
+      <dt data-i18n="ui.help.itemKey">Click an item in the satchel</dt><dd data-i18n="ui.help.item">Look at it, or use it on something</dd>
+      <dt data-i18n="ui.help.revealKey">Hold Space / the eye</dt><dd data-i18n="ui.help.reveal">Show everything you can interact with</dd>
+      <dt data-i18n="ui.help.exitKey">Double-click a doorway</dt><dd data-i18n="ui.help.exit">Go straight through</dd>
+      <dt data-i18n="ui.help.keysKey">Tab, Enter, 1–4</dt><dd data-i18n="ui.help.keys">Move between things, act, pick a reply</dd>
+      <dt data-i18n="ui.help.cancelKey">Right-click or Esc</dt><dd data-i18n="ui.help.cancel">Cancel</dd>
+      <dt data-i18n="ui.help.touchKey">Touch: press and hold</dt><dd data-i18n="ui.help.touch">Show everything you can interact with</dd>
+    </dl>
+    <div class="panel-actions"><button type="button" class="btn dialog-close" data-i18n="ui.back">Back</button></div>
+  </dialog>
+
+  <!-- In-game confirmation (replaces the browser's own pop-up). -->
+  <dialog id="confirm" class="panel small" aria-labelledby="confirm-text">
+    <p id="confirm-text"></p>
+    <div class="panel-actions">
+      <button id="confirm-no" type="button" class="btn" data-i18n="ui.no">No</button>
+      <button id="confirm-yes" type="button" class="btn primary" data-i18n="ui.yes">Yes</button>
+    </div>
   </dialog>
 
   <div id="rotate" data-i18n="ui.rotate">Turn your device sideways to play.</div>
