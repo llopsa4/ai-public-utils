@@ -1,4 +1,5 @@
 import type { Exit, Routine, Station, WanderBox } from '../engine/crowd';
+import type { MET_FLAGS } from '../engine/state';
 import type { ExtraId } from '../engine/types';
 
 /**
@@ -43,6 +44,12 @@ export interface ExtraDef {
   color: string;
   talk: LineCounts;
   chat: LineCounts;
+  /** Flag set the first time Mara talks to them (the notebook counts the people met). */
+  met: (typeof MET_FLAGS)[number];
+  /** Kids tag along a few steps when Mara walks past. */
+  curious?: boolean;
+  /** How many lines they may say on their way out (`line.<id>.leaving.n`). */
+  leaving?: number;
 }
 
 export interface CrowdDef {
@@ -79,7 +86,7 @@ const HALL: CrowdDef = {
   wander: { x: 130, y: 272, w: 400, h: 70 },
   extras: [
     {
-      id: 'extra-stoker', sheet: 'extra-stoker', body: 0.95, speed: 0.9, color: '#e8a878', carry: 'shovel',
+      id: 'extra-stoker', sheet: 'extra-stoker', met: 'metHollis', body: 0.95, speed: 0.9, color: '#e8a878', carry: 'shovel',
       routines: {
         warm: { stations: ['mouthA', 'mouthB', 'mouthC', 'mouthB', 'talkSpot'], detour: 0.15 },
         cold: { stations: ['staring', 'huddle1'], detour: 0.1 },
@@ -87,7 +94,7 @@ const HALL: CrowdDef = {
       talk: { warm: 3, cold: 2 }, chat: { warm: 3, cold: 1 },
     },
     {
-      id: 'extra-hoist', sheet: 'extra-hoist', body: 0.95, speed: 0.95, color: '#9ed6b8',
+      id: 'extra-hoist', sheet: 'extra-hoist', met: 'metWren', body: 0.95, speed: 0.95, color: '#9ed6b8',
       routines: {
         warm: { stations: ['pulley', 'clayPile', 'pulley', 'nearTent'], detour: 0.1 },
         cold: { stations: ['pulley', 'huddle3'], detour: 0.05 },
@@ -95,7 +102,7 @@ const HALL: CrowdDef = {
       talk: { warm: 3, cold: 2 }, chat: { warm: 3, cold: 1 },
     },
     {
-      id: 'extra-hauler', sheet: 'extra-hauler', body: 1, speed: 0.85, color: '#d9b26a', carry: 'sack', leavesWhenCold: true,
+      id: 'extra-hauler', sheet: 'extra-hauler', met: 'metDace', leaving: 2, body: 1, speed: 0.85, color: '#d9b26a', carry: 'sack', leavesWhenCold: true,
       carryBetween: { pick: 'clayPile', drop: ['mouthA', 'mouthB'] },
       routines: {
         warm: { stations: ['clayPile', 'mouthA', 'clayPile', 'mouthB'], detour: 0.05, leave: { exit: 'curtain', chance: 0.12, away: [9000, 16000] } },
@@ -104,7 +111,7 @@ const HALL: CrowdDef = {
       talk: { warm: 3, cold: 2 }, chat: { warm: 2, cold: 1 },
     },
     {
-      id: 'extra-tally', sheet: 'extra-tally', body: 0.92, speed: 0.7, color: '#b8c8e8', carry: 'slate', leavesWhenCold: true,
+      id: 'extra-tally', sheet: 'extra-tally', met: 'metAnsel', leaving: 2, body: 0.92, speed: 0.7, color: '#b8c8e8', carry: 'slate', leavesWhenCold: true,
       routines: {
         warm: { stations: ['tallyWall', 'mouthA', 'bench', 'lookout'], detour: 0.1, leave: { exit: 'west', chance: 0.1, away: [10000, 18000] } },
         cold: { stations: ['bench'], leave: { exit: 'west', chance: 1, away: [0, 0] } },
@@ -139,7 +146,7 @@ const FIRING_HOUSE: CrowdDef = {
   wander: { x: 330, y: 300, w: 270, h: 50 },
   extras: [
     {
-      id: 'extra-runner', sheet: 'extra-runner', body: 0.66, speed: 1.5, color: '#f2d27a',
+      id: 'extra-runner', sheet: 'extra-runner', met: 'metPip', curious: true, body: 0.66, speed: 1.5, color: '#f2d27a',
       routines: {
         warm: { stations: ['tag1', 'chalk2', 'tag2', 'soupPeek', 'tag3', 'tag4'], detour: 0.3, leave: { exit: 'east', chance: 0.12, away: [5000, 10000] } },
         alarm: { stations: ['byNellA'] },
@@ -148,7 +155,7 @@ const FIRING_HOUSE: CrowdDef = {
       talk: { warm: 3, alarm: 2, cold: 2 }, chat: { warm: 3, alarm: 1, cold: 1 },
     },
     {
-      id: 'extra-kid', sheet: 'extra-kid', body: 0.68, speed: 1.4, color: '#f0a8c0',
+      id: 'extra-kid', sheet: 'extra-kid', met: 'metBea', curious: true, body: 0.68, speed: 1.4, color: '#f0a8c0',
       routines: {
         warm: { stations: ['tag3', 'chalk1', 'tag1', 'hearthSit', 'tag4', 'soupPeek', 'tag2'], detour: 0.3 },
         alarm: { stations: ['byNellB'] },
@@ -190,7 +197,7 @@ export function crowdKeys(): string[] {
   return EXTRAS.flatMap(e => {
     const moods: Mood[] = e.routines.alarm ? ['warm', 'alarm', 'cold'] : ['warm', 'cold'];
     return [
-      `name.${e.id}`, `speaker.${e.id}`, ...moods.map(m => lookKey(e, m)),
+      `name.${e.id}`, `speaker.${e.id}`, ...moods.map(m => lookKey(e, m)), ...n(`line.${e.id}.leaving`, e.leaving ?? 0), ...(e.curious ? [`line.${e.id}.follow`] : []),
       ...moods.flatMap(m => (['talk', 'chat'] as const).flatMap(k => { const l = lineKind(e, k, m); return n(l.key, l.count); })),
     ];
   });

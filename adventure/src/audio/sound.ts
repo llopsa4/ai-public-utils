@@ -160,6 +160,44 @@ class Sound {
   latch(): void { this.burst('highpass', 3200, 0.25, 0.001, 0.025); this.burst('highpass', 2600, 0.2, 0.001, 0.03, 1, 0.12); this.tone('triangle', 1250, 1150, 0.06, 0.25, 0.12); }
   rumble(ms: number): void { this.burst('lowpass', 90, 0.5, 0.06, ms / 1000); this.tone('sine', 48, 34, 0.18, ms / 1000); }
   hiss(ms = 1600): void { this.burst('highpass', 2400, 0.22, 0.05, ms / 1000, 0.7); }
+  private crowdNodes: AudioNode[] = [];
+  private crowdTimers: number[] = [];
+  private crowdLevel = 0;
+
+  /**
+   * People about (0 = nobody, 1 = the kiln hall at work): a low murmur of voices (band-limited
+   * noise whose formant wanders like speech) and the odd distant clank or knock.
+   */
+  crowd(level: number): void {
+    if (Math.abs(level - this.crowdLevel) < 0.01 && (level === 0 || this.crowdNodes.length)) return;
+    this.crowdLevel = level;
+    for (const n of this.crowdNodes) { try { (n as AudioScheduledSourceNode).stop?.(); } catch { /* already stopped */ } n.disconnect(); }
+    this.crowdNodes = [];
+    for (const id of this.crowdTimers) window.clearInterval(id);
+    this.crowdTimers = [];
+    const ctx = this.ctx, src = this.source();
+    if (!ctx || !src || !this.master || level <= 0) return;
+    const voice = ctx.createBiquadFilter();
+    voice.type = 'bandpass'; voice.frequency.value = 450; voice.Q.value = 2.2;
+    const gain = ctx.createGain();
+    gain.gain.value = 0.035 * level;
+    src.connect(voice).connect(gain).connect(this.master);
+    src.start();
+    this.crowdNodes = [src, voice, gain];
+    // Syllable-like wandering of the formant and loudness.
+    this.crowdTimers.push(window.setInterval(() => {
+      const t = ctx.currentTime;
+      voice.frequency.setTargetAtTime(300 + Math.random() * 500, t, 0.05);
+      gain.gain.setTargetAtTime((0.015 + Math.random() * 0.04) * level, t, 0.08);
+    }, 170));
+    this.crowdTimers.push(window.setInterval(() => {
+      if (Math.random() < 0.5) return;
+      const v = 0.6 + Math.random() * 0.6;
+      if (Math.random() < 0.5) this.tone('triangle', 700 * v, 640 * v, 0.018 * level, 0.25);
+      else this.burst('lowpass', 260 * v, 0.06 * level, 0.004, 0.12);
+    }, 1700));
+  }
+
   // Background work in the kiln hall: quiet, so it sits under Mara's own sounds. `level` 0..1 by distance.
   /** A chalk tap or a small knock. */
   clink(level = 1): void { this.tone('triangle', 1500 + Math.random() * 300, 1300, 0.02 * level, 0.07); }

@@ -9,7 +9,7 @@ import { t } from '../engine/i18n';
 import { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
 import { sound } from '../audio/sound';
-import { SECRET_FLAGS, applyCommand } from '../engine/state';
+import { MET_FLAGS, SECRET_FLAGS, applyCommand } from '../engine/state';
 import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Speaker, Verb } from '../engine/types';
 import { Actor, SHADOW_DEPTH } from './Actor';
 import { Atmosphere, createAtmosphereTextures, highQuality } from './atmosphere';
@@ -229,6 +229,9 @@ export class RoomScene extends Phaser.Scene {
   /** Keyboard play: index into focusTargets(), -1 = nothing focused. */
   private focusIndex = -1;
   private focusRing: Phaser.GameObjects.Graphics | null = null;
+  /** Soft outline on whatever the pointer is over (not on touch screens). */
+  private hoverRing: Phaser.GameObjects.Graphics | null = null;
+  private hovered: Target | null = null;
   private busy = false;
   private leaving = false;
 
@@ -269,6 +272,8 @@ export class RoomScene extends Phaser.Scene {
     this.tintedCold = -1;
     this.focusIndex = -1;
     this.focusRing = this.add.graphics().setDepth(99999);
+    this.hoverRing = this.add.graphics().setDepth(99998);
+    this.hovered = null;
     this.busy = false;
     this.leaving = false;
 
@@ -301,6 +306,7 @@ export class RoomScene extends Phaser.Scene {
     this.crowd = CROWDS[this.room.id] ? new Crowd({
       scene: this, room: this.room, area: this.area, props: this.props,
       hero: () => this.hero,
+      others: () => [...this.actors.entries()].filter(([id]) => id !== 'hero').map(([, a]) => a.position),
       busy: () => this.isBusy(),
       loadSheet: (key, then) => this.loadLazySheet(key, then),
       bubble: (text, at) => this.session.ui.chatter(text, at),
@@ -325,7 +331,10 @@ export class RoomScene extends Phaser.Scene {
     if (!this.textures.exists('mara-gauntlet')) this.preloadGauntletSheet();
     // The kiln hall's people are fetched in the background from the first room on.
     for (const e of EXTRAS) this.loadLazySheet(e.sheet);
-    for (const [id, actor] of this.actors) if (id !== 'hero') this.scheduleFidget(actor);
+    for (const [id, actor] of this.actors) if (id !== 'hero') { this.scheduleFidget(actor); this.scheduleGlance(actor); }
+    // Voices and work noises where people are about.
+    sound.crowd(this.crowd ? (this.room.id === 'maraRoom' ? 1 : 0.55) * (this.isCold() ? 0.45 : 1) : 0);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => sound.crowd(0));
 
     this.session.ui.setHover('');
     this.session.ui.setBusy(false);
@@ -465,6 +474,7 @@ export class RoomScene extends Phaser.Scene {
       void this.runScript([
         { type: 'walk', to: spot.at, face: spot.face },
         { type: 'say', actor: m.def.id, text: crowd.nextLine(m) },
+        ...(this.session.state.flags[m.def.met] ? [] : [{ type: 'setFlag', flag: m.def.met, value: true } as Command]),
       ]).finally(() => crowd.release(m));
     });
   }
@@ -542,6 +552,7 @@ export class RoomScene extends Phaser.Scene {
     if (pointer.wasTouch) return;
     const at = { x: pointer.worldX, y: pointer.worldY };
     const target = this.isBusy() ? null : this.hitTest(at);
+    this.hovered = target;
     const item = this.session.selectedItem;
     const name = target ? this.targetName(target) : '';
     if (item) {
@@ -676,6 +687,7 @@ export class RoomScene extends Phaser.Scene {
     if (!this.hero?.sprite.active) return;
     this.props.update(time);
     this.crowd?.update();
+    this.drawHover(time);
     this.tintScenery();
     if (this.atmosphere.enabled) this.atmosphere.updateReflections(this.allActors().map(a => a.sprite), time);
     for (const [id, actor] of this.actors) {
@@ -683,6 +695,47 @@ export class RoomScene extends Phaser.Scene {
       const d = Math.hypot(actor.sprite.x - this.hero.sprite.x, actor.sprite.y - this.hero.sprite.y);
       if (d < NOTICE_DISTANCE) actor.lookAt(this.hero.sprite.x);
     }
+  }
+
+  /**
+   * A soft gold outline on what the pointer is over: the shape of a thing in the room, or a ring
+   * on the floor at a person's feet. Hidden while busy and while the action ring is open.
+   */
+  private drawHover(time: number): void {
+    const ring = this.hoverRing;
+    if (!ring) return;
+    ring.clear();
+    const target = this.hovered;
+    if (!target || this.isBusy() || this.session.ui.ringOpen()) return;
+    const pulse = 0.55 + 0.2 * Math.sin(time / 260);
+    if (target.kind === 'hotspot') {
+      const pts = target.hotspot.polygon;
+      ring.lineStyle(4, 0xffc860, 0.18 * pulse).strokePoints(pts, true, true);
+      ring.lineStyle(1.2, 0xffe2a0, 0.7 * pulse).strokePoints(pts, true, true);
+      return;
+    }
+    const actor = target.kind === 'actor' ? target.actor : target.member.actor;
+    if (target.kind === 'actor' && actor.id === 'hero') return;
+    const box = actor.hitBox();
+    const w = box.width * 0.9, h = Math.max(6, w * 0.22);
+    ring.lineStyle(3, 0xffc860, 0.25 * pulse).strokeEllipse(actor.sprite.x, actor.sprite.y - 1, w + 4, h + 3);
+    ring.lineStyle(1.2, 0xffe2a0, 0.8 * pulse).strokeEllipse(actor.sprite.x, actor.sprite.y - 1, w, h);
+  }
+
+  /** Story characters look about now and then when Mara isn't near: at the kids, the room, the door. */
+  private scheduleGlance(actor: Actor): void {
+    this.time.delayedCall(Phaser.Math.Between(4000, 9000), () => {
+      if (!actor.sprite.active) return;
+      const d = Math.hypot(actor.sprite.x - this.hero.sprite.x, actor.sprite.y - this.hero.sprite.y);
+      if (!this.busy && d >= NOTICE_DISTANCE) {
+        const people = this.crowd?.visible() ?? [];
+        const x = people.length && Math.random() < 0.6
+          ? people[Math.floor(Math.random() * people.length)].actor.sprite.x
+          : actor.sprite.x + (Math.random() < 0.5 ? -100 : 100);
+        actor.lookAt(x);
+      }
+      this.scheduleGlance(actor);
+    });
   }
 
   /** Story characters plus any background people on screen. */
@@ -819,6 +872,11 @@ export class RoomScene extends Phaser.Scene {
         applyCommand(state, command);
         // The kiln groans and the alarm goes up: the firing house's kids run to Nell.
         if (command.type === 'setFlag' && command.flag === 'alarm' && command.value) this.crowd?.setMood(this.crowdMood(), true);
+        if (command.type === 'setFlag' && command.value && (MET_FLAGS as readonly string[]).includes(command.flag)) {
+          const who = EXTRAS.find(e => e.met === command.flag);
+          const found = MET_FLAGS.filter(f => state.flags[f]).length;
+          if (who) this.session.ui.toast(t('ui.metFound', { name: t(`speaker.${who.id}`), found: String(found), total: String(MET_FLAGS.length) }));
+        }
         if (newSecret) {
           sound.choose();
           const found = SECRET_FLAGS.filter(f => state.flags[f]).length;

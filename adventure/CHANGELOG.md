@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Hover highlight: a soft gold outline on what the pointer is over (a ring at the feet for people).
+- Background people glance at Mara as she walks by, step round Nell and Oren, and the kids sometimes tag along a few steps ("Where are you going? Can I come?"). Dace and Ansel announce their soup breaks on the way out.
+- Nell and Oren look about when Mara isn't near: at the kids, the room, the door.
+- The kiln hall and firing house sound inhabited: a murmur of voices and the odd distant clank, quieter once the kiln is cold.
+- An optional count in the notebook of the people of Cinderfold Mara has talked to (six), with a note each time she meets someone new.
+- Settings show a sample line at the chosen text size and contrast.
+
 ## 0.5.0: a lived-in Cinderfold, still scene 1
 
 **Opening and rooms**

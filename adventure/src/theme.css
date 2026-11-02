@@ -835,3 +835,15 @@ dialog[open] {
   #intro-more.in { animation: none; }
 }
 #intro.leaving { pointer-events: none; }
+
+/* A line shown as the dialogue panel would show it, at the chosen text size and contrast. */
+.settings-sample {
+  margin: 0.6em 0 0.2em;
+  padding: 0.45em 0.8em;
+  border: 1px solid #c08a4a;
+  border-radius: 0.4em;
+  background: rgb(18 13 20 / 0.82);
+  color: #f2e2c4;
+  line-height: 1.35;
+}
+.high-contrast .settings-sample { background: #000; color: #fff; border-color: #fff; }

@@ -12,9 +12,14 @@ export const FLAGS = [
   'valveVented', 'sawSweeper',
   // optional secrets (none gate progress)
   'secretTally', 'secretChalk', 'secretSign', 'secretRail',
+  // optional: background people Mara has talked to
+  'metHollis', 'metWren', 'metDace', 'metAnsel', 'metPip', 'metBea',
 ] as const;
 
 export const SECRET_FLAGS = ['secretTally', 'secretChalk', 'secretSign', 'secretRail'] as const;
+
+/** Set the first time Mara talks to each background person (counted in the notebook). */
+export const MET_FLAGS = ['metHollis', 'metWren', 'metDace', 'metAnsel', 'metPip', 'metBea'] as const;
 
 export const ITEMS = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf'] as const;
 

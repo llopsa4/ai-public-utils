@@ -16,6 +16,8 @@ export interface CrowdHost {
   area: WalkArea;
   props: Props;
   hero: () => Actor;
+  /** Where the story characters stand (people walk round them too). */
+  others: () => Point[];
   /** True while a line, a conversation or a cutscene is on screen (no chatter then). */
   busy: () => boolean;
   /** Loads a lazy sheet (with its animations) and calls back when it is ready. */
@@ -49,6 +51,8 @@ export interface Member {
   last: Point;
   /** Where the person or Mara who just blocked this walker stood (to step around them). */
   blocker: Point | null;
+  /** A kid tagging along: a spot near where Mara is going. */
+  follow: Point | null;
 }
 
 const TASK_TAG: Record<Task, string | null> = { stand: null, work: 'work', carry: 'carry', reach: 'reach', sit: 'sit', sweep: 'carry', tap: 'carry' };
@@ -165,7 +169,7 @@ export class Crowd {
     scene.tweens.add({ targets: actor.sprite, alpha: 1, duration: 500 });
     const member: Member = {
       def, actor, schedule, target: null, task: null, carrying: false, held: false, vacate: false, react: null,
-      away: false, gone: false, prop: null, effect: null, talks: 0, last: { x: at.x, y: at.y }, blocker: null,
+      away: false, gone: false, prop: null, effect: null, talks: 0, last: { x: at.x, y: at.y }, blocker: null, follow: null,
     };
     if (def.carry && def.carry !== 'sack') member.prop = scene.add.image(at.x, at.y, `crowd-${def.carry}`);
     actor.onStep = () => {
@@ -190,7 +194,10 @@ export class Crowd {
       if (m.held) { await this.sleep(150); continue; }
       if (m.react) { await this.reacting(m); continue; }
       let step: Step = m.schedule.next();
-      if (m.vacate) {
+      if (m.follow) {
+        step = { kind: 'detour', to: m.follow, wait: 1800 + Math.random() * 1500 };
+        m.follow = null;
+      } else if (m.vacate) {
         m.vacate = false;
         step = { kind: 'detour', to: this.aside(m), wait: 1500 };
       }
@@ -218,6 +225,9 @@ export class Crowd {
       }
       case 'leave': {
         m.target = null;
+        if (!step.forever && m.def.leaving && Math.random() < 0.6 && !this.bubble && !this.host.busy()) {
+          this.say(m, t(`line.${m.def.id}.leaving.${1 + Math.floor(Math.random() * m.def.leaving)}`));
+        }
         if (!(await this.walk(m, step.exit))) return;
         if (!(await m.actor.walk([step.exit.out]))) return;
         await this.fade(m, 0);
@@ -309,7 +319,7 @@ export class Crowd {
   private async pause(m: Member, ms: number): Promise<void> {
     const end = this.host.scene.time.now + ms;
     while (this.alive && this.host.scene.time.now < end) {
-      if (m.held || m.react || m.vacate) return;
+      if (m.held || m.react || m.vacate || m.follow) return;
       await this.sleep(Math.min(150, end - this.host.scene.time.now));
     }
   }
@@ -440,7 +450,19 @@ export class Crowd {
   /** Mara is heading somewhere: anyone working right there steps aside. */
   heroHeading(to: Point): void {
     for (const m of this.visible()) {
-      if (m.held || !m.target) continue;
+      if (m.held) continue;
+      // Kids sometimes tag along for a few steps (only on an ordinary day).
+      if (m.def.curious && this.mood === 'warm' && !m.react && Math.random() < 0.3) {
+        const side = Math.random() < 0.5 ? -1 : 1;
+        const spot = this.host.area.clamp({ x: to.x + side * (34 + Math.random() * 16), y: to.y + 6 + Math.random() * 12 });
+        const crowded = [...this.members.filter(o => o !== m && !o.gone && !o.away).map(o => o.actor.position), ...this.host.others()]
+          .some(o => Math.hypot(o.x - spot.x, o.y - spot.y) < 22);
+        if (crowded) continue;
+        m.follow = spot;
+        if (!this.bubble && Math.random() < 0.5) this.say(m, t(`line.${m.def.id}.follow`));
+        continue;
+      }
+      if (!m.target) continue;
       const s = this.def.stations[m.target];
       if (s && Math.hypot(s.x - to.x, s.y - to.y) < VACATE_DISTANCE) m.vacate = true;
     }
@@ -457,7 +479,7 @@ export class Crowd {
       // steps round them. Walking away from someone, or alongside, is fine.
       if (a.isWalking && !m.held) {
         const vx = a.sprite.x - m.last.x, vy = a.sprite.y - m.last.y;
-        const obstacles: Point[] = hero.isWalking ? [] : [hero.position];
+        const obstacles: Point[] = [...(hero.isWalking ? [] : [hero.position]), ...this.host.others()];
         for (const o of this.members) if (o !== m && !o.gone && !o.away) obstacles.push(o.actor.position);
         const reach = BLOCK_DISTANCE * a.perspective;
         const hit = obstacles.find(o => {
@@ -471,6 +493,8 @@ export class Crowd {
         && Math.hypot(hero.sprite.x - a.sprite.x, (hero.sprite.y - a.sprite.y) * 1.6) < MAKE_WAY) m.vacate = true;
       m.last = { x: a.sprite.x, y: a.sprite.y };
       if (m.held) a.lookAt(hero.sprite.x);
+      // People standing about glance at Mara as she walks by.
+      else if (hero.isWalking && !a.isWalking && !m.task && Math.hypot(hero.sprite.x - a.sprite.x, hero.sprite.y - a.sprite.y) < 80) a.lookAt(hero.sprite.x);
       this.placeProp(m);
     }
     if (this.bubble) {

@@ -4,7 +4,7 @@ import { MAX_SAVE_BYTES, parseSave, saveFileName, serializeSave } from '../engin
 import { TEXT_SCALE, lineDuration, onSettingsChange, settings, updateSettings, type Settings } from '../engine/settings';
 import { objectives } from '../content/objectives';
 import { readAutosave } from '../engine/autosave';
-import { SECRET_FLAGS } from '../engine/state';
+import { MET_FLAGS, SECRET_FLAGS } from '../engine/state';
 import type { GameState, Point, Speaker, Verb } from '../engine/types';
 import { EXTRAS } from '../content/crowd';
 
@@ -255,6 +255,9 @@ export class Ui {
     const secrets = $('secrets');
     secrets.hidden = found === 0;
     secrets.textContent = t('ui.secrets', { found: String(found), total: String(SECRET_FLAGS.length) });
+    const met = MET_FLAGS.filter(f => this.host.getState().flags[f]).length;
+    $('met').hidden = met === 0;
+    $('met').textContent = t('ui.met', { found: String(met), total: String(MET_FLAGS.length) });
     this.renderHint();
     $<HTMLDialogElement>('notebook').showModal();
   }
@@ -350,9 +353,16 @@ export class Ui {
       const root = document.documentElement.classList;
       root.toggle('reduce-motion', s.reducedMotion);
       root.toggle('high-contrast', s.highContrast);
+      // The sample line uses the dialogue panel's size for the chosen text size.
+      $('settings-sample').style.fontSize = `${Math.round(Math.max(13, 7.5 * this.zoom) * TEXT_SCALE[s.textSize])}px`;
     };
     onSettingsChange(apply);
     apply(settings());
+  }
+
+  /** True while the action ring is open. */
+  ringOpen(): boolean {
+    return this.radialOpen;
   }
 
   /** An in-game yes/no panel (the browser's confirm() looks like a form and blocks the page). */

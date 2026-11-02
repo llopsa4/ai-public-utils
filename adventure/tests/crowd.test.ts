@@ -5,6 +5,7 @@ import { CROWDS, EXTRAS, crowdKeys, routineFor } from '../src/content/crowd';
 import { ROOMS } from '../src/content/rooms';
 import { Schedule, seeded, tooClose, type Routine } from '../src/engine/crowd';
 import { TABLES } from '../src/engine/i18n';
+import { FLAGS, MET_FLAGS } from '../src/engine/state';
 import { WalkArea } from '../src/engine/pathfinding';
 
 const HALL = CROWDS.maraRoom;
@@ -123,4 +124,10 @@ test('a schedule switches routine when the kiln goes cold, and can leave for goo
     assert.notEqual(s.kind, 'leave');
     if (s.kind === 'go') assert.ok(stoker.routines.cold.stations.includes(s.station.id));
   }
+});
+
+test('each background person has their own "met" flag, counted in the notebook and accepted by saves', () => {
+  assert.deepEqual(EXTRAS.map(e => e.met).sort(), [...MET_FLAGS].sort());
+  for (const f of MET_FLAGS) assert.ok((FLAGS as readonly string[]).includes(f));
+  for (const key of ['ui.met', 'ui.metFound']) assert.ok(TABLES.en[key]);
 });

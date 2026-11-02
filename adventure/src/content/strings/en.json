@@ -536,5 +536,14 @@
   "intro.1": "Beyond the walls the land is ash and wind. Little grows there, and the roads are long and empty.",
   "intro.2": "Still, here and there, people hold on: around a fire, a well, a machine that still works. They patch what breaks, and they keep each other going.",
   "intro.3": "Cinderfold is one of those places: a village built inside an old kiln, warm for as long as its fire burns.",
-  "intro.4": "Mara keeps its valves and carries its errands. This morning starts like any other."
+  "intro.4": "Mara keeps its valves and carries its errands. This morning starts like any other.",
+  "ui.met": "People of Cinderfold met: {found} of {total}",
+  "ui.metFound": "Met {name} ({found} of {total})",
+  "line.extra-hauler.leaving.1": "Soup break!",
+  "line.extra-hauler.leaving.2": "Back in a bit. Don't touch my pile.",
+  "line.extra-tally.leaving.1": "Off to see what the firing house has counted.",
+  "line.extra-tally.leaving.2": "Soup. Then numbers.",
+  "line.extra-runner.follow": "Where are you going? Can I come?",
+  "line.extra-kid.follow": "I'm guarding you. Don't mind me.",
+  "ui.settingsSample": "Nell: \"The soup is thin, but it's hot. Sit a moment.\""
 }
