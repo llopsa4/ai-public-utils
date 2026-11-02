@@ -30,8 +30,24 @@ const NOTICE_DISTANCE = 90;
 const COLD_TINT = 0x8796b8;
 
 /** Queues a sheet for loading unless it is already loaded or queued. */
+/**
+ * Sheets requested but not yet in the texture cache. A background load can outlive the room that
+ * started it (Mara leaves the tent before the lit gauntlet arrives); the next room must not request
+ * it again, or Phaser reports the texture key twice.
+ */
+const inFlight = new Set<string>();
+
 function queueSheet(scene: Phaser.Scene, key: string): void {
-  if (!scene.textures.exists(key)) scene.load.atlas(key, SHEETS[key].png, SHEETS[key].json);
+  if (scene.textures.exists(key) || inFlight.has(key)) return;
+  inFlight.add(key);
+  scene.textures.once(`${Phaser.Textures.Events.ADD_KEY}${key}`, () => inFlight.delete(key));
+  scene.load.atlas(key, SHEETS[key].png, SHEETS[key].json);
+}
+
+/** Runs `then` once the sheet is in the cache (now, or when its pending load lands). */
+function whenSheet(scene: Phaser.Scene, key: string, then: () => void): void {
+  if (scene.textures.exists(key)) { then(); return; }
+  scene.textures.once(`${Phaser.Textures.Events.ADD_KEY}${key}`, () => scene.time.delayedCall(0, then));
 }
 
 /** One animation per frame tag of a loaded sheet, keyed `<sheet>:<tag>` (once per sheet). */
@@ -289,7 +305,8 @@ export class RoomScene extends Phaser.Scene {
       sound.step(surface);
       this.props.step(this.hero.sprite.x, this.hero.sprite.y);
     };
-    if (!state.flags.hasGauntlet) this.preloadGauntletSheet();
+    // Mara's lit-gauntlet sheet: loaded in the background, swapped in when it arrives.
+    if (!this.textures.exists('mara-gauntlet')) this.preloadGauntletSheet();
     for (const [id, actor] of this.actors) if (id !== 'hero') this.scheduleFidget(actor);
 
     this.session.ui.setHover('');
@@ -348,13 +365,14 @@ export class RoomScene extends Phaser.Scene {
   /** In the tent, the lit-gauntlet sheet loads in the background while the player looks around. */
   private preloadGauntletSheet(): void {
     if (this.textures.exists('mara-gauntlet')) return;
+    const pending = inFlight.has('mara-gauntlet');
     queueSheet(this, 'mara-gauntlet');
-    this.load.once(Phaser.Loader.Events.COMPLETE, () => {
+    whenSheet(this, 'mara-gauntlet', () => {
       if (!this.sys.isActive()) return;
       createSheetAnims(this, 'mara-gauntlet');
       this.refreshObjects();
     });
-    this.load.start();
+    if (!pending) this.load.start();
   }
 
   // ------------------------------------------------------------------ input ---
