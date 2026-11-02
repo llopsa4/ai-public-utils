@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { initLanguage } from './engine/i18n';
 import { loadSettings, onSettingsChange, settings } from './engine/settings';
 import { sound } from './audio/sound';
+import { interact } from './content/interactions';
 import { BootScene, RoomScene, TitleScene } from './game/scenes';
 import { Session } from './game/session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from './ui/ui';
@@ -34,6 +35,7 @@ function relayout(): void {
   game.scale.setZoom(session.ui.layout() / ART_SCALE);
 }
 window.addEventListener('resize', relayout);
+onSettingsChange(relayout); // text size
 window.addEventListener('orientationchange', relayout);
 
 // Browsers only allow audio after a user gesture: start it on the first click or key.
@@ -46,5 +48,5 @@ onSettingsChange(applyVolume);
 
 // Opt-in inspection hook for testing art and timing: open the game with ?debug.
 if (new URLSearchParams(location.search).has('debug')) {
-  Object.assign(window, { adventure: { game, session, sound } });
+  Object.assign(window, { adventure: { game, session, sound, interact } });
 }

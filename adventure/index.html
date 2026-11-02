@@ -6,8 +6,8 @@
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#120d14">
   <title>Cinderfold</title>
-  <script type="module" crossorigin src="./build/index-ITFbWOTu.js"></script>
-  <link rel="stylesheet" crossorigin href="./build/index-BYxOzmN1.css">
+  <script type="module" crossorigin src="./build/index-B-LQ-2CQ.js"></script>
+  <link rel="stylesheet" crossorigin href="./build/index-O-xzH-Ao.css">
 </head>
 <body>
   <main id="app">
@@ -52,6 +52,7 @@
       <div id="lang" role="group" data-i18n-label="ui.language"></div>
       <button id="mute-btn" type="button" data-i18n-label="ui.mute" aria-pressed="false">&#128264;</button>
       <button id="reveal-btn" type="button" data-i18n-label="ui.reveal" aria-pressed="false">&#128065;</button>
+      <button id="fs-btn" type="button" data-i18n-label="ui.fullscreen" aria-pressed="false" hidden>&#x26F6;</button>
       <button id="notebook-btn" type="button" data-i18n="ui.notebook">Notebook</button>
       <button id="menu-btn" type="button" data-i18n="ui.menu">Menu</button>
     </nav>
@@ -105,6 +106,14 @@
       <label class="check"><input name="muted" type="checkbox"><span data-i18n="ui.mute">Mute</span></label>
       <label class="check"><input name="autoAdvance" type="checkbox"><span data-i18n="ui.autoAdvance">Advance lines automatically</span></label>
       <label class="check"><input name="reducedMotion" type="checkbox"><span data-i18n="ui.reducedMotion">Reduce motion</span></label>
+      <label><span data-i18n="ui.textSize">Text size</span>
+        <select name="textSize">
+          <option value="s" data-i18n="ui.size.s">Small</option>
+          <option value="m" data-i18n="ui.size.m">Medium</option>
+          <option value="l" data-i18n="ui.size.l">Large</option>
+        </select>
+      </label>
+      <label class="check"><input name="highContrast" type="checkbox"><span data-i18n="ui.highContrast">High-contrast text panels</span></label>
     </form>
     <div class="menu-actions"><button type="button" class="dialog-close" data-i18n="ui.close">Close</button></div>
   </dialog>

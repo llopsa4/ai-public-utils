@@ -1,4 +1,5 @@
-// Every art file the game loads. Replacing a PNG/JSON pair in art/src is all that is needed to
+// Every art file the game loads. Room backgrounds and foreground cut-outs are WebP copies of the
+// PNGs (art/webp.mjs), everything else is palette-indexed PNG. Replacing a PNG/JSON pair in art/src is all that is needed to
 // upgrade the art: the code only depends on frame tag names and the bottom-centre anchor.
 import maraJson from '../../art/src/characters/mara.json';
 import maraPng from '../../art/src/characters/mara.png';
@@ -20,13 +21,13 @@ import sweeperJson from '../../art/src/objects/sweeper.json';
 import sweeperPng from '../../art/src/objects/sweeper.png';
 import valveJson from '../../art/src/objects/valve.json';
 import valvePng from '../../art/src/objects/valve.png';
-import maraRoomPng from '../../art/src/rooms/mara-room.png';
-import tentRoomPng from '../../art/src/rooms/tent.png';
+import maraRoomPng from '../../art/src/rooms/mara-room.webp';
+import tentRoomPng from '../../art/src/rooms/tent.webp';
 import tentJson from '../../art/src/objects/tent.json';
 import tentPng from '../../art/src/objects/tent.png';
-import firingHousePng from '../../art/src/rooms/firing-house.png';
-import galleryPng from '../../art/src/rooms/gallery.png';
-import ashwaysPng from '../../art/src/rooms/ashways.png';
+import firingHousePng from '../../art/src/rooms/firing-house.webp';
+import galleryPng from '../../art/src/rooms/gallery.webp';
+import ashwaysPng from '../../art/src/rooms/ashways.webp';
 import type { NpcId, Verb } from '../engine/types';
 
 /** Aseprite "JSON array" export (also produced by LibreSprite and the art scripts). */
@@ -49,6 +50,9 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   tent: { png: tentPng, json: tentJson },
 };
 
+/** Sheets loaded only when a room needs them (the rest load at boot): saves ~550 KB before the title. */
+export const LAZY_SHEETS = new Set(['mara-gauntlet', 'oren', 'nell']);
+
 /** Sheet used for each non-player character. */
 export const NPC_SHEETS: Record<NpcId, string> = { oren: 'oren', nell: 'nell' };
 
@@ -65,10 +69,10 @@ export const VERB_ICONS = Object.fromEntries(
   Object.entries(iconFiles).map(([path, url]) => [path.replace(/^.*\/(\w+)\.png$/, '$1'), url]),
 ) as Record<Verb, string>;
 
-const foregroundFiles = import.meta.glob('../../art/src/foreground/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const foregroundFiles = import.meta.glob('../../art/src/foreground/*.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 /** Foreground cut-outs keyed by file name (texture key `fg-<name>`). */
 export const FOREGROUND_IMAGES: Record<string, string> = Object.fromEntries(
-  Object.entries(foregroundFiles).map(([path, url]) => [path.replace(/^.*\/([\w-]+)\.png$/, '$1'), url]),
+  Object.entries(foregroundFiles).map(([path, url]) => [path.replace(/^.*\/([\w-]+)\.webp$/, '$1'), url]),
 );
 
 const portraitFiles = import.meta.glob('../../art/src/portraits/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;

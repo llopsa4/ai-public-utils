@@ -1,6 +1,6 @@
 {
   "name": "cinderfold",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
   "engines": {
@@ -8,22 +8,26 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "art": "node art/pixelate.mjs && node art/rig.mjs && node art/icons.mjs",
+    "art": "node art/pixelate.mjs && node art/rig.mjs && node art/icons.mjs && node art/webp.mjs",
+    "webp": "node art/webp.mjs",
     "pixelate": "node art/pixelate.mjs",
     "rig": "node art/rig.mjs",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "build": "npm run typecheck && node scripts/publish.mjs && node scripts/verify-build.mjs",
     "preview": "node scripts/serve.mjs",
-    "check": "npm run typecheck && npm test && npm run build"
+    "check": "npm run typecheck && npm test && npm run build",
+    "e2e": "npm run build && playwright test"
   },
   "dependencies": {
     "phaser": "3.90.0"
   },
   "devDependencies": {
+    "@playwright/test": "1.64.1",
     "@types/node": "26.6.6",
     "@types/pngjs": "6.0.5",
     "pngjs": "7.0.0",
+    "sharp": "0.35.5",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
     "upng-js": "2.1.0",

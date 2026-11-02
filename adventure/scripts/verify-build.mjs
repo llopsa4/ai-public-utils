@@ -17,23 +17,35 @@ assert.deepEqual(published.sort(), built.sort(), 'build/ differs from dist/build
 for (const name of built) {
   const a = await readFile(resolve(project, 'dist/build', name));
   assert.ok(a.equals(await readFile(resolve(project, 'build', name))), `stale asset ${name}`);
-  assert.match(name, /\.(js|css|png)$/, `unexpected asset type ${name}`);
+  assert.match(name, /\.(js|css|png|webp)$/, `unexpected asset type ${name}`);
 }
-for (const art of ['mara', 'mara-gauntlet', 'oren', 'nell', 'sweeper', 'valve', 'socket', 'rack', 'pantry-door', 'notebook', 'mara-room', 'firing-house', 'gallery', 'ashways', 'gauntlet', 'regulator', 'bread', 'scarf']) {
-  assert.ok(built.some(n => n.startsWith(`${art}-`) && n.endsWith('.png')), `missing art: ${art}`);
+// Vite names assets <name>-<8-character hash>.<ext>.
+const has = (name, ext) => built.some(n => new RegExp(`^${name}-[\\w-]{8}\\.${ext}$`).test(n));
+for (const art of ['mara', 'mara-gauntlet', 'oren', 'nell', 'sweeper', 'valve', 'socket', 'rack', 'pantry-door', 'notebook', 'tent', 'gauntlet', 'regulator', 'bread', 'scarf']) {
+  assert.ok(has(art, 'png'), `missing art: ${art}`);
+}
+// Rooms and foreground cut-outs ship as WebP only (the tent object sprite shares the room's name and stays PNG).
+for (const room of ['tent', 'mara-room', 'firing-house', 'gallery', 'ashways', 'tent-stool', 'hall-left', 'hall-right', 'gallery-railing']) {
+  assert.ok(has(room, 'webp'), `missing WebP: ${room}`);
+  if (room !== 'tent') assert.ok(!has(room, 'png'), `PNG copy of ${room} shipped`);
 }
 for (const verb of ['look', 'open', 'close', 'take', 'use', 'talk', 'go', 'crouch', 'lie', 'stand']) {
   assert.ok(built.some(n => n.startsWith(`${verb}-`) && n.endsWith('.png')), `missing icon: ${verb}`);
 }
 const js = built.filter(n => n.endsWith('.js'));
 for (const name of js) assert.doesNotMatch(await readFile(resolve(project, 'build', name), 'utf8'), /sourceMappingURL=/);
-// Size budget: everything, and what the first room needs (shared art plus the tent).
+// Size budget: everything, and what is downloaded before the title screen is usable (code, sheets,
+// portraits, icons, Mara's unlit sheet, plus the two rooms the title loads: the kiln-hall backdrop
+// and the start room). Oren, Nell and the lit gauntlet load with the rooms that need them.
 const { statSync } = await import('node:fs');
 const size = name => statSync(resolve(project, 'build', name)).size;
 const total = built.reduce((sum, n) => sum + size(n), 0);
-const perRoom = /^(mara-room|firing-house|gallery|ashways|hall-left|hall-right|gallery-railing)-/;
-const firstLoad = built.filter(n => !perRoom.test(n)).reduce((sum, n) => sum + size(n), 0);
+const later = /^(firing-house|gallery|ashways|hall-left|hall-right|gallery-railing|mara-gauntlet|oren|nell)-[\w-]{8}\./;
+const firstLoad = built.filter(n => !later.test(n)).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;
-assert.ok(total < 4.5 * MB, `build is ${(total / MB).toFixed(2)} MB (budget 4.5 MB)`);
-assert.ok(firstLoad < 3 * MB, `first load is ${(firstLoad / MB).toFixed(2)} MB (budget 3 MB)`);
-console.log(`Build verified: ${built.length} assets, relative URLs only, ${(total / MB).toFixed(2)} MB total, ${(firstLoad / MB).toFixed(2)} MB before the first room.`);
+// Static count: it also includes portraits and icons that are only fetched when first shown, so the
+// real first load (measured by npm run e2e) is lower.
+const TOTAL_BUDGET = 3, FIRST_BUDGET = 1.65;
+assert.ok(total < TOTAL_BUDGET * MB, `build is ${(total / MB).toFixed(2)} MB (budget ${TOTAL_BUDGET} MB)`);
+assert.ok(firstLoad < FIRST_BUDGET * MB, `first load is ${(firstLoad / MB).toFixed(2)} MB (budget ${FIRST_BUDGET} MB)`);
+console.log(`Build verified: ${built.length} assets, relative URLs only, ${(total / MB).toFixed(2)} MB total, ${(firstLoad / MB).toFixed(2)} MB before the title screen.`);

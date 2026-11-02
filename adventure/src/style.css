@@ -246,7 +246,7 @@ button.verb:hover, button.verb:focus-visible {
   background: none;
   border: none;
   padding: 0.3em 0.5em;
-  min-height: 36px;
+  min-height: 44px;
   border-radius: 0.3em;
   cursor: pointer;
 }
@@ -464,8 +464,9 @@ button {
   gap: 2px;
 }
 
-#lang button, #menu-btn, #notebook-btn, #reveal-btn, #mute-btn, .menu-actions button {
-  min-height: 40px;
+#lang button, #menu-btn, #notebook-btn, #reveal-btn, #mute-btn, #fs-btn, .menu-actions button {
+  min-height: 44px;
+  min-width: 44px;
   padding: 0 12px;
   background: var(--panel);
   border: 1px solid var(--panel-edge);
@@ -614,6 +615,32 @@ button:focus-visible {
 
 @media (prefers-reduced-motion: reduce) {
   button.verb, #end { animation: none; }
+}
+
+#fs-btn[hidden] {
+  display: none;
+}
+
+/* High-contrast option: solid panels, white text, strong edges. */
+.high-contrast #dialogue, .high-contrast #choices, .high-contrast #hover, .high-contrast #labels .label, .high-contrast #toast {
+  background: #000 !important;
+  color: #fff;
+  border: 2px solid #fff !important;
+  box-shadow: none;
+}
+
+.high-contrast #dialogue-line, .high-contrast #choices button {
+  color: #fff;
+}
+
+.high-contrast #choices button:focus-visible, .high-contrast #choices button:hover {
+  color: #000;
+  background: #ffd84a;
+}
+
+.high-contrast dialog {
+  background: #000;
+  border: 2px solid #fff;
 }
 
 #lang[hidden] {

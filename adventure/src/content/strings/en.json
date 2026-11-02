@@ -10,7 +10,7 @@
   "ui.newGame": "New game",
   "ui.close": "Close",
   "ui.notice": "Progress saves automatically in this browser. Use Menu → Export save to keep a copy elsewhere.",
-  "ui.help": "Click or tap the floor to walk. Click or tap a person or object to open the action ring, then choose an action. Click an item in the satchel to look at it or use it on something. Hold Space (or press the eye button) to see everything you can interact with. Right-click or Esc cancels. Click to skip a line.",
+  "ui.help": "Click or tap the floor to walk. Click or tap a person or object to open the action ring, then choose an action. Click an item in the satchel to look at it or use it on something. Hold Space (or press the eye button, or press and hold on a touch screen) to see everything you can interact with. With the keyboard, Tab moves between things in the room and Enter opens the action ring. Right-click or Esc cancels. Click to skip a line.",
   "ui.confirmNew": "Start a new game? Your autosave will be replaced once you start playing.",
   "ui.confirmImport": "Replace the current game with this save?",
   "ui.imported": "Save imported.",
@@ -402,5 +402,11 @@
   "line.secretRailAgain": "There's space under mine. Someone will put their name there one day. I hope I get to meet them.",
   "ui.secretFound": "Secret found ({found}/{total}).",
   "ui.secrets": "Small things noticed: {found} of {total}.",
-  "ui.musicVolume": "Music volume"
+  "ui.musicVolume": "Music volume",
+  "ui.textSize": "Text size",
+  "ui.size.s": "Small",
+  "ui.size.m": "Medium",
+  "ui.size.l": "Large",
+  "ui.highContrast": "High-contrast text panels",
+  "ui.fullscreen": "Full screen"
 }

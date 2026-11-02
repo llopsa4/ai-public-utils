@@ -1,7 +1,7 @@
 import { ITEM_ICONS, PORTRAITS, PORTRAIT_MOODS, VERB_ICONS, type Mood } from '../game/assets';
 import { LANGUAGES, language, onLanguageChange, setLanguage, t, type Language } from '../engine/i18n';
 import { MAX_SAVE_BYTES, parseSave, saveFileName, serializeSave } from '../engine/saveFile';
-import { lineDuration, onSettingsChange, settings, updateSettings, type Settings } from '../engine/settings';
+import { TEXT_SCALE, lineDuration, onSettingsChange, settings, updateSettings, type Settings } from '../engine/settings';
 import { objectives } from '../content/objectives';
 import { readAutosave } from '../engine/autosave';
 import { SECRET_FLAGS } from '../engine/state';
@@ -36,6 +36,10 @@ export interface UiHost {
   continueGame(): void;
   /** Leave the room for the title screen (the game is autosaved first). */
   toTitle(): void;
+  /** Keyboard play: move the focus ring to the next/previous thing in the room. False = past the end. */
+  cycleFocus(direction: 1 | -1): boolean;
+  /** Keyboard play: open the action ring on the focused thing. False = nothing focused. */
+  activateFocus(): boolean;
 }
 
 /**
@@ -77,6 +81,8 @@ export class Ui {
     $('menu-settings').addEventListener('click', () => { this.menu.close(); this.openSettings(); });
     $('notebook-btn').addEventListener('click', () => this.openNotebook());
     $('reveal-btn').addEventListener('click', () => this.revealFor(3000));
+    this.bindFullscreen();
+    this.bindLongPress();
     const mute = $('mute-btn');
     const showMute = (s: Settings) => { mute.setAttribute('aria-pressed', String(s.muted)); mute.innerHTML = s.muted ? '&#128263;' : '&#128264;'; };
     mute.addEventListener('click', () => updateSettings({ muted: !settings().muted }));
@@ -103,6 +109,11 @@ export class Ui {
     this.fileInput.addEventListener('change', () => void this.importSave());
     this.menu.addEventListener('click', e => { if (e.target === this.menu) this.menu.close(); });
     window.addEventListener('keydown', e => {
+      // Keyboard play: with nothing else focused, Tab walks through the room before the bar buttons.
+      const free = (document.activeElement === document.body || document.activeElement === null)
+        && !this.anyDialogOpen() && !this.radialOpen && this.choices.hidden && $('title').hidden;
+      if (free && e.key === 'Tab' && this.host.cycleFocus(e.shiftKey ? -1 : 1)) e.preventDefault();
+      if (free && e.key === 'Enter' && this.host.activateFocus()) e.preventDefault();
       if (e.key === ' ' && !e.repeat && !this.anyDialogOpen() && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement)) {
         e.preventDefault();
         this.showLabels();
@@ -125,7 +136,7 @@ export class Ui {
     this.zoom = Math.max(0.25, Math.min(w / LOGICAL_W, h / LOGICAL_H));
     this.stage.style.width = `${LOGICAL_W * this.zoom}px`;
     this.stage.style.height = `${LOGICAL_H * this.zoom}px`;
-    this.overlay.style.fontSize = `${Math.max(13, Math.round(7.5 * this.zoom))}px`;
+    this.overlay.style.fontSize = `${Math.round(Math.max(13, 7.5 * this.zoom) * TEXT_SCALE[settings().textSize])}px`;
     return this.zoom;
   }
 
@@ -292,9 +303,10 @@ export class Ui {
     const form = $<HTMLFormElement>('settings-form');
     const s = settings();
     (form.elements.namedItem('textSpeed') as HTMLSelectElement).value = s.textSpeed;
+    (form.elements.namedItem('textSize') as HTMLSelectElement).value = s.textSize;
     (form.elements.namedItem('volume') as HTMLInputElement).value = String(s.volume);
     (form.elements.namedItem('musicVolume') as HTMLInputElement).value = String(s.musicVolume);
-    for (const k of ['muted', 'autoAdvance', 'reducedMotion'] as const) (form.elements.namedItem(k) as HTMLInputElement).checked = s[k];
+    for (const k of ['muted', 'autoAdvance', 'reducedMotion', 'highContrast'] as const) (form.elements.namedItem(k) as HTMLInputElement).checked = s[k];
     $<HTMLDialogElement>('settings').showModal();
   }
 
@@ -310,10 +322,55 @@ export class Ui {
         muted: el('muted').checked,
         autoAdvance: el('autoAdvance').checked,
         reducedMotion: el('reducedMotion').checked,
+        textSize: (form.elements.namedItem('textSize') as HTMLSelectElement).value as Settings['textSize'],
+        highContrast: el('highContrast').checked,
       });
     });
-    onSettingsChange(s => document.documentElement.classList.toggle('reduce-motion', s.reducedMotion));
-    document.documentElement.classList.toggle('reduce-motion', settings().reducedMotion);
+    const apply = (s: Settings) => {
+      const root = document.documentElement.classList;
+      root.toggle('reduce-motion', s.reducedMotion);
+      root.toggle('high-contrast', s.highContrast);
+    };
+    onSettingsChange(apply);
+    apply(settings());
+  }
+
+  /** Says something to screen readers only (focus moves on the canvas). */
+  announce(text: string): void {
+    this.live.textContent = text;
+  }
+
+  // ------------------------------------------------------------ mobile ---
+  /** Fullscreen toggle, only where the browser supports it (not on iPhone Safari). */
+  private bindFullscreen(): void {
+    const button = $<HTMLButtonElement>('fs-btn');
+    if (!document.fullscreenEnabled) return;
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      if (document.fullscreenElement) void document.exitFullscreen();
+      else void document.documentElement.requestFullscreen({ navigationUI: 'hide' }).catch(() => {});
+    });
+    document.addEventListener('fullscreenchange', () => button.setAttribute('aria-pressed', String(!!document.fullscreenElement)));
+  }
+
+  /** Touch: press and hold on the scene to label everything (the touch version of holding Space). */
+  private bindLongPress(): void {
+    let timer = 0, start: Point | null = null, shown = false;
+    const cancel = () => { window.clearTimeout(timer); start = null; };
+    this.stage.addEventListener('pointerdown', e => {
+      if (e.pointerType !== 'touch') return;
+      start = { x: e.clientX, y: e.clientY };
+      timer = window.setTimeout(() => { shown = true; this.showLabels(); }, 450);
+    });
+    this.stage.addEventListener('pointermove', e => {
+      if (start && Math.hypot(e.clientX - start.x, e.clientY - start.y) > 12) cancel();
+    });
+    const release = () => {
+      cancel();
+      if (shown) { shown = false; this.revealFor(1500); }
+    };
+    this.stage.addEventListener('pointerup', release);
+    this.stage.addEventListener('pointercancel', release);
   }
 
   // ------------------------------------------------------- hotspot labels ---

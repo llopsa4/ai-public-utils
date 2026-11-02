@@ -1,5 +1,23 @@
 # Changelog
 
+## 0.4.0: more polish, still no new story
+
+- Title screen over the kiln hall, with Continue, New game, Import and Settings. Menu → Title screen.
+- Autosave in this browser (one slot, same validation as exported saves); a damaged slot is ignored with a notice.
+- The cursor shows what it is over and what a click will do (look, handle, talk, leave).
+- Two-stage hints for the current goal in the notebook.
+- Looking again often gets a second or third line; each item has its own reply when used on the wrong thing.
+- Talking portraits: the mouth moves while a line is shown, and Mara and Oren show worried or angry faces on some lines.
+- Four optional secrets (tally marks, Tobi's chalk drawings, Nell's old sign, names on the gallery rail), counted in the notebook.
+- The kiln hall's tent is painted cloth from the Kiln art; the tent room's canvas no longer bands; the cold firing house is lighter.
+- Contact shadows under characters and the ash sweeper.
+- A generative synthesized score per room mood, with its own volume; footsteps sound different on stone, metal grating and ash.
+- Accessibility: text size, high-contrast panels, keyboard play (Tab between things in the room, Enter for the action ring).
+- Mobile: larger tap targets, press-and-hold labels, a fullscreen button.
+- Smaller download: a custom Phaser build (1.32 MB → 0.77 MB of JavaScript), WebP rooms, characters loaded per room. 2.75 MB in total; 0.96 MB before the title screen as GitHub Pages serves it.
+- Browser tests (Playwright): the full scene from the title screen to the end card, autosave and Continue, keyboard play, a phone in both orientations.
+- Save format version 4 (look counters, secrets); version 3 saves still load.
+
 ## 0.3.0: polish, no new story
 
 - Mara's tent is the new starting room (tempering-house painting under a canvas ceiling). He fits the ember cell before leaving; the kiln hall now has his tent in it.

@@ -36,6 +36,8 @@ export class Session {
       newGame,
       continueGame: () => this.continueGame(),
       toTitle: () => this.toTitle(),
+      cycleFocus: direction => (!this.onTitle && this.scene?.cycleFocus(direction)) ?? false,
+      activateFocus: () => (!this.onTitle && this.scene?.activateFocus()) ?? false,
     });
   }
 

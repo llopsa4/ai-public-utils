@@ -9,14 +9,21 @@ export interface Settings {
   /** When false, each spoken line waits for a click. */
   autoAdvance: boolean;
   reducedMotion: boolean;
+  /** Size of all interface text. */
+  textSize: 's' | 'm' | 'l';
+  /** Solid, high-contrast panels and labels. */
+  highContrast: boolean;
 }
 
 const STORAGE_KEY = 'cinderfold.settings';
 const SPEEDS: Settings['textSpeed'][] = ['slow', 'normal', 'fast'];
+const SIZES: Settings['textSize'][] = ['s', 'm', 'l'];
+/** Interface text scale per size setting. */
+export const TEXT_SCALE: Record<Settings['textSize'], number> = { s: 0.85, m: 1, l: 1.3 };
 const SPEED_FACTOR: Record<Settings['textSpeed'], number> = { slow: 1.5, normal: 1, fast: 0.65 };
 
 export function defaultSettings(prefersReducedMotion = false): Settings {
-  return { textSpeed: 'normal', volume: 0.7, musicVolume: 0.5, muted: false, autoAdvance: true, reducedMotion: prefersReducedMotion };
+  return { textSpeed: 'normal', volume: 0.7, musicVolume: 0.5, muted: false, autoAdvance: true, reducedMotion: prefersReducedMotion, textSize: 'm', highContrast: false };
 }
 
 /** Accepts only well-formed values; anything missing or invalid falls back to the default. */
@@ -30,6 +37,8 @@ export function parseSettings(raw: unknown, fallback: Settings): Settings {
     muted: typeof r.muted === 'boolean' ? r.muted : fallback.muted,
     autoAdvance: typeof r.autoAdvance === 'boolean' ? r.autoAdvance : fallback.autoAdvance,
     reducedMotion: typeof r.reducedMotion === 'boolean' ? r.reducedMotion : fallback.reducedMotion,
+    textSize: SIZES.includes(r.textSize as Settings['textSize']) ? (r.textSize as Settings['textSize']) : fallback.textSize,
+    highContrast: typeof r.highContrast === 'boolean' ? r.highContrast : fallback.highContrast,
   };
 }
 

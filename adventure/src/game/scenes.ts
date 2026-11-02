@@ -12,7 +12,7 @@ import { sound } from '../audio/sound';
 import { SECRET_FLAGS, applyCommand } from '../engine/state';
 import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Verb } from '../engine/types';
 import { Actor, SHADOW_DEPTH } from './Actor';
-import { FOREGROUND_IMAGES, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
+import { FOREGROUND_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
 import { cursorFor, type CursorKind } from '../ui/cursors';
@@ -26,13 +26,36 @@ const NOTICE_DISTANCE = 90;
 /** Cool, dimmed tint for Cinderfold once the kiln is shut down. */
 const COLD_TINT = 0x8796b8;
 
-/** Loads every sheet and builds one animation per frame tag, keyed `<sheet>:<tag>`. */
+/** Queues a sheet for loading unless it is already loaded or queued. */
+function queueSheet(scene: Phaser.Scene, key: string): void {
+  if (!scene.textures.exists(key)) scene.load.atlas(key, SHEETS[key].png, SHEETS[key].json);
+}
+
+/** One animation per frame tag of a loaded sheet, keyed `<sheet>:<tag>` (once per sheet). */
+function createSheetAnims(scene: Phaser.Scene, key: string): void {
+  const { json } = SHEETS[key];
+  for (const tag of json.meta.frameTags) {
+    if (scene.anims.exists(`${key}:${tag.name}`)) continue;
+    const frames = json.frames.slice(tag.from, tag.to + 1);
+    if (tag.direction === 'reverse') frames.reverse();
+    const average = frames.reduce((sum, f) => sum + f.duration, 0) / frames.length;
+    scene.anims.create({
+      key: `${key}:${tag.name}`,
+      frames: frames.map(f => ({ key, frame: f.filename })),
+      frameRate: 1000 / average,
+      repeat: frames.length > 1 ? -1 : 0,
+      yoyo: tag.direction === 'pingpong',
+    });
+  }
+}
+
+/** Loads the shared sheets (props and Mara) and builds their animations. */
 export class BootScene extends Phaser.Scene {
   constructor() { super('boot'); }
 
   preload(): void {
-    for (const [key, sheet] of Object.entries(SHEETS)) this.load.atlas(key, sheet.png, sheet.json);
-    // Room backgrounds and foreground pieces load per room, the first time it is entered.
+    for (const key of Object.keys(SHEETS)) if (!LAZY_SHEETS.has(key)) queueSheet(this, key);
+    // Room backgrounds, foreground pieces and the other characters load per room, when first needed.
   }
 
   create(): void {
@@ -65,20 +88,7 @@ export class BootScene extends Phaser.Scene {
       ctx.fillRect(0, 0, 128, 128);
       shadow.refresh();
     }
-    for (const [key, { json }] of Object.entries(SHEETS)) {
-      for (const tag of json.meta.frameTags) {
-        const frames = json.frames.slice(tag.from, tag.to + 1);
-        if (tag.direction === 'reverse') frames.reverse();
-        const average = frames.reduce((sum, f) => sum + f.duration, 0) / frames.length;
-        this.anims.create({
-          key: `${key}:${tag.name}`,
-          frames: frames.map(f => ({ key, frame: f.filename })),
-          frameRate: 1000 / average,
-          repeat: frames.length > 1 ? -1 : 0,
-          yoyo: tag.direction === 'pingpong',
-        });
-      }
-    }
+    for (const key of Object.keys(SHEETS)) if (this.textures.exists(key)) createSheetAnims(this, key);
     document.getElementById('loading')?.remove();
     this.scene.start('title');
   }
@@ -97,7 +107,7 @@ export class TitleScene extends Phaser.Scene {
   create(): void {
     this.cameras.main.setZoom(ART_SCALE).centerOn(LOGICAL_W / 2, LOGICAL_H / 2);
     this.add.image(0, 0, 'room-mara').setOrigin(0, 0).setScale(1 / ART_SCALE).setTint(0x6a5a58);
-    const mara = new Actor(this, 'hero', 'mara-gauntlet', 470, 352, 'left', 'stand', { farY: 0, farScale: 1.45, nearY: 360, nearScale: 1.45 });
+    const mara = new Actor(this, 'hero', 'mara', 470, 352, 'left', 'stand', { farY: 0, farScale: 1.45, nearY: 360, nearScale: 1.45 });
     mara.sprite.setTint(0xe8c8a8);
     if (!settings().reducedMotion) {
       this.add.particles(0, 120, 'fx-dot', particleConfig('embers', LOGICAL_W, 240)).setDepth(1000);
@@ -151,6 +161,9 @@ export class RoomScene extends Phaser.Scene {
   private ambient: Phaser.GameObjects.GameObject[] = [];
   private ambientCold: boolean | null = null;
   private lastExitClick = { id: '', time: 0 };
+  /** Keyboard play: index into focusTargets(), -1 = nothing focused. */
+  private focusIndex = -1;
+  private focusRing: Phaser.GameObjects.Graphics | null = null;
   private busy = false;
   private leaving = false;
 
@@ -163,6 +176,9 @@ export class RoomScene extends Phaser.Scene {
   /** Loads this room's background and foreground pieces if they are not cached yet. */
   preload(): void {
     const room = ROOMS[this.session.state.room];
+    const state = this.session.state;
+    if (state.flags.hasGauntlet) queueSheet(this, 'mara-gauntlet');
+    for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, NPC_SHEETS[a.id]);
     if (!this.textures.exists(room.background)) this.load.image(room.background, ROOM_IMAGES[room.background]);
     for (const f of room.foreground ?? []) {
       if (!this.textures.exists(`fg-${f.image}`)) this.load.image(`fg-${f.image}`, FOREGROUND_IMAGES[f.image]);
@@ -172,6 +188,7 @@ export class RoomScene extends Phaser.Scene {
   create(): void {
     const state = this.session.state;
     this.room = ROOMS[state.room];
+    for (const key of Object.keys(SHEETS)) if (this.textures.exists(key)) createSheetAnims(this, key);
     this.area = new WalkArea(this.room.walkable.outer, this.room.walkable.holes);
     this.actors = new Map();
     this.objects = new Map();
@@ -180,6 +197,8 @@ export class RoomScene extends Phaser.Scene {
       this.add.image(f.x, f.y, `fg-${f.image}`).setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(f.depth));
     this.ambient = [];
     this.ambientCold = null;
+    this.focusIndex = -1;
+    this.focusRing = this.add.graphics().setDepth(99999);
     this.busy = false;
     this.leaving = false;
 
@@ -216,6 +235,7 @@ export class RoomScene extends Phaser.Scene {
     this.input.on(Phaser.Input.Events.GAME_OUT, () => this.session.ui.setHover(''));
 
     this.hero.onStep = () => sound.step(this.room.surface ?? 'stone');
+    if (!state.flags.hasGauntlet) this.preloadGauntletSheet();
     for (const [id, actor] of this.actors) if (id !== 'hero') this.scheduleFidget(actor);
 
     this.session.ui.setHover('');
@@ -266,13 +286,27 @@ export class RoomScene extends Phaser.Scene {
     for (const e of Object.values(this.room.entries)) g.fillStyle(0xff40ff, 1).fillCircle(e.x, e.y, 3);
   }
 
+  /** Mara with the gauntlet lit once the cell is fitted (as soon as that sheet has loaded). */
   private heroSheet(): string {
-    return this.session.state.flags.hasGauntlet ? 'mara-gauntlet' : 'mara';
+    return this.session.state.flags.hasGauntlet && this.textures.exists('mara-gauntlet') ? 'mara-gauntlet' : 'mara';
+  }
+
+  /** In the tent, the lit-gauntlet sheet loads in the background while the player looks around. */
+  private preloadGauntletSheet(): void {
+    if (this.textures.exists('mara-gauntlet')) return;
+    queueSheet(this, 'mara-gauntlet');
+    this.load.once(Phaser.Loader.Events.COMPLETE, () => {
+      if (!this.sys.isActive()) return;
+      createSheetAnims(this, 'mara-gauntlet');
+      this.refreshObjects();
+    });
+    this.load.start();
   }
 
   // ------------------------------------------------------------------ input ---
   private onPointerDown(pointer: Phaser.Input.Pointer): void {
     const ui = this.session.ui;
+    this.clearFocus();
     if (this.isBusy()) { ui.skip(); return; }
     if (pointer.rightButtonDown()) {
       this.session.selectItem(null);
@@ -299,15 +333,62 @@ export class RoomScene extends Phaser.Scene {
       this.lastExitClick = { id: target.hotspot.id, time: now };
     }
     if (target) {
-      const id = this.targetId(target);
-      const verbs: Verb[] = target.kind === 'actor' ? ACTOR_VERBS[target.actor.id] : target.hotspot.verbs;
-      sound.blip();
-      ui.openRadial(at, this.targetName(target), verbs, verb => {
-        void this.runScript(interact(this.session.state, verb, id));
-      });
+      this.openTargetRing(target, at);
       return;
     }
     void this.walkTo(at);
+  }
+
+  private openTargetRing(target: Target, at: Point): void {
+    const id = this.targetId(target);
+    const verbs: Verb[] = target.kind === 'actor' ? ACTOR_VERBS[target.actor.id] : target.hotspot.verbs;
+    sound.blip();
+    this.session.ui.openRadial(at, this.targetName(target), verbs, verb => {
+      void this.runScript(interact(this.session.state, verb, id));
+    });
+  }
+
+  // ---------------------------------------------------------- keyboard play ---
+  /** Everything Tab can reach, left to right (secrets stay hidden). */
+  private focusTargets(): { target: Target; box: Phaser.Geom.Rectangle }[] {
+    const state = this.session.state;
+    const list: { target: Target; box: Phaser.Geom.Rectangle }[] = [];
+    for (const hotspot of this.room.hotspots) {
+      if (hotspot.secret || !conditionsHold(state, hotspot.visibleIf)) continue;
+      const xs = hotspot.polygon.map(p => p.x), ys = hotspot.polygon.map(p => p.y);
+      const x = Math.min(...xs), y = Math.min(...ys);
+      list.push({ target: { kind: 'hotspot', hotspot }, box: new Phaser.Geom.Rectangle(x, y, Math.max(...xs) - x, Math.max(...ys) - y) });
+    }
+    for (const actor of this.actors.values()) list.push({ target: { kind: 'actor', actor }, box: actor.hitBox() });
+    return list.sort((a, b) => a.box.centerX - b.box.centerX);
+  }
+
+  /** Moves the focus ring. Returns false when it runs past either end (focus then goes to the bar). */
+  cycleFocus(direction: 1 | -1): boolean {
+    if (this.isBusy()) return false;
+    const targets = this.focusTargets();
+    const next = this.focusIndex === -1 ? (direction === 1 ? 0 : targets.length - 1) : this.focusIndex + direction;
+    if (next < 0 || next >= targets.length) { this.clearFocus(); return false; }
+    this.focusIndex = next;
+    const { target, box } = targets[next];
+    const pad = 3;
+    this.focusRing?.clear().lineStyle(1.5, 0xe7c046, 1).strokeRoundedRect(box.x - pad, box.y - pad, box.width + pad * 2, box.height + pad * 2, 4);
+    this.session.ui.setHover(this.targetName(target), { x: box.centerX, y: box.y });
+    this.session.ui.announce(this.targetName(target));
+    return true;
+  }
+
+  activateFocus(): boolean {
+    if (this.focusIndex === -1 || this.isBusy()) return false;
+    const entry = this.focusTargets()[this.focusIndex];
+    if (!entry) return false;
+    this.openTargetRing(entry.target, { x: entry.box.centerX, y: entry.box.centerY });
+    return true;
+  }
+
+  private clearFocus(): void {
+    this.focusIndex = -1;
+    this.focusRing?.clear();
   }
 
   /** Name labels for every interactive thing in the room (hold Space / eye button). */
@@ -491,6 +572,7 @@ export class RoomScene extends Phaser.Scene {
   async runScript(commands: Command[]): Promise<void> {
     if (this.isBusy() || commands.length === 0) return;
     this.busy = true;
+    this.clearFocus();
     this.hero.stop();
     this.syncHero();
     this.session.ui.setBusy(true);
