@@ -27,4 +27,13 @@ for (const verb of ['look', 'open', 'close', 'take', 'use', 'talk', 'go', 'crouc
 }
 const js = built.filter(n => n.endsWith('.js'));
 for (const name of js) assert.doesNotMatch(await readFile(resolve(project, 'build', name), 'utf8'), /sourceMappingURL=/);
-console.log(`Build verified: ${built.length} assets, relative URLs only.`);
+// Size budget: everything, and what the first room needs (shared art plus the tent).
+const { statSync } = await import('node:fs');
+const size = name => statSync(resolve(project, 'build', name)).size;
+const total = built.reduce((sum, n) => sum + size(n), 0);
+const perRoom = /^(mara-room|firing-house|gallery|ashways|hall-left|hall-right|gallery-railing)-/;
+const firstLoad = built.filter(n => !perRoom.test(n)).reduce((sum, n) => sum + size(n), 0);
+const MB = 1024 * 1024;
+assert.ok(total < 4.5 * MB, `build is ${(total / MB).toFixed(2)} MB (budget 4.5 MB)`);
+assert.ok(firstLoad < 3 * MB, `first load is ${(firstLoad / MB).toFixed(2)} MB (budget 3 MB)`);
+console.log(`Build verified: ${built.length} assets, relative URLs only, ${(total / MB).toFixed(2)} MB total, ${(firstLoad / MB).toFixed(2)} MB before the first room.`);

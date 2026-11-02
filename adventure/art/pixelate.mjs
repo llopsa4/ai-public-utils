@@ -11,6 +11,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
+import { encodeIndexed } from './png.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const kiln = join(here, '..', '..', 'FFCardGame', 'assets');
@@ -138,7 +139,7 @@ function shrink(src, crop, w, h, { colors = 48, alphaCut = 128, grading, line = 
 
 function save(png, path) {
   mkdirSync(dirname(path), { recursive: true });
-  writeFileSync(path, PNG.sync.write(png));
+  writeFileSync(path, encodeIndexed(png));
 }
 
 function blit(dst, src, dx, dy) {
@@ -199,7 +200,7 @@ const ROOMS = [
 const roomPngs = {};
 for (const room of ROOMS) {
   const src = load(room.source);
-  roomPngs[room.name] = shrink(src, room.crop ?? null, 1280, 720, { colors: 128, alphaCut: 1, grading: room.grade });
+  roomPngs[room.name] = shrink(src, room.crop ?? null, 1280, 720, { colors: 96, alphaCut: 1, grading: room.grade });
   save(roomPngs[room.name], join(out, 'rooms', `${room.name}.png`));
 }
 

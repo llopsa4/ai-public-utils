@@ -30,8 +30,7 @@ export class BootScene extends Phaser.Scene {
 
   preload(): void {
     for (const [key, sheet] of Object.entries(SHEETS)) this.load.atlas(key, sheet.png, sheet.json);
-    for (const [key, url] of Object.entries(ROOM_IMAGES)) this.load.image(key, url);
-    for (const [key, url] of Object.entries(FOREGROUND_IMAGES)) this.load.image(`fg-${key}`, url);
+    // Room backgrounds and foreground pieces load per room, the first time it is entered.
   }
 
   create(): void {
@@ -118,6 +117,15 @@ export class RoomScene extends Phaser.Scene {
 
   isBusy(): boolean {
     return this.busy || this.leaving;
+  }
+
+  /** Loads this room's background and foreground pieces if they are not cached yet. */
+  preload(): void {
+    const room = ROOMS[this.session.state.room];
+    if (!this.textures.exists(room.background)) this.load.image(room.background, ROOM_IMAGES[room.background]);
+    for (const f of room.foreground ?? []) {
+      if (!this.textures.exists(`fg-${f.image}`)) this.load.image(`fg-${f.image}`, FOREGROUND_IMAGES[f.image]);
+    }
   }
 
   create(): void {

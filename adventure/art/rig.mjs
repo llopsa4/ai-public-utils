@@ -11,6 +11,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
+import { encodeIndexed } from './png.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const kiln = join(here, '..', '..', 'FFCardGame', 'assets');
@@ -303,7 +304,7 @@ function buildCharacter(id) {
     }
   });
   mkdirSync(join(out, 'characters'), { recursive: true });
-  writeFileSync(join(out, 'characters', `${id}.png`), PNG.sync.write(sheet));
+  writeFileSync(join(out, 'characters', `${id}.png`), encodeIndexed(sheet));
   const json = {
     frames: frames.map((_, n) => ({
       filename: String(n),
@@ -339,7 +340,7 @@ function buildCharacter(id) {
     portrait.data[o + 3] = a / n > 0.9 ? 255 : 0; // drop the illustration's soft glow halo
   }
   mkdirSync(join(out, 'portraits'), { recursive: true });
-  writeFileSync(join(out, 'portraits', `${portraitId}.png`), PNG.sync.write(portrait));
+  writeFileSync(join(out, 'portraits', `${portraitId}.png`), encodeIndexed(portrait));
 }
 
 for (const id of Object.keys(CHARACTERS)) buildCharacter(id);
