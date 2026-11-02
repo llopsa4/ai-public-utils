@@ -164,6 +164,10 @@ Tags (the frames each one plays):
 
 Mara has two sheets: before and after the ember cell is fitted to his gauntlet (unlit and glowing).
 
+## Fights
+
+Enemy sprites in `art/src/battle/<name>.png`, one image each, about 300 px wide, standing on the bottom edge (the game shows them at half size, mirrored to face Mara, on the room's darkened painting). Currently: `scavenger` (the Hatch Scavenger in the regulator gallery; it also crawls out of the hatch at a small size before the fight). Mara uses his normal sheet's `stand_side` frame in fights.
+
 ## Portraits
 
 Dialogue portraits in `art/src/portraits/`: head and shoulders, **256×256 per frame, side by side** in one strip. For each mood, a frame with the mouth closed, then one with it open (the game alternates them while a line is shown).

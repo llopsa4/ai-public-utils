@@ -109,6 +109,8 @@ export interface RoomDef {
   look?: RoomLook;
   /** Animated set pieces: gauge needle, bubbles, swinging hoist, lantern flames. */
   props?: PropDef[];
+  /** Where the maintenance hatch is (the gallery's fight starts there). */
+  hatch?: Point;
   /**
    * The room's name board (text `room.<id>`), hung from a hook at (x, y): a rope `drop` long, then
    * a board `w` by `h` (world units), a wooden plank or an iron shield-plate. Decoration only.
@@ -205,6 +207,8 @@ export type Command =
   | { type: 'handle'; target: string }
   /** Counts a look at a target, so repeated looks cycle through their lines. */
   | { type: 'looked'; id: string }
+  /** The gallery's maintenance hatch blows open and something crawls out (presentation). */
+  | { type: 'hatch' }
   /** A fight (shatter transition, battle, return). Continues the script once it is won. */
   | { type: 'fight'; id: string }
   /** Opens the gear menu and waits for it to close. */

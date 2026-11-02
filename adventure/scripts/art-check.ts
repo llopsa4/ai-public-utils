@@ -33,6 +33,8 @@ export const CHARACTER_SHEETS: { sheet: string; role: string; tags: string[]; op
 ];
 /** Sheets the game ships as WebP copies (the PNG is the source; `npm run webp` writes the copy). */
 export const WEBP_SHEETS: string[] = EXTRAS.map(e => e.sheet);
+/** Enemies in fights (art/src/battle). */
+export const BATTLE_SPRITES = ['scavenger'];
 
 export interface Problem { file: string; message: string; warning?: boolean }
 
@@ -126,6 +128,13 @@ export function checkArt(): Problem[] {
     if (s && (s.w !== FRAME * moods.length * 2 || s.h !== FRAME)) {
       fail(file, `is ${s.w}x${s.h}, expected ${FRAME * moods.length * 2}x${FRAME} (${moods.join(', ')}; mouth closed then open)`);
     }
+  }
+
+  // Battle sprites: standing on their bottom edge, facing the viewer or Mara (the game mirrors them).
+  for (const name of BATTLE_SPRITES) {
+    const file = join(ART, 'battle', `${name}.png`);
+    const s = needPng(file);
+    if (s && (s.w > 640 || s.h > 600)) warn(file, `is ${s.w}x${s.h}; battle sprites are about 300 px wide`);
   }
 
   // Satchel items and action-ring icons.

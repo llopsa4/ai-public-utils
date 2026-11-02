@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import { DIALOGUES } from '../content/dialogue';
-import { ACTOR_VERBS, ITEM_VERBS, interact } from '../content/interactions';
+import { ACTOR_VERBS, ITEM_VERBS, afterRelease, interact } from '../content/interactions';
+import { finishBattle } from '../engine/kit';
+import type { BattleRequest } from './battle';
 import { LINE_MOODS } from '../content/moods';
 import { ROOMS } from '../content/rooms';
 import { resolveNode } from '../engine/dialogue';
@@ -16,6 +18,7 @@ import { Atmosphere, createAtmosphereTextures, highQuality } from './atmosphere'
 import { addLight, localLight, mixColor } from '../engine/lighting';
 import { Props, createParticleTextures } from './props';
 import { Crowd, type Member } from './Crowd';
+import { BATTLE_IMAGES } from './battle';
 import { RoomSign } from './sign';
 import { CROWDS, EXTRAS, type Mood } from '../content/crowd';
 import { FOREGROUND_IMAGES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
@@ -344,6 +347,10 @@ export class RoomScene extends Phaser.Scene {
     if (this.session.arrival) this.walkIn(this.session.arrival);
     else this.session.autosave();
     this.session.arrival = null;
+    // A reload between the release and Oren's send-off picks the sequence up again (the fight
+    // restarts from its beginning).
+    const pending = this.room.id === 'gallery' && this.session.state.flags.kilnCold ? afterRelease(this.session.state.flags) : [];
+    if (pending.length) this.time.delayedCall(700, () => void this.runScript(pending));
   }
 
   /** On arrival Mara starts just beyond the doorway and walks in to the entry point. */
@@ -664,7 +671,13 @@ export class RoomScene extends Phaser.Scene {
     this.tintScenery();
     this.refreshAmbient(cold, animate);
     sound.ambience(this.room.id === 'ashways' ? 'wind' : cold ? 'cold' : 'kiln');
-    sound.music(cold ? 'cold' : this.room.music ?? 'warm');
+    sound.music(this.musicMood());
+  }
+
+  /** The score: nervous from the fight to the end of the chapter, else the cold kiln or the room's own. */
+  private musicMood(): 'nervous' | 'cold' | 'warm' | 'tension' | 'wind' {
+    if (this.session.state.flags.fought) return 'nervous';
+    return this.isCold() ? 'cold' : this.room.music ?? 'warm';
   }
 
   private coldTint(): number {
@@ -936,10 +949,15 @@ export class RoomScene extends Phaser.Scene {
       case 'giveSpares':
         applyCommand(state, command);
         return true;
+      case 'hatch':
+        await this.blowHatch();
+        return true;
       case 'fight':
+        await this.fight(command.id);
+        return true;
       case 'gear':
       case 'shop':
-        return true; // wired up with the battle scene, gear menu and shop
+        return true; // wired up with the gear menu and shop
       case 'end':
         this.leaving = true;
         this.cameras.main.fadeOut(900, 0, 0, 0);
@@ -947,6 +965,72 @@ export class RoomScene extends Phaser.Scene {
         this.session.ui.showEnd();
         return false;
     }
+  }
+
+  /** The creature drawn by the pulse: the hatch bursts with sparks and smoke and it crawls out. */
+  private hatchCreature: Phaser.GameObjects.Image | null = null;
+  private async blowHatch(): Promise<void> {
+    const at = this.room.hatch ?? { x: 360, y: 260 };
+    sound.rumble(500);
+    sound.shatter();
+    if (!settings().reducedMotion) this.cameras.main.shake(450, 0.008);
+    this.props.burst([{ x: at.x, y: at.y - 10 }, { x: at.x + 6, y: at.y - 4 }]);
+    for (let i = 0; i < 4; i++) this.time.delayedCall(i * 90, () => this.props.step(at.x + (Math.random() - 0.5) * 20, at.y));
+    await new Promise<void>(resolve => {
+      const load = () => {
+        const crawler = this.add.image(at.x, at.y, 'battle-scavenger').setOrigin(0.5, 1).setScale(0.32 / 2).setFlipX(true).setDepth(at.y).setAlpha(0);
+        this.hatchCreature = crawler;
+        this.tweens.add({ targets: crawler, alpha: 1, x: at.x + 14, duration: 500, ease: 'Quad.easeOut' });
+        this.tweens.add({ targets: crawler, y: at.y + 6, scale: 0.38 / 2, x: at.x + 26, delay: 500, duration: 500, ease: 'Sine.easeInOut', onComplete: () => resolve() });
+      };
+      if (this.textures.exists('battle-scavenger')) load();
+      else { this.load.image('battle-scavenger', BATTLE_IMAGES.scavenger); this.load.once(Phaser.Loader.Events.COMPLETE, load); this.load.start(); }
+    });
+    this.hero.setFacing('left');
+  }
+
+  /**
+   * A fight: save first (a reload restarts it), shatter the room into the battle scene, wait for
+   * the win, pay out, and fade back in.
+   */
+  private async fight(id: string): Promise<void> {
+    const state = this.session.state;
+    this.syncHero();
+    this.session.saveNow();
+    sound.music('combat');
+    this.session.ui.setHover('');
+    const shatter = settings().reducedMotion ? null : await this.snapshot();
+    this.hatchCreature?.destroy();
+    this.hatchCreature = null;
+    await new Promise<void>(resolve => {
+      const req: BattleRequest = {
+        encounterId: id, guided: !state.flags.fought, backdrop: this.room.background, shatter, heroSheet: this.heroSheet(),
+        onWin: battle => {
+          finishBattle(state, battle, id);
+          this.scene.stop('battle');
+          this.scene.resume();
+          resolve();
+        },
+      };
+      this.scene.launch('battle', req);
+      this.scene.pause();
+    });
+    this.session.ui.renderInventory();
+    sound.music('nervous');
+    this.cameras.main.fadeIn(600, 0, 0, 0);
+    await this.wait(400);
+  }
+
+  /** The canvas as it is now, as a texture (for the shatter). */
+  private snapshot(): Promise<string> {
+    const key = 'battle-snapshot';
+    if (this.textures.exists(key)) this.textures.remove(key);
+    return new Promise(resolve => {
+      this.game.renderer.snapshot(image => {
+        this.textures.addImage(key, image as HTMLImageElement);
+        resolve(key);
+      });
+    });
   }
 
   private async runDialogue(id: string): Promise<void> {

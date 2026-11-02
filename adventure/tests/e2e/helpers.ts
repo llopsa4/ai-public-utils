@@ -28,13 +28,18 @@ export async function act(page: Page, verb: string, target: string, item?: strin
     void session.scene.runScript(interact(session.state, verb, target, item ?? undefined));
   }, [verb, target, item ?? null] as const);
   const pending = [...choices];
-  for (let guard = 0; guard < 400; guard++) {
+  for (let guard = 0; guard < 1500; guard++) {
     const done = await page.evaluate(() => {
       const { session, game } = (window as any).adventure;
       session.ui.skip();
       return game.scene.isActive('room') && !session.scene.isBusy() && document.getElementById('choices')!.hidden;
     });
     if (done) return;
+    // A fight: follow the guide, else play the first playable card, else end the turn; then Continue.
+    if (await page.locator('#battle').isVisible()) {
+      await fightStep(page);
+      continue;
+    }
     const box = page.locator('#choices');
     if (await box.isVisible()) {
       const wanted = pending[0];
@@ -59,4 +64,20 @@ export async function startNewGame(page: Page, tap = false): Promise<void> {
   await expect(skip).toBeVisible();
   if (tap) await skip.tap(); else await skip.click();
   await idle(page);
+}
+
+/** One move in a fight, as a player would make it (clicks on the real buttons). */
+export async function fightStep(page: Page): Promise<void> {
+  const cont = page.locator('#battle-continue');
+  if (await cont.isVisible()) { await cont.click(); return; }
+  const askedEnd = page.locator('#battle-end.asked:not(:disabled)');
+  if (await askedEnd.count()) { await askedEnd.click(); await page.waitForTimeout(250); return; }
+  const asked = page.locator('.battle-card.asked:not(:disabled)');
+  const card = (await asked.count()) ? asked.first() : page.locator('.battle-card:not(:disabled)').first();
+  if (await card.count()) { await card.click(); }
+  else {
+    const end = page.locator('#battle-end:not(:disabled)');
+    if (await end.count()) await end.click();
+  }
+  await page.waitForTimeout(250);
 }

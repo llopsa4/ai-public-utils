@@ -2,6 +2,22 @@ import { ROOMS } from './rooms';
 import { SECRET_FLAGS } from '../engine/state';
 import type { ActorId, Command, GameState, NpcId, Point, Verb } from '../engine/types';
 
+/**
+ * What follows the release: the hatch blows, the fight, Oren's advice and the gear menu, then his
+ * send-off. Also used to pick up where a reload left off (fight not yet won, gear not yet checked).
+ */
+export function afterRelease(f: Record<string, boolean>): Command[] {
+  const out: Command[] = [];
+  if (!f.fought) {
+    out.push({ type: 'hatch' }, say('line.maraWatchOut'), { type: 'fight', id: 'hatchScavenger' }, flag('fought'),
+      say('line.orenAfterFight', 'oren'), say('line.maraAfterFight'));
+  }
+  if (!f.gearChecked) {
+    out.push(say('line.orenGear', 'oren'), { type: 'giveSpares' }, { type: 'gear' }, flag('gearChecked'), say('line.orenShelter', 'oren'));
+  }
+  return out;
+}
+
 /** Verbs offered for the characters (hotspot verbs live in rooms.ts). */
 export const ACTOR_VERBS: Record<ActorId, Verb[]> = {
   hero: ['look', 'talk', 'crouch', 'lie', 'stand'],
@@ -290,7 +306,7 @@ function resolve(state: GameState, verb: Verb, target: string, item?: string): C
         return [
           ...approach(state, target), pose('hero', 'crouch'), wait(500), say('line.releaseOne'), wait(300),
           { type: 'shake', ms: 900 }, flag('kilnCold'), { type: 'addItem', item: 'regulator' }, wait(400), pose('hero', 'stand'),
-          say('line.releaseDone'), say('line.orenShelter', 'oren'), say('line.maraPulse'),
+          say('line.releaseDone'), say('line.maraPulse'), ...afterRelease(state.flags),
         ];
       }
       if (item === 'notebook') {
@@ -429,6 +445,7 @@ export const INTERACTION_KEYS = [
   'line.soupBread', 'line.soupLook', 'line.soupLookCold', 'line.soupTake', 'line.soupUse',
   'line.shoesLook', 'line.shoesLookCold', 'line.shoesTake', 'line.hearthLook', 'line.hearthLookCold', 'line.hearthUse', 'line.hearthUseCold',
   'line.stairsLook', 'line.stairsLookAlarm', 'line.stairsNotYet', 'line.gateLook', 'line.gateLookReady', 'line.gateNotYet', 'line.gateLeave', 'line.toRoomLook',
+  'line.maraWatchOut', 'line.orenAfterFight', 'line.maraAfterFight', 'line.orenGear',
   'line.regulatorGone', 'line.maraPatch', 'line.orenLockingRing', 'line.notReady', 'line.needProcedure', 'line.releaseOne', 'line.releaseDone',
   'line.orenShelter', 'line.maraPulse', 'line.notebookTooSoon', 'line.notebookNotReady', 'line.procedureAlready', 'line.notebookProcedure1', 'line.notebookProcedure2',
   'line.regulatorLook', 'line.regulatorLookRing', 'line.regulatorLookCold', 'line.regulatorBareHands',

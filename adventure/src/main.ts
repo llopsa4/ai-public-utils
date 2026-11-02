@@ -4,6 +4,7 @@ import { loadSettings, onSettingsChange, settings } from './engine/settings';
 import { sound } from './audio/sound';
 import { interact } from './content/interactions';
 import { BootScene, RoomScene, TitleScene } from './game/scenes';
+import { BattleScene } from './game/battle';
 import { Session } from './game/session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from './ui/ui';
 import '@fontsource/zilla-slab/latin-400.css';
@@ -33,7 +34,7 @@ const game = new Phaser.Game({
   banner: false,
   scale: { mode: Phaser.Scale.NONE, zoom: session.ui.layout() / ART_SCALE },
   input: { activePointers: 2 },
-  scene: [BootScene, title, room],
+  scene: [BootScene, title, room, new BattleScene(session)],
 });
 
 function relayout(): void {

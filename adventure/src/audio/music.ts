@@ -2,7 +2,7 @@
  * A small generative score, synthesized like the rest of the sound: a slow pad chord per bar and
  * sparse plucked notes from the mood's scale. Moods crossfade on room changes.
  */
-export type MusicMood = 'warm' | 'tension' | 'cold' | 'wind' | 'none';
+export type MusicMood = 'warm' | 'tension' | 'cold' | 'wind' | 'combat' | 'nervous' | 'none';
 
 interface MoodDef {
   /** Semitone offsets from the root for the scale the plucks pick from. */
@@ -16,6 +16,23 @@ interface MoodDef {
   padLevel: number;
   /** Pad filter cutoff (Hz): darker for tense or cold rooms. */
   cutoff: number;
+  /**
+   * A rhythmic layer (combat and nervous moods): the bar split into `steps`, a fixed motif of
+   * scale notes (semitones above the root, null = rest) played as short stabs, and drum patterns.
+   */
+  groove?: {
+    steps: number;
+    motif: (number | null)[];
+    kick?: number[];
+    snare?: number[];
+    /** A closed hi-hat every n steps. */
+    hat?: number;
+    /** A soft clock tick on every step (nervous). */
+    tick?: boolean;
+    /** A held low root under everything. */
+    drone?: boolean;
+    stabLevel: number;
+  };
 }
 
 const MOODS: Record<Exclude<MusicMood, 'none'>, MoodDef> = {
@@ -25,6 +42,25 @@ const MOODS: Record<Exclude<MusicMood, 'none'>, MoodDef> = {
   tension: { scale: [0, 2, 3, 7, 8, 12], chords: [[0, 7, 15], [-4, 3, 12], [0, 7, 14], [-2, 5, 14]], root: 146.83, barSeconds: 6, pluck: 0.16, padLevel: 0.055, cutoff: 900 },
   // After the shutdown: bare fifths, almost silence.
   cold: { scale: [0, 7, 12, 14], chords: [[0, 7], [-5, 7]], root: 130.81, barSeconds: 8, pluck: 0.09, padLevel: 0.035, cutoff: 600 },
+  // A fight: the warm theme's own notes (D major pentatonic, the same chords) at a run, with drums.
+  combat: {
+    scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 1.9, pluck: 0, padLevel: 0.03, cutoff: 1800,
+    groove: {
+      steps: 16, stabLevel: 0.045, hat: 2,
+      motif: [12, 14, 16, 19, 16, 14, 12, 9, 12, 14, 16, 21, 19, 16, 14, 12],
+      kick: [0, 4, 8, 10, 12], snare: [4, 12],
+    },
+  },
+  // After the fight, until the chapter ends: the same notes, slower and broken up, over a ticking
+  // clock and a low drone. Uneasy rather than frantic.
+  nervous: {
+    scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 3.4, pluck: 0, padLevel: 0.028, cutoff: 750,
+    groove: {
+      steps: 8, stabLevel: 0.035, tick: true, drone: true,
+      motif: [12, null, 14, null, null, 16, 14, null],
+      kick: [0, 5],
+    },
+  },
   // The ashways: open, high and airy, A minor pentatonic.
   wind: { scale: [0, 3, 5, 7, 10, 12, 15], chords: [[0, 7, 15, 19], [-2, 5, 12, 17]], root: 220, barSeconds: 7, pluck: 0.14, padLevel: 0.03, cutoff: 2200 },
 };
@@ -72,6 +108,7 @@ export class Music {
     if (bus !== this.bus) return;
     const ctx = this.ctx;
     const t = ctx.currentTime + 0.05;
+    if (def.groove) this.playGroove(def, bus, t, this.bar);
     const chord = def.chords[this.bar++ % def.chords.length];
     for (const n of chord) this.pad(bus, semis(def.root, n), t, def.barSeconds, def.padLevel, def.cutoff);
     const beat = def.barSeconds / 4;
@@ -80,6 +117,93 @@ export class Music {
       const n = def.scale[Math.floor(Math.random() * def.scale.length)] + 12;
       this.pluckNote(bus, semis(def.root, n), t + b * beat + Math.random() * 0.08);
     }
+  }
+
+  /** One bar of the rhythmic layer: stabs on the motif, drums, ticks and the drone. */
+  private playGroove(def: MoodDef, bus: GainNode, t: number, bar: number): void {
+    const g = def.groove!;
+    const step = def.barSeconds / g.steps;
+    // Every other bar the motif answers itself a step higher in the scale, so it does not loop flat.
+    const lift = bar % 2 ? 2 : 0;
+    g.motif.forEach((n, i) => {
+      if (n === null) return;
+      const accent = i % 4 === 0 ? 1 : 0.7;
+      this.stab(bus, semis(def.root, n + lift), t + i * step, step * 1.6, g.stabLevel * accent);
+    });
+    for (const i of g.kick ?? []) this.kick(bus, t + i * step);
+    for (const i of g.snare ?? []) this.hit(bus, t + i * step, 'bandpass', 1900, 0.06, 0.12);
+    if (g.hat) for (let i = 0; i < g.steps; i += g.hat) this.hit(bus, t + i * step, 'highpass', 7000, i % 4 === 0 ? 0.03 : 0.018, 0.03);
+    if (g.tick) for (let i = 0; i < g.steps; i++) this.tick(bus, t + i * step, i % 4 === 0);
+    if (g.drone) this.pad(bus, semis(def.root, -12), t, def.barSeconds, 0.04, 300);
+  }
+
+  /** A short, bright plucked stab (sawtooth through a closing lowpass). */
+  private stab(bus: GainNode, freq: number, t: number, length: number, level: number): void {
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = freq;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.Q.value = 2;
+    filter.frequency.setValueAtTime(2600, t);
+    filter.frequency.exponentialRampToValueAtTime(500, t + length);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(level, t + 0.008);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + length);
+    osc.connect(filter).connect(gain).connect(bus);
+    osc.start(t);
+    osc.stop(t + length + 0.05);
+  }
+
+  private kick(bus: GainNode, t: number): void {
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(130, t);
+    osc.frequency.exponentialRampToValueAtTime(42, t + 0.16);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.16, t + 0.005);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+    osc.connect(gain).connect(bus);
+    osc.start(t);
+    osc.stop(t + 0.25);
+  }
+
+  private noiseBuffer: AudioBuffer | null = null;
+  private hit(bus: GainNode, t: number, type: BiquadFilterType, freq: number, level: number, decay: number): void {
+    const ctx = this.ctx;
+    if (!this.noiseBuffer) {
+      this.noiseBuffer = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+      const d = this.noiseBuffer.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = this.noiseBuffer;
+    const filter = ctx.createBiquadFilter();
+    filter.type = type; filter.frequency.value = freq; filter.Q.value = 0.9;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(level, t + 0.003);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + decay);
+    src.connect(filter).connect(gain).connect(bus);
+    src.start(t, Math.random() * 0.5);
+    src.stop(t + decay + 0.05);
+  }
+
+  private tick(bus: GainNode, t: number, strong: boolean): void {
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = 'square';
+    osc.frequency.value = strong ? 1900 : 1500;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(strong ? 0.012 : 0.007, t + 0.002);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.03);
+    osc.connect(gain).connect(bus);
+    osc.start(t);
+    osc.stop(t + 0.05);
   }
 
   /** A soft, slowly swelling chord tone: two slightly detuned triangles through a lowpass. */

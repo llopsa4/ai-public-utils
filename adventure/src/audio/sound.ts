@@ -198,6 +198,21 @@ class Sound {
     }, 1700));
   }
 
+  /** The room breaking into shards (into a fight). */
+  shatter(): void {
+    this.burst('highpass', 3000, 0.3, 0.002, 0.5, 0.7);
+    this.tone('triangle', 1800, 600, 0.08, 0.6);
+    this.tone('sine', 220, 70, 0.12, 0.7);
+  }
+  /** A blow landing; heavier hits are lower and longer. */
+  strike(damage = 6): void {
+    const k = Math.min(1, damage / 16);
+    this.burst('lowpass', 900 - 400 * k, 0.22 + 0.15 * k, 0.003, 0.12 + 0.1 * k);
+    this.tone('square', 180 - 60 * k, 60, 0.05, 0.12);
+  }
+  /** Block going up: a ceramic clack. */
+  guard(): void { this.burst('bandpass', 2600, 0.12, 0.002, 0.06, 4); this.tone('triangle', 900, 860, 0.04, 0.12); }
+
   // Background work in the kiln hall: quiet, so it sits under Mara's own sounds. `level` 0..1 by distance.
   /** A chalk tap or a small knock. */
   clink(level = 1): void { this.tone('triangle', 1500 + Math.random() * 300, 1300, 0.02 * level, 0.07); }

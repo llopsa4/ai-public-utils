@@ -46,7 +46,7 @@ for (const name of js) assert.doesNotMatch(await readFile(resolve(project, 'buil
 const { statSync } = await import('node:fs');
 const size = name => statSync(resolve(project, 'build', name)).size;
 const total = built.reduce((sum, n) => sum + size(n), 0);
-const later = /^(firing-house|gallery|ashways|hall-left|hall-right|gallery-railing|mara-gauntlet|oren|nell|extra-[a-z]+)-[\w-]{8}\./;
+const later = /^(firing-house|gallery|ashways|hall-left|hall-right|gallery-railing|mara-gauntlet|oren|nell|scavenger|extra-[a-z]+)-[\w-]{8}\./;
 // .woff fonts are fallbacks for browsers without WOFF2; current browsers never fetch them.
 const firstLoad = built.filter(n => !later.test(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;

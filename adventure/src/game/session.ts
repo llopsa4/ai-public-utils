@@ -60,6 +60,7 @@ export class Session {
 
   /** Starts a different game (new, imported or continued): from the title or in place of the current one. */
   replaceState(state: GameState): void {
+    this.endBattle();
     this.state = state;
     this.selectedItem = null;
     this.ui.closeRadial();
@@ -85,6 +86,7 @@ export class Session {
     if (this.onTitle || !this.scene) return;
     window.clearTimeout(this.autosaveTimer);
     if (!this.scene.isBusy()) writeAutosave(this.state);
+    this.endBattle();
     this.onTitle = true;
     this.selectedItem = null;
     this.ui.closeRadial();
@@ -102,6 +104,19 @@ export class Session {
   }
 
   /** Saves to this browser shortly after the game settles (never mid-script or on the title). */
+  /** Saves at once, even mid-script (just before a fight). */
+  saveNow(): void {
+    window.clearTimeout(this.autosaveTimer);
+    writeAutosave(this.state);
+  }
+
+  /** Stops a fight in progress (new game, import, title screen). */
+  private endBattle(): void {
+    const game = this.scene?.game ?? this.title?.game;
+    if (game?.scene.isActive('battle') || game?.scene.isPaused('battle')) game.scene.stop('battle');
+    this.ui.battle.hide();
+  }
+
   autosave(): void {
     window.clearTimeout(this.autosaveTimer);
     this.autosaveTimer = window.setTimeout(() => {

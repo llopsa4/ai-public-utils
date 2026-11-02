@@ -7,6 +7,7 @@ import { readAutosave } from '../engine/autosave';
 import { MET_FLAGS, SECRET_FLAGS } from '../engine/state';
 import type { GameState, Point, Speaker, Verb } from '../engine/types';
 import { EXTRAS } from '../content/crowd';
+import { BattleUi, type BattleHandlers } from './battle';
 
 /** World size in logical units; all content coordinates use it. */
 export const LOGICAL_W = 640;
@@ -117,7 +118,7 @@ export class Ui {
     this.fileInput.addEventListener('change', () => void this.importSave());
     this.menu.addEventListener('click', e => { if (e.target === this.menu) this.menu.close(); });
     window.addEventListener('keydown', e => {
-      if (this.introActive) return;
+      if (this.introActive || this.battle.open) return;
       // Keyboard play: with nothing else focused, Tab walks through the room before the bar buttons.
       const free = (document.activeElement === document.body || document.activeElement === null)
         && !this.anyDialogOpen() && !this.radialOpen && this.choices.hidden && $('title').hidden;
@@ -388,6 +389,14 @@ export class Ui {
   }
 
   private introActive = false;
+  /** The fight's controls (the battle scene sets the handlers). */
+  readonly battle: BattleUi = new BattleUi($('overlay'), {
+    play: id => this.battleHandlers?.play(id),
+    endTurn: () => this.battleHandlers?.endTurn(),
+    tonic: () => this.battleHandlers?.tonic(),
+    skipGuide: () => this.battleHandlers?.skipGuide(),
+  });
+  battleHandlers: BattleHandlers | null = null;
 
   /**
    * A new story: the screen fades slowly to black, a few lines of context appear one after

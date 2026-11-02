@@ -222,6 +222,8 @@ export const ROOMS: Record<string, RoomDef> = {
       { kind: 'flame', x: 22, y: 210, size: 12, color: 0xffc060, depth: 9000 },
     ],
     sign: { x: 476, y: 70, drop: 10, w: 74, h: 50, style: 'iron' },
+    // The maintenance hatch at the foot of the regulator housing.
+    hatch: { x: 356, y: 262 },
   },
   ashways: {
     id: 'ashways',
