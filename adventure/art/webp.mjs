@@ -20,4 +20,9 @@ for (const folder of ['rooms', 'foreground', 'props']) {
     total += info.size;
   }
 }
+// Background people's sheets (placeholders, many frames): lossy WebP is about a third smaller.
+for (const name of readdirSync(join(here, 'src', 'characters')).filter(n => /^extra-.*\.png$/.test(n))) {
+  const info = await sharp(join(here, 'src', 'characters', name)).webp({ quality: 82, alphaQuality: 100, effort: 6 }).toFile(join(here, 'src', 'characters', name.replace(/\.png$/, '.webp')));
+  total += info.size;
+}
 console.log(`WebP rooms and foregrounds written to art/src (${(total / 1024).toFixed(0)} KB).`);

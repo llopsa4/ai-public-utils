@@ -284,16 +284,12 @@ function dimGlow(src, r) {
   return img;
 }
 
-function buildCharacter(id) {
-  const cfg = CHARACTERS[id];
-  const raw = load(join(kiln, cfg.source));
-  const open = cfg.unpowered ? dimGlow(raw, cfg.unpowered) : raw;
-  const closed = withClosedEyes(open, cfg.eyes);
+/** The pose builders for one character config (source space). */
+function rigOf(cfg, open) {
   let top = open.height, bottom = 0;
   for (let y = 0; y < open.height; y++) for (let x = 0; x < open.width; x += 2) if (open.data[(y * open.width + x) * 4 + 3] > 128) { top = Math.min(top, y); bottom = Math.max(bottom, y); }
   const k = cfg.height / (bottom - top);
   const hipC = [(cfg.hips.near[0] + cfg.hips.far[0]) / 2, cfg.hipY];
-
   // Six-frame step (frames 0 and 3 are the foot plants). Positive angles swing a leg backward.
   const THIGH = [-14, -5, 8, 14, 2, -10];
   const SHIN = [0, 0, 6, 12, 28, 10];
@@ -308,36 +304,136 @@ function buildCharacter(id) {
     ...leg('far', THIGH[(phase + 3) % 6], SHIN[(phase + 3) % 6]),
     upper: mul(translate(0, BOB[phase]), rotateAbout(SWAY[phase], hipC)),
   });
-  const squash = cfg.crouchSquash ?? 0.6;
-  const crouchLeg = side => ({ [`${side}Thigh`]: scaleAbout(1, squash, cfg.hips[side]), [`${side}Shin`]: scaleAbout(1, squash, cfg.hips[side]) });
-  const crouchPose = { ...crouchLeg('near'), ...crouchLeg('far'), upper: rotateAbout(9, hipC) };
-  const fidgetPose = cfg.fidgetPart
-    ? { fidget: rotateAbout(cfg.fidgetPart.angle, cfg.fidgetPart.pivot) }
-    : { upper: rotateAbout(cfg.fidgetLean ?? 0, hipC) };
-  const deadPose = { whole: rotateAbout(90, hipC) };
+  const squashLegs = s => Object.fromEntries(['near', 'far'].flatMap(side => [[`${side}Thigh`, scaleAbout(1, s, cfg.hips[side])], [`${side}Shin`, scaleAbout(1, s, cfg.hips[side])]]));
+  return { k, hipC, walkPose, squashLegs };
+}
 
+/**
+ * Background people for the kiln hall: placeholder variants of the three bodies (recoloured
+ * clothes and skin, another height, painted headgear), with a trimmed frame set and no portraits.
+ * Frames: 0 stand, 1 blink, 2-7 walk, 8-9 work (crouched, bobbing), 10 carry, 11 reach, 12 sit.
+ */
+const EXTRAS = {
+  'extra-stoker': { base: 'oren', height: 218, hue: 190, sat: 0.35, light: 0.72, skin: 0.7, headgear: { kind: 'cap', color: [58, 52, 50] } },
+  'extra-tally': { base: 'oren', height: 206, hue: 50, sat: 0.3, light: 0.9, skin: 0.95, headgear: { kind: 'hood', color: [92, 80, 70] } },
+  'extra-hauler': { base: 'mara', height: 224, hue: 0, sat: 0.55, light: 0.7, skin: 0.62, noArm: true, headgear: { kind: 'kerchief', color: [140, 60, 44] } },
+  'extra-runner': { base: 'mara', height: 150, hue: 340, sat: 0.65, light: 0.95, skin: 1.05, noArm: true, headgear: { kind: 'cap', color: [70, 84, 104] } },
+  'extra-hoist': { base: 'nell', height: 222, hue: 150, sat: 0.35, light: 0.85, skin: 1.12, headgear: { kind: 'kerchief', color: [70, 100, 84] } },
+  'extra-sweeper': { base: 'nell', height: 210, hue: 20, sat: 0.25, light: 0.8, skin: 0.8, headgear: { kind: 'hood', color: [104, 88, 66] } },
+};
+const EXTRA_TAGS = [
+  ['stand_down', 0, 0], ['stand_side', 0, 0], ['stand_up', 0, 0], ['blink_down', 1, 1], ['blink_side', 1, 1],
+  ['walk_down', 2, 7], ['walk_side', 2, 7], ['walk_up', 2, 7], ['crouch', 8, 8], ['work', 8, 9], ['carry', 10, 10], ['reach', 11, 11], ['sit', 12, 12],
+];
+
+const rgbToHsl = (r, g, b) => {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
+  if (max === min) return [0, 0, l];
+  const d = max - min, s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  const h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+  return [h * 60, s, l];
+};
+const hslToRgb = (h, s, l) => {
+  const f = n => { const k = (n + h / 30) % 12, a = s * Math.min(l, 1 - l); return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)); };
+  return [f(0), f(8), f(4)].map(v => Math.round(Math.max(0, Math.min(1, v)) * 255));
+};
+
+/**
+ * A recoloured copy of a base illustration. Skin (low red-blue spread, or inside the face) keeps
+ * its hue and is scaled by `skin`; everything else is hue-rotated, desaturated and dimmed. Then
+ * headgear is painted over the top of the head, and for Mara's body the gauntlet arm is removed.
+ */
+function variantImage(src, base, v) {
+  const img = { width: src.width, height: src.height, data: Buffer.from(src.data) };
+  const eyeX = base.eyes.reduce((s, e) => s + e.x, 0) / base.eyes.length, eyeY = base.eyes.reduce((s, e) => s + e.y, 0) / base.eyes.length;
+  const faceR = 75;
+  for (let y = 0; y < img.height; y++) for (let x = 0; x < img.width; x++) {
+    const i = (y * img.width + x) * 4;
+    if (img.data[i + 3] < 8) continue;
+    if (v.noArm && base.arm && x >= base.arm.minX + 6 && y >= base.arm.minY && y <= base.arm.maxY + 40) { img.data[i + 3] = 0; continue; }
+    const R = img.data[i], G = img.data[i + 1], B = img.data[i + 2];
+    const [h, s, l] = rgbToHsl(R, G, B);
+    const inFace = Math.hypot(x - eyeX, (y - eyeY - 30) * 0.9) < faceR;
+    const skinLike = R > G && G > B && R - B > 35 && R - B < 120 && l > 0.35 && l < 0.68 && s > 0.22 && h > 8 && h < 38;
+    if (inFace || skinLike) {
+      if (inFace && !skinLike && l < 0.35) continue; // hair and brows stay as drawn
+      for (let c = 0; c < 3; c++) img.data[i + c] = Math.min(255, Math.round(img.data[i + c] * v.skin));
+      continue;
+    }
+    // Pale armour plates (Mara's, Nell's shield) become worn leather and wood: these are workers.
+    const plate = l > 0.58 && s < 0.75;
+    const [r, g, b] = plate ? hslToRgb(28, 0.32, l * 0.5) : hslToRgb((h + v.hue) % 360, s * v.sat, l * v.light);
+    img.data[i] = r; img.data[i + 1] = g; img.data[i + 2] = b;
+  }
+  paintHeadgear(img, eyeX, eyeY, v.headgear);
+  return img;
+}
+
+/** Paints a cap, hood or kerchief over the head, following the drawn silhouette. */
+function paintHeadgear(img, eyeX, eyeY, gear) {
+  const [cr, cg, cb] = gear.color;
+  const brimY = eyeY - (gear.kind === 'cap' ? 26 : 34);
+  const bottomY = gear.kind === 'hood' ? eyeY + 95 : brimY;
+  for (let y = 0; y <= bottomY + 8; y++) for (let x = Math.round(eyeX - 110); x <= eyeX + 110; x++) {
+    if (x < 0 || x >= img.width) continue;
+    const i = (y * img.width + x) * 4;
+    if (img.data[i + 3] < 128) continue;
+    const dx = x - eyeX;
+    let inside = y <= brimY;
+    // A hood frames the face: it covers the sides of the head but not the face oval.
+    if (gear.kind === 'hood' && y > brimY) inside = Math.abs(dx) > 70 && Math.abs(dx) < 110;
+    if (!inside) continue;
+    // Shade: lighter toward the upper left, a darker band at the brim.
+    const shade = 0.82 + 0.3 * Math.max(0, 1 - Math.hypot(dx + 30, y - (brimY - 60)) / 90) - (Math.abs(y - brimY) < 6 && gear.kind !== 'hood' ? 0.25 : 0);
+    const grain = 0.94 + 0.06 * Math.sin(x * 0.7 + y * 0.3);
+    img.data[i] = Math.min(255, Math.round(cr * shade * grain));
+    img.data[i + 1] = Math.min(255, Math.round(cg * shade * grain));
+    img.data[i + 2] = Math.min(255, Math.round(cb * shade * grain));
+  }
+  // The cap's bill sticks out toward the facing side (the figures face right).
+  if (gear.kind === 'cap') {
+    for (let y = brimY - 6; y <= brimY + 4; y++) for (let x = Math.round(eyeX); x <= eyeX + 70; x++) {
+      const i = (y * img.width + x) * 4;
+      const t = (x - eyeX) / 70;
+      if (y < brimY - 6 + t * 4) continue;
+      img.data[i] = Math.round(cr * 0.7); img.data[i + 1] = Math.round(cg * 0.7); img.data[i + 2] = Math.round(cb * 0.7); img.data[i + 3] = 255;
+    }
+  }
+}
+
+function buildExtra(id) {
+  const v = EXTRAS[id];
+  const base = { ...CHARACTERS[v.base], walks: true, height: v.height };
+  delete base.unpowered;
+  const raw = load(join(kiln, base.source));
+  const open = variantImage(raw, base, v);
+  const closed = withClosedEyes(open, base.eyes);
+  const { k, hipC, walkPose, squashLegs } = rigOf(base, open);
+  const squash = base.crouchSquash ?? 0.6;
   const frames = [];
-  const add = (img, pose) => frames.push(placeInFrame(renderPose(img, cfg, pose, k), 200));
-  add(open, {});                    // 0 stand_down
-  add(closed, {});                  // 1 blink_down
-  add(open, {});                    // 2 stand_side
-  add(closed, {});                  // 3 blink_side
-  add(open, {});                    // 4 stand_up (no back view exists: the three-quarter pose is reused)
-  for (let rep = 0; rep < 3; rep++) for (let p = 0; p < 6; p++) add(open, cfg.walks ? walkPose(p) : {}); // 5..22 walks
-  add(open, crouchPose);            // 23 crouch
-  add(closed, deadPose);            // 24 dead (rotated, eyes closed)
-  add(open, fidgetPose);            // 25 fidget (idle gesture)
+  const add = (img, pose) => frames.push(placeInFrame(renderPose(img, base, pose, k), 200));
+  add(open, {});
+  add(closed, {});
+  for (let p = 0; p < 6; p++) add(open, walkPose(p));
+  add(open, { ...squashLegs(squash), upper: rotateAbout(9, hipC) });
+  add(open, { ...squashLegs(squash), upper: mul(translate(0, 10), rotateAbout(14, hipC)), ...(base.fidgetPart ? { fidget: mul(translate(0, 10), mul(rotateAbout(14, hipC), rotateAbout(12, base.fidgetPart.pivot))) } : {}) });
+  add(open, { upper: rotateAbout(-4, hipC), ...(base.fidgetPart ? { fidget: mul(rotateAbout(-4, hipC), rotateAbout(-14, base.fidgetPart.pivot)) } : {}) });
+  add(open, { upper: mul(translate(0, -8), rotateAbout(-6, hipC)), ...(base.fidgetPart ? { fidget: mul(translate(0, -8), rotateAbout(-38, base.fidgetPart.pivot)) } : {}) });
+  add(open, { ...squashLegs(0.42), upper: rotateAbout(-2, hipC) });
+  writeSheet(id, frames, EXTRA_TAGS, n => (n >= 2 && n <= 7 ? 110 : n === 8 || n === 9 ? 280 : 1000), 64);
+}
 
-  // Palette from all frames, then hard alpha and a 1px dark outline for readability on busy art.
+/** Palette-reduces the frames, adds the outline and writes the PNG + Aseprite JSON pair. */
+function writeSheet(id, frames, tags, duration, colours) {
   const samples = [];
   for (const f of frames) for (let p = 0; p < FW * FH; p += 3) if (f.alpha[p] >= 0.5) samples.push([f.rgb[p * 3], f.rgb[p * 3 + 1], f.rgb[p * 3 + 2]]);
-  const pal = kmeans(samples, 112);
+  const pal = kmeans(samples, colours);
   const rows = Math.ceil(frames.length / COLS);
   const sheet = new PNG({ width: FW * COLS, height: FH * rows });
   frames.forEach((f, n) => {
     const fx = (n % COLS) * FW, fy = Math.floor(n / COLS) * FH;
     const solid = new Uint8Array(FW * FH);
-    // Fill pinholes: transparent pixels mostly surrounded by solid ones take their neighbours' colour.
     for (let p = FW; p < FW * (FH - 1); p++) {
       if (f.alpha[p] >= 0.5) continue;
       const nb = [p - 1, p + 1, p - FW, p + FW].filter(q => f.alpha[q] >= 0.5);
@@ -369,15 +465,43 @@ function buildCharacter(id) {
       frame: { x: (n % COLS) * FW, y: Math.floor(n / COLS) * FH, w: FW, h: FH },
       rotated: false, trimmed: false,
       spriteSourceSize: { x: 0, y: 0, w: FW, h: FH }, sourceSize: { w: FW, h: FH },
-      duration: n >= 5 && n <= 22 ? 110 : 1000,
+      duration: duration(n),
     })),
     meta: {
       app: 'adventure rig.mjs (Aseprite JSON-array compatible)', version: '1', image: `${id}.png`, format: 'RGBA8888',
       size: { w: sheet.width, h: sheet.height }, scale: '1',
-      frameTags: TAGS.map(([name, from, to]) => ({ name, from, to, direction: 'forward' })),
+      frameTags: tags.map(([name, from, to]) => ({ name, from, to, direction: 'forward' })),
     },
   };
   writeFileSync(join(out, 'characters', `${id}.json`), JSON.stringify(json, null, 1) + '\n');
+}
+
+function buildCharacter(id) {
+  const cfg = CHARACTERS[id];
+  const raw = load(join(kiln, cfg.source));
+  const open = cfg.unpowered ? dimGlow(raw, cfg.unpowered) : raw;
+  const closed = withClosedEyes(open, cfg.eyes);
+  const { k, hipC, walkPose, squashLegs } = rigOf(cfg, open);
+  const crouchPose = { ...squashLegs(cfg.crouchSquash ?? 0.6), upper: rotateAbout(9, hipC) };
+  const fidgetPose = cfg.fidgetPart
+    ? { fidget: rotateAbout(cfg.fidgetPart.angle, cfg.fidgetPart.pivot) }
+    : { upper: rotateAbout(cfg.fidgetLean ?? 0, hipC) };
+  const deadPose = { whole: rotateAbout(90, hipC) };
+
+  const frames = [];
+  const add = (img, pose) => frames.push(placeInFrame(renderPose(img, cfg, pose, k), 200));
+  add(open, {});                    // 0 stand_down
+  add(closed, {});                  // 1 blink_down
+  add(open, {});                    // 2 stand_side
+  add(closed, {});                  // 3 blink_side
+  add(open, {});                    // 4 stand_up (no back view exists: the three-quarter pose is reused)
+  for (let rep = 0; rep < 3; rep++) for (let p = 0; p < 6; p++) add(open, cfg.walks ? walkPose(p) : {}); // 5..22 walks
+  add(open, crouchPose);            // 23 crouch
+  add(closed, deadPose);            // 24 dead (rotated, eyes closed)
+  add(open, fidgetPose);            // 25 fidget (idle gesture)
+
+  // Palette from all frames, then hard alpha and a 1px dark outline for readability on busy art.
+  writeSheet(id, frames, TAGS, n => (n >= 5 && n <= 22 ? 110 : 1000), 112);
 
   // Dialogue portraits: area-averaged head-and-shoulders crops, 256x256 each, in a strip of frames
   // per mood (neutral, worried, angry), each with the mouth closed then open.
@@ -407,5 +531,8 @@ function buildCharacter(id) {
   writeFileSync(join(out, 'portraits', `${portraitId}.png`), encodeIndexed(portrait));
 }
 
-for (const id of Object.keys(CHARACTERS)) buildCharacter(id);
-console.log('Rigged character sheets and portraits written to art/src (mara, mara-gauntlet, oren, nell).');
+// `node art/rig.mjs extras` rebuilds only the background people.
+const only = process.argv[2];
+if (only !== 'extras') for (const id of Object.keys(CHARACTERS)) buildCharacter(id);
+for (const id of Object.keys(EXTRAS)) buildExtra(id);
+console.log(`Rigged character sheets written to art/src (${only === 'extras' ? '' : 'mara, mara-gauntlet, oren, nell, '}${Object.keys(EXTRAS).join(', ')}).`);
