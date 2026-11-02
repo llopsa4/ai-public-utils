@@ -21,7 +21,7 @@ export default defineConfig({
     reuseExistingServer: false,
   },
   projects: [
-    { name: 'desktop', testMatch: /playthrough|saves/, use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
+    { name: 'desktop', testMatch: /playthrough|saves|crowd/, use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 } } },
     { name: 'phone', testMatch: /mobile/, use: { ...devices['Pixel 7'] } },
   ],
 });

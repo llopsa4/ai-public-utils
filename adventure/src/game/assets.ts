@@ -9,6 +9,18 @@ import orenJson from '../../art/src/characters/oren.json';
 import orenPng from '../../art/src/characters/oren.png';
 import nellJson from '../../art/src/characters/nell.json';
 import nellPng from '../../art/src/characters/nell.png';
+import extraStokerJson from '../../art/src/characters/extra-stoker.json';
+import extraStokerPng from '../../art/src/characters/extra-stoker.webp';
+import extraTallyJson from '../../art/src/characters/extra-tally.json';
+import extraTallyPng from '../../art/src/characters/extra-tally.webp';
+import extraHaulerJson from '../../art/src/characters/extra-hauler.json';
+import extraHaulerPng from '../../art/src/characters/extra-hauler.webp';
+import extraRunnerJson from '../../art/src/characters/extra-runner.json';
+import extraRunnerPng from '../../art/src/characters/extra-runner.webp';
+import extraHoistJson from '../../art/src/characters/extra-hoist.json';
+import extraHoistPng from '../../art/src/characters/extra-hoist.webp';
+import extraSweeperJson from '../../art/src/characters/extra-sweeper.json';
+import extraSweeperPng from '../../art/src/characters/extra-sweeper.webp';
 import notebookJson from '../../art/src/objects/notebook.json';
 import notebookPng from '../../art/src/objects/notebook.png';
 import pantryDoorJson from '../../art/src/objects/pantry-door.json';
@@ -48,10 +60,17 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   sweeper: { png: sweeperPng, json: sweeperJson },
   valve: { png: valvePng, json: valveJson },
   tent: { png: tentPng, json: tentJson },
+  // The kiln hall's background people (placeholder art; WebP copies of the PNGs, art/webp.mjs).
+  'extra-stoker': { png: extraStokerPng, json: extraStokerJson },
+  'extra-tally': { png: extraTallyPng, json: extraTallyJson },
+  'extra-hauler': { png: extraHaulerPng, json: extraHaulerJson },
+  'extra-runner': { png: extraRunnerPng, json: extraRunnerJson },
+  'extra-hoist': { png: extraHoistPng, json: extraHoistJson },
+  'extra-sweeper': { png: extraSweeperPng, json: extraSweeperJson },
 };
 
 /** Sheets loaded only when a room needs them (the rest load at boot): saves ~550 KB before the title. */
-export const LAZY_SHEETS = new Set(['mara-gauntlet', 'oren', 'nell']);
+export const LAZY_SHEETS = new Set(['mara-gauntlet', 'oren', 'nell', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
 
 /** Sheet used for each non-player character. */
 export const NPC_SHEETS: Record<NpcId, string> = { oren: 'oren', nell: 'nell' };

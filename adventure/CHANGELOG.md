@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased: a working crowd in the kiln hall
+
+- Six background people in the kiln hall: Hollis the stoker, Wren the hoist hand, Dace the clay hauler, Mags the sweeper, Pip the runner and old Ansel the tally-keeper.
+- Each walks a routine of stations with random waits and detours, and works there with a pose, a held thing (shovel, broom, slate, sack) and a small effect: sparks at the kiln mouths, dust from the broom, the pulley swinging, chalk taps, scraping.
+- Some leave through the curtain or past the west wall and come back later. They wait if Mara stands in their way, and step aside when she heads to where they are working.
+- Look at them or talk to them: they stop, turn to Mara and say one of a few lines (others once the kiln is cold). Nothing they say changes the story or the save.
+- They chat now and then in speech bubbles, which are hidden during conversations and kept out of the history.
+- When the kiln goes cold they stop and look at it, then change routine; the stoker, hoist hand and sweeper stay and the other three leave for good.
+- Placeholder art: recoloured, re-heighted variants of Mara, Oren and Nell with painted headgear, built by `art/rig.mjs` and loaded in the background once play starts (WebP, about 340 KB). The total size budget is now 3.6 MB; the first load is unchanged.
+- Fix: very quiet sounds no longer throw an audio error (a distant footstep could stop a room change).
+
 ## 0.4.0: more polish, still no new story
 
 - Title screen over the kiln hall, with Continue, New game, Import and Settings. Menu → Title screen.

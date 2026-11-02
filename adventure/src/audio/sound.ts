@@ -81,7 +81,8 @@ class Sound {
     filter.type = type; filter.frequency.value = freq; filter.Q.value = q;
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(peak, t + attack);
+    // Exponential ramps cannot reach 0, so silent requests (a distant extra's footstep) ramp to almost nothing.
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, peak), t + attack);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + attack + decay);
     src.connect(filter).connect(gain).connect(this.master);
     src.start(t, Math.random());
@@ -98,7 +99,7 @@ class Sound {
     osc.frequency.exponentialRampToValueAtTime(to, t + duration);
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(peak, t + 0.01);
+    gain.gain.exponentialRampToValueAtTime(Math.max(0.0001, peak), t + 0.01);
     gain.gain.exponentialRampToValueAtTime(0.0001, t + duration);
     osc.connect(gain).connect(this.master);
     osc.start(t);
@@ -159,6 +160,13 @@ class Sound {
   latch(): void { this.burst('highpass', 3200, 0.25, 0.001, 0.025); this.burst('highpass', 2600, 0.2, 0.001, 0.03, 1, 0.12); this.tone('triangle', 1250, 1150, 0.06, 0.25, 0.12); }
   rumble(ms: number): void { this.burst('lowpass', 90, 0.5, 0.06, ms / 1000); this.tone('sine', 48, 34, 0.18, ms / 1000); }
   hiss(ms = 1600): void { this.burst('highpass', 2400, 0.22, 0.05, ms / 1000, 0.7); }
+  // Background work in the kiln hall: quiet, so it sits under Mara's own sounds. `level` 0..1 by distance.
+  /** A chalk tap or a small knock. */
+  clink(level = 1): void { this.tone('triangle', 1500 + Math.random() * 300, 1300, 0.02 * level, 0.07); }
+  /** A shovel scraping into coal. */
+  scrape(level = 1): void { this.burst('bandpass', 1300 + Math.random() * 400, 0.05 * level, 0.02, 0.22, 1.5); }
+  /** One broom stroke. */
+  sweep(level = 1): void { this.burst('bandpass', 1000 + Math.random() * 400, 0.035 * level, 0.03, 0.18, 2); }
   brushes(ms: number): void {
     for (let t = 0; t < ms; t += 90) this.burst('bandpass', 900 + Math.random() * 500, 0.06, 0.01, 0.06, 2, t / 1000);
   }

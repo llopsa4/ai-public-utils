@@ -5,7 +5,8 @@ import { TEXT_SCALE, lineDuration, onSettingsChange, settings, updateSettings, t
 import { objectives } from '../content/objectives';
 import { readAutosave } from '../engine/autosave';
 import { SECRET_FLAGS } from '../engine/state';
-import type { ActorId, GameState, Point, Verb } from '../engine/types';
+import type { GameState, Point, Speaker, Verb } from '../engine/types';
+import { EXTRAS } from '../content/crowd';
 
 /** World size in logical units; all content coordinates use it. */
 export const LOGICAL_W = 640;
@@ -17,7 +18,10 @@ export const ART_SCALE = 2;
 const FLAP_MS = 130;
 const FLAP_PER_CHAR = 42;
 
-const SPEECH_COLORS: Record<ActorId, string> = { hero: '#ffc26b', oren: '#a8dcff', nell: '#c4f29a' };
+const SPEECH_COLORS: Record<string, string> = {
+  hero: '#ffc26b', oren: '#a8dcff', nell: '#c4f29a',
+  ...Object.fromEntries(EXTRAS.map(e => [e.id, e.color])),
+};
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -54,7 +58,7 @@ export class Ui {
   private readonly hover = $('hover');
   private readonly dialogue = $('dialogue');
   private readonly labels = $('labels');
-  private readonly history: { actor: ActorId; text: string }[] = [];
+  private readonly history: { actor: Speaker; text: string }[] = [];
   /** How many hints were shown per notebook goal (0, 1 or 2), for this play session. */
   private readonly hintStage = new Map<string, number>();
   private revealTimer = 0;
@@ -152,7 +156,7 @@ export class Ui {
    * the right) and resolves when its time is up or the player clicks. With auto-advance off, only
    * a click moves on.
    */
-  say(actor: ActorId, text: string, _at: Point, mood: Mood = 'neutral'): Promise<void> {
+  say(actor: Speaker, text: string, _at: Point, mood: Mood = 'neutral'): Promise<void> {
     this.skipSpeech?.();
     const panel = this.dialogue;
     const stopFlap = this.showPortrait(actor === 'hero' ? 'mara' : actor, mood, text.length);
@@ -558,6 +562,20 @@ export class Ui {
     this.hover.classList.toggle('flip', p.x > LOGICAL_W * this.zoom * 0.75);
     this.hover.style.left = `${p.x}px`;
     this.hover.style.top = `${p.y}px`;
+  }
+
+  /**
+   * A background person's speech bubble above a world point (chatter: not spoken to Mara, not in
+   * the history, hidden from screen readers). Empty text hides it.
+   */
+  chatter(text: string, at?: Point): void {
+    const el = $('chatter');
+    if (!text || !at) { el.hidden = true; return; }
+    if (el.textContent !== text) el.textContent = text;
+    const p = this.toScreen(at);
+    el.style.left = `${p.x}px`;
+    el.style.top = `${p.y}px`;
+    el.hidden = false;
   }
 
   toast(text: string, ms = 3500): void {

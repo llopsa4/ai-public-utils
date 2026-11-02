@@ -10,6 +10,7 @@ Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 - **Act:** click or tap a person or object to open the action ring, then choose an action (Look at, Open, Close, Pick up, Use, Talk to, Go to). Arrow keys move around the ring and Esc closes it.
 - **Satchel:** click an item for Look at / Use. Use carries it, so you then click what to use it on. Right-click or Esc puts it back.
 - **Poses:** click Mara, Oren or Nell for Crouch, Lie down and Stand up.
+- **The kiln hall crowd:** six workers go about their day there: a stoker at the kiln mouths, a hoist hand at the pulley, a clay hauler, a sweeper, a runner and the old tally-keeper. They walk between their stations, work, leave and come back, and chat in speech bubbles. Click one to look at them or talk (they stop, turn to Mara and say a line). When the kiln goes cold they stop and stare at it, and half of them leave.
 - **Talk:** choose a reply with the mouse or the number keys. Lines appear in the panel at the bottom with the speaker's portrait, which talks and shows a mood (worried, angry) on some lines. Click to skip a line.
 - **Explore:** looking at something again often gets a different line, and four small secrets are hidden around Cinderfold (the notebook counts the ones you've found).
 - **Labels:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
@@ -53,7 +54,7 @@ Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, 
 | --- | --- |
 | `src/engine/` | Pure, Phaser-free logic: types, geometry, pathfinding (visibility graph + A*), state, save files, dialogue runner, i18n |
 | `src/content/` | Rooms (walk polygons, hotspots, objects, entries), interactions, dialogue trees, `strings/en.json` |
-| `src/game/` | Phaser scenes, the `Actor` (pose/walk/blink), asset list, session |
+| `src/game/` | Phaser scenes, the `Actor` (pose/walk/blink/task poses), the kiln-hall `Crowd`, asset list, session |
 | `src/ui/` | DOM interface over the canvas: dialogue panel, action ring, choices, hotspot labels, satchel, menu, notebook, history, settings, end card |
 | `src/audio/` | Web Audio synthesizer for ambience, effects, footsteps per floor surface, and a generative score per room mood (no sound files) |
 | `art/` | Art scripts and their output in `art/src/` (see [PROVENANCE](art/PROVENANCE.md)) |
@@ -65,16 +66,18 @@ The world is 640×360 logical units. The art and the canvas are 2× that (1280×
 
 - `npm run pixelate`: rooms, the ash sweeper, item icons and objects (crop, mask, area-average downscale, palette reduction).
 - `npm run rig`: animated characters and dialogue portraits. Legs are split at the hip and knee for a six-frame step; NPCs get a `fidget` frame. Each Kiln illustration is a single three-quarter pose, so `art/rig.mjs` cuts it into parts (upper body, near leg, far leg) and poses them per frame. That gives a walk sway, a crouch (legs folded), lying down (the figure rotated, eyes closed) and a blink (eyelids painted over). There are no back or side views, so every direction reuses the three-quarter pose, mirrored for left. Joints, eyes and portrait crops are set per character at the top of the script.
+- `npm run rig` also builds the **background people** (`EXTRAS` in `art/rig.mjs`, `node art/rig.mjs extras` for just those). They are placeholder variants of the three bodies: clothes recoloured, pale armour turned to leather, skin tone and height changed, and a cap, hood or kerchief painted on. Each has 13 frames: stand, blink, a six-frame walk, work (two frames, crouched), carry, reach and sit. Replace any `characters/extra-<id>.png/.json` pair with real art using the same tags.
 - `art/icons.mjs`: the drawn 24×24 action-ring icons.
-- `npm run webp` (`art/webp.mjs`, sharp): WebP copies of the rooms and foreground cut-outs, which are what the game loads.
-- Outputs are palette-indexed PNGs (`art/png.mjs`), plus the WebP rooms. Rooms, Oren, Nell and the lit gauntlet load the first time they are needed; `scripts/verify-build.mjs` enforces a size budget (3 MB total, 1.65 MB counted before the title screen), and `npm run e2e` measures the real first load (under 1 MB as GitHub Pages serves it).
+- `npm run webp` (`art/webp.mjs`, sharp): WebP copies of the rooms, foreground cut-outs and background people's sheets, which are what the game loads.
+- Outputs are palette-indexed PNGs (`art/png.mjs`), plus the WebP rooms. Rooms, Oren, Nell and the lit gauntlet load the first time they are needed, and the background people load in the background once play starts; `scripts/verify-build.mjs` enforces a size budget (3.6 MB total, 1.75 MB counted before the title screen), and `npm run e2e` measures the real first load (under 1 MB as GitHub Pages serves it).
+- `crowd: true` on a room brings in the background people. Their stations, exits, routines (warm and cold), held things and lines are in `src/content/crowd.ts`; the routine logic is `src/engine/crowd.ts` (pure, unit-tested) and the on-screen behaviour is `src/game/Crowd.ts`. Stations must stay clear of the spots Mara walks to (a test checks this).
 - Rooms can declare `foreground` cut-outs (drawn in front of characters standing behind them), `light` (character tint and depth dimming) and `ambient` (particles and flickering glows) in `src/content/rooms.ts`.
 
 Character sheets follow the Aseprite/LibreSprite JSON-array format with the tags `stand_down`, `blink_down`, `stand_side`, `blink_side`, `stand_up`, `walk_down`, `walk_side`, `walk_up` (six frames each, plants on frames 0 and 3), `crouch`, `dead` and optionally `fidget`. Frames are 256×256, anchored bottom-centre at the feet, and side frames face right. Hand-made sheets with the same tags can replace any of them.
 
 ## Current limits
 
-- One scene: four rooms, two neighbours and one machine. Tobi is mentioned but not shown, since there is no child art.
+- One scene: four rooms, two neighbours, six background people in the kiln hall and one machine. The background people are placeholder art (recoloured copies of Mara, Oren and Nell, with Nell's shield turned to wood), and their held things are drawn in code. Tobi is mentioned but not shown, since there is no child art.
 - Rig animation is stiff compared with drawn animation, and the characters always show their three-quarter view.
 - Nell uses Iven's illustration from Kiln Courier, shield included. In this game the shield is her old counter shutter.
 - Sound is synthesized, so it is simple rather than recorded. No cloud sync. English only.

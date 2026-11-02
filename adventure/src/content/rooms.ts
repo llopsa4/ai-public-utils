@@ -118,6 +118,7 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     foreground: [{ image: 'hall-left', x: 0, y: 248, depth: 400 }, { image: 'hall-right', x: 552, y: 280, depth: 400 }],
     props: [{ kind: 'swing', image: 'pulley', x: 94, y: 84, pivotX: 0.5, hotspot: 'pulleys' }],
+    crowd: true,
     ambient: {
       particles: [{ kind: 'embers', x: 300, y: 150, w: 250, h: 80, warm: true }],
       glows: [

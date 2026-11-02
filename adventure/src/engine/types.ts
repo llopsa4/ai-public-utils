@@ -11,6 +11,10 @@ export type Pose = 'stand' | 'crouch' | 'dead';
 export const NPC_IDS = ['oren', 'nell'] as const;
 export type NpcId = (typeof NPC_IDS)[number];
 export type ActorId = 'hero' | NpcId;
+/** Background people (the kiln-hall crowd): not saved, not part of the story. */
+export type ExtraId = `extra-${string}`;
+/** Anyone who can speak a line in the dialogue panel. */
+export type Speaker = ActorId | ExtraId;
 
 export const VERBS = ['look', 'open', 'close', 'take', 'use', 'talk', 'go', 'crouch', 'lie', 'stand'] as const;
 export type Verb = (typeof VERBS)[number];
@@ -103,6 +107,8 @@ export interface RoomDef {
   look?: RoomLook;
   /** Animated set pieces: gauge needle, bubbles, swinging hoist, lantern flames. */
   props?: PropDef[];
+  /** Background people working in the room (see content/crowd.ts). */
+  crowd?: boolean;
   /** When these hold the room is drawn with the cold tint (kiln shut down). */
   coldIf?: Condition[];
   entries: Record<string, { x: number; y: number; face: Facing }>;
@@ -162,7 +168,7 @@ export type Command =
   | { type: 'walk'; to: Point; face?: Facing }
   | { type: 'face'; actor: ActorId; face: Facing }
   /** `at` places the line for a voice from off-screen. */
-  | { type: 'say'; actor: ActorId; text: string; at?: Point }
+  | { type: 'say'; actor: Speaker; text: string; at?: Point }
   | { type: 'pose'; actor: ActorId; pose: Pose }
   | { type: 'setFlag'; flag: string; value: boolean }
   | { type: 'addItem'; item: string }

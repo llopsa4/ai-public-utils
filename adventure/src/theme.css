@@ -739,3 +739,35 @@ dialog[open] {
 
 .reduce-motion dialog[open] { animation: none; }
 @media (prefers-reduced-motion: reduce) { dialog[open] { animation: none; } }
+
+/* Chatter: a parchment speech bubble over a background person in the kiln hall. */
+#chatter {
+  position: absolute;
+  transform: translate(-50%, calc(-100% - 0.6em));
+  max-width: 14em;
+  padding: 0.25em 0.6em;
+  font-size: 0.8em;
+  line-height: 1.2;
+  text-align: center;
+  color: #2a1a12;
+  background: #f2e6cc;
+  border: 1px solid #5a3a24;
+  border-radius: 0.6em;
+  box-shadow: 0 0.15em 0.4em rgb(0 0 0 / 0.35);
+  pointer-events: none;
+  animation: chatter-in 160ms ease-out;
+}
+#chatter::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -0.45em;
+  width: 0.7em;
+  height: 0.7em;
+  background: inherit;
+  border: inherit;
+  border-width: 0 1px 1px 0;
+  transform: translateX(-50%) rotate(45deg);
+}
+@keyframes chatter-in { from { opacity: 0; transform: translate(-50%, calc(-100% - 0.2em)); } }
+@media (prefers-reduced-motion: reduce) { #chatter { animation: none; } }

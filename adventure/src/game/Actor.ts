@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import type { ActorId, DepthScale, Facing, Point, Pose } from '../engine/types';
+import type { DepthScale, Facing, Point, Pose, Speaker } from '../engine/types';
 
 const WALK_SPEED = 110; // logical pixels per second at scale 1
 const BLINK_MIN = 1500;
@@ -48,10 +48,16 @@ export class Actor {
   private gesturing = false;
   /** Perspective scale for the current y (1 = full size). */
   private depth = 1;
+  /** Walking speed relative to Mara's (background people hurry or dawdle). */
+  speed = 1;
+  /** Hit box width relative to the body (background people are narrower targets). */
+  hitWidth = 1;
+  /** A task tag held instead of the standing frame (background people at work), or null. */
+  private task: string | null = null;
 
   constructor(
     private readonly scene: Phaser.Scene,
-    readonly id: ActorId,
+    readonly id: Speaker,
     sheet: string,
     x: number,
     y: number,
@@ -110,6 +116,7 @@ export class Actor {
     const token = ++this.walkToken;
     if (path.length === 0) return true;
     if (this.pose !== 'stand') this.pose = 'stand';
+    this.task = null;
     this.walking = true;
     for (const target of path) {
       const dx = target.x - this.sprite.x, dy = target.y - this.sprite.y;
@@ -117,7 +124,7 @@ export class Actor {
       if (distance < 0.5) continue;
       // Vertical movement reads as depth, so prefer side-on walking unless clearly going up/down.
       this.setFacing(Math.abs(dx) >= Math.abs(dy) * 0.8 ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down');
-      const duration = (distance / (WALK_SPEED * this.depth)) * 1000;
+      const duration = (distance / (WALK_SPEED * this.speed * this.depth)) * 1000;
       let last = { x: this.sprite.x, y: this.sprite.y };
       await new Promise<void>(resolve => {
         this.finishStep = resolve;
@@ -157,7 +164,8 @@ export class Actor {
   hitBox(): Phaser.Geom.Rectangle {
     const body = BODY[this.pose];
     const s = this.depth * this.bodyScale;
-    return new Phaser.Geom.Rectangle(this.sprite.x - (body.w * s) / 2, this.sprite.y - body.h * s, body.w * s, body.h * s);
+    const w = body.w * s * this.hitWidth;
+    return new Phaser.Geom.Rectangle(this.sprite.x - w / 2, this.sprite.y - body.h * s, w, body.h * s);
   }
 
   /** Point just above the head, for speech text. */
@@ -199,9 +207,25 @@ export class Actor {
     if (PLANT_FRAMES.includes(frame)) this.onStep?.();
   }
 
+  /** Perspective scale at the current position. */
+  get perspective(): number {
+    return this.depth;
+  }
+
+  /** Holds a task tag (work, carry, reach, sit...) while standing; null goes back to standing. */
+  perform(tag: string | null): void {
+    if (this.walking) return;
+    this.task = tag && this.scene.anims.exists(`${this.sheet}:${tag}`) ? tag : null;
+    this.refresh();
+  }
+
+  get currentTask(): string | null {
+    return this.task;
+  }
+
   /** Turns to look at a point (only while standing still and idle). */
   lookAt(x: number): void {
-    if (this.walking || this.pose !== 'stand' || this.gesturing) return;
+    if (this.walking || this.pose !== 'stand' || this.gesturing || this.task) return;
     const face = x < this.sprite.x ? 'left' : 'right';
     if (face !== this.face) this.setFacing(face);
   }
@@ -223,6 +247,8 @@ export class Actor {
       this.advanceStride(0);
     } else if (this.gesturing) {
       return;
+    } else if (this.task) {
+      this.play(this.task, this.face === 'left');
     } else if (this.pose === 'stand') {
       this.play(`stand_${this.direction()}`, this.face === 'left');
     } else {
@@ -240,10 +266,10 @@ export class Actor {
   /** Eyes close briefly at a random 1.5–2.5 s interval while standing still and visible from the front or side. */
   private scheduleBlink(): void {
     this.blinkTimer = this.scene.time.delayedCall(Phaser.Math.Between(BLINK_MIN, BLINK_MAX), () => {
-      if (this.pose === 'stand' && !this.walking && !this.gesturing && this.face !== 'up' && this.sprite.active) {
+      if (this.pose === 'stand' && !this.walking && !this.gesturing && !this.task && this.face !== 'up' && this.sprite.active) {
         this.play(`blink_${this.direction()}`, this.face === 'left');
         this.scene.time.delayedCall(BLINK_LENGTH, () => {
-          if (this.pose === 'stand' && !this.walking && !this.gesturing) this.refresh();
+          if (this.pose === 'stand' && !this.walking && !this.gesturing && !this.task) this.refresh();
         });
       }
       if (this.sprite.active) this.scheduleBlink();

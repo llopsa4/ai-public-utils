@@ -10,11 +10,13 @@ import { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
 import { sound } from '../audio/sound';
 import { SECRET_FLAGS, applyCommand } from '../engine/state';
-import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Verb } from '../engine/types';
+import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Speaker, Verb } from '../engine/types';
 import { Actor, SHADOW_DEPTH } from './Actor';
 import { Atmosphere, createAtmosphereTextures, highQuality } from './atmosphere';
 import { addLight, localLight, mixColor } from '../engine/lighting';
 import { Props, createParticleTextures } from './props';
+import { Crowd, type Member } from './Crowd';
+import { EXTRAS } from '../content/crowd';
 import { FOREGROUND_IMAGES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
@@ -140,7 +142,7 @@ export class TitleScene extends Phaser.Scene {
   }
 }
 
-type Target = { kind: 'hotspot'; hotspot: HotspotDef } | { kind: 'actor'; actor: Actor };
+type Target = { kind: 'hotspot'; hotspot: HotspotDef } | { kind: 'actor'; actor: Actor } | { kind: 'extra'; member: Member };
 
 /**
  * For hands-on verbs that walk up to something first, marks the moment Mara arrives (right after
@@ -214,6 +216,8 @@ export class RoomScene extends Phaser.Scene {
   private ambientCold: boolean | null = null;
   private atmosphere!: Atmosphere;
   private props!: Props;
+  /** Background people (rooms with `crowd`), else null. */
+  private crowd: Crowd | null = null;
   /** Last cold state seen, to animate the shutdown when it happens in this room (null until created). */
   private knownCold: boolean | null = null;
   /** Cold factor last applied to the background tint (Low quality). */
@@ -290,6 +294,14 @@ export class RoomScene extends Phaser.Scene {
       const s = state.npcs[a.id];
       this.actors.set(a.id, new Actor(this, a.id, NPC_SHEETS[a.id], a.x, a.y, s.face, s.pose, this.room.scale));
     }
+    this.crowd = this.room.crowd ? new Crowd({
+      scene: this, room: this.room, area: this.area, props: this.props,
+      hero: () => this.hero,
+      busy: () => this.isBusy(),
+      loadSheet: (key, then) => this.loadLazySheet(key, then),
+      bubble: (text, at) => this.session.ui.chatter(text, at),
+    }, this.isCold()) : null;
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { this.crowd?.destroy(); this.crowd = null; });
     // After the actors exist: refreshObjects also updates the hero's sheet, the cold tint and ambience.
     this.refreshObjects();
     this.updateLighting();
@@ -307,6 +319,8 @@ export class RoomScene extends Phaser.Scene {
     };
     // Mara's lit-gauntlet sheet: loaded in the background, swapped in when it arrives.
     if (!this.textures.exists('mara-gauntlet')) this.preloadGauntletSheet();
+    // The kiln hall's people are fetched in the background from the first room on.
+    for (const e of EXTRAS) this.loadLazySheet(e.sheet);
     for (const [id, actor] of this.actors) if (id !== 'hero') this.scheduleFidget(actor);
 
     this.session.ui.setHover('');
@@ -375,6 +389,19 @@ export class RoomScene extends Phaser.Scene {
     if (!pending) this.load.start();
   }
 
+  /** Loads a lazy sheet in the background; `then` runs (in this room) once it and its animations are ready. */
+  private loadLazySheet(key: string, then?: () => void): void {
+    const needsStart = !this.textures.exists(key) && !inFlight.has(key);
+    queueSheet(this, key);
+    whenSheet(this, key, () => {
+      // Runs at once if the sheet is cached (the scene is still being created then), else on arrival.
+      if (this.sys.settings.status >= Phaser.Scenes.SHUTDOWN) return;
+      createSheetAnims(this, key);
+      then?.();
+    });
+    if (needsStart && !this.load.isLoading()) this.load.start();
+  }
+
   // ------------------------------------------------------------------ input ---
   private onPointerDown(pointer: Phaser.Input.Pointer): void {
     const ui = this.session.ui;
@@ -412,11 +439,28 @@ export class RoomScene extends Phaser.Scene {
   }
 
   private openTargetRing(target: Target, at: Point): void {
+    if (target.kind === 'extra') { this.openExtraRing(target.member, at); return; }
     const id = this.targetId(target);
-    const verbs: Verb[] = target.kind === 'actor' ? ACTOR_VERBS[target.actor.id] : target.hotspot.verbs;
+    const verbs: Verb[] = target.kind === 'actor' ? ACTOR_VERBS[target.actor.id as ActorId] : target.hotspot.verbs;
     sound.blip();
     this.session.ui.openRadial(at, this.targetName(target), verbs, verb => {
       void this.runScript(withHandling(interact(this.session.state, verb, id), verb, id));
+    });
+  }
+
+  /** Background people: look, or talk (they stop, turn to Mara and say a line; nothing else changes). */
+  private openExtraRing(m: Member, at: Point): void {
+    const crowd = this.crowd;
+    if (!crowd) return;
+    sound.blip();
+    this.session.ui.openRadial(at, crowd.name(m), ['look', 'talk'], verb => {
+      if (verb === 'look') { void this.runScript([{ type: 'say', actor: 'hero', text: crowd.lookLine(m) }]); return; }
+      crowd.hold(m);
+      const spot = crowd.talkSpot(m);
+      void this.runScript([
+        { type: 'walk', to: spot.at, face: spot.face },
+        { type: 'say', actor: m.def.id, text: crowd.nextLine(m) },
+      ]).finally(() => crowd.release(m));
     });
   }
 
@@ -432,6 +476,7 @@ export class RoomScene extends Phaser.Scene {
       list.push({ target: { kind: 'hotspot', hotspot }, box: new Phaser.Geom.Rectangle(x, y, Math.max(...xs) - x, Math.max(...ys) - y) });
     }
     for (const actor of this.actors.values()) list.push({ target: { kind: 'actor', actor }, box: actor.hitBox() });
+    for (const member of this.crowd?.visible() ?? []) list.push({ target: { kind: 'extra', member }, box: member.actor.hitBox() });
     return list.sort((a, b) => a.box.centerX - b.box.centerX);
   }
 
@@ -473,6 +518,7 @@ export class RoomScene extends Phaser.Scene {
         return { text: t(h.name), x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 };
       });
     for (const [id, actor] of this.actors) labels.push({ text: t(`name.${id}`), ...actor.headPoint() });
+    for (const m of this.crowd?.visible() ?? []) labels.push({ text: this.crowd!.name(m), ...m.actor.headPoint() });
     return labels;
   }
 
@@ -505,6 +551,7 @@ export class RoomScene extends Phaser.Scene {
 
   /** What a click on the target will most likely do: talk, leave, handle or look. */
   private cursorKind(target: Target): CursorKind {
+    if (target.kind === 'extra') return 'talk';
     if (target.kind === 'actor') return target.actor.id === 'hero' ? 'look' : 'talk';
     const verbs = target.hotspot.verbs;
     if (verbs.includes('go')) return 'exit';
@@ -516,6 +563,8 @@ export class RoomScene extends Phaser.Scene {
   private hitTest(p: Point): Target | null {
     const actors = [...this.actors.values()].sort((a, b) => b.sprite.depth - a.sprite.depth);
     for (const actor of actors) if (actor.hitBox().contains(p.x, p.y)) return { kind: 'actor', actor };
+    const member = this.crowd?.hit(p);
+    if (member) return { kind: 'extra', member };
     for (const hotspot of this.room.hotspots) {
       if (conditionsHold(this.session.state, hotspot.visibleIf) && pointInPolygon(p, hotspot.polygon)) return { kind: 'hotspot', hotspot };
     }
@@ -523,10 +572,11 @@ export class RoomScene extends Phaser.Scene {
   }
 
   private targetId(target: Target): string {
-    return target.kind === 'actor' ? target.actor.id : target.hotspot.id;
+    return target.kind === 'actor' ? target.actor.id : target.kind === 'extra' ? target.member.def.id : target.hotspot.id;
   }
 
   private targetName(target: Target): string {
+    if (target.kind === 'extra') return this.crowd?.name(target.member) ?? '';
     return t(target.kind === 'actor' ? `name.${target.actor.id}` : target.hotspot.name);
   }
 
@@ -535,6 +585,7 @@ export class RoomScene extends Phaser.Scene {
   private async walkTo(target: Point): Promise<void> {
     const state = this.session.state;
     if (this.hero.pose !== 'stand') { this.hero.setPose('stand'); state.hero.pose = 'stand'; }
+    this.crowd?.heroHeading(target);
     if (await this.hero.walk(this.area.findPath(this.hero.position, target))) {
       this.syncHero();
       this.session.autosave();
@@ -587,6 +638,7 @@ export class RoomScene extends Phaser.Scene {
     const cold = this.isCold();
     const animate = this.knownCold === false && cold;
     this.knownCold = cold;
+    if (animate) this.crowd?.chillAll(); else this.crowd?.setCold(cold);
     this.atmosphere.setCold(cold, animate);
     this.tintScenery();
     this.refreshAmbient(cold, animate);
@@ -613,13 +665,19 @@ export class RoomScene extends Phaser.Scene {
     this.updateLighting();
     if (!this.hero?.sprite.active) return;
     this.props.update(time);
+    this.crowd?.update();
     this.tintScenery();
-    if (this.atmosphere.enabled) this.atmosphere.updateReflections([...this.actors.values()].map(a => a.sprite), time);
+    if (this.atmosphere.enabled) this.atmosphere.updateReflections(this.allActors().map(a => a.sprite), time);
     for (const [id, actor] of this.actors) {
       if (id === 'hero' || this.busy) continue;
       const d = Math.hypot(actor.sprite.x - this.hero.sprite.x, actor.sprite.y - this.hero.sprite.y);
       if (d < NOTICE_DISTANCE) actor.lookAt(this.hero.sprite.x);
     }
+  }
+
+  /** Story characters plus any background people on screen. */
+  private allActors(): Actor[] {
+    return [...this.actors.values(), ...(this.crowd?.visible().map(m => m.actor) ?? [])];
   }
 
   /**
@@ -633,7 +691,7 @@ export class RoomScene extends Phaser.Scene {
     const coldTint = this.atmosphere.enabled ? 0xffffff : mixColor(0xffffff, this.coldTint(), cold);
     const sources = this.room.ambient?.glows ?? [];
     const { farY, nearY } = this.room.scale;
-    for (const actor of this.actors.values()) {
+    for (const actor of this.allActors()) {
       const t = Phaser.Math.Clamp((actor.sprite.y - farY) / (nearY - farY), 0, 1);
       const dim = light.farDim + (1 - light.farDim) * t;
       const chest = { x: actor.sprite.x, y: actor.sprite.y - 40 * actor.sprite.scaleY * ART_SCALE };
@@ -711,8 +769,8 @@ export class RoomScene extends Phaser.Scene {
     return new Promise(resolve => this.time.delayedCall(ms, resolve));
   }
 
-  private async say(actorId: ActorId, key: string, at?: Point): Promise<void> {
-    const actor = this.actors.get(actorId);
+  private async say(actorId: Speaker, key: string, at?: Point): Promise<void> {
+    const actor = this.actors.get(actorId as ActorId);
     const point = actor?.headPoint() ?? at ?? { x: 320, y: 60 };
     await this.session.ui.say(actorId, t(key), point, LINE_MOODS[key]);
   }
@@ -723,6 +781,7 @@ export class RoomScene extends Phaser.Scene {
     switch (command.type) {
       case 'walk': {
         if (this.hero.pose !== 'stand') this.hero.setPose('stand');
+        this.crowd?.heroHeading(command.to);
         await this.hero.walk(this.area.findPath(this.hero.position, command.to));
         if (command.face) this.hero.setFacing(command.face);
         this.syncHero();
