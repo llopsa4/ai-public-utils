@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { initLanguage, t } from './engine/i18n';
 import { BootScene, RoomScene } from './game/scenes';
 import { Session } from './game/session';
-import { LOGICAL_H, LOGICAL_W } from './ui/ui';
+import { ART_SCALE, LOGICAL_H, LOGICAL_W } from './ui/ui';
 import './style.css';
 
 initLanguage();
@@ -13,19 +13,20 @@ session.scene = room;
 const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game',
-  width: LOGICAL_W,
-  height: LOGICAL_H,
+  // The canvas is 2x the 640x360 world; the camera zooms 2x so content keeps world coordinates.
+  width: LOGICAL_W * ART_SCALE,
+  height: LOGICAL_H * ART_SCALE,
   backgroundColor: '#000000',
-  pixelArt: true,
+  antialias: true,
   roundPixels: true,
   banner: false,
-  scale: { mode: Phaser.Scale.NONE, zoom: session.ui.layout() },
+  scale: { mode: Phaser.Scale.NONE, zoom: session.ui.layout() / ART_SCALE },
   input: { activePointers: 2 },
   scene: [BootScene, room],
 });
 
 function relayout(): void {
-  game.scale.setZoom(session.ui.layout());
+  game.scale.setZoom(session.ui.layout() / ART_SCALE);
 }
 window.addEventListener('resize', relayout);
 window.addEventListener('orientationchange', relayout);

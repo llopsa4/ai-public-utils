@@ -6,15 +6,17 @@ import { ROOMS } from '../src/content/rooms';
 import { dialogueKeys } from '../src/engine/dialogue';
 import { LANGUAGES, TABLES, detectLanguage } from '../src/engine/i18n';
 import { MAX_SAVE_BYTES, parseSave, serializeSave } from '../src/engine/saveFile';
-import { newGame } from '../src/engine/state';
+import { ITEMS, newGame } from '../src/engine/state';
 import { VERBS } from '../src/engine/types';
 
 test('a save round-trips exactly', () => {
   const s = newGame();
-  s.flags.suitcaseOpen = true;
-  s.inventory.push('key');
+  s.flags.hasGauntlet = true;
+  s.flags.kilnCold = true;
+  s.inventory.push('gauntlet', 'regulator');
   s.hero.pose = 'crouch';
-  s.keeper.pose = 'dead';
+  s.npcs.nell.pose = 'dead';
+  s.npcs.oren.face = 'right';
   const result = parseSave(serializeSave(s));
   assert.ok(result.ok);
   assert.deepEqual(result.state, s);
@@ -34,7 +36,11 @@ test('invalid saves are rejected with a reason', () => {
     [variant(d => { d.state.hero.pose = 'flying'; }), 'save.error.invalid'],
     [variant(d => { d.state.flags.godMode = true; }), 'save.error.invalid'],
     [variant(d => { d.state.flags.doorOpen = 'yes'; }), 'save.error.invalid'],
-    [variant(d => { d.state.inventory = ['key', 'key']; }), 'save.error.invalid'],
+    [variant(d => { d.state.inventory = ['gauntlet', 'gauntlet']; }), 'save.error.invalid'],
+    [variant(d => { d.version = 1; }), 'save.error.version'],
+    [variant(d => { d.state.npcs.keeper = { pose: 'stand', face: 'left' }; }), 'save.error.invalid'],
+    [variant(d => { delete d.state.npcs.nell; }), 'save.error.invalid'],
+    [variant(d => { d.state.npcs.nell.pose = 'sleeping'; }), 'save.error.invalid'],
     [variant(d => { d.state.inventory = ['crown']; }), 'save.error.invalid'],
     ['x'.repeat(MAX_SAVE_BYTES + 1), 'save.error.tooLarge'],
   ];
@@ -47,7 +53,7 @@ test('invalid saves are rejected with a reason', () => {
 
 test('false flags are dropped on import', () => {
   const s = newGame();
-  const text = serializeSave(s).replace('"flags": {}', '"flags": {"doorOpen": false}');
+  const text = serializeSave(s).replace('"flags": {}', '"flags": {"kilnCold": false}');
   const result = parseSave(text);
   assert.ok(result.ok);
   assert.deepEqual(result.state.flags, {});
@@ -71,15 +77,15 @@ test('every key used by the content exists', () => {
     ...Object.values(DIALOGUES).flatMap(dialogueKeys),
     ...Object.values(ROOMS).flatMap(r => r.hotspots.map(h => h.name)),
     ...VERBS.map(v => `verb.${v}`),
-    'name.hero', 'name.keeper', 'name.key',
+    'name.hero', 'name.oren', 'name.nell', ...ITEMS.map(i => `name.${i}`),
+    'ui.endTag', 'ui.endTitle', 'ui.endText',
     'save.error.tooLarge', 'save.error.notJson', 'save.error.notSave', 'save.error.version', 'save.error.invalid',
   ];
   for (const key of used) assert.ok(TABLES.en[key], `missing string: ${key}`);
 });
 
-test('language detection prefers the stored choice, then the browser', () => {
-  assert.equal(detectLanguage('ca', ['es-ES']), 'ca');
-  assert.equal(detectLanguage(null, ['fr-FR', 'es-ES']), 'es');
-  assert.equal(detectLanguage('xx', ['ca-ES']), 'ca');
+test('language detection falls back to English', () => {
+  assert.equal(detectLanguage('en', ['ca-ES']), 'en');
   assert.equal(detectLanguage(null, ['de-DE']), 'en');
+  assert.equal(detectLanguage('xx', []), 'en');
 });

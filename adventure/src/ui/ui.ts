@@ -1,12 +1,15 @@
-import { ITEM_ICONS, VERB_ICONS } from '../game/assets';
+import { ITEM_ICONS, PORTRAITS, VERB_ICONS } from '../game/assets';
 import { LANGUAGES, language, onLanguageChange, setLanguage, t, type Language } from '../engine/i18n';
 import { MAX_SAVE_BYTES, parseSave, saveFileName, serializeSave } from '../engine/saveFile';
 import type { ActorId, GameState, Point, Verb } from '../engine/types';
 
+/** World size in logical units; all content coordinates use it. */
 export const LOGICAL_W = 640;
 export const LOGICAL_H = 360;
+/** Art and canvas resolution relative to the world (art is drawn at 1280x720). */
+export const ART_SCALE = 2;
 
-const SPEECH_COLORS: Record<ActorId, string> = { hero: '#a8dcff', keeper: '#c4f29a' };
+const SPEECH_COLORS: Record<ActorId, string> = { hero: '#ffc26b', oren: '#a8dcff', nell: '#c4f29a' };
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 
@@ -15,6 +18,8 @@ export interface UiHost {
   isBusy(): boolean;
   selectedItem(): string | null;
   selectItem(item: string | null): void;
+  /** An inventory item was clicked: the host opens its action ring. */
+  itemClicked(item: string, index: number): void;
   replaceState(state: GameState): void;
   newGame(): GameState;
 }
@@ -48,6 +53,7 @@ export class Ui {
     $('menu-close').addEventListener('click', () => this.menu.close());
     $('menu-export').addEventListener('click', () => this.exportSave());
     $('menu-import').addEventListener('click', () => this.fileInput.click());
+    $('end-new').addEventListener('click', () => { this.hideEnd(); this.host.replaceState(this.host.newGame()); });
     $('menu-new').addEventListener('click', () => {
       if (window.confirm(t('ui.confirmNew'))) { this.host.replaceState(this.host.newGame()); this.menu.close(); }
     });
@@ -67,9 +73,8 @@ export class Ui {
   layout(): number {
     const bar = $('bar').offsetHeight;
     const w = window.innerWidth, h = window.innerHeight - bar;
-    const fit = Math.min(w / LOGICAL_W, h / LOGICAL_H);
-    // Whole-number zoom keeps pixel art crisp; only screens smaller than 640x360 scale down.
-    this.zoom = fit >= 1 ? Math.floor(fit) : Math.max(0.25, fit);
+    // Painted, palette-reduced art scales smoothly, so the stage simply fits the window.
+    this.zoom = Math.max(0.25, Math.min(w / LOGICAL_W, h / LOGICAL_H));
     this.stage.style.width = `${LOGICAL_W * this.zoom}px`;
     this.stage.style.height = `${LOGICAL_H * this.zoom}px`;
     this.overlay.style.fontSize = `${Math.max(13, Math.round(7.5 * this.zoom))}px`;
@@ -88,6 +93,7 @@ export class Ui {
     el.textContent = text;
     el.style.color = SPEECH_COLORS[actor];
     el.hidden = false;
+    this.showPortrait(actor, at);
     const p = this.toScreen(at);
     const width = el.offsetWidth, height = el.offsetHeight;
     const stageW = LOGICAL_W * this.zoom;
@@ -98,12 +104,25 @@ export class Ui {
     return new Promise(resolve => {
       const done = () => {
         window.clearTimeout(timer);
-        if (this.skipSpeech === done) { this.skipSpeech = null; el.hidden = true; }
+        if (this.skipSpeech === done) { this.skipSpeech = null; el.hidden = true; $('portrait').hidden = true; }
         resolve();
       };
       const timer = window.setTimeout(done, duration);
       this.skipSpeech = done;
     });
+  }
+
+  /** Large Kiln Courier portrait of whoever is speaking, with their name, opposite the speaker. */
+  private showPortrait(actor: ActorId, at: Point): void {
+    const box = $('portrait');
+    const url = PORTRAITS[actor === 'hero' ? 'mara' : actor];
+    if (!url) { box.hidden = true; return; }
+    box.querySelector('img')!.src = url;
+    box.querySelector('figcaption')!.textContent = t(`speaker.${actor}`);
+    box.style.borderColor = SPEECH_COLORS[actor];
+    // Keep the portrait on the side of the screen away from the speaker.
+    box.classList.toggle('right', at.x < LOGICAL_W / 2);
+    box.hidden = false;
   }
 
   /** Ends the current line early. Returns whether there was one. */
@@ -224,6 +243,18 @@ export class Ui {
     this.toastTimer = window.setTimeout(() => { this.toastEl.hidden = true; }, ms);
   }
 
+  /** The closing card: shown over the stage until the player starts again. */
+  showEnd(): void {
+    const card = $('end');
+    card.hidden = false;
+    this.live.textContent = `${t('ui.endTag')}. ${t('ui.endText')}`;
+    $<HTMLButtonElement>('end-new').focus({ preventScroll: true });
+  }
+
+  hideEnd(): void {
+    $('end').hidden = true;
+  }
+
   setBusy(busy: boolean): void {
     this.menuButton.disabled = busy;
     this.stage.classList.toggle('busy', busy);
@@ -251,9 +282,11 @@ export class Ui {
       img.src = ITEM_ICONS[item];
       img.alt = '';
       b.append(img);
+      const index = state.inventory.indexOf(item);
       b.addEventListener('click', () => {
         if (this.host.isBusy()) return;
-        this.host.selectItem(this.host.selectedItem() === item ? null : item);
+        if (this.host.selectedItem() === item) this.host.selectItem(null);
+        else this.host.itemClicked(item, index);
       });
       this.inventory.append(b);
     }
@@ -264,6 +297,7 @@ export class Ui {
   // ---------------------------------------------------------- language ---
   private buildLanguageButtons(): void {
     const group = $('lang');
+    group.hidden = LANGUAGES.length < 2;
     for (const lang of LANGUAGES) {
       const b = document.createElement('button');
       b.type = 'button';

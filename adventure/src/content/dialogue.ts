@@ -1,54 +1,135 @@
 import type { DialogueTree } from '../engine/dialogue';
 
+const CONCERNS = ['toldRepair', 'toldMother', 'toldLeaving', 'toldWhyMe'];
+
 export const DIALOGUES: Record<string, DialogueTree> = {
-  keeper: {
+  // Oren, the kiln tender. Once the patch fails, the argument lets Mara voice what the shutdown costs him.
+  // Every reply is heard; none is a wrong answer, and he decides himself once he has said enough.
+  oren: {
     start: 'start',
     nodes: {
-      start: { branch: [{ if: [{ notFlag: 'metKeeper' }], next: 'first' }, { next: 'again' }] },
-      first: {
-        lines: [
-          { actor: 'keeper', text: 'dlg.keeper.first1' },
-          { actor: 'keeper', text: 'dlg.keeper.first2' },
+      start: {
+        branch: [
+          { if: [{ flag: 'kilnCold' }], next: 'cold' },
+          { if: [{ flag: 'decided' }], next: 'decided' },
+          { if: [{ flag: 'patchFailed' }], next: 'argue' },
+          { next: 'before' },
         ],
-        set: { metKeeper: true },
+      },
+      before: {
+        lines: [
+          { actor: 'oren', text: 'dlg.oren.before1' },
+          { actor: 'oren', text: 'dlg.oren.before2' },
+        ],
+        set: { metOren: true },
+        next: null,
+      },
+      argue: {
+        branch: [{ if: [{ atLeast: { count: 1, flags: CONCERNS } }], next: 'hub' }],
+        lines: [{ actor: 'oren', text: 'dlg.oren.argue1' }],
         next: 'hub',
       },
-      again: { lines: [{ actor: 'keeper', text: 'dlg.keeper.again' }], next: 'hub' },
       hub: {
         choices: [
-          { text: 'dlg.choice.who', next: 'who', if: [{ notFlag: 'askedWho' }] },
-          { text: 'dlg.choice.whoAgain', next: 'whoAgain', if: [{ flag: 'askedWho' }] },
-          { text: 'dlg.choice.place', next: 'place' },
-          { text: 'dlg.choice.key', next: 'key', if: [{ flag: 'keyTaken', notFlag: 'toldKey' }] },
-          { text: 'dlg.choice.bye', next: 'bye' },
+          { text: 'dlg.choice.repair', next: 'repair', if: [{ notFlag: 'toldRepair' }] },
+          { text: 'dlg.choice.mother', next: 'mother', if: [{ notFlag: 'toldMother' }] },
+          { text: 'dlg.choice.leaving', next: 'leaving', if: [{ notFlag: 'toldLeaving' }] },
+          { text: 'dlg.choice.whyMe', next: 'whyMe', if: [{ notFlag: 'toldWhyMe' }] },
+          { text: 'dlg.choice.decide', next: 'decide', if: [{ atLeast: { count: 2, flags: CONCERNS } }] },
+          { text: 'dlg.choice.minute', next: 'minute' },
         ],
       },
-      who: {
-        lines: [
-          { actor: 'keeper', text: 'dlg.keeper.who1' },
-          { actor: 'keeper', text: 'dlg.keeper.who2' },
-        ],
-        set: { askedWho: true },
+      repair: {
+        lines: [{ actor: 'oren', text: 'dlg.oren.repair1' }, { actor: 'oren', text: 'dlg.oren.repair2' }],
+        set: { toldRepair: true },
         next: 'hub',
       },
-      whoAgain: { lines: [{ actor: 'keeper', text: 'dlg.keeper.whoAgain' }], next: 'hub' },
-      place: {
-        lines: [
-          { actor: 'keeper', text: 'dlg.keeper.place1' },
-          { actor: 'keeper', text: 'dlg.keeper.place2' },
-        ],
+      mother: {
+        lines: [{ actor: 'oren', text: 'dlg.oren.mother1' }, { actor: 'oren', text: 'dlg.oren.mother2' }],
+        set: { toldMother: true },
         next: 'hub',
       },
-      key: {
-        lines: [
-          { actor: 'keeper', text: 'dlg.keeper.key1' },
-          { actor: 'hero', text: 'dlg.hero.key2' },
-          { actor: 'keeper', text: 'dlg.keeper.key3' },
-        ],
-        set: { toldKey: true },
+      leaving: {
+        lines: [{ actor: 'oren', text: 'dlg.oren.leaving1' }, { actor: 'oren', text: 'dlg.oren.leaving2' }],
+        set: { toldLeaving: true },
         next: 'hub',
       },
-      bye: { lines: [{ actor: 'keeper', text: 'dlg.keeper.bye' }], next: null },
+      whyMe: {
+        lines: [{ actor: 'oren', text: 'dlg.oren.whyMe1' }, { actor: 'oren', text: 'dlg.oren.whyMe2' }],
+        set: { toldWhyMe: true },
+        next: 'hub',
+      },
+      decide: {
+        lines: [
+          { actor: 'hero', text: 'dlg.hero.decide1' },
+          { actor: 'hero', text: 'dlg.hero.decide2' },
+          { actor: 'oren', text: 'dlg.oren.decide3' },
+          { actor: 'hero', text: 'dlg.hero.decide4' },
+          { actor: 'oren', text: 'dlg.oren.decide5' },
+        ],
+        set: { decided: true },
+        next: null,
+      },
+      minute: { lines: [{ actor: 'oren', text: 'dlg.oren.minute' }], next: null },
+      decided: {
+        branch: [{ if: [{ flag: 'procedureKnown' }], next: 'ready' }],
+        lines: [{ actor: 'oren', text: 'dlg.oren.notebookFirst' }],
+        next: null,
+      },
+      ready: { lines: [{ actor: 'oren', text: 'dlg.oren.ready' }], next: null },
+      cold: {
+        lines: [{ actor: 'oren', text: 'dlg.oren.cold1' }, { actor: 'oren', text: 'dlg.oren.cold2' }],
+        choices: [
+          { text: 'dlg.choice.stillWarm', next: 'stillWarm', if: [{ has: 'regulator' }] },
+          { text: 'dlg.choice.back', next: 'back' },
+        ],
+      },
+      stillWarm: { lines: [{ actor: 'oren', text: 'dlg.oren.stillWarm1' }, { actor: 'oren', text: 'dlg.oren.stillWarm2' }], next: null },
+      back: { lines: [{ actor: 'oren', text: 'dlg.oren.back' }], next: null },
+    },
+  },
+
+  // Nell, the neighbour with the sticking latch and the soup pot. Tobi (off-screen) sends his scarf through her.
+  nell: {
+    start: 'start',
+    nodes: {
+      start: {
+        branch: [
+          { if: [{ flag: 'kilnCold' }], next: 'cold' },
+          { if: [{ flag: 'latchFixed' }], next: 'afterLatch' },
+          { if: [{ flag: 'metNell' }], next: 'again' },
+          { next: 'first' },
+        ],
+      },
+      first: {
+        lines: [{ actor: 'nell', text: 'dlg.nell.first1' }, { actor: 'nell', text: 'dlg.nell.first2' }],
+        set: { metNell: true },
+        next: null,
+      },
+      again: { lines: [{ actor: 'nell', text: 'dlg.nell.again' }], next: null },
+      afterLatch: {
+        choices: [
+          { text: 'dlg.choice.soup', next: 'soup' },
+          { text: 'dlg.choice.noise', next: 'noise', if: [{ flag: 'alarm' }] },
+          { text: 'dlg.choice.later', next: 'later' },
+        ],
+      },
+      soup: { lines: [{ actor: 'nell', text: 'dlg.nell.soup' }], next: 'afterLatch' },
+      noise: { lines: [{ actor: 'nell', text: 'dlg.nell.noise' }], next: 'afterLatch' },
+      later: { lines: [{ actor: 'nell', text: 'dlg.nell.later' }], next: null },
+      cold: {
+        branch: [{ if: [{ flag: 'gotBread' }], next: 'coldAgain' }],
+        lines: [
+          { actor: 'nell', text: 'dlg.nell.cold1' },
+          { actor: 'nell', text: 'dlg.nell.cold2' },
+          { actor: 'nell', text: 'dlg.nell.cold3' },
+          { actor: 'nell', text: 'dlg.nell.cold4' },
+        ],
+        set: { gotBread: true, gotScarf: true },
+        items: ['bread', 'scarf'],
+        next: null,
+      },
+      coldAgain: { lines: [{ actor: 'nell', text: 'dlg.nell.coldAgain' }], next: null },
     },
   },
 };

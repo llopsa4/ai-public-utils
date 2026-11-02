@@ -1,9 +1,10 @@
 import { ROOMS } from '../content/rooms';
 import { FLAGS, ITEMS } from './state';
-import type { Facing, GameState, Pose } from './types';
+import { NPC_IDS, type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
 
 export const SAVE_FORMAT = 'adventure-pilot-save';
-export const SAVE_VERSION = 1;
+/** Version 2: Cinderfold (scene 1). Version 1 saves belonged to the engine pilot's hotel rooms. */
+export const SAVE_VERSION = 2;
 export const MAX_SAVE_BYTES = 64 * 1024;
 
 const FACINGS: Facing[] = ['down', 'up', 'left', 'right'];
@@ -17,14 +18,19 @@ export function serializeSave(state: GameState, now = new Date()): string {
 
 export function saveFileName(now = new Date()): string {
   const p = (n: number) => String(n).padStart(2, '0');
-  return `adventure-save-${now.getFullYear()}${p(now.getMonth() + 1)}${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}.json`;
+  return `cinderfold-save-${now.getFullYear()}${p(now.getMonth() + 1)}${p(now.getDate())}-${p(now.getHours())}${p(now.getMinutes())}.json`;
 }
 
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 
+function actor(v: unknown): ActorState | null {
+  if (!isObject(v) || !FACINGS.includes(v.face as Facing) || !POSES.includes(v.pose as Pose)) return null;
+  return { face: v.face as Facing, pose: v.pose as Pose };
+}
+
 /**
- * Parses and fully validates an imported save. Only known rooms, flags, items, poses and facings are
- * accepted, so a tampered or foreign file can never put the game into an impossible state.
+ * Parses and fully validates an imported save. Only known rooms, characters, flags, items, poses and
+ * facings are accepted, so a tampered or foreign file can never put the game into an impossible state.
  * Error values are string-table keys.
  */
 export function parseSave(text: string): ImportResult {
@@ -34,17 +40,24 @@ export function parseSave(text: string): ImportResult {
   if (!isObject(data) || data.format !== SAVE_FORMAT) return { ok: false, error: 'save.error.notSave' };
   if (data.version !== SAVE_VERSION) return { ok: false, error: 'save.error.version' };
   const s = data.state;
-  if (!isObject(s)) return { ok: false, error: 'save.error.invalid' };
-
   const invalid: ImportResult = { ok: false, error: 'save.error.invalid' };
+  if (!isObject(s)) return invalid;
   if (typeof s.room !== 'string' || !Object.hasOwn(ROOMS, s.room)) return invalid;
 
-  const hero = s.hero, keeper = s.keeper;
-  if (!isObject(hero) || !isObject(keeper)) return invalid;
+  const hero = s.hero;
+  const heroPose = actor(hero);
+  if (!isObject(hero) || !heroPose) return invalid;
   if (typeof hero.x !== 'number' || typeof hero.y !== 'number' || !Number.isFinite(hero.x) || !Number.isFinite(hero.y)) return invalid;
   if (hero.x < 0 || hero.x > 640 || hero.y < 0 || hero.y > 360) return invalid;
-  for (const actor of [hero, keeper]) {
-    if (!FACINGS.includes(actor.face as Facing) || !POSES.includes(actor.pose as Pose)) return invalid;
+
+  if (!isObject(s.npcs)) return invalid;
+  const keys = Object.keys(s.npcs);
+  if (keys.length !== NPC_IDS.length || !keys.every(k => (NPC_IDS as readonly string[]).includes(k))) return invalid;
+  const npcs = {} as Record<NpcId, ActorState>;
+  for (const id of NPC_IDS) {
+    const a = actor(s.npcs[id]);
+    if (!a) return invalid;
+    npcs[id] = a;
   }
 
   if (!isObject(s.flags)) return invalid;
@@ -61,14 +74,5 @@ export function parseSave(text: string): ImportResult {
     inventory.push(item);
   }
 
-  return {
-    ok: true,
-    state: {
-      room: s.room,
-      hero: { x: hero.x, y: hero.y, face: hero.face as Facing, pose: hero.pose as Pose },
-      keeper: { face: keeper.face as Facing, pose: keeper.pose as Pose },
-      flags,
-      inventory,
-    },
-  };
+  return { ok: true, state: { room: s.room, hero: { x: hero.x, y: hero.y, ...heroPose }, npcs, flags, inventory } };
 }

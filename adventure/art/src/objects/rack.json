@@ -1,0 +1,73 @@
+{
+ "frames": [
+  {
+   "filename": "0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 140
+   },
+   "duration": 100
+  },
+  {
+   "filename": "1",
+   "frame": {
+    "x": 112,
+    "y": 0,
+    "w": 112,
+    "h": 140
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 112,
+    "h": 140
+   },
+   "sourceSize": {
+    "w": 112,
+    "h": 140
+   },
+   "duration": 100
+  }
+ ],
+ "meta": {
+  "app": "adventure pixelate.mjs (Aseprite JSON-array compatible)",
+  "version": "1",
+  "image": "rack.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 224,
+   "h": 140
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "full",
+    "from": 0,
+    "to": 0,
+    "direction": "forward"
+   },
+   {
+    "name": "empty",
+    "from": 1,
+    "to": 1,
+    "direction": "forward"
+   }
+  ]
+ }
+}

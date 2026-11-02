@@ -9,6 +9,8 @@ export interface DialogueNode {
   lines?: DialogueLine[];
   /** Flags set after the lines are spoken. */
   set?: Record<string, boolean>;
+  /** Items handed to Mara after the lines are spoken. */
+  items?: string[];
   /** Shown after the lines; the hero speaks the chosen text, then the dialogue moves on. */
   choices?: DialogueChoice[];
   /** Used when there are no choices; null or absent ends the conversation. */
@@ -20,6 +22,7 @@ export interface ResolvedNode {
   id: string;
   lines: DialogueLine[];
   set: Record<string, boolean>;
+  items: string[];
   choices: DialogueChoice[];
   next: string | null;
 }
@@ -36,6 +39,7 @@ export function resolveNode(tree: DialogueTree, id: string, state: GameState): R
       id: current,
       lines: node.lines ?? [],
       set: node.set ?? {},
+      items: node.items ?? [],
       choices: (node.choices ?? []).filter(c => conditionsHold(state, c.if)),
       next: node.next ?? null,
     };

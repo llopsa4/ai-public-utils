@@ -1,0 +1,73 @@
+{
+ "frames": [
+  {
+   "filename": "0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 80,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 80,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 80,
+    "h": 96
+   },
+   "duration": 100
+  },
+  {
+   "filename": "1",
+   "frame": {
+    "x": 80,
+    "y": 0,
+    "w": 80,
+    "h": 96
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 80,
+    "h": 96
+   },
+   "sourceSize": {
+    "w": 80,
+    "h": 96
+   },
+   "duration": 100
+  }
+ ],
+ "meta": {
+  "app": "adventure pixelate.mjs (Aseprite JSON-array compatible)",
+  "version": "1",
+  "image": "pantry-door.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 160,
+   "h": 96
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "stuck",
+    "from": 0,
+    "to": 0,
+    "direction": "forward"
+   },
+   {
+    "name": "fixed",
+    "from": 1,
+    "to": 1,
+    "direction": "forward"
+   }
+  ]
+ }
+}

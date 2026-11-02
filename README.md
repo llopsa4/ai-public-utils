@@ -2,7 +2,7 @@
 
 Personal static web applications hosted on GitHub Pages.
 
-- [Adventure pilot](https://llopsa4.github.io/ai-public-utils/adventure/) — an original point-and-click adventure prototype (Phaser, EN/CA/ES). See [the adventure guide](adventure/README.md).
+- [Cinderfold](https://llopsa4.github.io/ai-public-utils/adventure/) — a point-and-click adventure built from the first scene of Kiln Courier's story (Phaser). See [the adventure guide](adventure/README.md).
 
 - [Kiln Courier](https://llopsa4.github.io/ai-public-utils/FFCardGame/) — an original industrial-fantasy card combat prototype. See [local play instructions](FFCardGame/README.md).
 
@@ -13,7 +13,7 @@ Personal static web applications hosted on GitHub Pages.
 
 GitHub Pages serves the root of the `main` branch. The empty `.nojekyll` file disables Jekyll processing; HTML, native JavaScript modules, CSS, and the scheduling worker are served directly.
 
-Kiln Courier uses TypeScript, React, and Vite. Run `npm ci` and `npm run build` inside `FFCardGame` after changing its source; include its generated `index.html` and `build/` assets with the source changes. Its build preserves this branch-based hosting layout and does not build or replace the other applications. The adventure pilot works the same way: run `npm ci` and `npm run build` inside `adventure`, then commit its generated `index.html` and `build/` with the source.
+Kiln Courier uses TypeScript, React, and Vite. Run `npm ci` and `npm run build` inside `FFCardGame` after changing its source; include its generated `index.html` and `build/` assets with the source changes. Its build preserves this branch-based hosting layout and does not build or replace the other applications. The Cinderfold adventure works the same way: run `npm ci` and `npm run build` inside `adventure`, then commit its generated `index.html` and `build/` with the source.
 
 To update the site, commit your changes and push `main` to `origin`. GitHub Pages deploys the updated files automatically. Check the repository's Actions tab for deployment status.
 

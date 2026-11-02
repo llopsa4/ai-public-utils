@@ -19,7 +19,7 @@ for (const name of built) {
   assert.ok(a.equals(await readFile(resolve(project, 'build', name))), `stale asset ${name}`);
   assert.match(name, /\.(js|css|png)$/, `unexpected asset type ${name}`);
 }
-for (const art of ['hero', 'keeper', 'door', 'suitcase', 'key', 'hall', 'street']) {
+for (const art of ['mara', 'mara-gauntlet', 'oren', 'nell', 'sweeper', 'valve', 'socket', 'rack', 'pantry-door', 'notebook', 'mara-room', 'firing-house', 'gallery', 'ashways', 'gauntlet', 'regulator', 'bread', 'scarf']) {
   assert.ok(built.some(n => n.startsWith(`${art}-`) && n.endsWith('.png')), `missing art: ${art}`);
 }
 for (const verb of ['look', 'open', 'close', 'take', 'use', 'talk', 'go', 'crouch', 'lie', 'stand']) {

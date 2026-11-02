@@ -1,11 +1,10 @@
-import ca from '../content/strings/ca.json';
 import en from '../content/strings/en.json';
-import es from '../content/strings/es.json';
 
-export const LANGUAGES = ['en', 'ca', 'es'] as const;
+/** English only for now. To add a language: add strings/<code>.json and list it here. */
+export const LANGUAGES = ['en'] as const;
 export type Language = (typeof LANGUAGES)[number];
 
-export const TABLES: Record<Language, Record<string, string>> = { en, ca, es };
+export const TABLES: Record<Language, Record<string, string>> = { en };
 const STORAGE_KEY = 'adventure.language';
 
 let current: Language = 'en';

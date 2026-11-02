@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#120d14">
-  <title>Adventure pilot</title>
-  <script type="module" crossorigin src="./build/index-C7yPP_8Q.js"></script>
-  <link rel="stylesheet" crossorigin href="./build/index-ujFsVdAm.css">
+  <title>Cinderfold</title>
+  <script type="module" crossorigin src="./build/index-BcYnr22u.js"></script>
+  <link rel="stylesheet" crossorigin href="./build/index-CsZEVnBs.css">
 </head>
 <body>
   <main id="app">
@@ -15,11 +15,18 @@
       <div id="game"></div>
       <div id="overlay">
         <div id="hover" hidden></div>
+        <figure id="portrait" hidden><img alt=""><figcaption></figcaption></figure>
         <div id="speech" hidden></div>
         <div id="radial" hidden></div>
         <div id="choices" role="group" hidden></div>
         <div id="toast" role="status" hidden></div>
       </div>
+      <section id="end" hidden aria-labelledby="end-title">
+        <p class="end-tag" data-i18n="ui.endTag">To be continued</p>
+        <h2 id="end-title" data-i18n="ui.endTitle"></h2>
+        <p data-i18n="ui.endText"></p>
+        <button id="end-new" type="button" data-i18n="ui.newGame">New game</button>
+      </section>
       <p id="loading">Loading…</p>
     </div>
     <nav id="bar">
@@ -30,7 +37,7 @@
   </main>
 
   <dialog id="menu">
-    <h1 data-i18n="ui.title">Adventure pilot</h1>
+    <h1 data-i18n="ui.title">Cinderfold</h1>
     <p data-i18n="ui.notice"></p>
     <p class="help" data-i18n="ui.help"></p>
     <div class="menu-actions">
@@ -43,6 +50,6 @@
   </dialog>
 
   <div id="rotate" data-i18n="ui.rotate">Turn your device sideways to play.</div>
-  <div id="live" class="sr-only" aria-live="polite"></div>
+  <div id="live" class="sr-only" aria-live="polite"></div>
 </body>
 </html>

@@ -11,6 +11,8 @@ export class Session {
   state: GameState = newGame();
   selectedItem: string | null = null;
   scene: RoomScene | null = null;
+  /** `?debug`: draw walk areas and hotspots. */
+  readonly debug = new URLSearchParams(location.search).has('debug');
   readonly ui: Ui;
 
   constructor() {
@@ -19,6 +21,7 @@ export class Session {
       isBusy: () => this.scene?.isBusy() ?? true,
       selectedItem: () => this.selectedItem,
       selectItem: item => this.selectItem(item),
+      itemClicked: (item, index) => this.scene?.openItemRing(item, index),
       replaceState: state => this.replaceState(state),
       newGame,
     });
@@ -34,6 +37,7 @@ export class Session {
     this.state = state;
     this.selectedItem = null;
     this.ui.closeRadial();
+    this.ui.hideEnd();
     this.ui.skip();
     this.scene?.scene.restart();
   }

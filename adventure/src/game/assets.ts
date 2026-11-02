@@ -1,37 +1,58 @@
 // Every art file the game loads. Replacing a PNG/JSON pair in art/src is all that is needed to
-// upgrade the placeholders: the code only depends on frame tag names and the bottom-centre anchor.
-import doorJson from '../../art/src/objects/door.json';
-import doorPng from '../../art/src/objects/door.png';
-import keyJson from '../../art/src/objects/key.json';
-import keyPng from '../../art/src/objects/key.png';
-import suitcaseJson from '../../art/src/objects/suitcase.json';
-import suitcasePng from '../../art/src/objects/suitcase.png';
-import heroJson from '../../art/src/characters/hero.json';
-import heroPng from '../../art/src/characters/hero.png';
-import keeperJson from '../../art/src/characters/keeper.json';
-import keeperPng from '../../art/src/characters/keeper.png';
-import hallPng from '../../art/src/rooms/hall.png';
-import streetPng from '../../art/src/rooms/street.png';
-import keyIcon from '../../art/src/items/key.png';
-import type { Verb } from '../engine/types';
+// upgrade the art: the code only depends on frame tag names and the bottom-centre anchor.
+import maraJson from '../../art/src/characters/mara.json';
+import maraPng from '../../art/src/characters/mara.png';
+import maraGauntletJson from '../../art/src/characters/mara-gauntlet.json';
+import maraGauntletPng from '../../art/src/characters/mara-gauntlet.png';
+import orenJson from '../../art/src/characters/oren.json';
+import orenPng from '../../art/src/characters/oren.png';
+import nellJson from '../../art/src/characters/nell.json';
+import nellPng from '../../art/src/characters/nell.png';
+import notebookJson from '../../art/src/objects/notebook.json';
+import notebookPng from '../../art/src/objects/notebook.png';
+import pantryDoorJson from '../../art/src/objects/pantry-door.json';
+import pantryDoorPng from '../../art/src/objects/pantry-door.png';
+import rackJson from '../../art/src/objects/rack.json';
+import rackPng from '../../art/src/objects/rack.png';
+import socketJson from '../../art/src/objects/socket.json';
+import socketPng from '../../art/src/objects/socket.png';
+import sweeperJson from '../../art/src/objects/sweeper.json';
+import sweeperPng from '../../art/src/objects/sweeper.png';
+import valveJson from '../../art/src/objects/valve.json';
+import valvePng from '../../art/src/objects/valve.png';
+import maraRoomPng from '../../art/src/rooms/mara-room.png';
+import firingHousePng from '../../art/src/rooms/firing-house.png';
+import galleryPng from '../../art/src/rooms/gallery.png';
+import ashwaysPng from '../../art/src/rooms/ashways.png';
+import type { NpcId, Verb } from '../engine/types';
 
-/** Aseprite "JSON array" export (also produced by LibreSprite and the placeholder generator). */
+/** Aseprite "JSON array" export (also produced by LibreSprite and the art scripts). */
 export interface AsepriteSheet {
   frames: { filename: string; frame: { x: number; y: number; w: number; h: number }; duration: number }[];
   meta: { frameTags: { name: string; from: number; to: number; direction?: string }[] };
 }
 
 export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
-  hero: { png: heroPng, json: heroJson },
-  keeper: { png: keeperPng, json: keeperJson },
-  door: { png: doorPng, json: doorJson },
-  suitcase: { png: suitcasePng, json: suitcaseJson },
-  key: { png: keyPng, json: keyJson },
+  mara: { png: maraPng, json: maraJson },
+  'mara-gauntlet': { png: maraGauntletPng, json: maraGauntletJson },
+  oren: { png: orenPng, json: orenJson },
+  nell: { png: nellPng, json: nellJson },
+  notebook: { png: notebookPng, json: notebookJson },
+  'pantry-door': { png: pantryDoorPng, json: pantryDoorJson },
+  rack: { png: rackPng, json: rackJson },
+  socket: { png: socketPng, json: socketJson },
+  sweeper: { png: sweeperPng, json: sweeperJson },
+  valve: { png: valvePng, json: valveJson },
 };
 
+/** Sheet used for each non-player character. */
+export const NPC_SHEETS: Record<NpcId, string> = { oren: 'oren', nell: 'nell' };
+
 export const ROOM_IMAGES: Record<string, string> = {
-  'room-hall': hallPng,
-  'room-street': streetPng,
+  'room-mara': maraRoomPng,
+  'room-firing-house': firingHousePng,
+  'room-gallery': galleryPng,
+  'room-ashways': ashwaysPng,
 };
 
 const iconFiles = import.meta.glob('../../art/src/icons/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
@@ -39,7 +60,16 @@ export const VERB_ICONS = Object.fromEntries(
   Object.entries(iconFiles).map(([path, url]) => [path.replace(/^.*\/(\w+)\.png$/, '$1'), url]),
 ) as Record<Verb, string>;
 
-export const ITEM_ICONS: Record<string, string> = { key: keyIcon };
+const portraitFiles = import.meta.glob('../../art/src/portraits/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+/** Dialogue portraits keyed by sheet name (mara, oren, nell). */
+export const PORTRAITS: Record<string, string> = Object.fromEntries(
+  Object.entries(portraitFiles).map(([path, url]) => [path.replace(/^.*\/([\w-]+)\.png$/, '$1'), url]),
+);
+
+const itemFiles = import.meta.glob('../../art/src/items/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+export const ITEM_ICONS: Record<string, string> = Object.fromEntries(
+  Object.entries(itemFiles).map(([path, url]) => [path.replace(/^.*\/(\w+)\.png$/, '$1'), url]),
+);
 
 /** First frame name of a tag, for single-frame object states. */
 export function tagFrame(sheet: string, tag: string): string {

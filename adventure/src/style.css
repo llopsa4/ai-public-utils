@@ -38,8 +38,6 @@ html, body {
 
 #game canvas {
   display: block;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
 }
 
 #loading {
@@ -67,6 +65,42 @@ html, body {
   background: rgb(18 13 20 / 0.7);
   border-radius: 0.3em;
   white-space: nowrap;
+}
+
+#portrait:not([hidden]) {
+  position: absolute;
+  left: 1.5%;
+  bottom: 3%;
+  width: 22%;
+  margin: 0;
+  border: 2px solid;
+  border-radius: 8px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 35%, #4a2c1c, #140c0c);
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.6);
+  animation: fade-in 160ms ease-out both;
+}
+
+#portrait.right {
+  left: auto;
+  right: 1.5%;
+}
+
+#portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+#portrait figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 0.15em 0.5em;
+  font-weight: 700;
+  font-size: 0.85em;
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.75));
 }
 
 #speech {
@@ -181,6 +215,52 @@ button.verb:hover, button.verb:focus-visible {
   border-radius: 0.5em;
 }
 
+#end:not([hidden]) {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 2rem 12%;
+  text-align: center;
+  background: radial-gradient(ellipse at center, rgb(40 22 14 / 0.88), rgb(8 5 8 / 0.97));
+  animation: fade-in 1.2s ease-out both;
+}
+
+#end .end-tag {
+  margin: 0;
+  color: var(--gold);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+}
+
+#end h2 {
+  margin: 0;
+  font-size: 1.6rem;
+}
+
+#end p {
+  max-width: 34rem;
+  line-height: 1.5;
+}
+
+#end button {
+  min-height: 44px;
+  padding: 0 18px;
+  background: var(--panel);
+  border: 1px solid var(--gold);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 /* --------------------------------------------------------------- bar --- */
 #bar {
   flex: none;
@@ -212,8 +292,8 @@ button {
 }
 
 #inventory .item {
-  width: 48px;
-  height: 44px;
+  width: 58px;
+  height: 54px;
   padding: 0;
   display: grid;
   place-items: center;
@@ -224,9 +304,8 @@ button {
 }
 
 #inventory .item img {
-  width: 32px;
-  height: 32px;
-  image-rendering: pixelated;
+  width: 46px;
+  height: 46px;
 }
 
 #inventory .item[aria-pressed="true"] {
@@ -322,5 +401,9 @@ button:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  button.verb { animation: none; }
+  button.verb, #end { animation: none; }
+}
+
+#lang[hidden] {
+  display: none;
 }
