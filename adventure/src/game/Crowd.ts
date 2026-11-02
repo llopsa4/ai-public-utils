@@ -45,8 +45,10 @@ export interface Member {
   prop: Phaser.GameObjects.Image | null;
   effect: Phaser.Time.TimerEvent | null;
   talks: number;
-  /** Position last frame (to tell whether a walker is heading into Mara). */
+  /** Position last frame (to tell whether a walker is heading into someone). */
   last: Point;
+  /** Where the person or Mara who just blocked this walker stood (to step around them). */
+  blocker: Point | null;
 }
 
 const TASK_TAG: Record<Task, string | null> = { stand: null, work: 'work', carry: 'carry', reach: 'reach', sit: 'sit', sweep: 'carry', tap: 'carry' };
@@ -62,6 +64,10 @@ const CHATTER_MIN = 8000;
 const CHATTER_MAX = 20000;
 /** How close Mara may stand before someone walking into her waits. */
 const BLOCK_DISTANCE = 16;
+/** How far someone steps to the side to get round a person in the way. */
+const SIDESTEP = 24;
+/** Mara walking this close to someone standing still makes them step aside. */
+const MAKE_WAY = 20;
 /** Mara heading this close to a busy station makes its worker step aside. */
 const VACATE_DISTANCE = 40;
 
@@ -159,7 +165,7 @@ export class Crowd {
     scene.tweens.add({ targets: actor.sprite, alpha: 1, duration: 500 });
     const member: Member = {
       def, actor, schedule, target: null, task: null, carrying: false, held: false, vacate: false, react: null,
-      away: false, gone: false, prop: null, effect: null, talks: 0, last: { x: at.x, y: at.y },
+      away: false, gone: false, prop: null, effect: null, talks: 0, last: { x: at.x, y: at.y }, blocker: null,
     };
     if (def.carry && def.carry !== 'sack') member.prop = scene.add.image(at.x, at.y, `crowd-${def.carry}`);
     actor.onStep = () => {
@@ -265,15 +271,38 @@ export class Crowd {
   }
 
   /** Walks to a point, waiting for Mara if she stands in the way. False if interrupted. */
+  /**
+   * Walks to a point. Someone in the way (Mara standing still, or another person) stops the walk;
+   * the walker waits a moment, steps to the side away from them, and carries on. False if
+   * interrupted for another reason, or still blocked after a few tries.
+   */
   private async walk(m: Member, to: Point): Promise<boolean> {
-    for (let attempt = 0; attempt < 3; attempt++) {
+    for (let attempt = 0; attempt < 4; attempt++) {
       if (!this.alive || m.held || m.react) return false;
+      const blocker = m.blocker;
+      m.blocker = null;
+      if (blocker) {
+        const side = this.sidestep(m, to, blocker);
+        if (side && !(await m.actor.walk([side])) && !m.blocker) return false;
+      }
       const path = this.host.area.findPath(m.actor.position, to);
       if (await m.actor.walk(path)) return true;
       if (!this.alive || m.held || m.react || m.vacate) return false;
-      await this.sleep(700 + Math.random() * 600); // blocked by Mara: wait, then try again
+      if (!m.blocker) return false;
+      await this.sleep(300 + Math.random() * 500);
     }
     return false;
+  }
+
+  /** A point a step to the side of the way to `to`, on the side away from whoever is in the way. */
+  private sidestep(m: Member, to: Point, blocker: Point): Point | null {
+    const p = m.actor.position;
+    const dx = to.x - p.x, dy = to.y - p.y, len = Math.hypot(dx, dy);
+    if (len < 4) return null;
+    const ux = dx / len, uy = dy / len;
+    let nx = -uy, ny = ux;
+    if ((blocker.x - p.x) * nx + (blocker.y - p.y) * ny > 0) { nx = -nx; ny = -ny; }
+    return this.host.area.clamp({ x: p.x + nx * SIDESTEP + ux * 6, y: p.y + ny * SIDESTEP * 0.6 + uy * 6 });
   }
 
   /** Waits, but gives up early when the person is needed elsewhere. */
@@ -424,12 +453,22 @@ export class Crowd {
     for (const m of this.members) {
       if (m.gone) continue;
       const a = m.actor;
-      // Someone walking into Mara while she stands still waits for her (walking away is fine).
-      if (a.isWalking && !hero.isWalking && !m.held) {
-        const dx = hero.sprite.x - a.sprite.x, dy = hero.sprite.y - a.sprite.y;
-        const towards = dx * (a.sprite.x - m.last.x) + dy * (a.sprite.y - m.last.y) > 0;
-        if (towards && Math.hypot(dx, dy) < BLOCK_DISTANCE) a.stop();
+      // Walking into someone (Mara standing still, or another person) stops the walk; walk() then
+      // steps round them. Walking away from someone, or alongside, is fine.
+      if (a.isWalking && !m.held) {
+        const vx = a.sprite.x - m.last.x, vy = a.sprite.y - m.last.y;
+        const obstacles: Point[] = hero.isWalking ? [] : [hero.position];
+        for (const o of this.members) if (o !== m && !o.gone && !o.away) obstacles.push(o.actor.position);
+        const reach = BLOCK_DISTANCE * a.perspective;
+        const hit = obstacles.find(o => {
+          const dx = o.x - a.sprite.x, dy = o.y - a.sprite.y;
+          return dx * vx + dy * vy > 0 && Math.hypot(dx, dy * 1.6) < reach;
+        });
+        if (hit) { m.blocker = hit; a.stop(); }
       }
+      // Mara walking through where someone stands: they make way.
+      if (hero.isWalking && !a.isWalking && !m.held && !m.react && !m.away && !m.vacate
+        && Math.hypot(hero.sprite.x - a.sprite.x, (hero.sprite.y - a.sprite.y) * 1.6) < MAKE_WAY) m.vacate = true;
       m.last = { x: a.sprite.x, y: a.sprite.y };
       if (m.held) a.lookAt(hero.sprite.x);
       this.placeProp(m);
