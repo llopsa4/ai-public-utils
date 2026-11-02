@@ -177,9 +177,16 @@ export interface Bag {
 }
 
 export interface GameState {
+  /** The chapter being played (src/chapters). */
+  chapter: string;
+  /** Chapters reached so far, in story order. */
+  reached: string[];
+  /** Flags of chapters already played, by chapter id (later chapters can read them). */
+  earlier: Record<string, Record<string, boolean>>;
   room: string;
   hero: { x: number; y: number } & ActorState;
   npcs: Record<NpcId, ActorState>;
+  /** The active chapter's story flags. */
   flags: Record<string, boolean>;
   inventory: string[];
   /** How many times each target was looked at (repeated looks cycle through its lines). */
@@ -199,6 +206,8 @@ export type Command =
   | { type: 'addItem'; item: string }
   | { type: 'removeItem'; item: string }
   | { type: 'room'; room: string; entry: string }
+  /** The chapter ends and the next begins: kept items, kit and bag carry over; flags start afresh. */
+  | { type: 'chapter'; id: string }
   | { type: 'dialogue'; id: string }
   | { type: 'wait'; ms: number }
   | { type: 'shake'; ms: number }

@@ -54,7 +54,9 @@ test('invalid saves are rejected with a reason', () => {
 
 test('false flags are dropped on import', () => {
   const s = newGame();
-  const text = serializeSave(s).replace('"flags": {}', '"flags": {"kilnCold": false}');
+  const d = JSON.parse(serializeSave(s));
+  d.state.flags.ch1 = { kilnCold: false };
+  const text = JSON.stringify(d);
   const result = parseSave(text);
   assert.ok(result.ok);
   assert.deepEqual(result.state.flags, {});

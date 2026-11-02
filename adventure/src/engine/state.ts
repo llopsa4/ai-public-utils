@@ -1,13 +1,17 @@
-import { chapter } from '../chapters';
+import { CHAPTERS, FIRST_CHAPTER } from '../chapters';
 import { newBag, newKit, giveSpares } from './kit';
 import type { ActorId, ActorState, Command, GameState } from './types';
 
 const standing = (face: ActorState['face']): ActorState => ({ pose: 'stand', face });
 
-export function newGame(): GameState {
-  const { start, rooms } = chapter();
+/** A new game at the start of a chapter (the first by default). */
+export function newGame(id = FIRST_CHAPTER): GameState {
+  const { start, rooms } = CHAPTERS[id];
   const entry = rooms[start.room].entries[start.entry];
   return {
+    chapter: id,
+    reached: [id],
+    earlier: {},
     room: start.room,
     hero: { x: entry.x, y: entry.y, face: entry.face, pose: 'stand' },
     npcs: { oren: standing('left'), nell: standing('right') },
@@ -37,7 +41,7 @@ export function applyCommand(state: GameState, command: Command): void {
       state.inventory = state.inventory.filter(i => i !== command.item);
       break;
     case 'giveSpares':
-      giveSpares(state.kit, chapter().spares);
+      giveSpares(state.kit, CHAPTERS[state.chapter].spares);
       break;
     case 'pose':
       actorState(state, command.actor).pose = command.pose;
@@ -54,12 +58,25 @@ export function applyCommand(state: GameState, command: Command): void {
       state.looks[command.id] = Math.min(99, (state.looks[command.id] ?? 0) + 1);
       break;
     case 'room': {
-      const entry = chapter().rooms[command.room].entries[command.entry];
+      const entry = CHAPTERS[state.chapter].rooms[command.room].entries[command.entry];
       state.room = command.room;
       state.hero.x = entry.x;
       state.hero.y = entry.y;
       state.hero.face = entry.face;
       state.hero.pose = 'stand';
+      break;
+    }
+    case 'chapter': {
+      // Mara walks into the next chapter with his kit, bag and kept items; this chapter's flags
+      // are kept for later chapters to read.
+      const kept = CHAPTERS[state.chapter].keptItems;
+      const next = newGame(command.id);
+      state.earlier[state.chapter] = state.flags;
+      Object.assign(state, {
+        chapter: command.id, room: next.room, hero: next.hero, npcs: next.npcs, flags: {}, looks: {},
+        inventory: state.inventory.filter(i => kept.includes(i)),
+        reached: state.reached.includes(command.id) ? state.reached : [...state.reached, command.id],
+      });
       break;
     }
     default:

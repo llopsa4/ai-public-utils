@@ -1,5 +1,6 @@
 import { readAutosave, writeAutosave } from '../engine/autosave';
 import { onSettingsChange, settings } from '../engine/settings';
+import { setChapter } from '../chapters';
 import { newGame } from '../engine/state';
 import type { GameState } from '../engine/types';
 import { Ui } from '../ui/ui';
@@ -62,6 +63,7 @@ export class Session {
   /** Starts a different game (new, imported or continued): from the title or in place of the current one. */
   replaceState(state: GameState): void {
     this.endBattle();
+    setChapter(state.chapter);
     this.state = state;
     this.selectedItem = null;
     this.ui.closeRadial();

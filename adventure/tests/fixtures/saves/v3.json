@@ -1,0 +1,39 @@
+{
+  "format": "cinderfold-save",
+  "version": 3,
+  "savedAt": "2026-10-30T12:00:00.000Z",
+  "state": {
+    "room": "gallery",
+    "hero": {
+      "x": 600,
+      "y": 304,
+      "face": "left",
+      "pose": "stand"
+    },
+    "npcs": {
+      "oren": {
+        "pose": "stand",
+        "face": "left"
+      },
+      "nell": {
+        "pose": "crouch",
+        "face": "right"
+      }
+    },
+    "flags": {
+      "hasGauntlet": true,
+      "hasNotebook": true,
+      "latchFixed": true,
+      "alarm": true,
+      "metNell": true,
+      "metOren": true,
+      "patchFailed": true,
+      "secretTally": true,
+      "metHollis": true
+    },
+    "inventory": [
+      "gauntlet",
+      "notebook"
+    ]
+  }
+}

@@ -1,13 +1,11 @@
-import { ROOMS } from '../chapters/ch1/rooms';
+import { CHAPTERS } from '../chapters';
 import { MATERIALS, TONIC, MAX_SALVAGE } from '../content/kit';
 import { newBag, newKit, validKit } from './kit';
-import { FLAGS, ITEMS } from '../chapters/ch1/flags';
+import { READABLE_VERSIONS, SAVE_VERSION, migrate } from './migrations';
 import { NPC_IDS, type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
 
 const SAVE_FORMAT = 'cinderfold-save';
-/** Version 5: Mara's kit (health, gear) and bag (salvage, materials, tonics). Versions 3 and 4 still load. */
-const SAVE_VERSION = 5;
-const READABLE_VERSIONS = [3, 4, 5];
+// Version 6: chapters (flags kept per chapter). Older versions are upgraded (src/engine/migrations.ts).
 const MAX_LOOK_KEYS = 64;
 export const MAX_SAVE_BYTES = 64 * 1024;
 
@@ -16,8 +14,11 @@ const POSES: Pose[] = ['stand', 'crouch', 'dead'];
 
 export type ImportResult = { ok: true; state: GameState } | { ok: false; error: string };
 
+/** The saved form of a game: flags of every chapter reached, by chapter id. */
 export function serializeSave(state: GameState, now = new Date()): string {
-  return JSON.stringify({ format: SAVE_FORMAT, version: SAVE_VERSION, savedAt: now.toISOString(), state }, null, 2);
+  const { earlier, flags, ...rest } = state;
+  const saved = { ...rest, flags: { ...earlier, [state.chapter]: flags } };
+  return JSON.stringify({ format: SAVE_FORMAT, version: SAVE_VERSION, savedAt: now.toISOString(), state: saved }, null, 2);
 }
 
 export function saveFileName(now = new Date()): string {
@@ -42,11 +43,20 @@ export function parseSave(text: string): ImportResult {
   let data: unknown;
   try { data = JSON.parse(text); } catch { return { ok: false, error: 'save.error.notJson' }; }
   if (!isObject(data) || data.format !== SAVE_FORMAT) return { ok: false, error: 'save.error.notSave' };
-  if (!READABLE_VERSIONS.includes(data.version as number)) return { ok: false, error: 'save.error.version' };
-  const s = data.state;
   const invalid: ImportResult = { ok: false, error: 'save.error.invalid' };
-  if (!isObject(s)) return invalid;
-  if (typeof s.room !== 'string' || !Object.hasOwn(ROOMS, s.room)) return invalid;
+  if (!READABLE_VERSIONS.includes(data.version as number)) return { ok: false, error: 'save.error.version' };
+  if (!isObject(data.state)) return invalid;
+  const s = migrate(data.version as number, data.state)!;
+
+  if (typeof s.chapter !== 'string' || !Object.hasOwn(CHAPTERS, s.chapter)) return invalid;
+  const current = CHAPTERS[s.chapter];
+  if (!Array.isArray(s.reached) || s.reached.length > Object.keys(CHAPTERS).length || !s.reached.includes(s.chapter)) return invalid;
+  const reached: string[] = [];
+  for (const id of s.reached) {
+    if (typeof id !== 'string' || !Object.hasOwn(CHAPTERS, id) || reached.includes(id)) return invalid;
+    reached.push(id);
+  }
+  if (typeof s.room !== 'string' || !Object.hasOwn(current.rooms, s.room)) return invalid;
 
   const hero = s.hero;
   const heroPose = actor(hero);
@@ -64,21 +74,29 @@ export function parseSave(text: string): ImportResult {
     npcs[id] = a;
   }
 
+  // Flags by chapter: each reached chapter's own flags only.
   if (!isObject(s.flags)) return invalid;
-  const flags: Record<string, boolean> = {};
-  for (const [name, value] of Object.entries(s.flags)) {
-    if (!(FLAGS as readonly string[]).includes(name) || typeof value !== 'boolean') return invalid;
-    if (value) flags[name] = true;
+  const byChapter: Record<string, Record<string, boolean>> = {};
+  for (const [id, set] of Object.entries(s.flags)) {
+    if (!reached.includes(id) || !isObject(set)) return invalid;
+    const flags: Record<string, boolean> = {};
+    for (const [name, value] of Object.entries(set)) {
+      if (!CHAPTERS[id].flags.includes(name) || typeof value !== 'boolean') return invalid;
+      if (value) flags[name] = true;
+    }
+    byChapter[id] = flags;
   }
+  const { [s.chapter]: flags = {}, ...earlier } = byChapter;
 
-  if (!Array.isArray(s.inventory) || s.inventory.length > ITEMS.length) return invalid;
+  // Items of this chapter, or kept from an earlier one.
+  const allowed = new Set([...current.items, ...reached.flatMap(id => CHAPTERS[id].keptItems)]);
+  if (!Array.isArray(s.inventory) || s.inventory.length > allowed.size) return invalid;
   const inventory: string[] = [];
   for (const item of s.inventory) {
-    if (typeof item !== 'string' || !(ITEMS as readonly string[]).includes(item) || inventory.includes(item)) return invalid;
+    if (typeof item !== 'string' || !allowed.has(item) || inventory.includes(item)) return invalid;
     inventory.push(item);
   }
 
-  // Look counters: absent in version 3 saves.
   const looks: Record<string, number> = {};
   if (s.looks !== undefined) {
     if (!isObject(s.looks) || Object.keys(s.looks).length > MAX_LOOK_KEYS) return invalid;
@@ -88,7 +106,6 @@ export function parseSave(text: string): ImportResult {
     }
   }
 
-  // Kit and bag: absent before version 5 (a fresh kit and an empty bag).
   const kit = newKit();
   if (s.kit !== undefined) {
     const k = s.kit;
@@ -116,5 +133,5 @@ export function parseSave(text: string): ImportResult {
     bag.tonics = b.tonics as number;
   }
 
-  return { ok: true, state: { room: s.room, hero: { x: hero.x, y: hero.y, ...heroPose }, npcs, flags, inventory, looks, kit, bag } };
+  return { ok: true, state: { chapter: s.chapter, reached, earlier, room: s.room, hero: { x: hero.x, y: hero.y, ...heroPose }, npcs, flags, inventory, looks, kit, bag } };
 }

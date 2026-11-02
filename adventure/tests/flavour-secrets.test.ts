@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { interact } from '../src/chapters/ch1/interactions';
 import { ROOMS } from '../src/chapters/ch1/rooms';
@@ -48,10 +49,7 @@ test('secrets are found once, never gate progress and are hidden from the labels
 
 test('version 3 saves (no look counters) still load; bad counters are rejected', () => {
   const v4 = JSON.parse(serializeSave(newGame()));
-  const v3 = structuredClone(v4);
-  v3.version = 3;
-  delete v3.state.looks;
-  const loaded = parseSave(JSON.stringify(v3));
+  const loaded = parseSave(readFileSync(new URL('./fixtures/saves/v3.json', import.meta.url), 'utf8'));
   assert.ok(loaded.ok);
   if (loaded.ok) assert.deepEqual(loaded.state.looks, {});
   for (const looks of [{ workbench: -1 }, { workbench: 1.5 }, { 'bad key!': 1 }, []]) {

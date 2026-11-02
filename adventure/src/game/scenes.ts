@@ -17,7 +17,7 @@ import SCAVENGER_SPRITE from '../../art/src/battle/scavenger.png';
 import { MATERIALS, maraProfile } from '../content/kit';
 import { RoomSign } from './sign';
 import type { Mood } from '../engine/crowd';
-import { chapter } from '../chapters';
+import { chapter, setChapter } from '../chapters';
 import { ambienceFor, crowdMoodFor, guided, heroSheetFor, hushed, musicFor, onEnter, type StoryContext } from '../engine/story';
 import { FOREGROUND_IMAGES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
@@ -944,6 +944,19 @@ export class RoomScene extends Phaser.Scene {
         this.hero.stop();
         applyCommand(state, command);
         this.session.arrival = command.entry;
+        this.scene.restart();
+        return false;
+      }
+      case 'chapter': {
+        // The next chapter opens at its start, with the slow fade of a new story.
+        this.leaving = true;
+        this.session.ui.closeRadial();
+        this.cameras.main.fadeOut(FADE_MS * 3, 0, 0, 0);
+        await this.wait(FADE_MS * 3 + 80);
+        applyCommand(state, command);
+        setChapter(command.id);
+        this.session.arrival = null;
+        this.session.slowFadeIn = true;
         this.scene.restart();
         return false;
       }

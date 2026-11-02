@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { CARDS, cardAvailability, endTurn, playCard, preview } from '../src/combat/combat';
 import type { BattleState, CardType } from '../src/combat/types';
@@ -125,11 +126,8 @@ test('saves keep the kit and bag; older saves get a fresh kit; tampered kits are
   assert.ok(round.ok);
   assert.deepEqual(round.state, s);
 
-  const old = JSON.parse(serializeSave(newGame()));
-  old.version = 4;
-  delete old.state.kit;
-  delete old.state.bag;
-  const migrated = parseSave(JSON.stringify(old));
+  // A version 4 save, from before fights existed.
+  const migrated = parseSave(readFileSync(new URL('./fixtures/saves/v4.json', import.meta.url), 'utf8'));
   assert.ok(migrated.ok);
   assert.deepEqual(migrated.state.kit, newKit());
   assert.deepEqual(migrated.state.bag, newBag());
