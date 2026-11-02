@@ -67,6 +67,12 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     scale: { farY: 206, farScale: 0.78, nearY: 358, nearScale: 1.22 },
     coldIf: COLD,
+    light: { tint: 0xffe4c4, farDim: 0.82 },
+    foreground: [{ image: 'tent-stool', x: 73, y: 204, depth: 300 }],
+    ambient: {
+      particles: [{ kind: 'dust', x: 440, y: 150, w: 170, h: 180 }],
+      glows: [{ x: 596, y: 270, r: 60, color: 0xffa040, warm: true }],
+    },
     entries: {
       start: { x: 360, y: 300, face: 'down' },
       fromKilnHall: { x: 590, y: 336, face: 'left' },
@@ -87,6 +93,16 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     scale: { farY: 234, farScale: 0.82, nearY: 358, nearScale: 1.02 },
     coldIf: COLD,
+    light: { tint: 0xffd4a8, farDim: 0.86 },
+    foreground: [{ image: 'hall-left', x: 0, y: 248, depth: 400 }, { image: 'hall-right', x: 552, y: 280, depth: 400 }],
+    ambient: {
+      particles: [{ kind: 'embers', x: 300, y: 150, w: 250, h: 80, warm: true }],
+      glows: [
+        { x: 332, y: 208, r: 30, color: 0xff8a2a, warm: true },
+        { x: 438, y: 204, r: 38, color: 0xff9a34, warm: true },
+        { x: 516, y: 218, r: 22, color: 0xff8a2a, warm: true },
+      ],
+    },
     entries: {
       fromTent: { x: 245, y: 270, face: 'down' },
       fromFiringHouse: { x: 584, y: 252, face: 'left' },
@@ -106,6 +122,15 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     scale: { farY: 228, farScale: 0.72, nearY: 358, nearScale: 0.96 },
     coldIf: COLD,
+    light: { tint: 0xf2c49a, farDim: 0.78 },
+    ambient: {
+      particles: [{ kind: 'embers', x: 0, y: 190, w: 70, h: 60, warm: true }, { kind: 'steam', x: 236, y: 186, w: 30, h: 14, warm: true }],
+      glows: [
+        { x: 30, y: 226, r: 34, color: 0xff7a24, warm: true },
+        { x: 190, y: 160, r: 18, color: 0xff8a2a, warm: true },
+        { x: 362, y: 190, r: 30, color: 0xffb060, warm: true },
+      ],
+    },
     entries: {
       fromMaraRoom: { x: 600, y: 300, face: 'left' },
       fromGallery: { x: 584, y: 244, face: 'down' },
@@ -128,6 +153,12 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     scale: { farY: 268, farScale: 0.96, nearY: 358, nearScale: 1.06 },
     coldIf: COLD,
+    light: { tint: 0xffdcb8, farDim: 0.9 },
+    foreground: [{ image: 'gallery-railing', x: 278, y: 206, depth: 300 }],
+    ambient: {
+      particles: [{ kind: 'steam', x: 160, y: 70, w: 180, h: 60, warm: true }],
+      glows: [{ x: 24, y: 214, r: 30, color: 0xffa040 }, { x: 270, y: 32, r: 24, color: 0xff9a34, warm: true }],
+    },
     entries: {
       fromFiringHouse: { x: 600, y: 304, face: 'left' },
     },
@@ -145,6 +176,11 @@ export const ROOMS: Record<string, RoomDef> = {
       holes: [],
     },
     scale: { farY: 226, farScale: 0.72, nearY: 358, nearScale: 1.02 },
+    light: { tint: 0xffe6c8, farDim: 0.84 },
+    ambient: {
+      particles: [{ kind: 'ash', x: 0, y: 0, w: 640, h: 220 }],
+      glows: [{ x: 424, y: 150, r: 46, color: 0xffb060 }],
+    },
     entries: {
       fromFiringHouse: { x: 70, y: 326, face: 'right' },
     },

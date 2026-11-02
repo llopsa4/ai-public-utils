@@ -10,7 +10,7 @@ import { settings } from '../engine/settings';
 import { applyCommand } from '../engine/state';
 import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Verb } from '../engine/types';
 import { Actor } from './Actor';
-import { NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
+import { FOREGROUND_IMAGES, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
 
@@ -25,9 +25,26 @@ export class BootScene extends Phaser.Scene {
   preload(): void {
     for (const [key, sheet] of Object.entries(SHEETS)) this.load.atlas(key, sheet.png, sheet.json);
     for (const [key, url] of Object.entries(ROOM_IMAGES)) this.load.image(key, url);
+    for (const [key, url] of Object.entries(FOREGROUND_IMAGES)) this.load.image(`fg-${key}`, url);
   }
 
   create(): void {
+    // Shared effect textures: a soft dot for particles and a radial glow for light pools.
+    const dot = this.make.graphics({ x: 0, y: 0 }, false);
+    dot.fillStyle(0xffffff, 1).fillCircle(8, 8, 8);
+    dot.generateTexture('fx-dot', 16, 16);
+    dot.destroy();
+    const glow = this.textures.createCanvas('fx-glow', 128, 128);
+    if (glow) {
+      const ctx = glow.getContext();
+      const g = ctx.createRadialGradient(64, 64, 0, 64, 64, 64);
+      g.addColorStop(0, 'rgba(255,255,255,0.9)');
+      g.addColorStop(0.35, 'rgba(255,255,255,0.35)');
+      g.addColorStop(1, 'rgba(255,255,255,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, 128, 128);
+      glow.refresh();
+    }
     for (const [key, { json }] of Object.entries(SHEETS)) {
       for (const tag of json.meta.frameTags) {
         const frames = json.frames.slice(tag.from, tag.to + 1);
@@ -49,6 +66,33 @@ export class BootScene extends Phaser.Scene {
 
 type Target = { kind: 'hotspot'; hotspot: HotspotDef } | { kind: 'actor'; actor: Actor };
 
+/** Multiplies a colour by a brightness factor and a second colour (both as 0xRRGGBB). */
+function multiplyColor(color: number, factor: number, other: number): number {
+  const ch = (c: number, shift: number) => ((c >> shift) & 255) / 255;
+  const r = Math.round(ch(color, 16) * ch(other, 16) * factor * 255);
+  const g = Math.round(ch(color, 8) * ch(other, 8) * factor * 255);
+  const b = Math.round(ch(color, 0) * ch(other, 0) * factor * 255);
+  return (r << 16) | (g << 8) | b;
+}
+
+function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash', w: number, h: number): Phaser.Types.GameObjects.Particles.ParticleEmitterConfig {
+  const area = { x: { min: 0, max: w }, y: { min: 0, max: h } };
+  switch (kind) {
+    case 'embers':
+      return { ...area, lifespan: { min: 2200, max: 4200 }, speedY: { min: -26, max: -8 }, speedX: { min: -6, max: 6 }, scale: { start: 0.22, end: 0 },
+        alpha: { start: 1, end: 0 }, tint: [0xffc060, 0xff8a2a, 0xff6a1a], frequency: 240, blendMode: 'ADD' };
+    case 'steam':
+      return { ...area, lifespan: { min: 2600, max: 4000 }, speedY: { min: -10, max: -3 }, speedX: { min: -3, max: 3 }, scale: { start: 0.5, end: 1.8 },
+        alpha: { start: 0.18, end: 0 }, tint: 0xf4efe6, frequency: 380 };
+    case 'dust':
+      return { ...area, lifespan: { min: 5000, max: 8000 }, speedY: { min: -2, max: 2 }, speedX: { min: -3, max: 3 }, scale: { min: 0.06, max: 0.12 },
+        alpha: { start: 0.6, end: 0 }, tint: 0xffe2b0, frequency: 420, blendMode: 'ADD' };
+    case 'ash':
+      return { ...area, lifespan: { min: 6000, max: 9000 }, speedY: { min: 2, max: 7 }, speedX: { min: 4, max: 12 }, scale: { min: 0.08, max: 0.16 },
+        alpha: { start: 0.55, end: 0 }, tint: [0xd8d0c8, 0xffb070], frequency: 260 };
+  }
+}
+
 /** One room: background, objects, characters, input and the command/dialogue runner. */
 export class RoomScene extends Phaser.Scene {
   private room!: RoomDef;
@@ -57,6 +101,9 @@ export class RoomScene extends Phaser.Scene {
   private background!: Phaser.GameObjects.Image;
   private actors = new Map<ActorId, Actor>();
   private objects = new Map<string, Phaser.GameObjects.Sprite>();
+  private foreground: Phaser.GameObjects.Image[] = [];
+  private ambient: Phaser.GameObjects.GameObject[] = [];
+  private ambientCold: boolean | null = null;
   private busy = false;
   private leaving = false;
 
@@ -72,6 +119,10 @@ export class RoomScene extends Phaser.Scene {
     this.area = new WalkArea(this.room.walkable.outer, this.room.walkable.holes);
     this.actors = new Map();
     this.objects = new Map();
+    this.foreground = (this.room.foreground ?? []).map(f =>
+      this.add.image(f.x, f.y, `fg-${f.image}`).setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(f.depth));
+    this.ambient = [];
+    this.ambientCold = null;
     this.busy = false;
     this.leaving = false;
 
@@ -93,8 +144,9 @@ export class RoomScene extends Phaser.Scene {
       const s = state.npcs[a.id];
       this.actors.set(a.id, new Actor(this, a.id, NPC_SHEETS[a.id], a.x, a.y, s.face, s.pose, this.room.scale));
     }
-    // After the actors exist: refreshObjects also updates the hero's sheet and the cold tint.
+    // After the actors exist: refreshObjects also updates the hero's sheet, the cold tint and ambience.
     this.refreshObjects();
+    this.updateLighting();
     if (this.session.debug) this.drawDebug();
 
     this.input.mouse?.disableContextMenu();
@@ -248,12 +300,55 @@ export class RoomScene extends Phaser.Scene {
     this.applyTint();
   }
 
+  private isCold(): boolean {
+    return this.room.coldIf ? conditionsHold(this.session.state, this.room.coldIf) : false;
+  }
+
   private applyTint(): void {
-    const cold = this.room.coldIf ? conditionsHold(this.session.state, this.room.coldIf) : false;
-    const targets: (Phaser.GameObjects.Image | Phaser.GameObjects.Sprite)[] = [this.background, ...this.objects.values(), ...[...this.actors.values()].map(a => a.sprite)];
+    const cold = this.isCold();
+    const targets: (Phaser.GameObjects.Image | Phaser.GameObjects.Sprite)[] = [this.background, ...this.objects.values(), ...this.foreground];
     for (const o of targets) {
       if (cold) o.setTint(COLD_TINT);
       else o.clearTint();
+    }
+    this.refreshAmbient(cold);
+  }
+
+  update(): void {
+    this.updateLighting();
+  }
+
+  /** Characters take the room's light, darker toward the back, cooled once the kiln is cold. */
+  private updateLighting(): void {
+    const light = this.room?.light;
+    if (!light) return;
+    const cold = this.isCold();
+    const { farY, nearY } = this.room.scale;
+    for (const actor of this.actors.values()) {
+      const t = Phaser.Math.Clamp((actor.sprite.y - farY) / (nearY - farY), 0, 1);
+      const dim = light.farDim + (1 - light.farDim) * t;
+      actor.sprite.setTint(multiplyColor(light.tint, dim, cold ? COLD_TINT : 0xffffff));
+    }
+  }
+
+  /** Particles and flickering light pools; warm ones go out with the kiln. Off with reduced motion. */
+  private refreshAmbient(cold: boolean): void {
+    if (this.ambientCold === cold && this.ambient.length) return;
+    this.ambientCold = cold;
+    for (const o of this.ambient) o.destroy();
+    this.ambient = [];
+    const def = this.room.ambient;
+    if (!def || settings().reducedMotion) return;
+    for (const p of def.particles ?? []) {
+      if (cold && p.warm) continue;
+      this.ambient.push(this.add.particles(p.x, p.y, 'fx-dot', particleConfig(p.kind, p.w, p.h)).setDepth(p.kind === 'dust' ? 9000 : -5000));
+    }
+    for (const g of def.glows ?? []) {
+      if (cold && g.warm) continue;
+      const light = this.add.image(g.x, g.y, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setTint(g.color)
+        .setScale((g.r * 2) / 128).setAlpha(0.35).setDepth(-5000);
+      this.tweens.add({ targets: light, alpha: { from: 0.22, to: 0.42 }, duration: Phaser.Math.Between(180, 420), yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: Phaser.Math.Between(0, 300) });
+      this.ambient.push(light);
     }
   }
 

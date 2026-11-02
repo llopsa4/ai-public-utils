@@ -65,6 +65,12 @@ export const VERB_ICONS = Object.fromEntries(
   Object.entries(iconFiles).map(([path, url]) => [path.replace(/^.*\/(\w+)\.png$/, '$1'), url]),
 ) as Record<Verb, string>;
 
+const foregroundFiles = import.meta.glob('../../art/src/foreground/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+/** Foreground cut-outs keyed by file name (texture key `fg-<name>`). */
+export const FOREGROUND_IMAGES: Record<string, string> = Object.fromEntries(
+  Object.entries(foregroundFiles).map(([path, url]) => [path.replace(/^.*\/([\w-]+)\.png$/, '$1'), url]),
+);
+
 const portraitFiles = import.meta.glob('../../art/src/portraits/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 /** Dialogue portraits keyed by sheet name (mara, oren, nell). */
 export const PORTRAITS: Record<string, string> = Object.fromEntries(

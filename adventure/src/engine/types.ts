@@ -62,9 +62,30 @@ export interface DepthScale {
   nearScale: number;
 }
 
+/** A piece of the background cut out and drawn in front of anything standing behind it. */
+export interface ForegroundDef {
+  /** Image key (art/src/foreground/<image>.png, drawn at half scale). */
+  image: string;
+  /** World position of the image's top-left corner. */
+  x: number;
+  y: number;
+  /** Actors whose feet are above this line are drawn behind it. */
+  depth: number;
+}
+
+/** Ambient effects: particle fields and flickering light pools. */
+export interface AmbientDef {
+  particles?: { kind: 'embers' | 'steam' | 'dust' | 'ash'; x: number; y: number; w: number; h: number; warm?: boolean }[];
+  glows?: { x: number; y: number; r: number; color: number; warm?: boolean }[];
+}
+
 export interface RoomDef {
   id: string;
   background: string;
+  foreground?: ForegroundDef[];
+  /** Light on characters: tint at full brightness and how dark they get at the far line (0..1). */
+  light?: { tint: number; farDim: number };
+  ambient?: AmbientDef;
   /** Outer walkable polygon followed by optional holes (obstacles). */
   walkable: { outer: Polygon; holes: Polygon[] };
   scale: DepthScale;

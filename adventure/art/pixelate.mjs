@@ -196,9 +196,11 @@ const ROOMS = [
   { name: 'gallery', source: 'opening/regulator-gallery.png', grade: { saturation: 1.04, contrast: 1.03, lift: 3 } },
   { name: 'ashways', source: 'opening/ashways.png', crop: [140, 120, 1392, 783], grade: { saturation: 1.04, contrast: 1.04 } },
 ];
+const roomPngs = {};
 for (const room of ROOMS) {
   const src = load(room.source);
-  save(shrink(src, room.crop ?? null, 1280, 720, { colors: 128, alphaCut: 1, grading: room.grade }), join(out, 'rooms', `${room.name}.png`));
+  roomPngs[room.name] = shrink(src, room.crop ?? null, 1280, 720, { colors: 128, alphaCut: 1, grading: room.grade });
+  save(roomPngs[room.name], join(out, 'rooms', `${room.name}.png`));
 }
 
 // ------------------------------------------------------------------ tent ---
@@ -249,8 +251,33 @@ function paintCanvas(px, W, points, lightFn) {
   paintCanvas(px, W, [[1150, 330], [1100, 420], [1118, 560], [1140, 560]], () => 0.62); // tied-back flap
   for (let y = 330; y < H; y++) for (const x of [1146, 1236]) { const o = (y * W + x) * 4; px[o] = 70; px[o + 1] = 44; px[o + 2] = 26; } // poles
   const png = toPng(px, W, H, palette(px, 128, 1), 1);
+  roomPngs.tent = png;
   save(png, join(out, 'rooms', 'tent.png'));
 }
+
+// ------------------------------------------------------------ foreground ---
+// Pieces of a room cut out (same pixels) and drawn in front of characters standing behind them.
+// Coordinates are in room-image pixels (2x the world); the room def places them at half scale.
+function foregroundPiece(room, name, polygons, [x0, y0, x1, y1]) {
+  const src = roomPngs[room];
+  const masks = polygons.map(polygonMask);
+  const piece = new PNG({ width: x1 - x0, height: y1 - y0 });
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    if (!masks.some(m => m(x, y))) continue;
+    const s = (y * src.width + x) * 4, d = ((y - y0) * piece.width + (x - x0)) * 4;
+    src.data.copy(piece.data, d, s, s + 4);
+  }
+  save(piece, join(out, 'foreground', `${name}.png`));
+}
+const rect = (x, y, w, h) => [[x, y], [x + w, y], [x + w, y + h], [x, y + h]];
+foregroundPiece('tent', 'tent-stool', [[[150, 412], [336, 412], [338, 470], [332, 604], [146, 604], [150, 470]]], [146, 408, 340, 606]);
+foregroundPiece('mara-room', 'hall-left', [[[0, 500], [110, 520], [190, 600], [200, 720], [0, 720]]], [0, 496, 202, 720]);
+foregroundPiece('mara-room', 'hall-right', [[[1110, 620], [1180, 570], [1280, 560], [1280, 720], [1100, 720]]], [1104, 560, 1280, 720]);
+foregroundPiece('gallery', 'gallery-railing', [
+  [[620, 415], [945, 432], [945, 450], [620, 435]],
+  [[560, 474], [945, 478], [945, 492], [560, 490]],
+  rect(615, 415, 45, 155), rect(762, 420, 20, 212), rect(840, 420, 16, 130), rect(918, 430, 14, 170),
+], [556, 412, 946, 634]);
 
 // The tent seen from the kiln hall: the same cloth in a tent silhouette with a dark entrance.
 {
@@ -298,33 +325,31 @@ icon('gauntlet', gauntletArt, [60, 40, 1150, 1150]);
 icon('notebook', masked(gallery, polygonMask(BOOK)), [305, 678, 440, 175]);
 icon('regulator', masked(gallery, circle(650, 375, 168)), [480, 205, 340, 340]);
 icon('bread', masked(cinderfold, ellipseMask(270, 548, 66, 46)), [200, 498, 140, 100]);
-icon('scarf', masked(cinderfold, polygonMask([[74, 100], [182, 104], [186, 350], [70, 352]])), [66, 96, 124, 260]);
+{
+  const iven = load('opening/iven.png');
+  const orange = (x, y) => {
+    const i = (y * iven.width + x) * 4, r = iven.data[i], g = iven.data[i + 1], b = iven.data[i + 2];
+    return r > 140 && g > 60 && g < r * 0.8 && b < g * 0.75 ? 1 : 0;
+  };
+  icon('scarf', masked(iven, (x, y) => (x >= 330 && x <= 640 && y >= 140 && y <= 340 ? orange(x, y) : 0)), [330, 140, 310, 200]);
+}
 
 // --------------------------------------------------------------- objects ---
 // Mother's notebook lying on the stone block in the kiln hall.
 writeSheet('objects', 'notebook', [shrink(masked(gallery, polygonMask(BOOK)), [305, 678, 440, 175], 76, 30, { colors: 32, alphaCut: 110, line: true })], [['idle', 0, 0]]);
 
-// Charging rack for the gauntlet's ember cell: full (glowing cell) / empty.
+// Charging rack: the gallery's painted lantern used as the ember cell's cradle. Once the cell is
+// taken the glass goes dark (orange pixels dimmed).
 {
-  const W = 112, H = 140;
-  const frames = [true, false].map(full => {
-    const f = new PNG({ width: W, height: H });
-    const wood = [94, 58, 32], dark = [62, 38, 22], iron = [90, 86, 96];
-    fillRect(f, 10, 8, 92, 10, wood); fillRect(f, 10, 122, 92, 12, wood);
-    fillRect(f, 16, 8, 10, 126, dark); fillRect(f, 86, 8, 10, 126, dark);
-    fillRect(f, 44, 18, 6, 14, iron); fillRect(f, 62, 18, 6, 14, iron);
-    line(f, 30, 116, 82, 116, 4, iron);
-    if (full) {
-      fillRect(f, 36, 30, 40, 86, [176, 132, 62]); // brass casing
-      fillRect(f, 40, 40, 32, 64, [232, 116, 42]);
-      fillRect(f, 46, 46, 20, 52, [255, 195, 90]);
-      fillRect(f, 50, 50, 8, 40, [255, 236, 170]);
-      for (const y of [30, 56, 82, 108]) fillRect(f, 34, y, 44, 6, [201, 154, 62]);
-      fillEllipse(f, 56, 72, 44, 52, [255, 160, 60, 40]);
-    }
-    outline(f);
-    return f;
-  });
+  const lantern = masked(gallery, polygonMask([[52, 416], [80, 416], [86, 440], [112, 468], [118, 640], [126, 690], [4, 690], [12, 640], [18, 468], [44, 440]]));
+  const lit = shrink(lantern, [0, 412, 132, 282], 56, 120, { colors: 40, alphaCut: 110, line: true });
+  const dark = new PNG({ width: lit.width, height: lit.height });
+  lit.data.copy(dark.data);
+  for (let i = 0; i < dark.data.length; i += 4) {
+    const r = dark.data[i], g = dark.data[i + 1], b = dark.data[i + 2];
+    if (r > 150 && r - b > 70) { const l = (r * 0.3 + g * 0.59 + b * 0.11) * 0.38; dark.data[i] = l * 1.1; dark.data[i + 1] = l; dark.data[i + 2] = l * 0.95; }
+  }
+  const frames = [lit, dark].map(img => { const f = new PNG({ width: 112, height: 140 }); blit(f, img, 28, 140 - img.height); return f; });
   writeSheet('objects', 'rack', frames, [['full', 0, 0], ['empty', 1, 1]]);
 }
 
@@ -347,13 +372,14 @@ writeSheet('objects', 'notebook', [shrink(masked(gallery, polygonMask(BOOK)), [3
 {
   const atlas = load('card-atlas.png');
   const wheel = shrink(masked(atlas, circle(626, 596, 132)), [490, 460, 272, 272], 76, 76, { colors: 40, alphaCut: 110, line: true });
+  const stub = shrink(atlas, [70, 560, 115, 240], 52, 90, { colors: 32, alphaCut: 1, line: true });
   const frames = [false, true].map(venting => {
     const f = new PNG({ width: 112, height: 160 });
-    fillRect(f, 40, 76, 32, 84, [76, 70, 80]); fillRect(f, 36, 150, 40, 10, [56, 52, 60]);
-    fillRect(f, 30, 72, 52, 14, [138, 74, 42]); fillRect(f, 72, 104, 22, 12, [76, 70, 80]);
+    blit(f, stub, 30, 70);
     blit(f, wheel, 18, 4);
-    if (venting) for (const [x, y, r] of [[100, 98, 10], [92, 80, 13], [102, 58, 15], [88, 36, 17], [104, 18, 12]]) fillEllipse(f, x, y, r, r, [240, 236, 226, 190]);
     outline(f);
+    if (venting) for (const [x, y, r] of [[100, 98, 10], [92, 80, 13], [102, 58, 15], [88, 36, 17], [104, 18, 12]]) fillEllipse(f, x, y, r, r, [240, 236, 226, 190]);
+    
     return f;
   });
   writeSheet('objects', 'valve', frames, [['closed', 0, 0], ['venting', 1, 1]]);
