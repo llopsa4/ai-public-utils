@@ -6,8 +6,8 @@
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#120d14">
   <title>Cinderfold</title>
-  <script type="module" crossorigin src="./build/index-9tSvQ1IL.js"></script>
-  <link rel="stylesheet" crossorigin href="./build/index-i7LY5KnH.css">
+  <script type="module" crossorigin src="./build/index-DYVwuEMg.js"></script>
+  <link rel="stylesheet" crossorigin href="./build/index-CWnOeQQm.css">
 </head>
 <body>
   <main id="app">
@@ -54,6 +54,7 @@
       <button id="mute-btn" class="btn icon-btn" type="button" data-i18n-label="ui.mute" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on" d="M16 9c1.3 1.6 1.3 4.4 0 6M18.5 6.5c2.8 3 2.8 8 0 11" fill="none"/><path class="off" d="M16 9l5 6M21 9l-5 6" fill="none"/></svg></button>
       <button id="reveal-btn" class="btn icon-btn" type="button" data-i18n-label="ui.reveal" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12z" fill="none"/><circle cx="12" cy="12" r="3"/></svg></button>
       <button id="fs-btn" class="btn icon-btn" type="button" data-i18n-label="ui.fullscreen" aria-pressed="false" hidden><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" fill="none"/></svg></button>
+      <button id="gear-btn" class="btn" type="button" data-i18n="ui.gear" hidden>Gear</button>
       <button id="notebook-btn" class="btn" type="button" data-i18n="ui.notebook">Notebook</button>
       <button id="menu-btn" class="btn" type="button" data-i18n="ui.menu">Menu</button>
     </nav>
@@ -160,6 +161,22 @@
       <dt data-i18n="ui.help.touchKey">Touch: press and hold</dt><dd data-i18n="ui.help.touch">Show everything you can interact with</dd>
     </dl>
     <div class="panel-actions"><button type="button" class="btn dialog-close" data-i18n="ui.back">Back</button></div>
+  </dialog>
+
+  <!-- Mara's gear: one choice per slot, the stats it gives, and what he carries. -->
+  <dialog id="gear" class="panel" aria-labelledby="gear-heading">
+    <h1 id="gear-heading" class="plaque" data-i18n="ui.gearTitle">Gear</h1>
+    <div id="gear-slots" class="gear-slots"></div>
+    <div id="gear-stats" class="gear-stats" aria-live="polite"></div>
+    <div id="gear-bag" class="gear-bag"></div>
+    <div class="panel-actions"><button type="button" class="btn primary dialog-close" data-i18n="ui.done">Done</button></div>
+  </dialog>
+
+  <!-- The merchant's stall. -->
+  <dialog id="shop" class="panel small" aria-labelledby="shop-heading">
+    <h1 id="shop-heading" class="plaque" data-i18n="ui.shopTitle">Tonics</h1>
+    <div id="shop-body" class="shop-body"></div>
+    <div class="panel-actions"><button type="button" class="btn dialog-close" data-i18n="ui.leaveShop">Leave</button></div>
   </dialog>
 
   <!-- In-game confirmation (replaces the browser's own pop-up). -->

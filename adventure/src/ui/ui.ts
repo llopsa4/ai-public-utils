@@ -8,6 +8,12 @@ import { MET_FLAGS, SECRET_FLAGS } from '../engine/state';
 import type { GameState, Point, Speaker, Verb } from '../engine/types';
 import { EXTRAS } from '../content/crowd';
 import { BattleUi, type BattleHandlers } from './battle';
+import { sound } from '../audio/sound';
+import { EQUIPMENT_SLOTS, openingHandSize } from '../combat/equipment';
+import { EQUIPMENT } from '../combat/gear';
+import type { BattleStats, EquipmentSlot } from '../combat/types';
+import { HERO_MAX_HP, MATERIALS, TONIC } from '../content/combat';
+import { buyTonic, equip, isLocked, optionsFor, statsWith } from '../engine/kit';
 
 /** World size in logical units; all content coordinates use it. */
 export const LOGICAL_W = 640;
@@ -37,6 +43,8 @@ export interface UiHost {
   newGame(): GameState;
   /** Starts a new story after the opening (the first room fades in slowly). */
   startStory(): void;
+  /** Saves soon (after gear changes and purchases). */
+  autosave(): void;
   /** Labels for everything interactive in the room, in world coordinates. */
   hotspotLabels(): { text: string; x: number; y: number }[];
   /** Title screen: load the autosave and start playing. */
@@ -88,6 +96,7 @@ export class Ui {
     $('menu-history').addEventListener('click', () => this.openHistory()); // stacks over the pause menu; Back returns to it
     $('menu-settings').addEventListener('click', () => this.openSettings());
     $('notebook-btn').addEventListener('click', () => this.openNotebook());
+    $('gear-btn').addEventListener('click', () => void this.openGear());
     $('reveal-btn').addEventListener('click', () => this.revealFor(3000));
     this.bindFullscreen();
     this.bindLongPress();
@@ -359,6 +368,139 @@ export class Ui {
     };
     onSettingsChange(apply);
     apply(settings());
+  }
+
+  // ------------------------------------------------------------- gear ---
+  /** Mara's gear: a choice per slot with its stats, and what he carries. Resolves when closed. */
+  openGear(): Promise<void> {
+    const dialog = $<HTMLDialogElement>('gear');
+    this.renderGear();
+    dialog.showModal();
+    return new Promise(resolve => dialog.addEventListener('close', () => { this.host.autosave(); resolve(); }, { once: true }));
+  }
+
+  private renderGear(preview?: { slot: EquipmentSlot; id: string }): void {
+    const state = this.host.getState();
+    const kit = state.kit;
+    const describe = (id: string) => {
+      const b = EQUIPMENT[id].bonuses;
+      const parts = (Object.keys(b) as (keyof BattleStats)[]).filter(k => b[k]).map(k => `${b[k]! > 0 ? '+' : ''}${b[k]} ${t(`ui.stat.${k}`).toLowerCase()}`);
+      return parts.length ? parts.join(', ') : t('ui.noBonus');
+    };
+    const slots = $('gear-slots');
+    slots.replaceChildren();
+    for (const slot of EQUIPMENT_SLOTS) {
+      const row = document.createElement('div');
+      row.className = 'gear-slot';
+      const label = document.createElement('span');
+      label.className = 'row-label';
+      label.textContent = t(`ui.slot.${slot}`);
+      row.append(label);
+      const current = kit.equipment[slot].id;
+      if (isLocked(slot)) {
+        const p = document.createElement('p');
+        p.className = 'gear-locked';
+        p.textContent = `${EQUIPMENT[current].name}: ${t('ui.slotLocked')}`;
+        row.append(p);
+      } else {
+        const group = document.createElement('div');
+        group.className = 'segmented';
+        group.setAttribute('role', 'radiogroup');
+        group.setAttribute('aria-label', t(`ui.slot.${slot}`));
+        for (const id of optionsFor(kit, slot)) {
+          const l = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = 'radio';
+          input.name = `gear-${slot}`;
+          input.value = id;
+          input.checked = id === current;
+          input.addEventListener('change', () => { if (equip(kit, slot, id)) { this.host.autosave(); this.renderGear(); } });
+          const text = document.createElement('span');
+          text.append(EQUIPMENT[id].name);
+          const small = document.createElement('small');
+          small.textContent = describe(id);
+          text.append(small);
+          l.append(input, text);
+          l.addEventListener('pointerenter', () => this.renderGearStats(slot, id));
+          l.addEventListener('pointerleave', () => this.renderGearStats());
+          input.addEventListener('focus', () => this.renderGearStats(slot, id));
+          group.append(l);
+        }
+        row.append(group);
+      }
+      slots.append(row);
+    }
+    this.renderGearStats(preview?.slot, preview?.id);
+    const bag = state.bag;
+    const mats = Object.entries(bag.materials).filter(([, n]) => n > 0).map(([id, n]) => `${n} ${t(MATERIALS[id].name)}`);
+    const lines = [
+      t('ui.health', { hp: String(kit.hp), max: String(HERO_MAX_HP) }),
+      t('ui.salvage', { n: String(bag.salvage) }),
+      t('ui.tonics', { n: String(bag.tonics) }),
+      mats.length ? t('ui.materials', { list: mats.join(', ') }) : t('ui.noMaterials'),
+    ];
+    $('gear-bag').replaceChildren(...lines.map(text => { const p = document.createElement('p'); p.textContent = text; return p; }));
+  }
+
+  /** The stats now, and (while hovering or focusing an option) what they would become. */
+  private renderGearStats(slot?: EquipmentSlot, id?: string): void {
+    const kit = this.host.getState().kit;
+    const now = statsWith(kit);
+    const then = slot && id ? statsWith(kit, slot, id) : now;
+    const box = $('gear-stats');
+    box.replaceChildren();
+    for (const key of ['power', 'defense', 'speed', 'maxMp'] as const) {
+      const name = document.createElement('span');
+      name.textContent = t(`ui.stat.${key}`);
+      const value = document.createElement('span');
+      const diff = then[key] - now[key];
+      value.className = `value${diff > 0 ? ' up' : diff < 0 ? ' down' : ''}`;
+      value.textContent = diff ? `${now[key]} → ${then[key]}` : String(now[key]);
+      const help = document.createElement('span');
+      help.className = 'help';
+      help.textContent = t(`ui.statHelp.${key}`);
+      box.append(name, value, help);
+    }
+    const hand = document.createElement('span');
+    hand.className = 'hand';
+    hand.textContent = t('ui.openingHand', { n: String(openingHandSize(5, then.speed)) });
+    box.append(hand);
+  }
+
+  // ------------------------------------------------------------- shop ---
+  /** The merchant's stall: Kiln Tonics for salvage. Resolves when closed. */
+  openShop(): Promise<void> {
+    const dialog = $<HTMLDialogElement>('shop');
+    this.renderShop('');
+    dialog.showModal();
+    return new Promise(resolve => dialog.addEventListener('close', () => { this.host.autosave(); resolve(); }, { once: true }));
+  }
+
+  private renderShop(note: string): void {
+    const bag = this.host.getState().bag;
+    const body = $('shop-body');
+    const item = document.createElement('p');
+    item.textContent = t('ui.shopItem', { heal: String(TONIC.heal) });
+    const buy = document.createElement('button');
+    buy.type = 'button';
+    buy.id = 'shop-buy';
+    buy.className = 'btn primary';
+    buy.textContent = t('ui.buyFor', { price: String(TONIC.price) });
+    buy.disabled = bag.salvage < TONIC.price || bag.tonics >= TONIC.max;
+    buy.addEventListener('click', () => {
+      const result = buyTonic(bag);
+      if (result === 'bought') sound.pickup();
+      this.host.autosave();
+      this.renderShop(result === 'bought' ? t('ui.shopBought') : result === 'full' ? t('ui.shopFull', { max: String(TONIC.max) }) : t('ui.shopPoor'));
+      $('shop-buy').focus();
+    });
+    const have = document.createElement('p');
+    have.textContent = t('ui.shopHave', { salvage: String(bag.salvage), tonics: String(bag.tonics), max: String(TONIC.max) });
+    const status = document.createElement('p');
+    status.className = 'shop-note';
+    status.setAttribute('role', 'status');
+    status.textContent = note || (bag.tonics >= TONIC.max ? t('ui.shopFull', { max: String(TONIC.max) }) : bag.salvage < TONIC.price ? t('ui.shopPoor') : '');
+    body.replaceChildren(item, buy, have, status);
   }
 
   /** True while the action ring is open. */
@@ -705,6 +847,7 @@ export class Ui {
   // --------------------------------------------------------- inventory ---
   renderInventory(): void {
     const state = this.host.getState();
+    $('gear-btn').hidden = !state.flags.fought;
     const selected = this.host.selectedItem();
     this.inventory.replaceChildren();
     if (state.inventory.length === 0) {

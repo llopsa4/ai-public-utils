@@ -1001,3 +1001,22 @@ dialog[open] {
   .battle-card.asked, .battle-end.asked { animation: none; box-shadow: 0 0 0 3px #ffd070; }
   .battle-pop { animation-duration: 0.01s; animation-delay: 1s; }
 }
+
+/* ------------------------------------------------------------ gear and shop --- */
+.gear-slots { display: grid; gap: 0.7em; margin: 0.4em 0 0.8em; }
+.gear-slot .row-label { display: block; margin-bottom: 0.25em; color: #d8b88a; font-size: 0.85em; letter-spacing: 0.06em; text-transform: uppercase; }
+.gear-slot .segmented { flex-wrap: wrap; }
+.gear-slot .segmented label span { display: flex; flex-direction: column; align-items: flex-start; line-height: 1.15; }
+.gear-slot .segmented small { font-size: 0.72em; opacity: 0.8; }
+.gear-locked { font-style: italic; color: #c8b090; }
+.gear-stats { display: grid; grid-template-columns: auto auto 1fr; gap: 0.15em 0.8em; align-items: baseline; margin: 0.4em 0; padding: 0.5em 0.7em; background: rgb(0 0 0 / 0.25); border-radius: 4px; }
+.gear-stats .value { font-weight: 700; text-align: right; }
+.gear-stats .up { color: #8aff9a; }
+.gear-stats .down { color: #ff8a6a; }
+.gear-stats .help { font-size: 0.75em; opacity: 0.75; }
+.gear-stats .hand { grid-column: 1 / -1; margin-top: 0.3em; font-size: 0.85em; color: #ffd79a; }
+.gear-bag { font-size: 0.85em; color: #d8c8a8; }
+.gear-bag p { margin: 0.15em 0; }
+.shop-body p { margin: 0.4em 0; }
+.shop-body .btn { margin: 0.4em 0; }
+.shop-note { min-height: 1.3em; color: #ffd79a; }

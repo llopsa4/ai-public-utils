@@ -51,7 +51,23 @@ test('a reload in the middle of the fight starts the fight again; winning it pay
   // Win it (the guide, then any playable card) and Continue.
   for (let i = 0; i < 300 && await page.locator('#battle').isVisible(); i++) await fightStep(page);
   await expect(page.locator('#battle')).toBeHidden();
+
+  // Oren's advice opens the gear menu: put on his light coat.
+  await expect.poll(async () => {
+    await page.evaluate(() => (window as any).adventure.session.ui.skip());
+    return page.locator('#gear[open]').count();
+  }, { timeout: 60_000, intervals: [300] }).toBe(1);
+  await page.locator('#gear label', { hasText: 'Light Armor' }).click();
+  await expect(page.locator('#gear-stats')).toContainText('Defense');
+  await page.locator('#gear .dialog-close').click();
+  await expect.poll(async () => {
+    await page.evaluate(() => (window as any).adventure.session.ui.skip());
+    return page.evaluate(() => !(window as any).adventure.session.scene.isBusy());
+  }, { timeout: 60_000, intervals: [300] }).toBe(true);
+  await expect(page.locator('#gear-btn')).toBeVisible();
   const state = await page.evaluate(() => (window as any).adventure.session.state);
+  expect(state.kit.equipment.armor.id).toBe('light-armor');
+  expect(state.flags.gearChecked).toBe(true);
   expect(state.flags.fought).toBe(true);
   expect(state.bag.salvage).toBe(12);
   expect(state.bag.materials).toEqual({ 'pressure-coil': 1 });

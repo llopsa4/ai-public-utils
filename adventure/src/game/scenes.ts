@@ -956,8 +956,11 @@ export class RoomScene extends Phaser.Scene {
         await this.fight(command.id);
         return true;
       case 'gear':
+        await this.session.ui.openGear();
+        return true;
       case 'shop':
-        return true; // wired up with the gear menu and shop
+        await this.session.ui.openShop();
+        return true;
       case 'end':
         this.leaving = true;
         this.cameras.main.fadeOut(900, 0, 0, 0);

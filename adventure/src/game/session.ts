@@ -38,6 +38,7 @@ export class Session {
       hotspotLabels: () => (this.onTitle ? [] : this.scene?.hotspotLabels() ?? []),
       newGame,
       startStory: () => { this.slowFadeIn = true; this.replaceState(newGame()); },
+      autosave: () => this.autosave(),
       continueGame: () => this.continueGame(),
       toTitle: () => this.toTitle(),
       cycleFocus: direction => (!this.onTitle && this.scene?.cycleFocus(direction)) ?? false,

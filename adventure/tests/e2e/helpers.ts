@@ -36,6 +36,11 @@ export async function act(page: Page, verb: string, target: string, item?: strin
     });
     if (done) return;
     // A fight: follow the guide, else play the first playable card, else end the turn; then Continue.
+    // The gear menu and the shop wait for the player: take what is offered and close.
+    for (const id of ['gear', 'shop']) {
+      const dialog = page.locator(`#${id}[open]`);
+      if (await dialog.count()) await dialog.locator('.dialog-close').click();
+    }
     if (await page.locator('#battle').isVisible()) {
       await fightStep(page);
       continue;
