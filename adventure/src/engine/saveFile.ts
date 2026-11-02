@@ -3,7 +3,8 @@ import { FLAGS, ITEMS } from './state';
 import { NPC_IDS, type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
 
 const SAVE_FORMAT = 'cinderfold-save';
-const SAVE_VERSION = 2;
+/** Version 3: Mara's tent is the starting room. */
+const SAVE_VERSION = 3;
 export const MAX_SAVE_BYTES = 64 * 1024;
 
 const FACINGS: Facing[] = ['down', 'up', 'left', 'right'];

@@ -23,6 +23,7 @@ export class Session {
       selectItem: item => this.selectItem(item),
       itemClicked: (item, index) => this.scene?.openItemRing(item, index),
       replaceState: state => this.replaceState(state),
+      hotspotLabels: () => this.scene?.hotspotLabels() ?? [],
       newGame,
     });
   }
@@ -38,6 +39,7 @@ export class Session {
     this.selectedItem = null;
     this.ui.closeRadial();
     this.ui.hideEnd();
+    this.ui.clearHistory();
     this.ui.skip();
     this.scene?.scene.restart();
   }

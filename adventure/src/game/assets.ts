@@ -21,6 +21,9 @@ import sweeperPng from '../../art/src/objects/sweeper.png';
 import valveJson from '../../art/src/objects/valve.json';
 import valvePng from '../../art/src/objects/valve.png';
 import maraRoomPng from '../../art/src/rooms/mara-room.png';
+import tentRoomPng from '../../art/src/rooms/tent.png';
+import tentJson from '../../art/src/objects/tent.json';
+import tentPng from '../../art/src/objects/tent.png';
 import firingHousePng from '../../art/src/rooms/firing-house.png';
 import galleryPng from '../../art/src/rooms/gallery.png';
 import ashwaysPng from '../../art/src/rooms/ashways.png';
@@ -43,12 +46,14 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   socket: { png: socketPng, json: socketJson },
   sweeper: { png: sweeperPng, json: sweeperJson },
   valve: { png: valvePng, json: valveJson },
+  tent: { png: tentPng, json: tentJson },
 };
 
 /** Sheet used for each non-player character. */
 export const NPC_SHEETS: Record<NpcId, string> = { oren: 'oren', nell: 'nell' };
 
 export const ROOM_IMAGES: Record<string, string> = {
+  'room-tent': tentRoomPng,
   'room-mara': maraRoomPng,
   'room-firing-house': firingHousePng,
   'room-gallery': galleryPng,

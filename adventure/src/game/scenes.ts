@@ -6,6 +6,7 @@ import { resolveNode } from '../engine/dialogue';
 import { conditionsHold, pointInPolygon } from '../engine/geometry';
 import { t } from '../engine/i18n';
 import { WalkArea } from '../engine/pathfinding';
+import { settings } from '../engine/settings';
 import { applyCommand } from '../engine/state';
 import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Verb } from '../engine/types';
 import { Actor } from './Actor';
@@ -151,6 +152,19 @@ export class RoomScene extends Phaser.Scene {
       return;
     }
     void this.walkTo(at);
+  }
+
+  /** Name labels for every interactive thing in the room (hold Space / eye button). */
+  hotspotLabels(): { text: string; x: number; y: number }[] {
+    const state = this.session.state;
+    const labels = this.room.hotspots
+      .filter(h => conditionsHold(state, h.visibleIf))
+      .map(h => {
+        const xs = h.polygon.map(p => p.x), ys = h.polygon.map(p => p.y);
+        return { text: t(h.name), x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 };
+      });
+    for (const [id, actor] of this.actors) labels.push({ text: t(`name.${id}`), ...actor.headPoint() });
+    return labels;
   }
 
   /** Action ring for an inventory item, shown just above the bar. */
@@ -308,7 +322,7 @@ export class RoomScene extends Phaser.Scene {
         await this.wait(command.ms);
         return true;
       case 'shake':
-        this.cameras.main.shake(command.ms, 0.004);
+        if (!settings().reducedMotion) this.cameras.main.shake(command.ms, 0.004);
         await this.wait(Math.min(command.ms, 400));
         return true;
       case 'moveObject': {

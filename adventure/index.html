@@ -6,8 +6,8 @@
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#120d14">
   <title>Cinderfold</title>
-  <script type="module" crossorigin src="./build/index-DiUCuP6B.js"></script>
-  <link rel="stylesheet" crossorigin href="./build/index-CsZEVnBs.css">
+  <script type="module" crossorigin src="./build/index-FJ3suOdE.js"></script>
+  <link rel="stylesheet" crossorigin href="./build/index-l_fV530N.css">
 </head>
 <body>
   <main id="app">
@@ -15,8 +15,15 @@
       <div id="game"></div>
       <div id="overlay">
         <div id="hover" hidden></div>
-        <figure id="portrait" hidden><img alt=""><figcaption></figcaption></figure>
-        <div id="speech" hidden></div>
+        <div id="labels" hidden></div>
+        <section id="dialogue" hidden>
+          <img id="dialogue-portrait" alt="">
+          <div class="dialogue-text">
+            <p id="dialogue-name"></p>
+            <p id="dialogue-line"></p>
+            <p id="dialogue-more" data-i18n="ui.clickToContinue" hidden>Click to continue</p>
+          </div>
+        </section>
         <div id="radial" hidden></div>
         <div id="choices" role="group" hidden></div>
         <div id="toast" role="status" hidden></div>
@@ -32,6 +39,8 @@
     <nav id="bar">
       <div id="inventory" role="toolbar" data-i18n-label="ui.inventory"></div>
       <div id="lang" role="group" data-i18n-label="ui.language"></div>
+      <button id="reveal-btn" type="button" data-i18n-label="ui.reveal" aria-pressed="false">&#128065;</button>
+      <button id="notebook-btn" type="button" data-i18n="ui.notebook">Notebook</button>
       <button id="menu-btn" type="button" data-i18n="ui.menu">Menu</button>
     </nav>
   </main>
@@ -44,9 +53,41 @@
       <button id="menu-export" type="button" data-i18n="ui.export">Export save</button>
       <button id="menu-import" type="button" data-i18n="ui.import">Import save</button>
       <button id="menu-new" type="button" data-i18n="ui.newGame">New game</button>
+      <button id="menu-history" type="button" data-i18n="ui.history">History</button>
+      <button id="menu-settings" type="button" data-i18n="ui.settings">Settings</button>
       <button id="menu-close" type="button" data-i18n="ui.close">Close</button>
     </div>
     <input id="import-file" type="file" accept=".json,application/json" hidden>
+  </dialog>
+
+  <dialog id="notebook">
+    <h1 data-i18n="ui.notebookTitle">Mara's notebook</h1>
+    <ol id="objectives"></ol>
+    <div class="menu-actions"><button type="button" class="dialog-close" data-i18n="ui.close">Close</button></div>
+  </dialog>
+
+  <dialog id="history">
+    <h1 data-i18n="ui.historyTitle">What was said</h1>
+    <ol id="history-list"></ol>
+    <div class="menu-actions"><button type="button" class="dialog-close" data-i18n="ui.close">Close</button></div>
+  </dialog>
+
+  <dialog id="settings">
+    <h1 data-i18n="ui.settings">Settings</h1>
+    <form id="settings-form" class="settings">
+      <label><span data-i18n="ui.textSpeed">Text speed</span>
+        <select name="textSpeed">
+          <option value="slow" data-i18n="ui.speed.slow">Slow</option>
+          <option value="normal" data-i18n="ui.speed.normal">Normal</option>
+          <option value="fast" data-i18n="ui.speed.fast">Fast</option>
+        </select>
+      </label>
+      <label><span data-i18n="ui.volume">Volume</span><input name="volume" type="range" min="0" max="1" step="0.05"></label>
+      <label class="check"><input name="muted" type="checkbox"><span data-i18n="ui.mute">Mute</span></label>
+      <label class="check"><input name="autoAdvance" type="checkbox"><span data-i18n="ui.autoAdvance">Advance lines automatically</span></label>
+      <label class="check"><input name="reducedMotion" type="checkbox"><span data-i18n="ui.reducedMotion">Reduce motion</span></label>
+    </form>
+    <div class="menu-actions"><button type="button" class="dialog-close" data-i18n="ui.close">Close</button></div>
   </dialog>
 
   <div id="rotate" data-i18n="ui.rotate">Turn your device sideways to play.</div>

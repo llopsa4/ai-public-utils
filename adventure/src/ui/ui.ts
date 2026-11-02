@@ -1,6 +1,8 @@
 import { ITEM_ICONS, PORTRAITS, VERB_ICONS } from '../game/assets';
 import { LANGUAGES, language, onLanguageChange, setLanguage, t, type Language } from '../engine/i18n';
 import { MAX_SAVE_BYTES, parseSave, saveFileName, serializeSave } from '../engine/saveFile';
+import { lineDuration, onSettingsChange, settings, updateSettings, type Settings } from '../engine/settings';
+import { objectives } from '../content/objectives';
 import type { ActorId, GameState, Point, Verb } from '../engine/types';
 
 /** World size in logical units; all content coordinates use it. */
@@ -22,19 +24,24 @@ export interface UiHost {
   itemClicked(item: string, index: number): void;
   replaceState(state: GameState): void;
   newGame(): GameState;
+  /** Labels for everything interactive in the room, in world coordinates. */
+  hotspotLabels(): { text: string; x: number; y: number }[];
 }
 
 /**
- * Everything drawn over the game canvas: speech, the action ring, dialogue choices, hover label,
- * toasts, the inventory bar and the menu. DOM text stays sharp at any zoom and supports accents
- * in all three languages without a bitmap font.
+ * Everything drawn over the game canvas: the dialogue panel, the action ring, dialogue choices,
+ * hover label, hotspot labels, toasts, the satchel bar, the menu and its dialogs. DOM text stays
+ * sharp at any zoom.
  */
 export class Ui {
   zoom = 1;
   private readonly stage = $('stage');
   private readonly overlay = $('overlay');
   private readonly hover = $('hover');
-  private readonly speech = $('speech');
+  private readonly dialogue = $('dialogue');
+  private readonly labels = $('labels');
+  private readonly history: { actor: ActorId; text: string }[] = [];
+  private revealTimer = 0;
   private readonly radial = $('radial');
   private readonly choices = $('choices');
   private readonly toastEl = $('toast');
@@ -54,17 +61,32 @@ export class Ui {
     $('menu-export').addEventListener('click', () => this.exportSave());
     $('menu-import').addEventListener('click', () => this.fileInput.click());
     $('end-new').addEventListener('click', () => { this.hideEnd(); this.host.replaceState(this.host.newGame()); });
+    $('menu-history').addEventListener('click', () => { this.menu.close(); this.openHistory(); });
+    $('menu-settings').addEventListener('click', () => { this.menu.close(); this.openSettings(); });
+    $('notebook-btn').addEventListener('click', () => this.openNotebook());
+    $('reveal-btn').addEventListener('click', () => this.revealFor(3000));
+    for (const d of document.querySelectorAll<HTMLDialogElement>('dialog')) {
+      d.addEventListener('click', e => { if (e.target === d) d.close(); });
+      d.querySelector('.dialog-close')?.addEventListener('click', () => d.close());
+    }
+    this.dialogue.addEventListener('pointerdown', () => this.skip());
+    this.bindSettingsForm();
     $('menu-new').addEventListener('click', () => {
       if (window.confirm(t('ui.confirmNew'))) { this.host.replaceState(this.host.newGame()); this.menu.close(); }
     });
     this.fileInput.addEventListener('change', () => void this.importSave());
     this.menu.addEventListener('click', e => { if (e.target === this.menu) this.menu.close(); });
     window.addEventListener('keydown', e => {
+      if (e.key === ' ' && !e.repeat && !this.anyDialogOpen() && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement)) {
+        e.preventDefault();
+        this.showLabels();
+      }
       if (e.key === 'Escape' && !this.menu.open) {
         if (this.closeRadialHandler) this.closeRadial();
         else if (this.host.selectedItem()) this.host.selectItem(null);
       }
     });
+    window.addEventListener('keyup', e => { if (e.key === ' ') this.hideLabels(); });
     onLanguageChange(() => this.translate());
     this.translate();
   }
@@ -86,43 +108,137 @@ export class Ui {
   }
 
   // ------------------------------------------------------------ speech ---
-  /** Shows a spoken line above a point; resolves when its time is up or the player skips it. */
-  say(actor: ActorId, text: string, at: Point): Promise<void> {
+  /**
+   * Shows a spoken line in the dialogue panel (portrait, name, text; Mara on the left, others on
+   * the right) and resolves when its time is up or the player clicks. With auto-advance off, only
+   * a click moves on.
+   */
+  say(actor: ActorId, text: string, _at: Point): Promise<void> {
     this.skipSpeech?.();
-    const el = this.speech;
-    el.textContent = text;
-    el.style.color = SPEECH_COLORS[actor];
-    el.hidden = false;
-    this.showPortrait(actor, at);
-    const p = this.toScreen(at);
-    const width = el.offsetWidth, height = el.offsetHeight;
-    const stageW = LOGICAL_W * this.zoom;
-    el.style.left = `${Math.min(Math.max(p.x - width / 2, 4), stageW - width - 4)}px`;
-    el.style.top = `${Math.max(p.y - height, 4)}px`;
-    this.live.textContent = text;
-    const duration = Math.min(6000, Math.max(1500, 900 + text.length * 55));
+    const panel = this.dialogue;
+    const portrait = $<HTMLImageElement>('dialogue-portrait');
+    const url = PORTRAITS[actor === 'hero' ? 'mara' : actor];
+    portrait.hidden = !url;
+    if (url) portrait.src = url;
+    const name = $('dialogue-name');
+    name.textContent = t(`speaker.${actor}`);
+    name.style.color = SPEECH_COLORS[actor];
+    $('dialogue-line').textContent = text;
+    panel.style.borderColor = SPEECH_COLORS[actor];
+    panel.classList.toggle('right', actor !== 'hero');
+    const s = settings();
+    $('dialogue-more').hidden = s.autoAdvance;
+    panel.hidden = false;
+    this.live.textContent = `${t(`speaker.${actor}`)}: ${text}`;
+    this.history.push({ actor, text });
     return new Promise(resolve => {
       const done = () => {
         window.clearTimeout(timer);
-        if (this.skipSpeech === done) { this.skipSpeech = null; el.hidden = true; $('portrait').hidden = true; }
+        if (this.skipSpeech === done) { this.skipSpeech = null; panel.hidden = true; }
         resolve();
       };
-      const timer = window.setTimeout(done, duration);
+      const timer = s.autoAdvance ? window.setTimeout(done, lineDuration(text, s.textSpeed)) : 0;
       this.skipSpeech = done;
     });
   }
 
-  /** Large Kiln Courier portrait of whoever is speaking, with their name, opposite the speaker. */
-  private showPortrait(actor: ActorId, at: Point): void {
-    const box = $('portrait');
-    const url = PORTRAITS[actor === 'hero' ? 'mara' : actor];
-    if (!url) { box.hidden = true; return; }
-    box.querySelector('img')!.src = url;
-    box.querySelector('figcaption')!.textContent = t(`speaker.${actor}`);
-    box.style.borderColor = SPEECH_COLORS[actor];
-    // Keep the portrait on the side of the screen away from the speaker.
-    box.classList.toggle('right', at.x < LOGICAL_W / 2);
+  clearHistory(): void {
+    this.history.length = 0;
+  }
+
+  // ---------------------------------------------- notebook, history, settings ---
+  private anyDialogOpen(): boolean {
+    return [...document.querySelectorAll('dialog')].some(d => d.open);
+  }
+
+  private openNotebook(): void {
+    const list = $('objectives');
+    list.replaceChildren();
+    for (const o of objectives(this.host.getState())) {
+      const li = document.createElement('li');
+      li.textContent = t(o.key) + (o.optional ? ` ${t('ui.optional')}` : '');
+      li.classList.toggle('done', o.done);
+      list.append(li);
+    }
+    $<HTMLDialogElement>('notebook').showModal();
+  }
+
+  private openHistory(): void {
+    const list = $('history-list');
+    list.replaceChildren();
+    if (this.history.length === 0) {
+      const li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = t('ui.historyEmpty');
+      list.append(li);
+    }
+    for (const line of this.history) {
+      const li = document.createElement('li');
+      const who = document.createElement('strong');
+      who.textContent = `${t(`speaker.${line.actor}`)}: `;
+      who.style.color = SPEECH_COLORS[line.actor];
+      li.append(who, line.text);
+      list.append(li);
+    }
+    const dialog = $<HTMLDialogElement>('history');
+    dialog.showModal();
+    list.lastElementChild?.scrollIntoView({ block: 'end' });
+  }
+
+  private openSettings(): void {
+    const form = $<HTMLFormElement>('settings-form');
+    const s = settings();
+    (form.elements.namedItem('textSpeed') as HTMLSelectElement).value = s.textSpeed;
+    (form.elements.namedItem('volume') as HTMLInputElement).value = String(s.volume);
+    for (const k of ['muted', 'autoAdvance', 'reducedMotion'] as const) (form.elements.namedItem(k) as HTMLInputElement).checked = s[k];
+    $<HTMLDialogElement>('settings').showModal();
+  }
+
+  private bindSettingsForm(): void {
+    const form = $<HTMLFormElement>('settings-form');
+    form.addEventListener('submit', e => e.preventDefault());
+    form.addEventListener('input', () => {
+      const el = (name: string) => form.elements.namedItem(name) as HTMLInputElement;
+      updateSettings({
+        textSpeed: (form.elements.namedItem('textSpeed') as HTMLSelectElement).value as Settings['textSpeed'],
+        volume: Number(el('volume').value),
+        muted: el('muted').checked,
+        autoAdvance: el('autoAdvance').checked,
+        reducedMotion: el('reducedMotion').checked,
+      });
+    });
+    onSettingsChange(s => document.documentElement.classList.toggle('reduce-motion', s.reducedMotion));
+    document.documentElement.classList.toggle('reduce-motion', settings().reducedMotion);
+  }
+
+  // ------------------------------------------------------- hotspot labels ---
+  private showLabels(): void {
+    if (this.host.isBusy()) return;
+    const box = this.labels;
+    box.replaceChildren();
+    for (const l of this.host.hotspotLabels()) {
+      const el = document.createElement('span');
+      el.className = 'label';
+      el.textContent = l.text;
+      const p = this.toScreen(l);
+      el.style.left = `${p.x}px`;
+      el.style.top = `${p.y}px`;
+      box.append(el);
+    }
     box.hidden = false;
+    $('reveal-btn').setAttribute('aria-pressed', 'true');
+  }
+
+  private hideLabels(): void {
+    window.clearTimeout(this.revealTimer);
+    this.labels.hidden = true;
+    $('reveal-btn').setAttribute('aria-pressed', 'false');
+  }
+
+  private revealFor(ms: number): void {
+    this.showLabels();
+    window.clearTimeout(this.revealTimer);
+    this.revealTimer = window.setTimeout(() => this.hideLabels(), ms);
   }
 
   /** Ends the current line early. Returns whether there was one. */

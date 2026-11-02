@@ -94,6 +94,45 @@ export function interact(state: GameState, verb: Verb, target: string, item?: st
       }
       break;
 
+    case 'tentFlap':
+      if (item) break;
+      if (verb === 'look') return [say('line.tentFlapLook')];
+      if (verb === 'go' || verb === 'open') {
+        if (!f.hasGauntlet) return [...approach(state, target), say('line.tentNotYet')];
+        return [...approach(state, target), go('maraRoom', 'fromTent')];
+      }
+      break;
+
+    case 'workbench':
+      if (item) break;
+      if (verb === 'look') return [say('line.workbenchLook')];
+      if (verb === 'use') return [...approach(state, target), say('line.workbenchUse')];
+      break;
+
+    case 'jar':
+      if (item) break;
+      if (verb === 'look') return [say('line.jarLook')];
+      if (verb === 'take') return [say('line.jarTake')];
+      break;
+
+    case 'stool':
+      if (item) break;
+      if (verb === 'look') return [say('line.stoolLook')];
+      if (verb === 'use') return [say('line.stoolUse')];
+      break;
+
+    case 'drum':
+      if (item) break;
+      if (verb === 'look') return [say('line.drumLook')];
+      if (verb === 'use') return [...approach(state, target), say('line.drumUse')];
+      break;
+
+    case 'toTent':
+      if (item) break;
+      if (verb === 'look') return [say('line.toTentLook')];
+      if (verb === 'go') return [...approach(state, target), go('tent', 'fromKilnHall')];
+      break;
+
     case 'niche': // the kiln mouths
       if (item) break;
       if (verb === 'look') return [say(f.kilnCold ? 'line.nicheLookCold' : 'line.nicheLook')];
@@ -338,6 +377,8 @@ export const INTERACTION_KEYS = [
   'line.rackLook', 'line.rackLookEmpty', 'line.rackEmpty', 'line.rackTake',
   'line.notebookOnBench', 'line.notebookOpen', 'line.notebookTake',
   'line.nicheLook', 'line.nicheLookCold', 'line.nicheUse', 'line.nicheUseCold', 'line.roomCurtainLook',
+  'line.tentFlapLook', 'line.tentNotYet', 'line.workbenchLook', 'line.workbenchUse', 'line.jarLook', 'line.jarTake',
+  'line.stoolLook', 'line.stoolUse', 'line.drumLook', 'line.drumUse', 'line.toTentLook',
   'line.pulleysLook', 'line.pulleysUse', 'line.jarsLook', 'line.jarsTake', 'line.cartLook', 'line.cartUse',
   'line.latchAlreadyFixed', 'line.nellFixed', 'line.maraLatch', 'line.nellSoup', 'line.maraNightShift', 'line.kilnGroans', 'line.orenCalls', 'line.maraAlarm',
   'line.latchLook', 'line.latchLookFixed', 'line.latchOpenFixed', 'line.latchStuck', 'line.latchStuckHint',

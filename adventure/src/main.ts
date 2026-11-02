@@ -1,11 +1,13 @@
 import Phaser from 'phaser';
 import { initLanguage, t } from './engine/i18n';
+import { loadSettings } from './engine/settings';
 import { BootScene, RoomScene } from './game/scenes';
 import { Session } from './game/session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from './ui/ui';
 import './style.css';
 
 initLanguage();
+loadSettings();
 const session = new Session();
 const room = new RoomScene(session);
 session.scene = room;

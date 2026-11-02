@@ -45,6 +45,7 @@ function toArgument(): GameState {
   const s = newGame();
   run(s, 'take', 'rack');
   run(s, 'take', 'notebook');
+  run(s, 'go', 'tentFlap');
   run(s, 'go', 'roomCurtain');
   run(s, 'use', 'pantryDoor', 'gauntlet');
   run(s, 'go', 'stairs');
@@ -52,9 +53,11 @@ function toArgument(): GameState {
   return s;
 }
 
-test('the whole scene plays from Mara\'s room to the ashways', () => {
+test('the whole scene plays from Mara\'s tent to the ashways', () => {
   const s = newGame();
-  assert.equal(s.room, 'maraRoom');
+  assert.equal(s.room, 'tent');
+  assert.deepEqual(run(s, 'go', 'tentFlap').spoken, ['line.tentNotYet'], 'he needs the gauntlet working before leaving');
+  assert.equal(s.room, 'tent');
 
   run(s, 'take', 'rack');
   assert.ok(s.flags.hasGauntlet);
@@ -62,6 +65,11 @@ test('the whole scene plays from Mara\'s room to the ashways', () => {
   run(s, 'take', 'notebook');
   assert.deepEqual(s.inventory, ['gauntlet', 'notebook']);
 
+  run(s, 'go', 'tentFlap');
+  assert.equal(s.room, 'maraRoom');
+  run(s, 'go', 'toTent');
+  assert.equal(s.room, 'tent', 'the tent can be revisited');
+  run(s, 'go', 'tentFlap');
   run(s, 'go', 'roomCurtain');
   assert.equal(s.room, 'firingHouse');
   assert.deepEqual(run(s, 'go', 'stairs').spoken, ['line.stairsNotYet'], 'the gallery waits for the alarm');

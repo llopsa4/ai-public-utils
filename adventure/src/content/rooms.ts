@@ -8,14 +8,24 @@ const COLD = [{ flag: 'kilnCold' }];
 
 // Hotspots are tested in list order: put small things before large ones they overlap.
 
-// Mara's corner of the kiln hall (Kiln Courier's kiln-hall illustration).
-const maraRoomHotspots: HotspotDef[] = [
-  { id: 'notebook', name: 'name.notebook', polygon: rect(18, 188, 46, 22), verbs: ['look', 'take', 'open'], walkTo: pt(82, 250), face: 'left',
+// Mara's tent: his starting room (tempering-house painting under a canvas ceiling).
+const tentHotspots: HotspotDef[] = [
+  { id: 'notebook', name: 'name.notebook', polygon: rect(126, 148, 48, 22), verbs: ['look', 'take', 'open'], walkTo: pt(222, 274), face: 'left',
     visibleIf: [{ notFlag: 'hasNotebook' }] },
-  { id: 'rack', name: 'name.rack', polygon: rect(217, 174, 56, 72), verbs: ['look', 'take', 'use'], walkTo: pt(245, 262), face: 'up' },
+  { id: 'rack', name: 'name.rack', polygon: rect(442, 190, 56, 72), verbs: ['look', 'take', 'use'], walkTo: pt(430, 272), face: 'right' },
+  { id: 'jar', name: 'name.jar', polygon: rect(64, 98, 52, 62), verbs: ['look', 'take'], walkTo: pt(222, 274), face: 'left' },
+  { id: 'workbench', name: 'name.workbench', polygon: rect(0, 130, 196, 140), verbs: ['look', 'use'], walkTo: pt(222, 274), face: 'left' },
+  { id: 'stool', name: 'name.stool', polygon: rect(75, 205, 94, 96), verbs: ['look', 'use'] },
+  { id: 'drum', name: 'name.drum', polygon: rect(200, 102, 190, 124), verbs: ['look', 'use'], walkTo: pt(300, 240), face: 'up' },
+  { id: 'tentFlap', name: 'name.tentFlap', polygon: rect(562, 160, 66, 170), verbs: ['look', 'go', 'open'], walkTo: pt(596, 336), face: 'right' },
+];
+
+// Kiln hall outside the tent (Kiln Courier's kiln-hall illustration).
+const maraRoomHotspots: HotspotDef[] = [
+  { id: 'toTent', name: 'name.toTent', polygon: rect(195, 174, 100, 72), verbs: ['look', 'go'], walkTo: pt(245, 264), face: 'up' },
   { id: 'niche', name: 'name.niche', polygon: rect(296, 148, 248, 84), verbs: ['look', 'use'], walkTo: pt(420, 244), face: 'up' },
   { id: 'pulleys', name: 'name.pulleys', polygon: rect(66, 30, 76, 136), verbs: ['look', 'use'], walkTo: pt(118, 250), face: 'up' },
-  { id: 'jars', name: 'name.jars', polygon: rect(126, 186, 88, 50), verbs: ['look', 'take'], walkTo: pt(170, 252), face: 'up' },
+  { id: 'jars', name: 'name.jars', polygon: rect(126, 186, 68, 50), verbs: ['look', 'take'], walkTo: pt(170, 252), face: 'up' },
   { id: 'cart', name: 'name.cart', polygon: rect(474, 198, 64, 34), verbs: ['look', 'use'], walkTo: pt(506, 246), face: 'up' },
   { id: 'roomCurtain', name: 'name.toFiringHouse', polygon: rect(546, 140, 56, 82), verbs: ['look', 'go'], walkTo: pt(584, 246), face: 'up' },
 ];
@@ -48,22 +58,41 @@ const ashwaysHotspots: HotspotDef[] = [
 ];
 
 export const ROOMS: Record<string, RoomDef> = {
+  tent: {
+    id: 'tent',
+    background: 'room-tent',
+    walkable: {
+      outer: [pt(220, 228), pt(540, 206), pt(548, 312), pt(612, 322), pt(616, 358), pt(0, 358), pt(0, 292), pt(200, 262)],
+      holes: [rect(78, 282, 92, 22), rect(450, 256, 40, 10)],
+    },
+    scale: { farY: 206, farScale: 0.78, nearY: 358, nearScale: 1.22 },
+    coldIf: COLD,
+    entries: {
+      start: { x: 360, y: 300, face: 'down' },
+      fromKilnHall: { x: 590, y: 336, face: 'left' },
+    },
+    objects: [
+      { id: 'rack', sheet: 'rack', x: 470, y: 262, flag: 'hasGauntlet', whenTrue: 'empty', whenFalse: 'full' },
+      { id: 'notebook', sheet: 'notebook', x: 150, y: 168, visibleIf: [{ notFlag: 'hasNotebook' }] },
+    ],
+    hotspots: tentHotspots,
+    actors: [],
+  },
   maraRoom: {
     id: 'maraRoom',
     background: 'room-mara',
     walkable: {
       outer: [pt(40, 238), pt(610, 234), pt(612, 280), pt(556, 288), pt(552, 358), pt(96, 358), pt(88, 262), pt(40, 256)],
-      holes: [rect(222, 240, 46, 12)],
+      holes: [rect(200, 236, 90, 14)],
     },
     scale: { farY: 234, farScale: 0.82, nearY: 358, nearScale: 1.02 },
     coldIf: COLD,
     entries: {
-      start: { x: 300, y: 300, face: 'down' },
+      fromTent: { x: 245, y: 270, face: 'down' },
       fromFiringHouse: { x: 584, y: 252, face: 'left' },
     },
     objects: [
-      { id: 'rack', sheet: 'rack', x: 245, y: 246, flag: 'hasGauntlet', whenTrue: 'empty', whenFalse: 'full' },
-      { id: 'notebook', sheet: 'notebook', x: 42, y: 206, visibleIf: [{ notFlag: 'hasNotebook' }] },
+      { id: 'tent', sheet: 'tent', x: 245, y: 248 },
     ],
     hotspots: maraRoomHotspots,
     actors: [],
@@ -128,5 +157,5 @@ export const ROOMS: Record<string, RoomDef> = {
   },
 };
 
-export const START_ROOM = 'maraRoom';
+export const START_ROOM = 'tent';
 export const START_ENTRY = 'start';

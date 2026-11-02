@@ -67,48 +67,88 @@ html, body {
   white-space: nowrap;
 }
 
-#portrait:not([hidden]) {
+/* Dialogue panel: small portrait with the name and line beside it. */
+#dialogue:not([hidden]) {
   position: absolute;
-  left: 1.5%;
-  bottom: 3%;
-  width: 22%;
-  margin: 0;
-  border: 2px solid;
-  border-radius: 8px;
-  overflow: hidden;
-  background: radial-gradient(circle at 50% 35%, #4a2c1c, #140c0c);
-  box-shadow: 0 6px 24px rgb(0 0 0 / 0.6);
-  animation: fade-in 160ms ease-out both;
+  left: 2%;
+  right: 2%;
+  bottom: 2.5%;
+  display: flex;
+  align-items: center;
+  gap: 0.8em;
+  padding: 0.5em 0.9em 0.5em 0.5em;
+  background: rgb(14 9 10 / 0.86);
+  border: 1px solid;
+  border-radius: 10px;
+  box-shadow: 0 6px 24px rgb(0 0 0 / 0.55);
+  pointer-events: auto;
+  cursor: pointer;
+  animation: fade-in 120ms ease-out both;
 }
 
-#portrait.right {
-  left: auto;
-  right: 1.5%;
+#dialogue.right {
+  flex-direction: row-reverse;
+  padding: 0.5em 0.5em 0.5em 0.9em;
 }
 
-#portrait img {
-  display: block;
-  width: 100%;
+#dialogue-portrait {
+  flex: none;
+  width: 10%;
+  min-width: 56px;
   aspect-ratio: 1;
+  border-radius: 6px;
+  background: radial-gradient(circle at 50% 35%, #4a2c1c, #140c0c);
 }
 
-#portrait figcaption {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  padding: 0.15em 0.5em;
+#dialogue .dialogue-text {
+  flex: 1;
+  min-width: 0;
+}
+
+#dialogue.right .dialogue-text {
+  text-align: right;
+}
+
+#dialogue-name {
+  margin: 0 0 0.15em;
   font-weight: 700;
   font-size: 0.85em;
-  background: linear-gradient(transparent, rgb(0 0 0 / 0.75));
+  letter-spacing: 0.04em;
 }
 
-#speech {
+#dialogue-line {
+  margin: 0;
+  font-size: 1.05em;
+  line-height: 1.35;
+}
+
+#dialogue-more {
+  margin: 0.25em 0 0;
+  font-size: 0.75em;
+  opacity: 0.6;
+}
+
+/* Hold Space / eye button: name labels on everything interactive. */
+#labels:not([hidden]) {
   position: absolute;
-  max-width: 60%;
-  text-align: center;
-  font-weight: 700;
-  text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 2px 2px 0 #000, 0 2px 0 #000, 2px 0 0 #000;
+  inset: 0;
+}
+
+#labels .label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  padding: 0.1em 0.45em;
+  font-size: 0.8em;
+  white-space: nowrap;
+  color: var(--text);
+  background: rgb(18 13 20 / 0.82);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  box-shadow: 0 0 10px rgb(231 192 70 / 0.35);
+}
+
+#reveal-btn[aria-pressed="true"] {
+  border-color: var(--gold);
 }
 
 #radial:not([hidden]) {
@@ -318,7 +358,7 @@ button {
   gap: 2px;
 }
 
-#lang button, #menu-btn, .menu-actions button {
+#lang button, #menu-btn, #notebook-btn, #reveal-btn, .menu-actions button {
   min-height: 40px;
   padding: 0 12px;
   background: var(--panel);
@@ -338,6 +378,68 @@ button {
 }
 
 /* -------------------------------------------------------------- menu --- */
+dialog {
+  max-width: min(32rem, 92vw);
+  padding: 1.2rem 1.4rem;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid var(--panel-edge);
+  border-radius: 10px;
+}
+
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.6);
+}
+
+dialog h1 {
+  margin: 0 0 0.6rem;
+  font-size: 1.3rem;
+}
+
+#objectives li {
+  margin: 0.35em 0;
+}
+
+#objectives li.done {
+  opacity: 0.55;
+  text-decoration: line-through;
+}
+
+#history-list {
+  max-height: 55vh;
+  overflow-y: auto;
+  padding-left: 1.2em;
+}
+
+#history-list li {
+  margin: 0.3em 0;
+}
+
+#history-list li.empty {
+  list-style: none;
+  opacity: 0.7;
+}
+
+.settings {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.settings label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.settings label.check {
+  justify-content: flex-start;
+}
+
+.settings select, .settings input[type="range"] {
+  min-height: 32px;
+}
+
 #menu {
   max-width: min(32rem, 92vw);
   padding: 1.2rem 1.4rem;
@@ -398,6 +500,10 @@ button:focus-visible {
   overflow: hidden;
   clip-path: inset(50%);
   white-space: nowrap;
+}
+
+.reduce-motion button.verb, .reduce-motion #end, .reduce-motion #dialogue {
+  animation: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

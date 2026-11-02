@@ -78,7 +78,7 @@ test('every key used by the content exists', () => {
     ...Object.values(ROOMS).flatMap(r => r.hotspots.map(h => h.name)),
     ...VERBS.map(v => `verb.${v}`),
     'name.hero', 'name.oren', 'name.nell', ...ITEMS.map(i => `name.${i}`),
-    'ui.endTag', 'ui.endTitle', 'ui.endText',
+    'ui.endTag', 'ui.endTitle', 'ui.endText', 'speaker.hero', 'speaker.oren', 'speaker.nell',
     'save.error.tooLarge', 'save.error.notJson', 'save.error.notSave', 'save.error.version', 'save.error.invalid',
   ];
   for (const key of used) assert.ok(TABLES.en[key], `missing string: ${key}`);
