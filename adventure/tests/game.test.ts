@@ -1,10 +1,11 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { DIALOGUES } from '../src/content/dialogue';
-import { ACTOR_VERBS, INTERACTION_KEYS, ITEM_VERBS, interact } from '../src/content/interactions';
-import { ROOMS } from '../src/content/rooms';
+import { DIALOGUES } from '../src/chapters/ch1/dialogue';
+import { ACTOR_VERBS, INTERACTION_KEYS, ITEM_VERBS, interact } from '../src/chapters/ch1/interactions';
+import { ROOMS } from '../src/chapters/ch1/rooms';
 import { resolveNode } from '../src/engine/dialogue';
-import { FLAGS, ITEMS, applyCommand, newGame } from '../src/engine/state';
+import { FLAGS, ITEMS } from '../src/chapters/ch1/flags';
+import { applyCommand, newGame } from '../src/engine/state';
 import type { Command, GameState, Verb } from '../src/engine/types';
 
 /** Plays commands against the state the way the scene does, returning the spoken lines and commands. */

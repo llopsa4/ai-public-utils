@@ -3,9 +3,8 @@ import { cardDefinition } from '../combat/cards';
 import { EQUIPMENT_SLOTS, deriveStats, withEquipment } from '../combat/equipment';
 import { EQUIPMENT } from '../combat/gear';
 import type { BattleState, BattleStats, EquipmentSlot } from '../combat/types';
-import {
-  ENCOUNTERS, HERO_MAX_HP, LOCKED_SLOTS, MAX_SALVAGE, OREN_SPARES, REWARDS, STARTING_EQUIPMENT, STARTING_OWNED, TONIC, maraProfile,
-} from '../content/combat';
+import { HERO_MAX_HP, LOCKED_SLOTS, MAX_SALVAGE, STARTING_EQUIPMENT, STARTING_OWNED, TONIC, maraProfile, type Reward } from '../content/kit';
+import type { EncounterDefinition } from '../combat/types';
 import type { Bag, GameState, Kit } from './types';
 
 /** Mara's fighting kit and bag at the start of a game (and for saves from before fights existed). */
@@ -17,16 +16,15 @@ export function newBag(): Bag {
 }
 
 /** A free battle for an encounter, from Mara's current kit (the first fight is Kiln Courier's lesson, src/kc). */
-export function startBattle(state: GameState, encounterId: string, seed: number): BattleState {
-  return createBattle(maraProfile(state.kit), ENCOUNTERS[encounterId], seed);
+export function startBattle(state: GameState, encounter: EncounterDefinition, seed: number): BattleState {
+  return createBattle(maraProfile(state.kit), encounter, seed);
 }
 
 /** Ends a fight: health and MP carry over; a win pays out. */
-export function finishBattle(state: GameState, battle: BattleState, encounterId: string): void {
+export function finishBattle(state: GameState, battle: BattleState, reward?: Reward): void {
   state.kit.hp = Math.max(1, battle.hero.hp);
   state.kit.mp = battle.mp;
   if (battle.outcome !== 'victory') return;
-  const reward = REWARDS[encounterId];
   if (!reward) return;
   state.bag.salvage = Math.min(MAX_SALVAGE, state.bag.salvage + reward.salvage);
   for (const [id, n] of Object.entries(reward.materials)) state.bag.materials[id] = (state.bag.materials[id] ?? 0) + n;
@@ -53,8 +51,8 @@ export function buyTonic(bag: Bag): PurchaseResult {
 }
 
 /** Oren's spares join the gear Mara can choose from. */
-export function giveSpares(kit: Kit): void {
-  for (const id of OREN_SPARES) if (!kit.owned.includes(id)) kit.owned.push(id);
+export function giveSpares(kit: Kit, items: readonly string[]): void {
+  for (const id of items) if (!kit.owned.includes(id)) kit.owned.push(id);
 }
 
 export function isLocked(slot: EquipmentSlot): boolean {

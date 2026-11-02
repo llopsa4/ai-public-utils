@@ -1,6 +1,6 @@
 import { ROOMS } from './rooms';
-import { SECRET_FLAGS } from '../engine/state';
-import type { ActorId, Command, GameState, NpcId, Point, Verb } from '../engine/types';
+import { SECRET_FLAGS } from './flags';
+import type { ActorId, Command, GameState, NpcId, Point, Verb } from '../../engine/types';
 
 /**
  * What follows the release: the hatch blows, the fight, Oren's advice and the gear menu, then his

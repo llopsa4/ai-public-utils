@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { sound } from '../audio/sound';
-import { CROWDS, lineKind, lookKey, routineFor, type Carry, type CrowdDef, type ExtraDef, type Mood } from '../content/crowd';
-import { Schedule, type Station, type Step, type Task } from '../engine/crowd';
+import { chapter } from '../chapters';
+import { Schedule, type Station, type Step, type Task, lineKind, lookKey, routineFor, type Carry, type CrowdDef, type ExtraDef, type Mood } from '../engine/crowd';
 import { t } from '../engine/i18n';
 import type { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
@@ -122,7 +122,7 @@ export class Crowd {
   private mood: Mood;
 
   constructor(private readonly host: CrowdHost, mood: Mood) {
-    this.def = CROWDS[host.room.id];
+    this.def = chapter().crowds[host.room.id];
     this.mood = mood;
     createCrowdTextures(host.scene);
     for (const def of this.def.extras) {

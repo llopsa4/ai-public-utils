@@ -1,4 +1,4 @@
-import type { DialogueTree } from '../engine/dialogue';
+import type { DialogueTree } from '../../engine/dialogue';
 
 const CONCERNS = ['toldRepair', 'toldMother', 'toldLeaving', 'toldWhyMe'];
 

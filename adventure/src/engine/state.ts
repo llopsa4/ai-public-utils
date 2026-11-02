@@ -1,37 +1,14 @@
-import { ROOMS, START_ENTRY, START_ROOM } from '../content/rooms';
+import { chapter } from '../chapters';
 import { newBag, newKit, giveSpares } from './kit';
 import type { ActorId, ActorState, Command, GameState } from './types';
-
-export const FLAGS = [
-  // Mara's room
-  'hasGauntlet', 'hasNotebook',
-  // firing house
-  'latchFixed', 'alarm', 'metNell', 'gotBread', 'gotScarf',
-  // regulator gallery
-  'metOren', 'patchFailed', 'toldRepair', 'toldMother', 'toldLeaving', 'toldWhyMe', 'decided', 'procedureKnown', 'kilnCold',
-  // ashways
-  'valveVented', 'sawSweeper',
-  // optional secrets (none gate progress)
-  'secretTally', 'secretChalk', 'secretSign', 'secretRail',
-  // the first fight and what follows it
-  'fought', 'gearChecked', 'metMerchant',
-  // optional: background people Mara has talked to
-  'metHollis', 'metWren', 'metDace', 'metAnsel', 'metPip', 'metBea',
-] as const;
-
-export const SECRET_FLAGS = ['secretTally', 'secretChalk', 'secretSign', 'secretRail'] as const;
-
-/** Set the first time Mara talks to each background person (counted in the notebook). */
-export const MET_FLAGS = ['metHollis', 'metWren', 'metDace', 'metAnsel', 'metPip', 'metBea'] as const;
-
-export const ITEMS = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf'] as const;
 
 const standing = (face: ActorState['face']): ActorState => ({ pose: 'stand', face });
 
 export function newGame(): GameState {
-  const entry = ROOMS[START_ROOM].entries[START_ENTRY];
+  const { start, rooms } = chapter();
+  const entry = rooms[start.room].entries[start.entry];
   return {
-    room: START_ROOM,
+    room: start.room,
     hero: { x: entry.x, y: entry.y, face: entry.face, pose: 'stand' },
     npcs: { oren: standing('left'), nell: standing('right') },
     flags: {},
@@ -60,7 +37,7 @@ export function applyCommand(state: GameState, command: Command): void {
       state.inventory = state.inventory.filter(i => i !== command.item);
       break;
     case 'giveSpares':
-      giveSpares(state.kit);
+      giveSpares(state.kit, chapter().spares);
       break;
     case 'pose':
       actorState(state, command.actor).pose = command.pose;
@@ -77,7 +54,7 @@ export function applyCommand(state: GameState, command: Command): void {
       state.looks[command.id] = Math.min(99, (state.looks[command.id] ?? 0) + 1);
       break;
     case 'room': {
-      const entry = ROOMS[command.room].entries[command.entry];
+      const entry = chapter().rooms[command.room].entries[command.entry];
       state.room = command.room;
       state.hero.x = entry.x;
       state.hero.y = entry.y;

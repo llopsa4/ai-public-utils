@@ -1,4 +1,4 @@
-import type { HotspotDef, Point, Polygon, RoomDef } from '../engine/types';
+import type { HotspotDef, Point, Polygon, RoomDef } from '../../engine/types';
 
 const rect = (x: number, y: number, w: number, h: number): Polygon => [
   { x, y }, { x: x + w, y }, { x: x + w, y: y + h }, { x, y: y + h },

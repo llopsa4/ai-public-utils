@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { CROWDS, EXTRAS, crowdKeys, routineFor } from '../src/content/crowd';
-import { ROOMS } from '../src/content/rooms';
+import { CROWDS, EXTRAS, crowdKeys } from '../src/chapters/ch1/crowd';
+import { routineFor } from '../src/engine/crowd';
+import { ROOMS } from '../src/chapters/ch1/rooms';
 import { Schedule, seeded, tooClose, type Routine } from '../src/engine/crowd';
 import { TABLES } from '../src/engine/i18n';
-import { FLAGS, MET_FLAGS } from '../src/engine/state';
+import { FLAGS, MET_FLAGS } from '../src/chapters/ch1/flags';
 import { WalkArea } from '../src/engine/pathfinding';
 
 const HALL = CROWDS.maraRoom;

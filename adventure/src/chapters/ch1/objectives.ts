@@ -1,4 +1,5 @@
-import type { GameState } from '../engine/types';
+import type { GameState } from '../../engine/types';
+import type { Objective } from '../types';
 
 /**
  * Mara's notebook of goals, derived only from existing story flags (no new story).
@@ -19,7 +20,6 @@ const STEPS: { key: string; done: (s: GameState) => boolean; optional?: boolean 
 
 export const OBJECTIVE_KEYS = STEPS.map(s => s.key);
 
-export interface Objective { key: string; done: boolean; optional: boolean }
 
 /** Completed steps plus the first open required step (optional steps show only while relevant). */
 export function objectives(state: GameState): Objective[] {

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { OBJECTIVE_KEYS, objectives } from '../src/content/objectives';
+import { OBJECTIVE_KEYS, objectives } from '../src/chapters/ch1/objectives';
 import { TABLES } from '../src/engine/i18n';
 import { defaultSettings, lineDuration, parseSettings } from '../src/engine/settings';
 import { newGame } from '../src/engine/state';

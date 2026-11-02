@@ -11,9 +11,9 @@ import { paletteConformity } from '../art/normalize.mjs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PORTRAIT_MOODS, ROOM_FILES } from '../src/content/art';
-import { EXTRAS } from '../src/content/crowd';
-import { ROOMS } from '../src/content/rooms';
-import { ITEMS } from '../src/engine/state';
+import { EXTRAS } from '../src/chapters/ch1/crowd';
+import { ROOMS } from '../src/chapters/ch1/rooms';
+import { ITEMS } from '../src/chapters/ch1/flags';
 import { NPC_IDS, VERBS } from '../src/engine/types';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import { initLanguage } from './engine/i18n';
 import { loadSettings, onSettingsChange, settings } from './engine/settings';
 import { sound } from './audio/sound';
-import { interact } from './content/interactions';
+import { chapter } from './chapters';
 import { BootScene, RoomScene, TitleScene } from './game/scenes';
 import { Session } from './game/session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from './ui/ui';
@@ -53,5 +53,5 @@ onSettingsChange(applyVolume);
 
 // Opt-in inspection hook for testing art and timing: open the game with ?debug.
 if (new URLSearchParams(location.search).has('debug')) {
-  Object.assign(window, { adventure: { game, session, sound, interact } });
+  Object.assign(window, { adventure: { game, session, sound, interact: (...a: Parameters<ReturnType<typeof chapter>['interact']>) => chapter().interact(...a) } });
 }

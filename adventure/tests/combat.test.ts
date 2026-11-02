@@ -2,7 +2,8 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { CARDS, cardAvailability, endTurn, playCard, preview } from '../src/combat/combat';
 import type { BattleState, CardType } from '../src/combat/types';
-import { ENCOUNTERS, HERO_MAX_HP, REWARDS, STARTER_CARDS, TONIC, maraProfile } from '../src/content/combat';
+import { HERO_MAX_HP, STARTER_CARDS, TONIC, maraProfile } from '../src/content/kit';
+import { ENCOUNTERS, REWARDS } from '../src/chapters/ch1/combat';
 import { LESSON_STEPS } from '../src/kc/content/tutorial';
 import { tutorialAtStep } from '../src/kc/game/tutorial';
 import { buyTonic, drinkTonic, equip, finishBattle, newBag, newKit, optionsFor, startBattle, statsWith, validKit } from '../src/engine/kit';
@@ -11,13 +12,13 @@ import { applyCommand, newGame } from '../src/engine/state';
 
 // ----------------------------------------------------------------- the card rules (Kiln Courier's) ---
 function fixture(types: CardType[], extra: Partial<BattleState> = {}): BattleState {
-  const b = startBattle(newGame(), 'hatchScavenger', 1);
+  const b = startBattle(newGame(), ENCOUNTERS.hatchScavenger, 1);
   return { ...b, draw: [], discard: [], hand: types.map((type, i) => ({ type, id: `test-${i}` })), ...extra };
 }
 
 test('a fight starts with the starter deck, full resources and a seeded, reproducible hand', () => {
-  const s = startBattle(newGame(), 'hatchScavenger', 42);
-  assert.deepEqual(s, startBattle(newGame(), 'hatchScavenger', 42));
+  const s = startBattle(newGame(), ENCOUNTERS.hatchScavenger, 42);
+  assert.deepEqual(s, startBattle(newGame(), ENCOUNTERS.hatchScavenger, 42));
   assert.equal(s.hand.length, 5);
   assert.equal(s.draw.length, 7);
   assert.equal(s.hero.hp, HERO_MAX_HP);
@@ -69,9 +70,9 @@ test("the first fight is Kiln Courier's lesson against the Hatch Scavenger, and 
 // ------------------------------------------------------------------------- kit, bag and shop ---
 test('winning pays salvage and a pressure coil; health and MP carry over', () => {
   const s = newGame();
-  const b = { ...startBattle(s, 'hatchScavenger', 3), outcome: 'victory' as const, mp: 6 };
+  const b = { ...startBattle(s, ENCOUNTERS.hatchScavenger, 3), outcome: 'victory' as const, mp: 6 };
   b.hero = { hp: 41, block: 0 };
-  finishBattle(s, b, 'hatchScavenger');
+  finishBattle(s, b, REWARDS.hatchScavenger);
   assert.equal(s.bag.salvage, REWARDS.hatchScavenger.salvage);
   assert.deepEqual(s.bag.materials, { 'pressure-coil': 1 });
   assert.equal(s.kit.hp, 41);
@@ -86,7 +87,7 @@ test('the merchant sells tonics for salvage, up to three; a tonic heals in a fig
   assert.equal(buyTonic(bag), 'full');
   assert.equal(bag.salvage, 17 - 3 * TONIC.price);
   assert.equal(buyTonic({ ...newBag(), salvage: 4 }), 'noSalvage');
-  const hurt = { ...startBattle(newGame(), 'hatchScavenger', 1) };
+  const hurt = { ...startBattle(newGame(), ENCOUNTERS.hatchScavenger, 1) };
   hurt.hero = { hp: 30, block: 0 };
   const healed = drinkTonic(hurt, bag);
   assert.equal(healed.hero.hp, 30 + TONIC.heal);
@@ -109,7 +110,7 @@ test('gear: Oren\'s spares can be worn; the gauntlet stays; stats change as the 
   assert.deepEqual(statsWith(s.kit), { power: 0, defense: 1, speed: 3, maxMp: 10, attackStrain: 0 });
   assert.equal(statsWith(s.kit, 'armor', 'patched-coat').defense, 0);
   // Speed 3 adds a card to the opening hand.
-  assert.equal(startBattle(s, 'hatchScavenger', 1).hand.length, 6);
+  assert.equal(startBattle(s, ENCOUNTERS.hatchScavenger, 1).hand.length, 6);
   assert.ok(validKit(s.kit));
   assert.equal(maraProfile(s.kit).equipment!.armor.id, 'light-armor');
 });

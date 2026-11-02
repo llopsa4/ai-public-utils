@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { OBJECTIVE_KEYS } from '../src/content/objectives';
+import { OBJECTIVE_KEYS } from '../src/chapters/ch1/objectives';
 import { clearAutosave, readAutosave, writeAutosave } from '../src/engine/autosave';
 import { TABLES } from '../src/engine/i18n';
 import { newGame } from '../src/engine/state';

@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ROOMS } from '../src/content/rooms';
+import { ROOMS } from '../src/chapters/ch1/rooms';
 import { pointInPolygon } from '../src/engine/geometry';
 import { COLD_GRADE, NEUTRAL_GRADE, addLight, gradeMatrix, lerpGrade, localLight, mixColor } from '../src/engine/lighting';
 import { defaultSettings, parseSettings } from '../src/engine/settings';

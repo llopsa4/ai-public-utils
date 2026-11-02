@@ -1,4 +1,4 @@
-import type { Facing, Point } from './types';
+import type { ExtraId, Facing, Point } from './types';
 
 /** What a background person does at a station (each maps to a sheet tag and an effect). */
 export type Task = 'stand' | 'work' | 'carry' | 'reach' | 'sit' | 'sweep' | 'tap';
@@ -108,4 +108,74 @@ export function tooClose(stations: Station[], points: Point[], radius: number): 
   const out: { station: string; point: Point }[] = [];
   for (const s of stations) for (const p of points) if (Math.hypot(s.x - p.x, s.y - p.y) < radius) out.push({ station: s.id, point: p });
   return out;
+}
+
+// ------------------------------------------------- crowd content (each chapter fills these in) ---
+
+/** What someone holds: a placeholder sprite made in code (game/Crowd.ts). */
+export type Carry = 'shovel' | 'broom' | 'slate' | 'sack';
+
+/**
+ * The story moment a room's people react to: normal, the alarm (the kiln groaning, before the
+ * shutdown) and the cold kiln.
+ */
+export type Mood = 'warm' | 'alarm' | 'cold';
+
+/** How many lines of a kind someone has per mood (`line.<id>.<kind>`, `<kind>Alarm`, `<kind>Cold` + `.1..n`). */
+export interface LineCounts { warm: number; alarm?: number; cold: number }
+
+export interface ExtraDef {
+  id: ExtraId;
+  /** Sprite sheet (art/src/characters/<sheet>.webp). */
+  sheet: ExtraId;
+  /** Size relative to an adult, for hit boxes and the speech point. */
+  body: number;
+  /** Walking speed relative to Mara. */
+  speed: number;
+  /** Routines per mood; without an `alarm` routine the warm one carries on through the alarm. */
+  routines: { warm: Routine; alarm?: Routine; cold: Routine };
+  /** Leaves for good when the kiln goes cold (and is gone if the room is entered cold). */
+  leavesWhenCold?: boolean;
+  carry?: Carry;
+  /** The hauler only has a sack between the clay pile and a kiln mouth. */
+  carryBetween?: { pick: string; drop: string[] };
+  /** Ring tone of the name in the dialogue panel. */
+  color: string;
+  talk: LineCounts;
+  chat: LineCounts;
+  /** Flag set the first time Mara talks to them (the notebook counts the people met). */
+  met?: string;
+  /** Talking opens the merchant's stall after their line. */
+  shop?: boolean;
+  /** Kids tag along a few steps when Mara walks past. */
+  curious?: boolean;
+  /** How many lines they may say on their way out (`line.<id>.leaving.n`). */
+  leaving?: number;
+}
+
+export interface CrowdDef {
+  stations: Record<string, Station>;
+  exits: Record<string, Exit>;
+  /** Where detours wander (clamped to the floor by the scene). */
+  wander: WanderBox;
+  extras: ExtraDef[];
+}
+
+/** The routine for a mood (the warm one carries on through the alarm if there is no alarm routine). */
+export function routineFor(def: ExtraDef, mood: Mood): Routine {
+  return mood === 'alarm' ? def.routines.alarm ?? def.routines.warm : def.routines[mood];
+}
+
+const SUFFIX: Record<Mood, string> = { warm: '', alarm: 'Alarm', cold: 'Cold' };
+
+/** The string key prefix for a kind of line in a mood, falling back to warm lines when there are none. */
+export function lineKind(def: ExtraDef, kind: 'talk' | 'chat', mood: Mood): { key: string; count: number } {
+  const counts = def[kind];
+  const m = mood === 'alarm' && !counts.alarm ? 'warm' : mood;
+  return { key: `line.${def.id}.${kind}${SUFFIX[m]}`, count: counts[m]! };
+}
+
+export function lookKey(def: ExtraDef, mood: Mood): string {
+  const m = mood === 'alarm' && !def.routines.alarm ? 'warm' : mood;
+  return `line.${def.id}.look${SUFFIX[m]}`;
 }

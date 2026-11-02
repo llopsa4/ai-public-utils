@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { ROOMS } from '../src/content/rooms';
+import { ROOMS } from '../src/chapters/ch1/rooms';
 import { WalkArea } from '../src/engine/pathfinding';
 import type { Point } from '../src/engine/types';
 

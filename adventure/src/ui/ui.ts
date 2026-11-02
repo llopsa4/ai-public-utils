@@ -2,14 +2,12 @@ import { ITEM_ICONS, PORTRAITS, PORTRAIT_MOODS, VERB_ICONS, type Mood } from '..
 import { LANGUAGES, language, onLanguageChange, setLanguage, t, type Language } from '../engine/i18n';
 import { MAX_SAVE_BYTES, parseSave, saveFileName, serializeSave } from '../engine/saveFile';
 import { TEXT_SCALE, lineDuration, onSettingsChange, settings, updateSettings, type Settings } from '../engine/settings';
-import { objectives } from '../content/objectives';
 import { readAutosave } from '../engine/autosave';
-import { MET_FLAGS, SECRET_FLAGS } from '../engine/state';
 import type { GameState, Point, Speaker, Verb } from '../engine/types';
-import { EXTRAS } from '../content/crowd';
+import { chapter } from '../chapters';
 import { sound } from '../audio/sound';
 import { EQUIPMENT } from '../combat/gear';
-import { HERO_MAX_HP, LOCKED_SLOTS, MATERIALS, TONIC, maraProfile } from '../content/combat';
+import { HERO_MAX_HP, LOCKED_SLOTS, MATERIALS, TONIC, maraProfile } from '../content/kit';
 import { buyTonic, equip } from '../engine/kit';
 
 /** World size in logical units; all content coordinates use it. */
@@ -24,7 +22,7 @@ const FLAP_PER_CHAR = 42;
 
 const SPEECH_COLORS: Record<string, string> = {
   hero: '#ffc26b', oren: '#a8dcff', nell: '#c4f29a',
-  ...Object.fromEntries(EXTRAS.map(e => [e.id, e.color])),
+  ...Object.fromEntries(chapter().extras.map(e => [e.id, e.color])),
 };
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
@@ -252,26 +250,26 @@ export class Ui {
   private openNotebook(): void {
     const list = $('objectives');
     list.replaceChildren();
-    for (const o of objectives(this.host.getState())) {
+    for (const o of chapter().objectives(this.host.getState())) {
       const li = document.createElement('li');
       li.textContent = t(o.key) + (o.optional ? ` ${t('ui.optional')}` : '');
       li.classList.toggle('done', o.done);
       list.append(li);
     }
-    const found = SECRET_FLAGS.filter(f => this.host.getState().flags[f]).length;
+    const found = chapter().secretFlags.filter(f => this.host.getState().flags[f]).length;
     const secrets = $('secrets');
     secrets.hidden = found === 0;
-    secrets.textContent = t('ui.secrets', { found: String(found), total: String(SECRET_FLAGS.length) });
-    const met = MET_FLAGS.filter(f => this.host.getState().flags[f]).length;
+    secrets.textContent = t('ui.secrets', { found: String(found), total: String(chapter().secretFlags.length) });
+    const met = chapter().metFlags.filter(f => this.host.getState().flags[f]).length;
     $('met').hidden = met === 0;
-    $('met').textContent = t('ui.met', { found: String(met), total: String(MET_FLAGS.length) });
+    $('met').textContent = t('ui.met', { found: String(met), total: String(chapter().metFlags.length) });
     this.renderHint();
     $<HTMLDialogElement>('notebook').showModal();
   }
 
   /** The first unfinished required goal: the one hints are about. */
   private currentGoal(): string | null {
-    return objectives(this.host.getState()).find(o => !o.done && !o.optional)?.key ?? null;
+    return chapter().objectives(this.host.getState()).find(o => !o.done && !o.optional)?.key ?? null;
   }
 
   /** Hints come in two stages per goal: a nudge, then the plain answer. */

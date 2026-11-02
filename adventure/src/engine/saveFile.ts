@@ -1,7 +1,7 @@
-import { ROOMS } from '../content/rooms';
-import { MATERIALS, TONIC, MAX_SALVAGE } from '../content/combat';
+import { ROOMS } from '../chapters/ch1/rooms';
+import { MATERIALS, TONIC, MAX_SALVAGE } from '../content/kit';
 import { newBag, newKit, validKit } from './kit';
-import { FLAGS, ITEMS } from './state';
+import { FLAGS, ITEMS } from '../chapters/ch1/flags';
 import { NPC_IDS, type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
 
 const SAVE_FORMAT = 'cinderfold-save';

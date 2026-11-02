@@ -1,12 +1,13 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { DIALOGUES } from '../src/content/dialogue';
-import { INTERACTION_KEYS } from '../src/content/interactions';
-import { ROOMS } from '../src/content/rooms';
+import { DIALOGUES } from '../src/chapters/ch1/dialogue';
+import { INTERACTION_KEYS } from '../src/chapters/ch1/interactions';
+import { ROOMS } from '../src/chapters/ch1/rooms';
 import { dialogueKeys } from '../src/engine/dialogue';
 import { LANGUAGES, TABLES, detectLanguage } from '../src/engine/i18n';
 import { MAX_SAVE_BYTES, parseSave, serializeSave } from '../src/engine/saveFile';
-import { ITEMS, newGame } from '../src/engine/state';
+import { ITEMS } from '../src/chapters/ch1/flags';
+import { newGame } from '../src/engine/state';
 import { VERBS } from '../src/engine/types';
 
 test('a save round-trips exactly', () => {

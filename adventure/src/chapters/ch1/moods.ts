@@ -1,4 +1,4 @@
-import type { Mood } from '../game/assets';
+import type { Mood } from '../../game/assets';
 
 /**
  * The face a speaker's portrait shows for a line (default: neutral). Characters whose portrait has

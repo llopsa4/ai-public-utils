@@ -6,10 +6,10 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
-import { CROWDS } from '../src/content/crowd';
-import { ROOMS } from '../src/content/rooms';
+import { CROWDS } from '../src/chapters/ch1/crowd';
+import { ROOMS } from '../src/chapters/ch1/rooms';
 import { TABLES } from '../src/engine/i18n';
-import { ITEMS } from '../src/engine/state';
+import { ITEMS } from '../src/chapters/ch1/flags';
 import type { Point, RoomDef } from '../src/engine/types';
 import { VERBS } from '../src/engine/types';
 import { PORTRAIT_MOODS, ROOM_FILES } from '../src/content/art';

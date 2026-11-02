@@ -1,4 +1,8 @@
-import en from '../content/strings/en.json';
+import game from '../content/strings/en.json';
+import { CHAPTER_STRINGS } from '../chapters/strings';
+
+/** The game's own strings (interface, verbs, saves, the opening) plus every chapter's. */
+const en: Record<string, string> = Object.assign({}, game, ...Object.values(CHAPTER_STRINGS));
 
 /** English only for now. To add a language: add strings/<code>.json and list it here. */
 export const LANGUAGES = ['en'] as const;

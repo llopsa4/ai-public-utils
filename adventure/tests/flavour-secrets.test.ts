@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { interact } from '../src/content/interactions';
-import { ROOMS } from '../src/content/rooms';
+import { interact } from '../src/chapters/ch1/interactions';
+import { ROOMS } from '../src/chapters/ch1/rooms';
 import { parseSave, serializeSave } from '../src/engine/saveFile';
-import { SECRET_FLAGS, applyCommand, newGame } from '../src/engine/state';
+import { SECRET_FLAGS } from '../src/chapters/ch1/flags';
+import { applyCommand, newGame } from '../src/engine/state';
 import type { Command, GameState } from '../src/engine/types';
 
 const lines = (cs: Command[]) => cs.filter(c => c.type === 'say').map(c => (c as { text: string }).text);
@@ -62,7 +63,7 @@ test('version 3 saves (no look counters) still load; bad counters are rejected',
 
 test('portrait strips match their moods, and every mood line exists', async () => {
   const { readFileSync } = await import('node:fs');
-  const { LINE_MOODS } = await import('../src/content/moods');
+  const { LINE_MOODS } = await import('../src/chapters/ch1/moods');
   const { TABLES } = await import('../src/engine/i18n');
   const PORTRAIT_MOODS = { mara: ['neutral', 'worried', 'angry'], oren: ['neutral', 'worried', 'angry'], nell: ['neutral'] };
   for (const [id, moods] of Object.entries(PORTRAIT_MOODS)) {

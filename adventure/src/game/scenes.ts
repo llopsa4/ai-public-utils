@@ -1,16 +1,12 @@
 import Phaser from 'phaser';
-import { DIALOGUES } from '../content/dialogue';
-import { ACTOR_VERBS, ITEM_VERBS, afterRelease, interact } from '../content/interactions';
 import { drinkTonic, finishBattle } from '../engine/kit';
-import { LINE_MOODS } from '../content/moods';
-import { ROOMS } from '../content/rooms';
 import { resolveNode } from '../engine/dialogue';
 import { conditionsHold, pointInPolygon } from '../engine/geometry';
 import { t } from '../engine/i18n';
 import { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
 import { sound } from '../audio/sound';
-import { MET_FLAGS, SECRET_FLAGS, applyCommand } from '../engine/state';
+import { applyCommand } from '../engine/state';
 import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Speaker, Verb } from '../engine/types';
 import { Actor, SHADOW_DEPTH } from './Actor';
 import { Atmosphere, createAtmosphereTextures, highQuality } from './atmosphere';
@@ -18,9 +14,11 @@ import { addLight, localLight, mixColor } from '../engine/lighting';
 import { Props, createParticleTextures } from './props';
 import { Crowd, type Member } from './Crowd';
 import SCAVENGER_SPRITE from '../../art/src/battle/scavenger.png';
-import { ENCOUNTERS, MATERIALS, REWARDS, maraProfile } from '../content/combat';
+import { MATERIALS, maraProfile } from '../content/kit';
 import { RoomSign } from './sign';
-import { CROWDS, EXTRAS, type Mood } from '../content/crowd';
+import type { Mood } from '../engine/crowd';
+import { chapter } from '../chapters';
+import { ambienceFor, crowdMoodFor, guided, heroSheetFor, hushed, musicFor, onEnter, type StoryContext } from '../engine/story';
 import { FOREGROUND_IMAGES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
@@ -127,7 +125,7 @@ export class TitleScene extends Phaser.Scene {
 
   /** The kiln-hall backdrop, and the room the game will open in so it is ready behind the menu. */
   preload(): void {
-    const start = ROOMS[this.session.state.room].background;
+    const start = chapter().rooms[this.session.state.room].background;
     for (const key of new Set(['room-mara', start])) if (!this.textures.exists(key)) this.load.image(key, ROOM_IMAGES[key]);
   }
 
@@ -246,9 +244,10 @@ export class RoomScene extends Phaser.Scene {
 
   /** Loads this room's background and foreground pieces if they are not cached yet. */
   preload(): void {
-    const room = ROOMS[this.session.state.room];
+    const room = chapter().rooms[this.session.state.room];
     const state = this.session.state;
-    if (state.flags.hasGauntlet) queueSheet(this, 'mara-gauntlet');
+    const sheet = heroSheetFor(chapter().story, { state, room, cold: false });
+    if (sheet !== 'mara') queueSheet(this, sheet);
     for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, NPC_SHEETS[a.id]);
     if (!this.textures.exists(room.background)) this.load.image(room.background, ROOM_IMAGES[room.background]);
     for (const p of room.props ?? []) {
@@ -261,7 +260,7 @@ export class RoomScene extends Phaser.Scene {
 
   create(): void {
     const state = this.session.state;
-    this.room = ROOMS[state.room];
+    this.room = chapter().rooms[state.room];
     for (const key of Object.keys(SHEETS)) if (this.textures.exists(key)) createSheetAnims(this, key);
     this.area = new WalkArea(this.room.walkable.outer, this.room.walkable.holes);
     this.actors = new Map();
@@ -306,7 +305,7 @@ export class RoomScene extends Phaser.Scene {
       const s = state.npcs[a.id];
       this.actors.set(a.id, new Actor(this, a.id, NPC_SHEETS[a.id], a.x, a.y, s.face, s.pose, this.room.scale));
     }
-    this.crowd = CROWDS[this.room.id] ? new Crowd({
+    this.crowd = chapter().crowds[this.room.id] ? new Crowd({
       scene: this, room: this.room, area: this.area, props: this.props,
       hero: () => this.hero,
       others: () => [...this.actors.entries()].filter(([id]) => id !== 'hero').map(([, a]) => a.position),
@@ -333,7 +332,7 @@ export class RoomScene extends Phaser.Scene {
     // Mara's lit-gauntlet sheet: loaded in the background, swapped in when it arrives.
     if (!this.textures.exists('mara-gauntlet')) this.preloadGauntletSheet();
     // The kiln hall's people are fetched in the background from the first room on.
-    for (const e of EXTRAS) this.loadLazySheet(e.sheet);
+    for (const e of chapter().extras) this.loadLazySheet(e.sheet);
     for (const [id, actor] of this.actors) if (id !== 'hero') { this.scheduleFidget(actor); this.scheduleGlance(actor); }
     // Voices and work noises where people are about.
     const murmur: Record<string, number> = { maraRoom: 1, firingHouse: 0.55 };
@@ -345,13 +344,12 @@ export class RoomScene extends Phaser.Scene {
     this.session.ui.renderInventory();
     this.cameras.main.fadeIn(this.session.slowFadeIn ? 1800 : FADE_MS, 0, 0, 0);
     this.session.slowFadeIn = false;
-    sound.hush(!!this.session.state.flags.fought);
+    sound.hush(hushed(chapter().story, this.storyContext()));
     if (this.session.arrival) this.walkIn(this.session.arrival);
     else this.session.autosave();
     this.session.arrival = null;
-    // A reload between the release and Oren's send-off picks the sequence up again (the fight
-    // restarts from its beginning).
-    const pending = this.room.id === 'gallery' && this.session.state.flags.kilnCold ? afterRelease(this.session.state.flags) : [];
+    // The chapter's entry scripts (e.g. a sequence picked up again after a reload).
+    const pending = onEnter(chapter().story, this.storyContext());
     if (pending.length) this.time.delayedCall(700, () => void this.runScript(pending));
   }
 
@@ -394,9 +392,10 @@ export class RoomScene extends Phaser.Scene {
     for (const e of Object.values(this.room.entries)) g.fillStyle(0xff40ff, 1).fillCircle(e.x, e.y, 3);
   }
 
-  /** Mara with the gauntlet lit once the cell is fitted (as soon as that sheet has loaded). */
+  /** Mara's sheet for the story so far, as soon as it has loaded. */
   private heroSheet(): string {
-    return this.session.state.flags.hasGauntlet && this.textures.exists('mara-gauntlet') ? 'mara-gauntlet' : 'mara';
+    const sheet = heroSheetFor(chapter().story, this.storyContext());
+    return this.textures.exists(sheet) ? sheet : 'mara';
   }
 
   /** In the tent, the lit-gauntlet sheet loads in the background while the player looks around. */
@@ -440,7 +439,7 @@ export class RoomScene extends Phaser.Scene {
 
     if (item) {
       this.session.selectItem(null);
-      if (target) void this.runScript(interact(this.session.state, 'use', this.targetId(target), item));
+      if (target) void this.runScript(chapter().interact(this.session.state, 'use', this.targetId(target), item));
       else void this.walkTo(at);
       return;
     }
@@ -449,7 +448,7 @@ export class RoomScene extends Phaser.Scene {
       if (this.lastExitClick.id === target.hotspot.id && now - this.lastExitClick.time < 400) {
         ui.closeRadial();
         this.lastExitClick = { id: '', time: 0 };
-        void this.runScript(interact(this.session.state, 'go', target.hotspot.id).filter(c => c.type !== 'walk'));
+        void this.runScript(chapter().interact(this.session.state, 'go', target.hotspot.id).filter(c => c.type !== 'walk'));
         return;
       }
       this.lastExitClick = { id: target.hotspot.id, time: now };
@@ -464,10 +463,10 @@ export class RoomScene extends Phaser.Scene {
   private openTargetRing(target: Target, at: Point): void {
     if (target.kind === 'extra') { this.openExtraRing(target.member, at); return; }
     const id = this.targetId(target);
-    const verbs: Verb[] = target.kind === 'actor' ? ACTOR_VERBS[target.actor.id as ActorId] : target.hotspot.verbs;
+    const verbs: Verb[] = target.kind === 'actor' ? chapter().actorVerbs[target.actor.id as ActorId] : target.hotspot.verbs;
     sound.blip();
     this.session.ui.openRadial(at, this.targetName(target), verbs, verb => {
-      void this.runScript(withHandling(interact(this.session.state, verb, id), verb, id));
+      void this.runScript(withHandling(chapter().interact(this.session.state, verb, id), verb, id));
     });
   }
 
@@ -553,9 +552,9 @@ export class RoomScene extends Phaser.Scene {
     if (this.isBusy()) return;
     sound.blip();
     const at = { x: 70 + index * 46, y: 300 };
-    this.session.ui.openRadial(at, t(`name.${item}`), ITEM_VERBS, verb => {
+    this.session.ui.openRadial(at, t(`name.${item}`), chapter().itemVerbs, verb => {
       if (verb === 'use') this.session.selectItem(item);
-      else void this.runScript(interact(this.session.state, verb, `item:${item}`));
+      else void this.runScript(chapter().interact(this.session.state, verb, `item:${item}`));
     });
   }
 
@@ -653,9 +652,14 @@ export class RoomScene extends Phaser.Scene {
     this.applyTint();
   }
 
-  /** What the room's background people react to: the cold kiln, else the alarm, else an ordinary day. */
+  /** The story's state as the chapter's rules see it (src/engine/story.ts). */
+  private storyContext(): StoryContext {
+    return { state: this.session.state, room: this.room, cold: this.isCold() };
+  }
+
+  /** What the room's background people react to (the chapter's story rules). */
   private crowdMood(): Mood {
-    return this.isCold() ? 'cold' : this.session.state.flags.alarm ? 'alarm' : 'warm';
+    return crowdMoodFor(chapter().story, this.storyContext());
   }
 
   private isCold(): boolean {
@@ -674,14 +678,8 @@ export class RoomScene extends Phaser.Scene {
     this.atmosphere.setCold(cold, animate);
     this.tintScenery();
     this.refreshAmbient(cold, animate);
-    sound.ambience(this.room.id === 'ashways' ? 'wind' : cold ? 'cold' : 'kiln');
-    sound.music(this.musicMood());
-  }
-
-  /** The score: nervous from the fight to the end of the chapter, else the cold kiln or the room's own. */
-  private musicMood(): 'nervous' | 'cold' | 'warm' | 'tension' | 'wind' {
-    if (this.session.state.flags.fought) return 'nervous';
-    return this.isCold() ? 'cold' : this.room.music ?? 'warm';
+    sound.ambience(ambienceFor(chapter().story, this.storyContext()));
+    sound.music(musicFor(chapter().story, this.storyContext()));
   }
 
   private coldTint(): number {
@@ -852,7 +850,7 @@ export class RoomScene extends Phaser.Scene {
   private async say(actorId: Speaker, key: string, at?: Point): Promise<void> {
     const actor = this.actors.get(actorId as ActorId);
     const point = actor?.headPoint() ?? at ?? { x: 320, y: 60 };
-    await this.session.ui.say(actorId, t(key), point, LINE_MOODS[key]);
+    await this.session.ui.say(actorId, t(key), point, chapter().lineMoods[key]);
   }
 
   /** Executes one command. Returns false when the script must stop (room change or the end). */
@@ -882,22 +880,21 @@ export class RoomScene extends Phaser.Scene {
       case 'addItem':
       case 'removeItem':
         if (command.type === 'addItem') sound.pickup();
-        if (command.type === 'setFlag' && command.value && command.flag === 'latchFixed') sound.latch();
-        if (command.type === 'setFlag' && command.value && command.flag === 'valveVented') sound.hiss();
+        const cue = command.type === 'setFlag' && command.value ? chapter().story.flagSounds[command.flag] : undefined;
+        if (cue) sound[cue]();
         const newSecret = command.type === 'setFlag' && command.value && !state.flags[command.flag]
-          && (SECRET_FLAGS as readonly string[]).includes(command.flag);
+          && chapter().secretFlags.includes(command.flag);
         applyCommand(state, command);
-        // The kiln groans and the alarm goes up: the firing house's kids run to Nell.
-        if (command.type === 'setFlag' && command.flag === 'alarm' && command.value) this.crowd?.setMood(this.crowdMood(), true);
-        if (command.type === 'setFlag' && command.value && (MET_FLAGS as readonly string[]).includes(command.flag)) {
-          const who = EXTRAS.find(e => e.met === command.flag);
-          const found = MET_FLAGS.filter(f => state.flags[f]).length;
-          if (who) this.session.ui.toast(t('ui.metFound', { name: t(`speaker.${who.id}`), found: String(found), total: String(MET_FLAGS.length) }));
+        if (command.type === 'setFlag' && command.value && chapter().story.crowdReactsTo.includes(command.flag)) this.crowd?.setMood(this.crowdMood(), true);
+        if (command.type === 'setFlag' && command.value && chapter().metFlags.includes(command.flag)) {
+          const who = chapter().extras.find(e => e.met === command.flag);
+          const found = chapter().metFlags.filter(f => state.flags[f]).length;
+          if (who) this.session.ui.toast(t('ui.metFound', { name: t(`speaker.${who.id}`), found: String(found), total: String(chapter().metFlags.length) }));
         }
         if (newSecret) {
           sound.choose();
-          const found = SECRET_FLAGS.filter(f => state.flags[f]).length;
-          this.session.ui.toast(t('ui.secretFound', { found: String(found), total: String(SECRET_FLAGS.length) }));
+          const found = chapter().secretFlags.filter(f => state.flags[f]).length;
+          this.session.ui.toast(t('ui.secretFound', { found: String(found), total: String(chapter().secretFlags.length) }));
         }
         this.refreshObjects();
         this.session.ui.renderInventory();
@@ -1056,16 +1053,16 @@ export class RoomScene extends Phaser.Scene {
     el.hidden = false;
     this.scene.pause();
     await new Promise<void>(resolve => {
-      const reward = REWARDS[id];
+      const reward = chapter().rewards[id];
       const rewards = reward ? [t('battle.rewardSalvage', { n: String(reward.salvage) }),
         ...Object.entries(reward.materials).map(([m, n]) => t('battle.rewardMaterial', { n: String(n), name: t(MATERIALS[m].name) }))] : [];
       const close = kc.mountBattle(el, {
-        profile: maraProfile(state.kit), guided: !state.flags.fought, encounter: ENCOUNTERS[id], rewards,
+        profile: maraProfile(state.kit), guided: guided(chapter().story, this.storyContext()), encounter: chapter().encounters[id], rewards,
         tonics: () => state.bag.tonics,
         drink: battle => { const next = drinkTonic(battle, state.bag); return next === battle ? null : next; },
         onMenu: () => this.session.ui.openMenu(),
         onWin: battle => {
-          finishBattle(state, battle, id);
+          finishBattle(state, battle, reward);
           this.session.closeBattle = null;
           close();
           el.hidden = true;
@@ -1139,7 +1136,7 @@ export class RoomScene extends Phaser.Scene {
   }
 
   private async runDialogue(id: string): Promise<void> {
-    const tree = DIALOGUES[id];
+    const tree = chapter().dialogues[id];
     const state = this.session.state;
     let nodeId: string | null = tree.start;
     while (nodeId) {
