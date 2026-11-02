@@ -16,7 +16,8 @@ import { Atmosphere, createAtmosphereTextures, highQuality } from './atmosphere'
 import { addLight, localLight, mixColor } from '../engine/lighting';
 import { Props, createParticleTextures } from './props';
 import { Crowd, type Member } from './Crowd';
-import { EXTRAS } from '../content/crowd';
+import { RoomSign } from './sign';
+import { CROWDS, EXTRAS, type Mood } from '../content/crowd';
 import { FOREGROUND_IMAGES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
@@ -129,7 +130,7 @@ export class TitleScene extends Phaser.Scene {
 
   create(): void {
     this.cameras.main.setZoom(ART_SCALE).centerOn(LOGICAL_W / 2, LOGICAL_H / 2);
-    this.add.image(0, 0, 'room-mara').setOrigin(0, 0).setScale(1 / ART_SCALE).setTint(0x6a5a58);
+    this.add.image(0, 0, 'room-mara', '__BASE').setOrigin(0, 0).setScale(1 / ART_SCALE).setTint(0x6a5a58);
     const mara = new Actor(this, 'hero', 'mara', 470, 352, 'left', 'stand', { farY: 0, farScale: 1.45, nearY: 360, nearScale: 1.45 });
     mara.sprite.setTint(0xe8c8a8);
     if (!settings().reducedMotion) {
@@ -216,8 +217,10 @@ export class RoomScene extends Phaser.Scene {
   private ambientCold: boolean | null = null;
   private atmosphere!: Atmosphere;
   private props!: Props;
-  /** Background people (rooms with `crowd`), else null. */
+  /** Background people (rooms in CROWDS), else null. */
   private crowd: Crowd | null = null;
+  /** The room's hanging name board, if it has one. */
+  private sign: RoomSign | null = null;
   /** Last cold state seen, to animate the shutdown when it happens in this room (null until created). */
   private knownCold: boolean | null = null;
   /** Cold factor last applied to the background tint (Low quality). */
@@ -270,10 +273,11 @@ export class RoomScene extends Phaser.Scene {
     this.leaving = false;
 
     this.cameras.main.setZoom(ART_SCALE).centerOn(LOGICAL_W / 2, LOGICAL_H / 2);
-    this.background = this.add.image(0, 0, this.room.background).setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-10000);
+    this.background = this.add.image(0, 0, this.room.background, '__BASE').setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-10000);
     this.atmosphere = new Atmosphere(this, this.room, this.isCold());
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.atmosphere.destroy());
     this.props = new Props(this, this.room, () => this.session.state, () => this.atmosphere.cold);
+    this.sign = this.room.sign ? new RoomSign(this, this.room) : null;
     for (const def of this.room.objects) {
       const sprite = this.add.sprite(def.x, def.y, def.sheet, SHEETS[def.sheet].json.frames[0].filename).setOrigin(0.5, 1).setScale(1 / ART_SCALE).setDepth(def.depth ?? def.y);
       if (def.anim) sprite.play(`${def.sheet}:${def.anim}`);
@@ -294,13 +298,13 @@ export class RoomScene extends Phaser.Scene {
       const s = state.npcs[a.id];
       this.actors.set(a.id, new Actor(this, a.id, NPC_SHEETS[a.id], a.x, a.y, s.face, s.pose, this.room.scale));
     }
-    this.crowd = this.room.crowd ? new Crowd({
+    this.crowd = CROWDS[this.room.id] ? new Crowd({
       scene: this, room: this.room, area: this.area, props: this.props,
       hero: () => this.hero,
       busy: () => this.isBusy(),
       loadSheet: (key, then) => this.loadLazySheet(key, then),
       bubble: (text, at) => this.session.ui.chatter(text, at),
-    }, this.isCold()) : null;
+    }, this.crowdMood()) : null;
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { this.crowd?.destroy(); this.crowd = null; });
     // After the actors exist: refreshObjects also updates the hero's sheet, the cold tint and ambience.
     this.refreshObjects();
@@ -626,6 +630,11 @@ export class RoomScene extends Phaser.Scene {
     this.applyTint();
   }
 
+  /** What the room's background people react to: the cold kiln, else the alarm, else an ordinary day. */
+  private crowdMood(): Mood {
+    return this.isCold() ? 'cold' : this.session.state.flags.alarm ? 'alarm' : 'warm';
+  }
+
   private isCold(): boolean {
     return this.room.coldIf ? conditionsHold(this.session.state, this.room.coldIf) : false;
   }
@@ -638,7 +647,7 @@ export class RoomScene extends Phaser.Scene {
     const cold = this.isCold();
     const animate = this.knownCold === false && cold;
     this.knownCold = cold;
-    if (animate) this.crowd?.chillAll(); else this.crowd?.setCold(cold);
+    this.crowd?.setMood(this.crowdMood(), animate);
     this.atmosphere.setCold(cold, animate);
     this.tintScenery();
     this.refreshAmbient(cold, animate);
@@ -656,7 +665,7 @@ export class RoomScene extends Phaser.Scene {
     if (k === this.tintedCold) return;
     this.tintedCold = k;
     const tint = mixColor(0xffffff, this.coldTint(), k);
-    for (const o of [this.background, ...this.objects.values(), ...this.foreground]) {
+    for (const o of [this.background, ...this.objects.values(), ...this.foreground, ...(this.sign ? [this.sign.image] : [])]) {
       if (k === 0) o.clearTint(); else o.setTint(tint);
     }
   }
@@ -807,6 +816,8 @@ export class RoomScene extends Phaser.Scene {
         const newSecret = command.type === 'setFlag' && command.value && !state.flags[command.flag]
           && (SECRET_FLAGS as readonly string[]).includes(command.flag);
         applyCommand(state, command);
+        // The kiln groans and the alarm goes up: the firing house's kids run to Nell.
+        if (command.type === 'setFlag' && command.flag === 'alarm' && command.value) this.crowd?.setMood(this.crowdMood(), true);
         if (newSecret) {
           sound.choose();
           const found = SECRET_FLAGS.filter(f => state.flags[f]).length;
@@ -827,6 +838,7 @@ export class RoomScene extends Phaser.Scene {
       case 'shake':
         sound.rumble(command.ms);
         if (!this.isCold()) this.props.burst((this.room.ambient?.glows ?? []).filter(g => g.warm));
+        this.sign?.jolt();
         if (!settings().reducedMotion) this.cameras.main.shake(command.ms, 0.004);
         await this.wait(Math.min(command.ms, 400));
         return true;

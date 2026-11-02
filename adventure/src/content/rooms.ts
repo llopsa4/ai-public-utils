@@ -81,6 +81,7 @@ export const ROOMS: Record<string, RoomDef> = {
     foreground: [{ image: 'tent-stool', x: 73, y: 204, depth: 300 }],
     // The cell's flame in the charging cradle, until it goes into the gauntlet.
     props: [{ kind: 'flame', x: 470, y: 230, size: 14, color: 0xffb050, depth: 263, visibleIf: [{ notFlag: 'hasGauntlet' }] }],
+    sign: { x: 420, y: 6, drop: 14, w: 92, h: 20, style: 'wood' },
     ambient: {
       particles: [{ kind: 'dust', x: 440, y: 150, w: 170, h: 180 }],
       glows: [{ x: 596, y: 270, r: 60, color: 0xffa040, warm: true }],
@@ -118,7 +119,7 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     foreground: [{ image: 'hall-left', x: 0, y: 248, depth: 400 }, { image: 'hall-right', x: 552, y: 280, depth: 400 }],
     props: [{ kind: 'swing', image: 'pulley', x: 94, y: 84, pivotX: 0.5, hotspot: 'pulleys' }],
-    crowd: true,
+    sign: { x: 230, y: 48, drop: 14, w: 100, h: 22, style: 'wood' },
     ambient: {
       particles: [{ kind: 'embers', x: 300, y: 150, w: 250, h: 80, warm: true }],
       glows: [
@@ -181,6 +182,7 @@ export const ROOMS: Record<string, RoomDef> = {
       { id: 'nell', x: 292, y: 292 },
     ],
     props: [{ kind: 'bubbles', x: 228, y: 192, w: 22, h: 4, color: 0xf0d090, warm: true }],
+    sign: { x: 440, y: 56, drop: 12, w: 112, h: 22, style: 'wood' },
   },
   gallery: {
     id: 'gallery',
@@ -218,6 +220,7 @@ export const ROOMS: Record<string, RoomDef> = {
       { kind: 'gauge', image: 'gauge-face', x: 180, y: 33.25, length: 12, angle: 36, rest: -128 },
       { kind: 'flame', x: 22, y: 210, size: 12, color: 0xffc060, depth: 9000 },
     ],
+    sign: { x: 476, y: 70, drop: 10, w: 74, h: 50, style: 'iron' },
   },
   ashways: {
     id: 'ashways',
@@ -246,6 +249,7 @@ export const ROOMS: Record<string, RoomDef> = {
       { id: 'sweeper', sheet: 'sweeper', x: 420, y: 274, anim: 'idle', movedTo: { flag: 'valveVented', x: 172, y: 266 }, shadow: 118 },
     ],
     hotspots: ashwaysHotspots,
+    sign: { x: 330, y: 88, drop: 14, w: 100, h: 22, style: 'wood' },
     actors: [],
   },
 };

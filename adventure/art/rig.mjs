@@ -309,7 +309,7 @@ function rigOf(cfg, open) {
 }
 
 /**
- * Background people for the kiln hall: placeholder variants of the three bodies (recoloured
+ * Background people (the kiln-hall crowd, the firing-house kids): placeholder variants of the three bodies (recoloured
  * clothes and skin, another height, painted headgear), with a trimmed frame set and no portraits.
  * Frames: 0 stand, 1 blink, 2-7 walk, 8-9 work (crouched, bobbing), 10 carry, 11 reach, 12 sit.
  */
@@ -319,7 +319,8 @@ const EXTRAS = {
   'extra-hauler': { base: 'mara', height: 224, hue: 0, sat: 0.55, light: 0.7, skin: 0.62, noArm: true, headgear: { kind: 'kerchief', color: [140, 60, 44] } },
   'extra-runner': { base: 'mara', height: 150, hue: 340, sat: 0.65, light: 0.95, skin: 1.05, noArm: true, headgear: { kind: 'cap', color: [70, 84, 104] } },
   'extra-hoist': { base: 'nell', height: 222, hue: 150, sat: 0.35, light: 0.85, skin: 1.12, headgear: { kind: 'kerchief', color: [70, 100, 84] } },
-  'extra-sweeper': { base: 'nell', height: 210, hue: 20, sat: 0.25, light: 0.8, skin: 0.8, headgear: { kind: 'hood', color: [104, 88, 66] } },
+  // A firing-house kid: Nell's body, small, the shield now a board carried like a toy shield.
+  'extra-kid': { base: 'nell', height: 146, hue: 200, sat: 0.55, light: 1.0, skin: 0.9, headgear: { kind: 'cap', color: [120, 70, 50] } },
 };
 const EXTRA_TAGS = [
   ['stand_down', 0, 0], ['stand_side', 0, 0], ['stand_up', 0, 0], ['blink_down', 1, 1], ['blink_side', 1, 1],

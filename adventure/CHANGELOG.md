@@ -1,14 +1,16 @@
 # Changelog
 
-## Unreleased: a working crowd in the kiln hall
+## Unreleased: background people and room names
 
-- Six background people in the kiln hall: Hollis the stoker, Wren the hoist hand, Dace the clay hauler, Mags the sweeper, Pip the runner and old Ansel the tally-keeper.
-- Each walks a routine of stations with random waits and detours, and works there with a pose, a held thing (shovel, broom, slate, sack) and a small effect: sparks at the kiln mouths, dust from the broom, the pulley swinging, chalk taps, scraping.
-- Some leave through the curtain or past the west wall and come back later. They wait if Mara stands in their way, and step aside when she heads to where they are working.
-- Look at them or talk to them: they stop, turn to Mara and say one of a few lines (others once the kiln is cold). Nothing they say changes the story or the save.
+- Every room has its name on a board hanging from a rope (an iron shield-plate in the regulator gallery). The boards sway, jolt when the kiln groans, and take the room's light.
+- Four workers in the kiln hall: Hollis the stoker, Wren the hoist hand, Dace the clay hauler and old Ansel the tally-keeper. Each walks a routine of stations with random waits and detours, and works there with a pose, a held thing (shovel, slate, sack) and a small effect: sparks at the kiln mouths, the pulley swinging, chalk taps, scraping. Dace and Ansel leave and come back now and then.
+- Two kids in the firing house, Pip and Bea (Bea carries a board as a toy shield): they play tag, chalk on the floor, peek into the soup and sit by the hearth. When the alarm goes up they run to Nell and stay by her; once the kiln is cold they huddle by the dead hearth.
+- Everyone waits if Mara stands in their way, and steps aside when she heads to where they are.
+- Look at them or talk to them: they stop, turn to Mara and say one of a few lines, which change with the alarm and the cold. Nothing they say changes the story or the save.
 - They chat now and then in speech bubbles, which are hidden during conversations and kept out of the history.
-- When the kiln goes cold they stop and look at it, then change routine; the stoker, hoist hand and sweeper stay and the other three leave for good.
-- Placeholder art: recoloured, re-heighted variants of Mara, Oren and Nell with painted headgear, built by `art/rig.mjs` and loaded in the background once play starts (WebP, about 340 KB). The total size budget is now 3.6 MB; the first load is unchanged.
+- When the kiln goes cold in front of them, the workers stop and stare at it, then change routine; Dace and Ansel leave for good.
+- Placeholder art: recoloured, re-heighted variants of Mara, Oren and Nell with painted headgear, built by `art/rig.mjs` and loaded in the background once play starts (WebP, about 320 KB). The total size budget is now 3.6 MB.
+- Fix: coming back to a room on High quality showed only a small crop of its background over black (the heat-haze frame had become the image's default frame).
 - Fix: very quiet sounds no longer throw an audio error (a distant footstep could stop a room change).
 
 ## 0.4.0: more polish, still no new story

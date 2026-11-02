@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { sound } from '../audio/sound';
-import { EXTRAS, HALL_EXITS, HALL_STATIONS, HALL_WANDER, type Carry, type ExtraDef } from '../content/crowd';
+import { CROWDS, lineKind, lookKey, routineFor, type Carry, type CrowdDef, type ExtraDef, type Mood } from '../content/crowd';
 import { Schedule, type Station, type Step, type Task } from '../engine/crowd';
 import { t } from '../engine/i18n';
 import type { WalkArea } from '../engine/pathfinding';
@@ -37,8 +37,8 @@ export interface Member {
   held: boolean;
   /** Asked to make room for Mara. */
   vacate: boolean;
-  /** The kiln just went cold: stop and stare, then change routine. */
-  chill: boolean;
+  /** The story moved on (alarm, cold kiln): react, then change routine. */
+  react: Mood | null;
   /** Out of the room for a while (or for good). */
   away: boolean;
   gone: boolean;
@@ -108,12 +108,16 @@ export class Crowd {
   private bubble: { owner: Member; text: string; until: number } | null = null;
   private readonly calm = settings().reducedMotion;
 
-  constructor(private readonly host: CrowdHost, cold: boolean) {
-    this.cold = cold;
+  private readonly def: CrowdDef;
+  private mood: Mood;
+
+  constructor(private readonly host: CrowdHost, mood: Mood) {
+    this.def = CROWDS[host.room.id];
+    this.mood = mood;
     createCrowdTextures(host.scene);
-    for (const def of EXTRAS) {
-      if (cold && def.leavesWhenCold) continue;
-      host.loadSheet(def.sheet, () => { if (this.alive) this.spawn(def, cold); });
+    for (const def of this.def.extras) {
+      if (mood === 'cold' && def.leavesWhenCold) continue;
+      host.loadSheet(def.sheet, () => { if (this.alive) this.spawn(def); });
     }
     this.scheduleChatter();
   }
@@ -136,20 +140,25 @@ export class Crowd {
     return list.find(m => m.actor.hitBox().contains(p.x, p.y)) ?? null;
   }
 
-  private spawn(def: ExtraDef, cold: boolean): void {
+  private get cold(): boolean {
+    return this.mood === 'cold';
+  }
+
+  private spawn(def: ExtraDef): void {
     const scene = this.host.scene;
     const rng = () => Math.random();
-    const schedule = new Schedule(cold ? def.cold : def.warm, HALL_STATIONS, HALL_EXITS, HALL_WANDER, rng);
+    const { stations, exits, wander } = this.def;
+    const schedule = new Schedule(routineFor(def, this.mood), stations, exits, wander, rng);
     // Start at work at a station of the routine, or somewhere on the floor if it's taken.
     const station = this.free(schedule.current) ? schedule.current : null;
-    const at = station ?? this.host.area.clamp({ x: HALL_WANDER.x + Math.random() * HALL_WANDER.w, y: HALL_WANDER.y + Math.random() * HALL_WANDER.h });
+    const at = station ?? this.host.area.clamp({ x: wander.x + Math.random() * wander.w, y: wander.y + Math.random() * wander.h });
     const actor = new Actor(scene, def.id, def.sheet, at.x, at.y, 'down', 'stand', this.host.room.scale, def.body);
     actor.speed = def.speed;
     actor.hitWidth = 0.75;
     actor.sprite.setAlpha(0);
     scene.tweens.add({ targets: actor.sprite, alpha: 1, duration: 500 });
     const member: Member = {
-      def, actor, schedule, target: null, task: null, carrying: false, held: false, vacate: false, chill: false,
+      def, actor, schedule, target: null, task: null, carrying: false, held: false, vacate: false, react: null,
       away: false, gone: false, prop: null, effect: null, talks: 0, last: { x: at.x, y: at.y },
     };
     if (def.carry && def.carry !== 'sack') member.prop = scene.add.image(at.x, at.y, `crowd-${def.carry}`);
@@ -173,7 +182,7 @@ export class Crowd {
     await this.pause(m, firstWait);
     while (this.alive && !m.gone && m.actor.sprite.active) {
       if (m.held) { await this.sleep(150); continue; }
-      if (m.chill) { await this.chilled(m); continue; }
+      if (m.react) { await this.reacting(m); continue; }
       let step: Step = m.schedule.next();
       if (m.vacate) {
         m.vacate = false;
@@ -213,7 +222,8 @@ export class Crowd {
         // Out of the room when the kiln died: some don't come back.
         if (m.def.leavesWhenCold && this.cold) { m.gone = true; return; }
         m.away = false;
-        m.chill = false;
+        m.react = null;
+        m.schedule.change(routineFor(m.def, this.mood));
         m.actor.sprite.setPosition(step.exit.out.x, step.exit.out.y);
         await this.fade(m, 1);
         await m.actor.walk([{ x: step.exit.x, y: step.exit.y }]);
@@ -222,31 +232,45 @@ export class Crowd {
     }
   }
 
-  private cold = false;
-
-  /** The kiln just died in front of everyone: they stop, look at it, then change routine. */
-  chillAll(): void {
-    this.cold = true;
-    for (const m of this.members) if (!m.gone) m.chill = true;
+  /**
+   * The story moved on. With `react` (it happened in front of them) everyone responds first: the
+   * cold kiln is stared at, the alarm sends the kids running to Nell. Otherwise routines just switch.
+   */
+  setMood(mood: Mood, react: boolean): void {
+    if (mood === this.mood) return;
+    this.mood = mood;
+    for (const m of this.members) {
+      if (m.gone) continue;
+      if (react) m.react = mood;
+      else m.schedule.change(routineFor(m.def, mood), mood === 'cold' && !!m.def.leavesWhenCold);
+    }
   }
 
-  private async chilled(m: Member): Promise<void> {
-    m.chill = false;
+  private async reacting(m: Member): Promise<void> {
+    const mood = m.react!;
+    m.react = null;
     if (m.away) return;
     m.actor.stop();
     this.leaveStation(m);
-    m.actor.setFacing('up');
-    await this.sleep(1800 + Math.random() * 1400);
-    m.schedule.change(m.def.cold, !!m.def.leavesWhenCold);
+    if (mood === 'cold') {
+      m.actor.setFacing('up');
+      await this.sleep(1800 + Math.random() * 1400);
+    } else if (mood === 'alarm') {
+      // A startled look up, then a dash.
+      m.actor.setFacing('up');
+      await this.sleep(500 + Math.random() * 400);
+      m.actor.speed = m.def.speed * 1.3;
+    }
+    m.schedule.change(routineFor(m.def, mood), mood === 'cold' && !!m.def.leavesWhenCold);
   }
 
   /** Walks to a point, waiting for Mara if she stands in the way. False if interrupted. */
   private async walk(m: Member, to: Point): Promise<boolean> {
     for (let attempt = 0; attempt < 3; attempt++) {
-      if (!this.alive || m.held || m.chill) return false;
+      if (!this.alive || m.held || m.react) return false;
       const path = this.host.area.findPath(m.actor.position, to);
       if (await m.actor.walk(path)) return true;
-      if (!this.alive || m.held || m.chill || m.vacate) return false;
+      if (!this.alive || m.held || m.react || m.vacate) return false;
       await this.sleep(700 + Math.random() * 600); // blocked by Mara: wait, then try again
     }
     return false;
@@ -256,7 +280,7 @@ export class Crowd {
   private async pause(m: Member, ms: number): Promise<void> {
     const end = this.host.scene.time.now + ms;
     while (this.alive && this.host.scene.time.now < end) {
-      if (m.held || m.chill || m.vacate) return;
+      if (m.held || m.react || m.vacate) return;
       await this.sleep(Math.min(150, end - this.host.scene.time.now));
     }
   }
@@ -291,7 +315,7 @@ export class Crowd {
   private leaveStation(m: Member): void {
     m.effect?.remove();
     m.effect = null;
-    const station = m.target ? HALL_STATIONS[m.target] : null;
+    const station = m.target ? this.def.stations[m.target] : null;
     const { carryBetween } = m.def;
     // The hauler picks a sack up at the pile and puts it down at a kiln mouth.
     if (station && carryBetween) {
@@ -376,28 +400,23 @@ export class Crowd {
 
   /** The next thing this person says to Mara (cycles through their lines). */
   nextLine(m: Member): string {
-    const cold = this.cold;
-    const count = cold ? m.def.talkCold : m.def.talk;
-    const n = (m.talks++ % count) + 1;
-    return `line.${m.def.id}.${cold ? 'talkCold' : 'talk'}.${n}`;
+    const { key, count } = lineKind(m.def, 'talk', this.mood);
+    return `${key}.${(m.talks++ % count) + 1}`;
   }
 
   lookLine(m: Member): string {
-    return `line.${m.def.id}.${this.cold ? 'lookCold' : 'look'}`;
+    return lookKey(m.def, this.mood);
   }
 
   /** Mara is heading somewhere: anyone working right there steps aside. */
   heroHeading(to: Point): void {
     for (const m of this.visible()) {
       if (m.held || !m.target) continue;
-      const s = HALL_STATIONS[m.target];
+      const s = this.def.stations[m.target];
       if (s && Math.hypot(s.x - to.x, s.y - to.y) < VACATE_DISTANCE) m.vacate = true;
     }
   }
 
-  setCold(cold: boolean): void {
-    this.cold = cold;
-  }
 
   // ------------------------------------------------------------ per frame ---
   update(): void {
@@ -459,8 +478,8 @@ export class Crowd {
     const list = this.visible().filter(m => !m.held);
     if (!list.length) return;
     const m = list[Math.floor(Math.random() * list.length)];
-    const count = this.cold ? m.def.chatCold : m.def.chat;
-    const key = `line.${m.def.id}.${this.cold ? 'chatCold' : 'chat'}.${1 + Math.floor(Math.random() * count)}`;
+    const { key: prefix, count } = lineKind(m.def, 'chat', this.mood);
+    const key = `${prefix}.${1 + Math.floor(Math.random() * count)}`;
     this.say(m, t(key));
   }
 

@@ -19,8 +19,8 @@ import extraRunnerJson from '../../art/src/characters/extra-runner.json';
 import extraRunnerPng from '../../art/src/characters/extra-runner.webp';
 import extraHoistJson from '../../art/src/characters/extra-hoist.json';
 import extraHoistPng from '../../art/src/characters/extra-hoist.webp';
-import extraSweeperJson from '../../art/src/characters/extra-sweeper.json';
-import extraSweeperPng from '../../art/src/characters/extra-sweeper.webp';
+import extraKidJson from '../../art/src/characters/extra-kid.json';
+import extraKidPng from '../../art/src/characters/extra-kid.webp';
 import notebookJson from '../../art/src/objects/notebook.json';
 import notebookPng from '../../art/src/objects/notebook.png';
 import pantryDoorJson from '../../art/src/objects/pantry-door.json';
@@ -60,13 +60,13 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   sweeper: { png: sweeperPng, json: sweeperJson },
   valve: { png: valvePng, json: valveJson },
   tent: { png: tentPng, json: tentJson },
-  // The kiln hall's background people (placeholder art; WebP copies of the PNGs, art/webp.mjs).
+  // Background people (kiln hall, firing house) (placeholder art; WebP copies of the PNGs, art/webp.mjs).
   'extra-stoker': { png: extraStokerPng, json: extraStokerJson },
   'extra-tally': { png: extraTallyPng, json: extraTallyJson },
   'extra-hauler': { png: extraHaulerPng, json: extraHaulerJson },
   'extra-runner': { png: extraRunnerPng, json: extraRunnerJson },
   'extra-hoist': { png: extraHoistPng, json: extraHoistJson },
-  'extra-sweeper': { png: extraSweeperPng, json: extraSweeperJson },
+  'extra-kid': { png: extraKidPng, json: extraKidJson },
 };
 
 /** Sheets loaded only when a room needs them (the rest load at boot): saves ~550 KB before the title. */

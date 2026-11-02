@@ -23,7 +23,7 @@ async function enterHall(page: Page, errors: string[], quality: 'high' | 'low' =
   });
   await idle(page);
   // The six sheets arrive in the background; everyone fades in once theirs is ready.
-  await expect.poll(async () => (await snapshot(page)).length, { timeout: 15_000 }).toBe(6);
+  await expect.poll(async () => (await snapshot(page)).length, { timeout: 15_000 }).toBe(4);
 }
 
 test('the kiln hall crowd works, moves about, talks to Mara and reacts when the kiln goes cold', async ({ page }, info) => {
@@ -58,7 +58,7 @@ test('the kiln hall crowd works, moves about, talks to Mara and reacts when the 
   await expect(talk).toBeVisible();
   await talk.click();
   await expect(page.locator('#dialogue-name')).toBeVisible({ timeout: 10_000 });
-  const names = ['Hollis', 'Wren', 'Dace', 'Mags', 'Pip', 'Ansel'];
+  const names = ['Hollis', 'Wren', 'Dace', 'Ansel'];
   await expect.poll(async () => names.includes((await page.locator('#dialogue-name').textContent()) ?? ''), { timeout: 10_000 }).toBeTruthy();
   await page.screenshot({ path: info.outputPath('hall-talk.png') });
   await page.evaluate(() => (window as any).adventure.session.ui.skip());
@@ -66,10 +66,10 @@ test('the kiln hall crowd works, moves about, talks to Mara and reacts when the 
   expect(await page.evaluate(() => (window as any).adventure.session.state.npcs), 'talking to the crowd changes no saved state')
     .toEqual(npcsBefore);
 
-  // The kiln dies in front of them: half of them leave for good.
+  // The kiln dies in front of them: two of them leave for good.
   await page.evaluate(() => (window as any).adventure.session.scene.runScript([{ type: 'setFlag', flag: 'kilnCold', value: true }]));
   // Headless Chromium without a GPU can run the game at a few frames per second, and game timers slow with it.
-  await expect.poll(async () => (await snapshot(page)).filter(m => m.gone).length, { timeout: 120_000 }).toBe(3);
+  await expect.poll(async () => (await snapshot(page)).filter(m => m.gone).length, { timeout: 120_000 }).toBe(2);
   await page.screenshot({ path: info.outputPath('hall-cold.png') });
   expect(errors, errors.join('\n')).toEqual([]);
 });
@@ -89,8 +89,52 @@ test('entering the hall after the kiln died: only the ones who stayed are there'
     s.replaceState(st);
   });
   await idle(page);
-  await expect.poll(async () => (await snapshot(page)).length, { timeout: 15_000 }).toBe(3);
+  await expect.poll(async () => (await snapshot(page)).length, { timeout: 15_000 }).toBe(2);
   await page.waitForTimeout(3000);
-  expect((await snapshot(page)).map(m => m.id).sort()).toEqual(['extra-hoist', 'extra-stoker', 'extra-sweeper']);
+  expect((await snapshot(page)).map(m => m.id).sort()).toEqual(['extra-hoist', 'extra-stoker']);
+  expect(errors, errors.join('\n')).toEqual([]);
+});
+
+test('two kids play in the firing house and run to Nell when the alarm goes up', async ({ page }) => {
+  const errors: string[] = [];
+  await page.addInitScript(() => localStorage.setItem('cinderfold.settings', JSON.stringify({ visualQuality: 'high' })));
+  await open(page, errors, { clear: false });
+  await page.getByRole('button', { name: 'New game' }).click();
+  await idle(page);
+  await page.evaluate(() => {
+    const s = (window as any).adventure.session;
+    const st = structuredClone(s.state);
+    st.room = 'firingHouse';
+    st.hero = { x: 600, y: 330, face: 'left', pose: 'stand' };
+    st.flags = { hasGauntlet: true, hasNotebook: true, latchFixed: true };
+    s.replaceState(st);
+  });
+  await idle(page);
+  await expect.poll(async () => (await snapshot(page)).map(m => m.id).sort(), { timeout: 15_000 }).toEqual(['extra-kid', 'extra-runner']);
+  await page.evaluate(() => (window as any).adventure.session.scene.runScript([{ type: 'setFlag', flag: 'alarm', value: true }]));
+  const nearNell = async () => (await snapshot(page)).filter(m => !m.walking && Math.hypot(m.x - 292, m.y - 292) < 40).length;
+  await expect.poll(nearNell, { timeout: 120_000 }).toBe(2);
+  expect(errors, errors.join('\n')).toEqual([]);
+});
+
+test('coming back to a room shows its whole background (High quality)', async ({ page }) => {
+  const errors: string[] = [];
+  await page.addInitScript(() => localStorage.setItem('cinderfold.settings', JSON.stringify({ visualQuality: 'high' })));
+  await open(page, errors, { clear: false });
+  await page.getByRole('button', { name: 'New game' }).click();
+  await idle(page);
+  const frame = () => page.evaluate(() => (window as any).adventure.session.scene.background.frame.name);
+  for (const room of ['maraRoom', 'firingHouse', 'tent', 'maraRoom', 'firingHouse', 'tent']) {
+    await page.evaluate(r => {
+      const s = (window as any).adventure.session;
+      const st = structuredClone(s.state);
+      st.room = r;
+      st.hero = { x: 400, y: 320, face: 'left', pose: 'stand' };
+      st.flags = { hasGauntlet: true, hasNotebook: true };
+      s.replaceState(st);
+    }, room);
+    await idle(page);
+    expect(await frame(), `${room} background`).toBe('__BASE');
+  }
   expect(errors, errors.join('\n')).toEqual([]);
 });

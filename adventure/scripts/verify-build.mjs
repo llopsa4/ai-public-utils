@@ -29,8 +29,8 @@ for (const room of ['tent', 'mara-room', 'firing-house', 'gallery', 'ashways', '
   assert.ok(has(room, 'webp'), `missing WebP: ${room}`);
   if (room !== 'tent') assert.ok(!has(room, 'png'), `PNG copy of ${room} shipped`);
 }
-// The kiln hall's background people (placeholders) ship as WebP only.
-for (const extra of ['extra-stoker', 'extra-tally', 'extra-hauler', 'extra-runner', 'extra-hoist', 'extra-sweeper']) {
+// Background people (placeholders) ship as WebP only.
+for (const extra of ['extra-stoker', 'extra-tally', 'extra-hauler', 'extra-runner', 'extra-hoist', 'extra-kid']) {
   assert.ok(has(extra, 'webp'), `missing WebP: ${extra}`);
   assert.ok(!has(extra, 'png'), `PNG copy of ${extra} shipped`);
 }

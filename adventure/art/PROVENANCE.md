@@ -27,10 +27,10 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 | `characters/mara.*` | `hero.png` | `rig.mjs` | as above with the gauntlet's ember glow painted dark (unpowered) |
 | `characters/oren.*`, `portraits/oren.png` | `opening/oren.png` | `rig.mjs` | cutout rig, painted blink, fidget (gauge lifted); 6-frame portrait strip as for Mara |
 | `characters/nell.*`, `portraits/nell.png` | `opening/iven.png` (used for the neighbour Nell) | `rig.mjs` | cutout rig, painted blink; the shield moves with the upper body; 2-frame portrait strip (mouth closed and open, no moods) |
-| `characters/extra-*.png/.json/.webp` (kiln hall background people, placeholders) | `hero.png`, `opening/oren.png`, `opening/iven.png` | `rig.mjs` (`EXTRAS`) | the same cutout rig with every frame walking; clothes hue-rotated and desaturated, pale plates turned to leather, skin tone scaled, painted cap / hood / kerchief, Mara's gauntlet arm removed; 13 frames, 64 colours; WebP copy is what ships |
+| `characters/extra-*.png/.json/.webp` (background people in the kiln hall and firing house, placeholders) | `hero.png`, `opening/oren.png`, `opening/iven.png` | `rig.mjs` (`EXTRAS`) | the same cutout rig with every frame walking; clothes hue-rotated and desaturated, pale plates turned to leather, skin tone scaled, painted cap / hood / kerchief, Mara's gauntlet arm removed; 13 frames, 64 colours; WebP copy is what ships |
 | `icons/*.png` | — | `icons.mjs` | drawn 24×24 action-ring icons |
 
 All outputs are palette-indexed PNGs (`art/png.mjs`, upng-js).
 Room backgrounds, foreground cut-outs, props and the background people's sheets are also written as WebP (`art/webp.mjs`, sharp 0.35, which bundles libvips under the LGPL-3.0); the game loads the WebP copies.
 
-The interface font is Zilla Slab (Mozilla / Typotheque), SIL Open Font License 1.1, bundled from `@fontsource/zilla-slab` (Latin subset). The interface frames, rivets, toggles and icons are drawn in CSS and inline SVG.
+The interface font is Zilla Slab (Mozilla / Typotheque), SIL Open Font License 1.1, bundled from `@fontsource/zilla-slab` (Latin subset). The interface frames, rivets, toggles and icons are drawn in CSS and inline SVG. The room name boards are painted at runtime on a canvas (`src/game/sign.ts`).

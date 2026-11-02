@@ -77,6 +77,7 @@ test('every key used by the content exists', () => {
     ...Object.values(DIALOGUES).flatMap(dialogueKeys),
     ...Object.values(ROOMS).flatMap(r => r.hotspots.map(h => h.name)),
     ...VERBS.map(v => `verb.${v}`),
+    ...Object.values(ROOMS).filter(r => r.sign).map(r => `room.${r.id}`),
     'name.hero', 'name.oren', 'name.nell', ...ITEMS.map(i => `name.${i}`),
     'ui.endTag', 'ui.endTitle', 'ui.endText', 'speaker.hero', 'speaker.oren', 'speaker.nell',
     'save.error.tooLarge', 'save.error.notJson', 'save.error.notSave', 'save.error.version', 'save.error.invalid',

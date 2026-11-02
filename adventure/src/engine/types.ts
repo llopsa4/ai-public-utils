@@ -107,8 +107,11 @@ export interface RoomDef {
   look?: RoomLook;
   /** Animated set pieces: gauge needle, bubbles, swinging hoist, lantern flames. */
   props?: PropDef[];
-  /** Background people working in the room (see content/crowd.ts). */
-  crowd?: boolean;
+  /**
+   * The room's name board (text `room.<id>`), hung from a hook at (x, y): a rope `drop` long, then
+   * a board `w` by `h` (world units), a wooden plank or an iron shield-plate. Decoration only.
+   */
+  sign?: { x: number; y: number; drop: number; w: number; h: number; style: 'wood' | 'iron'; depth?: number };
   /** When these hold the room is drawn with the cold tint (kiln shut down). */
   coldIf?: Condition[];
   entries: Record<string, { x: number; y: number; face: Facing }>;
