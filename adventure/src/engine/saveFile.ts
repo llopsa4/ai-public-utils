@@ -3,8 +3,10 @@ import { FLAGS, ITEMS } from './state';
 import { NPC_IDS, type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
 
 const SAVE_FORMAT = 'cinderfold-save';
-/** Version 3: Mara's tent is the starting room. */
-const SAVE_VERSION = 3;
+/** Version 4: look counters (cycling lines) and secret flags. Version 3 saves still load. */
+const SAVE_VERSION = 4;
+const READABLE_VERSIONS = [3, 4];
+const MAX_LOOK_KEYS = 64;
 export const MAX_SAVE_BYTES = 64 * 1024;
 
 const FACINGS: Facing[] = ['down', 'up', 'left', 'right'];
@@ -38,7 +40,7 @@ export function parseSave(text: string): ImportResult {
   let data: unknown;
   try { data = JSON.parse(text); } catch { return { ok: false, error: 'save.error.notJson' }; }
   if (!isObject(data) || data.format !== SAVE_FORMAT) return { ok: false, error: 'save.error.notSave' };
-  if (data.version !== SAVE_VERSION) return { ok: false, error: 'save.error.version' };
+  if (!READABLE_VERSIONS.includes(data.version as number)) return { ok: false, error: 'save.error.version' };
   const s = data.state;
   const invalid: ImportResult = { ok: false, error: 'save.error.invalid' };
   if (!isObject(s)) return invalid;
@@ -74,5 +76,15 @@ export function parseSave(text: string): ImportResult {
     inventory.push(item);
   }
 
-  return { ok: true, state: { room: s.room, hero: { x: hero.x, y: hero.y, ...heroPose }, npcs, flags, inventory } };
+  // Look counters: absent in version 3 saves.
+  const looks: Record<string, number> = {};
+  if (s.looks !== undefined) {
+    if (!isObject(s.looks) || Object.keys(s.looks).length > MAX_LOOK_KEYS) return invalid;
+    for (const [id, n] of Object.entries(s.looks)) {
+      if (!/^[\w:]{1,40}$/.test(id) || typeof n !== 'number' || !Number.isInteger(n) || n < 0 || n > 99) return invalid;
+      looks[id] = n;
+    }
+  }
+
+  return { ok: true, state: { room: s.room, hero: { x: hero.x, y: hero.y, ...heroPose }, npcs, flags, inventory, looks } };
 }

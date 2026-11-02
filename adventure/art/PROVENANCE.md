@@ -21,10 +21,10 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 | `items/regulator.png` | `opening/regulator-gallery.png` | `pixelate.mjs` | circular mask, 64×64 |
 | `items/bread.png` | `opening/cinderfold.png` (bread basket) | `pixelate.mjs` | mask, 64×64 |
 | `items/scarf.png` | `opening/iven.png` (orange scarf) | `pixelate.mjs` | colour mask, 64×64 |
-| `characters/mara-gauntlet.*`, `portraits/mara.png` | `hero.png` | `rig.mjs` | cutout rig (hips and knees: six-frame walk, crouch, lie down), painted blink, 112 colours |
+| `characters/mara-gauntlet.*`, `portraits/mara.png` | `hero.png` | `rig.mjs` | cutout rig (hips and knees: six-frame walk, crouch, lie down), painted blink, 112 colours; portrait strip of 6 frames (neutral, worried, angry, each with the mouth closed and painted open; moods are brow warps) |
 | `characters/mara.*` | `hero.png` | `rig.mjs` | as above with the gauntlet's ember glow painted dark (unpowered) |
-| `characters/oren.*`, `portraits/oren.png` | `opening/oren.png` | `rig.mjs` | cutout rig, painted blink, fidget (gauge lifted) |
-| `characters/nell.*`, `portraits/nell.png` | `opening/iven.png` (used for the neighbour Nell) | `rig.mjs` | cutout rig, painted blink; the shield moves with the upper body |
+| `characters/oren.*`, `portraits/oren.png` | `opening/oren.png` | `rig.mjs` | cutout rig, painted blink, fidget (gauge lifted); 6-frame portrait strip as for Mara |
+| `characters/nell.*`, `portraits/nell.png` | `opening/iven.png` (used for the neighbour Nell) | `rig.mjs` | cutout rig, painted blink; the shield moves with the upper body; 2-frame portrait strip (mouth closed and open, no moods) |
 | `icons/*.png` | — | `icons.mjs` | drawn 24×24 action-ring icons |
 
 All outputs are palette-indexed PNGs (`art/png.mjs`, upng-js).

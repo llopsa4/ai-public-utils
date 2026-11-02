@@ -10,7 +10,8 @@ Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 - **Act:** click or tap a person or object to open the action ring, then choose an action (Look at, Open, Close, Pick up, Use, Talk to, Go to). Arrow keys move around the ring and Esc closes it.
 - **Satchel:** click an item for Look at / Use. Use carries it, so you then click what to use it on. Right-click or Esc puts it back.
 - **Poses:** click Mara, Oren or Nell for Crouch, Lie down and Stand up.
-- **Talk:** choose a reply with the mouse or the number keys. Lines appear in the panel at the bottom with the speaker's portrait. Click to skip a line.
+- **Talk:** choose a reply with the mouse or the number keys. Lines appear in the panel at the bottom with the speaker's portrait, which talks and shows a mood (worried, angry) on some lines. Click to skip a line.
+- **Explore:** looking at something again often gets a different line, and four small secrets are hidden around Cinderfold (the notebook counts the ones you've found).
 - **Labels:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
 - **Exits:** double-click a doorway to go straight through.
 - **Menu:** saves, **History** (everything said so far), **Settings** (text speed, volume, mute, auto-advance, reduced motion) and **Title screen**.

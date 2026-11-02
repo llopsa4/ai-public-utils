@@ -6,8 +6,8 @@
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#120d14">
   <title>Cinderfold</title>
-  <script type="module" crossorigin src="./build/index-BV2hsd3b.js"></script>
-  <link rel="stylesheet" crossorigin href="./build/index-BLcTBlMj.css">
+  <script type="module" crossorigin src="./build/index-DDAWLZrI.js"></script>
+  <link rel="stylesheet" crossorigin href="./build/index-BYxOzmN1.css">
 </head>
 <body>
   <main id="app">
@@ -17,7 +17,7 @@
         <div id="hover" hidden></div>
         <div id="labels" hidden></div>
         <section id="dialogue" hidden>
-          <img id="dialogue-portrait" alt="">
+          <div id="dialogue-portrait" aria-hidden="true"></div>
           <div class="dialogue-text">
             <p id="dialogue-name"></p>
             <p id="dialogue-line"></p>
@@ -76,6 +76,7 @@
   <dialog id="notebook">
     <h1 data-i18n="ui.notebookTitle">Mara's notebook</h1>
     <ol id="objectives"></ol>
+    <p id="secrets" class="secrets" hidden></p>
     <div id="hint-box">
       <p id="hint-text" class="hint" hidden></p>
       <button id="hint-btn" type="button" data-i18n="ui.hint">Hint</button>

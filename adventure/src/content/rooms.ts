@@ -22,6 +22,7 @@ const tentHotspots: HotspotDef[] = [
 
 // Kiln hall outside the tent (Kiln Courier's kiln-hall illustration).
 const maraRoomHotspots: HotspotDef[] = [
+  { id: 'tally', name: 'name.tally', polygon: rect(8, 104, 52, 92), verbs: ['look'], walkTo: pt(62, 252), face: 'up', secret: true },
   { id: 'toTent', name: 'name.toTent', polygon: rect(195, 174, 100, 72), verbs: ['look', 'go'], walkTo: pt(245, 264), face: 'up' },
   { id: 'niche', name: 'name.niche', polygon: rect(296, 148, 248, 84), verbs: ['look', 'use'], walkTo: pt(420, 244), face: 'up' },
   { id: 'pulleys', name: 'name.pulleys', polygon: rect(66, 30, 76, 136), verbs: ['look', 'use'], walkTo: pt(118, 250), face: 'up' },
@@ -31,6 +32,8 @@ const maraRoomHotspots: HotspotDef[] = [
 ];
 
 const firingHouseHotspots: HotspotDef[] = [
+  { id: 'chalk', name: 'name.chalk', polygon: rect(236, 122, 46, 28), verbs: ['look'], walkTo: pt(262, 286), face: 'up', secret: true },
+  { id: 'sign', name: 'name.sign', polygon: rect(312, 46, 26, 28), verbs: ['look'], secret: true },
   { id: 'pantryDoor', name: 'name.pantryDoor', polygon: rect(434, 150, 42, 74), verbs: ['look', 'open', 'use'], walkTo: pt(455, 248), face: 'up' },
   { id: 'soup', name: 'name.soup', polygon: rect(216, 186, 80, 30), verbs: ['look', 'take', 'use'], walkTo: pt(262, 286), face: 'up' },
   { id: 'shoes', name: 'name.shoes', polygon: rect(18, 34, 150, 160), verbs: ['look', 'take'] },
@@ -41,6 +44,7 @@ const firingHouseHotspots: HotspotDef[] = [
 ];
 
 const galleryHotspots: HotspotDef[] = [
+  { id: 'railNames', name: 'name.railNames', polygon: rect(306, 206, 40, 62), verbs: ['look'], walkTo: pt(400, 296), face: 'left', secret: true },
   { id: 'gauge', name: 'name.gauge', polygon: rect(150, 6, 54, 54), verbs: ['look', 'use'] },
   { id: 'regulator', name: 'name.regulator', polygon: rect(186, 78, 156, 146), verbs: ['look', 'use', 'take', 'open'], walkTo: pt(404, 290), face: 'left' },
   { id: 'logbook', name: 'name.logbook', polygon: rect(118, 262, 164, 52), verbs: ['look', 'take'] },

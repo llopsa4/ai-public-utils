@@ -108,7 +108,12 @@ html, body {
   min-width: 56px;
   aspect-ratio: 1;
   border-radius: 6px;
-  background: radial-gradient(circle at 50% 35%, #4a2c1c, #140c0c);
+  background-color: #2a1812;
+  background-repeat: no-repeat;
+}
+
+#dialogue-portrait[hidden] {
+  display: none;
 }
 
 #dialogue .dialogue-text {
@@ -370,6 +375,16 @@ button.verb:hover, button.verb:focus-visible {
 
 #app.on-title #bar > :not(#mute-btn) {
   visibility: hidden;
+}
+
+.secrets {
+  margin: 0.4rem 0 0;
+  font-size: 0.9em;
+  opacity: 0.8;
+}
+
+.secrets[hidden] {
+  display: none;
 }
 
 #hint-box {

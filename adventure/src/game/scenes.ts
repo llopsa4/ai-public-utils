@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { DIALOGUES } from '../content/dialogue';
 import { ACTOR_VERBS, ITEM_VERBS, interact } from '../content/interactions';
+import { LINE_MOODS } from '../content/moods';
 import { ROOMS } from '../content/rooms';
 import { resolveNode } from '../engine/dialogue';
 import { conditionsHold, pointInPolygon } from '../engine/geometry';
@@ -8,7 +9,7 @@ import { t } from '../engine/i18n';
 import { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
 import { sound } from '../audio/sound';
-import { applyCommand } from '../engine/state';
+import { SECRET_FLAGS, applyCommand } from '../engine/state';
 import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Verb } from '../engine/types';
 import { Actor } from './Actor';
 import { FOREGROUND_IMAGES, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
@@ -292,7 +293,7 @@ export class RoomScene extends Phaser.Scene {
   hotspotLabels(): { text: string; x: number; y: number }[] {
     const state = this.session.state;
     const labels = this.room.hotspots
-      .filter(h => conditionsHold(state, h.visibleIf))
+      .filter(h => !h.secret && conditionsHold(state, h.visibleIf))
       .map(h => {
         const xs = h.polygon.map(p => p.x), ys = h.polygon.map(p => p.y);
         return { text: t(h.name), x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 };
@@ -488,7 +489,7 @@ export class RoomScene extends Phaser.Scene {
   private async say(actorId: ActorId, key: string, at?: Point): Promise<void> {
     const actor = this.actors.get(actorId);
     const point = actor?.headPoint() ?? at ?? { x: 320, y: 60 };
-    await this.session.ui.say(actorId, t(key), point);
+    await this.session.ui.say(actorId, t(key), point, LINE_MOODS[key]);
   }
 
   /** Executes one command. Returns false when the script must stop (room change or the end). */
@@ -519,9 +520,19 @@ export class RoomScene extends Phaser.Scene {
         if (command.type === 'addItem') sound.pickup();
         if (command.type === 'setFlag' && command.value && command.flag === 'latchFixed') sound.latch();
         if (command.type === 'setFlag' && command.value && command.flag === 'valveVented') sound.hiss();
+        const newSecret = command.type === 'setFlag' && command.value && !state.flags[command.flag]
+          && (SECRET_FLAGS as readonly string[]).includes(command.flag);
         applyCommand(state, command);
+        if (newSecret) {
+          sound.choose();
+          const found = SECRET_FLAGS.filter(f => state.flags[f]).length;
+          this.session.ui.toast(t('ui.secretFound', { found: String(found), total: String(SECRET_FLAGS.length) }));
+        }
         this.refreshObjects();
         this.session.ui.renderInventory();
+        return true;
+      case 'looked':
+        applyCommand(state, command);
         return true;
       case 'wait':
         await this.wait(command.ms);

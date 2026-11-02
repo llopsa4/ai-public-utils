@@ -33,6 +33,8 @@ export interface HotspotDef {
   walkTo?: Point;
   face?: Facing;
   visibleIf?: Condition[];
+  /** Optional secret: not shown by the Space / eye-button labels, only found by exploring. */
+  secret?: boolean;
 }
 
 export interface ObjectDef {
@@ -108,6 +110,8 @@ export interface GameState {
   npcs: Record<NpcId, ActorState>;
   flags: Record<string, boolean>;
   inventory: string[];
+  /** How many times each target was looked at (repeated looks cycle through its lines). */
+  looks: Record<string, number>;
 }
 
 /** One step of a scripted interaction. The scene plays them in order. */
@@ -125,4 +129,6 @@ export type Command =
   | { type: 'wait'; ms: number }
   | { type: 'shake'; ms: number }
   | { type: 'moveObject'; id: string; x: number; y: number; ms: number }
+  /** Counts a look at a target, so repeated looks cycle through their lines. */
+  | { type: 'looked'; id: string }
   | { type: 'end' };

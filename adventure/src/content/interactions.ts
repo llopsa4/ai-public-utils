@@ -1,4 +1,5 @@
 import { ROOMS } from './rooms';
+import { SECRET_FLAGS } from '../engine/state';
 import type { ActorId, Command, GameState, NpcId, Point, Verb } from '../engine/types';
 
 /** Verbs offered for the characters (hotspot verbs live in rooms.ts). */
@@ -36,8 +37,30 @@ function toNpc(id: NpcId): Command[] {
   return [{ type: 'walk', to: s.at, face: s.face }, { type: 'face', actor: id, face: s.npcFace }];
 }
 
+/** Look lines with a second and third variant (`<key>.2`, `<key>.3`); repeated looks cycle through them. */
+const VARIED_LOOKS = [
+  'line.rackLook', 'line.notebookOnBench', 'line.jarLook', 'line.workbenchLook', 'line.stoolLook', 'line.drumLook', 'line.tentFlapLook',
+  'line.toTentLook', 'line.nicheLook', 'line.pulleysLook', 'line.jarsLook', 'line.cartLook', 'line.roomCurtainLook',
+  'line.latchLook', 'line.soupLook', 'line.shoesLook', 'line.hearthLook', 'line.stairsLook', 'line.gateLook', 'line.toRoomLook',
+  'line.regulatorLook', 'line.gaugeLook', 'line.logbookLook', 'line.lanternLook', 'line.galleryStairsLook',
+  'line.valveLook', 'line.passageLook', 'line.pipesLook', 'line.wayBackLook',
+  'line.heroLook', 'line.orenLook', 'line.nellLook',
+];
+const VARIANT_KEYS = VARIED_LOOKS.flatMap(k => [`${k}.2`, `${k}.3`]);
+
+/** Items with their own reply when used on something that doesn't take them. */
+const ITEM_FAILS = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf'];
+
+/** Secrets: looking at them for the first time marks them found. */
+const SECRETS: Record<string, { flag: (typeof SECRET_FLAGS)[number]; line: string; again: string }> = {
+  tally: { flag: 'secretTally', line: 'line.secretTally', again: 'line.secretTallyAgain' },
+  chalk: { flag: 'secretChalk', line: 'line.secretChalk', again: 'line.secretChalkAgain' },
+  sign: { flag: 'secretSign', line: 'line.secretSign', again: 'line.secretSignAgain' },
+  railNames: { flag: 'secretRail', line: 'line.secretRail', again: 'line.secretRailAgain' },
+};
+
 function fallback(verb: Verb, item?: string): Command[] {
-  if (item) return [say('line.useFails')];
+  if (item) return [say(ITEM_FAILS.includes(item) ? `line.useFails.${item}` : 'line.useFails')];
   if (verb === 'look') return [say('line.nothingSpecial')];
   return [say('line.cannot')];
 }
@@ -48,7 +71,28 @@ function fallback(verb: Verb, item?: string): Command[] {
  * Targets are hotspot ids, character ids, or `item:<id>` for things in the inventory.
  */
 export function interact(state: GameState, verb: Verb, target: string, item?: string): Command[] {
+  const commands = resolve(state, verb, target, item);
+  return verb === 'look' && !item ? cycleLook(state, target, commands) : commands;
+}
+
+/** Swaps a varied look line for the next variant and counts the look. */
+function cycleLook(state: GameState, target: string, commands: Command[]): Command[] {
+  const i = commands.findIndex(c => c.type === 'say' && VARIED_LOOKS.includes(c.text));
+  if (i < 0) return commands;
+  const line = commands[i] as Extract<Command, { type: 'say' }>;
+  const n = (state.looks[target] ?? 0) % 3;
+  const text = n === 0 ? line.text : `${line.text}.${n + 1}`;
+  return [...commands.slice(0, i), { ...line, text }, ...commands.slice(i + 1), { type: 'looked', id: target }];
+}
+
+function resolve(state: GameState, verb: Verb, target: string, item?: string): Command[] {
   const f = state.flags;
+  const secret = SECRETS[target];
+  if (secret) {
+    if (item || verb !== 'look') return fallback(verb, item);
+    if (f[secret.flag]) return [say(secret.again)];
+    return [...approach(state, target), say(secret.line), flag(secret.flag)];
+  }
   const has = (i: string) => state.inventory.includes(i);
 
   switch (target) {
@@ -393,4 +437,7 @@ export const INTERACTION_KEYS = [
   'line.valveAlready', 'line.valveVented', 'line.valveLook', 'line.valveLookVented', 'line.valveStiff', 'line.valveClose',
   'line.passageLook', 'line.passageLookClear', 'line.passageBlocked', 'line.farewell', 'line.pipesLook', 'line.pipesUse', 'line.wayBackLook', 'line.wayBackGo',
   ...(['oren', 'nell'] as const).flatMap(id => [...NPC_KEYS.map(k => `line.${id}${k}`), `line.askCrouch.${id}`, `line.askLie.${id}`]),
+  ...VARIANT_KEYS,
+  ...ITEM_FAILS.map(i => `line.useFails.${i}`),
+  ...Object.values(SECRETS).flatMap(s => [s.line, s.again]),
 ];

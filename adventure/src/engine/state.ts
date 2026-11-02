@@ -10,7 +10,11 @@ export const FLAGS = [
   'metOren', 'patchFailed', 'toldRepair', 'toldMother', 'toldLeaving', 'toldWhyMe', 'decided', 'procedureKnown', 'kilnCold',
   // ashways
   'valveVented', 'sawSweeper',
+  // optional secrets (none gate progress)
+  'secretTally', 'secretChalk', 'secretSign', 'secretRail',
 ] as const;
+
+export const SECRET_FLAGS = ['secretTally', 'secretChalk', 'secretSign', 'secretRail'] as const;
 
 export const ITEMS = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf'] as const;
 
@@ -24,6 +28,7 @@ export function newGame(): GameState {
     npcs: { oren: standing('left'), nell: standing('right') },
     flags: {},
     inventory: [],
+    looks: {},
   };
 }
 
@@ -54,6 +59,9 @@ export function applyCommand(state: GameState, command: Command): void {
       state.hero.x = command.to.x;
       state.hero.y = command.to.y;
       if (command.face) state.hero.face = command.face;
+      break;
+    case 'looked':
+      state.looks[command.id] = Math.min(99, (state.looks[command.id] ?? 0) + 1);
       break;
     case 'room': {
       const entry = ROOMS[command.room].entries[command.entry];

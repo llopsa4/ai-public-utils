@@ -1,9 +1,10 @@
-import { ITEM_ICONS, PORTRAITS, VERB_ICONS } from '../game/assets';
+import { ITEM_ICONS, PORTRAITS, PORTRAIT_MOODS, VERB_ICONS, type Mood } from '../game/assets';
 import { LANGUAGES, language, onLanguageChange, setLanguage, t, type Language } from '../engine/i18n';
 import { MAX_SAVE_BYTES, parseSave, saveFileName, serializeSave } from '../engine/saveFile';
 import { lineDuration, onSettingsChange, settings, updateSettings, type Settings } from '../engine/settings';
 import { objectives } from '../content/objectives';
 import { readAutosave } from '../engine/autosave';
+import { SECRET_FLAGS } from '../engine/state';
 import type { ActorId, GameState, Point, Verb } from '../engine/types';
 
 /** World size in logical units; all content coordinates use it. */
@@ -11,6 +12,10 @@ export const LOGICAL_W = 640;
 export const LOGICAL_H = 360;
 /** Art and canvas resolution relative to the world (art is drawn at 1280x720). */
 export const ART_SCALE = 2;
+
+/** Mouth flap timing: one open/closed swap per this many ms, for about this long per character. */
+const FLAP_MS = 130;
+const FLAP_PER_CHAR = 42;
 
 const SPEECH_COLORS: Record<ActorId, string> = { hero: '#ffc26b', oren: '#a8dcff', nell: '#c4f29a' };
 
@@ -134,13 +139,10 @@ export class Ui {
    * the right) and resolves when its time is up or the player clicks. With auto-advance off, only
    * a click moves on.
    */
-  say(actor: ActorId, text: string, _at: Point): Promise<void> {
+  say(actor: ActorId, text: string, _at: Point, mood: Mood = 'neutral'): Promise<void> {
     this.skipSpeech?.();
     const panel = this.dialogue;
-    const portrait = $<HTMLImageElement>('dialogue-portrait');
-    const url = PORTRAITS[actor === 'hero' ? 'mara' : actor];
-    portrait.hidden = !url;
-    if (url) portrait.src = url;
+    const stopFlap = this.showPortrait(actor === 'hero' ? 'mara' : actor, mood, text.length);
     const name = $('dialogue-name');
     name.textContent = t(`speaker.${actor}`);
     name.style.color = SPEECH_COLORS[actor];
@@ -155,12 +157,38 @@ export class Ui {
     return new Promise(resolve => {
       const done = () => {
         window.clearTimeout(timer);
+        stopFlap();
         if (this.skipSpeech === done) { this.skipSpeech = null; panel.hidden = true; }
         resolve();
       };
       const timer = s.autoAdvance ? window.setTimeout(done, lineDuration(text, s.textSpeed)) : 0;
       this.skipSpeech = done;
     });
+  }
+
+  /**
+   * Shows the speaker's portrait strip at the mood's frame and flaps the mouth for a while
+   * (not with reduced motion). Returns a function that stops the flapping.
+   */
+  private showPortrait(sheet: string, mood: Mood, chars: number): () => void {
+    const el = $('dialogue-portrait');
+    const url = PORTRAITS[sheet];
+    el.hidden = !url;
+    if (!url) return () => {};
+    const moods = PORTRAIT_MOODS[sheet] ?? ['neutral'];
+    const frames = moods.length * 2;
+    const base = Math.max(0, moods.indexOf(mood)) * 2;
+    const show = (open: boolean) => {
+      el.style.backgroundPositionX = `${((base + (open ? 1 : 0)) / (frames - 1)) * 100}%`;
+    };
+    el.style.backgroundImage = `url("${url}")`;
+    el.style.backgroundSize = `${frames * 100}% 100%`;
+    show(false);
+    if (settings().reducedMotion) return () => {};
+    let open = false;
+    const flap = window.setInterval(() => { open = !open; show(open); }, FLAP_MS);
+    const stop = window.setTimeout(() => { window.clearInterval(flap); show(false); }, Math.max(500, chars * FLAP_PER_CHAR));
+    return () => { window.clearInterval(flap); window.clearTimeout(stop); show(false); };
   }
 
   /** Forgets the dialogue history and hint stages (new, imported or continued game). */
@@ -203,6 +231,10 @@ export class Ui {
       li.classList.toggle('done', o.done);
       list.append(li);
     }
+    const found = SECRET_FLAGS.filter(f => this.host.getState().flags[f]).length;
+    const secrets = $('secrets');
+    secrets.hidden = found === 0;
+    secrets.textContent = t('ui.secrets', { found: String(found), total: String(SECRET_FLAGS.length) });
     this.renderHint();
     $<HTMLDialogElement>('notebook').showModal();
   }

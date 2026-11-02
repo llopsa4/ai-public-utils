@@ -15,7 +15,7 @@
         <div id="hover" hidden></div>
         <div id="labels" hidden></div>
         <section id="dialogue" hidden>
-          <img id="dialogue-portrait" alt="">
+          <div id="dialogue-portrait" aria-hidden="true"></div>
           <div class="dialogue-text">
             <p id="dialogue-name"></p>
             <p id="dialogue-line"></p>
@@ -74,6 +74,7 @@
   <dialog id="notebook">
     <h1 data-i18n="ui.notebookTitle">Mara's notebook</h1>
     <ol id="objectives"></ol>
+    <p id="secrets" class="secrets" hidden></p>
     <div id="hint-box">
       <p id="hint-text" class="hint" hidden></p>
       <button id="hint-btn" type="button" data-i18n="ui.hint">Hint</button>

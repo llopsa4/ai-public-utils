@@ -30,6 +30,8 @@ const MARA = {
     arm: { minX: 790, minY: 300, maxY: 900, pivot: [800, 380] },
     eyes: [{ x: 673, y: 109, rx: 13, ry: 7, skinAt: [668, 124] }],
     portrait: [470, 0, 420, 420],
+    // Talking portraits: the mouth that opens and the brows that move with the mood (inner = end nearest the nose).
+    face: { mouth: { x: 682, y: 160, rx: 10, ry: 4 }, brows: [{ x0: 652, x1: 702, y0: 82, y1: 110, inner: 'right' }] },
 };
 
 const CHARACTERS = {
@@ -43,6 +45,10 @@ const CHARACTERS = {
     fidgetPart: { minX: 560, minY: 300, maxY: 600, pivot: [600, 520], angle: -9 },
     eyes: [{ x: 553, y: 116, rx: 9, ry: 5, skinAt: [553, 130] }, { x: 588, y: 112, rx: 8, ry: 5, skinAt: [590, 126] }],
     portrait: [390, 0, 330, 330],
+    face: {
+      mouth: { x: 570, y: 166, rx: 15, ry: 4 },
+      brows: [{ x0: 530, x1: 566, y0: 84, y1: 110, inner: 'right' }, { x0: 572, x1: 600, y0: 82, y1: 108, inner: 'left' }],
+    },
   },
   nell: {
     source: 'opening/iven.png', height: 220, walks: false,
@@ -53,6 +59,12 @@ const CHARACTERS = {
     nearIsUpper: true, crouchSquash: 1,
     eyes: [{ x: 452, y: 129, rx: 15, ry: 8, skinAt: [452, 148] }, { x: 507, y: 123, rx: 14, ry: 8, skinAt: [505, 142] }],
     portrait: [320, 0, 340, 340],
+    // Nell's illustration smiles, so brow moods read wrong on her: she only gets the talking mouth.
+    moods: ['neutral'],
+    face: {
+      mouth: { x: 486, y: 174, rx: 17, ry: 5 },
+      brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }],
+    },
   },
 };
 
@@ -80,6 +92,52 @@ function withClosedEyes(src, eyes) {
     for (let x = Math.floor(e.x - e.rx); x <= e.x + e.rx; x++) {
       const yy = Math.round(e.y + e.ry * 0.35 + ((x - e.x) / e.rx) ** 2 * e.ry * -0.3);
       for (let t = 0; t < 3; t++) { const i = ((yy + t) * img.width + x) * 4; img.data[i] = 42; img.data[i + 1] = 26; img.data[i + 2] = 20; }
+    }
+  }
+  return img;
+}
+
+/** Portrait moods and mouth states, in strip order (frame = mood * 2 + (open ? 1 : 0)). Keep in sync with PORTRAIT_MOODS in src/game/assets.ts. */
+const MOODS = ['neutral', 'worried', 'angry'];
+
+/**
+ * Copy of the image with a mood and an open or closed mouth painted on. Worried lifts the inner
+ * ends of the brows, angry pulls them down and in; the open mouth is a dark, feathered gap under
+ * the lip line.
+ */
+function withFace(src, face, mood, open) {
+  const img = { width: src.width, height: src.height, data: Buffer.from(src.data) };
+  const px = (x, y) => (Math.round(y) * src.width + Math.round(x)) * 4;
+  // Brows: vertical warp inside each brow box, strongest at the inner end, faded at the box edges.
+  const lift = mood === 'worried' ? 6 : mood === 'angry' ? -5 : 0;
+  if (lift) {
+    for (const b of face.brows) {
+      const h = b.y1 - b.y0;
+      for (let y = b.y0; y <= b.y1; y++) for (let x = b.x0; x <= b.x1; x++) {
+        const along = (x - b.x0) / (b.x1 - b.x0);
+        const inner = b.inner === 'right' ? along : 1 - along;
+        const edge = Math.sin(((y - b.y0) / h) * Math.PI); // 0 at the box edges, 1 in the middle
+        const shift = lift * inner ** 1.5 * edge + (mood === 'angry' ? -1.5 * edge : 0);
+        const sy = Math.min(b.y1, Math.max(b.y0, y + shift));
+        const y0 = Math.floor(sy), t = sy - y0;
+        const a = px(x, y0), c = px(x, Math.min(b.y1, y0 + 1)), o = px(x, y);
+        for (let k = 0; k < 3; k++) img.data[o + k] = Math.round(src.data[a + k] * (1 - t) + src.data[c + k] * t);
+      }
+    }
+  }
+  if (open) {
+    const m = face.mouth;
+    const cy = m.y + m.ry * 0.6;
+    for (let y = Math.floor(cy - m.ry - 2); y <= cy + m.ry + 2; y++) {
+      for (let x = Math.floor(m.x - m.rx - 2); x <= m.x + m.rx + 2; x++) {
+        const d = ((x - m.x) / m.rx) ** 2 + ((y - cy) / m.ry) ** 2;
+        if (d > 1.25) continue;
+        const o = px(x, y);
+        // Dark interior, a lighter lip rim at the edge.
+        const inside = d < 0.75 ? 1 : Math.max(0, (1.25 - d) / 0.5);
+        const target = d < 0.75 ? [46, 18, 16] : [img.data[o] * 0.8, img.data[o + 1] * 0.62, img.data[o + 2] * 0.6];
+        for (let k = 0; k < 3; k++) img.data[o + k] = Math.round(img.data[o + k] * (1 - inside) + target[k] * inside);
+      }
     }
   }
   return img;
@@ -321,24 +379,30 @@ function buildCharacter(id) {
   };
   writeFileSync(join(out, 'characters', `${id}.json`), JSON.stringify(json, null, 1) + '\n');
 
-  // Dialogue portrait: area-averaged head-and-shoulders crop, 256x256, full colour.
-  // Mara has one portrait (gauntlet lit), written by the 'mara-gauntlet' variant as mara.png.
+  // Dialogue portraits: area-averaged head-and-shoulders crops, 256x256 each, in a strip of frames
+  // per mood (neutral, worried, angry), each with the mouth closed then open.
+  // Mara has one portrait set (gauntlet lit), written by the 'mara-gauntlet' variant as mara.png.
   if (cfg.unpowered) return;
   const portraitId = id.replace(/-gauntlet$/, '');
   const [px, py, pw, ph] = cfg.portrait;
-  const P = 256, portrait = new PNG({ width: P, height: P });
-  for (let y = 0; y < P; y++) for (let x = 0; x < P; x++) {
-    let r = 0, g = 0, b = 0, a = 0, n = 0;
-    for (let sy = Math.floor(py + (y * ph) / P); sy < py + ((y + 1) * ph) / P; sy++) {
-      for (let sx = Math.floor(px + (x * pw) / P); sx < px + ((x + 1) * pw) / P; sx++) {
-        const i = (sy * open.width + sx) * 4, al = open.data[i + 3] / 255;
-        r += open.data[i] * al; g += open.data[i + 1] * al; b += open.data[i + 2] * al; a += al; n++;
+  const moods = cfg.moods ?? MOODS;
+  const P = 256, portrait = new PNG({ width: P * moods.length * 2, height: P });
+  moods.forEach((mood, mi) => [false, true].forEach((talking, ti) => {
+    const face = withFace(open, cfg.face, mood, talking);
+    const ox = (mi * 2 + ti) * P;
+    for (let y = 0; y < P; y++) for (let x = 0; x < P; x++) {
+      let r = 0, g = 0, b = 0, a = 0, n = 0;
+      for (let sy = Math.floor(py + (y * ph) / P); sy < py + ((y + 1) * ph) / P; sy++) {
+        for (let sx = Math.floor(px + (x * pw) / P); sx < px + ((x + 1) * pw) / P; sx++) {
+          const i = (sy * face.width + sx) * 4, al = face.data[i + 3] / 255;
+          r += face.data[i] * al; g += face.data[i + 1] * al; b += face.data[i + 2] * al; a += al; n++;
+        }
       }
+      const o = (y * portrait.width + ox + x) * 4;
+      portrait.data[o] = a ? r / a : 0; portrait.data[o + 1] = a ? g / a : 0; portrait.data[o + 2] = a ? b / a : 0;
+      portrait.data[o + 3] = a / n > 0.9 ? 255 : 0; // drop the illustration's soft glow halo
     }
-    const o = (y * P + x) * 4;
-    portrait.data[o] = a ? r / a : 0; portrait.data[o + 1] = a ? g / a : 0; portrait.data[o + 2] = a ? b / a : 0;
-    portrait.data[o + 3] = a / n > 0.9 ? 255 : 0; // drop the illustration's soft glow halo
-  }
+  }));
   mkdirSync(join(out, 'portraits'), { recursive: true });
   writeFileSync(join(out, 'portraits', `${portraitId}.png`), encodeIndexed(portrait));
 }
