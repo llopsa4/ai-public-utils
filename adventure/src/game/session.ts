@@ -11,6 +11,8 @@ export class Session {
   state: GameState = newGame();
   selectedItem: string | null = null;
   scene: RoomScene | null = null;
+  /** Entry Mara is walking in through after a room change (null on load / new game). */
+  arrival: string | null = null;
   /** `?debug`: draw walk areas and hotspots. */
   readonly debug = new URLSearchParams(location.search).has('debug');
   readonly ui: Ui;
@@ -39,6 +41,7 @@ export class Session {
     this.selectedItem = null;
     this.ui.closeRadial();
     this.ui.hideEnd();
+    this.arrival = null;
     this.ui.clearHistory();
     this.ui.skip();
     this.scene?.scene.restart();

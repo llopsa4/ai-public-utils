@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { initLanguage, t } from './engine/i18n';
-import { loadSettings } from './engine/settings';
+import { loadSettings, onSettingsChange, settings } from './engine/settings';
+import { sound } from './audio/sound';
 import { BootScene, RoomScene } from './game/scenes';
 import { Session } from './game/session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from './ui/ui';
@@ -35,7 +36,15 @@ window.addEventListener('orientationchange', relayout);
 
 session.ui.toast(t('ui.notice'), 9000);
 
+// Browsers only allow audio after a user gesture: start it on the first click or key.
+const unlockAudio = () => sound.unlock();
+window.addEventListener('pointerdown', unlockAudio, { once: true });
+window.addEventListener('keydown', unlockAudio, { once: true });
+const applyVolume = () => sound.setVolume(settings().volume, settings().muted);
+applyVolume();
+onSettingsChange(applyVolume);
+
 // Opt-in inspection hook for testing art and timing: open the game with ?debug.
 if (new URLSearchParams(location.search).has('debug')) {
-  Object.assign(window, { adventure: { game, session } });
+  Object.assign(window, { adventure: { game, session, sound } });
 }

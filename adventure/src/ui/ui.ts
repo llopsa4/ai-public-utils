@@ -65,6 +65,11 @@ export class Ui {
     $('menu-settings').addEventListener('click', () => { this.menu.close(); this.openSettings(); });
     $('notebook-btn').addEventListener('click', () => this.openNotebook());
     $('reveal-btn').addEventListener('click', () => this.revealFor(3000));
+    const mute = $('mute-btn');
+    const showMute = (s: Settings) => { mute.setAttribute('aria-pressed', String(s.muted)); mute.innerHTML = s.muted ? '&#128263;' : '&#128264;'; };
+    mute.addEventListener('click', () => updateSettings({ muted: !settings().muted }));
+    onSettingsChange(showMute);
+    showMute(settings());
     for (const d of document.querySelectorAll<HTMLDialogElement>('dialog')) {
       d.addEventListener('click', e => { if (e.target === d) d.close(); });
       d.querySelector('.dialog-close')?.addEventListener('click', () => d.close());

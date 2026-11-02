@@ -7,6 +7,7 @@ import { conditionsHold, pointInPolygon } from '../engine/geometry';
 import { t } from '../engine/i18n';
 import { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
+import { sound } from '../audio/sound';
 import { applyCommand } from '../engine/state';
 import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Verb } from '../engine/types';
 import { Actor } from './Actor';
@@ -15,6 +16,11 @@ import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
 
 const FADE_MS = 280;
+/** How far Mara walks past a doorway on leaving, and in from it on arriving (world units). */
+const DOORWAY_STEP = 26;
+const FACE_VECTOR: Record<string, Point> = { left: { x: -1, y: 0 }, right: { x: 1, y: 0 }, up: { x: 0, y: -1 }, down: { x: 0, y: 1 } };
+/** NPCs turn toward Mara within this distance. */
+const NOTICE_DISTANCE = 90;
 /** Cool, dimmed tint for Cinderfold once the kiln is shut down. */
 const COLD_TINT = 0x8796b8;
 
@@ -104,6 +110,7 @@ export class RoomScene extends Phaser.Scene {
   private foreground: Phaser.GameObjects.Image[] = [];
   private ambient: Phaser.GameObjects.GameObject[] = [];
   private ambientCold: boolean | null = null;
+  private lastExitClick = { id: '', time: 0 };
   private busy = false;
   private leaving = false;
 
@@ -154,10 +161,40 @@ export class RoomScene extends Phaser.Scene {
     this.input.on(Phaser.Input.Events.POINTER_MOVE, (p: Phaser.Input.Pointer) => this.onPointerMove(p));
     this.input.on(Phaser.Input.Events.GAME_OUT, () => this.session.ui.setHover(''));
 
+    this.hero.onStep = () => sound.step();
+    for (const [id, actor] of this.actors) if (id !== 'hero') this.scheduleFidget(actor);
+
     this.session.ui.setHover('');
     this.session.ui.setBusy(false);
     this.session.ui.renderInventory();
     this.cameras.main.fadeIn(FADE_MS, 0, 0, 0);
+    if (this.session.arrival) this.walkIn(this.session.arrival);
+    this.session.arrival = null;
+  }
+
+  /** On arrival Mara starts just beyond the doorway and walks in to the entry point. */
+  private walkIn(entryId: string): void {
+    const entry = this.room.entries[entryId];
+    if (!entry) return;
+    const v = FACE_VECTOR[entry.face];
+    this.hero.sprite.setPosition(entry.x - v.x * DOORWAY_STEP, entry.y - v.y * DOORWAY_STEP);
+    this.busy = true;
+    this.session.ui.setBusy(true);
+    void this.hero.walk([{ x: entry.x, y: entry.y }]).then(() => {
+      this.hero.setFacing(entry.face);
+      this.syncHero();
+      if (this.leaving) return;
+      this.busy = false;
+      this.session.ui.setBusy(false);
+    });
+  }
+
+  private scheduleFidget(actor: Actor): void {
+    this.time.delayedCall(Phaser.Math.Between(6000, 12000), () => {
+      if (!actor.sprite.active) return;
+      if (!this.busy) actor.fidget();
+      this.scheduleFidget(actor);
+    });
   }
 
   /** Walk area (green), holes (red), hotspots (yellow) and approach points, for fitting art. */
@@ -195,9 +232,20 @@ export class RoomScene extends Phaser.Scene {
       else void this.walkTo(at);
       return;
     }
+    if (target && target.kind === 'hotspot' && target.hotspot.verbs.includes('go')) {
+      const now = this.time.now;
+      if (this.lastExitClick.id === target.hotspot.id && now - this.lastExitClick.time < 400) {
+        ui.closeRadial();
+        this.lastExitClick = { id: '', time: 0 };
+        void this.runScript(interact(this.session.state, 'go', target.hotspot.id).filter(c => c.type !== 'walk'));
+        return;
+      }
+      this.lastExitClick = { id: target.hotspot.id, time: now };
+    }
     if (target) {
       const id = this.targetId(target);
       const verbs: Verb[] = target.kind === 'actor' ? ACTOR_VERBS[target.actor.id] : target.hotspot.verbs;
+      sound.blip();
       ui.openRadial(at, this.targetName(target), verbs, verb => {
         void this.runScript(interact(this.session.state, verb, id));
       });
@@ -222,6 +270,7 @@ export class RoomScene extends Phaser.Scene {
   /** Action ring for an inventory item, shown just above the bar. */
   openItemRing(item: string, index: number): void {
     if (this.isBusy()) return;
+    sound.blip();
     const at = { x: 70 + index * 46, y: 300 };
     this.session.ui.openRadial(at, t(`name.${item}`), ITEM_VERBS, verb => {
       if (verb === 'use') this.session.selectItem(item);
@@ -312,10 +361,17 @@ export class RoomScene extends Phaser.Scene {
       else o.clearTint();
     }
     this.refreshAmbient(cold);
+    sound.ambience(this.room.id === 'ashways' ? 'wind' : cold ? 'cold' : 'kiln');
   }
 
   update(): void {
     this.updateLighting();
+    if (!this.hero?.sprite.active) return;
+    for (const [id, actor] of this.actors) {
+      if (id === 'hero' || this.busy) continue;
+      const d = Math.hypot(actor.sprite.x - this.hero.sprite.x, actor.sprite.y - this.hero.sprite.y);
+      if (d < NOTICE_DISTANCE) actor.lookAt(this.hero.sprite.x);
+    }
   }
 
   /** Characters take the room's light, darker toward the back, cooled once the kiln is cold. */
@@ -409,6 +465,9 @@ export class RoomScene extends Phaser.Scene {
       case 'setFlag':
       case 'addItem':
       case 'removeItem':
+        if (command.type === 'addItem') sound.pickup();
+        if (command.type === 'setFlag' && command.value && command.flag === 'latchFixed') sound.latch();
+        if (command.type === 'setFlag' && command.value && command.flag === 'valveVented') sound.hiss();
         applyCommand(state, command);
         this.refreshObjects();
         this.session.ui.renderInventory();
@@ -417,6 +476,7 @@ export class RoomScene extends Phaser.Scene {
         await this.wait(command.ms);
         return true;
       case 'shake':
+        sound.rumble(command.ms);
         if (!settings().reducedMotion) this.cameras.main.shake(command.ms, 0.004);
         await this.wait(Math.min(command.ms, 400));
         return true;
@@ -426,6 +486,7 @@ export class RoomScene extends Phaser.Scene {
         const sheet = this.room.objects.find(o => o.id === command.id)!.sheet;
         const idle = sprite.anims.currentAnim?.key;
         if (this.anims.exists(`${sheet}:scurry`)) sprite.play(`${sheet}:scurry`);
+        if (sheet === 'sweeper') sound.brushes(command.ms);
         await new Promise<void>(resolve => this.tweens.add({
           targets: sprite, x: command.x, y: command.y, duration: command.ms, ease: 'Sine.easeInOut',
           onUpdate: () => sprite.setDepth(sprite.y), onComplete: () => resolve(),
@@ -436,14 +497,20 @@ export class RoomScene extends Phaser.Scene {
       case 'dialogue':
         await this.runDialogue(command.id);
         return true;
-      case 'room':
+      case 'room': {
         this.leaving = true;
         this.session.ui.closeRadial();
-        this.cameras.main.fadeOut(FADE_MS, 0, 0, 0);
-        await this.wait(FADE_MS + 20);
+        const v = FACE_VECTOR[this.hero.face];
+        const out = { x: this.hero.position.x + v.x * DOORWAY_STEP, y: this.hero.position.y + v.y * DOORWAY_STEP };
+        void this.hero.walk([out]);
+        this.cameras.main.fadeOut(FADE_MS + 60, 0, 0, 0);
+        await this.wait(FADE_MS + 80);
+        this.hero.stop();
         applyCommand(state, command);
+        this.session.arrival = command.entry;
         this.scene.restart();
         return false;
+      }
       case 'end':
         this.leaving = true;
         this.cameras.main.fadeOut(900, 0, 0, 0);
@@ -465,6 +532,7 @@ export class RoomScene extends Phaser.Scene {
       if (node.items.length > 0) this.session.ui.renderInventory();
       if (node.choices.length > 0) {
         const index = await this.session.ui.choose(node.choices.map(c => t(c.text)));
+        sound.choose();
         const choice = node.choices[index];
         await this.say('hero', choice.text);
         nodeId = choice.next;

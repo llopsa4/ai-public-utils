@@ -25,7 +25,7 @@ const FW = 256, FH = 256, COLS = 5;
  */
 const MARA = {
     source: 'hero.png', height: 232, walks: true,
-    hipY: 860, splitX: 560, hips: { near: [400, 860], far: [650, 860] },
+    hipY: 860, splitX: 560, hips: { near: [400, 860], far: [650, 860] }, knees: { near: [313, 1040], far: [800, 1060] },
     arm: { minX: 790, minY: 300, maxY: 900, pivot: [800, 380] },
     eyes: [{ x: 673, y: 109, rx: 13, ry: 7, skinAt: [668, 124] }],
     portrait: [470, 0, 420, 420],
@@ -37,13 +37,17 @@ const CHARACTERS = {
   'mara-gauntlet': MARA,
   oren: {
     source: 'opening/oren.png', height: 226, walks: false,
-    hipY: 1050, splitX: 515, hips: { near: [400, 1040], far: [630, 1040] },
+    hipY: 1050, splitX: 515, hips: { near: [400, 1040], far: [630, 1040] }, knees: { near: [370, 1230], far: [620, 1215] },
+    // Fidget: the hands and gauge lift a little toward his eyes.
+    fidgetPart: { minX: 560, minY: 300, maxY: 600, pivot: [600, 520], angle: -9 },
     eyes: [{ x: 553, y: 116, rx: 9, ry: 5, skinAt: [553, 130] }, { x: 588, y: 112, rx: 8, ry: 5, skinAt: [590, 126] }],
     portrait: [390, 0, 330, 330],
   },
   nell: {
     source: 'opening/iven.png', height: 220, walks: false,
-    hipY: 1000, splitX: 480, hips: { near: [420, 1000], far: [640, 1000] },
+    hipY: 1000, splitX: 480, hips: { near: [420, 1000], far: [640, 1000] }, knees: { near: [360, 1240], far: [760, 1250] },
+    // Fidget: she shifts her weight and leans on the shutter.
+    fidgetLean: -3,
     // The big shield covers the near leg: it moves with the upper body, and crouching is a bow.
     nearIsUpper: true, crouchSquash: 1,
     eyes: [{ x: 452, y: 129, rx: 15, ry: 8, skinAt: [452, 148] }, { x: 507, y: 123, rx: 14, ry: 8, skinAt: [505, 142] }],
@@ -96,16 +100,24 @@ const translate = (dx, dy) => [1, 0, 0, 1, dx, dy];
 
 const OVERLAP = 26;
 
-/** Parts a pixel belongs to. Bands near the cuts go to both sides so posed joints never open a gap. */
+/**
+ * Parts a pixel belongs to. Legs split at the hip and the knee; bands near each cut go to both
+ * sides so posed joints never open a gap. The arm and fidget regions move with the upper body
+ * unless a pose moves them.
+ */
 function partsOf(cfg, x, y) {
-  const a = cfg.arm;
-  const parts = [];
-  if (a && x >= a.minX && y >= a.minY && y <= a.maxY) parts.push('arm');
-  const inArmBand = a && x >= a.minX - OVERLAP && y >= a.minY && y <= a.maxY;
   if (cfg.nearIsUpper && x < cfg.splitX) return ['upper'];
-  if (!parts.length || inArmBand) {
-    if (y < cfg.hipY || (parts.length && inArmBand)) parts.push('upper');
-    if (y >= cfg.hipY - OVERLAP && !(parts[0] === 'arm')) parts.push(x < cfg.splitX ? 'near' : 'far');
+  const a = cfg.arm;
+  if (a && x >= a.minX && y >= a.minY && y <= a.maxY) return a && x < a.minX + OVERLAP ? ['arm', 'upper'] : ['arm'];
+  const f = cfg.fidgetPart;
+  if (f && x >= f.minX && y >= f.minY && y <= f.maxY) return ['fidget'];
+  const parts = [];
+  if (y < cfg.hipY) parts.push('upper');
+  if (y >= cfg.hipY - OVERLAP) {
+    const side = x < cfg.splitX ? 'near' : 'far';
+    const kneeY = cfg.knees[side][1];
+    if (y < kneeY + OVERLAP) parts.push(`${side}Thigh`);
+    if (y >= kneeY - OVERLAP) parts.push(`${side}Shin`);
   }
   return parts;
 }
@@ -118,9 +130,11 @@ function renderPose(img, cfg, pose, k) {
   const W = 400, H = 400, ox = 200, oy = 330; // working canvas; hips land near (ox, oy)
   const hipC = [(cfg.hips.near[0] + cfg.hips.far[0]) / 2, cfg.hipY];
   const layers = {};
-  for (const name of ['far', 'upper', 'near', 'arm']) layers[name] = { rgb: new Float64Array(W * H * 3), a: new Float64Array(W * H) };
-  const final = name => mul(pose.whole ?? identity(), pose[name] ?? identity());
-  const mats = Object.fromEntries(['far', 'upper', 'near', 'arm'].map(n => [n, final(n)]));
+  const ORDER = ['farShin', 'farThigh', 'upper', 'fidget', 'nearShin', 'nearThigh', 'arm'];
+  for (const name of ORDER) layers[name] = { rgb: new Float64Array(W * H * 3), a: new Float64Array(W * H) };
+  // Parts without their own transform follow the upper body (arm, fidget) or stay put (legs).
+  const final = name => mul(pose.whole ?? identity(), pose[name] ?? ((name === 'arm' || name === 'fidget') ? pose.upper : null) ?? identity());
+  const mats = Object.fromEntries(ORDER.map(n => [n, final(n)]));
   for (let y = 0; y < img.height; y++) {
     for (let x = 0; x < img.width; x++) {
       const i = (y * img.width + x) * 4;
@@ -140,7 +154,7 @@ function renderPose(img, cfg, pose, k) {
   // Composite: colour = premultiplied sum / alpha sum; coverage = alpha sum * k^2.
   const rgb = new Float64Array(W * H * 3), alpha = new Float64Array(W * H);
   const area = k * k;
-  for (const name of ['far', 'upper', 'near', 'arm']) {
+  for (const name of ORDER) {
     const L = layers[name];
     for (let o = 0; o < W * H; o++) {
       if (!L.a[o]) continue;
@@ -194,7 +208,7 @@ function nearest(pal, r, g, b) {
 
 const TAGS = [
   ['stand_down', 0, 0], ['blink_down', 1, 1], ['stand_side', 2, 2], ['blink_side', 3, 3], ['stand_up', 4, 4],
-  ['walk_down', 5, 8], ['walk_side', 9, 12], ['walk_up', 13, 16], ['crouch', 17, 17], ['dead', 18, 18],
+  ['walk_down', 5, 10], ['walk_side', 11, 16], ['walk_up', 17, 22], ['crouch', 23, 23], ['dead', 24, 24], ['fidget', 25, 25],
 ];
 
 /** Dims the ember glow (bright orange pixels) inside a region: an unpowered gauntlet. */
@@ -221,22 +235,26 @@ function buildCharacter(id) {
   const k = cfg.height / (bottom - top);
   const hipC = [(cfg.hips.near[0] + cfg.hips.far[0]) / 2, cfg.hipY];
 
-  const walkPose = phase => {
-    const swing = [7, 0, -7, 0][phase];
-    const knee = [0, 5, 0, 5][phase];
-    return {
-      near: mul(rotateAbout(swing, cfg.hips.near), scaleAbout(1, 1 - knee / 100, cfg.hips.near)),
-      far: mul(rotateAbout(-swing, cfg.hips.far), scaleAbout(1, 1 - (5 - knee) / 100, cfg.hips.far)),
-      upper: translate(0, phase % 2 ? -8 : 0),
-      arm: translate(0, phase % 2 ? -8 : 0),
-    };
+  // Six-frame step (frames 0 and 3 are the foot plants). Positive angles swing a leg backward.
+  const THIGH = [-14, -5, 8, 14, 2, -10];
+  const SHIN = [0, 0, 6, 12, 28, 10];
+  const BOB = [6, -8, -2, 6, -8, -2];
+  const SWAY = [-1.2, 0, 0.8, 1.2, 0, -0.8];
+  const leg = (side, thigh, shin) => {
+    const t = rotateAbout(thigh, cfg.hips[side]);
+    return { [`${side}Thigh`]: t, [`${side}Shin`]: mul(t, rotateAbout(shin, cfg.knees[side])) };
   };
-  const crouchPose = {
-    near: scaleAbout(1, cfg.crouchSquash ?? 0.6, cfg.hips.near),
-    far: scaleAbout(1, cfg.crouchSquash ?? 0.6, cfg.hips.far),
-    upper: rotateAbout(9, hipC),
-    arm: rotateAbout(9, hipC),
-  };
+  const walkPose = phase => ({
+    ...leg('near', THIGH[phase], SHIN[phase]),
+    ...leg('far', THIGH[(phase + 3) % 6], SHIN[(phase + 3) % 6]),
+    upper: mul(translate(0, BOB[phase]), rotateAbout(SWAY[phase], hipC)),
+  });
+  const squash = cfg.crouchSquash ?? 0.6;
+  const crouchLeg = side => ({ [`${side}Thigh`]: scaleAbout(1, squash, cfg.hips[side]), [`${side}Shin`]: scaleAbout(1, squash, cfg.hips[side]) });
+  const crouchPose = { ...crouchLeg('near'), ...crouchLeg('far'), upper: rotateAbout(9, hipC) };
+  const fidgetPose = cfg.fidgetPart
+    ? { fidget: rotateAbout(cfg.fidgetPart.angle, cfg.fidgetPart.pivot) }
+    : { upper: rotateAbout(cfg.fidgetLean ?? 0, hipC) };
   const deadPose = { whole: rotateAbout(90, hipC) };
 
   const frames = [];
@@ -246,9 +264,10 @@ function buildCharacter(id) {
   add(open, {});                    // 2 stand_side
   add(closed, {});                  // 3 blink_side
   add(open, {});                    // 4 stand_up (no back view exists: the three-quarter pose is reused)
-  for (let rep = 0; rep < 3; rep++) for (let p = 0; p < 4; p++) add(open, cfg.walks ? walkPose(p) : {}); // 5..16 walks
-  add(open, crouchPose);            // 17 crouch
-  add(closed, deadPose);            // 18 dead (rotated, eyes closed)
+  for (let rep = 0; rep < 3; rep++) for (let p = 0; p < 6; p++) add(open, cfg.walks ? walkPose(p) : {}); // 5..22 walks
+  add(open, crouchPose);            // 23 crouch
+  add(closed, deadPose);            // 24 dead (rotated, eyes closed)
+  add(open, fidgetPose);            // 25 fidget (idle gesture)
 
   // Palette from all frames, then hard alpha and a 1px dark outline for readability on busy art.
   const samples = [];
@@ -291,7 +310,7 @@ function buildCharacter(id) {
       frame: { x: (n % COLS) * FW, y: Math.floor(n / COLS) * FH, w: FW, h: FH },
       rotated: false, trimmed: false,
       spriteSourceSize: { x: 0, y: 0, w: FW, h: FH }, sourceSize: { w: FW, h: FH },
-      duration: n >= 5 && n <= 16 ? 150 : 1000,
+      duration: n >= 5 && n <= 22 ? 110 : 1000,
     })),
     meta: {
       app: 'adventure rig.mjs (Aseprite JSON-array compatible)', version: '1', image: `${id}.png`, format: 'RGBA8888',

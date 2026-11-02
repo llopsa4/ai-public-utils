@@ -5,6 +5,10 @@ const WALK_SPEED = 110; // logical pixels per second at scale 1
 const BLINK_MIN = 1500;
 const BLINK_MAX = 2500;
 const BLINK_LENGTH = 150;
+/** World units travelled per walk frame at depth scale 1 (keeps the feet from sliding). */
+const STRIDE = 7;
+/** Frames of the walk cycle where a foot lands (footstep sounds). */
+const PLANT_FRAMES = [0, 3];
 
 /** Art is drawn at 2x the world: sprites are shown at half size. */
 const ART_SCALE = 2;
@@ -31,6 +35,12 @@ export class Actor {
   private finishStep: (() => void) | null = null;
   private blinkTimer: Phaser.Time.TimerEvent | null = null;
   private sheet: string;
+  private strideDistance = 0;
+  private walkFrame = -1;
+  /** Called on each footstep (used for sound). */
+  onStep: (() => void) | null = null;
+  /** Busy with a gesture (fidget) that should not be interrupted by the idle refresh. */
+  private gesturing = false;
   /** Perspective scale for the current y (1 = full size). */
   private depth = 1;
 
@@ -99,11 +109,16 @@ export class Actor {
       // Vertical movement reads as depth, so prefer side-on walking unless clearly going up/down.
       this.setFacing(Math.abs(dx) >= Math.abs(dy) * 0.8 ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down');
       const duration = (distance / (WALK_SPEED * this.depth)) * 1000;
+      let last = { x: this.sprite.x, y: this.sprite.y };
       await new Promise<void>(resolve => {
         this.finishStep = resolve;
         this.tween = this.scene.tweens.add({
           targets: this.sprite, x: target.x, y: target.y, duration,
-          onUpdate: () => this.place(),
+          onUpdate: () => {
+            this.place();
+            this.advanceStride(Math.hypot(this.sprite.x - last.x, this.sprite.y - last.y));
+            last = { x: this.sprite.x, y: this.sprite.y };
+          },
           onComplete: () => resolve(),
         });
       });
@@ -153,10 +168,42 @@ export class Actor {
     return this.face === 'left' || this.face === 'right' ? 'side' : this.face;
   }
 
+  /** Walk frames follow the distance covered, so each step matches the ground travelled. */
+  private advanceStride(moved: number): void {
+    const anim = this.scene.anims.get(`${this.sheet}:walk_${this.direction()}`);
+    if (!anim) return;
+    this.strideDistance += moved / Math.max(0.2, this.depth);
+    const frame = Math.floor(this.strideDistance / STRIDE) % anim.frames.length;
+    if (frame === this.walkFrame) return;
+    this.walkFrame = frame;
+    this.sprite.setFrame(anim.frames[frame].frame.name);
+    if (PLANT_FRAMES.includes(frame)) this.onStep?.();
+  }
+
+  /** Turns to look at a point (only while standing still and idle). */
+  lookAt(x: number): void {
+    if (this.walking || this.pose !== 'stand' || this.gesturing) return;
+    const face = x < this.sprite.x ? 'left' : 'right';
+    if (face !== this.face) this.setFacing(face);
+  }
+
+  /** Plays the idle gesture (fidget frame) for a moment, if the sheet has one. */
+  fidget(ms = 1300): void {
+    if (this.walking || this.pose !== 'stand' || this.gesturing || !this.scene.anims.exists(`${this.sheet}:fidget`)) return;
+    this.gesturing = true;
+    this.play('fidget', this.face === 'left');
+    this.scene.time.delayedCall(ms, () => { this.gesturing = false; if (this.sprite.active) this.refresh(); });
+  }
+
   private refresh(): void {
     if (!this.sprite.active) return;
     if (this.walking) {
-      this.play(`walk_${this.direction()}`, this.face === 'left');
+      this.sprite.anims.stop();
+      this.sprite.setFlipX(this.face === 'left');
+      this.walkFrame = -1;
+      this.advanceStride(0);
+    } else if (this.gesturing) {
+      return;
     } else if (this.pose === 'stand') {
       this.play(`stand_${this.direction()}`, this.face === 'left');
     } else {
@@ -174,10 +221,10 @@ export class Actor {
   /** Eyes close briefly at a random 1.5–2.5 s interval while standing still and visible from the front or side. */
   private scheduleBlink(): void {
     this.blinkTimer = this.scene.time.delayedCall(Phaser.Math.Between(BLINK_MIN, BLINK_MAX), () => {
-      if (this.pose === 'stand' && !this.walking && this.face !== 'up' && this.sprite.active) {
+      if (this.pose === 'stand' && !this.walking && !this.gesturing && this.face !== 'up' && this.sprite.active) {
         this.play(`blink_${this.direction()}`, this.face === 'left');
         this.scene.time.delayedCall(BLINK_LENGTH, () => {
-          if (this.pose === 'stand' && !this.walking) this.refresh();
+          if (this.pose === 'stand' && !this.walking && !this.gesturing) this.refresh();
         });
       }
       if (this.sprite.active) this.scheduleBlink();

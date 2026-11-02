@@ -147,7 +147,7 @@ html, body {
   box-shadow: 0 0 10px rgb(231 192 70 / 0.35);
 }
 
-#reveal-btn[aria-pressed="true"] {
+#reveal-btn[aria-pressed="true"], #mute-btn[aria-pressed="true"] {
   border-color: var(--gold);
 }
 
@@ -358,7 +358,7 @@ button {
   gap: 2px;
 }
 
-#lang button, #menu-btn, #notebook-btn, #reveal-btn, .menu-actions button {
+#lang button, #menu-btn, #notebook-btn, #reveal-btn, #mute-btn, .menu-actions button {
   min-height: 40px;
   padding: 0 12px;
   background: var(--panel);
