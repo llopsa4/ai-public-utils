@@ -101,13 +101,7 @@ export const PROP_IMAGES: Record<string, string> = Object.fromEntries(
 );
 
 const portraitFiles = import.meta.glob('../../art/src/portraits/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
-/** Portrait moods in strip order; each mood has a closed-mouth and an open-mouth frame (art/rig.mjs). */
-export type Mood = 'neutral' | 'worried' | 'angry';
-export const PORTRAIT_MOODS: Record<string, Mood[]> = {
-  mara: ['neutral', 'worried', 'angry'],
-  oren: ['neutral', 'worried', 'angry'],
-  nell: ['neutral'],
-};
+export { PORTRAIT_MOODS, type Mood } from '../content/art';
 
 /** Dialogue portrait strips keyed by sheet name (mara, oren, nell). */
 export const PORTRAITS: Record<string, string> = Object.fromEntries(
