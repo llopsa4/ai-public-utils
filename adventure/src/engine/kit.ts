@@ -15,7 +15,7 @@ export function newBag(): Bag {
   return { salvage: 0, materials: {}, tonics: 0 };
 }
 
-/** A free battle for an encounter, from Mara's current kit (the first fight is Kiln Courier's lesson, src/kc). */
+/** A free battle for an encounter, from Mara's current kit (the first fight is Kiln Courier's lesson, from FFCardGame). */
 export function startBattle(state: GameState, encounter: EncounterDefinition, seed: number): BattleState {
   return createBattle(maraProfile(state.kit), encounter, seed);
 }

@@ -1,5 +1,5 @@
 import type { Chapter } from '../types';
-import { ENCOUNTERS, OREN_SPARES, REWARDS } from './combat';
+import { ENCOUNTERS, LESSON_PROMPTS, OREN_SPARES, REWARDS } from './combat';
 import { CROWDS, EXTRAS } from './crowd';
 import { DIALOGUES } from './dialogue';
 import { FLAGS, ITEMS, KEPT_ITEMS, MET_FLAGS, SECRET_FLAGS } from './flags';
@@ -30,6 +30,7 @@ export const CH1: Chapter = {
   extras: EXTRAS,
   encounters: ENCOUNTERS,
   rewards: REWARDS,
+  lessonPrompts: LESSON_PROMPTS,
   spares: OREN_SPARES,
   objectives,
   objectiveKeys: OBJECTIVE_KEYS,

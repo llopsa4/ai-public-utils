@@ -5,8 +5,8 @@ import { CARDS, cardAvailability, endTurn, playCard, preview } from '../src/comb
 import type { BattleState, CardType } from '../src/combat/types';
 import { HERO_MAX_HP, STARTER_CARDS, TONIC, maraProfile } from '../src/content/kit';
 import { ENCOUNTERS, REWARDS } from '../src/chapters/ch1/combat';
-import { LESSON_STEPS } from '../src/kc/content/tutorial';
-import { tutorialAtStep } from '../src/kc/game/tutorial';
+import { LESSON_STEPS } from '@kc/content/tutorial';
+import { tutorialAtStep } from '@kc/game/tutorial';
 import { buyTonic, drinkTonic, equip, finishBattle, newBag, newKit, optionsFor, startBattle, statsWith, validKit } from '../src/engine/kit';
 import { parseSave, serializeSave } from '../src/engine/saveFile';
 import { applyCommand, newGame } from '../src/engine/state';
@@ -61,10 +61,10 @@ test('ending the turn: the enemy acts on its intent, block absorbs it, and a new
 
 // -------------------------------------------------------------------------- the guided fight ---
 test("the first fight is Kiln Courier's lesson against the Hatch Scavenger, and its steps win it", () => {
-  const start = tutorialAtStep(0);
+  const start = tutorialAtStep(0, ENCOUNTERS.hatchScavenger);
   assert.equal(start.battle.config.encounter.enemy.name, 'Hatch Scavenger');
   assert.equal(start.battle.enemy.hp, ENCOUNTERS.hatchScavenger.enemy.maxHp);
-  const end = tutorialAtStep(LESSON_STEPS.length - 1);
+  const end = tutorialAtStep(LESSON_STEPS.length - 1, ENCOUNTERS.hatchScavenger);
   assert.equal(end.battle.outcome, 'victory');
 });
 

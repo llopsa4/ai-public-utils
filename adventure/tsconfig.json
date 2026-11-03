@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2023",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
@@ -13,7 +17,20 @@
     "skipLibCheck": true,
     "jsx": "react-jsx",
     "noEmit": true,
-    "types": ["vite/client", "node"]
+    "types": [
+      "vite/client",
+      "node"
+    ],
+    "paths": {
+      "@kc/*": [
+        "../FFCardGame/client/src/*"
+      ]
+    }
   },
-  "include": ["src", "tests", "scripts/**/*.ts", "art/*.d.mts"]
+  "include": [
+    "src",
+    "tests",
+    "scripts/**/*.ts",
+    "art/*.d.mts"
+  ]
 }

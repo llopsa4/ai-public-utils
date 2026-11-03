@@ -16,7 +16,7 @@
     "art:guide": "tsx scripts/art-guide.ts",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
-    "build": "npm run typecheck && node scripts/publish.mjs && node scripts/verify-build.mjs",
+    "build": "npm run typecheck && node scripts/kc-css.mjs && node scripts/publish.mjs && node scripts/verify-build.mjs",
     "preview": "node scripts/serve.mjs",
     "check": "npm run typecheck && npm test && npm run build",
     "e2e": "npm run build && playwright test",

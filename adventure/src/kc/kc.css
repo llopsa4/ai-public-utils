@@ -1,4 +1,4 @@
-/* Kiln Courier's stylesheet (FFCardGame/style.css), scoped under .kc by scripts/kc-css.py.
+/* Kiln Courier's stylesheet (FFCardGame/style.css), scoped under .kc by scripts/kc-css.mjs.
    Do not edit by hand: change FFCardGame and re-run the script; Cinderfold additions go in kc-local.css. */
 .kc {
   color-scheme: dark;

@@ -49,8 +49,14 @@ test('the first fight is Kiln Courier\'s lesson: only the outlined control works
   await expect(page.locator('#kc-root .lesson-banner')).toContainText('1/19');
   expect(await enemyHp(page)).toBe(30);
 
-  // Follow the lesson to the end.
+  // Follow the lesson to the end. The victory dialog carries Cinderfold's name and what the fight paid.
+  let sawRewards = false;
   for (let i = 0; i < 200 && !(await page.locator('#force-veil').count()); i++) {
+    if (!sawRewards && await page.locator('#kc-root .kc-rewards').isVisible().catch(() => false)) {
+      await expect(page.locator('#kc-root .kc-rewards')).toContainText('+12 salvage');
+      await expect(page.locator('#kc-root .modal-top .eyebrow')).toHaveText('CINDERFOLD');
+      sawRewards = true;
+    }
     if (await page.locator('#kc-root .combat-screen').isVisible().catch(() => false)) await fightStep(page);
     else { await page.evaluate(() => (window as any).adventure.session.ui.skip()); await page.waitForTimeout(250); }
   }
@@ -61,6 +67,9 @@ test('the first fight is Kiln Courier\'s lesson: only the outlined control works
   await expect(page.locator('#force-veil')).toBeVisible();
   await page.locator('#gear-btn').click();
   await expect(page.locator('#kc-root .kc-armory')).toBeVisible({ timeout: 30_000 });
+  // The equipment is shown with its pictures (not the fallback icons).
+  await expect(page.locator('#kc-root .kc-armory .equipment-art img').first()).toBeVisible();
+  expect(await page.locator('#kc-root .kc-armory .equipment-art img').evaluateAll(imgs => imgs.every(i => (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
   await page.locator('#kc-root .gear-tile', { hasText: 'Light Armor' }).click();
   await page.locator('#armory-equip').click();
   await page.locator('#armory-done').click();
@@ -73,6 +82,7 @@ test('the first fight is Kiln Courier\'s lesson: only the outlined control works
   expect(state.kit.equipment.armor.id).toBe('light-armor');
   expect(state.bag.salvage).toBe(12);
   expect(state.bag.materials).toEqual({ 'pressure-coil': 1 });
+  expect(sawRewards).toBe(true);
   expect(errors, errors.join('\n')).toEqual([]);
 });
 

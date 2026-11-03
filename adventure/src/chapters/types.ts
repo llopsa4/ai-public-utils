@@ -39,6 +39,8 @@ export interface Chapter {
   extras: ExtraDef[];
   encounters: Record<string, EncounterDefinition>;
   rewards: Record<string, Reward>;
+  /** Kiln Courier's lesson prompts reworded for this chapter's first enemy, by step index. */
+  lessonPrompts?: Readonly<Record<number, string>>;
   /** Gear handed over by the `giveSpares` command. */
   spares: readonly string[];
   objectives(state: GameState): Objective[];

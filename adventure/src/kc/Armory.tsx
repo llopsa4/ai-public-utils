@@ -3,12 +3,12 @@
 // is equipped, and the build before and after. No buying, upgrading or card work in this chapter.
 import { useState } from 'react';
 import { openingArt } from './assets';
-import { EquipmentArt } from './components/EquipmentArt';
-import { EquipmentIcon } from './components/EquipmentIcon';
-import { EQUIPMENT, STARTING_EQUIPMENT } from './content/equipment';
-import { deriveStats, EQUIPMENT_SLOTS, openingHandSize } from './game/equipment';
-import type { CharacterProfile, EquippedItem, EquipmentSlot } from './game/types';
-import { equipmentComparison } from './game/workshop';
+import { EquipmentArt } from './EquipmentArt';
+import { EquipmentIcon } from '@kc/components/EquipmentIcon';
+import { EQUIPMENT, STARTING_EQUIPMENT } from '@kc/content/equipment';
+import { deriveStats, EQUIPMENT_SLOTS, openingHandSize } from '@kc/game/equipment';
+import type { CharacterProfile, EquippedItem, EquipmentSlot } from '@kc/game/types';
+import { equipmentComparison } from '@kc/game/workshop';
 
 export interface ArmoryProps {
   profile: CharacterProfile;

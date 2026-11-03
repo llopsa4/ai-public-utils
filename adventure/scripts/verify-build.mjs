@@ -56,4 +56,20 @@ const MB = 1024 * 1024;
 const TOTAL_BUDGET = 4.6, FIRST_BUDGET = 1.75;
 assert.ok(total < TOTAL_BUDGET * MB, `build is ${(total / MB).toFixed(2)} MB (budget ${TOTAL_BUDGET} MB)`);
 assert.ok(firstLoad < FIRST_BUDGET * MB, `first load is ${(firstLoad / MB).toFixed(2)} MB (budget ${FIRST_BUDGET} MB)`);
-console.log(`Build verified: ${built.length} assets, relative URLs only, ${(total / MB).toFixed(2)} MB total, ${(firstLoad / MB).toFixed(2)} MB before the title screen.`);
+// Per-chapter art (by the art manifest's `chapter`; `game` is shared by every chapter) and the fight
+// screens' code (the `mount` chunk: React and Kiln Courier's battle and workshop screens).
+const { MANIFEST } = await import('../art/manifest.mjs');
+const artChapter = new Map(MANIFEST.map(e => [e.file.split('/').pop().replace(/\.\w+$/, ''), e.chapter ?? 'game']));
+const perChapter = {};
+for (const n of built) {
+  const chapter = artChapter.get(n.replace(/-[\w-]{8}\.\w+$/, ''));
+  if (chapter) perChapter[chapter] = (perChapter[chapter] ?? 0) + size(n);
+}
+const fightCode = built.filter(n => /^mount-[\w-]{8}\.(js|css)$/.test(n)).reduce((sum, n) => sum + size(n), 0);
+const CHAPTER_ART_BUDGET = 2.5, FIGHT_CODE_BUDGET = 0.4;
+for (const [chapter, bytes] of Object.entries(perChapter)) {
+  assert.ok(bytes < CHAPTER_ART_BUDGET * MB, `${chapter} art is ${(bytes / MB).toFixed(2)} MB (budget ${CHAPTER_ART_BUDGET} MB)`);
+}
+assert.ok(fightCode < FIGHT_CODE_BUDGET * MB, `fight code is ${(fightCode / MB).toFixed(2)} MB (budget ${FIGHT_CODE_BUDGET} MB)`);
+const chapters = Object.entries(perChapter).map(([c, b]) => `${c} ${(b / MB).toFixed(2)}`).join(', ');
+console.log(`Build verified: ${built.length} assets, relative URLs only, ${(total / MB).toFixed(2)} MB total, ${(firstLoad / MB).toFixed(2)} MB before the title screen; art MB: ${chapters}; fight code ${(fightCode / MB).toFixed(2)} MB.`);

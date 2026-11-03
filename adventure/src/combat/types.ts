@@ -1,2 +1,2 @@
-// Kiln Courier's rules live in src/kc (copied from FFCardGame); the adventure imports them from here.
-export * from '../kc/game/types';
+// Kiln Courier's rules (FFCardGame/client/src, as @kc); the adventure imports them from here.
+export * from '@kc/game/types';

@@ -66,7 +66,7 @@ export async function blowHatch(scene: RoomScene): Promise<void> {
 
 /**
  * A fight: save first (a reload restarts it), shatter the room, then Kiln Courier's battle screen
- * (React, src/kc) over everything. The script carries on once it is won.
+ * (React: FFCardGame's code through src/kc/mount.tsx) over everything. The script carries on once it is won.
  */
 export async function fight(scene: RoomScene, id: string): Promise<void> {
   const state = scene.session.state;
@@ -88,7 +88,7 @@ export async function fight(scene: RoomScene, id: string): Promise<void> {
     const rewards = reward ? [t('battle.rewardSalvage', { n: String(reward.salvage) }),
       ...Object.entries(reward.materials).map(([m, n]) => t('battle.rewardMaterial', { n: String(n), name: t(MATERIALS[m].name) }))] : [];
     const close = kc.mountBattle(el, {
-      profile: maraProfile(state.kit), guided: guided(chapter().story, scene.storyContext()), encounter: chapter().encounters[id], rewards,
+      profile: maraProfile(state.kit), guided: guided(chapter().story, scene.storyContext()), encounter: chapter().encounters[id], lessonPrompts: chapter().lessonPrompts, rewards,
       tonics: () => state.bag.tonics,
       drink: battle => { const next = drinkTonic(battle, state.bag); return next === battle ? null : next; },
       onMenu: () => scene.session.ui.openMenu(),

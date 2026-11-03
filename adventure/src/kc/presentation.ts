@@ -1,8 +1,11 @@
-// Cinderfold: the scene's only fight is the Hatch Scavenger in the regulator gallery.
+// Cinderfold's stand-in for Kiln Courier's client/src/presentation.ts (swapped in by vite.config.ts):
+// the chapter's only fight is the Hatch Scavenger in the regulator gallery, also during the lesson
+// (which Kiln Courier would draw as its practice sweeper).
 import { openingArt } from './assets';
-import type { BattleState } from './game/types';
+import type { BattleState } from '@kc/game/types';
+import type * as Original from '@kc/presentation';
 
-export function battleVisual(_state: BattleState) {
+export function battleVisual(_state: BattleState): ReturnType<typeof Original.battleVisual> {
   return {
     machine: 'scavenger' as const,
     sprite: openingArt['pressure-scavenger'],

@@ -33,4 +33,6 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 All outputs are palette-indexed PNGs (`art/png.mjs`, upng-js).
 Room backgrounds, foreground cut-outs, props and the background people's sheets are also written as WebP (`art/webp.mjs`, sharp 0.35, which bundles libvips under the LGPL-3.0); the game loads the WebP copies.
 
-The interface font is Zilla Slab (Mozilla / Typotheque), SIL Open Font License 1.1, bundled from `@fontsource/zilla-slab` (Latin subset). The interface frames, rivets, toggles and icons are drawn in CSS and inline SVG. The room name boards are painted at runtime on a canvas (`src/game/sign.ts`).
+The interface font is Zilla Slab (Mozilla / Typotheque), SIL Open Font License 1.1, bundled from `@fontsource/zilla-slab` (Latin subset). The fight and gear screens use Cinzel and Cormorant Garamond (SIL Open Font License 1.1, from `@fontsource`), the same families as Kiln Courier.
+
+The fight and gear screens' code is Kiln Courier's (`FFCardGame/client/src`, same repository), imported directly rather than copied; the battle art they show is the WebPs in `art/src/kc` made by `art/kc.mjs` from `FFCardGame/assets`. The interface frames, rivets, toggles and icons are drawn in CSS and inline SVG. The room name boards are painted at runtime on a canvas (`src/game/sign.ts`).

@@ -11,21 +11,23 @@ import '@fontsource/cormorant-garamond/latin-600.css';
 import '@fontsource/cormorant-garamond/latin-500-italic.css';
 import './kc.css';
 import './kc-local.css';
-import { App, type LessonView } from './App';
+import { App, type LessonView } from '@kc/App';
 import { Armory, type ArmoryProps } from './Armory';
-import { LESSON_ENCOUNTER, type LessonAction } from './content/tutorial';
-import { createBattle, endTurn, playCard } from './game/combat';
-import { newTutorial, tutorialTransition, type TutorialState } from './game/tutorial';
-import type { BattleState, CharacterProfile, EncounterDefinition } from './game/types';
-import type { BattleController } from './hooks/useBattle';
+import type { LessonAction } from '@kc/content/tutorial';
+import { createBattle, endTurn, playCard } from '@kc/game/combat';
+import { newTutorial, tutorialTransition, type TutorialState } from '@kc/game/tutorial';
+import type { BattleState, CharacterProfile, EncounterDefinition } from '@kc/game/types';
+import type { BattleController } from '@kc/hooks/useBattle';
 
 export interface BattleOptions {
   /** Mara as the rules see him (from the saved kit). */
   profile: CharacterProfile;
   /** The first fight is Kiln Courier's guided lesson; Skip turns it into a free fight. */
   guided: boolean;
-  /** For free fights (and retries after Skip). */
-  encounter?: EncounterDefinition;
+  /** The enemy, also of the guided lesson (Kiln Courier's lesson, taught against it). */
+  encounter: EncounterDefinition;
+  /** The lesson's prompts reworded for this enemy, by step index. */
+  lessonPrompts?: Readonly<Record<number, string>>;
   rewards: string[];
   tonics: () => number;
   /** Drinks a tonic: the new battle state, or null if none could be drunk. */
@@ -35,14 +37,14 @@ export interface BattleOptions {
 }
 
 function Battle(o: BattleOptions) {
-  const [lesson, setLesson] = useState<TutorialState | null>(() => (o.guided ? newTutorial() : null));
-  const [start, setStart] = useState<BattleState>(() => createBattle(o.profile, o.encounter ?? LESSON_ENCOUNTER));
+  const [lesson, setLesson] = useState<TutorialState | null>(() => (o.guided ? newTutorial(o.encounter) : null));
+  const [start, setStart] = useState<BattleState>(() => createBattle(o.profile, o.encounter));
   const [free, setFree] = useState<BattleState>(start);
   const [, redraw] = useState(0);
 
   if (lesson) {
     const act = (action: LessonAction): TutorialState | null => {
-      const next = tutorialTransition(lesson, { step: lesson.step, revision: lesson.revision, action });
+      const next = tutorialTransition(lesson, { step: lesson.step, revision: lesson.revision, action }, o.encounter);
       if (next === lesson) return null;
       setLesson(next);
       if (action.type === 'finish') o.onWin(next.battle);
@@ -55,19 +57,19 @@ function Battle(o: BattleOptions) {
       retry: () => null,
     };
     const view: LessonView = {
-      state: lesson, replay: false,
+      state: lesson, replay: false, encounter: o.encounter, prompts: o.lessonPrompts,
       act: action => !!act(action),
-      reset: () => setLesson(newTutorial()),
+      reset: () => setLesson(newTutorial(o.encounter)),
       // Skip: the fight carries on from here, free.
       skip: () => {
         const here = structuredClone(lesson.battle);
         delete here.practice;
-        setStart(createBattle(o.profile, o.encounter ?? LESSON_ENCOUNTER));
+        setStart(createBattle(o.profile, o.encounter));
         setFree(here);
         setLesson(null);
       },
     };
-    return <App key="lesson" controller={controller} lesson={view} onMenu={o.onMenu} onVictory={() => act({ type: 'finish' })} rewards={o.rewards} />;
+    return <App key="lesson" controller={controller} lesson={view} onMenu={o.onMenu} onVictory={() => act({ type: 'finish' })} brand="Cinderfold" rewards={o.rewards} />;
   }
 
   const controller: BattleController = {
@@ -77,12 +79,12 @@ function Battle(o: BattleOptions) {
     // A fall is not a game over: the fight starts again as it began.
     retry: () => { const fresh = structuredClone(start); setFree(fresh); return fresh; },
   };
-  const tonic = {
-    count: o.tonics(),
-    usable: free.hero.hp < free.config.hero.maxHp,
-    drink: () => { const next = o.drink(free); if (next) { setFree(next); redraw(n => n + 1); } },
-  };
-  return <App key="free" controller={controller} onMenu={o.onMenu} onVictory={() => o.onWin(free)} rewards={o.rewards} tonic={tonic} suppressHints />;
+  // A Kiln Tonic under End turn while Mara carries one.
+  const tonics = o.tonics();
+  const drink = () => { const next = o.drink(free); if (next) { setFree(next); redraw(n => n + 1); } };
+  const tonic = ({ busy, lesson, over }: { busy: boolean; lesson: boolean; over: boolean }) => tonics > 0 &&
+    <button id="kc-tonic" className="session-secondary kc-tonic" disabled={busy || lesson || free.hero.hp >= free.config.hero.maxHp || over} onClick={drink}>Kiln Tonic · {tonics}<small> +15 HP</small></button>;
+  return <App key="free" controller={controller} onMenu={o.onMenu} onVictory={() => o.onWin(free)} brand="Cinderfold" rewards={o.rewards} extraControls={tonic} suppressHints />;
 }
 
 /** Shows Kiln Courier's battle screen in `el`. Returns a function that removes it. */

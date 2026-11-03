@@ -25,18 +25,53 @@ function phaserFlags(): Plugin {
   };
 }
 
+/** Kiln Courier's source (the card rules and battle screens), shared with FFCardGame. */
+const KC = fileURLToPath(new URL('../FFCardGame/client/src', import.meta.url));
+/**
+ * Kiln Courier modules the adventure supplies itself: its small WebP art instead of Kiln Courier's
+ * full-size PNGs, and the scavenger drawn in the lesson too (see each file's header).
+ */
+const KC_OVERRIDES: Record<string, string> = {
+  'assets.ts': fileURLToPath(new URL('./src/kc/assets.ts', import.meta.url)),
+  'presentation.ts': fileURLToPath(new URL('./src/kc/presentation.ts', import.meta.url)),
+  'components/EquipmentArt.tsx': fileURLToPath(new URL('./src/kc/EquipmentArt.tsx', import.meta.url)),
+};
+function kcOverrides(): Plugin {
+  const norm = (p: string) => p.replace(/\\/g, '/');
+  const kc = norm(KC);
+  return {
+    name: 'kc-overrides',
+    enforce: 'pre',
+    async resolveId(source, importer, options) {
+      if (!importer || !source.startsWith('.')) return null;
+      const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
+      if (!resolved) return null;
+      const id = norm(resolved.id);
+      for (const [file, replacement] of Object.entries(KC_OVERRIDES)) {
+        if (id === `${kc}/${file}` && norm(importer) !== norm(replacement)) return replacement;
+      }
+      return null;
+    },
+  };
+}
+
 export default defineConfig(({ command }) => ({
   root: fileURLToPath(new URL('./src', import.meta.url)),
   // Relative URLs so the game works from any sub-path, e.g. https://<user>.github.io/<repo>/adventure/.
   base: './',
   publicDir: false,
-  plugins: [phaserFlags()],
+  plugins: [phaserFlags(), kcOverrides()],
   // Production builds bundle only the parts of Phaser the game uses (see src/phaser-custom.cjs).
   // The dev server keeps the full prebuilt Phaser, since it cannot serve Phaser's CommonJS sources.
-  resolve: command === 'build'
-    ? { alias: [{ find: /^phaser$/, replacement: fileURLToPath(new URL('./src/phaser-custom.cjs', import.meta.url)) }] }
-    : {},
-  server: { fs: { allow: [fileURLToPath(new URL('.', import.meta.url))] } },
+  resolve: {
+    alias: [
+      { find: /^@kc\//, replacement: `${KC}/` },
+      ...(command === 'build' ? [{ find: /^phaser$/, replacement: fileURLToPath(new URL('./src/phaser-custom.cjs', import.meta.url)) }] : []),
+    ],
+    // One React for the adventure and Kiln Courier's files (FFCardGame has its own node_modules).
+    dedupe: ['react', 'react-dom'],
+  },
+  server: { fs: { allow: [fileURLToPath(new URL('.', import.meta.url)), KC] } },
   build: {
     outDir: fileURLToPath(new URL('./dist', import.meta.url)),
     emptyOutDir: true,

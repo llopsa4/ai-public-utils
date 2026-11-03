@@ -1,6 +1,6 @@
 # Cinderfold: A delivery he does not want
 
-A point-and-click adventure built from the first scene of **Kiln Courier**'s story. Mara, a courier and kiln-minder in Cinderfold (a village built inside an old industrial kiln), must shut down the cracked regulator and carry it away for assessment. He doesn't want to go. The game runs entirely in the browser as static files on GitHub Pages: no server, no accounts, no tracking. It uses only free software: Phaser 3 (MIT), TypeScript, Vite and the Zilla Slab font (OFL); the art and test tools (pngjs, upng-js, sharp, Playwright) are development-only.
+A point-and-click adventure built from the first scene of **Kiln Courier**'s story. Mara, a courier and kiln-minder in Cinderfold (a village built inside an old industrial kiln), must shut down the cracked regulator and carry it away for assessment. He doesn't want to go. The game runs entirely in the browser as static files on GitHub Pages: no server, no accounts, no tracking. It uses only free software: Phaser 3 (MIT), React (MIT, for the fight and gear screens), TypeScript, Vite and the Zilla Slab, Cinzel and Cormorant Garamond fonts (OFL); the art and test tools (pngjs, upng-js, sharp, Playwright) are development-only.
 
 ## Play
 
@@ -51,6 +51,15 @@ Add `?debug` to the URL to draw the walk areas (green), obstacles (red), hotspot
 `node scripts/probe.mjs --room gallery --flags kilnCold --items regulator [--quality low]` screenshots the built game in any room at any point of the story (`--all`: every room, warm and cold, both qualities) into `shots/`. `tests/story-graph.test.ts` explores every story state each chapter can reach (1,790 for chapter 1) and checks that the end stays reachable from all of them, and that every room, goal, secret and spoken line exists.
 
 Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, tilemaps, text or Phaser sound) built from Phaser's own sources; `vite.config.ts` sets Phaser's compile-time flags. The dev server uses the full prebuilt Phaser. If new code needs a Phaser module that is not in the custom entry, add it there; `npm run e2e` catches what's missing.
+
+## Fights
+
+Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/client/src` in this repository, imported directly (as `@kc/...`, set in `tsconfig.json` and `vite.config.ts`), not copied. They load only when the first fight or the gear screen opens (`src/kc/mount.tsx`, the bridge, with `Armory.tsx`, the equip-only workshop).
+
+- Kiln Courier's battle screen takes optional settings for a host game: `brand` (the Cinderfold title), `rewards` (what the fight paid, in the victory dialog), `extraControls` (the Kiln Tonic button), and for its guided lesson an `encounter` and reworded `prompts`. The first fight is that lesson taught against chapter 1's Hatch Scavenger (`src/chapters/ch1/combat.ts`).
+- Three Kiln Courier modules are swapped for the adventure's own at build time (`kcOverrides` in `vite.config.ts`): `src/kc/assets.ts` and `src/kc/EquipmentArt.tsx` (the small WebPs from `art/kc.mjs` instead of Kiln Courier's full-size PNGs) and `src/kc/presentation.ts` (the scavenger in the gallery, also during the lesson). The compiler checks they keep the originals' names and types.
+- Kiln Courier's stylesheet is scoped under `.kc` into `src/kc/kc.css` by `scripts/kc-css.mjs` on every build; Cinderfold's additions are in `src/kc/kc-local.css`.
+- Changing Kiln Courier changes the adventure's fights: after editing FFCardGame, run both projects' checks.
 
 ## Layout
 
