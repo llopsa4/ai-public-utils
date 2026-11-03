@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { LESSON_CLAIM, LESSON_STEPS, type LessonAction } from '../client/src/content/tutorial';
+import { LESSON_CLAIM, LESSON_ENCOUNTER, LESSON_STEPS, type LessonAction } from '../client/src/content/tutorial';
 import { newTutorial, resetTutorial, tutorialAtStep, tutorialMatches, tutorialTransition } from '../client/src/game/tutorial';
 import { campaignTransition, newCampaign } from '../client/src/game/campaign';
 import { decodeSave, encodeSave } from '../client/src/persistence/campaign';
@@ -209,4 +209,23 @@ test('tutorial skipping does not bypass introductory story scenes or affect non-
   const forged = JSON.parse(encodeSave(newCampaign(13)));
   forged.state.progression.commands.push({type:'skip-lesson', revision:999});
   assert.throws(() => decodeSave(JSON.stringify(forged)));
+});
+
+test('a host game can teach the same lesson against its own enemy', () => {
+  const encounter = { ...LESSON_ENCOUNTER, id: 'host-enemy', title: 'HOST ARENA', enemy: { ...LESSON_ENCOUNTER.enemy, name: 'Host Enemy', label: 'Enemy' } };
+  let state = newTutorial(encounter);
+  assert.equal(state.battle.config.encounter.id, 'host-enemy');
+  // The default lesson does not accept it, and the host's own does.
+  assert.equal(tutorialMatches(state), false);
+  assert.equal(tutorialMatches(state, encounter), true);
+  for (const step of LESSON_STEPS) {
+    const next = tutorialTransition(state, { action: step.action, step: state.step, revision: state.revision }, encounter);
+    assert.notEqual(next, state);
+    state = next;
+  }
+  assert.equal(state.battle.outcome, 'victory');
+  assert.deepEqual(tutorialAtStep(LESSON_STEPS.length, encounter).battle, state.battle);
+  assert.equal(resetTutorial(state, encounter).battle.config.encounter.id, 'host-enemy');
+  // Without the encounter, every call behaves exactly as before.
+  assert.equal(newTutorial().battle.config.encounter.id, LESSON_ENCOUNTER.id);
 });

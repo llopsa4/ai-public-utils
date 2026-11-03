@@ -3,9 +3,10 @@ import { cardDefinition, cardLabel } from '../content/cards';
 import type { BattleState } from '../game/types';
 
 export type DialogKind = 'help' | 'restart' | 'draw' | 'discard' | 'log' | 'outcome' | 'intent';
-interface Props { kind: DialogKind | null; state: BattleState; onClose: () => void; onRestart: () => void; campaign?: boolean; onVictory?: () => void; lessonPrompt?: string; onReplay?: () => void; onSkipLesson?: () => void }
+interface Props { kind: DialogKind | null; state: BattleState; onClose: () => void; onRestart: () => void; campaign?: boolean; onVictory?: () => void; lessonPrompt?: string; onReplay?: () => void; onSkipLesson?: () => void; brand?: string; rewards?: string[] }
 
-export function GameDialog({ kind, state, onClose, onRestart, campaign = false, onVictory, lessonPrompt, onReplay, onSkipLesson }: Props) {
+// `brand` and `rewards`: an embedding game's name in the dialog header, and what a win pays.
+export function GameDialog({ kind, state, onClose, onRestart, campaign = false, onVictory, lessonPrompt, onReplay, onSkipLesson, brand, rewards }: Props) {
   const dialog = useRef<HTMLDialogElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   useLayoutEffect(() => {
@@ -34,7 +35,7 @@ export function GameDialog({ kind, state, onClose, onRestart, campaign = false, 
       const rect = dialog.current.getBoundingClientRect();
       if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) onClose();
     }}>
-    <div className="modal-top"><span className="eyebrow">KILN COURIER</span><button id="close-modal" className={`quiet${lessonPrompt && kind !== 'restart' && kind !== 'outcome' ? ' lesson-target' : ''}`} disabled={!!lessonPrompt && (kind === 'restart' || kind === 'outcome')} aria-label="Close dialog" onClick={onClose}>Close ×</button></div>
+    <div className="modal-top"><span className="eyebrow">{brand?.toUpperCase() ?? 'KILN COURIER'}</span><button id="close-modal" className={`quiet${lessonPrompt && kind !== 'restart' && kind !== 'outcome' ? ' lesson-target' : ''}`} disabled={!!lessonPrompt && (kind === 'restart' || kind === 'outcome')} aria-label="Close dialog" onClick={onClose}>Close ×</button></div>
     <h2 id="modal-title">{title}</h2>
     {lessonPrompt && <p className="lesson-modal-prompt" role="status">◆ {lessonPrompt}</p>}
     <div id="modal-body">
@@ -46,6 +47,7 @@ export function GameDialog({ kind, state, onClose, onRestart, campaign = false, 
       {kind === 'outcome' && <>
         <span className="outcome-kicker">{victory ? `${state.config.encounter.enemy.label.toUpperCase()} DEFEATED` : 'DELIVERY LOST'}</span>
         <p>{victory ? state.config.encounter.victoryText : 'The kiln keeps its silence. Take a breath, read its intentions, and give the gauntlet another chance.'}</p>
+        {victory && rewards?.length ? <ul className="kc-rewards">{rewards.map(line => <li key={line}>{line}</li>)}</ul> : null}
         <div className="summary-stats"><div><strong>{state.turn}</strong><span>TURNS</span></div><div><strong>{state.hero.hp}</strong><span>HEALTH LEFT</span></div><div><strong>{state.mp}</strong><span>MP LEFT</span></div><div><strong>{state.config.encounter.enemy.maxHp - state.enemy.hp}</strong><span>DAMAGE DEALT</span></div></div>
         <p>{lessonPrompt ? 'Lesson complete. Continue to return to your journey.' : campaign ? victory ? 'Continue to review the result and your reward. Your choices are saved.' : 'Retry from the exact saved starting state. Earlier progress stays.' : 'This is the end of the combat prototype. Try a fresh shuffle and a different balance of heat and defense.'}</p>
       </>}

@@ -1,6 +1,6 @@
 import { Atmosphere } from './components/Atmosphere';
 import { cardLabel } from './content/cards';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { battleVisual } from './presentation';
 import { assets, openingArt } from './assets';
@@ -13,13 +13,19 @@ import { EquipmentSummary } from './components/EquipmentSummary';
 import { GameDialog, type DialogKind } from './components/GameDialog';
 import { useBattle, type BattleController } from './hooks/useBattle';
 import { completeTutorial, tutorialComplete } from './persistence/preferences';
-import type { CardInstance, BattleSetup } from './game/types';
+import type { CardInstance, BattleSetup, EncounterDefinition } from './game/types';
 import { LESSON_STEPS, type LessonAction } from './content/tutorial';
 import { tutorialMatches, type TutorialState } from './game/tutorial';
 
-export interface LessonView { state: TutorialState; replay: boolean; act: (action: LessonAction) => boolean; reset: () => void; skip?: () => void }
+// `encounter` and `prompts` (by step index) let a host game teach the lesson against its own enemy.
+export interface LessonView { state: TutorialState; replay: boolean; act: (action: LessonAction) => boolean; reset: () => void; skip?: () => void; encounter?: EncounterDefinition; prompts?: Readonly<Record<number, string>> }
+// Optional settings for a host game embedding the battle screen; without them nothing changes.
+// `brand` replaces the Kiln Courier wordmark (as plain text, without the restart link or the page
+// icon), `rewards` lists what a win pays in the victory dialog, and `extraControls` adds controls
+// under End turn.
+export interface EmbedOptions { brand?: string; rewards?: string[]; extraControls?: (context: { busy: boolean; lesson: boolean; over: boolean }) => ReactNode }
 
-export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, onNavigate, suppressHints = false }: { setup?: BattleSetup; controller?: BattleController; onMenu?: () => void; onVictory?: () => void; lesson?: LessonView; onReplay?: () => void; onNavigate?: (update: () => void) => void; suppressHints?: boolean }) {
+export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, onNavigate, suppressHints = false, brand, rewards, extraControls }: { setup?: BattleSetup; controller?: BattleController; onMenu?: () => void; onVictory?: () => void; lesson?: LessonView; onReplay?: () => void; onNavigate?: (update: () => void) => void; suppressHints?: boolean } & EmbedOptions) {
   const battle = useBattle(setup, controller);
   const { state, busy, animation } = battle;
   const visual=battleVisual(state);
@@ -38,8 +44,9 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, on
     if (!lesson && !supportRequired && !practiceRequired) arrivalHeading.current?.focus();
   }, []);
   const focusRequest = useRef<number | 'end-turn' | null>(null);
-  const step = lesson ? LESSON_STEPS[lesson.state.step] : undefined;
-  const validLesson = !lesson || tutorialMatches(lesson.state);
+  const lessonStep = lesson ? LESSON_STEPS[lesson.state.step] : undefined;
+  const step = lessonStep && { ...lessonStep, prompt: lesson?.prompts?.[lesson.state.step] ?? lessonStep.prompt };
+  const validLesson = !lesson || tutorialMatches(lesson.state, lesson.encounter);
   const activeDialog = lesson ? (busy ? null : step?.dialog ?? null) : dialog;
   const blocked = (target: string) => !!lesson && (busy || step?.target !== target || !validLesson);
   const marked = (target: string) => step?.target === target;
@@ -108,10 +115,10 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, on
   }}>
     <Atmosphere combat/>
     {departure&&<div className="played-card" aria-hidden="true" style={{left:departure.left,top:departure.top,width:departure.width,height:departure.height,'--fly-x':`${departure.x}px`,'--fly-y':`${departure.y}px`} as CSSProperties}><CardArt type={departure.card.type}/><span>{cardLabel(departure.card)}</span></div>}
-    <link rel="icon" href={assets.mark} type="image/svg+xml" />
+    {!brand && <link rel="icon" href={assets.mark} type="image/svg+xml" />}
     <a className="skip" href="#hand">Skip to cards</a>
     <header className="masthead">
-      <a className="wordmark" href="./" aria-disabled={!!lesson || undefined} tabIndex={lesson ? -1 : undefined} aria-label={controller ? 'Kiln Courier, retry this encounter' : 'Kiln Courier, start a fresh battle'} onClick={event => { event.preventDefault(); if (!lesson) confirmRestart(); }}>KILN COURIER</a>
+      {brand ? <span className="wordmark" aria-label={brand}>{brand.toUpperCase()}</span> : <a className="wordmark" href="./" aria-disabled={!!lesson || undefined} tabIndex={lesson ? -1 : undefined} aria-label={controller ? 'Kiln Courier, retry this encounter' : 'Kiln Courier, start a fresh battle'} onClick={event => { event.preventDefault(); if (!lesson) confirmRestart(); }}>KILN COURIER</a>}
       <h1 ref={arrivalHeading} tabIndex={-1} className="chapter">{state.config.encounter.title} <span aria-hidden="true">·</span> <span id="phase-label">{state.outcome === 'victory' ? 'VICTORY' : state.outcome === 'defeat' ? 'DEFEAT' : 'TURN'}</span> <span id="turn">{String(state.turn).padStart(2, '0')}</span></h1>
       <nav aria-label="Game controls">
         {onMenu && <button className="quiet" onClick={onMenu}>Menu</button>}
@@ -138,6 +145,7 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, on
         </section>
         <aside className="deck-side right-controls">
           <EndTurn state={state} busy={busy || !!supportRequired || !!practiceRequired} onEndTurn={endTurn} lessonBlocked={blocked('end-turn')} highlighted={marked('end-turn')} />
+          {extraControls?.({ busy, lesson: !!lesson, over: !!state.outcome })}
           <button className={`pile-button${highlighted('discard-button')}`} id="discard-button" disabled={blocked('discard-button')} aria-describedby={lesson ? 'lesson-instruction' : undefined} aria-label={`Discard pile ${state.discard.length}`} onClick={() => openDialog('discard')}><span className="pile-stack"><CardArt type="discard-back" /></span><span>DISCARD <strong id="discard-count">{state.discard.length}</strong></span></button>
         </aside>
       </section>
@@ -145,6 +153,6 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, on
       {controller && !lesson && state.outcome && !dialog && !busy && <div className="battle-result-action"><button className="modal-primary" onClick={state.outcome === 'victory' ? onVictory : restart}>{state.outcome === 'victory' ? 'Continue' : 'Retry encounter'}</button></div>}
       <p className="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true">{battle.announcement}</p>
     </main>
-    <GameDialog kind={activeDialog} state={state} campaign={!!controller} lessonPrompt={step?.prompt} onSkipLesson={lesson?.skip} onReplay={onReplay} onVictory={onVictory} onClose={closeDialog} onRestart={restart} />
+    <GameDialog kind={activeDialog} state={state} campaign={!!controller} lessonPrompt={step?.prompt} onSkipLesson={lesson?.skip} onReplay={onReplay} onVictory={onVictory} onClose={closeDialog} onRestart={restart} brand={brand} rewards={rewards} />
   </div>;
 }

@@ -1,11 +1,12 @@
 import { LESSON_DECK, LESSON_ENCOUNTER, LESSON_PROFILE, LESSON_STEPS, type LessonAction } from '../content/tutorial';
 import { createBattle, draw, endTurn, playCard } from './combat';
-import type { BattleState } from './types';
+import type { BattleState, EncounterDefinition } from './types';
 
 export interface TutorialState { step: number; revision: number; battle: BattleState; battleStart: BattleState }
 export interface TutorialCommand { step: number; revision: number; action: LessonAction }
-export function newTutorial(): TutorialState {
-  const battle = createBattle(LESSON_PROFILE, LESSON_ENCOUNTER, 101);
+// `encounter` lets a host game teach the same lesson against its own enemy (same cards and steps).
+export function newTutorial(encounter: EncounterDefinition = LESSON_ENCOUNTER): TutorialState {
+  const battle = createBattle(LESSON_PROFILE, encounter, 101);
   // Teaching-only explicit first-drawn order. The same twelve cards and real
   // draw/reshuffle rules are retained; ordinary battle creation is unchanged.
   battle.rng = 101;
@@ -26,15 +27,15 @@ function advance(state: TutorialState): TutorialState {
 }
 // A finite, reproducible trace also validates saves: a step can never claim to
 // be ahead of its actual resources, modal or deck state.
-export function tutorialAtStep(step: number): TutorialState {
+export function tutorialAtStep(step: number, encounter: EncounterDefinition = LESSON_ENCOUNTER): TutorialState {
   if (!Number.isInteger(step) || step < 0 || step > LESSON_STEPS.length) throw new Error('Invalid lesson step');
-  let state = newTutorial();
+  let state = newTutorial(encounter);
   while (state.step < step) state = advance(state);
   return state;
 }
-export function tutorialMatches(state: TutorialState): boolean {
+export function tutorialMatches(state: TutorialState, encounter: EncounterDefinition = LESSON_ENCOUNTER): boolean {
   try {
-    const expected = tutorialAtStep(state.step);
+    const expected = tutorialAtStep(state.step, encounter);
     return Number.isSafeInteger(state.revision) && state.revision >= state.step
       && stable(state.battle) === stable(expected.battle)
       && stable(state.battleStart) === stable(expected.battleStart);
@@ -45,14 +46,14 @@ function stable(value: unknown): string {
   if (value && typeof value === 'object') return `{${Object.keys(value).sort().map(key => `${JSON.stringify(key)}:${stable((value as Record<string, unknown>)[key])}`).join(',')}}`;
   return JSON.stringify(value);
 }
-export function tutorialTransition(previous: TutorialState, command: TutorialCommand): TutorialState {
+export function tutorialTransition(previous: TutorialState, command: TutorialCommand, encounter: EncounterDefinition = LESSON_ENCOUNTER): TutorialState {
   const expected = LESSON_STEPS[previous.step];
   if (!expected || command.step !== previous.step || command.revision !== previous.revision
-      || !sameAction(expected.action, command.action) || !tutorialMatches(previous)) return previous;
+      || !sameAction(expected.action, command.action) || !tutorialMatches(previous, encounter)) return previous;
   const next = advance(previous);
   if ((expected.action.type === 'play' || expected.action.type === 'end-turn') && next.battle === previous.battle) return previous;
   return next;
 }
-export function resetTutorial(previous: TutorialState): TutorialState {
-  return { ...newTutorial(), revision: previous.revision + 1 };
+export function resetTutorial(previous: TutorialState, encounter: EncounterDefinition = LESSON_ENCOUNTER): TutorialState {
+  return { ...newTutorial(encounter), revision: previous.revision + 1 };
 }

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.8.0 — 2026-11-03
+
+- Add optional settings for a host game embedding the battle screen (the Cinderfold adventure in this repository): `brand` (its name in place of the Kiln Courier wordmark), `rewards` (lines in the victory dialog), `extraControls` (controls under End turn), and for the guided lesson an `encounter` and reworded `prompts`. Without them the game, its lesson, saves and rules are unchanged.
+- Validate 112 tests (one new: the lesson taught against another enemy, and every default call unchanged), the production build, and an unchanged opening screen in the browser.
+
 ## 0.7.0 — 2026-10-31
 
 - Illustrate all nine equipment items and six reinforced variants, using local WebP derivatives with recorded generation prompts.
