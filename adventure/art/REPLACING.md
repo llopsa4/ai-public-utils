@@ -40,20 +40,20 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `notebook` | mother's notebook | 252, 296, 96×44 | (444, 548) |
-| `rack` | charging rack | 884, 380, 112×144 | (860, 544) |
-| `jar` | water jar | 128, 196, 104×124 | (444, 548) |
-| `workbench` | workbench | 0, 260, 392×280 | (444, 548) |
+| `notebook` | mother's notebook | 112, 328, 80×36 | (220, 532) |
+| `rack` | charging rack | 312, 220, 104×144 | (364, 532) |
+| `jar` | water jar | 224, 244, 92×112 | (280, 532) |
+| `workbench` | workbench | 0, 192, 428×324 | (300, 532) |
 | `stool` | stool | 150, 410, 188×192 | — |
-| `drum` | old brush drum | 400, 204, 380×248 | (600, 480) |
-| `tentFlap` | tent flap | 1124, 320, 132×340 | (1192, 672) |
+| `drum` | old brush drum | 500, 328, 236×164 | (640, 524) |
+| `tentFlap` | tent flap | 1108, 200, 144×284 | (1184, 516) |
 
-- Object `objects/rack` (224×140, tags full (1), empty (1)): foot point (940, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Object `objects/notebook` (76×30, tags idle (1)): foot point (300, 336). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Walk-behind piece `foreground/tent-stool.png` (194×198, top left at (146, 408)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
-- The name board hangs from (340, 12) (about 184×68); it is painted by the game, so leave a quiet patch of wall there.
-- Heat shimmer (High quality) over: 788, 12, 64×60: hot spots in the painting (fires, lamps, pipes).
-- Flickering light pools at (1192, 540), (820, 112): lamps, kiln mouths, hearths in the painting.
+- Object `objects/rack` (224×140, tags full (1), empty (1)): foot point (364, 360). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/notebook` (76×30, tags idle (1)): foot point (150, 360). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Walk-behind piece `foreground/tent-stool.png` (196×200, top left at (144, 408)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
+- The name board hangs from (220, 20) (about 184×64); it is painted by the game, so leave a quiet patch of wall there.
+- Heat shimmer (High quality) over: 608, 68, 64×60: hot spots in the painting (fires, lamps, pipes).
+- Flickering light pools at (1184, 360), (640, 110): lamps, kiln mouths, hearths in the painting.
 
 ### The Kiln Hall: `rooms/mara-room.png`
 

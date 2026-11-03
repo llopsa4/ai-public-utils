@@ -4,7 +4,7 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 
 | Output | Source (FFCardGame/assets) | Script | Processing |
 | --- | --- | --- | --- |
-| `rooms/tent.png` (Mara's tent), `foreground/tent-stool.png` | — (original) | `tent.mjs` | painted from scratch as an SVG scene (canvas, poles, lantern, workbench, jar, brush drum, cot, rug, door flap), rendered with sharp, 128 colours with dithering; the stool rendered alone for the walk-behind piece |
+| `rooms/tent.png` (Mara's tent), `foreground/tent-stool.png` | — (original) | `tent.mjs` | painted from scratch as an SVG scene seen side-on (canvas walls with seams and folds, poles, a brass lantern, the workbench with its tools, jar and candle, the brush drum on its trestle, a coat, the cot with boots, a rug, the door flap), with lantern falloff, cast shadows and contact shading, wood grain and canvas textures from SVG noise; rendered with sharp as pixel art (reduced to 320×180, 48 colours, no dithering, scaled up 4× with hard edges); the stool cut-out takes the room's own pixels inside the stool's shape |
 | `objects/tent.*` (the tent seen in the kiln hall) | `opening/tempering-house.png` (cloth over the workbench) | `pixelate.mjs` | the painted cloth mapped onto a tent silhouette (mirrored on the far slope, shaded by side), dark entrance and pole drawn |
 | `rooms/mara-room.png` (kiln hall) | `kiln-hall.png` | `pixelate.mjs` | 1280×720 area downscale, light grade, 96-colour palette |
 | `rooms/firing-house.png` | `opening/cinderfold.png` | `pixelate.mjs` | as above |
