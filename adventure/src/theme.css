@@ -168,6 +168,12 @@ dialog[open] {
   text-align: center;
 }
 
+/* The gear pop-up: wider than the shop, for the loadout and the shelf beside the selected piece. */
+.panel.gear-panel {
+  width: min(54rem, 96vw);
+  max-width: 96vw;
+}
+
 .panel.small p {
   margin: 0.4rem 0 1.2rem;
   font-size: 1.1em;

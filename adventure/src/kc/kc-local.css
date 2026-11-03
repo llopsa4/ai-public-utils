@@ -11,7 +11,6 @@
 .kc .kc-tonic small { font-size: 12px; opacity: 0.8; }
 .kc .kc-rewards { list-style: none; margin: 10px 0; padding: 0; display: flex; gap: 14px; justify-content: center; font-family: 'Cinzel', Georgia, serif; color: var(--gold); }
 .kc .kc-rewards li { padding: 4px 12px; border: 1px solid var(--brass); border-radius: 999px; background: #241a10; }
-.kc.kc-armory-screen { padding: 24px clamp(12px, 4vw, 48px); background: linear-gradient(#100d09f0, #100d09f8), url('../../art/src/kc/regulator-gallery.webp') center / cover; }
 .kc .kc-armory { max-width: 1180px; margin: 0 auto; }
 .kc .kc-build, .kc .kc-carried { text-align: center; }
 /* The regulator gallery backdrop (art/src/kc/regulator-gallery.webp) has its floor grating lower
@@ -183,3 +182,49 @@
   .kc .kc-victory-stats dd { font-size: 20px; }
   .kc .kc-victory-continue { padding: 9px 24px; font-size: 16px; }
 }
+
+/* ------------------------------------------------- the gear pop-up (#gear, Armory with popup) --- */
+.kc.kc-armory-popup { background: transparent; font-size: 16px; }
+.kc-armory-popup .kc-armory { max-width: none; }
+.kc-armory-popup .loadout-slots { gap: 8px; margin: 0 0 8px; }
+.kc-armory-popup .loadout-slots > button { padding: 6px 8px; gap: 8px; }
+.kc-armory-popup .loadout-slots .equipment-art { width: 40px; }
+.kc-armory-popup .loadout-slots small { font-size: 12px; margin-bottom: 2px; }
+.kc-armory-popup .loadout-slots strong { font-size: 14px; }
+.kc-armory-popup .kc-build { font-size: 14px; margin: 4px 0; }
+.kc-armory-popup .workbench-result { min-height: 0; margin: 0; font-size: 14px; }
+.kc-armory-popup .showroom-grid { grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.6fr); gap: 14px; margin-top: 8px; }
+.kc-armory-popup .showroom h3, .kc-armory-popup .gear-shelf > h3 { font-size: 13px; margin-bottom: 8px; }
+.kc-armory-popup .gear-tiles { gap: 6px; }
+.kc-armory-popup .gear-tile { padding: 6px 4px; }
+.kc-armory-popup .gear-tile .equipment-art { max-width: 56px; }
+.kc-armory-popup .gear-tile strong { font-size: 13px; }
+.kc-armory-popup .gear-tile small { font-size: 12px; margin-top: 2px; }
+.kc-armory-popup .selected-workpiece { padding: 12px 14px; }
+.kc-armory-popup .workpiece-title h3 { font-size: 18px; margin: 2px 0; }
+.kc-armory-popup .showroom .workpiece-title p { font-size: 15px; margin: 4px 0; }
+.kc-armory-popup .gear-pair { margin: 6px 0; }
+.kc-armory-popup .gear-pair .equipment-art { max-width: 88px; }
+.kc-armory-popup .gear-pair figcaption { font-size: 12px; }
+.kc-armory-popup .gear-pair figcaption strong { font-size: 14px; }
+.kc-armory-popup .showroom .gear-properties { font-size: 14px; padding: 6px; }
+.kc-armory-popup .comparison-heading h4 { font-size: 14px; margin: 8px 0 4px; }
+.kc-armory-popup .gear-deltas { font-size: 14px; }
+.kc-armory-popup .workpiece-actions { margin-top: 8px; }
+.kc-armory-popup .workpiece-actions button { font-size: 15px; padding: 8px 14px; }
+.kc-armory-popup .session-caption { font-size: 13px; margin: 6px 0 0; }
+@media (max-width: 760px) {
+  .kc-armory-popup .showroom-grid { grid-template-columns: 1fr; }
+  .kc-armory-popup .gear-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+/* Equip reads as the action it is (Kiln Courier's dark button looks disabled on this panel). */
+.kc-armory-popup #armory-equip:not(:disabled) {
+  color: #2a1606;
+  border: 1px solid #ffe2a6;
+  background: linear-gradient(#ffd98c, #e09a3e 60%, #b86d22);
+  box-shadow: 0 0 0 2px #3a220e, 0 4px 12px #0009;
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+.kc-armory-popup #armory-equip:not(:disabled):hover { filter: brightness(1.08); }

@@ -6,9 +6,9 @@
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#120d14">
   <title>Cinderfold</title>
-  <script type="module" crossorigin src="./build/index-CwlOhzJ1.js"></script>
+  <script type="module" crossorigin src="./build/index-CoO-2rZk.js"></script>
   <link rel="modulepreload" crossorigin href="./build/combat-BDwBaWVO.js">
-  <link rel="stylesheet" crossorigin href="./build/index-7i3b-5Fx.css">
+  <link rel="stylesheet" crossorigin href="./build/index-D2H7yRkh.css">
 </head>
 <body>
   <main id="app">
@@ -169,6 +169,13 @@
   </dialog>
 
   <!-- The merchant's stall. -->
+  <!-- Mara's gear: Kiln Courier's workshop (src/kc/Armory.tsx) mounted in #gear-body, over the room. -->
+  <dialog id="gear" class="panel gear-panel" aria-labelledby="gear-heading">
+    <h1 id="gear-heading" class="plaque" data-i18n="ui.gearTitle">Mara's gear</h1>
+    <div id="gear-body"></div>
+    <div class="panel-actions"><button id="armory-done" type="button" class="btn primary dialog-close" data-i18n="ui.done">Done</button></div>
+  </dialog>
+
   <dialog id="shop" class="panel small" aria-labelledby="shop-heading">
     <h1 id="shop-heading" class="plaque" data-i18n="ui.shopTitle">Tonics</h1>
     <div id="shop-body" class="shop-body"></div>

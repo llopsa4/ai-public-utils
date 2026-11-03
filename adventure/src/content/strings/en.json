@@ -139,5 +139,6 @@
   "battle.healthLeft": "Health",
   "battle.damageDealt": "Damage",
   "battle.continue": "Continue",
-  "battle.salvage": "salvage"
+  "battle.salvage": "salvage",
+  "ui.done": "Done"
 }

@@ -110,6 +110,6 @@ function ArmoryRoot(props: Omit<ArmoryProps, 'profile' | 'owned' | 'salvage' | '
 /** Shows the workshop (equip-only) in `el`. Returns a function that removes it. */
 export function mountArmory(el: HTMLElement, props: Parameters<typeof ArmoryRoot>[0]): () => void {
   const root = createRoot(el);
-  root.render(<div className="kc kc-screen kc-armory-screen"><ArmoryRoot {...props} /></div>);
+  root.render(<div className={props.popup ? 'kc kc-armory-popup' : 'kc kc-screen kc-armory-screen'}><ArmoryRoot {...props} /></div>);
   return () => root.unmount();
 }

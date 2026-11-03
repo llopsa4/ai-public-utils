@@ -70,11 +70,11 @@ test('the first fight is Kiln Courier\'s lesson: only the outlined control works
   await page.keyboard.press('Escape');
   await expect(page.locator('#force-veil')).toBeVisible();
   await page.locator('#gear-btn').click();
-  await expect(page.locator('#kc-root .kc-armory')).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator('#gear .kc-armory')).toBeVisible({ timeout: 30_000 });
   // The equipment is shown with its pictures (not the fallback icons).
-  await expect(page.locator('#kc-root .kc-armory .equipment-art img').first()).toBeVisible();
-  expect(await page.locator('#kc-root .kc-armory .equipment-art img').evaluateAll(imgs => imgs.every(i => (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
-  await page.locator('#kc-root .gear-tile', { hasText: 'Light Armor' }).click();
+  await expect(page.locator('#gear .kc-armory .equipment-art img').first()).toBeVisible();
+  expect(await page.locator('#gear .kc-armory .equipment-art img').evaluateAll(imgs => imgs.every(i => (i as HTMLImageElement).naturalWidth > 0))).toBe(true);
+  await page.locator('#gear .gear-tile', { hasText: 'Light Armor' }).click();
   await page.locator('#armory-equip').click();
   await page.locator('#armory-done').click();
   await expect.poll(async () => {

@@ -37,16 +37,15 @@ export async function forceGear(ui: Ui): Promise<void> {
 }
 
 /**
- * Mara's gear on Kiln Courier's workshop screen (equip-only, src/kc/Armory.tsx), loaded on first
- * use. Resolves when Done is pressed.
+ * Mara's gear: Kiln Courier's workshop (equip-only, src/kc/Armory.tsx, loaded on first use) in a
+ * pop-up over the room, like the shop. Resolves when it is closed (Done, Escape or a click outside).
  */
 export async function openGear(ui: Ui): Promise<void> {
   const kc = await import('../kc/mount');
-  const el = $('kc-root');
-  el.hidden = false;
+  const dialog = $<HTMLDialogElement>('gear');
   await new Promise<void>(resolve => {
-    const close = kc.mountArmory(el, {
-      title: t('ui.gearTitle'), eyebrow: t('ui.gearEyebrow'), locked: [...LOCKED_SLOTS],
+    const unmount = kc.mountArmory($('gear-body'), {
+      popup: true, title: t('ui.gearTitle'), eyebrow: t('ui.gearEyebrow'), locked: [...LOCKED_SLOTS],
       read: () => {
         const { kit, bag } = ui.host.getState();
         const mats = Object.entries(bag.materials).filter(([, n]) => n > 0).map(([id, n]) => `${n} ${t(MATERIALS[id].name)}`);
@@ -56,7 +55,9 @@ export async function openGear(ui: Ui): Promise<void> {
         };
       },
       onEquip: id => { equip(ui.host.getState().kit, EQUIPMENT[id].slot, id); ui.host.autosave(); },
-      onClose: () => { close(); el.hidden = true; ui.host.autosave(); resolve(); },
+      onClose: () => dialog.close(),
     });
+    dialog.addEventListener('close', () => { unmount(); ui.host.autosave(); resolve(); }, { once: true });
+    dialog.showModal();
   });
 }

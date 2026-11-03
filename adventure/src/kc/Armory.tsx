@@ -21,6 +21,8 @@ export interface ArmoryProps {
   eyebrow: string;
   onEquip: (id: string) => void;
   onClose: () => void;
+  /** Inside the game's gear pop-up: the panel gives the title and Done; no panorama. */
+  popup?: boolean;
 }
 
 function bonuses(item: EquippedItem) {
@@ -44,7 +46,7 @@ function StatComparison({ profile, item }: { profile: CharacterProfile; item: Eq
   return values.length ? <dl className="gear-deltas">{values.map(value => <div key={value.key} className={value.before === value.after ? 'unchanged' : (value.after > value.before) !== value.lowerBetter ? 'stat-benefit' : 'stat-tradeoff'}><dt>{value.label}</dt><dd><span>{value.before}</span><span aria-hidden="true"> → </span><strong>{value.after}</strong>{value.before !== value.after && <small>{value.after - value.before > 0 ? '+' : ''}{value.after - value.before}{value.lowerBetter ? ' pressure' : ''}</small>}</dd></div>)}</dl> : <p className="session-caption">No change to your current build.</p>;
 }
 
-export function Armory({ profile, owned, locked, salvage, carried, title, eyebrow, onEquip, onClose }: ArmoryProps) {
+export function Armory({ profile, owned, locked, salvage, carried, title, eyebrow, onEquip, onClose, popup = false }: ArmoryProps) {
   const loadout = profile.equipment ?? STARTING_EQUIPMENT;
   const firstSpare = owned.find(id => loadout[EQUIPMENT[id].slot].id !== id) ?? owned[0];
   const [gearId, setGearId] = useState(firstSpare);
@@ -53,8 +55,8 @@ export function Armory({ profile, owned, locked, salvage, carried, title, eyebro
   const currentItem = loadout[data.slot];
   const equipped = currentItem.id === gearId, slotLocked = locked.includes(data.slot);
   return <section className="workshop showroom kc-armory" aria-label={title}>
-    <header className="workshop-heading"><div><span className="eyebrow">{eyebrow}</span><h2>{title}</h2></div><span className="salvage-balance"><span aria-hidden="true">◇</span> {salvage}<small>salvage</small></span></header>
-    <div className="workshop-panorama" style={{ backgroundImage: `url(${openingArt['regulator-gallery']})` }} role="img" aria-label="The regulator gallery" />
+    {!popup && <header className="workshop-heading"><div><span className="eyebrow">{eyebrow}</span><h2>{title}</h2></div><span className="salvage-balance"><span aria-hidden="true">◇</span> {salvage}<small>salvage</small></span></header>}
+    {!popup && <div className="workshop-panorama" style={{ backgroundImage: `url(${openingArt['regulator-gallery']})` }} role="img" aria-label="The regulator gallery" />}
     <div className="loadout-slots" aria-label="Three equipped slots">{EQUIPMENT_SLOTS.map(slot => {
       const equippedItem = loadout[slot];
       return <button key={slot} onClick={() => { setGearId(equippedItem.id); setResult(''); }} aria-label={`Inspect equipped ${EQUIPMENT[equippedItem.id].name}`}><EquipmentArt item={equippedItem} /><span><small>{slot} · equipped</small><strong>{EQUIPMENT[equippedItem.id].name}</strong></span></button>;
@@ -78,7 +80,8 @@ export function Armory({ profile, owned, locked, salvage, carried, title, eyebro
         <p className="session-caption">{slotLocked ? "The gauntlet is his mother's: it stays." : 'Swaps are free. They never restore HP or MP.'}</p>
       </section>
     </div>
-    {carried.length > 0 && <p className="session-caption kc-carried">{carried.join(' · ')}</p>}
-    <footer className="workshop-exit"><p>Your gear is saved as you change it.</p><button id="armory-done" className="modal-primary" onClick={onClose}>Done →</button></footer>
+    {carried.length > 0 && <p className="session-caption kc-carried">{[...(popup ? [`◇ ${salvage} salvage`] : []), ...carried].join(' · ')}</p>}
+    {popup ? <p className="session-caption kc-carried">Your gear is saved as you change it.</p>
+      : <footer className="workshop-exit"><p>Your gear is saved as you change it.</p><button id="armory-done" className="modal-primary" onClick={onClose}>Done →</button></footer>}
   </section>;
 }
