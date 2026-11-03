@@ -53,7 +53,7 @@ export async function openGear(ui: Ui): Promise<void> {
       // The paper doll shows only the gear and the stats it gives (no purse or bag).
       read: () => {
         const { kit, bag } = ui.host.getState();
-        return { profile: maraProfile(kit), owned: debug ? [...new Set([...kit.owned, ...ALL_GEAR])] : [...kit.owned], salvage: bag.salvage, carried: [] };
+        return { profile: maraProfile(kit), owned: debug ? [...new Set([...kit.owned, ...ALL_GEAR])] : [...kit.owned], salvage: bag.salvage, carried: [], tonics: bag.tonics };
       },
       onEquip: id => {
         const kit = ui.host.getState().kit;

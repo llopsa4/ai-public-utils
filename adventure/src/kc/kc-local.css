@@ -188,7 +188,7 @@
 .kc-armory-popup .doll {
   display: grid;
   grid-template-columns: 290px minmax(0, 1fr);
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   gap: 14px 22px;
   max-width: none;
 }
@@ -246,8 +246,23 @@
   box-shadow: 0 0 0 1px #2a1606, 0 2px 4px #000a;
 }
 .kc-armory-popup .doll-lock svg { width: 100%; height: 100%; display: block; }
+.kc-armory-popup .doll-belt { grid-row: 2; display: flex; align-items: center; gap: 12px; width: 260px; margin: 0 auto -4px; }
+.kc-armory-popup .doll-tonic { position: relative; transform: none; flex: none; }
+.kc-armory-popup .doll-slotname.doll-plain { text-transform: none; }
+.kc-armory-popup .doll-potion-icon, .kc-armory-popup .doll-potion-icon svg { display: block; width: var(--art); height: var(--art); }
+.kc-armory-popup .doll-count {
+  position: absolute;
+  right: 3px;
+  bottom: 1px;
+  font: 700 14px 'Cinzel', Georgia, serif;
+  color: #ffe2a6;
+  text-shadow: 0 1px 0 #000, 0 0 4px #000;
+}
+.kc-armory-popup .doll-belt-label { font-size: 14px; color: var(--muted); }
+.kc-armory-popup .doll-belt-label strong { margin-left: 4px; font-family: 'Cinzel', Georgia, serif; color: var(--ivory); }
+.kc-armory-popup .stash-tonic { cursor: default; }
 .kc-armory-popup .doll-stats {
-  grid-row: 2;
+  grid-row: 3;
   margin: 0 auto;
   width: 260px;
   display: grid;
@@ -261,7 +276,7 @@
 .kc-armory-popup .doll-stats > div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dotted #5c442680; }
 .kc-armory-popup .doll-stats dt { font-size: 13px; color: var(--muted); }
 .kc-armory-popup .doll-stats dd { margin: 0; font-family: 'Cinzel', Georgia, serif; font-size: 15px; color: var(--ivory); }
-.kc-armory-popup .doll-side { grid-column: 2; grid-row: 1 / span 2; min-width: 0; }
+.kc-armory-popup .doll-side { grid-column: 2; grid-row: 1 / span 3; min-width: 0; }
 .kc-armory-popup .doll-heading { margin: 0 0 6px; font: 600 13px 'Cinzel', Georgia, serif; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
 .kc-armory-popup .doll-stash {
   display: grid;
@@ -301,7 +316,7 @@
   .kc.kc-armory-popup { --cell: 48px; --art: 38px; }
   .kc-armory-popup .doll { grid-template-columns: 210px minmax(0, 1fr); gap: 10px 14px; }
   .kc-armory-popup .doll-figure { width: 200px; height: 300px; }
-  .kc-armory-popup .doll-stats { width: 200px; }
+  .kc-armory-popup .doll-stats, .kc-armory-popup .doll-belt { width: 200px; }
 }
 /* Equip reads as the action it is (Kiln Courier's dark button looks disabled on this panel). */
 .kc-armory-popup #armory-equip:not(:disabled) {

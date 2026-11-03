@@ -9,7 +9,8 @@ import { EQUIPMENT, STARTING_EQUIPMENT } from '@kc/content/equipment';
 import { deriveStats, EQUIPMENT_SLOTS, openingHandSize } from '@kc/game/equipment';
 import type { CharacterProfile, EquippedItem, EquipmentSlot } from '@kc/game/types';
 import { equipmentComparison } from '@kc/game/workshop';
-import { BASIC_WEAR, type WearSlot } from '../content/kit';
+import { BASIC_WEAR, TONIC, type WearSlot } from '../content/kit';
+import { TONIC_ICON } from '../ui/icons';
 
 export interface ArmoryProps {
   profile: CharacterProfile;
@@ -18,6 +19,8 @@ export interface ArmoryProps {
   salvage: number;
   /** Extra lines under the build (tonics, materials). */
   carried: string[];
+  /** Kiln Tonics carried (the paper doll's belt). */
+  tonics?: number;
   title: string;
   eyebrow: string;
   onEquip: (id: string) => void;
@@ -59,9 +62,10 @@ const SLOT_AT: Record<EquipmentSlot | WearSlot, { x: number; y: number }> = {
   pants: { x: 50, y: 66 }, // his legs
   boots: { x: 52, y: 90 }, // his feet
 };
-/** What the stash shows: one type of gear at a time. Pants and boots: only what he wears for now. */
-type GearType = EquipmentSlot | WearSlot;
-const TYPE_NAME: Record<GearType, string> = { gauntlet: 'Gauntlets', armor: 'Armor', utility: 'Utility', pants: 'Pants', boots: 'Boots' };
+/** What the stash shows: one type of gear at a time (or the tonics on his belt). Pants and boots: only what he wears for now. */
+type GearType = EquipmentSlot | WearSlot | 'tonic';
+const TYPE_NAME: Record<GearType, string> = { gauntlet: 'Gauntlets', armor: 'Armor', utility: 'Utility', pants: 'Pants', boots: 'Boots', tonic: 'Kiln Tonics' };
+const Potion = () => <span className="doll-potion-icon" dangerouslySetInnerHTML={{ __html: TONIC_ICON }} />;
 const WEAR_SLOTS: WearSlot[] = ['pants', 'boots'];
 const isWear = (t: GearType): t is WearSlot => (WEAR_SLOTS as string[]).includes(t);
 
@@ -80,15 +84,15 @@ const STAT_ROWS: ['power' | 'defense' | 'speed' | 'cards' | 'hp' | 'mp', string]
  * cells with what he owns but isn't wearing, a tooltip card for the selected piece, and his stats.
  * Click selects, double-click equips, and a piece can be dragged onto its slot (touch: tap, then Equip).
  */
-function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
+function PaperDoll({ profile, owned, locked, onEquip, tonics = 0 }: ArmoryProps) {
   const loadout = profile.equipment ?? STARTING_EQUIPMENT;
   const stash = owned.filter(id => loadout[EQUIPMENT[id].slot].id !== id);
   const first = stash[0] ?? loadout.armor.id;
   const [view, setView] = useState<GearType>(EQUIPMENT[first].slot);
   const [chosen, setSelected] = useState<string | null>(first);
-  const shelf = isWear(view) ? [] : stash.filter(id => EQUIPMENT[id].slot === view);
-  // Trousers and boots have their own card (always worn, no bonuses).
-  const selected = isWear(view) ? null : chosen ?? loadout[view].id;
+  const shelf = isWear(view) || view === 'tonic' ? [] : stash.filter(id => EQUIPMENT[id].slot === view);
+  // Trousers, boots and tonics have their own card.
+  const selected = isWear(view) || view === 'tonic' ? null : chosen ?? loadout[view].id;
   const [dragging, setDragging] = useState<string | null>(null);
   const [over, setOver] = useState<EquipmentSlot | null>(null);
   const [result, setResult] = useState('');
@@ -128,10 +132,19 @@ function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
         <WearArt slot={slot} />
       </button>)}
     </div>
+    <div className="doll-belt">
+      <button type="button" className={`doll-slot doll-tonic${view === 'tonic' ? ' doll-viewing doll-selected' : ''}`} aria-pressed={view === 'tonic'}
+        aria-label={`Kiln Tonics: ${tonics} of ${TONIC.max}`} title={`Kiln Tonics: ${tonics} of ${TONIC.max}`} onClick={() => { setView('tonic'); setResult(''); }}>
+        <Potion /><span className="doll-count">{tonics}</span>
+      </button>
+      <span className="doll-belt-label">Kiln Tonics <strong>{tonics} / {TONIC.max}</strong></span>
+    </div>
     <dl className="doll-stats">{STAT_ROWS.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{statValue(key)}</dd></div>)}</dl>
     <div className="doll-side">
       <h3 className="doll-heading">Stash <span>· {TYPE_NAME[view]}</span></h3>
       <div className="doll-stash">{Array.from({ length: Math.max(STASH_CELLS, shelf.length) }, (_, n) => {
+        if (view === 'tonic') return n < tonics ? <span key={`tonic-${n}`} className="stash-cell stash-tonic" title="Kiln Tonic"><Potion /></span>
+          : <span key={`empty-${n}`} className="stash-cell stash-empty" aria-hidden="true" />;
         const id = shelf[n];
         if (!id) return <span key={`empty-${n}`} className="stash-cell stash-empty" aria-hidden="true" />;
         return <button key={id} type="button" draggable className={`gear-tile stash-cell${id === selected ? ' doll-selected' : ''}${spare(id) ? ' doll-spare' : ''}`}
@@ -142,7 +155,12 @@ function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
           <EquipmentArt item={{ id }} /><span className="sr-only">{EQUIPMENT[id].name}</span>
         </button>;
       })}</div>
-      {isWear(view) ? <article className="doll-card" aria-live="polite">
+      {view === 'tonic' ? <article className="doll-card" aria-live="polite">
+        <h3>Kiln Tonic</h3>
+        <p className="doll-slotname doll-plain">On his belt · {tonics} of {TONIC.max}</p>
+        <p className="doll-bonuses">Heals {TONIC.heal} HP in a fight</p>
+        <p className="doll-desc">Drink one from the battle screen, under End turn. Corvin sells them in the ashways.</p>
+      </article> : isWear(view) ? <article className="doll-card" aria-live="polite">
         <h3>{BASIC_WEAR[view].name}</h3>
         <p className="doll-slotname">{view} · equipped</p>
         <p className="doll-bonuses">Standard gear</p>

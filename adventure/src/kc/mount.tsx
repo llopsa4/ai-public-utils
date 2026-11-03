@@ -101,7 +101,7 @@ export function mountBattle(el: HTMLElement, options: BattleOptions): () => void
   return () => root.unmount();
 }
 
-function ArmoryRoot(props: Omit<ArmoryProps, 'profile' | 'owned' | 'salvage' | 'carried'> & { read: () => Pick<ArmoryProps, 'profile' | 'owned' | 'salvage' | 'carried'> }) {
+function ArmoryRoot(props: Omit<ArmoryProps, 'profile' | 'owned' | 'salvage' | 'carried' | 'tonics'> & { read: () => Pick<ArmoryProps, 'profile' | 'owned' | 'salvage' | 'carried' | 'tonics'> }) {
   const [, redraw] = useState(0);
   const { read, onEquip, ...rest } = props;
   return <Armory {...rest} {...read()} onEquip={id => { onEquip(id); redraw(n => n + 1); }} />;
