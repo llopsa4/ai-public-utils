@@ -57,7 +57,8 @@ const SLOT_AT: Record<EquipmentSlot, { x: number; y: number }> = {
   utility: { x: 24, y: 43 }, // the carrier at his hip
 };
 const STASH_CELLS = 8;
-const STAT_ROWS: [keyof ReturnType<typeof deriveStats> | 'cards', string][] = [['power', 'Power'], ['defense', 'Defense'], ['speed', 'Speed'], ['cards', 'Opening cards'], ['maxMp', 'Max MP']];
+// Two per row: the last row is health next to MP (now / most).
+const STAT_ROWS: ['power' | 'defense' | 'speed' | 'cards' | 'hp' | 'mp', string][] = [['power', 'Power'], ['defense', 'Defense'], ['speed', 'Speed'], ['cards', 'Opening cards'], ['hp', 'HP'], ['mp', 'MP']];
 
 /**
  * The gear pop-up as a paper doll: Mara's figure with his three slots on the body, a stash of square
@@ -81,7 +82,8 @@ function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
     setResult(`${EQUIPMENT[id].name} equipped.`);
   };
   const stats = deriveStats(profile);
-  const statValue = (key: (typeof STAT_ROWS)[number][0]) => (key === 'cards' ? openingHandSize(5, stats.speed) : stats[key]);
+  const statValue = (key: (typeof STAT_ROWS)[number][0]) =>
+    key === 'cards' ? openingHandSize(5, stats.speed) : key === 'hp' ? `${profile.hp} / ${profile.maxHp}` : key === 'mp' ? `${profile.mp} / ${stats.maxMp}` : stats[key];
   const spare = (id: string) => !(STARTING_EQUIPMENT_IDS as readonly string[]).includes(id);
   return <section className="kc-armory doll" aria-label="Mara's gear">
     <div className="doll-figure">
