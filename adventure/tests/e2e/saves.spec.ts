@@ -21,7 +21,9 @@ test('progress is autosaved: reload, Continue, and the game resumes where it was
   expect(s.inventory).toEqual(['gauntlet']);
 
   // A damaged slot is ignored with a notice, never loaded.
-  await page.evaluate(() => localStorage.setItem('cinderfold.autosave', '{broken'));
+  // Flush the pending autosave first (it is written 400 ms after a change), so it cannot replace
+  // the damaged slot before the reload.
+  await page.evaluate(() => { (window as any).adventure.session.saveNow(); localStorage.setItem('cinderfold.autosave', '{broken'); });
   await page.reload();
   await expect(page.locator('#title')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Continue' })).toBeHidden();
