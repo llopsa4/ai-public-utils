@@ -50,7 +50,15 @@ export function updateLighting(scene: RoomScene): void {
   if (!light || !scene.atmosphere) return;
   const cold = scene.atmosphere.cold;
   const coldTint = scene.atmosphere.enabled ? 0xffffff : mixColor(0xffffff, coldTintOf(scene), cold);
-  const sources = scene.room.ambient?.glows ?? [];
+  const carried = scene.room.heroLight;
+  const glow = scene.heroLight;
+  let sources = scene.room.ambient?.glows ?? [];
+  if (carried && glow?.active && scene.hero?.sprite.active) {
+    // At the gauntlet hand, a little ahead of him.
+    const h = scene.hero.sprite;
+    glow.setPosition(h.x + (h.flipX ? -14 : 14) * h.scaleX * ART_SCALE, h.y - 46 * h.scaleY * ART_SCALE);
+    sources = [...sources, { x: glow.x, y: glow.y, r: carried.r, color: carried.color }];
+  }
   const { farY, nearY } = scene.room.scale;
   for (const actor of scene.allActors()) {
     const t = Phaser.Math.Clamp((actor.sprite.y - farY) / (nearY - farY), 0, 1);
@@ -78,6 +86,16 @@ export function refreshAmbient(scene: RoomScene, cold: boolean, animate = false)
     }
   } else {
     for (const o of old) o.destroy();
+  }
+  // Mara's own light (dark rooms): lighting, not motion, so it stays with reduced motion.
+  scene.heroLight = null;
+  const carried = scene.room.heroLight;
+  if (carried) {
+    const light = scene.add.image(0, 0, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setTint(carried.color)
+      .setScale((carried.r * 2) / 128).setAlpha(0.4).setDepth(-4000);
+    if (!settings().reducedMotion) scene.tweens.add({ targets: light, alpha: { from: 0.32, to: 0.46 }, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    scene.ambient.push(light);
+    scene.heroLight = light;
   }
   const def = scene.room.ambient;
   if (!def || settings().reducedMotion) return;

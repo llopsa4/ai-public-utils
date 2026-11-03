@@ -107,6 +107,8 @@ export class RoomScene extends Phaser.Scene {
   foreground: Phaser.GameObjects.Image[] = [];
   ambient: Phaser.GameObjects.GameObject[] = [];
   ambientCold: boolean | null = null;
+  /** The glow Mara carries in dark rooms (`RoomDef.heroLight`), moved with him. */
+  heroLight: Phaser.GameObjects.Image | null = null;
   atmosphere!: Atmosphere;
   props!: Props;
   /** Background people (rooms in CROWDS), else null. */
@@ -140,6 +142,7 @@ export class RoomScene extends Phaser.Scene {
     const sheet = heroSheetFor(chapter().story, { state, room, cold: false });
     if (sheet !== 'mara') queueSheet(this, sheet);
     for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, NPC_SHEETS[a.id] ?? a.id);
+    for (const o of room.objects) queueSheet(this, o.sheet);
     if (!this.textures.exists(room.background)) this.load.image(room.background, ROOM_IMAGES[room.background]);
     for (const p of room.props ?? []) {
       if ('image' in p && !this.textures.exists(`prop-${p.image}`)) this.load.image(`prop-${p.image}`, PROP_IMAGES[p.image]);

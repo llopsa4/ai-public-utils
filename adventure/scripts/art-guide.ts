@@ -125,8 +125,10 @@ for (const room of CHAPTER_LIST.flatMap(c => Object.values(c.rooms))) {
   p();
   const extras: string[] = [];
   for (const o of room.objects) {
-    const info = sheetInfo(join(ART, 'objects', o.sheet));
-    extras.push(`- Object \`objects/${o.sheet}\` (${info.size}, tags ${info.tags.join(', ')}): foot point ${pt(o)}${o.movedTo ? `, moves to ${pt(o.movedTo)}` : ''}. Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).`);
+    // Later chapters keep their objects in their own folder (the manifest says where).
+    const file = (MANIFEST.find(e => e.kind === 'object' && e.id === o.sheet)?.file ?? `objects/${o.sheet}.png`).replace(/\.png$/, '');
+    const info = sheetInfo(join(ART, file));
+    extras.push(`- Object \`${file}\` (${info.size}, tags ${info.tags.join(', ')}): foot point ${pt(o)}${o.movedTo ? `, moves to ${pt(o.movedTo)}` : ''}. Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).`);
   }
   for (const f of room.foreground ?? []) {
     const s = pngSize(join(ART, 'foreground', `${f.image}.png`));

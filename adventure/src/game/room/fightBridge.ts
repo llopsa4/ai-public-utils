@@ -10,6 +10,8 @@ import { chapter } from '../../chapters';
 import { guided, hushed, musicFor } from '../../engine/story';
 import { LOGICAL_H, LOGICAL_W } from '../../ui/ui';
 import type { RoomScene } from '../scenes';
+import type { Point } from '../../engine/types';
+import { CREATURE_ART } from '../assets';
 import { wait } from './runner';
 
 /**
@@ -92,7 +94,7 @@ export async function blowHatch(scene: RoomScene): Promise<void> {
  * A fight: save first (a reload restarts it), shatter the room, then Kiln Courier's battle screen
  * (React: FFCardGame's code through src/kc/mount.tsx) over everything. The script carries on once it is won.
  */
-export async function fight(scene: RoomScene, id: string): Promise<void> {
+export async function fight(scene: RoomScene, id: string, pool?: readonly string[]): Promise<void> {
   const state = scene.session.state;
   scene.syncHero();
   scene.session.saveNow();
@@ -117,6 +119,7 @@ export async function fight(scene: RoomScene, id: string): Promise<void> {
       loot: reward ? [{ kind: 'salvage' as const, id: 'salvage', amount: reward.salvage, name: t('battle.salvage') },
         ...Object.entries(reward.materials).map(([m, n]) => ({ kind: 'material' as const, id: m, amount: n, name: t(MATERIALS[m].name) }))] : [],
       onLootShown: () => sound.pickup(),
+      pickEncounter: pool ? () => chapter().encounters[pool[Math.floor(Math.random() * pool.length)]] : undefined,
       tonics: () => state.bag.tonics,
       drink: battle => { const next = drinkTonic(battle, state.bag); return next === battle ? null : next; },
       onMenu: () => scene.session.ui.openMenu(),
@@ -206,4 +209,35 @@ export function snapshot(scene: RoomScene): Promise<string> {
       resolve(key);
     });
   });
+}
+
+/**
+ * A random creature (from the chapter's pool) comes out of somewhere in the room: it squeezes out
+ * small, grows, hops to its landing spot facing Mara, then the fight. Each attempt draws anew.
+ */
+export async function creatureFight(scene: RoomScene, poolName: string, from: Point, land: Point): Promise<void> {
+  const pool = chapter().encounterPools?.[poolName] ?? [];
+  const id = pool[Math.floor(Math.random() * pool.length)];
+  const art = CREATURE_ART[id];
+  const calm = settings().reducedMotion;
+  if (art) {
+    const key = `creature-${id}`;
+    if (!scene.textures.exists(key)) { scene.load.image(key, art.sprite); await new Promise<void>(r => { scene.load.once(Phaser.Loader.Events.COMPLETE, () => r()); scene.load.start(); }); }
+    sound.scrape(1);
+    const critter = scene.add.image(from.x, from.y, key).setOrigin(0.5, 1).setScale(0.1).setDepth(1000).setFlipX(land.x < scene.hero.position.x ? false : true);
+    scene.hatchCreature = critter;
+    for (let i = 0; i < 5; i++) scene.props.step(from.x + (i - 2) * 6, from.y);
+    await new Promise<void>(resolve => scene.tweens.addCounter({
+      from: 0, to: 1, duration: calm ? 250 : 800, ease: 'Sine.easeInOut',
+      onUpdate: tween => {
+        const k = tween.getValue() ?? 0;
+        critter.setPosition(from.x + (land.x - from.x) * k, from.y + (land.y - from.y) * k - Math.sin(k * Math.PI) * 30);
+        critter.setScale(0.1 + 0.2 * k);
+      },
+      onComplete: () => { critter.setDepth(land.y); sound.strike(3); resolve(); },
+    }));
+    scene.hero.setFacing(land.x < scene.hero.position.x ? 'left' : 'right');
+    await wait(scene, calm ? 100 : 400);
+  }
+  await fight(scene, id, pool);
 }

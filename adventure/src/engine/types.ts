@@ -97,6 +97,8 @@ export interface RoomDef {
   /** Light on characters: tint at full brightness and how dark they get at the far line (0..1). */
   light?: { tint: number; farDim: number };
   ambient?: AmbientDef;
+  /** A light carried by Mara (his gauntlet's glow in dark rooms): radius and colour, world units. */
+  heroLight?: { r: number; color: number };
   /** Outer walkable polygon followed by optional holes (obstacles). */
   walkable: { outer: Polygon; holes: Polygon[] };
   scale: DepthScale;
@@ -230,6 +232,15 @@ export type Command =
   | { type: 'hatch' }
   /** A fight (shatter transition, battle, return). Continues the script once it is won. */
   | { type: 'fight'; id: string }
+  /**
+   * A creature from the chapter's pool (`Chapter.encounterPools`), drawn at random on every attempt:
+   * it comes out of `from` and lands at `land` in the room, then the fight.
+   */
+  | { type: 'creatureFight'; pool: string; from: Point; land: Point }
+  /** Something hurts Mara outside a fight (never below 1 health). */
+  | { type: 'hurt'; amount: number }
+  /** Rest: health and MP back to full. */
+  | { type: 'heal' }
   /** Opens the gear menu and waits for it to close. */
   | { type: 'gear' }
   /** Shows the Gear button and makes the player press it (then the gear screen, until closed). */

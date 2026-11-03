@@ -10,7 +10,7 @@ import type { Command } from '../../engine/types';
 import { CHAPTER_IDS, chapter, loadChapter, setChapter } from '../../chapters';
 import type { RoomScene } from '../scenes';
 import { runDialogue, say, wait } from './runner';
-import { blowHatch, fight } from './fightBridge';
+import { blowHatch, creatureFight, fight } from './fightBridge';
 import { DOORWAY_STEP, FACE_VECTOR, FADE_MS } from './shared';
 
 type Of<K extends Command['type']> = Extract<Command, { type: K }>;
@@ -146,6 +146,22 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
       sound.choose();
       scene.session.ui.toast(t('ui.learned', { name: TECHNIQUES[command.technique].name }));
     }
+    return true;
+  },
+  creatureFight: async (scene: RoomScene, command: Of<'creatureFight'>): Promise<boolean> => {
+    await creatureFight(scene, command.pool, command.from, command.land);
+    return true;
+  },
+  hurt: async (scene: RoomScene, command: Of<'hurt'>): Promise<boolean> => {
+    applyCommand(scene.session.state, command);
+    sound.hiss(500);
+    if (!settings().reducedMotion) scene.cameras.main.shake(200, 0.004);
+    scene.session.ui.toast(t('ui.hurt', { n: String(command.amount), hp: String(scene.session.state.kit.hp) }));
+    return true;
+  },
+  heal: async (scene: RoomScene, command: Of<'heal'>): Promise<boolean> => {
+    applyCommand(scene.session.state, command);
+    scene.session.ui.toast(t('ui.healed'));
     return true;
   },
   giveSpares: async (scene: RoomScene, command: Of<'giveSpares'>): Promise<boolean> => {

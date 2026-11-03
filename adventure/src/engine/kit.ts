@@ -12,6 +12,17 @@ export function newKit(): Kit {
   return { hp: HERO_MAX_HP, mp: HERO_MAX_MP, maxHp: HERO_MAX_HP, maxMp: HERO_MAX_MP, techniques: [], equipment: structuredClone(STARTING_EQUIPMENT), owned: [...STARTING_OWNED] };
 }
 
+/** Hurt outside a fight (a scald): never below 1 health. */
+export function hurt(kit: Kit, amount: number): void {
+  kit.hp = Math.max(1, kit.hp - Math.max(0, Math.round(amount)));
+}
+
+/** A night's rest: health and MP back to their most. */
+export function healFully(kit: Kit): void {
+  kit.hp = kit.maxHp;
+  kit.mp = deriveStats(maraProfile(kit)).maxMp;
+}
+
 /** A teacher passes on a technique: once only; the most health and MP grow, and so do the current ones. */
 export function learn(kit: Kit, technique: string): boolean {
   const t = TECHNIQUES[technique];

@@ -47,6 +47,8 @@ export interface Chapter {
   extras: ExtraDef[];
   encounters: Record<string, EncounterDefinition>;
   rewards: Record<string, Reward>;
+  /** Random fights: a pool name to the encounters it draws from (`creatureFight`). */
+  encounterPools?: Record<string, readonly string[]>;
   /** Kiln Courier's lesson prompts reworded for this chapter's first enemy, by step index. */
   lessonPrompts?: Readonly<Record<number, string>>;
   /** Gear handed over by the `giveSpares` command. */

@@ -131,10 +131,15 @@ export function registerArt(art: {
   lazySheets?: string[];
   npcSheets?: Partial<Record<NpcId, string>>;
   portraits?: Record<string, string>;
+  creatures?: Record<string, { fight: string; sprite: string; arena: string }>;
 }): void {
   Object.assign(ROOM_IMAGES, art.rooms);
   Object.assign(SHEETS, art.sheets);
   for (const s of art.lazySheets ?? []) LAZY_SHEETS.add(s);
   Object.assign(NPC_SHEETS, art.npcSheets);
   Object.assign(PORTRAITS, art.portraits);
+  Object.assign(CREATURE_ART, art.creatures);
 }
+
+/** Creatures of random fights, by encounter id: their fight picture, room sprite and fight backdrop. */
+export const CREATURE_ART: Record<string, { fight: string; sprite: string; arena: string }> = {};

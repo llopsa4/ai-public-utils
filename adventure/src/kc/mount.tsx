@@ -38,6 +38,8 @@ export interface BattleOptions {
   /** Drinks a tonic: the new battle state, or null if none could be drunk. */
   drink: (battle: BattleState) => BattleState | null;
   onWin: (battle: BattleState) => void;
+  /** Random fights: a new enemy for each retry after a fall (else the same fight again). */
+  pickEncounter?: () => EncounterDefinition;
   onMenu: () => void;
 }
 
@@ -84,7 +86,11 @@ function Battle(o: BattleOptions) {
     play: (id, revision) => { const next = playCard(free, id, revision); if (next === free) return null; setFree(next); return next; },
     endTurn: revision => { const next = endTurn(free, revision); if (next === free) return null; setFree(next); return next; },
     // A fall is not a game over: the fight starts again as it began.
-    retry: () => { const fresh = structuredClone(start); setFree(fresh); return fresh; },
+    retry: () => {
+      const fresh = o.pickEncounter ? createBattle(o.profile, o.pickEncounter()) : structuredClone(start);
+      setFree(fresh);
+      return fresh;
+    },
   };
   // A Kiln Tonic under End turn while Mara carries one.
   const tonics = o.tonics();
