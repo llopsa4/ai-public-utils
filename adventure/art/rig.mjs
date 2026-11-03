@@ -358,6 +358,7 @@ function variantImage(src, base, v) {
 
 /** Paints a cap, hood or kerchief over the head, following the drawn silhouette. */
 function paintHeadgear(img, eyeX, eyeY, gear) {
+  if (!gear) return;
   const [cr, cg, cb] = gear.color;
   const brimY = eyeY - (gear.kind === 'cap' ? 26 : 34);
   const bottomY = gear.kind === 'hood' ? eyeY + 95 : brimY;
@@ -412,7 +413,7 @@ function buildExtra(id) {
 }
 
 /** Palette-reduces the frames, adds the outline and writes the PNG + Aseprite JSON pair. */
-function writeSheet(id, frames, tags, duration, colours) {
+function writeSheet(id, frames, tags, duration, colours, dir = '') {
   const samples = [];
   for (const f of frames) for (let p = 0; p < FW * FH; p += 3) if (f.alpha[p] >= 0.5) samples.push([f.rgb[p * 3], f.rgb[p * 3 + 1], f.rgb[p * 3 + 2]]);
   const pal = kmeans(samples, colours);
@@ -444,8 +445,8 @@ function writeSheet(id, frames, tags, duration, colours) {
       sheet.data[o] = 30; sheet.data[o + 1] = 20; sheet.data[o + 2] = 18; sheet.data[o + 3] = 255;
     }
   });
-  mkdirSync(join(out, 'characters'), { recursive: true });
-  writeFileSync(join(out, 'characters', `${id}.png`), encodeIndexed(sheet));
+  mkdirSync(join(out, `${dir}characters`), { recursive: true });
+  writeFileSync(join(out, `${dir}characters`, `${id}.png`), encodeIndexed(sheet));
   const json = {
     frames: frames.map((_, n) => ({
       filename: String(n),
@@ -460,13 +461,16 @@ function writeSheet(id, frames, tags, duration, colours) {
       frameTags: tags.map(([name, from, to]) => ({ name, from, to, direction: 'forward' })),
     },
   };
-  writeFileSync(join(out, 'characters', `${id}.json`), JSON.stringify(json, null, 1) + '\n');
+  writeFileSync(join(out, `${dir}characters`, `${id}.json`), JSON.stringify(json, null, 1) + '\n');
 }
 
 function buildCharacter(id) {
   const cfg = { ...CHARACTERS[id] };
-  if (isFinal(`characters/${id}.png`)) { console.log(`  ${id}: final art, kept.`); return; }
-  const raw = loadSource(cfg);
+  // Later chapters' characters live in their chapter's folder (art/src/<chapter>/characters, portraits).
+  const dir = cfg.dir ?? '';
+  if (isFinal(`${dir}characters/${id}.png`)) { console.log(`  ${id}: final art, kept.`); return; }
+  // A placeholder can be a recoloured, re-dressed copy of another body (like the background people).
+  const raw = cfg.variant ? variantImage(loadSource(cfg), cfg, cfg.variant) : loadSource(cfg);
   const open = cfg.unpowered ? dimGlow(raw, cfg.unpowered) : raw;
   const closed = withClosedEyes(open, cfg.eyes);
   const { k, hipC, walkPose, squashLegs } = rigOf(cfg, open);
@@ -489,7 +493,7 @@ function buildCharacter(id) {
   add(open, fidgetPose);            // 25 fidget (idle gesture)
 
   // Palette from all frames, then hard alpha and a 1px dark outline for readability on busy art.
-  writeSheet(id, frames, TAGS, n => (n >= 5 && n <= 22 ? 110 : 1000), 112);
+  writeSheet(id, frames, TAGS, n => (n >= 5 && n <= 22 ? 110 : 1000), 112, dir);
 
   // Dialogue portraits: area-averaged head-and-shoulders crops, 256x256 each, in a strip of frames
   // per mood (neutral, worried, angry), each with the mouth closed then open.
@@ -515,8 +519,8 @@ function buildCharacter(id) {
       portrait.data[o + 3] = a / n > 0.9 ? 255 : 0; // drop the illustration's soft glow halo
     }
   }));
-  mkdirSync(join(out, 'portraits'), { recursive: true });
-  writeFileSync(join(out, 'portraits', `${portraitId}.png`), encodeIndexed(portrait));
+  mkdirSync(join(out, `${dir}portraits`), { recursive: true });
+  writeFileSync(join(out, `${dir}portraits`, `${portraitId}.png`), encodeIndexed(portrait));
 }
 
 // `node art/rig.mjs extras` rebuilds only the background people.

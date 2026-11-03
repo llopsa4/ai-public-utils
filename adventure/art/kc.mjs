@@ -20,6 +20,10 @@ await webp('hero.png', 'hero.webp', 512);
 await webp('opening/pressure-scavenger.png', 'pressure-scavenger.webp', 768);
 await webp('card-atlas.png', 'card-atlas.webp', 768, 74);
 await webp('opening/regulator-gallery.png', 'regulator-gallery.webp', 1280, 72);
+// Chapter 2: Bryn's workshop for the sparring, and the training rig (Kiln Courier draws its
+// training rig with the sweeper picture).
+await webp('opening/tempering-house.png', 'tempering-house.webp', 1280, 72);
+await webp('opening/ash-sweeper.png', 'ash-sweeper.webp', 768);
 for (const id of ['courier-gauntlet', 'patched-coat', 'plain-carrier', 'light-armor', 'quick-harness']) {
   if (!isFinal(`kc/equipment/${id}.webp`)) await sharp(join(kc, 'equipment', 'runtime', `${id}.webp`)).resize({ width: 320 }).webp({ quality: 80, alphaQuality: 90, effort: 6 }).toFile(join(out, 'equipment', `${id}.webp`));
 }

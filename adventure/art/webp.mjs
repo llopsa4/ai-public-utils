@@ -4,15 +4,16 @@
 //   npm run webp   (also part of npm run art, after pixelate)
 //
 // The PNGs stay the source of truth: they are what pixelate.mjs writes and what PROVENANCE lists.
-import { readdirSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
 
 const here = dirname(fileURLToPath(import.meta.url));
 let total = 0;
-for (const folder of ['rooms', 'foreground', 'props']) {
+for (const folder of ['rooms', 'foreground', 'props', 'ch2/rooms']) {
   const dir = join(here, 'src', folder);
+  if (!existsSync(dir)) continue;
   for (const name of readdirSync(dir).filter(n => n.endsWith('.png'))) {
     const out = join(dir, name.replace(/\.png$/, '.webp'));
     // Rooms are opaque paintings; foreground pieces need their alpha edges kept exact.

@@ -6,7 +6,7 @@
 // See art/REPLACING.md (npm run art:guide) for what each file must contain.
 import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { PNG } from 'pngjs';
-import { MANIFEST } from '../art/manifest.mjs';
+import { MANIFEST, RIGS } from '../art/manifest.mjs';
 import { paletteConformity } from '../art/normalize.mjs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,10 +28,11 @@ export const ICON_SIZE = 24;
 export const STORY_TAGS = ['stand_down', 'blink_down', 'stand_side', 'blink_side', 'stand_up', 'walk_down', 'walk_side', 'walk_up', 'crouch', 'dead'];
 export const EXTRA_TAGS = ['stand_down', 'stand_side', 'stand_up', 'blink_down', 'blink_side', 'walk_down', 'walk_side', 'walk_up', 'crouch', 'work', 'carry', 'reach', 'sit'];
 /** Character sheets: Mara (unlit and lit gauntlet), the story characters, then the background people. */
-export const CHARACTER_SHEETS: { sheet: string; role: string; tags: string[]; optional?: string[] }[] = [
+/** `dir`: a later chapter's characters live in its folder (art/src/<chapter>/characters). */
+export const CHARACTER_SHEETS: { sheet: string; role: string; tags: string[]; optional?: string[]; dir?: string }[] = [
   { sheet: 'mara', role: 'Mara, gauntlet unlit (start of the game)', tags: STORY_TAGS },
   { sheet: 'mara-gauntlet', role: 'Mara, gauntlet lit', tags: STORY_TAGS },
-  ...NPC_IDS.map(id => ({ sheet: id, role: `${id[0].toUpperCase()}${id.slice(1)} (story character)`, tags: STORY_TAGS, optional: ['fidget'] })),
+  ...NPC_IDS.map(id => ({ sheet: id, role: `${id[0].toUpperCase()}${id.slice(1)} (story character)`, tags: STORY_TAGS, optional: ['fidget'], dir: (RIGS as Record<string, { dir?: string }>)[id]?.dir })),
   ...EXTRAS.map(e => ({ sheet: e.sheet, role: `background person (${e.id.replace('extra-', '')})`, tags: EXTRA_TAGS })),
 ];
 /** Sheets the game ships as WebP copies (the PNG is the source; `npm run webp` writes the copy). */
@@ -120,7 +121,7 @@ export function checkArt(): Problem[] {
 
   // Characters: 256x256 frames, feet on the bottom row, centred.
   for (const c of CHARACTER_SHEETS) {
-    const json = sheet(join(ART, 'characters', c.sheet), c.tags, FRAME);
+    const json = sheet(join(ART, `${c.dir ?? ''}characters`, c.sheet), c.tags, FRAME);
     if (json && WEBP_SHEETS.includes(c.sheet)) webpFor(join(ART, 'characters', `${c.sheet}.png`));
   }
 

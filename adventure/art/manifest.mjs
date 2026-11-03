@@ -80,6 +80,20 @@ export const RIGS = {
     moods: ['neutral'],
     face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
   },
+  // Chapter 2. Placeholder: Iven's body recoloured and re-dressed (a dark red kerchief, the plates
+  // turned to leather), rigged like Nell, until Codex draws Bryn.
+  bryn: {
+    dir: 'ch2/',
+    variant: { hue: 345, sat: 0.75, light: 0.78, skin: 0.8, headgear: { kind: 'kerchief', color: [120, 42, 32] } },
+    source: 'kiln:opening/iven.png', height: 224, walks: false,
+    hipY: 1000, splitX: 480, hips: { near: [420, 1000], far: [640, 1000] }, knees: { near: [360, 1240], far: [760, 1250] },
+    fidgetLean: -3,
+    nearIsUpper: true, crouchSquash: 1,
+    eyes: [{ x: 452, y: 129, rx: 15, ry: 8, skinAt: [452, 148] }, { x: 507, y: 123, rx: 14, ry: 8, skinAt: [505, 142] }],
+    portrait: [320, 0, 340, 340],
+    moods: ['neutral'],
+    face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
+  },
 };
 
 /** @type {ArtEntry[]} */
@@ -171,6 +185,17 @@ export const MANIFEST = [
   // Worn always, shown on the gear screen's paper doll (drawn in code until delivered).
   { ...equipment('work-trousers', "Mara's work trousers: heavy dark cloth with ceramic knee plates, patched at both knees."), status: 'requested', generator: 'src/kc/Armory.tsx (drawn in code)' },
   { ...equipment('courier-boots', "Mara's courier boots: stitched brown leather, resoled more than once, brass buckles."), status: 'requested', generator: 'src/kc/Armory.tsx (drawn in code)' },
+  // ------------------------------------------------------------------ chapter 2: Tempered Flow ---
+  { ...room('room-road', 'road', "The road to Bryn's tempering house, at the edge of the ashways at dusk: a stone house (right) with a heavy wooden door, a lit window and a bell on a bracket, a lantern by the door, a chimney breathing steam; the ash road and a signpost back towards Cinderfold (left), great pipes in the haze behind.", 'Warm key light from the window and the door lantern (right); cool blue-grey dusk from the sky (left).'), file: 'ch2/rooms/road.png', chapter: 'ch2', generator: 'ch2.mjs' },
+  { ...room('room-workshop', 'workshop', "Bryn's workshop inside the tempering house: a great ceramic return pipe across the top with a glowing flange (the reading valve), her bench with a glove and tools (left), a stool, a caged training rig in the middle, a coal crate, the open side on the right looking out over the valley, a curtain to the back room (left).", 'Warm daylight from the open side (right); the pipe flanges glow orange; cooler shadow on the left under the bench.'), file: 'ch2/rooms/workshop.png', chapter: 'ch2', generator: 'ch2.mjs' },
+  { ...room('room-backroom', 'backroom', "Bryn's back room: a stone hearth with a pot on the fire (left), a shelf of supply crates and jars, a table with a bowl and bread, a map pinned on the wall above it, a cot under a blanket (right), a courier's pouch on a peg by the far door (right), the curtain back to the workshop (left edge).", 'Warm key light from the hearth (left); soft lamplight over the table; the far door side darker.'), file: 'ch2/rooms/backroom.png', chapter: 'ch2', generator: 'ch2.mjs' },
+  { id: 'char-bryn', kind: 'character', file: 'ch2/characters/bryn.png', sheet: 'ch2/characters/bryn.json', anchor: 'bottom-centre', height: 224, rig: 'bryn', chapter: 'ch2', status: 'placeholder', generator: 'rig.mjs',
+    subject: 'Bryn, a gauntlet smith in her thirties who runs the tempering house: broad-shouldered and heavily muscled from hauling crucibles, sleeves rolled, a leather apron over work clothes, a kerchief over her hair, a quick grin.' },
+  { id: 'portrait-bryn', kind: 'portrait', file: 'ch2/portraits/bryn.png', anchor: 'none', moods: ['neutral'], chapter: 'ch2', status: 'placeholder', generator: 'rig.mjs', subject: "Bryn's head and shoulders." },
+  { id: 'battle-backdrop-workshop', kind: 'battle-backdrop', file: 'kc/tempering-house.webp', size: { w: 1280, h: 720 }, anchor: 'top-left', chapter: 'ch2', status: 'placeholder', generator: 'kc.mjs',
+    subject: "Bryn's workshop as the sparring backdrop (same place as room-workshop, the floor clear in the lower third)." },
+  { id: 'battle-enemy-rig', kind: 'battle-portrait', file: 'kc/ash-sweeper.webp', anchor: 'bottom-centre', width: 768, chapter: 'ch2', status: 'placeholder', generator: 'kc.mjs',
+    subject: "Bryn's training rig: a caged brush drum on a sprung frame that swings back at whoever strikes it." },
 ];
 
 // Statuses set by the importer (art/status.json: { "<id>": "final" }) override the defaults above.

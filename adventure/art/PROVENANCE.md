@@ -33,6 +33,12 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 All outputs are palette-indexed PNGs (`art/png.mjs`, upng-js).
 Room backgrounds, foreground cut-outs, props and the background people's sheets are also written as WebP (`art/webp.mjs`, sharp 0.35, which bundles libvips under the LGPL-3.0); the game loads the WebP copies.
 
+Chapter 2's art (placeholders, `art/src/ch2/` and two fight pictures in `art/src/kc/`):
+- `ch2/rooms/workshop.png` comes from `FFCardGame/assets/opening/tempering-house.png` (`art/ch2.mjs`: fitted to 1280×720, 96 colours).
+- `ch2/rooms/road.png` and `ch2/rooms/backroom.png` are painted from scratch as SVG scenes (`art/ch2.mjs`).
+- `ch2/characters/bryn.*` and `ch2/portraits/bryn.png` are Iven's illustration (`opening/iven.png`) recoloured and re-dressed: a dark red kerchief, red-brown clothes, leather plates. It is rigged like Nell (`art/rig.mjs`, `RIGS.bryn` with a `variant`).
+- `kc/tempering-house.webp` (the sparring backdrop) and `kc/ash-sweeper.webp` (the training rig) are `opening/tempering-house.png` and `opening/ash-sweeper.png` (`art/kc.mjs`).
+
 The interface font is Zilla Slab (Mozilla / Typotheque), SIL Open Font License 1.1, bundled from `@fontsource/zilla-slab` (Latin subset). The fight and gear screens use Cinzel and Cormorant Garamond (SIL Open Font License 1.1, from `@fontsource`), the same families as Kiln Courier.
 
 The fight and gear screens' code is Kiln Courier's (`FFCardGame/client/src`, same repository), imported directly rather than copied; the battle art they show is the WebPs in `art/src/kc` made by `art/kc.mjs` from `FFCardGame/assets`, except the fight backdrop `art/src/kc/regulator-gallery.webp` (also behind the gear screen): a picture of the regulator gallery generated with Google Gemini and supplied by the author, brought in with `npm run art:import` (fitted to 1280×720, snapped to the master palette with dithering) and marked final in `art/status.json`, so `art/kc.mjs` no longer overwrites it. The interface frames, rivets, toggles and icons are drawn in CSS and inline SVG. The room name boards are painted at runtime on a canvas (`src/game/sign.ts`).
