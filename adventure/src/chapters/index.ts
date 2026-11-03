@@ -10,7 +10,9 @@ export const FIRST_CHAPTER = 'ch1';
 addStrings(CH1.strings);
 
 /** Later chapters, each its own download (fetched the first time it is needed). */
-const LOADERS: Record<string, () => Promise<Chapter>> = {};
+const LOADERS: Record<string, () => Promise<Chapter>> = {
+  ch2: () => import('./ch2').then(m => m.CH2),
+};
 
 /** Every chapter id, in story order (loaded or not). */
 export const CHAPTER_IDS: readonly string[] = [FIRST_CHAPTER, ...Object.keys(LOADERS)];
@@ -30,27 +32,35 @@ export function setChapter(id: string): Chapter {
   return next;
 }
 
-/** Fetches a chapter (its code, strings and art list) if it isn't loaded yet. */
-export async function loadChapter(id: string): Promise<Chapter> {
-  if (CHAPTERS[id]) return CHAPTERS[id];
-  const load = LOADERS[id];
-  if (!load) throw new Error(`Unknown chapter: ${id}`);
-  const loaded = await load();
-  CHAPTERS[id] = loaded;
-  addStrings(loaded.strings);
+const artLoaded = new Set<string>();
+
+/**
+ * Fetches a chapter (its code and strings) if it isn't loaded yet. With `art` (the game, in the
+ * browser) its pictures are registered too; tests and tools load chapters without them.
+ */
+export async function loadChapter(id: string, { art = false } = {}): Promise<Chapter> {
+  let loaded = CHAPTERS[id];
+  if (!loaded) {
+    const load = LOADERS[id];
+    if (!load) throw new Error(`Unknown chapter: ${id}`);
+    loaded = await load();
+    CHAPTERS[id] = loaded;
+    addStrings(loaded.strings);
+  }
+  if (art && loaded.art && !artLoaded.has(id)) { await loaded.art(); artLoaded.add(id); }
   return loaded;
 }
 
 /** Every chapter (for tests and tools). */
 export async function loadAllChapters(): Promise<Chapter[]> {
-  return Promise.all(CHAPTER_IDS.map(loadChapter));
+  return Promise.all(CHAPTER_IDS.map(id => loadChapter(id)));
 }
 
 /** Loads the chapter a save is in, before it is read (a save of a later chapter needs it). */
 export async function loadChapterOf(saveText: string | null): Promise<void> {
   let id: unknown;
   try { id = saveText ? JSON.parse(saveText)?.state?.chapter : undefined; } catch { return; }
-  if (typeof id === 'string' && Object.hasOwn(LOADERS, id)) await loadChapter(id).catch(() => undefined);
+  if (typeof id === 'string' && Object.hasOwn(LOADERS, id)) await loadChapter(id, { art: true }).catch(() => undefined);
 }
 
 /** A room of the active chapter. */

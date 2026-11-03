@@ -52,6 +52,17 @@ Add `?debug` to the URL to draw the walk areas (green), obstacles (red), hotspot
 
 Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, tilemaps, text or Phaser sound) built from Phaser's own sources; `vite.config.ts` sets Phaser's compile-time flags. The dev server uses the full prebuilt Phaser. If new code needs a Phaser module that is not in the custom entry, add it there; `npm run e2e` catches what's missing.
 
+## Chapter 2 (debug only)
+
+Chapter 2, **Tempered Flow**, is playable only in debug mode for now. Open the game with `?debug` and either finish chapter 1 (its end leads into chapter 2 instead of the end card), or press `` ` `` and pick `ch2` in the debug panel's chapter menu. Mara reaches Bryn's tempering house on the road out of Cinderfold country:
+- he spars with her training rig
+- he answers her question about what he is rushing towards
+- she reads the regulator's records (the fault lies further along the return circuit)
+- she retunes his gauntlet: Kiln Courier's **Tempered Flow** technique, plus +6 most health and +2 most MP, kept for later chapters
+- over supper he writes home to Oren, lets Bryn pack his supplies, and finds the valley marked abandoned on her map
+
+Without `?debug` nothing changes: chapter 1 ends with its end card, and chapter 2's code and art are never downloaded. Chapter 2 lives in `src/chapters/ch2/`, loads on demand (`loadChapter` in `src/chapters/index.ts`), brings its own cast (Bryn) and its art (`src/chapters/ch2/art.ts`, `art/src/ch2/`), and has its own size budget. All of its art is placeholder, listed in the art manifest with Codex briefs.
+
 ## Fights
 
 Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/client/src` in this repository, imported directly (as `@kc/...`, set in `tsconfig.json` and `vite.config.ts`), not copied. They load only when the first fight or the gear screen opens (`src/kc/mount.tsx`, the bridge, with `Armory.tsx`, the equip-only workshop).
@@ -95,7 +106,7 @@ Character sheets follow the Aseprite/LibreSprite JSON-array format with the tags
 
 ## Current limits
 
-- One scene: five rooms, two neighbours, four workers and two kids in the background, and one machine. The background people are placeholder art (recoloured copies of Mara, Oren and Nell, with Nell's shield turned to wood; Bea carries hers as a toy shield), and their held things are drawn in code. Tobi is mentioned but not shown, since there is no child art.
+- Chapter 1 is one scene: five rooms, two neighbours, four workers and two kids in the background, and one machine. The background people are placeholder art (recoloured copies of Mara, Oren and Nell, with Nell's shield turned to wood; Bea carries hers as a toy shield), and their held things are drawn in code. Tobi is mentioned but not shown, since there is no child art.
 - Rig animation is stiff compared with drawn animation, and the characters always show their three-quarter view.
 - Nell uses Iven's illustration from Kiln Courier, shield included. In this game the shield is her old counter shutter.
 - Sound is synthesized, so it is simple rather than recorded. No cloud sync. English only.

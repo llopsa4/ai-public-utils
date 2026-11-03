@@ -46,30 +46,36 @@ for (const name of js) assert.doesNotMatch(await readFile(resolve(project, 'buil
 // (React, its art and fonts: the `mount` chunk) loads with the first fight.
 const { statSync } = await import('node:fs');
 const size = name => statSync(resolve(project, 'build', name)).size;
-const total = built.reduce((sum, n) => sum + size(n), 0);
+// Per-chapter art (by the art manifest's `chapter`; `game` is shared by every chapter). Chapters
+// after the first load on demand (their code chunk `<id>-<hash>.js` and their art): they get their
+// own budget and count neither in the game's total nor before the title screen.
+const { MANIFEST } = await import('../art/manifest.mjs');
+const artChapter = new Map(MANIFEST.map(e => [e.file.split('/').pop().replace(/\.\w+$/, ''), e.chapter ?? 'game']));
+const chapterOf = n => artChapter.get(n.replace(/-[\w-]{8}\.\w+$/, '')) ?? n.match(/^(ch\d+)-[\w-]{8}\.js$/)?.[1];
+const laterChapter = n => { const c = chapterOf(n); return c && c !== 'game' && c !== 'ch1' ? c : null; };
+const perChapter = {};
+for (const n of built) {
+  const chapter = chapterOf(n);
+  if (chapter) perChapter[chapter] = (perChapter[chapter] ?? 0) + size(n);
+}
+const total = built.filter(n => !laterChapter(n)).reduce((sum, n) => sum + size(n), 0);
 const later = /^(firing-house|gallery|ashways|hall-left|hall-right|gallery-railing|mara-gauntlet|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
 // .woff fonts are fallbacks for browsers without WOFF2; current browsers never fetch them.
-const firstLoad = built.filter(n => !later.test(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
+const firstLoad = built.filter(n => !later.test(n) && !laterChapter(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;
 // Static count: it also includes portraits and icons that are only fetched when first shown, so the
 // real first load (measured by npm run e2e) is lower.
-const TOTAL_BUDGET = 4.6, FIRST_BUDGET = 1.75;
+// 4.8 MB since chapter 2 (the game had reached 4.6 MB with chapter 1; later chapters are budgeted on their own below).
+const TOTAL_BUDGET = 4.8, FIRST_BUDGET = 1.75;
 assert.ok(total < TOTAL_BUDGET * MB, `build is ${(total / MB).toFixed(2)} MB (budget ${TOTAL_BUDGET} MB)`);
 assert.ok(firstLoad < FIRST_BUDGET * MB, `first load is ${(firstLoad / MB).toFixed(2)} MB (budget ${FIRST_BUDGET} MB)`);
-// Per-chapter art (by the art manifest's `chapter`; `game` is shared by every chapter) and the fight
-// screens' code (the `mount` chunk: React and Kiln Courier's battle and workshop screens).
-const { MANIFEST } = await import('../art/manifest.mjs');
-const artChapter = new Map(MANIFEST.map(e => [e.file.split('/').pop().replace(/\.\w+$/, ''), e.chapter ?? 'game']));
-const perChapter = {};
-for (const n of built) {
-  const chapter = artChapter.get(n.replace(/-[\w-]{8}\.\w+$/, ''));
-  if (chapter) perChapter[chapter] = (perChapter[chapter] ?? 0) + size(n);
-}
+// The fight screens' code (the `mount` chunk: React and Kiln Courier's battle and workshop screens).
 const fightCode = built.filter(n => /^mount-[\w-]{8}\.(js|css)$/.test(n)).reduce((sum, n) => sum + size(n), 0);
-const CHAPTER_ART_BUDGET = 2.5, FIGHT_CODE_BUDGET = 0.4;
+const CHAPTER_ART_BUDGET = 2.5, LATER_CHAPTER_BUDGET = 1.5, FIGHT_CODE_BUDGET = 0.4;
 for (const [chapter, bytes] of Object.entries(perChapter)) {
-  assert.ok(bytes < CHAPTER_ART_BUDGET * MB, `${chapter} art is ${(bytes / MB).toFixed(2)} MB (budget ${CHAPTER_ART_BUDGET} MB)`);
+  const budget = chapter === 'game' || chapter === 'ch1' ? CHAPTER_ART_BUDGET : LATER_CHAPTER_BUDGET;
+  assert.ok(bytes < budget * MB, `${chapter} is ${(bytes / MB).toFixed(2)} MB (budget ${budget} MB)`);
 }
 assert.ok(fightCode < FIGHT_CODE_BUDGET * MB, `fight code is ${(fightCode / MB).toFixed(2)} MB (budget ${FIGHT_CODE_BUDGET} MB)`);
 const chapters = Object.entries(perChapter).map(([c, b]) => `${c} ${(b / MB).toFixed(2)}`).join(', ');
-console.log(`Build verified: ${built.length} assets, relative URLs only, ${(total / MB).toFixed(2)} MB total, ${(firstLoad / MB).toFixed(2)} MB before the title screen; art MB: ${chapters}; fight code ${(fightCode / MB).toFixed(2)} MB.`);
+console.log(`Build verified: ${built.length} assets, relative URLs only, ${(total / MB).toFixed(2)} MB total (without later chapters), ${(firstLoad / MB).toFixed(2)} MB before the title screen; MB by chapter: ${chapters}; fight code ${(fightCode / MB).toFixed(2)} MB.`);

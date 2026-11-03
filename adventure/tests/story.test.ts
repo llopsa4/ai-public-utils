@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CHAPTERS, chapter } from '../src/chapters';
+import { CHAPTERS, chapter, loadAllChapters } from '../src/chapters';
+
+await loadAllChapters();
 import { afterRelease } from '../src/chapters/ch1/interactions';
 import { conditionsHold } from '../src/engine/geometry';
 import { ambienceFor, crowdMoodFor, guided, heroSheetFor, hushed, musicFor, onEnter, type StoryContext } from '../src/engine/story';

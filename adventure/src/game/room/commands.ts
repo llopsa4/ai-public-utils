@@ -7,7 +7,7 @@ import { sound } from '../../audio/sound';
 import { applyCommand } from '../../engine/state';
 import { TECHNIQUES } from '../../content/kit';
 import type { Command } from '../../engine/types';
-import { chapter, loadChapter, setChapter } from '../../chapters';
+import { CHAPTER_IDS, chapter, loadChapter, setChapter } from '../../chapters';
 import type { RoomScene } from '../scenes';
 import { runDialogue, say, wait } from './runner';
 import { blowHatch, fight } from './fightBridge';
@@ -131,7 +131,7 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     scene.session.ui.closeRadial();
     scene.cameras.main.fadeOut(FADE_MS * 3, 0, 0, 0);
     await wait(scene, FADE_MS * 3 + 80);
-    await loadChapter(command.id);
+    await loadChapter(command.id, { art: true });
     applyCommand(state, command);
     setChapter(command.id);
     scene.session.arrival = null;
@@ -174,6 +174,9 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     return true;
   },
   end: async (scene: RoomScene): Promise<boolean> => {
+    // ?debug: later chapters are playable, so the end of a chapter leads into the next one.
+    const next = CHAPTER_IDS[CHAPTER_IDS.indexOf(scene.session.state.chapter) + 1];
+    if (scene.session.debug && next) return COMMANDS.chapter(scene, { type: 'chapter', id: next });
     scene.leaving = true;
     scene.cameras.main.fadeOut(900, 0, 0, 0);
     await wait(scene, 700);

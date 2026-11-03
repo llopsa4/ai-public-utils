@@ -25,7 +25,7 @@ export const FLAP_MS = 130;
 export const FLAP_PER_CHAR = 42;
 
 export const SPEECH_COLORS: Record<string, string> = {
-  hero: '#ffc26b', oren: '#a8dcff', nell: '#c4f29a',
+  hero: '#ffc26b', oren: '#a8dcff', nell: '#c4f29a', bryn: '#ff9f7a',
   ...Object.fromEntries(chapter().extras.map(e => [e.id, e.color])),
 };
 
@@ -356,7 +356,14 @@ export class Ui {
   showEnd(): void {
     const card = $('end');
     card.hidden = false;
-    this.live.textContent = `${t('ui.endTag')}. ${t('ui.endText')}`;
+    // The chapter's own end card (later chapters), else the game's.
+    const end = chapter().end ?? { title: 'ui.endTitle', text: 'ui.endText' };
+    const title = $('end-title'), text = card.querySelector<HTMLElement>('.end-text')!;
+    title.dataset.i18n = end.title;
+    text.dataset.i18n = end.text;
+    title.textContent = t(end.title);
+    text.textContent = t(end.text);
+    this.live.textContent = `${t('ui.endTag')}. ${t(end.text)}`;
     $<HTMLButtonElement>('end-new').focus({ preventScroll: true });
   }
 

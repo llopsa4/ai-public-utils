@@ -15,7 +15,7 @@ export function newGame(id = FIRST_CHAPTER): GameState {
     hero: { x: entry.x, y: entry.y, face: entry.face, pose: 'stand' },
     npcs: structuredClone(CHAPTERS[id].npcs),
     flags: {},
-    inventory: [],
+    inventory: [...(CHAPTERS[id].startItems ?? [])],
     looks: {},
     kit: newKit(),
     bag: newBag(),
@@ -77,7 +77,7 @@ export function applyCommand(state: GameState, command: Command): void {
       state.earlier[state.chapter] = state.flags;
       Object.assign(state, {
         chapter: command.id, room: next.room, hero: next.hero, npcs: next.npcs, flags: {}, looks: {},
-        inventory: state.inventory.filter(i => kept.includes(i)),
+        inventory: [...new Set([...state.inventory.filter(i => kept.includes(i)), ...next.inventory])],
         reached: state.reached.includes(command.id) ? state.reached : [...state.reached, command.id],
       });
       break;

@@ -7,7 +7,7 @@ import { sound } from '../../audio/sound';
 import SCAVENGER_SPRITE from '../../../art/src/battle/scavenger.png';
 import { MATERIALS, maraProfile } from '../../content/kit';
 import { chapter } from '../../chapters';
-import { guided } from '../../engine/story';
+import { guided, hushed, musicFor } from '../../engine/story';
 import { LOGICAL_H, LOGICAL_W } from '../../ui/ui';
 import type { RoomScene } from '../scenes';
 import { wait } from './runner';
@@ -134,7 +134,10 @@ export async function fight(scene: RoomScene, id: string): Promise<void> {
   scene.scene.resume();
   cover.destroy();
   scene.session.ui.renderInventory();
-  sound.music('nervous');
+  // The chapter decides what follows a fight (chapter 1: the nervous score, everything else quiet).
+  const after = chapter().story.afterFight;
+  sound.hush(after?.hush ?? hushed(chapter().story, scene.storyContext()));
+  sound.music(after?.music ?? musicFor(chapter().story, scene.storyContext()));
   scene.cameras.main.fadeIn(700, 0, 0, 0);
   await wait(scene, 500);
 }

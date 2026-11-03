@@ -41,6 +41,8 @@ export interface StoryRules {
   heroSheet: StoryPick<string>[];
   /** Fights are played as the guided lesson while any of these holds. */
   guided: StoryWhen[];
+  /** After a fight: the score to play and whether background sound stays quiet (default: the room's). */
+  afterFight?: { music?: MusicMood; hush?: boolean };
 }
 
 export interface StoryContext { state: GameState; room: RoomDef; cold: boolean }

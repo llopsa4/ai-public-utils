@@ -21,4 +21,6 @@ export const STORY: StoryRules = {
   // Mara with the gauntlet lit once the cell is fitted.
   heroSheet: [{ if: [{ flag: 'hasGauntlet' }], pick: 'mara-gauntlet' }],
   guided: [{ if: [{ notFlag: 'fought' }] }],
+  // After the fight, the nervous score alone until the chapter ends.
+  afterFight: { music: 'nervous', hush: true },
 };

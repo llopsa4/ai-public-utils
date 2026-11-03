@@ -20,6 +20,12 @@ export interface Chapter {
   start: { room: string; entry: string };
   /** The chapter's cast and how each stands at the start. */
   npcs: Partial<Record<NpcId, ActorState>>;
+  /** Items a fresh start of the chapter hands over (a debug jump); a chapter change keeps Mara's own too. */
+  startItems?: readonly string[];
+  /** The end card's title and text (string keys); without them the game's own. */
+  end?: { title: string; text: string };
+  /** The chapter's art, loaded with it in the browser (later chapters; chapter 1's is the game's). */
+  art?: () => Promise<void>;
   rooms: Record<string, RoomDef>;
   /** Story flags saves accept for this chapter. */
   flags: readonly string[];

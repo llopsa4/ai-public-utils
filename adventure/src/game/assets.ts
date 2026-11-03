@@ -123,3 +123,18 @@ export function tagFrame(sheet: string, tag: string): string {
   if (!found) throw new Error(`Sheet ${sheet} has no tag ${tag}`);
   return json.frames[found.from].filename;
 }
+
+/** A later chapter's art (src/chapters/<id>/art.ts) joins the tables when the chapter loads. */
+export function registerArt(art: {
+  rooms?: Record<string, string>;
+  sheets?: Record<string, { png: string; json: AsepriteSheet }>;
+  lazySheets?: string[];
+  npcSheets?: Partial<Record<NpcId, string>>;
+  portraits?: Record<string, string>;
+}): void {
+  Object.assign(ROOM_IMAGES, art.rooms);
+  Object.assign(SHEETS, art.sheets);
+  for (const s of art.lazySheets ?? []) LAZY_SHEETS.add(s);
+  Object.assign(NPC_SHEETS, art.npcSheets);
+  Object.assign(PORTRAITS, art.portraits);
+}

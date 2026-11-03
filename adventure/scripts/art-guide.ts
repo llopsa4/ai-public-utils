@@ -7,7 +7,8 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
 import { CROWDS } from '../src/chapters/ch1/crowd';
-import { ROOMS } from '../src/chapters/ch1/rooms';
+import { loadAllChapters } from '../src/chapters';
+import { MANIFEST } from '../art/manifest.mjs';
 import { TABLES } from '../src/engine/i18n';
 import { ITEMS } from '../src/chapters/ch1/flags';
 import type { Point, RoomDef } from '../src/engine/types';
@@ -15,7 +16,11 @@ import { VERBS } from '../src/engine/types';
 import { PORTRAIT_MOODS, ROOM_FILES } from '../src/content/art';
 import { ART, CHARACTER_SHEETS, FRAME, ICON_SIZE, ITEM_SIZE, ROOM_SIZE, WEBP_SHEETS, pngSize } from './art-check';
 
+// Every chapter (their rooms and strings), chapters after the first included.
+const CHAPTER_LIST = await loadAllChapters();
 const en = TABLES.en;
+/** A room painting's file under art/src, without the extension (from the art manifest). */
+const roomFile = (background: string) => (MANIFEST.find(e => e.id === background)?.file ?? `rooms/${ROOM_FILES[background]}.png`).replace(/\.png$/, '');
 const K = 2; // art pixels per world unit
 const art = (n: number) => Math.round(n * K);
 const box = (pts: Point[]) => {
@@ -58,7 +63,7 @@ async function referenceImage(room: RoomDef, file: string): Promise<void> {
     svg += `<rect x="${art(s.x - s.w / 2)}" y="${art(s.y)}" width="${art(s.w)}" height="${art(s.drop + s.h)}" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="6 6"/>`;
   }
   const overlay = `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM_SIZE.w}" height="${ROOM_SIZE.h}">${svg}</svg>`;
-  await sharp(join(ART, 'rooms', `${file}.png`)).composite([{ input: Buffer.from(overlay) }]).jpeg({ quality: 78 }).toFile(join(ART, '..', 'spec', `${file}.jpg`));
+  await sharp(join(ART, `${file}.png`)).composite([{ input: Buffer.from(overlay) }]).jpeg({ quality: 78 }).toFile(join(ART, '..', 'spec', `${file.split('/').pop()}.jpg`));
 }
 
 function sheetInfo(path: string): { frames: number; tags: string[]; size: string } {
@@ -107,12 +112,12 @@ p('- cyan dashed: walk-behind pieces (see below); white dashed: the hanging name
 p();
 p('A new painting should put the things on the list where the reference image shows them, or the positions in `src/chapters/<chapter>/rooms.ts` must be moved to match the new painting (hotspot polygons, `walkTo`, the walk area, entries, objects, foreground pieces, `look` effects, crowd stations in `src/chapters/<chapter>/crowd.ts`). `npm test` checks that the walk area, approach points and stations stay consistent.');
 p();
-for (const room of Object.values(ROOMS)) {
-  const file = ROOM_FILES[room.background];
+for (const room of CHAPTER_LIST.flatMap(c => Object.values(c.rooms))) {
+  const file = roomFile(room.background);
   await referenceImage(room, file);
-  p(`### ${en[`room.${room.id}`] ?? room.id}: \`rooms/${file}.png\``);
+  p(`### ${en[`room.${room.id}`] ?? room.id}: \`${file}.png\``);
   p();
-  p(`![${room.id}](spec/${file}.jpg)`);
+  p(`![${room.id}](spec/${file.split('/').pop()}.jpg)`);
   p();
   p('| Clickable | Name | Box (x, y, w×h) | Mara stands at |');
   p('| --- | --- | --- | --- |');
@@ -153,7 +158,7 @@ p();
 p('| Sheet | Who | Must have | Now |');
 p('| --- | --- | --- | --- |');
 for (const c of CHARACTER_SHEETS) {
-  const info = sheetInfo(join(ART, 'characters', c.sheet));
+  const info = sheetInfo(join(ART, `${c.dir ?? ''}characters`, c.sheet));
   p(`| \`${c.sheet}\`${WEBP_SHEETS.includes(c.sheet) ? ' (ships as WebP)' : ''} | ${c.role} | ${c.tags.length} tags${c.optional ? ` (+ ${c.optional.join(', ')})` : ''} | ${info.size}, ${info.frames} frames |`);
 }
 p();

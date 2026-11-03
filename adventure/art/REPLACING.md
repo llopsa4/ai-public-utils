@@ -138,6 +138,62 @@ A new painting should put the things on the list where the reference image shows
 - The name board hangs from (660, 176) (about 200×72); it is painted by the game, so leave a quiet patch of wall there.
 - Flickering light pools at (848, 300): lamps, kiln mouths, hearths in the painting.
 
+### Bryn's Road: `ch2/rooms/road.png`
+
+![road](spec/road.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `doorframe` (secret) | Doorframe | 724, 292, 28×220 | (760, 544) |
+| `bell` | Bell | 892, 268, 44×68 | (860, 544) |
+| `door` | Heavy door | 752, 286, 142×228 | (820, 544) |
+| `window` | Lit window | 950, 320, 140×90 | (1010, 544) |
+| `signpost` | Signpost | 200, 360, 150×164 | (300, 560) |
+| `farPipes` | Pipes in the haze | 0, 140, 680×140 | — |
+| `roadBack` | Road back | 0, 480, 60×236 | — |
+
+- The name board hangs from (1040, 112) (about 200×68); it is painted by the game, so leave a quiet patch of wall there.
+- Flickering light pools at (1020, 364), (712, 318): lamps, kiln mouths, hearths in the painting.
+
+### Tempering House: `ch2/rooms/workshop.png`
+
+![workshop](spec/workshop.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `crucible` (secret) | Old crucible | 96, 224, 76×88 | (320, 524) |
+| `readingValve` | Reading valve | 720, 120, 48×72 | (744, 444) |
+| `stool2` | Stool | 110, 384, 140×140 | — |
+| `bench` | Bryn's bench | 0, 300, 290×170 | (340, 524) |
+| `cage` | Training cage | 300, 230, 280×180 | (444, 464) |
+| `coal` | Coal crate | 730, 290, 80×76 | (770, 444) |
+| `toBackroom` | Curtain to the back room | 190, 144, 56×140 | (300, 524) |
+| `view` | Open side | 960, 0, 320×240 | — |
+| `returnPipe` | Return pipe | 200, 0, 580×116 | — |
+| `toRoad` | Out to the road | 1220, 360, 60×240 | (1224, 540) |
+
+- Bryn stands at (880, 504).
+- The name board hangs from (600, 224) (about 220×60); it is painted by the game, so leave a quiet patch of wall there.
+- Flickering light pools at (744, 156), (380, 120): lamps, kiln mouths, hearths in the painting.
+
+### Back Room: `ch2/rooms/backroom.png`
+
+![backroom](spec/backroom.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `pouch` | Courier's pouch | 1048, 300, 48×68 | (1112, 580) |
+| `map` | Map on the wall | 560, 170, 230×160 | (680, 580) |
+| `farDoor` | Far door | 1150, 230, 120×300 | (1200, 580) |
+| `shelf` | Supply shelf | 370, 210, 130×230 | (440, 580) |
+| `hearth2` | Hearth | 90, 250, 250×300 | (380, 584) |
+| `table` | Table | 520, 430, 320×90 | (680, 592) |
+| `cot` | Cot | 900, 452, 300×120 | (1040, 604) |
+| `toWorkshop` | Curtain to the workshop | 0, 220, 70×330 | (80, 584) |
+
+- Bryn stands at (800, 624).
+- Flickering light pools at (216, 510), (680, 420): lamps, kiln mouths, hearths in the painting.
+
 ## Characters
 
 Sprite sheets in `art/src/characters/`: a PNG plus an Aseprite JSON-array file (LibreSprite and Aseprite export it; `frames[]` with `frame` rectangles and `duration` in ms, `meta.frameTags` with names and frame ranges). Every frame is **256×256**, the character standing on the bottom row, centred. An adult stands about 220–232 px tall, a child about 150. The layout of frames in the image is free.
@@ -157,6 +213,7 @@ Tags (the frames each one plays):
 | `mara-gauntlet` | Mara, gauntlet lit | 10 tags | 1280×1536, 26 frames |
 | `oren` | Oren (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `nell` | Nell (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
+| `bryn` | Bryn (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `extra-stoker` (ships as WebP) | background person (stoker) | 13 tags | 1280×768, 13 frames |
 | `extra-hoist` (ships as WebP) | background person (hoist) | 13 tags | 1280×768, 13 frames |
 | `extra-hauler` (ships as WebP) | background person (hauler) | 13 tags | 1280×768, 13 frames |

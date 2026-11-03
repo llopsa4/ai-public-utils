@@ -2,7 +2,7 @@ import { gzipSync } from 'node:zlib';
 import { expect, test } from '@playwright/test';
 import { act, idle, open, state, startNewGame } from './helpers';
 
-test('the whole scene plays in the browser, from the title screen to "To be continued"', async ({ page }) => {
+test('the whole scene plays in the browser, from the title screen into chapter 2 (debug)', async ({ page }) => {
   const errors: string[] = [];
   // What is downloaded before the title screen is usable (raw, and as GitHub Pages sends it: JS/CSS gzipped).
   let raw = 0, wire = 0, counting = true;
@@ -75,16 +75,19 @@ test('the whole scene plays in the browser, from the title screen to "To be cont
     const { session, interact } = (window as any).adventure;
     void session.scene.runScript(interact(session.state, 'go', 'passage'));
   });
-  for (let i = 0; i < 40 && !(await page.locator('#end').isVisible()); i++) {
+  // With ?debug (as these tests run) chapter 1's end leads into chapter 2, with Mara's things carried
+  // over; without it the end card shows (tests/e2e/debug-chapter2.spec.ts checks both).
+  await expect.poll(async () => {
     await page.evaluate(() => (window as any).adventure.session.ui.skip());
-    await page.waitForTimeout(150);
-  }
-  await expect(page.locator('#end')).toBeVisible();
-  await expect(page.locator('#end')).toContainText('To be continued');
+    return page.evaluate(() => (window as any).adventure.session.state.chapter);
+  }, { timeout: 30_000, intervals: [200] }).toBe('ch2');
+  await idle(page);
+  const next = await state(page);
+  expect(next.room).toBe('road');
+  expect(next.inventory).toEqual(expect.arrayContaining(['gauntlet', 'notebook', 'regulator', 'bread', 'scarf']));
 
-  // The notebook counts the secret found on the way.
-  const s = await state(page);
-  expect(s.flags.secretTally).toBe(true);
+  // The secret found on the way stays in chapter 1's flags.
+  expect(await page.evaluate(() => (window as any).adventure.session.state.earlier.ch1.secretTally)).toBe(true);
   expect(errors, errors.join('\n')).toEqual([]);
 });
 

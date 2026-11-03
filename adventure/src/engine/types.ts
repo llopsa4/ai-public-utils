@@ -11,7 +11,7 @@ export type Facing = 'down' | 'up' | 'left' | 'right';
 export type Pose = 'stand' | 'crouch' | 'dead';
 
 /** Every named character in the game; each chapter brings its own cast (`Chapter.npcs`). */
-export const NPC_IDS = ['oren', 'nell'] as const;
+export const NPC_IDS = ['oren', 'nell', 'bryn'] as const;
 export type NpcId = (typeof NPC_IDS)[number];
 export type ActorId = 'hero' | NpcId;
 /** Background people (the kiln-hall crowd): not saved, not part of the story. */

@@ -1,0 +1,96 @@
+import { readFileSync } from 'node:fs';
+import { expect, test, type Page } from '@playwright/test';
+import { act, fightStep, idle, open, startNewGame, state } from './helpers';
+
+/** Runs an interaction and plays it through, winning any fight it starts. */
+async function actThroughFight(page: Page, verb: string, target: string, until: () => Promise<boolean>): Promise<void> {
+  await idle(page);
+  await page.evaluate(([verb, target]) => {
+    const { session, interact } = (window as any).adventure;
+    void session.scene.runScript(interact(session.state, verb, target));
+  }, [verb, target] as const);
+  for (let i = 0; i < 400 && !(await until()); i++) {
+    if (await page.locator('#kc-root .combat-screen').isVisible().catch(() => false)) await fightStep(page);
+    else { await page.evaluate(() => (window as any).adventure.session.ui.skip()); await page.waitForTimeout(200); }
+  }
+}
+
+test('debug mode: chapter 2 plays from the road to its end card, and Bryn teaches Tempered Flow', async ({ page }) => {
+  test.setTimeout(240_000);
+  const errors: string[] = [];
+  await open(page, errors);
+  await startNewGame(page);
+  // Jump with the debug panel's chapter menu (the real chapter change).
+  await page.keyboard.press('`');
+  await page.locator('#debug-panel select').first().selectOption('ch2');
+  await expect.poll(() => page.evaluate(() => (window as any).adventure.session.state.chapter), { timeout: 30_000 }).toBe('ch2');
+  await idle(page);
+  await page.keyboard.press('`');
+  expect((await state(page)).room).toBe('road');
+
+  await act(page, 'use', 'door');
+  expect((await state(page)).room).toBe('workshop');
+  await act(page, 'talk', 'bryn');
+  expect((await state(page)).flags.offeredPractice).toBe(true);
+  await actThroughFight(page, 'use', 'cage', async () => !!(await state(page)).flags.sparred
+    && await page.evaluate(() => !(window as any).adventure.session.scene.isBusy()));
+  await act(page, 'talk', 'bryn', undefined, [
+    "Cinderfold's cold. Everyone there is waiting on what I'm carrying.",
+    "If I slow down, I'll have to think about doing this on my own.",
+    "I'm scared it all comes down to me. I need to know I'm not the only one holding it.",
+  ]);
+  expect((await state(page)).flags.namedNeed).toBe(true);
+  await act(page, 'use', 'readingValve', 'regulator');
+  await act(page, 'use', 'bench', 'gauntlet');
+  const tempered = await page.evaluate(() => (window as any).adventure.session.state);
+  expect(tempered.room).toBe('backroom');
+  expect(tempered.kit.techniques).toEqual(['tempered-flow']);
+  expect([tempered.kit.maxHp, tempered.kit.maxMp]).toEqual([66, 12]);
+
+  await act(page, 'use', 'hearth2');
+  await act(page, 'use', 'pouch', 'notebook');
+  await act(page, 'talk', 'bryn', undefined, [
+    "I'll make a list of what I need for the road.",
+    "Could you put my supplies together? I'd rather sleep.",
+    'Goodnight, Bryn.',
+  ]);
+  await act(page, 'look', 'map');
+  const ready = await state(page);
+  expect(ready.flags.letterSent && ready.flags.askedForHelp && ready.flags.sawValley).toBe(true);
+  await page.evaluate(() => { const { session, interact } = (window as any).adventure; void session.scene.runScript(interact(session.state, 'go', 'farDoor')); });
+  await expect.poll(async () => {
+    await page.evaluate(() => (window as any).adventure.session.ui.skip());
+    return page.locator('#end').isVisible();
+  }, { timeout: 30_000, intervals: [200] }).toBe(true);
+  await expect(page.locator('#end-title')).toHaveText('Tempered Flow');
+  expect(errors, errors.join('\n')).toEqual([]);
+});
+
+test('without debug mode, chapter 1 ends with the end card and chapter 2 is never downloaded', async ({ page }) => {
+  test.setTimeout(120_000);
+  const requests: string[] = [];
+  page.on('request', r => requests.push(r.url()));
+  // A chapter 1 save at the ashways with the passage clear (an old-format save: it is upgraded on load).
+  const save = JSON.parse(readFileSync(new URL('../fixtures/saves/v5.json', import.meta.url), 'utf8'));
+  Object.assign(save.state, {
+    room: 'ashways', hero: { x: 580, y: 320, face: 'left', pose: 'stand' },
+    flags: { hasGauntlet: true, hasNotebook: true, latchFixed: true, alarm: true, metOren: true, patchFailed: true, decided: true, procedureKnown: true, kilnCold: true, fought: true, gearChecked: true, valveVented: true },
+    inventory: ['gauntlet', 'notebook', 'regulator'],
+  });
+  await page.addInitScript(text => { if (!sessionStorage.getItem('seeded')) { localStorage.setItem('cinderfold.autosave', text); sessionStorage.setItem('seeded', '1'); } }, JSON.stringify(save));
+  await page.goto('./');
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await page.waitForTimeout(2500);
+  // Click the passage (world 424, 164) and choose Go in the action ring.
+  const canvas = page.locator('#game canvas');
+  const box = (await canvas.boundingBox())!;
+  await canvas.click({ position: { x: (424 / 640) * box.width, y: (164 / 360) * box.height } });
+  await page.locator('.verb[data-verb="go"]').click();
+  await expect.poll(async () => {
+    if (await page.locator('#dialogue').isVisible().catch(() => false)) await page.locator('#dialogue').click().catch(() => {});
+    return page.locator('#end').isVisible();
+  }, { timeout: 30_000, intervals: [300] }).toBe(true);
+  await expect(page.locator('#end')).toContainText('To be continued');
+  await expect(page.locator('#end-title')).toHaveText('A delivery he does not want');
+  expect(requests.filter(u => /\/build\/ch2-[\w-]+\.js/.test(u) || /\/build\/(road|workshop|backroom|bryn)-/.test(u))).toEqual([]);
+});

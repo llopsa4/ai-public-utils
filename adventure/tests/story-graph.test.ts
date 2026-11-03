@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { CHAPTERS, setChapter, type Chapter } from '../src/chapters';
+import { CHAPTERS, loadAllChapters, setChapter, type Chapter } from '../src/chapters';
+
+// Every chapter, chapters after the first included (they load on demand in the game).
+await loadAllChapters();
 import { resolveNode } from '../src/engine/dialogue';
 import { conditionsHold } from '../src/engine/geometry';
 import { TABLES } from '../src/engine/i18n';
