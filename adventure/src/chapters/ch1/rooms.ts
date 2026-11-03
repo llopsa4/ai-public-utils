@@ -222,8 +222,9 @@ export const ROOMS: Record<string, RoomDef> = {
       { kind: 'flame', x: 22, y: 210, size: 12, color: 0xffc060, depth: 9000 },
     ],
     sign: { x: 476, y: 70, drop: 10, w: 74, h: 50, style: 'iron' },
-    // The maintenance hatch at the foot of the regulator housing.
-    hatch: { x: 462, y: 286 },
+    // The round hatch in the pipe, open since the regulator came out (the socket's dark disc): the
+    // scavenger squeezes out of it and leaps down to the floor in front of Mara.
+    hatch: { x: 265, y: 153, r: 44, stepBack: { x: 490, y: 312 }, land: { x: 382, y: 310 } },
   },
   ashways: {
     id: 'ashways',

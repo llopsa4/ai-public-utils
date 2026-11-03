@@ -12,55 +12,79 @@ import { LOGICAL_H, LOGICAL_W } from '../../ui/ui';
 import type { RoomScene } from '../scenes';
 import { wait } from './runner';
 
+/**
+ * The round hatch in the pipe breaks: the camera shakes, sparks and smoke pour from its dark
+ * opening and bits of its brass rim fly off. Mara steps back; the scavenger drawn by the pulse
+ * squeezes out of the opening (only what is inside the circle shows), leaps over the railing and
+ * lands on the floor facing him.
+ */
 export async function blowHatch(scene: RoomScene): Promise<void> {
-  const at = scene.room.hatch ?? { x: 360, y: 260 };
+  const hatch = scene.room.hatch ?? { x: 265, y: 153, r: 44, stepBack: { x: 470, y: 302 }, land: { x: 396, y: 300 } };
   const calm = settings().reducedMotion;
   sound.rumble(500);
   sound.shatter();
   if (!calm) scene.cameras.main.shake(450, 0.008);
-  // The hole: a dark oval with a ragged metal rim, drawn on the floor.
-  const hole = scene.add.graphics().setDepth(at.y - 2);
-  hole.fillStyle(0x060404, 1).fillEllipse(at.x, at.y, 64, 15);
-  hole.lineStyle(2, 0x5a4a3c, 1).strokeEllipse(at.x, at.y, 66, 16);
-  hole.fillStyle(0xff8a3a, 0.35).fillEllipse(at.x, at.y + 1, 34, 6);
-  scene.hatchHole = hole;
-  // The cover flies off, spinning, and clatters down to one side.
-  const cover = scene.add.graphics().setDepth(at.y + 40).setPosition(at.x, at.y);
-  cover.fillStyle(0x4a4038, 1).fillEllipse(0, 0, 60, 14);
-  cover.lineStyle(2, 0x2a2420, 1).strokeEllipse(0, 0, 60, 14);
-  cover.fillStyle(0x6a5a4a, 1).fillRect(-14, -2, 28, 4);
-  if (calm) cover.setPosition(at.x - 70, at.y + 18);
-  else {
-    scene.tweens.add({ targets: cover, x: at.x - 70, duration: 900, ease: 'Linear' });
-    scene.tweens.add({ targets: cover, y: at.y - 70, duration: 420, ease: 'Quad.easeOut', yoyo: false,
-      onComplete: () => scene.tweens.add({ targets: cover, y: at.y + 18, duration: 480, ease: 'Bounce.easeOut' }) });
-    scene.tweens.add({ targets: cover, angle: 540, duration: 900, ease: 'Quad.easeOut' });
+  const rim = (k: number) => Array.from({ length: k }, (_, i) => {
+    const a = (i / k) * Math.PI * 2;
+    return { x: hatch.x + Math.cos(a) * hatch.r * 0.8, y: hatch.y + Math.sin(a) * hatch.r * 0.8 };
+  });
+  scene.props.burst([{ x: hatch.x, y: hatch.y }, ...rim(6)]);
+  for (let i = 0; i < 8; i++) scene.time.delayedCall(i * 110, () => scene.props.step(hatch.x + (Math.random() - 0.5) * hatch.r, hatch.y + (Math.random() - 0.5) * hatch.r));
+  // Bits of the brass rim fly out and fall away.
+  if (!calm) {
+    for (const [n, p] of rim(10).entries()) {
+      const bit = scene.add.graphics().setDepth(1000).setPosition(p.x, p.y);
+      bit.fillStyle(n % 2 ? 0x8a6a3a : 0x5a4630, 1).fillTriangle(-3, -2, 4, -1, -1, 3);
+      const dx = p.x - hatch.x, dy = p.y - hatch.y;
+      scene.tweens.add({ targets: bit, x: p.x + dx * 1.6, duration: 900, ease: 'Linear' });
+      scene.tweens.add({ targets: bit, y: p.y + dy * 0.8 + 150, duration: 900, ease: 'Quad.easeIn' });
+      scene.tweens.add({ targets: bit, angle: (Math.random() - 0.5) * 720, alpha: 0, duration: 900, onComplete: () => bit.destroy() });
+    }
   }
-  scene.props.burst([{ x: at.x, y: at.y - 6 }, { x: at.x + 8, y: at.y - 4 }, { x: at.x - 8, y: at.y - 4 }]);
-  for (let i = 0; i < 8; i++) scene.time.delayedCall(i * 110, () => scene.props.step(at.x + (Math.random() - 0.5) * 30, at.y - Math.random() * 6));
-  await wait(scene, calm ? 200 : 700);
-  // The scavenger climbs out: only what is above the rim shows while it rises.
+  // Mara steps back from it.
+  if (scene.hero.pose !== 'stand') scene.hero.setPose('stand');
+  const back = scene.hero.walk(scene.area.findPath(scene.hero.position, hatch.stepBack));
+  await wait(scene, calm ? 200 : 600);
   await new Promise<void>(resolve => {
-    const climb = () => {
-      const crawler = scene.add.image(at.x, at.y, 'battle-scavenger').setOrigin(0.5, 1).setScale(0.42).setFlipX(true).setDepth(at.y);
-      const full = crawler.displayHeight;
-      crawler.setY(at.y + full);
-      const rim = scene.make.graphics({}, false).fillRect(at.x - 120, 0, 240, at.y);
-      crawler.setMask(rim.createGeometryMask());
+    const emerge = () => {
+      const crawler = scene.add.image(hatch.x, hatch.y, 'battle-scavenger').setOrigin(0.5, 0.5).setScale(0.08).setFlipX(true).setDepth(0);
+      const hole = scene.make.graphics({}, false).fillCircle(hatch.x, hatch.y, hatch.r);
+      crawler.setMask(hole.createGeometryMask());
       scene.hatchCreature = crawler;
       sound.scrape(1);
+      // Out of the opening: it grows as it pushes through, still inside the circle.
       scene.tweens.add({
-        targets: crawler, y: at.y, duration: calm ? 300 : 1100, ease: 'Quad.easeOut',
+        targets: crawler, scale: 0.24, duration: calm ? 250 : 900, ease: 'Quad.easeOut',
         onComplete: () => {
           crawler.clearMask(true);
-          sound.strike(4);
-          scene.tweens.add({ targets: crawler, x: at.x - 12, y: at.y + 6, duration: calm ? 200 : 600, ease: 'Sine.easeInOut', onComplete: () => resolve() });
+          crawler.setDepth(1000).setOrigin(0.5, 1).setY(hatch.y + crawler.displayHeight / 2);
+          // The leap: across and down in an arc, growing to its size on the floor.
+          const from = { x: crawler.x, y: crawler.y };
+          const to = hatch.land;
+          const lift = 60;
+          scene.tweens.addCounter({
+            from: 0, to: 1, duration: calm ? 250 : 650, ease: 'Sine.easeIn',
+            onUpdate: tween => {
+              const k = tween.getValue() ?? 0;
+              crawler.setPosition(from.x + (to.x - from.x) * k, from.y + (to.y - from.y) * k - Math.sin(k * Math.PI) * lift);
+              crawler.setScale(0.24 + (0.42 - 0.24) * k);
+            },
+            onComplete: () => {
+              crawler.setDepth(to.y);
+              sound.strike(4);
+              if (!calm) scene.cameras.main.shake(180, 0.006);
+              for (let i = 0; i < 5; i++) scene.props.step(to.x + (i - 2) * 12, to.y);
+              resolve();
+            },
+          });
         },
       });
     };
-    if (scene.textures.exists('battle-scavenger')) climb();
-    else { scene.load.image('battle-scavenger', SCAVENGER_SPRITE); scene.load.once(Phaser.Loader.Events.COMPLETE, climb); scene.load.start(); }
+    if (scene.textures.exists('battle-scavenger')) emerge();
+    else { scene.load.image('battle-scavenger', SCAVENGER_SPRITE); scene.load.once(Phaser.Loader.Events.COMPLETE, emerge); scene.load.start(); }
   });
+  await back;
+  scene.syncHero();
   scene.hero.setFacing('left');
 }
 
@@ -106,7 +130,6 @@ export async function fight(scene: RoomScene, id: string): Promise<void> {
   });
   scene.scene.resume();
   cover.destroy();
-  scene.hatchHole?.setAlpha(0.6);
   scene.session.ui.renderInventory();
   sound.music('nervous');
   scene.cameras.main.fadeIn(700, 0, 0, 0);

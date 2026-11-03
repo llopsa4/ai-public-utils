@@ -109,8 +109,11 @@ export interface RoomDef {
   look?: RoomLook;
   /** Animated set pieces: gauge needle, bubbles, swinging hoist, lantern flames. */
   props?: PropDef[];
-  /** Where the maintenance hatch is (the gallery's fight starts there). */
-  hatch?: Point;
+  /**
+   * The hatch the gallery's fight comes out of: the round opening's centre and radius, where Mara
+   * steps back to, and where the creature lands on the floor.
+   */
+  hatch?: { x: number; y: number; r: number; stepBack: Point; land: Point };
   /**
    * The room's name board (text `room.<id>`), hung from a hook at (x, y): a rope `drop` long, then
    * a board `w` by `h` (world units), a wooden plank or an iron shield-plate. Decoration only.

@@ -455,13 +455,8 @@ export class RoomScene extends Phaser.Scene {
 
 
 
-  /**
-   * The hatch in the gallery floor blows: its cover spins away, smoke and sparks pour out of the
-   * dark hole, and the scavenger drawn by the pulse climbs up out of it, then steps toward Mara.
-   * (Hole and cover are drawn in code: placeholders until replaced.)
-   */
+  /** The creature out of the hatch (room/fightBridge.ts blowHatch), until its fight begins. */
   hatchCreature: Phaser.GameObjects.Image | null = null;
-  hatchHole: Phaser.GameObjects.Graphics | null = null;
 
 
 
