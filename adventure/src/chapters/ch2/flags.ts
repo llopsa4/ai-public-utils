@@ -1,13 +1,13 @@
 /** Chapter 2's story flags and items. Saves accept only these for chapter 2. */
 export const FLAGS = [
   // the tunnels: the grate, the steam junction (the wrong valve scalds), the cistern's bridge
-  'grateOpen', 'foundRag', 'tunnel1Clear', 'grumbled', 'scalded', 'steamOff', 'tunnel2Clear', 'bridgeDown', 'tunnel3Clear',
+  'sat', 'grateOpen', 'foundRag', 'tunnel1Clear', 'grumbled', 'scalded', 'steamOff', 'tunnel2Clear', 'bridgeDown', 'tunnel3Clear',
   // the road
   'knocked',
   // the workshop
   'metBryn', 'offeredPractice', 'sparred', 'toldRush', 'toldHome', 'toldAlone', 'namedNeed', 'retuned', 'recordsRead',
   // the back room
-  'ate', 'rested', 'letterSent', 'askedForHelp', 'sawValley',
+  'ate', 'tremor', 'rested', 'letterSent', 'askedForHelp', 'sawValley',
   // optional secrets (none gate progress)
   'secretDoorframe', 'secretCrucible',
 ] as const;

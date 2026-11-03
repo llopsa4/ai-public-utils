@@ -83,7 +83,7 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   }, { timeout: 30_000, intervals: [200] }).toBe('ch2');
   await idle(page);
   const next = await state(page);
-  expect(next.room).toBe('tunnelCollapse');
+  expect(next.room).toBe('tunnelMouth');
   expect(next.inventory).toEqual(expect.arrayContaining(['gauntlet', 'notebook', 'regulator', 'bread', 'scarf']));
 
   // The secret found on the way stays in chapter 1's flags.

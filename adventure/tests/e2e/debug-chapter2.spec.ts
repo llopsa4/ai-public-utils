@@ -26,6 +26,10 @@ test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn tea
   await expect.poll(() => page.evaluate(() => (window as any).adventure.session.state.chapter), { timeout: 30_000 }).toBe('ch2');
   await idle(page);
   await page.keyboard.press('`');
+  // The calm start at the tunnel mouth, then in (the roof falls behind him).
+  expect((await state(page)).room).toBe('tunnelMouth');
+  await act(page, 'use', 'pipeSeat');
+  await act(page, 'go', 'arch');
   expect((await state(page)).room).toBe('tunnelCollapse');
   const full = () => page.evaluate(() => (window as any).adventure.session.state);
   const settled = async (flag: string) => !!(await state(page)).flags[flag]
@@ -90,9 +94,6 @@ test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn tea
   await act(page, 'use', 'readingValve', 'regulator');
   expect((await state(page)).room).toBe('backroom');
 
-  // Bryn's cot: health and MP back to full.
-  await act(page, 'use', 'cot');
-  expect((await full()).kit.hp).toBe(66);
   await act(page, 'use', 'hearth2');
   await act(page, 'use', 'pouch', 'notebook');
   await act(page, 'talk', 'bryn', undefined, [
@@ -103,6 +104,13 @@ test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn tea
   await act(page, 'look', 'map');
   const ready = await state(page);
   expect(ready.flags.letterSent && ready.flags.askedForHelp && ready.flags.sawValley).toBe(true);
+  // Not before a night's sleep; the night tremor wakes him (rested: health back to full).
+  await act(page, 'go', 'farDoor');
+  expect((await state(page)).flags.tremor).toBeFalsy();
+  await act(page, 'use', 'cot');
+  const night = await full();
+  expect(night.flags.tremor).toBe(true);
+  expect(night.kit.hp).toBe(66);
   await page.evaluate(() => { const { session, interact } = (window as any).adventure; void session.scene.runScript(interact(session.state, 'go', 'farDoor')); });
   await expect.poll(async () => {
     await page.evaluate(() => (window as any).adventure.session.ui.skip());

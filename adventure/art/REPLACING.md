@@ -138,6 +138,22 @@ A new painting should put the things on the list where the reference image shows
 - The name board hangs from (660, 176) (about 200×72); it is painted by the game, so leave a quiet patch of wall there.
 - Flickering light pools at (848, 300): lamps, kiln mouths, hearths in the painting.
 
+### Service Line 4: `ch2/rooms/tunnel-mouth.png`
+
+![tunnelMouth](spec/tunnel-mouth.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `arch` | tunnel arch | 830, 190, 260×330 | (960, 544) |
+| `plate` | iron plate | 860, 150, 180×40 | — |
+| `mouthLamp` | lamp | 776, 248, 28×32 | — |
+| `pipeSeat` | pipe | 260, 460, 430×44 | (460, 544) |
+| `dawn` | dawn | 0, 0, 760×300 | — |
+| `ashRoad` | ash road | 0, 330, 80×240 | — |
+
+- The name board hangs from (600, 92) (about 240×64); it is painted by the game, so leave a quiet patch of wall there.
+- Flickering light pools at (790, 266): lamps, kiln mouths, hearths in the painting.
+
 ### Collapsed Tunnel: `ch2/rooms/tunnel-collapse.png`
 
 ![tunnelCollapse](spec/tunnel-collapse.jpg)

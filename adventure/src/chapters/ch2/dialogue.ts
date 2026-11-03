@@ -61,10 +61,12 @@ export const DIALOGUES: Record<string, DialogueTree> = {
       later: { lines: [{ actor: 'bryn', text: 'dlg2.bryn.later' }], next: null },
       toRecords: { lines: [{ actor: 'bryn', text: 'dlg2.bryn.toRecords' }], next: null },
       evening: {
-        branch: [{ if: [{ flag: 'askedForHelp' }, { flag: 'letterSent' }, { flag: 'sawValley' }], next: 'night' }],
+        branch: [
+          { if: [{ flag: 'tremor' }], next: 'dawn' },{ if: [{ flag: 'askedForHelp' }, { flag: 'letterSent' }, { flag: 'sawValley' }], next: 'night' }],
         lines: [{ actor: 'bryn', text: 'dlg2.bryn.evening' }],
         next: 'eveningHub',
       },
+      dawn: { lines: [{ actor: 'bryn', text: 'dlg2.bryn.dawn' }], next: null },
       eveningHub: {
         choices: [
           { text: 'dlg2.choice.supplies', next: 'supplies', if: [{ notFlag: 'askedForHelp' }] },

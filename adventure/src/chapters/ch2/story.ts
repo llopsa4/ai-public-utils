@@ -3,7 +3,8 @@ import type { Command } from '../../engine/types';
 
 /** Chapter 2's story rules (src/engine/story.ts): each room's own score, wind on the road and in the tunnels. */
 export const STORY: StoryRules = {
-  music: [],
+  // After the tremor the back room is dark and the score turns nervous.
+  music: [{ room: 'backroom', if: [{ flag: 'tremor' }], pick: 'nervous' }],
   ambience: [{ room: 'road', pick: 'wind' }, { room: 'tunnelCollapse', pick: 'wind' }, { room: 'tunnelSteam', pick: 'wind' }, { room: 'tunnelCistern', pick: 'wind' }],
   defaultAmbience: 'kiln',
   hush: [],
@@ -11,6 +12,22 @@ export const STORY: StoryRules = {
   crowdReactsTo: [],
   // The first time into the steam junction, Mara has had enough of the road.
   onEnter: [{
+    // The calm start: the morning after chapter 1's farewell.
+    room: 'tunnelMouth', if: [{ notFlag: 'sat' }, { notFlag: 'grateOpen' }],
+    run: s => s.looks['chapter2.morning'] ? [] : [
+      { type: 'looked', id: 'chapter2.morning' },
+      { type: 'wait', ms: 600 },
+      ...['line2.morning1', 'line2.morning2'].map((text): Command => ({ type: 'say', actor: 'hero', text })),
+    ],
+  }, {
+    // The roof came down behind him.
+    room: 'tunnelCollapse', if: [{ notFlag: 'grateOpen' }],
+    run: s => s.looks['chapter2.collapse'] ? [] : [
+      { type: 'looked', id: 'chapter2.collapse' },
+      { type: 'shake', ms: 900 },
+      ...['line2.collapse1', 'line2.collapse2'].map((text): Command => ({ type: 'say', actor: 'hero', text })),
+    ],
+  }, {
     room: 'tunnelSteam', if: [{ notFlag: 'grumbled' }],
     run: () => [
       { type: 'setFlag', flag: 'grumbled', value: true },

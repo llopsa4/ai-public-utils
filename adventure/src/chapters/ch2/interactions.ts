@@ -58,6 +58,21 @@ const KNOCK: Command[] = [
   flag('knocked'), flag('metBryn'), go('workshop', 'fromRoad'),
 ];
 
+/** Into the tunnels: the old roof gives way behind him. */
+const INTO_TUNNELS: Command[] = [
+  say('line2.archGo'), wait(300), go('tunnelCollapse', 'start'),
+];
+
+/**
+ * The night: Mara sleeps (health and MP back), and in the dark a surge through Bryn's return line
+ * shakes the house and puts out the lamps and the fire. The fault has reached her own line.
+ */
+const NIGHT: Command[] = [
+  say('line2.sleep1'), pose('hero', 'dead'), wait(1400), { type: 'heal' }, flag('rested'),
+  shake(1200), flag('tremor'), wait(500), say('line2.tremor0'), pose('hero', 'stand'),
+  say('line2.tremor1', 'bryn'), say('line2.tremor2'), say('line2.tremor3', 'bryn'), say('line2.tremor4'), say('line2.tremor5', 'bryn'),
+];
+
 /** A creature from the tunnel pool comes out of `from` and lands at `land`; then the fight. */
 const critter = (from: Point, land: Point): Command => ({ type: 'creatureFight', pool: 'tunnel', from, land });
 
@@ -99,6 +114,18 @@ export const RULES: readonly Rule[] = [
   ...inventoryItem('bread', [say('line.breadLook')]),
   ...inventoryItem('scarf', ({ state }) => [say(state.flags.bridgeDown ? 'line2.scarfScorched' : 'line.scarfLook')]),
   ...inventoryItem('rag', [say('line2.ragItemLook')]),
+
+  // ----------------------------------------------------- the tunnel mouth ---
+  { target: 'arch', verb: 'look', do: [say('line2.archLook')] },
+  { target: 'arch', verb: 'go', walk: true, do: INTO_TUNNELS },
+  { target: 'plate', verb: 'look', do: [say('line2.plateLook')] },
+  { target: 'mouthLamp', verb: 'look', do: [say('line2.mouthLampLook')] },
+  { target: 'pipeSeat', verb: 'look', do: [say('line2.pipeSeatLook')] },
+  { target: 'pipeSeat', verb: 'use', when: F('sat'), do: [say('line2.pipeSeatAgain')] },
+  { target: 'pipeSeat', verb: 'use', walk: true, do: [pose('hero', 'crouch'), wait(600), say('line2.sit1'), say('line2.sit2'), say('line2.sit3'), pose('hero', 'stand'), flag('sat')] },
+  { target: 'dawn', verb: 'look', do: [say('line2.dawnLook')] },
+  { target: 'ashRoad', verb: 'look', do: [say('line2.ashRoadLook')] },
+  { target: 'ashRoad', verb: 'go', do: [say('line2.ashRoadGo')] },
 
   // ------------------------------------------------- the collapsed tunnel ---
   { target: 'rag', verb: 'look', do: [say('line2.ragLook')] },
@@ -244,6 +271,7 @@ export const RULES: readonly Rule[] = [
   { target: 'farDoor', verb: ['open', 'go'], when: NOT('letterSent'), do: [say('line2.leaveLetter')] },
   { target: 'farDoor', verb: ['open', 'go'], when: NOT('askedForHelp'), do: [say('line2.leaveSupplies')] },
   { target: 'farDoor', verb: ['open', 'go'], when: NOT('sawValley'), do: [say('line2.leaveMap')] },
+  { target: 'farDoor', verb: ['open', 'go'], when: NOT('tremor'), do: [say('line2.leaveSleep')] },
   { target: 'farDoor', verb: ['open', 'go'], walk: true, do: [say('line2.leave1'), say('line2.leave2', 'bryn'), say('line2.leave3'), wait(300), { type: 'end' }] },
   { target: 'shelf', verb: 'look', do: [say('line2.shelfLook')] },
   { target: 'shelf', verb: 'take', do: [say('line2.shelfTake')] },
@@ -254,7 +282,10 @@ export const RULES: readonly Rule[] = [
   { target: 'table', verb: 'look', do: [say('line2.tableLook')] },
   { target: 'table', verb: ['use', 'take'], do: [say('line2.tableUse')] },
   { target: 'cot', verb: 'look', do: [say('line2.cotLook')] },
-  { target: 'cot', verb: 'use', walk: true, do: [pose('hero', 'dead'), wait(900), say('line2.cotUse'), { type: 'heal' }, pose('hero', 'stand'), flag('rested')] },
+  // Bed once the evening's done (letter, supplies, map); the night tremor wakes him.
+  { target: 'cot', verb: 'use', when: F('tremor'), do: [say('line2.cotAfterTremor')] },
+  { target: 'cot', verb: 'use', when: [{ atLeast: { count: 3, flags: ['letterSent', 'askedForHelp', 'sawValley'] } }], walk: true, do: NIGHT },
+  { target: 'cot', verb: 'use', walk: true, do: [pose('hero', 'dead'), wait(900), say('line2.cotUse'), pose('hero', 'stand')] },
   { target: 'toWorkshop', verb: 'look', do: [say('line2.toWorkshopLook')] },
   { target: 'toWorkshop', verb: 'go', walk: true, do: [go('workshop', 'fromBackroom')] },
 

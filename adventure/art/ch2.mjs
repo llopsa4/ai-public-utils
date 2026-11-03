@@ -141,6 +141,22 @@ const tunnelBase = (glowX) => {
 };
 const darken = '<rect width="1280" height="720" fill="#000" opacity="0.18"/>';
 {
+  // 0. The tunnel mouth at dawn (chapter 2's calm start): the ash road and a pale dawn sky (left),
+  //    a long pipe along the ground to sit on (centre), the brick arch of service line 4 with a lit
+  //    lamp and an iron plate over it (right).
+  let s = rect(0, 0, W, H, '#8a8296');
+  s += rect(0, 0, W, 300, '#c8b8c0') + ellipse(240, 300, 260, 90, '#ffd8a0', 'opacity="0.5" filter="url(#softer)"');
+  s += poly([[0, 380], [200, 340], [480, 370], [760, 330], [W, 360], [W, H], [0, H]], '#6e6470');
+  s += poly([[0, 470], [W, 450], [W, H], [0, H]], '#5a5058');
+  for (let n = 0; n < 26; n++) s += ellipse(rnd() * W, 520 + rnd() * 190, 40 + rnd() * 80, 5 + rnd() * 6, '#7a7078', `opacity="${0.3 + rnd() * 0.3}"`);
+  s += rect(780, 160, 360, 360, '#4a3a32') + stones(780, 160, 1140, 520, '#2e241e');
+  s += `<path d="M830 520 L830 300 Q960 190 1090 300 L1090 520 Z" fill="#120e0c"/>`;
+  s += rect(860, 150, 180, 40, '#3a302a') + rect(866, 156, 168, 28, '#5a4a3a') + line(890, 170, 1010, 170, '#2a201a', 3);
+  s += rect(778, 250, 24, 30, '#3a2a1e') + rect(782, 256, 16, 18, '#ffd27a') + ellipse(790, 266, 90, 70, 'url(#warm)', 'opacity="0.55"');
+  s += rect(260, 468, 420, 30, '#5a4a3e') + rect(260, 468, 420, 8, '#7a6a5a') + rect(250, 462, 20, 42, '#4a3a2e') + rect(670, 462, 20, 42, '#4a3a2e');
+  await save('tunnel-mouth', render(s + '<rect width="1280" height="720" fill="#ffb878" opacity="0.06"/>'));
+}
+{
   // 1. The collapsed tunnel: rubble down on the way back (left), the grate at the far end (the way on).
   let s = tunnelBase(640);
   s += poly([[0, 300], [80, 260], [190, 330], [240, 470], [260, 600], [0, 640]], '#3a302a');

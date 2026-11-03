@@ -32,6 +32,16 @@ const workshopHotspots: HotspotDef[] = [
   { id: 'toRoad', name: 'name2.toRoad', polygon: rect(610, 180, 30, 120), verbs: ['look', 'go'], walkTo: pt(612, 270), face: 'right' },
 ];
 
+// The tunnel mouth at dawn: the calm start, continuing from chapter 1's farewell.
+const mouthHotspots: HotspotDef[] = [
+  { id: 'arch', name: 'name2.arch', polygon: rect(415, 95, 130, 165), verbs: ['look', 'go'], walkTo: pt(480, 272), face: 'up' },
+  { id: 'plate', name: 'name2.plate', polygon: rect(430, 75, 90, 20), verbs: ['look'] },
+  { id: 'mouthLamp', name: 'name2.lamp', polygon: rect(388, 124, 14, 16), verbs: ['look'] },
+  { id: 'pipeSeat', name: 'name2.pipeSeat', polygon: rect(130, 230, 215, 22), verbs: ['look', 'use'], walkTo: pt(230, 272), face: 'up' },
+  { id: 'dawn', name: 'name2.dawn', polygon: rect(0, 0, 380, 150), verbs: ['look'] },
+  { id: 'ashRoad', name: 'name2.ashRoad', polygon: rect(0, 165, 40, 120), verbs: ['look', 'go'] },
+];
+
 // The tunnels (painted in code, art/ch2.mjs): dark, lit by a failing lamp and Mara's gauntlet.
 const collapseHotspots: HotspotDef[] = [
   // Only for a Mara without Tobi's scarf (it is optional in chapter 1): the cistern needs one or the other.
@@ -86,6 +96,22 @@ const tunnelFloor = { outer: [pt(0, 282), pt(200, 254), pt(440, 254), pt(640, 28
 const tunnelScale = { farY: 254, farScale: 0.82, nearY: 358, nearScale: 1.08 };
 
 export const ROOMS: Record<string, RoomDef> = {
+  tunnelMouth: {
+    id: 'tunnelMouth',
+    background: 'room-tunnel-mouth',
+    walkable: { outer: [pt(0, 262), pt(640, 262), pt(640, 358), pt(0, 358)], holes: [] },
+    scale: { farY: 262, farScale: 0.94, nearY: 358, nearScale: 1.1 },
+    surface: 'ash',
+    music: 'wind',
+    light: { tint: 0xf0dcd0, farDim: 0.9 },
+    look: { grade: { saturation: 1, brightness: 1.02, contrast: 1.02, warmth: 0.15 }, vignette: 0.3 },
+    ambient: { particles: [{ kind: 'ash', x: 0, y: 80, w: 640, h: 180 }], glows: [{ x: 395, y: 133, r: 40, color: 0xffd27a, warm: true }] },
+    sign: { x: 300, y: 46, drop: 10, w: 120, h: 22, style: 'wood' },
+    entries: { start: { x: 90, y: 300, face: 'right' } },
+    objects: [],
+    hotspots: mouthHotspots,
+    actors: [],
+  },
   tunnelCollapse: {
     id: 'tunnelCollapse',
     background: 'room-tunnel-collapse',
@@ -197,6 +223,9 @@ export const ROOMS: Record<string, RoomDef> = {
     walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 358), pt(0, 358)], holes: [] },
     scale: { farY: 268, farScale: 1, nearY: 358, nearScale: 1.12 },
     music: 'warm',
+    // The night tremor: a surge through Bryn's return line puts the lamps and the fire out.
+    coldIf: [{ flag: 'tremor' }],
+    coldTint: 0x9098b8,
     light: { tint: 0xffd8b0, farDim: 0.9 },
     look: { grade: { saturation: 1.05, brightness: 1, contrast: 1.05, warmth: 0.35 }, vignette: 0.36 },
     ambient: { glows: [{ x: 108, y: 255, r: 70, color: 0xff9a40, warm: true }, { x: 340, y: 210, r: 60, color: 0xffc070 }] },
@@ -209,5 +238,5 @@ export const ROOMS: Record<string, RoomDef> = {
   },
 };
 
-export const START_ROOM = 'tunnelCollapse';
+export const START_ROOM = 'tunnelMouth';
 export const START_ENTRY = 'start';

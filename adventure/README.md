@@ -54,17 +54,18 @@ Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, 
 
 ## Chapter 2 (debug only)
 
-Chapter 2, **Tempered Flow**, is playable only in debug mode for now. Open the game with `?debug` and either finish chapter 1 (its end leads into chapter 2 instead of the end card), or press `` ` `` and pick `ch2` in the debug panel's chapter menu. First he crosses the tunnels under the ashways: three dark scenes, each with a small puzzle that wakes a creature, drawn at random from four (Cinder Rat, Rat Pack, Ash Mite Swarm, Pipe Beetle) on every attempt, including after a lost fight:
+Chapter 2, **Tempered Flow**, is playable only in debug mode for now. Open the game with `?debug` and either finish chapter 1 (its end leads into chapter 2 instead of the end card), or press `` ` `` and pick `ch2` in the debug panel's chapter menu. It opens calm, at dawn at the mouth of a service tunnel (a pipe to sit on, thoughts of home); as he goes in, the roof falls behind him. Then he crosses the tunnels under the ashways: three dark scenes, each with a small puzzle that wakes a creature, drawn at random from four (Cinder Rat, Rat Pack, Ash Mite Swarm, Pipe Beetle) on every attempt, including after a lost fight:
 - the collapsed tunnel: pry the rusted grate open with the gauntlet
 - the steam junction: turn the valve the leaking pipe runs to (the wrong one scalds him for 5 health)
 - the ash cistern: the chain holding the drawbridge up is too hot to grip, even with the gauntlet; Mara wraps Tobi's scarf round it (a Mara who left chapter 1 without the scarf finds an oily rag in the first tunnel's rubble instead)
 
-His health carries from fight to fight (tonics can be drunk), and each win leaves 4 salvage. Then he reaches Bryn's tempering house on the road out of Cinderfold country, and her cot heals him fully:
+His health carries from fight to fight (tonics can be drunk), and each win leaves 4 salvage. Then he reaches Bryn's tempering house on the road out of Cinderfold country, and later her cot heals him:
 - she retunes his gauntlet: Kiln Courier's **Tempered Flow** technique, plus +6 most health and +2 most MP, kept for later chapters
 - he tries it on her training rig: Kiln Courier's technique practice (the first play must be the highlighted Tempered Flow card, its banner explains the cost; he fights at full health and MP and loses nothing)
 - he answers her question about what he is rushing towards
 - she reads the regulator's records (the fault lies further along the return circuit), then supper
 - over supper he writes home to Oren, lets Bryn pack his supplies, and finds the valley marked abandoned on her map
+- he sleeps on her cot (health and MP back), and in the night a pressure surge through her return line shakes the house and puts out the lamps: the fault is still spreading, and he leaves before first light
 
 Without `?debug` nothing changes: chapter 1 ends with its end card, and chapter 2's code and art are never downloaded. Chapter 2 lives in `src/chapters/ch2/`, loads on demand (`loadChapter` in `src/chapters/index.ts`), brings its own cast (Bryn) and its art (`src/chapters/ch2/art.ts`, `art/src/ch2/`), and has its own size budget. All of its art is placeholder, listed in the art manifest with Codex briefs.
 

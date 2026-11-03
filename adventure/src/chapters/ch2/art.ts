@@ -6,6 +6,7 @@ import brynPortrait from '../../../art/src/ch2/portraits/bryn.png';
 import roadRoom from '../../../art/src/ch2/rooms/road.webp';
 import workshopRoom from '../../../art/src/ch2/rooms/workshop.webp';
 import backroomRoom from '../../../art/src/ch2/rooms/backroom.webp';
+import tunnelMouth from '../../../art/src/ch2/rooms/tunnel-mouth.webp';
 import tunnelCollapse from '../../../art/src/ch2/rooms/tunnel-collapse.webp';
 import tunnelSteam from '../../../art/src/ch2/rooms/tunnel-steam.webp';
 import tunnelCistern from '../../../art/src/ch2/rooms/tunnel-cistern.webp';
@@ -33,7 +34,7 @@ import { registerArt } from '../../game/assets';
 export function registerChapterArt(): void {
   registerArt({
     rooms: {
-      'room-tunnel-collapse': tunnelCollapse, 'room-tunnel-steam': tunnelSteam, 'room-tunnel-cistern': tunnelCistern,
+      'room-tunnel-mouth': tunnelMouth, 'room-tunnel-collapse': tunnelCollapse, 'room-tunnel-steam': tunnelSteam, 'room-tunnel-cistern': tunnelCistern,
       'room-road': roadRoom, 'room-workshop': workshopRoom, 'room-backroom': backroomRoom,
     },
     sheets: {

@@ -7,6 +7,7 @@ import type { Objective } from '../types';
  * chapters.
  */
 const STEPS: { key: string; done: (s: GameState) => boolean; optional?: boolean }[] = [
+  { key: 'obj.tunnels', done: s => s.room !== 'tunnelMouth' },
   { key: 'obj.grate', done: s => !!s.flags.tunnel1Clear },
   { key: 'obj.steam', done: s => !!s.flags.tunnel2Clear },
   { key: 'obj.bridge', done: s => !!s.flags.tunnel3Clear },
@@ -19,6 +20,7 @@ const STEPS: { key: string; done: (s: GameState) => boolean; optional?: boolean 
   { key: 'obj.letter', done: s => !!s.flags.letterSent },
   { key: 'obj.supplies', done: s => !!s.flags.askedForHelp },
   { key: 'obj.map', done: s => !!s.flags.sawValley },
+  { key: 'obj.sleep', done: s => !!s.flags.tremor },
   { key: 'obj.farDoor', done: () => false },
 ];
 
