@@ -77,10 +77,15 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   });
   // With ?debug (as these tests run) chapter 1's end leads into chapter 2, with Mara's things carried
   // over; without it the end card shows (tests/e2e/debug-chapter2.spec.ts checks both).
+  // Chapter 2 opens with its title and lines over black (skipped here).
   await expect.poll(async () => {
-    await page.evaluate(() => (window as any).adventure.session.ui.skip());
+    await page.evaluate(() => {
+      const intro = document.getElementById('intro')!;
+      if (!intro.hidden) document.getElementById('intro-skip')!.click();
+      else (window as any).adventure.session.ui.skip();
+    });
     return page.evaluate(() => (window as any).adventure.session.state.chapter);
-  }, { timeout: 30_000, intervals: [200] }).toBe('ch2');
+  }, { timeout: 60_000, intervals: [200] }).toBe('ch2');
   await idle(page);
   const next = await state(page);
   expect(next.room).toBe('tunnelMouth');

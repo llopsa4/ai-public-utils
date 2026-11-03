@@ -67,7 +67,11 @@ export function mountDebugPanel(session: Session): void {
     // after fetching the chapter if it isn't loaded yet.
     chapterSelect.onchange = () => {
       const id = chapterSelect.value;
-      void loadChapter(id, { art: true }).then(() => change(st => applyCommand(st, { type: 'chapter', id })));
+      void loadChapter(id, { art: true }).then(async next => {
+        // As in the game: the chapter's opening lines, the first time this save enters it.
+        if (next.intro && !session.state.reached.includes(id)) await session.ui.chapterIntro(next.intro);
+        change(st => applyCommand(st, { type: 'chapter', id }));
+      });
     };
     const roomSelect = el<HTMLSelectElement>('select');
     for (const id of Object.keys(c.rooms)) roomSelect.append(el('option', { value: id, textContent: id, selected: id === s.room }));

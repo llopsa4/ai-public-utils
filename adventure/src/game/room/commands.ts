@@ -131,7 +131,9 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     scene.session.ui.closeRadial();
     scene.cameras.main.fadeOut(FADE_MS * 3, 0, 0, 0);
     await wait(scene, FADE_MS * 3 + 80);
-    await loadChapter(command.id, { art: true });
+    const next = await loadChapter(command.id, { art: true });
+    // Its opening lines over black, the first time he enters it.
+    if (next.intro && !state.reached.includes(command.id)) await scene.session.ui.chapterIntro(next.intro);
     applyCommand(state, command);
     setChapter(command.id);
     scene.session.arrival = null;

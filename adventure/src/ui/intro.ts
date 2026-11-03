@@ -15,20 +15,44 @@ export async function newStory(ui: Ui): Promise<void> {
   await playIntro();
   ui.host.startStory();
   ui.introActive = false;
+  fadeIntroAway();
+}
+
+/**
+ * A later chapter's opening (`Chapter.intro`): its title, then its lines, over black; then the
+ * black fades away over the new chapter's first room.
+ */
+export async function chapterIntro(ui: Ui, keys: readonly string[]): Promise<void> {
+  if (ui.introActive || !keys.length) return;
+  ui.introActive = true;
+  ui.setHover('');
+  await playIntro(keys.slice(1), keys[0]);
+  ui.introActive = false;
+  fadeIntroAway();
+}
+
+/** Timers of a fade-away still running (a new intro cancels them, or they would hide it). */
+let fading: number[] = [];
+
+function fadeIntroAway(): void {
   const intro = $('intro');
   // The black fades away over the room's own slow fade-in; play can start at once.
   intro.classList.add('leaving');
-  window.setTimeout(() => {
+  fading.push(window.setTimeout(() => {
     intro.style.setProperty('--intro-fade', '1.6s');
     intro.classList.remove('shown');
-    window.setTimeout(() => { intro.hidden = true; intro.classList.remove('leaving'); }, settings().reducedMotion ? 0 : 1700);
-  }, 50);
+    fading.push(window.setTimeout(() => { intro.hidden = true; intro.classList.remove('leaving'); fading = []; }, settings().reducedMotion ? 0 : 1700));
+  }, 50));
 }
 
-export function playIntro(): Promise<void> {
+/** The lines over black (chapter 1's opening by default); an optional title comes first, larger. */
+export function playIntro(keys: readonly string[] = ['intro.1', 'intro.2', 'intro.3', 'intro.4'], titleKey?: string): Promise<void> {
   const intro = $('intro'), text = $('intro-text'), more = $('intro-more');
   const calm = settings().reducedMotion;
-  const lines = [1, 2, 3, 4].map(n => t(`intro.${n}`));
+  const lines = [...(titleKey ? [t(titleKey)] : []), ...keys.map(k => t(k))];
+  for (const id of fading) window.clearTimeout(id);
+  fading = [];
+  intro.classList.remove('leaving');
   text.replaceChildren();
   text.classList.remove('out');
   more.classList.remove('in');
@@ -55,6 +79,7 @@ export function playIntro(): Promise<void> {
       if (shown >= lines.length) { finish(); return; }
       for (const p of text.children) p.classList.add('past');
       const p = document.createElement('p');
+      if (titleKey && shown === 0) p.className = 'intro-title';
       p.textContent = lines[shown++];
       text.append(p);
       void p.offsetWidth;

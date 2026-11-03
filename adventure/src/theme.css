@@ -833,6 +833,8 @@ dialog[open] {
   text-shadow: 0 0 1.2em rgb(255 120 40 / 0.25);
 }
 #intro-text p.in { opacity: 1; transform: none; }
+/* A later chapter's title, before its lines. */
+#intro-text p.intro-title { font-style: normal; font-size: 1.5em; letter-spacing: 0.06em; color: #ffd8a0; margin-bottom: 1.4em; }
 #intro-text p.past { color: #a8957a; }
 #intro-text.out p { opacity: 0; transition-duration: 1.2s; }
 #intro-more {

@@ -20,6 +20,7 @@ export const CH2: Chapter = {
   npcs: { bryn: { pose: 'stand', face: 'left' } },
   startItems: START_ITEMS,
   end: { title: 'end2.title', text: 'end2.text' },
+  intro: ['intro2.title', 'intro2.1', 'intro2.2', 'intro2.3'],
   rooms: ROOMS,
   flags: FLAGS,
   items: ITEMS,

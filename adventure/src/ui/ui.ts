@@ -9,7 +9,7 @@ import { nextHint, openHistory, openNotebook } from './notebook';
 import { bindSettingsForm, openSettings } from './settingsMenu';
 import { forceGear, openGear } from './gear';
 import { openShop } from './shop';
-import { newStory } from './intro';
+import { chapterIntro, newStory } from './intro';
 import { choose, closeRadial, openRadial } from './radial';
 import { bindFullscreen, bindLongPress, hideLabels, revealFor, showLabels } from './labels';
 import { exportSave, importSave } from './saves';
@@ -275,6 +275,11 @@ export class Ui {
   }
 
   introActive = false;
+
+  /** A later chapter's opening lines over black (see `Chapter.intro`). */
+  chapterIntro(keys: readonly string[]): Promise<void> {
+    return chapterIntro(this, keys);
+  }
 
 
 

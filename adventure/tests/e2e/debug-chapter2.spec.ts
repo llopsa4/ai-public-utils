@@ -23,8 +23,14 @@ test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn tea
   // Jump with the debug panel's chapter menu (the real chapter change).
   await page.keyboard.press('`');
   await page.locator('#debug-panel select').first().selectOption('ch2');
+  // Chapter 2's opening over black: its title first.
+  await expect(page.locator('#intro-text .intro-title')).toHaveText('Chapter 2: Tempered Flow', { timeout: 30_000 });
+  await page.evaluate(() => document.getElementById('intro-skip')!.click());
   await expect.poll(() => page.evaluate(() => (window as any).adventure.session.state.chapter), { timeout: 30_000 }).toBe('ch2');
   await idle(page);
+  await expect(page.locator('#intro')).toBeHidden({ timeout: 10_000 });
+  // Once per save: the chapter is now reached, which is what keeps the intro from playing again.
+  expect(await page.evaluate(() => (window as any).adventure.session.state.reached)).toContain('ch2');
   await page.keyboard.press('`');
   // The calm start at the tunnel mouth, then in (the roof falls behind him).
   expect((await state(page)).room).toBe('tunnelMouth');

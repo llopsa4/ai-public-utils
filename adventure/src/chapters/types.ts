@@ -47,6 +47,11 @@ export interface Chapter {
   extras: ExtraDef[];
   encounters: Record<string, EncounterDefinition>;
   rewards: Record<string, Reward>;
+  /**
+   * Lines over black when the chapter is first entered (string keys; the first is its title).
+   * Chapter 1's opening is the game's own intro, played on New game.
+   */
+  intro?: readonly string[];
   /** Random fights: a pool name to the encounters it draws from (`creatureFight`). */
   encounterPools?: Record<string, readonly string[]>;
   /** Kiln Courier's lesson prompts reworded for this chapter's first enemy, by step index. */
