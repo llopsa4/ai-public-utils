@@ -1,5 +1,6 @@
 // Export and import of save files.
 import { t } from '../engine/i18n';
+import { loadChapterOf } from '../chapters';
 import { MAX_SAVE_BYTES, parseSave, saveFileName, serializeSave } from '../engine/saveFile';
 import { $, type Ui } from './ui';
 
@@ -22,7 +23,9 @@ export async function importSave(ui: Ui): Promise<void> {
   const file = ui.fileInput.files?.[0];
   ui.fileInput.value = '';
   if (!file) return;
-  const result = file.size > MAX_SAVE_BYTES ? { ok: false as const, error: 'save.error.tooLarge' } : parseSave(await file.text());
+  const text = file.size > MAX_SAVE_BYTES ? '' : await file.text();
+  if (text) await loadChapterOf(text);
+  const result = file.size > MAX_SAVE_BYTES ? { ok: false as const, error: 'save.error.tooLarge' } : parseSave(text);
   if (!result.ok) { ui.toast(t(result.error), 6000); return; }
   if (!$('app').classList.contains('on-title') && !(await ui.confirm(t('ui.confirmImport')))) return;
   ui.host.replaceState(result.state);

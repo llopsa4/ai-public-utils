@@ -10,6 +10,7 @@ export type Polygon = Point[];
 export type Facing = 'down' | 'up' | 'left' | 'right';
 export type Pose = 'stand' | 'crouch' | 'dead';
 
+/** Every named character in the game; each chapter brings its own cast (`Chapter.npcs`). */
 export const NPC_IDS = ['oren', 'nell'] as const;
 export type NpcId = (typeof NPC_IDS)[number];
 export type ActorId = 'hero' | NpcId;
@@ -188,7 +189,8 @@ export interface GameState {
   earlier: Record<string, Record<string, boolean>>;
   room: string;
   hero: { x: number; y: number } & ActorState;
-  npcs: Record<NpcId, ActorState>;
+  /** The current chapter's cast and how each stands (only that chapter's characters). */
+  npcs: Partial<Record<NpcId, ActorState>>;
   /** The active chapter's story flags. */
   flags: Record<string, boolean>;
   inventory: string[];

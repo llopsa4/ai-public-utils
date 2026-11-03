@@ -51,7 +51,7 @@ export function onPointerDown(scene: RoomScene, pointer: Phaser.Input.Pointer): 
 export function openTargetRing(scene: RoomScene, target: Target, at: Point): void {
   if (target.kind === 'extra') { openExtraRing(scene, target.member, at); return; }
   const id = targetId(target);
-  const verbs: Verb[] = target.kind === 'actor' ? chapter().actorVerbs[target.actor.id as ActorId] : target.hotspot.verbs;
+  const verbs: Verb[] = target.kind === 'actor' ? chapter().actorVerbs[target.actor.id as ActorId] ?? [] : target.hotspot.verbs;
   sound.blip();
   scene.session.ui.openRadial(at, targetName(scene, target), verbs, verb => {
     void runScript(scene, withHandling(chapter().interact(scene.session.state, verb, id), verb, id));

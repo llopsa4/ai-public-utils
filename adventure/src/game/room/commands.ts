@@ -6,7 +6,7 @@ import { settings } from '../../engine/settings';
 import { sound } from '../../audio/sound';
 import { applyCommand } from '../../engine/state';
 import type { Command } from '../../engine/types';
-import { chapter, setChapter } from '../../chapters';
+import { chapter, loadChapter, setChapter } from '../../chapters';
 import type { RoomScene } from '../scenes';
 import { runDialogue, say, wait } from './runner';
 import { blowHatch, fight } from './fightBridge';
@@ -130,6 +130,7 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     scene.session.ui.closeRadial();
     scene.cameras.main.fadeOut(FADE_MS * 3, 0, 0, 0);
     await wait(scene, FADE_MS * 3 + 80);
+    await loadChapter(command.id);
     applyCommand(state, command);
     setChapter(command.id);
     scene.session.arrival = null;

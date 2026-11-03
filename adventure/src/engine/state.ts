@@ -2,7 +2,6 @@ import { CHAPTERS, FIRST_CHAPTER } from '../chapters';
 import { newBag, newKit, giveSpares } from './kit';
 import type { ActorId, ActorState, Command, GameState } from './types';
 
-const standing = (face: ActorState['face']): ActorState => ({ pose: 'stand', face });
 
 /** A new game at the start of a chapter (the first by default). */
 export function newGame(id = FIRST_CHAPTER): GameState {
@@ -14,7 +13,7 @@ export function newGame(id = FIRST_CHAPTER): GameState {
     earlier: {},
     room: start.room,
     hero: { x: entry.x, y: entry.y, face: entry.face, pose: 'stand' },
-    npcs: { oren: standing('left'), nell: standing('right') },
+    npcs: structuredClone(CHAPTERS[id].npcs),
     flags: {},
     inventory: [],
     looks: {},
@@ -24,7 +23,8 @@ export function newGame(id = FIRST_CHAPTER): GameState {
 }
 
 function actorState(state: GameState, actor: ActorId): ActorState {
-  return actor === 'hero' ? state.hero : state.npcs[actor];
+  // A character outside the chapter's cast gets a throwaway state (commands for them change nothing).
+  return actor === 'hero' ? state.hero : state.npcs[actor] ?? { pose: 'stand', face: 'down' };
 }
 
 /** Applies the state-changing part of a command. Presentation-only commands leave the state untouched. */

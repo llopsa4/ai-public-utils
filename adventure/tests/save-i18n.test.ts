@@ -16,8 +16,8 @@ test('a save round-trips exactly', () => {
   s.flags.kilnCold = true;
   s.inventory.push('gauntlet', 'regulator');
   s.hero.pose = 'crouch';
-  s.npcs.nell.pose = 'dead';
-  s.npcs.oren.face = 'right';
+  s.npcs.nell!.pose = 'dead';
+  s.npcs.oren!.face = 'right';
   const result = parseSave(serializeSave(s));
   assert.ok(result.ok);
   assert.deepEqual(result.state, s);
@@ -41,7 +41,7 @@ test('invalid saves are rejected with a reason', () => {
     [variant(d => { d.version = 1; }), 'save.error.version'],
     [variant(d => { d.state.npcs.stranger = { pose: 'stand', face: 'left' }; }), 'save.error.invalid'],
     [variant(d => { delete d.state.npcs.nell; }), 'save.error.invalid'],
-    [variant(d => { d.state.npcs.nell.pose = 'sleeping'; }), 'save.error.invalid'],
+    [variant(d => { d.state.npcs.nell!.pose = 'sleeping'; }), 'save.error.invalid'],
     [variant(d => { d.state.inventory = ['crown']; }), 'save.error.invalid'],
     ['x'.repeat(MAX_SAVE_BYTES + 1), 'save.error.tooLarge'],
   ];

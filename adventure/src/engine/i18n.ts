@@ -1,14 +1,21 @@
 import game from '../content/strings/en.json';
-import { CHAPTER_STRINGS } from '../chapters/strings';
 
-/** The game's own strings (interface, verbs, saves, the opening) plus every chapter's. */
-const en: Record<string, string> = Object.assign({}, game, ...Object.values(CHAPTER_STRINGS));
+/**
+ * The game's own strings (interface, verbs, saves, the opening). Each chapter's strings are added
+ * when the chapter registers or loads (src/chapters/index.ts, `addStrings`).
+ */
+const en: Record<string, string> = { ...game };
 
 /** English only for now. To add a language: add strings/<code>.json and list it here. */
 export const LANGUAGES = ['en'] as const;
 export type Language = (typeof LANGUAGES)[number];
 
 export const TABLES: Record<Language, Record<string, string>> = { en };
+
+/** A chapter's strings join the table when the chapter loads (src/chapters/index.ts). */
+export function addStrings(strings: Record<string, string>): void {
+  Object.assign(TABLES.en, strings);
+}
 const STORAGE_KEY = 'adventure.language';
 
 let current: Language = 'en';

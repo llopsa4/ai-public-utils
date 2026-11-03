@@ -2,7 +2,7 @@ import { CHAPTERS } from '../chapters';
 import { MATERIALS, TONIC, MAX_SALVAGE } from '../content/kit';
 import { newBag, newKit, validKit } from './kit';
 import { READABLE_VERSIONS, SAVE_VERSION, migrate } from './migrations';
-import { NPC_IDS, type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
+import { type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
 
 const SAVE_FORMAT = 'cinderfold-save';
 // Version 6: chapters (flags kept per chapter). Older versions are upgraded (src/engine/migrations.ts).
@@ -65,10 +65,12 @@ export function parseSave(text: string): ImportResult {
   if (hero.x < 0 || hero.x > 640 || hero.y < 0 || hero.y > 360) return invalid;
 
   if (!isObject(s.npcs)) return invalid;
+  // Exactly the chapter's cast.
+  const cast = Object.keys(current.npcs) as NpcId[];
   const keys = Object.keys(s.npcs);
-  if (keys.length !== NPC_IDS.length || !keys.every(k => (NPC_IDS as readonly string[]).includes(k))) return invalid;
-  const npcs = {} as Record<NpcId, ActorState>;
-  for (const id of NPC_IDS) {
+  if (keys.length !== cast.length || !keys.every(k => (cast as string[]).includes(k))) return invalid;
+  const npcs: Partial<Record<NpcId, ActorState>> = {};
+  for (const id of cast) {
     const a = actor(s.npcs[id]);
     if (!a) return invalid;
     npcs[id] = a;

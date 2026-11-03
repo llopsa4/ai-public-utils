@@ -76,7 +76,7 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
 export const LAZY_SHEETS = new Set(['mara-gauntlet', 'oren', 'nell', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
 
 /** Sheet used for each non-player character. */
-export const NPC_SHEETS: Record<NpcId, string> = { oren: 'oren', nell: 'nell' };
+export const NPC_SHEETS: Partial<Record<NpcId, string>> = { oren: 'oren', nell: 'nell' };
 
 export const ROOM_IMAGES: Record<string, string> = {
   'room-tent': tentRoomPng,

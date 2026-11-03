@@ -139,7 +139,7 @@ export class RoomScene extends Phaser.Scene {
     const state = this.session.state;
     const sheet = heroSheetFor(chapter().story, { state, room, cold: false });
     if (sheet !== 'mara') queueSheet(this, sheet);
-    for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, NPC_SHEETS[a.id]);
+    for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, NPC_SHEETS[a.id] ?? a.id);
     if (!this.textures.exists(room.background)) this.load.image(room.background, ROOM_IMAGES[room.background]);
     for (const p of room.props ?? []) {
       if ('image' in p && !this.textures.exists(`prop-${p.image}`)) this.load.image(`prop-${p.image}`, PROP_IMAGES[p.image]);
@@ -193,8 +193,8 @@ export class RoomScene extends Phaser.Scene {
     this.actors.set('hero', this.hero);
     for (const a of this.room.actors) {
       if (!conditionsHold(state, a.visibleIf)) continue;
-      const s = state.npcs[a.id];
-      this.actors.set(a.id, new Actor(this, a.id, NPC_SHEETS[a.id], a.x, a.y, s.face, s.pose, this.room.scale));
+      const s = state.npcs[a.id] ?? { pose: 'stand' as const, face: 'down' as const };
+      this.actors.set(a.id, new Actor(this, a.id, NPC_SHEETS[a.id] ?? a.id, a.x, a.y, s.face, s.pose, this.room.scale));
     }
     this.crowd = chapter().crowds[this.room.id] ? new Crowd({
       scene: this, room: this.room, area: this.area, props: this.props,

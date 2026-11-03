@@ -2,7 +2,7 @@ import type { EncounterDefinition } from '../combat/types';
 import type { Reward } from '../content/kit';
 import type { DialogueTree } from '../engine/dialogue';
 import type { CrowdDef, ExtraDef } from '../engine/crowd';
-import type { ActorId, Command, GameState, RoomDef, Verb } from '../engine/types';
+import type { ActorId, ActorState, Command, GameState, NpcId, RoomDef, Verb } from '../engine/types';
 import type { Mood as MusicMood } from '../game/assets';
 import type { StoryRules } from '../engine/story';
 
@@ -18,6 +18,8 @@ export interface Chapter {
   /** String key of the chapter's title. */
   title: string;
   start: { room: string; entry: string };
+  /** The chapter's cast and how each stands at the start. */
+  npcs: Partial<Record<NpcId, ActorState>>;
   rooms: Record<string, RoomDef>;
   /** Story flags saves accept for this chapter. */
   flags: readonly string[];
@@ -30,7 +32,7 @@ export interface Chapter {
   metFlags: readonly string[];
   /** What a verb, or an item, does to a target: commands for the scene to play. */
   interact(state: GameState, verb: Verb, target: string, item?: string): Command[];
-  actorVerbs: Record<ActorId, Verb[]>;
+  actorVerbs: Partial<Record<ActorId, Verb[]>>;
   itemVerbs: Verb[];
   /** Every string key the click rules can say (checked by the tests). */
   interactionKeys: readonly string[];

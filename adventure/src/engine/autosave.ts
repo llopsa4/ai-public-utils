@@ -15,6 +15,11 @@ export function writeAutosave(state: GameState, store = defaultStore()): boolean
   try { store?.setItem(STORAGE_KEY, serializeSave(state)); return !!store; } catch { return false; }
 }
 
+/** The autosave as stored (unchecked), or null: used to load its chapter before reading it. */
+export function autosaveText(store = defaultStore()): string | null {
+  try { return store?.getItem(STORAGE_KEY) ?? null; } catch { return null; }
+}
+
 /** A missing slot is 'none'; anything that fails save validation is 'corrupt' and never loaded. */
 export function readAutosave(store = defaultStore()): AutosaveRead {
   let text: string | null = null;

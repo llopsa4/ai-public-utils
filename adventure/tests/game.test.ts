@@ -155,11 +155,11 @@ test('pose verbs work on Mara and every neighbour', () => {
   assert.equal(s.hero.pose, 'stand');
   for (const id of ['oren', 'nell'] as const) {
     run(s, 'lie', id);
-    assert.equal(s.npcs[id].pose, 'dead');
+    assert.equal(s.npcs[id]!.pose, 'dead');
     run(s, 'crouch', id);
-    assert.equal(s.npcs[id].pose, 'crouch');
+    assert.equal(s.npcs[id]!.pose, 'crouch');
     run(s, 'stand', id);
-    assert.equal(s.npcs[id].pose, 'stand');
+    assert.equal(s.npcs[id]!.pose, 'stand');
   }
 });
 
@@ -191,7 +191,7 @@ test('every content reference is valid', () => {
       for (const f of [o.flag, o.movedTo?.flag]) if (f) assert.ok((FLAGS as readonly string[]).includes(f), `unknown flag ${f}`);
     }
   }
-  for (const verb of ACTOR_VERBS.hero) assert.ok(interact(s, verb, 'hero').length > 0);
+  for (const verb of ACTOR_VERBS.hero!) assert.ok(interact(s, verb, 'hero').length > 0);
   for (const item of ITEMS) for (const verb of ITEM_VERBS) assert.ok(interact(s, verb, `item:${item}`).length > 0);
   for (const f of flagsUsed) assert.ok((FLAGS as readonly string[]).includes(f), `unknown flag ${f}`);
 });

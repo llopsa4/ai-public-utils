@@ -65,8 +65,8 @@ function clicks(c: Chapter, s: GameState): { verb: (typeof VERBS)[number]; targe
   const actors = room.actors.filter(a => conditionsHold(s, a.visibleIf));
   const out: { verb: (typeof VERBS)[number]; target: string; item?: string }[] = [];
   for (const h of hotspots) for (const verb of h.verbs) out.push({ verb, target: h.id });
-  for (const a of actors) for (const verb of c.actorVerbs[a.id]) out.push({ verb, target: a.id });
-  for (const verb of c.actorVerbs.hero) out.push({ verb, target: 'hero' });
+  for (const a of actors) for (const verb of (c.actorVerbs[a.id] ?? [])) out.push({ verb, target: a.id });
+  for (const verb of (c.actorVerbs.hero ?? [])) out.push({ verb, target: 'hero' });
   for (const item of s.inventory) {
     for (const verb of c.itemVerbs) out.push({ verb, target: `item:${item}` });
     for (const t of ['hero', ...hotspots.map(h => h.id), ...actors.map(a => a.id)]) out.push({ verb: 'use', target: t, item });

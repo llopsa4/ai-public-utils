@@ -19,7 +19,7 @@ test('saves from every older version load, upgraded to chapter 1', () => {
     assert.equal(s.room, 'gallery');
     assert.deepEqual(s.inventory, ['gauntlet', 'notebook']);
     assert.ok(s.flags.patchFailed && s.flags.secretTally && s.flags.metHollis);
-    assert.equal(s.npcs.nell.pose, 'crouch');
+    assert.equal(s.npcs.nell!.pose, 'crouch');
     assert.deepEqual(s.looks, v === 3 ? {} : { rack: 2, 'item:gauntlet': 1 });
     if (v === 5) assert.deepEqual([s.kit.hp, s.bag.salvage, s.bag.tonics], [41, 12, 1]);
   }

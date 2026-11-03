@@ -6,6 +6,7 @@ import { routineFor } from '../src/engine/crowd';
 import { ROOMS } from '../src/chapters/ch1/rooms';
 import { Schedule, seeded, tooClose, type Routine } from '../src/engine/crowd';
 import { TABLES } from '../src/engine/i18n';
+import '../src/chapters'; // registers chapter 1's strings
 import { FLAGS, MET_FLAGS } from '../src/chapters/ch1/flags';
 import { WalkArea } from '../src/engine/pathfinding';
 

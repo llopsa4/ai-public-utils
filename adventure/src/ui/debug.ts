@@ -1,10 +1,10 @@
 // The debug panel (only with ?debug; ` toggles it, ?debug=panel opens it at start): jump to a
 // chapter, room or set of flags; give items, salvage, tonics and gear; start a fight; switch the
 // visual quality and the walk-area overlay. Loaded on demand, so it is not in the normal game.
-import { CHAPTERS, chapter } from '../chapters';
+import { CHAPTER_IDS, chapter, loadChapter } from '../chapters';
 import { ALL_GEAR, TONIC } from '../content/kit';
 import { settings, updateSettings } from '../engine/settings';
-import { newGame } from '../engine/state';
+import { applyCommand, newGame } from '../engine/state';
 import type { GameState } from '../engine/types';
 import type { Session } from '../game/session';
 
@@ -62,11 +62,13 @@ export function mountDebugPanel(session: Session): void {
 
     panel.append(el('h2', { textContent: 'Chapter and room' }));
     const chapterSelect = el<HTMLSelectElement>('select');
-    for (const id of Object.keys(CHAPTERS)) chapterSelect.append(el('option', { value: id, textContent: id, selected: id === s.chapter }));
-    chapterSelect.onchange = () => change(st => {
-      const fresh = newGame(chapterSelect.value);
-      Object.assign(st, { ...fresh, kit: st.kit, bag: st.bag, earlier: st.earlier, reached: [...new Set([...st.reached, fresh.chapter])] });
-    });
+    for (const id of CHAPTER_IDS) chapterSelect.append(el('option', { value: id, textContent: id, selected: id === s.chapter }));
+    // Jumping to a chapter is the real chapter change (kit, bag and kept items carry over),
+    // after fetching the chapter if it isn't loaded yet.
+    chapterSelect.onchange = () => {
+      const id = chapterSelect.value;
+      void loadChapter(id).then(() => change(st => applyCommand(st, { type: 'chapter', id })));
+    };
     const roomSelect = el<HTMLSelectElement>('select');
     for (const id of Object.keys(c.rooms)) roomSelect.append(el('option', { value: id, textContent: id, selected: id === s.room }));
     roomSelect.onchange = () => change(st => {

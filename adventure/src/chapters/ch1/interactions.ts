@@ -20,14 +20,14 @@ export function afterRelease(f: Record<string, boolean>): Command[] {
 }
 
 /** Verbs offered for the characters (hotspot verbs live in rooms.ts). */
-export const ACTOR_VERBS: Record<ActorId, Verb[]> = {
+export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
   hero: ['look', 'talk', 'crouch', 'lie', 'stand'],
   oren: ['look', 'talk', 'crouch', 'lie', 'stand'],
   nell: ['look', 'talk', 'crouch', 'lie', 'stand'],
 };
 
 /** Where Mara stands to talk to each character. */
-const TALK_SPOTS: Record<NpcId, { at: Point; face: 'left' | 'right'; npcFace: 'left' | 'right' }> = {
+const TALK_SPOTS: Partial<Record<NpcId, { at: Point; face: 'left' | 'right'; npcFace: 'left' | 'right' }>> = {
   oren: { at: { x: 470, y: 304 }, face: 'right', npcFace: 'left' },
   nell: { at: { x: 346, y: 298 }, face: 'left', npcFace: 'right' },
 };
@@ -48,7 +48,7 @@ const wait = (ms: number): Command => ({ type: 'wait', ms });
 const go = (room: string, entry: string): Command => ({ type: 'room', room, entry });
 
 function toNpc(id: NpcId): Command[] {
-  const s = TALK_SPOTS[id];
+  const s = TALK_SPOTS[id]!;
   return [{ type: 'walk', to: s.at, face: s.face }, { type: 'face', actor: id, face: s.npcFace }];
 }
 
@@ -100,14 +100,14 @@ const either = (target: string, verb: Verb | Verb[], name: string, set: string, 
 
 /** Talking to, posing and handing things to Nell and Oren. */
 function npcRules(id: NpcId): Rule[] {
-  const getUp = (s: GameState): Command[] => (s.npcs[id].pose === 'stand' ? [] : [pose(id, 'stand')]);
+  const getUp = (s: GameState): Command[] => ((s.npcs[id]?.pose ?? 'stand') === 'stand' ? [] : [pose(id, 'stand')]);
   return [
     { target: id, item: '*', do: ({ state }) => [...toNpc(id), ...getUp(state), say(`line.${id}Item`, id)] },
-    { target: id, verb: 'look', do: ({ state }) => [say(state.npcs[id].pose === 'dead' ? `line.${id}LookDown` : `line.${id}Look${state.flags.kilnCold ? 'Cold' : ''}`)] },
+    { target: id, verb: 'look', do: ({ state }) => [say(state.npcs[id]?.pose === 'dead' ? `line.${id}LookDown` : `line.${id}Look${state.flags.kilnCold ? 'Cold' : ''}`)] },
     { target: id, verb: 'talk', do: ({ state }) => [...toNpc(id), ...getUp(state), { type: 'dialogue', id }] },
     { target: id, verb: 'crouch', do: ({ state }) => [...toNpc(id), ...getUp(state), say(`line.askCrouch.${id}`), pose(id, 'crouch'), say(`line.${id}Crouch`, id)] },
     { target: id, verb: 'lie', do: ({ state }) => [...toNpc(id), ...getUp(state), say(`line.askLie.${id}`), say(`line.${id}Lie`, id), pose(id, 'dead')] },
-    { target: id, verb: 'stand', do: ({ state }) => (state.npcs[id].pose === 'stand' ? [say('line.alreadyStanding')]
+    { target: id, verb: 'stand', do: ({ state }) => ((state.npcs[id]?.pose ?? 'stand') === 'stand' ? [say('line.alreadyStanding')]
       : [...toNpc(id), say('line.askStand'), pose(id, 'stand'), say(`line.${id}Stand`, id)]) },
   ];
 }
