@@ -57,8 +57,8 @@ Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, 
 | `src/engine/` | Pure, Phaser-free logic: types, geometry, pathfinding (visibility graph + A*), state, save files, dialogue runner, click rules (`rules.ts`), story rules (`story.ts`), i18n |
 | `src/chapters/` | One folder per chapter behind the `Chapter` interface (`types.ts`, registry in `index.ts`). `ch1/`: rooms, click rules (`interactions.ts`), story rules (`story.ts`), dialogue trees, crowds, the fight, objectives, flags and `strings.en.json` |
 | `src/content/` | What every chapter shares: Mara's kit (`kit.ts`), the interface strings (`strings/en.json`), art lists |
-| `src/game/` | Phaser scenes, the `Actor` (pose/walk/blink/task poses), the background people (`Crowd`), room name boards (`sign.ts`), asset list, session |
-| `src/ui/` | DOM interface over the canvas: dialogue panel, action ring, choices, hotspot labels, satchel, menu, notebook, history, settings, end card |
+| `src/game/` | Phaser scenes (`scenes.ts`; the room's input, lighting, script runner, command handlers and fight bridge in `room/`), the `Actor` (pose/walk/blink/task poses), the background people (`Crowd`), room name boards (`sign.ts`), asset list, session |
+| `src/ui/` | DOM interface over the canvas: `ui.ts` (layout, title, menu, satchel, toasts) with one module per screen: `speech`, `radial` (action ring, choices), `labels` (touch), `notebook` (goals, history), `settingsMenu`, `gear`, `shop`, `intro`, `saves` |
 | `src/audio/` | Web Audio synthesizer for ambience, effects, footsteps per floor surface, and a generative score per room mood (no sound files) |
 | `art/` | Art scripts and their output in `art/src/` (see [PROVENANCE](art/PROVENANCE.md)) |
 | `tests/` | `node:test` suites run with tsx |
