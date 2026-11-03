@@ -224,7 +224,8 @@ export async function creatureFight(scene: RoomScene, poolName: string, from: Po
     const key = `creature-${id}`;
     if (!scene.textures.exists(key)) { scene.load.image(key, art.sprite); await new Promise<void>(r => { scene.load.once(Phaser.Loader.Events.COMPLETE, () => r()); scene.load.start(); }); }
     sound.scrape(1);
-    const critter = scene.add.image(from.x, from.y, key).setOrigin(0.5, 1).setScale(0.1).setDepth(1000).setFlipX(land.x < scene.hero.position.x ? false : true);
+    // The art faces left (as on the fight screen); turned round when Mara is to its right.
+    const critter = scene.add.image(from.x, from.y, key).setOrigin(0.5, 1).setScale(0.1).setDepth(1000).setFlipX(scene.hero.position.x > land.x);
     scene.hatchCreature = critter;
     for (let i = 0; i < 5; i++) scene.props.step(from.x + (i - 2) * 6, from.y);
     await new Promise<void>(resolve => scene.tweens.addCounter({

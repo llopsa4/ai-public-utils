@@ -248,7 +248,8 @@ const CREATURES = {
 for (const [id, body] of Object.entries(CREATURES)) {
   if (isFinal(`ch2/creatures/${id}.png`)) continue;
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768">${defs}${body}</svg>`;
-  const trimmed = await sharp(Buffer.from(svg)).trim({ threshold: 1 }).png().toBuffer();
+  // Drawn facing right; mirrored so every enemy faces left (they always stand on the right of the fight).
+  const trimmed = await sharp(Buffer.from(svg)).flop().trim({ threshold: 1 }).png().toBuffer();
   const inked = Math.round(768 * 0.6), floor = Math.round(768 * 0.04);
   const fitted = await sharp(trimmed).resize({ height: inked }).png().toBuffer();
   const { width } = await sharp(fitted).metadata();
