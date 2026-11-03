@@ -396,6 +396,29 @@ dialog[open] {
   color: rgb(58 38 22 / 0.75);
 }
 
+/* What Mara noted about each secret found, in ink under the count. */
+.secret-list {
+  margin: 0.35rem 0 0;
+  padding: 0 0 0 1.4em;
+  list-style: none;
+  font-size: 0.9em;
+  line-height: 1.45;
+  color: rgb(58 38 22 / 0.9);
+}
+.secret-list li {
+  position: relative;
+  margin: 0.25rem 0;
+}
+.secret-list li::before {
+  content: "\2726";
+  position: absolute;
+  left: -1.2em;
+  color: rgb(140 70 20 / 0.8);
+}
+.secret-list[hidden] {
+  display: none;
+}
+
 .corner-close {
   position: absolute;
   top: 0.4rem;

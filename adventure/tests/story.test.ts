@@ -31,6 +31,8 @@ test('every chapter is complete: start room, flags, strings for its title', () =
     assert.ok(c.rooms[c.start.room]?.entries[c.start.entry], `${c.id} start`);
     for (const i of c.keptItems) assert.ok(c.items.includes(i), `${c.id} kept item ${i}`);
     for (const f of [...c.secretFlags, ...c.metFlags]) assert.ok(c.flags.includes(f), `${c.id} flag ${f}`);
+    // Each secret has Mara's note for the notebook.
+    for (const f of c.secretFlags) assert.ok(c.strings[`note.${f}`], `${c.id} notebook note for ${f}`);
     assert.ok(c.strings[c.title], `${c.id} title string`);
   }
   assert.equal(newGame().room, chapter().start.room);
