@@ -137,6 +137,8 @@ export const MANIFEST = [
   item('regulator', 'The cracked regulator ring, still faintly pulsing.'),
   item('bread', 'A small loaf from Nell.'),
   item('scarf', "Nell's orange scarf, folded."),
+  // The Kiln Tonic peddlers sell: drawn in code for now (src/ui/icons.ts TONIC_ICON) until delivered.
+  { ...item('tonic', 'A Kiln Tonic: a small stoppered glass flask of glowing ember-orange tonic, a cork and a brass collar.'), chapter: 'game', status: 'requested', generator: 'src/ui/icons.ts (drawn in code)' },
   icon('look', 'An eye.'), icon('open', 'A door swinging open.'), icon('close', 'A door shutting.'), icon('take', 'A grabbing hand.'),
   icon('use', 'A gear with a hand.'), icon('talk', 'A speech bubble.'), icon('go', 'A walking foot / arrow.'),
   icon('crouch', 'A crouching figure.'), icon('lie', 'A lying figure.'), icon('stand', 'A standing figure.'),

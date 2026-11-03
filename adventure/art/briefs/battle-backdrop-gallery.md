@@ -1,6 +1,6 @@
 # battle-backdrop-gallery
 
-Status: **placeholder** · battle-backdrop · chapter ch1 · in the game as `art/src/kc/regulator-gallery.webp`
+Status: **final** · battle-backdrop · chapter ch1 · in the game as `art/src/kc/regulator-gallery.webp`
 
 ## Prompt for Codex
 

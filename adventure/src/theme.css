@@ -878,9 +878,79 @@ dialog[open] {
 .high-contrast .settings-sample { background: #000; color: #fff; border-color: #fff; }
 
 /* ------------------------------------------------------------ gear and shop --- */
-.shop-body p { margin: 0.4em 0; }
-.shop-body .btn { margin: 0.4em 0; }
-.shop-note { min-height: 1.3em; color: #ffd79a; }
+/* Corvin's stall: the purse, the tonic on a glowing tile, its price and Buy. */
+.shop-body { position: relative; text-align: left; }
+#shop .stall-purse {
+  display: table;
+  margin: -0.5rem 0 0.7rem auto;
+  padding: 0.15em 0.6em;
+  font-size: 0.85em;
+  color: #e8c88e;
+  border: 1px solid var(--brass-dark);
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.35);
+}
+#shop .stall-purse strong { color: #ffe2a6; margin: 0 0.15em 0 0.25em; }
+.stall-coin { color: #ffb347; text-shadow: 0 0 6px rgb(255 140 40 / 0.7); }
+.stall-item { display: flex; align-items: center; gap: 1rem; margin: 0.2rem 0 0.9rem; }
+.stall-tile {
+  position: relative;
+  flex: none;
+  width: 96px;
+  height: 96px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--brass);
+  border-radius: 4px;
+  background: radial-gradient(circle at 50% 55%, #4a2a12, #160d08 72%);
+  box-shadow: inset 0 0 0 1px rgb(255 210 150 / 0.12), inset 0 0 18px #000c, 0 6px 16px #0009;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+.stall-tile:hover { box-shadow: inset 0 0 0 1px rgb(255 210 150 / 0.2), inset 0 0 18px #000a, 0 0 22px rgb(255 140 40 / 0.45); }
+.stall-tile svg { width: 78px; height: 78px; filter: drop-shadow(0 4px 4px #000a); }
+.stall-count {
+  position: absolute;
+  right: 4px;
+  bottom: 2px;
+  font-weight: 700;
+  font-size: 0.85em;
+  color: #ffe2a6;
+  text-shadow: 0 1px 0 #000, 0 0 4px #000;
+}
+.stall-float {
+  position: absolute;
+  right: 2px;
+  bottom: 18px;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: #fff0b8;
+  text-shadow: 0 2px 0 #000, 0 0 10px rgb(255 160 60 / 0.9);
+  pointer-events: none;
+  animation: stall-float 900ms ease-out forwards;
+}
+.stall-bought { animation: stall-pulse 450ms ease-out; }
+.stall-refused { animation: stall-shake 380ms ease-in-out; }
+#shop .stall-name { margin: 0; font-size: 1.25rem; letter-spacing: 0.06em; color: #ffd79a; text-shadow: 0 0 10px rgb(255 140 40 / 0.35); }
+#shop .stall-effect { margin: 0.25em 0 0.15em; font-size: 1em; }
+#shop .stall-carry { margin: 0; font-size: 0.9em; opacity: 0.8; }
+.stall-row { display: flex; align-items: center; justify-content: space-between; gap: 0.8rem; }
+.stall-price {
+  font-weight: 700;
+  font-size: 1.15em;
+  color: #ffe2a6;
+  padding: 0.25em 0.75em;
+  border: 1px solid var(--brass);
+  border-radius: 4px;
+  background: linear-gradient(#3a2412, #1c120b);
+}
+.stall-price .stall-coin { margin-right: 0.3em; }
+.stall-buy { min-width: 9.5em; }
+#shop .shop-note { min-height: 1.3em; margin: 0.8em 0 0; font-size: 0.95em; color: #ffd79a; text-align: center; }
+@keyframes stall-pulse { 40% { transform: scale(1.08); box-shadow: 0 0 28px rgb(255 160 60 / 0.7); } }
+@keyframes stall-shake { 20%, 60% { transform: translateX(-5px); } 40%, 80% { transform: translateX(5px); } }
+@keyframes stall-float { 0% { opacity: 0; transform: translateY(6px) scale(0.6); } 20% { opacity: 1; transform: translateY(0) scale(1.1); } 100% { opacity: 0; transform: translateY(-46px) scale(1); } }
+.reduce-motion .stall-tile, .reduce-motion .stall-float { animation: none; }
+.reduce-motion .stall-float { display: none; }
 
 .btn[hidden] { display: none !important; }
 

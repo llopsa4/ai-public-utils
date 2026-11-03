@@ -121,11 +121,8 @@
   "ui.tonics": "Kiln Tonics: {n}",
   "ui.materials": "Materials: {list}",
   "ui.noMaterials": "Materials: none yet",
-  "ui.shopTitle": "Tonics",
+  "ui.shopTitle": "Corvin's stall",
   "ui.leaveShop": "Leave",
-  "ui.shopItem": "Kiln Tonic: heals {heal} HP in a fight",
-  "ui.buyFor": "Buy for {price} salvage",
-  "ui.shopHave": "You have {salvage} salvage and {tonics} of {max} tonics.",
   "ui.shopBought": "Bought a Kiln Tonic.",
   "ui.shopFull": "Mara can't carry more than {max}.",
   "ui.shopPoor": "Not enough salvage.",
@@ -140,5 +137,13 @@
   "battle.damageDealt": "Damage",
   "battle.continue": "Continue",
   "battle.salvage": "salvage",
-  "ui.done": "Done"
+  "ui.done": "Done",
+  "ui.shopTonic": "Kiln Tonic",
+  "ui.shopEffect": "Heals {heal} HP in a fight.",
+  "ui.shopCarry": "You carry {n} of {max}.",
+  "ui.shopPurse": "{n} salvage",
+  "ui.shopPrice": "Price: {price} salvage",
+  "ui.buy": "Buy",
+  "ui.buyPoor": "Not enough salvage",
+  "ui.buyFull": "You carry {max}"
 }
