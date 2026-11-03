@@ -1,76 +1,25 @@
 import Phaser from 'phaser';
-import { drinkTonic, finishBattle } from '../engine/kit';
-import { resolveNode } from '../engine/dialogue';
-import { conditionsHold, pointInPolygon } from '../engine/geometry';
-import { t } from '../engine/i18n';
+import { conditionsHold } from '../engine/geometry';
 import { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
 import { sound } from '../audio/sound';
-import { applyCommand } from '../engine/state';
-import type { ActorId, Command, HotspotDef, ObjectDef, Point, RoomDef, Speaker, Verb } from '../engine/types';
+import type { ActorId, Command, ObjectDef, Point, RoomDef } from '../engine/types';
 import { Actor, SHADOW_DEPTH } from './Actor';
-import { Atmosphere, createAtmosphereTextures, highQuality } from './atmosphere';
-import { addLight, localLight, mixColor } from '../engine/lighting';
+import { Atmosphere, createAtmosphereTextures } from './atmosphere';
 import { Props, createParticleTextures } from './props';
-import { Crowd, type Member } from './Crowd';
-import SCAVENGER_SPRITE from '../../art/src/battle/scavenger.png';
-import { MATERIALS, maraProfile } from '../content/kit';
+import { Crowd } from './Crowd';
 import { RoomSign } from './sign';
 import type { Mood } from '../engine/crowd';
-import { chapter, setChapter } from '../chapters';
-import { ambienceFor, crowdMoodFor, guided, heroSheetFor, hushed, musicFor, onEnter, type StoryContext } from '../engine/story';
+import { chapter } from '../chapters';
+import { crowdMoodFor, heroSheetFor, hushed, onEnter, type StoryContext } from '../engine/story';
 import { FOREGROUND_IMAGES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
-import { cursorFor, type CursorKind } from '../ui/cursors';
-
-const FADE_MS = 280;
-/** How far Mara walks past a doorway on leaving, and in from it on arriving (world units). */
-const DOORWAY_STEP = 26;
-const FACE_VECTOR: Record<string, Point> = { left: { x: -1, y: 0 }, right: { x: 1, y: 0 }, up: { x: 0, y: -1 }, down: { x: 0, y: 1 } };
-/** NPCs turn toward Mara within this distance. */
-const NOTICE_DISTANCE = 90;
-/** Cool, dimmed tint for Cinderfold once the kiln is shut down. */
-const COLD_TINT = 0x8796b8;
-
-/** Queues a sheet for loading unless it is already loaded or queued. */
-/**
- * Sheets requested but not yet in the texture cache. A background load can outlive the room that
- * started it (Mara leaves the tent before the lit gauntlet arrives); the next room must not request
- * it again, or Phaser reports the texture key twice.
- */
-const inFlight = new Set<string>();
-
-function queueSheet(scene: Phaser.Scene, key: string): void {
-  if (scene.textures.exists(key) || inFlight.has(key)) return;
-  inFlight.add(key);
-  scene.textures.once(`${Phaser.Textures.Events.ADD_KEY}${key}`, () => inFlight.delete(key));
-  scene.load.atlas(key, SHEETS[key].png, SHEETS[key].json);
-}
-
-/** Runs `then` once the sheet is in the cache (now, or when its pending load lands). */
-function whenSheet(scene: Phaser.Scene, key: string, then: () => void): void {
-  if (scene.textures.exists(key)) { then(); return; }
-  scene.textures.once(`${Phaser.Textures.Events.ADD_KEY}${key}`, () => scene.time.delayedCall(0, then));
-}
-
-/** One animation per frame tag of a loaded sheet, keyed `<sheet>:<tag>` (once per sheet). */
-function createSheetAnims(scene: Phaser.Scene, key: string): void {
-  const { json } = SHEETS[key];
-  for (const tag of json.meta.frameTags) {
-    if (scene.anims.exists(`${key}:${tag.name}`)) continue;
-    const frames = json.frames.slice(tag.from, tag.to + 1);
-    if (tag.direction === 'reverse') frames.reverse();
-    const average = frames.reduce((sum, f) => sum + f.duration, 0) / frames.length;
-    scene.anims.create({
-      key: `${key}:${tag.name}`,
-      frames: frames.map(f => ({ key, frame: f.filename })),
-      frameRate: 1000 / average,
-      repeat: frames.length > 1 ? -1 : 0,
-      yoyo: tag.direction === 'pingpong',
-    });
-  }
-}
+import { DOORWAY_STEP, FACE_VECTOR, FADE_MS, NOTICE_DISTANCE, createSheetAnims, inFlight, particleConfig, queueSheet, whenSheet } from './room/shared';
+import type { Target } from './room/shared';
+import { activateFocus, cycleFocus, drawHover, hotspotLabels, onPointerDown, onPointerMove, openItemRing } from './room/input';
+import { applyTint, tintScenery, updateLighting } from './room/lighting';
+import { runScript } from './room/runner';
 
 /** Loads the shared sheets (props and Mara) and builds their animations. */
 export class BootScene extends Phaser.Scene {
@@ -144,99 +93,41 @@ export class TitleScene extends Phaser.Scene {
   }
 }
 
-type Target = { kind: 'hotspot'; hotspot: HotspotDef } | { kind: 'actor'; actor: Actor } | { kind: 'extra'; member: Member };
 
-/**
- * For hands-on verbs that walk up to something first, marks the moment Mara arrives (right after
- * the approach walk) so the scene can show him handling it.
- */
-function withHandling(commands: Command[], verb: Verb, target: string): Command[] {
-  if (verb !== 'take' && verb !== 'use' && verb !== 'open') return commands;
-  const arrive = commands.findIndex(c => c.type !== 'walk' && c.type !== 'face');
-  if (arrive <= 0 || commands[arrive - 1].type !== 'walk') return commands;
-  return [...commands.slice(0, arrive), { type: 'handle', target }, ...commands.slice(arrive)];
-}
-
-/** Multiplies a colour by a brightness factor and a second colour (both as 0xRRGGBB). */
-function multiplyColor(color: number, factor: number, other: number): number {
-  const ch = (c: number, shift: number) => ((c >> shift) & 255) / 255;
-  const r = Math.round(ch(color, 16) * ch(other, 16) * factor * 255);
-  const g = Math.round(ch(color, 8) * ch(other, 8) * factor * 255);
-  const b = Math.round(ch(color, 0) * ch(other, 0) * factor * 255);
-  return (r << 16) | (g << 8) | b;
-}
-
-/**
- * Ambient particles. `rich` (High quality) uses the textured puff and ember streak, with turning
- * smoke and wobbling embers; otherwise plain dots at a lower rate.
- */
-export function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash', w: number, h: number, rich = false): Phaser.Types.GameObjects.Particles.ParticleEmitterConfig {
-  const area = { x: { min: 0, max: w }, y: { min: 0, max: h } };
-  if (rich) {
-    switch (kind) {
-      case 'embers':
-        return { ...area, lifespan: { min: 2200, max: 4200 }, speedY: { min: -30, max: -10 }, speedX: { min: -8, max: 8 }, scale: { start: 0.5, end: 0.1 },
-          alpha: { start: 1, end: 0 }, tint: [0xffd070, 0xff9a3a, 0xff6a1a], frequency: 200, blendMode: 'ADD', accelerationX: { min: -6, max: 6 } };
-      case 'steam':
-        return { ...area, lifespan: { min: 2800, max: 4400 }, speedY: { min: -11, max: -4 }, speedX: { min: -4, max: 4 }, scale: { start: 0.35, end: 1.5 },
-          alpha: { start: 0.22, end: 0 }, tint: 0xf4efe6, frequency: 300, rotate: { start: 0, end: 90 } };
-      case 'dust':
-        return { ...area, lifespan: { min: 5000, max: 8000 }, speedY: { min: -2, max: 2 }, speedX: { min: -3, max: 3 }, scale: { min: 0.03, max: 0.07 },
-          alpha: { start: 0.7, end: 0 }, tint: 0xffe2b0, frequency: 340, blendMode: 'ADD' };
-      case 'ash':
-        return { ...area, lifespan: { min: 6000, max: 9000 }, speedY: { min: 2, max: 7 }, speedX: { min: 4, max: 14 }, scale: { min: 0.05, max: 0.12 },
-          alpha: { start: 0.6, end: 0 }, tint: [0xd8d0c8, 0xffb070], frequency: 200, rotate: { start: 0, end: 360 } };
-    }
-  }
-  switch (kind) {
-    case 'embers':
-      return { ...area, lifespan: { min: 2200, max: 4200 }, speedY: { min: -26, max: -8 }, speedX: { min: -6, max: 6 }, scale: { start: 0.22, end: 0 },
-        alpha: { start: 1, end: 0 }, tint: [0xffc060, 0xff8a2a, 0xff6a1a], frequency: 240, blendMode: 'ADD' };
-    case 'steam':
-      return { ...area, lifespan: { min: 2600, max: 4000 }, speedY: { min: -10, max: -3 }, speedX: { min: -3, max: 3 }, scale: { start: 0.5, end: 1.8 },
-        alpha: { start: 0.18, end: 0 }, tint: 0xf4efe6, frequency: 380 };
-    case 'dust':
-      return { ...area, lifespan: { min: 5000, max: 8000 }, speedY: { min: -2, max: 2 }, speedX: { min: -3, max: 3 }, scale: { min: 0.06, max: 0.12 },
-        alpha: { start: 0.6, end: 0 }, tint: 0xffe2b0, frequency: 420, blendMode: 'ADD' };
-    case 'ash':
-      return { ...area, lifespan: { min: 6000, max: 9000 }, speedY: { min: 2, max: 7 }, speedX: { min: 4, max: 12 }, scale: { min: 0.08, max: 0.16 },
-        alpha: { start: 0.55, end: 0 }, tint: [0xd8d0c8, 0xffb070], frequency: 260 };
-  }
-}
 
 /** One room: background, objects, characters, input and the command/dialogue runner. */
 export class RoomScene extends Phaser.Scene {
-  private room!: RoomDef;
-  private area!: WalkArea;
-  private hero!: Actor;
-  private background!: Phaser.GameObjects.Image;
-  private actors = new Map<ActorId, Actor>();
-  private objects = new Map<string, Phaser.GameObjects.Sprite>();
-  private objectShadows = new Map<string, Phaser.GameObjects.Image>();
-  private foreground: Phaser.GameObjects.Image[] = [];
-  private ambient: Phaser.GameObjects.GameObject[] = [];
-  private ambientCold: boolean | null = null;
-  private atmosphere!: Atmosphere;
-  private props!: Props;
+  room!: RoomDef;
+  area!: WalkArea;
+  hero!: Actor;
+  background!: Phaser.GameObjects.Image;
+  actors = new Map<ActorId, Actor>();
+  objects = new Map<string, Phaser.GameObjects.Sprite>();
+  objectShadows = new Map<string, Phaser.GameObjects.Image>();
+  foreground: Phaser.GameObjects.Image[] = [];
+  ambient: Phaser.GameObjects.GameObject[] = [];
+  ambientCold: boolean | null = null;
+  atmosphere!: Atmosphere;
+  props!: Props;
   /** Background people (rooms in CROWDS), else null. */
-  private crowd: Crowd | null = null;
+  crowd: Crowd | null = null;
   /** The room's hanging name board, if it has one. */
-  private sign: RoomSign | null = null;
+  sign: RoomSign | null = null;
   /** Last cold state seen, to animate the shutdown when it happens in this room (null until created). */
-  private knownCold: boolean | null = null;
+  knownCold: boolean | null = null;
   /** Cold factor last applied to the background tint (Low quality). */
-  private tintedCold = -1;
-  private lastExitClick = { id: '', time: 0 };
+  tintedCold = -1;
+  lastExitClick = { id: '', time: 0 };
   /** Keyboard play: index into focusTargets(), -1 = nothing focused. */
-  private focusIndex = -1;
-  private focusRing: Phaser.GameObjects.Graphics | null = null;
+  focusIndex = -1;
+  focusRing: Phaser.GameObjects.Graphics | null = null;
   /** Soft outline on whatever the pointer is over (not on touch screens). */
-  private hoverRing: Phaser.GameObjects.Graphics | null = null;
-  private hovered: Target | null = null;
-  private busy = false;
-  private leaving = false;
+  hoverRing: Phaser.GameObjects.Graphics | null = null;
+  hovered: Target | null = null;
+  busy = false;
+  leaving = false;
 
-  constructor(private readonly session: Session) { super('room'); }
+  constructor(readonly session: Session) { super('room'); }
 
   isBusy(): boolean {
     return this.busy || this.leaving;
@@ -316,12 +207,12 @@ export class RoomScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { this.crowd?.destroy(); this.crowd = null; });
     // After the actors exist: refreshObjects also updates the hero's sheet, the cold tint and ambience.
     this.refreshObjects();
-    this.updateLighting();
+    updateLighting(this);
     if (this.session.debug) this.drawDebug();
 
     this.input.mouse?.disableContextMenu();
-    this.input.on(Phaser.Input.Events.POINTER_DOWN, (p: Phaser.Input.Pointer) => this.onPointerDown(p));
-    this.input.on(Phaser.Input.Events.POINTER_MOVE, (p: Phaser.Input.Pointer) => this.onPointerMove(p));
+    this.input.on(Phaser.Input.Events.POINTER_DOWN, (p: Phaser.Input.Pointer) => onPointerDown(this, p));
+    this.input.on(Phaser.Input.Events.POINTER_MOVE, (p: Phaser.Input.Pointer) => onPointerMove(this, p));
     this.input.on(Phaser.Input.Events.GAME_OUT, () => this.session.ui.setHover(''));
 
     this.hero.onStep = () => {
@@ -350,11 +241,11 @@ export class RoomScene extends Phaser.Scene {
     this.session.arrival = null;
     // The chapter's entry scripts (e.g. a sequence picked up again after a reload).
     const pending = onEnter(chapter().story, this.storyContext());
-    if (pending.length) this.time.delayedCall(700, () => void this.runScript(pending));
+    if (pending.length) this.time.delayedCall(700, () => void runScript(this, pending));
   }
 
   /** On arrival Mara starts just beyond the doorway and walks in to the entry point. */
-  private walkIn(entryId: string): void {
+  walkIn(entryId: string): void {
     const entry = this.room.entries[entryId];
     if (!entry) return;
     const v = FACE_VECTOR[entry.face];
@@ -371,7 +262,7 @@ export class RoomScene extends Phaser.Scene {
     });
   }
 
-  private scheduleFidget(actor: Actor): void {
+  scheduleFidget(actor: Actor): void {
     this.time.delayedCall(Phaser.Math.Between(6000, 12000), () => {
       if (!actor.sprite.active) return;
       if (!this.busy) actor.fidget();
@@ -380,7 +271,7 @@ export class RoomScene extends Phaser.Scene {
   }
 
   /** Walk area (green), holes (red), hotspots (yellow) and approach points, for fitting art. */
-  private drawDebug(): void {
+  drawDebug(): void {
     const g = this.add.graphics().setDepth(100000);
     const poly = (points: Point[], color: number) => g.lineStyle(1, color, 0.9).strokePoints(points as Phaser.Types.Math.Vector2Like[], true);
     poly(this.room.walkable.outer, 0x40ff60);
@@ -393,13 +284,13 @@ export class RoomScene extends Phaser.Scene {
   }
 
   /** Mara's sheet for the story so far, as soon as it has loaded. */
-  private heroSheet(): string {
+  heroSheet(): string {
     const sheet = heroSheetFor(chapter().story, this.storyContext());
     return this.textures.exists(sheet) ? sheet : 'mara';
   }
 
   /** In the tent, the lit-gauntlet sheet loads in the background while the player looks around. */
-  private preloadGauntletSheet(): void {
+  preloadGauntletSheet(): void {
     if (this.textures.exists('mara-gauntlet')) return;
     const pending = inFlight.has('mara-gauntlet');
     queueSheet(this, 'mara-gauntlet');
@@ -412,7 +303,7 @@ export class RoomScene extends Phaser.Scene {
   }
 
   /** Loads a lazy sheet in the background; `then` runs (in this room) once it and its animations are ready. */
-  private loadLazySheet(key: string, then?: () => void): void {
+  loadLazySheet(key: string, then?: () => void): void {
     const needsStart = !this.textures.exists(key) && !inFlight.has(key);
     queueSheet(this, key);
     whenSheet(this, key, () => {
@@ -424,191 +315,38 @@ export class RoomScene extends Phaser.Scene {
     if (needsStart && !this.load.isLoading()) this.load.start();
   }
 
-  // ------------------------------------------------------------------ input ---
-  private onPointerDown(pointer: Phaser.Input.Pointer): void {
-    const ui = this.session.ui;
-    this.clearFocus();
-    if (this.isBusy()) { ui.skip(); return; }
-    if (pointer.rightButtonDown()) {
-      this.session.selectItem(null);
-      return;
-    }
-    const at = { x: pointer.worldX, y: pointer.worldY };
-    const target = this.hitTest(at);
-    const item = this.session.selectedItem;
 
-    if (item) {
-      this.session.selectItem(null);
-      if (target) void this.runScript(chapter().interact(this.session.state, 'use', this.targetId(target), item));
-      else void this.walkTo(at);
-      return;
-    }
-    if (target && target.kind === 'hotspot' && target.hotspot.verbs.includes('go')) {
-      const now = this.time.now;
-      if (this.lastExitClick.id === target.hotspot.id && now - this.lastExitClick.time < 400) {
-        ui.closeRadial();
-        this.lastExitClick = { id: '', time: 0 };
-        void this.runScript(chapter().interact(this.session.state, 'go', target.hotspot.id).filter(c => c.type !== 'walk'));
-        return;
-      }
-      this.lastExitClick = { id: target.hotspot.id, time: now };
-    }
-    if (target) {
-      this.openTargetRing(target, at);
-      return;
-    }
-    void this.walkTo(at);
-  }
 
-  private openTargetRing(target: Target, at: Point): void {
-    if (target.kind === 'extra') { this.openExtraRing(target.member, at); return; }
-    const id = this.targetId(target);
-    const verbs: Verb[] = target.kind === 'actor' ? chapter().actorVerbs[target.actor.id as ActorId] : target.hotspot.verbs;
-    sound.blip();
-    this.session.ui.openRadial(at, this.targetName(target), verbs, verb => {
-      void this.runScript(withHandling(chapter().interact(this.session.state, verb, id), verb, id));
-    });
-  }
 
-  /** Background people: look, or talk (they stop, turn to Mara and say a line; nothing else changes). */
-  private openExtraRing(m: Member, at: Point): void {
-    const crowd = this.crowd;
-    if (!crowd) return;
-    sound.blip();
-    this.session.ui.openRadial(at, crowd.name(m), ['look', 'talk'], verb => {
-      if (verb === 'look') { void this.runScript([{ type: 'say', actor: 'hero', text: crowd.lookLine(m) }]); return; }
-      crowd.hold(m);
-      const spot = crowd.talkSpot(m);
-      const met = m.def.met;
-      void this.runScript([
-        { type: 'walk', to: spot.at, face: spot.face },
-        { type: 'say', actor: m.def.id, text: crowd.nextLine(m) },
-        ...(!met || this.session.state.flags[met] ? [] : [{ type: 'setFlag', flag: met, value: true } as Command]),
-        ...(m.def.shop ? [{ type: 'shop' } as Command, { type: 'setFlag', flag: 'metMerchant', value: true } as Command] : []),
-      ]).finally(() => crowd.release(m));
-    });
-  }
-
-  // ---------------------------------------------------------- keyboard play ---
-  /** Everything Tab can reach, left to right (secrets stay hidden). */
-  private focusTargets(): { target: Target; box: Phaser.Geom.Rectangle }[] {
-    const state = this.session.state;
-    const list: { target: Target; box: Phaser.Geom.Rectangle }[] = [];
-    for (const hotspot of this.room.hotspots) {
-      if (hotspot.secret || !conditionsHold(state, hotspot.visibleIf)) continue;
-      const xs = hotspot.polygon.map(p => p.x), ys = hotspot.polygon.map(p => p.y);
-      const x = Math.min(...xs), y = Math.min(...ys);
-      list.push({ target: { kind: 'hotspot', hotspot }, box: new Phaser.Geom.Rectangle(x, y, Math.max(...xs) - x, Math.max(...ys) - y) });
-    }
-    for (const actor of this.actors.values()) list.push({ target: { kind: 'actor', actor }, box: actor.hitBox() });
-    for (const member of this.crowd?.visible() ?? []) list.push({ target: { kind: 'extra', member }, box: member.actor.hitBox() });
-    return list.sort((a, b) => a.box.centerX - b.box.centerX);
-  }
 
   /** Moves the focus ring. Returns false when it runs past either end (focus then goes to the bar). */
   cycleFocus(direction: 1 | -1): boolean {
-    if (this.isBusy()) return false;
-    const targets = this.focusTargets();
-    const next = this.focusIndex === -1 ? (direction === 1 ? 0 : targets.length - 1) : this.focusIndex + direction;
-    if (next < 0 || next >= targets.length) { this.clearFocus(); return false; }
-    this.focusIndex = next;
-    const { target, box } = targets[next];
-    const pad = 3;
-    this.focusRing?.clear().lineStyle(1.5, 0xe7c046, 1).strokeRoundedRect(box.x - pad, box.y - pad, box.width + pad * 2, box.height + pad * 2, 4);
-    this.session.ui.setHover(this.targetName(target), { x: box.centerX, y: box.y });
-    this.session.ui.announce(this.targetName(target));
-    return true;
+    return cycleFocus(this, direction);
   }
 
   activateFocus(): boolean {
-    if (this.focusIndex === -1 || this.isBusy()) return false;
-    const entry = this.focusTargets()[this.focusIndex];
-    if (!entry) return false;
-    this.openTargetRing(entry.target, { x: entry.box.centerX, y: entry.box.centerY });
-    return true;
+    return activateFocus(this);
   }
 
-  private clearFocus(): void {
-    this.focusIndex = -1;
-    this.focusRing?.clear();
-  }
 
   /** Name labels for every interactive thing in the room (hold Space / eye button). */
   hotspotLabels(): { text: string; x: number; y: number }[] {
-    const state = this.session.state;
-    const labels = this.room.hotspots
-      .filter(h => !h.secret && conditionsHold(state, h.visibleIf))
-      .map(h => {
-        const xs = h.polygon.map(p => p.x), ys = h.polygon.map(p => p.y);
-        return { text: t(h.name), x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 };
-      });
-    for (const [id, actor] of this.actors) labels.push({ text: t(`name.${id}`), ...actor.headPoint() });
-    for (const m of this.crowd?.visible() ?? []) labels.push({ text: this.crowd!.name(m), ...m.actor.headPoint() });
-    return labels;
+    return hotspotLabels(this);
   }
 
   /** Action ring for an inventory item, shown just above the bar. */
   openItemRing(item: string, index: number): void {
-    if (this.isBusy()) return;
-    sound.blip();
-    const at = { x: 70 + index * 46, y: 300 };
-    this.session.ui.openRadial(at, t(`name.${item}`), chapter().itemVerbs, verb => {
-      if (verb === 'use') this.session.selectItem(item);
-      else void this.runScript(chapter().interact(this.session.state, verb, `item:${item}`));
-    });
+    return openItemRing(this, item, index);
   }
 
-  private onPointerMove(pointer: Phaser.Input.Pointer): void {
-    if (pointer.wasTouch) return;
-    const at = { x: pointer.worldX, y: pointer.worldY };
-    const target = this.isBusy() ? null : this.hitTest(at);
-    this.hovered = target;
-    const item = this.session.selectedItem;
-    const name = target ? this.targetName(target) : '';
-    if (item) {
-      const itemName = t(`name.${item}`);
-      this.session.ui.setHover(name ? t('ui.useWith', { item: itemName, target: name }) : t('ui.useWithNothing', { item: itemName }), at);
-    } else {
-      this.session.ui.setHover(name, at);
-    }
-    // While an item is carried, the stage shows the item's icon as the cursor instead.
-    this.input.setDefaultCursor(item ? '' : cursorFor(target ? this.cursorKind(target) : null));
-  }
 
-  /** What a click on the target will most likely do: talk, leave, handle or look. */
-  private cursorKind(target: Target): CursorKind {
-    if (target.kind === 'extra') return 'talk';
-    if (target.kind === 'actor') return target.actor.id === 'hero' ? 'look' : 'talk';
-    const verbs = target.hotspot.verbs;
-    if (verbs.includes('go')) return 'exit';
-    if (verbs.includes('talk')) return 'talk';
-    if (verbs.some(v => v === 'take' || v === 'use' || v === 'open')) return 'hand';
-    return 'look';
-  }
 
-  private hitTest(p: Point): Target | null {
-    const actors = [...this.actors.values()].sort((a, b) => b.sprite.depth - a.sprite.depth);
-    for (const actor of actors) if (actor.hitBox().contains(p.x, p.y)) return { kind: 'actor', actor };
-    const member = this.crowd?.hit(p);
-    if (member) return { kind: 'extra', member };
-    for (const hotspot of this.room.hotspots) {
-      if (conditionsHold(this.session.state, hotspot.visibleIf) && pointInPolygon(p, hotspot.polygon)) return { kind: 'hotspot', hotspot };
-    }
-    return null;
-  }
 
-  private targetId(target: Target): string {
-    return target.kind === 'actor' ? target.actor.id : target.kind === 'extra' ? target.member.def.id : target.hotspot.id;
-  }
 
-  private targetName(target: Target): string {
-    if (target.kind === 'extra') return this.crowd?.name(target.member) ?? '';
-    return t(target.kind === 'actor' ? `name.${target.actor.id}` : target.hotspot.name);
-  }
 
   // --------------------------------------------------------------- movement ---
   /** Free walking from a click; a new click interrupts it. */
-  private async walkTo(target: Point): Promise<void> {
+  async walkTo(target: Point): Promise<void> {
     const state = this.session.state;
     if (this.hero.pose !== 'stand') { this.hero.setPose('stand'); state.hero.pose = 'stand'; }
     this.crowd?.heroHeading(target);
@@ -620,7 +358,7 @@ export class RoomScene extends Phaser.Scene {
     }
   }
 
-  private syncHero(): void {
+  syncHero(): void {
     const h = this.session.state.hero;
     h.x = Math.round(this.hero.position.x);
     h.y = Math.round(this.hero.position.y);
@@ -628,12 +366,12 @@ export class RoomScene extends Phaser.Scene {
     h.pose = this.hero.pose;
   }
 
-  private objectPosition(def: ObjectDef): Point {
+  objectPosition(def: ObjectDef): Point {
     const moved = def.movedTo && this.session.state.flags[def.movedTo.flag];
     return moved ? { x: def.movedTo!.x, y: def.movedTo!.y } : { x: def.x, y: def.y };
   }
 
-  private refreshObjects(): void {
+  refreshObjects(): void {
     const state = this.session.state;
     for (const def of this.room.objects) {
       const sprite = this.objects.get(def.id)!;
@@ -649,61 +387,33 @@ export class RoomScene extends Phaser.Scene {
       this.objectShadows.get(def.id)?.setVisible(sprite.visible).setPosition(sprite.x, sprite.y - 1);
     }
     if (this.hero?.sprite.active) this.hero.setSheet(this.heroSheet());
-    this.applyTint();
+    applyTint(this);
   }
 
   /** The story's state as the chapter's rules see it (src/engine/story.ts). */
-  private storyContext(): StoryContext {
+  storyContext(): StoryContext {
     return { state: this.session.state, room: this.room, cold: this.isCold() };
   }
 
   /** What the room's background people react to (the chapter's story rules). */
-  private crowdMood(): Mood {
+  crowdMood(): Mood {
     return crowdMoodFor(chapter().story, this.storyContext());
   }
 
-  private isCold(): boolean {
+  isCold(): boolean {
     return this.room.coldIf ? conditionsHold(this.session.state, this.room.coldIf) : false;
   }
 
-  /**
-   * The kiln's cold: on High the camera grade shifts (Atmosphere); on Low the scenery is tinted.
-   * Either way it fades in over three seconds when it happens in front of the player.
-   */
-  private applyTint(): void {
-    const cold = this.isCold();
-    const animate = this.knownCold === false && cold;
-    this.knownCold = cold;
-    this.crowd?.setMood(this.crowdMood(), animate);
-    this.atmosphere.setCold(cold, animate);
-    this.tintScenery();
-    this.refreshAmbient(cold, animate);
-    sound.ambience(ambienceFor(chapter().story, this.storyContext()));
-    sound.music(musicFor(chapter().story, this.storyContext()));
-  }
 
-  private coldTint(): number {
-    return this.room.coldTint ?? COLD_TINT;
-  }
 
-  /** Low quality: tints the background, props and foreground by the (animated) cold factor. */
-  private tintScenery(): void {
-    const k = this.atmosphere.enabled ? 0 : this.atmosphere.cold;
-    if (k === this.tintedCold) return;
-    this.tintedCold = k;
-    const tint = mixColor(0xffffff, this.coldTint(), k);
-    for (const o of [this.background, ...this.objects.values(), ...this.foreground, ...(this.sign ? [this.sign.image] : [])]) {
-      if (k === 0) o.clearTint(); else o.setTint(tint);
-    }
-  }
 
   update(time: number): void {
-    this.updateLighting();
+    updateLighting(this);
     if (!this.hero?.sprite.active) return;
     this.props.update(time);
     this.crowd?.update();
-    this.drawHover(time);
-    this.tintScenery();
+    drawHover(this, time);
+    tintScenery(this);
     if (this.atmosphere.enabled) this.atmosphere.updateReflections(this.allActors().map(a => a.sprite), time);
     for (const [id, actor] of this.actors) {
       if (id === 'hero' || this.busy) continue;
@@ -712,33 +422,9 @@ export class RoomScene extends Phaser.Scene {
     }
   }
 
-  /**
-   * A soft gold outline on what the pointer is over: the shape of a thing in the room, or a ring
-   * on the floor at a person's feet. Hidden while busy and while the action ring is open.
-   */
-  private drawHover(time: number): void {
-    const ring = this.hoverRing;
-    if (!ring) return;
-    ring.clear();
-    const target = this.hovered;
-    if (!target || this.isBusy() || this.session.ui.ringOpen()) return;
-    const pulse = 0.55 + 0.2 * Math.sin(time / 260);
-    if (target.kind === 'hotspot') {
-      const pts = target.hotspot.polygon;
-      ring.lineStyle(4, 0xffc860, 0.18 * pulse).strokePoints(pts, true, true);
-      ring.lineStyle(1.2, 0xffe2a0, 0.7 * pulse).strokePoints(pts, true, true);
-      return;
-    }
-    const actor = target.kind === 'actor' ? target.actor : target.member.actor;
-    if (target.kind === 'actor' && actor.id === 'hero') return;
-    const box = actor.hitBox();
-    const w = box.width * 0.9, h = Math.max(6, w * 0.22);
-    ring.lineStyle(3, 0xffc860, 0.25 * pulse).strokeEllipse(actor.sprite.x, actor.sprite.y - 1, w + 4, h + 3);
-    ring.lineStyle(1.2, 0xffe2a0, 0.8 * pulse).strokeEllipse(actor.sprite.x, actor.sprite.y - 1, w, h);
-  }
 
   /** Story characters look about now and then when Mara isn't near: at the kids, the room, the door. */
-  private scheduleGlance(actor: Actor): void {
+  scheduleGlance(actor: Actor): void {
     this.time.delayedCall(Phaser.Math.Between(4000, 9000), () => {
       if (!actor.sprite.active) return;
       const d = Math.hypot(actor.sprite.x - this.hero.sprite.x, actor.sprite.y - this.hero.sprite.y);
@@ -754,419 +440,30 @@ export class RoomScene extends Phaser.Scene {
   }
 
   /** Story characters plus any background people on screen. */
-  private allActors(): Actor[] {
+  allActors(): Actor[] {
     return [...this.actors.values(), ...(this.crowd?.visible().map(m => m.actor) ?? [])];
   }
 
-  /**
-   * Characters take the room's light, darker toward the back, warmer near kiln mouths, hearths and
-   * lanterns (the room's glows), cooled once the kiln is cold (on Low; High grades the whole camera).
-   */
-  private updateLighting(): void {
-    const light = this.room?.light;
-    if (!light || !this.atmosphere) return;
-    const cold = this.atmosphere.cold;
-    const coldTint = this.atmosphere.enabled ? 0xffffff : mixColor(0xffffff, this.coldTint(), cold);
-    const sources = this.room.ambient?.glows ?? [];
-    const { farY, nearY } = this.room.scale;
-    for (const actor of this.allActors()) {
-      const t = Phaser.Math.Clamp((actor.sprite.y - farY) / (nearY - farY), 0, 1);
-      const dim = light.farDim + (1 - light.farDim) * t;
-      const chest = { x: actor.sprite.x, y: actor.sprite.y - 40 * actor.sprite.scaleY * ART_SCALE };
-      actor.sprite.setTint(addLight(multiplyColor(light.tint, dim, coldTint), localLight(chest, sources, cold)));
-    }
-  }
 
-  /**
-   * Particles and flickering light pools; warm ones go out with the kiln (fading over three seconds
-   * when it happens in front of the player). Off with reduced motion. On High each glow also gets a
-   * wide, faint bloom halo.
-   */
-  private refreshAmbient(cold: boolean, animate = false): void {
-    if (this.ambientCold === cold && this.ambient.length) return;
-    this.ambientCold = cold;
-    const old = this.ambient;
-    this.ambient = [];
-    if (animate) {
-      for (const o of old) {
-        if (o instanceof Phaser.GameObjects.Particles.ParticleEmitter) o.stop();
-        else this.tweens.killTweensOf(o);
-        this.tweens.add({ targets: o, alpha: 0, duration: 3000, onComplete: () => o.destroy() });
-      }
-    } else {
-      for (const o of old) o.destroy();
-    }
-    const def = this.room.ambient;
-    if (!def || settings().reducedMotion) return;
-    const bloom = highQuality(this);
-    for (const p of def.particles ?? []) {
-      if (cold && p.warm) continue;
-      const texture = !bloom ? 'fx-dot' : p.kind === 'embers' ? 'fx-ember' : 'fx-puff';
-      this.ambient.push(this.add.particles(p.x, p.y, texture, particleConfig(p.kind, p.w, p.h, bloom)).setDepth(p.kind === 'dust' ? 9000 : -5000));
-    }
-    for (const g of def.glows ?? []) {
-      if (cold && g.warm) continue;
-      const light = this.add.image(g.x, g.y, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setTint(g.color)
-        .setScale((g.r * 2) / 128).setAlpha(0.35).setDepth(-5000);
-      this.tweens.add({ targets: light, alpha: { from: 0.22, to: 0.42 }, duration: Phaser.Math.Between(180, 420), yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: Phaser.Math.Between(0, 300) });
-      this.ambient.push(light);
-      if (bloom) {
-        const halo = this.add.image(g.x, g.y, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setTint(g.color)
-          .setScale((g.r * 5) / 128).setAlpha(0.1).setDepth(8500);
-        this.tweens.add({ targets: halo, alpha: { from: 0.07, to: 0.13 }, duration: Phaser.Math.Between(600, 1100), yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-        this.ambient.push(halo);
-      }
-    }
-  }
 
   // ----------------------------------------------------------------- script ---
   /** Plays interaction commands in order. Input only skips speech until it finishes. */
-  async runScript(commands: Command[]): Promise<void> {
-    if (this.isBusy() || commands.length === 0) return;
-    this.busy = true;
-    this.clearFocus();
-    this.hero.stop();
-    this.syncHero();
-    this.session.ui.setBusy(true);
-    this.session.ui.setHover('');
-    try {
-      for (const command of commands) {
-        if (!(await this.exec(command))) return;
-      }
-    } finally {
-      if (this.sys.isActive() && !this.leaving) {
-        this.busy = false;
-        this.session.ui.setBusy(false);
-        this.session.ui.renderInventory();
-        this.session.autosave();
-      }
-    }
+  runScript(commands: Command[]): Promise<void> {
+    return runScript(this, commands);
   }
 
-  private wait(ms: number): Promise<void> {
-    return new Promise(resolve => this.time.delayedCall(ms, resolve));
-  }
 
-  private async say(actorId: Speaker, key: string, at?: Point): Promise<void> {
-    const actor = this.actors.get(actorId as ActorId);
-    const point = actor?.headPoint() ?? at ?? { x: 320, y: 60 };
-    await this.session.ui.say(actorId, t(key), point, chapter().lineMoods[key]);
-  }
 
-  /** Executes one command. Returns false when the script must stop (room change or the end). */
-  private async exec(command: Command): Promise<boolean> {
-    const state = this.session.state;
-    switch (command.type) {
-      case 'walk': {
-        if (this.hero.pose !== 'stand') this.hero.setPose('stand');
-        this.crowd?.heroHeading(command.to);
-        await this.hero.walk(this.area.findPath(this.hero.position, command.to));
-        if (command.face) this.hero.setFacing(command.face);
-        this.syncHero();
-        return true;
-      }
-      case 'face':
-        this.actors.get(command.actor)?.setFacing(command.face);
-        applyCommand(state, command);
-        return true;
-      case 'pose':
-        this.actors.get(command.actor)?.setPose(command.pose);
-        applyCommand(state, command);
-        return true;
-      case 'say':
-        await this.say(command.actor, command.text, command.at);
-        return true;
-      case 'setFlag':
-      case 'addItem':
-      case 'removeItem':
-        if (command.type === 'addItem') sound.pickup();
-        const cue = command.type === 'setFlag' && command.value ? chapter().story.flagSounds[command.flag] : undefined;
-        if (cue) sound[cue]();
-        const newSecret = command.type === 'setFlag' && command.value && !state.flags[command.flag]
-          && chapter().secretFlags.includes(command.flag);
-        applyCommand(state, command);
-        if (command.type === 'setFlag' && command.value && chapter().story.crowdReactsTo.includes(command.flag)) this.crowd?.setMood(this.crowdMood(), true);
-        if (command.type === 'setFlag' && command.value && chapter().metFlags.includes(command.flag)) {
-          const who = chapter().extras.find(e => e.met === command.flag);
-          const found = chapter().metFlags.filter(f => state.flags[f]).length;
-          if (who) this.session.ui.toast(t('ui.metFound', { name: t(`speaker.${who.id}`), found: String(found), total: String(chapter().metFlags.length) }));
-        }
-        if (newSecret) {
-          sound.choose();
-          const found = chapter().secretFlags.filter(f => state.flags[f]).length;
-          this.session.ui.toast(t('ui.secretFound', { found: String(found), total: String(chapter().secretFlags.length) }));
-        }
-        this.refreshObjects();
-        this.session.ui.renderInventory();
-        return true;
-      case 'looked':
-        applyCommand(state, command);
-        return true;
-      case 'handle':
-        this.props.swing(command.target);
-        return true;
-      case 'wait':
-        await this.wait(command.ms);
-        return true;
-      case 'shake':
-        sound.rumble(command.ms);
-        if (!this.isCold()) this.props.burst((this.room.ambient?.glows ?? []).filter(g => g.warm));
-        this.sign?.jolt();
-        if (!settings().reducedMotion) this.cameras.main.shake(command.ms, 0.004);
-        await this.wait(Math.min(command.ms, 400));
-        return true;
-      case 'moveObject': {
-        const sprite = this.objects.get(command.id);
-        if (!sprite) return true;
-        const sheet = this.room.objects.find(o => o.id === command.id)!.sheet;
-        const idle = sprite.anims.currentAnim?.key;
-        if (this.anims.exists(`${sheet}:scurry`)) sprite.play(`${sheet}:scurry`);
-        if (sheet === 'sweeper') sound.brushes(command.ms);
-        await new Promise<void>(resolve => this.tweens.add({
-          targets: sprite, x: command.x, y: command.y, duration: command.ms, ease: 'Sine.easeInOut',
-          onUpdate: () => { sprite.setDepth(sprite.y); this.objectShadows.get(command.id)?.setPosition(sprite.x, sprite.y - 1); },
-          onComplete: () => resolve(),
-        }));
-        if (idle) sprite.play(idle);
-        return true;
-      }
-      case 'dialogue':
-        await this.runDialogue(command.id);
-        return true;
-      case 'room': {
-        this.leaving = true;
-        this.session.ui.closeRadial();
-        const v = FACE_VECTOR[this.hero.face];
-        const out = { x: this.hero.position.x + v.x * DOORWAY_STEP, y: this.hero.position.y + v.y * DOORWAY_STEP };
-        void this.hero.walk([out]);
-        this.cameras.main.fadeOut(FADE_MS + 60, 0, 0, 0);
-        await this.wait(FADE_MS + 80);
-        this.hero.stop();
-        applyCommand(state, command);
-        this.session.arrival = command.entry;
-        this.scene.restart();
-        return false;
-      }
-      case 'chapter': {
-        // The next chapter opens at its start, with the slow fade of a new story.
-        this.leaving = true;
-        this.session.ui.closeRadial();
-        this.cameras.main.fadeOut(FADE_MS * 3, 0, 0, 0);
-        await this.wait(FADE_MS * 3 + 80);
-        applyCommand(state, command);
-        setChapter(command.id);
-        this.session.arrival = null;
-        this.session.slowFadeIn = true;
-        this.scene.restart();
-        return false;
-      }
-      case 'giveSpares':
-        applyCommand(state, command);
-        return true;
-      case 'hatch':
-        await this.blowHatch();
-        return true;
-      case 'fight':
-        await this.fight(command.id);
-        return true;
-      case 'gear':
-        await this.session.ui.openGear();
-        return true;
-      case 'awaitGear':
-        await this.session.ui.forceGear();
-        return true;
-      case 'shop':
-        await this.session.ui.openShop();
-        return true;
-      case 'end':
-        this.leaving = true;
-        this.cameras.main.fadeOut(900, 0, 0, 0);
-        await this.wait(700);
-        this.session.ui.showEnd();
-        return false;
-    }
-  }
 
   /**
    * The hatch in the gallery floor blows: its cover spins away, smoke and sparks pour out of the
    * dark hole, and the scavenger drawn by the pulse climbs up out of it, then steps toward Mara.
    * (Hole and cover are drawn in code: placeholders until replaced.)
    */
-  private hatchCreature: Phaser.GameObjects.Image | null = null;
-  private hatchHole: Phaser.GameObjects.Graphics | null = null;
-  private async blowHatch(): Promise<void> {
-    const at = this.room.hatch ?? { x: 360, y: 260 };
-    const calm = settings().reducedMotion;
-    sound.rumble(500);
-    sound.shatter();
-    if (!calm) this.cameras.main.shake(450, 0.008);
-    // The hole: a dark oval with a ragged metal rim, drawn on the floor.
-    const hole = this.add.graphics().setDepth(at.y - 2);
-    hole.fillStyle(0x060404, 1).fillEllipse(at.x, at.y, 64, 15);
-    hole.lineStyle(2, 0x5a4a3c, 1).strokeEllipse(at.x, at.y, 66, 16);
-    hole.fillStyle(0xff8a3a, 0.35).fillEllipse(at.x, at.y + 1, 34, 6);
-    this.hatchHole = hole;
-    // The cover flies off, spinning, and clatters down to one side.
-    const cover = this.add.graphics().setDepth(at.y + 40).setPosition(at.x, at.y);
-    cover.fillStyle(0x4a4038, 1).fillEllipse(0, 0, 60, 14);
-    cover.lineStyle(2, 0x2a2420, 1).strokeEllipse(0, 0, 60, 14);
-    cover.fillStyle(0x6a5a4a, 1).fillRect(-14, -2, 28, 4);
-    if (calm) cover.setPosition(at.x - 70, at.y + 18);
-    else {
-      this.tweens.add({ targets: cover, x: at.x - 70, duration: 900, ease: 'Linear' });
-      this.tweens.add({ targets: cover, y: at.y - 70, duration: 420, ease: 'Quad.easeOut', yoyo: false,
-        onComplete: () => this.tweens.add({ targets: cover, y: at.y + 18, duration: 480, ease: 'Bounce.easeOut' }) });
-      this.tweens.add({ targets: cover, angle: 540, duration: 900, ease: 'Quad.easeOut' });
-    }
-    this.props.burst([{ x: at.x, y: at.y - 6 }, { x: at.x + 8, y: at.y - 4 }, { x: at.x - 8, y: at.y - 4 }]);
-    for (let i = 0; i < 8; i++) this.time.delayedCall(i * 110, () => this.props.step(at.x + (Math.random() - 0.5) * 30, at.y - Math.random() * 6));
-    await this.wait(calm ? 200 : 700);
-    // The scavenger climbs out: only what is above the rim shows while it rises.
-    await new Promise<void>(resolve => {
-      const climb = () => {
-        const crawler = this.add.image(at.x, at.y, 'battle-scavenger').setOrigin(0.5, 1).setScale(0.42).setFlipX(true).setDepth(at.y);
-        const full = crawler.displayHeight;
-        crawler.setY(at.y + full);
-        const rim = this.make.graphics({}, false).fillRect(at.x - 120, 0, 240, at.y);
-        crawler.setMask(rim.createGeometryMask());
-        this.hatchCreature = crawler;
-        sound.scrape(1);
-        this.tweens.add({
-          targets: crawler, y: at.y, duration: calm ? 300 : 1100, ease: 'Quad.easeOut',
-          onComplete: () => {
-            crawler.clearMask(true);
-            sound.strike(4);
-            this.tweens.add({ targets: crawler, x: at.x - 12, y: at.y + 6, duration: calm ? 200 : 600, ease: 'Sine.easeInOut', onComplete: () => resolve() });
-          },
-        });
-      };
-      if (this.textures.exists('battle-scavenger')) climb();
-      else { this.load.image('battle-scavenger', SCAVENGER_SPRITE); this.load.once(Phaser.Loader.Events.COMPLETE, climb); this.load.start(); }
-    });
-    this.hero.setFacing('left');
-  }
+  hatchCreature: Phaser.GameObjects.Image | null = null;
+  hatchHole: Phaser.GameObjects.Graphics | null = null;
 
-  /**
-   * A fight: save first (a reload restarts it), shatter the room, then Kiln Courier's battle screen
-   * (React, src/kc) over everything. The script carries on once it is won.
-   */
-  private async fight(id: string): Promise<void> {
-    const state = this.session.state;
-    this.syncHero();
-    this.session.saveNow();
-    sound.hush(true);
-    sound.music('combat');
-    this.session.ui.setHover('');
-    const kcModule = import('../kc/mount');
-    const cover = await this.shatter();
-    const kc = await kcModule;
-    this.hatchCreature?.destroy();
-    this.hatchCreature = null;
-    const el = document.getElementById('kc-root')!;
-    el.hidden = false;
-    this.scene.pause();
-    await new Promise<void>(resolve => {
-      const reward = chapter().rewards[id];
-      const rewards = reward ? [t('battle.rewardSalvage', { n: String(reward.salvage) }),
-        ...Object.entries(reward.materials).map(([m, n]) => t('battle.rewardMaterial', { n: String(n), name: t(MATERIALS[m].name) }))] : [];
-      const close = kc.mountBattle(el, {
-        profile: maraProfile(state.kit), guided: guided(chapter().story, this.storyContext()), encounter: chapter().encounters[id], rewards,
-        tonics: () => state.bag.tonics,
-        drink: battle => { const next = drinkTonic(battle, state.bag); return next === battle ? null : next; },
-        onMenu: () => this.session.ui.openMenu(),
-        onWin: battle => {
-          finishBattle(state, battle, reward);
-          this.session.closeBattle = null;
-          close();
-          el.hidden = true;
-          resolve();
-        },
-      });
-      this.session.closeBattle = () => { close(); el.hidden = true; };
-    });
-    this.scene.resume();
-    cover.destroy();
-    this.hatchHole?.setAlpha(0.6);
-    this.session.ui.renderInventory();
-    sound.music('nervous');
-    this.cameras.main.fadeIn(700, 0, 0, 0);
-    await this.wait(500);
-  }
 
-  /**
-   * The room breaks into shards that fall away with a white flash, leaving black (the battle screen
-   * then appears over it). Returns the black cover, removed after the fight.
-   */
-  private async shatter(): Promise<Phaser.GameObjects.Graphics> {
-    const black = this.add.graphics().setDepth(100000).setScrollFactor(0);
-    if (settings().reducedMotion) {
-      this.cameras.main.fadeOut(400, 0, 0, 0);
-      await this.wait(420);
-      black.fillStyle(0x000000, 1).fillRect(0, 0, LOGICAL_W, LOGICAL_H);
-      this.cameras.main.resetFX();
-      return black;
-    }
-    const key = await this.snapshot();
-    black.fillStyle(0x000000, 1).fillRect(0, 0, LOGICAL_W, LOGICAL_H);
-    const tex = this.textures.get(key);
-    const src = tex.getSourceImage() as HTMLImageElement;
-    const cols = 8, rows = 5, w = src.width / cols, h = src.height / rows, k = LOGICAL_W / src.width;
-    const centre = { x: this.hero.position.x, y: this.hero.position.y - 60 };
-    const shards: Phaser.GameObjects.Image[] = [];
-    sound.shatter();
-    for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-      const name = `shard-${r}-${c}`;
-      if (!tex.has(name)) tex.add(name, 0, c * w, r * h, w, h);
-      const x = (c + 0.5) * w * k, y = (r + 0.5) * h * k;
-      const shard = this.add.image(x, y, key, name).setScale(k).setDepth(100001).setScrollFactor(0);
-      shards.push(shard);
-      const d = Math.hypot(x - centre.x, y - centre.y);
-      this.tweens.add({
-        targets: shard, delay: 120 + d * 1.2, duration: 700 + Math.random() * 300, ease: 'Quad.easeIn',
-        y: y + 260 + Math.random() * 120, x: x + (x - centre.x) * 0.35, angle: (Math.random() - 0.5) * 70, alpha: 0,
-      });
-    }
-    const flash = this.add.graphics().setDepth(100002).setScrollFactor(0);
-    flash.fillStyle(0xffffff, 0.85).fillRect(0, 0, LOGICAL_W, LOGICAL_H);
-    this.tweens.add({ targets: flash, alpha: 0, duration: 260 });
-    await this.wait(1500);
-    for (const shard of shards) shard.destroy();
-    flash.destroy();
-    if (this.textures.exists(key)) this.textures.remove(key);
-    return black;
-  }
 
-  /** The canvas as it is now, as a texture (for the shatter). */
-  private snapshot(): Promise<string> {
-    const key = 'battle-snapshot';
-    if (this.textures.exists(key)) this.textures.remove(key);
-    return new Promise(resolve => {
-      this.game.renderer.snapshot(image => {
-        this.textures.addImage(key, image as HTMLImageElement);
-        resolve(key);
-      });
-    });
-  }
 
-  private async runDialogue(id: string): Promise<void> {
-    const tree = chapter().dialogues[id];
-    const state = this.session.state;
-    let nodeId: string | null = tree.start;
-    while (nodeId) {
-      const node = resolveNode(tree, nodeId, state);
-      for (const line of node.lines) await this.say(line.actor, line.text);
-      for (const [flag, value] of Object.entries(node.set)) applyCommand(state, { type: 'setFlag', flag, value });
-      for (const item of node.items) applyCommand(state, { type: 'addItem', item });
-      if (node.items.length > 0) this.session.ui.renderInventory();
-      if (node.choices.length > 0) {
-        const index = await this.session.ui.choose(node.choices.map(c => t(c.text)));
-        sound.choose();
-        const choice = node.choices[index];
-        await this.say('hero', choice.text);
-        nodeId = choice.next;
-      } else {
-        nodeId = node.next;
-      }
-    }
-  }
 }
