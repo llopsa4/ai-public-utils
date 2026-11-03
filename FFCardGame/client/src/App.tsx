@@ -13,7 +13,7 @@ import { EquipmentSummary } from './components/EquipmentSummary';
 import { GameDialog, type DialogKind } from './components/GameDialog';
 import { useBattle, type BattleController } from './hooks/useBattle';
 import { completeTutorial, tutorialComplete } from './persistence/preferences';
-import type { CardInstance, BattleSetup, EncounterDefinition } from './game/types';
+import type { CardInstance, BattleSetup, BattleState, EncounterDefinition } from './game/types';
 import { LESSON_STEPS, type LessonAction } from './content/tutorial';
 import { tutorialMatches, type TutorialState } from './game/tutorial';
 
@@ -22,10 +22,11 @@ export interface LessonView { state: TutorialState; replay: boolean; act: (actio
 // Optional settings for a host game embedding the battle screen; without them nothing changes.
 // `brand` replaces the Kiln Courier wordmark (as plain text, without the restart link or the page
 // icon), `rewards` lists what a win pays in the victory dialog, and `extraControls` adds controls
-// under End turn.
-export interface EmbedOptions { brand?: string; rewards?: string[]; extraControls?: (context: { busy: boolean; lesson: boolean; over: boolean }) => ReactNode }
+// under End turn. `victoryView` replaces the outcome dialog after a win with the host's own
+// screen; its `onContinue` does what the dialog's Continue would.
+export interface EmbedOptions { brand?: string; rewards?: string[]; extraControls?: (context: { busy: boolean; lesson: boolean; over: boolean }) => ReactNode; victoryView?: (props: { state: BattleState; lesson: boolean; onContinue: () => void }) => ReactNode }
 
-export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, onNavigate, suppressHints = false, brand, rewards, extraControls }: { setup?: BattleSetup; controller?: BattleController; onMenu?: () => void; onVictory?: () => void; lesson?: LessonView; onReplay?: () => void; onNavigate?: (update: () => void) => void; suppressHints?: boolean } & EmbedOptions) {
+export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, onNavigate, suppressHints = false, brand, rewards, extraControls, victoryView }: { setup?: BattleSetup; controller?: BattleController; onMenu?: () => void; onVictory?: () => void; lesson?: LessonView; onReplay?: () => void; onNavigate?: (update: () => void) => void; suppressHints?: boolean } & EmbedOptions) {
   const battle = useBattle(setup, controller);
   const { state, busy, animation } = battle;
   const visual=battleVisual(state);
@@ -153,6 +154,8 @@ export function App({ setup, controller, onMenu, onVictory, lesson, onReplay, on
       {controller && !lesson && state.outcome && !dialog && !busy && <div className="battle-result-action"><button className="modal-primary" onClick={state.outcome === 'victory' ? onVictory : restart}>{state.outcome === 'victory' ? 'Continue' : 'Retry encounter'}</button></div>}
       <p className="sr-only" id="announcement" role="status" aria-live="polite" aria-atomic="true">{battle.announcement}</p>
     </main>
-    <GameDialog kind={activeDialog} state={state} campaign={!!controller} lessonPrompt={step?.prompt} onSkipLesson={lesson?.skip} onReplay={onReplay} onVictory={onVictory} onClose={closeDialog} onRestart={restart} brand={brand} rewards={rewards} />
+    {victoryView && activeDialog === 'outcome' && state.outcome === 'victory'
+      ? victoryView({ state, lesson: !!lesson, onContinue: () => onVictory?.() })
+      : <GameDialog kind={activeDialog} state={state} campaign={!!controller} lessonPrompt={step?.prompt} onSkipLesson={lesson?.skip} onReplay={onReplay} onVictory={onVictory} onClose={closeDialog} onRestart={restart} brand={brand} rewards={rewards} />}
   </div>;
 }

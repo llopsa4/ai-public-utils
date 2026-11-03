@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.0 — 2026-11-03
+
+- Add an optional `victoryView` setting for a host game embedding the battle screen: after a win it shows the host's own screen in place of the outcome dialog, with a Continue that does what the dialog's would. Defeat keeps the dialog. Without it nothing changes.
+- Validate 112 tests and the production build.
+
 ## 0.8.0 — 2026-11-03
 
 - Add optional settings for a host game embedding the battle screen (the Cinderfold adventure in this repository): `brand` (its name in place of the Kiln Courier wordmark), `rewards` (lines in the victory dialog), `extraControls` (controls under End turn), and for the guided lesson an `encounter` and reworded `prompts`. Without them the game, its lesson, saves and rules are unchanged.
