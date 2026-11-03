@@ -1,4 +1,4 @@
-// Cinderfold: Kiln Courier's workshop screen (components/Workshop.tsx) in equip-only form: Mara's
+// Cinderfold: Mara's gear. In the game's gear pop-up, a paper doll (PaperDoll); elsewhere Kiln Courier's workshop screen (components/Workshop.tsx) in equip-only form: Mara's
 // three slots with their pictures, the gear he owns on the shelf, the selected piece next to what
 // is equipped, and the build before and after. No buying, upgrading or card work in this chapter.
 import { useState } from 'react';
@@ -46,7 +46,96 @@ function StatComparison({ profile, item }: { profile: CharacterProfile; item: Eq
   return values.length ? <dl className="gear-deltas">{values.map(value => <div key={value.key} className={value.before === value.after ? 'unchanged' : (value.after > value.before) !== value.lowerBetter ? 'stat-benefit' : 'stat-tradeoff'}><dt>{value.label}</dt><dd><span>{value.before}</span><span aria-hidden="true"> → </span><strong>{value.after}</strong>{value.before !== value.after && <small>{value.after - value.before > 0 ? '+' : ''}{value.after - value.before}{value.lowerBetter ? ' pressure' : ''}</small>}</dd></div>)}</dl> : <p className="session-caption">No change to your current build.</p>;
 }
 
-export function Armory({ profile, owned, locked, salvage, carried, title, eyebrow, onEquip, onClose, popup = false }: ArmoryProps) {
+export function Armory(props: ArmoryProps) {
+  return props.popup ? <PaperDoll {...props} /> : <Workshop {...props} />;
+}
+
+/** Where each slot sits on Mara's figure (art/src/kc/hero.webp), as a share of its width and height. */
+const SLOT_AT: Record<EquipmentSlot, { x: number; y: number }> = {
+  gauntlet: { x: 86, y: 43 }, // his right hand, in the gauntlet
+  armor: { x: 55, y: 27 }, // his chest
+  utility: { x: 24, y: 43 }, // the carrier at his hip
+};
+const STASH_CELLS = 8;
+const STAT_ROWS: [keyof ReturnType<typeof deriveStats> | 'cards', string][] = [['power', 'Power'], ['defense', 'Defense'], ['speed', 'Speed'], ['cards', 'Opening cards'], ['maxMp', 'Max MP']];
+
+/**
+ * The gear pop-up as a paper doll: Mara's figure with his three slots on the body, a stash of square
+ * cells with what he owns but isn't wearing, a tooltip card for the selected piece, and his stats.
+ * Click selects, double-click equips, and a piece can be dragged onto its slot (touch: tap, then Equip).
+ */
+function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
+  const loadout = profile.equipment ?? STARTING_EQUIPMENT;
+  const stash = owned.filter(id => loadout[EQUIPMENT[id].slot].id !== id);
+  const [selected, setSelected] = useState(stash[0] ?? loadout.armor.id);
+  const [dragging, setDragging] = useState<string | null>(null);
+  const [over, setOver] = useState<EquipmentSlot | null>(null);
+  const [result, setResult] = useState('');
+  const data = EQUIPMENT[selected];
+  const equipped = loadout[data.slot].id === selected, slotLocked = locked.includes(data.slot);
+  const canEquip = (id: string) => !locked.includes(EQUIPMENT[id].slot) && loadout[EQUIPMENT[id].slot].id !== id;
+  const equip = (id: string) => {
+    if (!canEquip(id)) return;
+    onEquip(id);
+    setSelected(id);
+    setResult(`${EQUIPMENT[id].name} equipped.`);
+  };
+  const stats = deriveStats(profile);
+  const statValue = (key: (typeof STAT_ROWS)[number][0]) => (key === 'cards' ? openingHandSize(5, stats.speed) : stats[key]);
+  const spare = (id: string) => !(STARTING_EQUIPMENT_IDS as readonly string[]).includes(id);
+  return <section className="kc-armory doll" aria-label="Mara's gear">
+    <div className="doll-figure">
+      <img className="doll-body" src={openingArt.iven} alt="" />
+      {EQUIPMENT_SLOTS.map(slot => {
+        const item = loadout[slot];
+        const target = dragging !== null && EQUIPMENT[dragging].slot === slot && canEquip(dragging);
+        return <button key={slot} type="button" style={{ left: `${SLOT_AT[slot].x}%`, top: `${SLOT_AT[slot].y}%` }}
+          className={`doll-slot${item.id === selected ? ' doll-selected' : ''}${target ? ' doll-target' : ''}${over === slot && target ? ' doll-over' : ''}`}
+          aria-pressed={item.id === selected} aria-label={`${slot}: ${EQUIPMENT[item.id].name}${locked.includes(slot) ? ', locked' : ''}`} title={`${EQUIPMENT[item.id].name} (${slot})`}
+          onClick={() => { setSelected(item.id); setResult(''); }}
+          onDragOver={event => { if (target) { event.preventDefault(); setOver(slot); } }}
+          onDragLeave={() => setOver(null)}
+          onDrop={event => { event.preventDefault(); setOver(null); if (dragging && target) equip(dragging); setDragging(null); }}>
+          <EquipmentArt item={item} />
+          {locked.includes(slot) && <span className="doll-lock" aria-hidden="true">{LOCK}</span>}
+        </button>;
+      })}
+    </div>
+    <dl className="doll-stats">{STAT_ROWS.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{statValue(key)}</dd></div>)}</dl>
+    <div className="doll-side">
+      <h3 className="doll-heading">Stash</h3>
+      <div className="doll-stash">{Array.from({ length: Math.max(STASH_CELLS, stash.length) }, (_, n) => {
+        const id = stash[n];
+        if (!id) return <span key={`empty-${n}`} className="stash-cell stash-empty" aria-hidden="true" />;
+        return <button key={id} type="button" draggable className={`gear-tile stash-cell${id === selected ? ' doll-selected' : ''}${spare(id) ? ' doll-spare' : ''}`}
+          aria-pressed={id === selected} title={EQUIPMENT[id].name}
+          onClick={() => { setSelected(id); setResult(''); }} onDoubleClick={() => equip(id)}
+          onDragStart={event => { event.dataTransfer.setData('text/plain', id); event.dataTransfer.effectAllowed = 'move'; setDragging(id); setSelected(id); }}
+          onDragEnd={() => { setDragging(null); setOver(null); }}>
+          <EquipmentArt item={{ id }} /><span className="sr-only">{EQUIPMENT[id].name}</span>
+        </button>;
+      })}</div>
+      <article className={`doll-card${spare(selected) ? ' doll-spare' : ''}`} aria-live="polite">
+        <h3>{data.name}</h3>
+        <p className="doll-slotname">{data.slot}{equipped ? ' · equipped' : ''}{slotLocked ? ' · locked' : ''}</p>
+        <p className="doll-bonuses">{bonuses({ id: selected })}</p>
+        {descriptions[selected] && <p className="doll-desc">{descriptions[selected]}</p>}
+        {!equipped && <><h4>Your build if equipped</h4><StatComparison profile={profile} item={{ id: selected }} /></>}
+        <button id="armory-equip" type="button" className={equipped || slotLocked ? 'session-secondary' : 'modal-primary'} disabled={equipped || slotLocked}
+          onClick={event => { if (event.detail <= 1) equip(selected); }}>
+          {slotLocked && !equipped ? "His mother's: it stays" : equipped ? 'Equipped' : `Equip ${data.name}`}
+        </button>
+        <p role="status" className="doll-result" key={result}>{result}</p>
+      </article>
+    </div>
+  </section>;
+}
+
+const STARTING_EQUIPMENT_IDS = Object.values(STARTING_EQUIPMENT).map(e => e.id);
+const LOCK = <svg viewBox="0 0 16 16"><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" strokeWidth="1.8" /><rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" /></svg>;
+
+/** The full-screen workshop (outside the pop-up): Kiln Courier's showroom layout. */
+function Workshop({ profile, owned, locked, salvage, carried, title, eyebrow, onEquip, onClose, popup = false }: ArmoryProps) {
   const loadout = profile.equipment ?? STARTING_EQUIPMENT;
   const firstSpare = owned.find(id => loadout[EQUIPMENT[id].slot].id !== id) ?? owned[0];
   const [gearId, setGearId] = useState(firstSpare);

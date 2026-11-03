@@ -1,7 +1,7 @@
 // The gear screen (Kiln Courier's workshop) and Oren's forced first visit.
 import { t } from '../engine/i18n';
 import { EQUIPMENT } from '../combat/gear';
-import { HERO_MAX_HP, LOCKED_SLOTS, MATERIALS, maraProfile } from '../content/kit';
+import { LOCKED_SLOTS, maraProfile } from '../content/kit';
 import { equip } from '../engine/kit';
 import { $, type Ui } from './ui';
 
@@ -46,13 +46,10 @@ export async function openGear(ui: Ui): Promise<void> {
   await new Promise<void>(resolve => {
     const unmount = kc.mountArmory($('gear-body'), {
       popup: true, title: t('ui.gearTitle'), eyebrow: t('ui.gearEyebrow'), locked: [...LOCKED_SLOTS],
+      // The paper doll shows only the gear and the stats it gives (no purse or bag).
       read: () => {
         const { kit, bag } = ui.host.getState();
-        const mats = Object.entries(bag.materials).filter(([, n]) => n > 0).map(([id, n]) => `${n} ${t(MATERIALS[id].name)}`);
-        return {
-          profile: maraProfile(kit), owned: [...kit.owned], salvage: bag.salvage,
-          carried: [t('ui.health', { hp: String(kit.hp), max: String(HERO_MAX_HP) }), t('ui.tonics', { n: String(bag.tonics) }), mats.length ? t('ui.materials', { list: mats.join(', ') }) : t('ui.noMaterials')],
-        };
+        return { profile: maraProfile(kit), owned: [...kit.owned], salvage: bag.salvage, carried: [] };
       },
       onEquip: id => { equip(ui.host.getState().kit, EQUIPMENT[id].slot, id); ui.host.autosave(); },
       onClose: () => dialog.close(),

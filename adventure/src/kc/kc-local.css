@@ -183,39 +183,122 @@
   .kc .kc-victory-continue { padding: 9px 24px; font-size: 16px; }
 }
 
-/* ------------------------------------------------- the gear pop-up (#gear, Armory with popup) --- */
-.kc.kc-armory-popup { background: transparent; font-size: 16px; }
-.kc-armory-popup .kc-armory { max-width: none; }
-.kc-armory-popup .loadout-slots { gap: 8px; margin: 0 0 8px; }
-.kc-armory-popup .loadout-slots > button { padding: 6px 8px; gap: 8px; }
-.kc-armory-popup .loadout-slots .equipment-art { width: 40px; }
-.kc-armory-popup .loadout-slots small { font-size: 12px; margin-bottom: 2px; }
-.kc-armory-popup .loadout-slots strong { font-size: 14px; }
-.kc-armory-popup .kc-build { font-size: 14px; margin: 4px 0; }
-.kc-armory-popup .workbench-result { min-height: 0; margin: 0; font-size: 14px; }
-.kc-armory-popup .showroom-grid { grid-template-columns: minmax(180px, 0.8fr) minmax(0, 1.6fr); gap: 14px; margin-top: 8px; }
-.kc-armory-popup .showroom h3, .kc-armory-popup .gear-shelf > h3 { font-size: 13px; margin-bottom: 8px; }
-.kc-armory-popup .gear-tiles { gap: 6px; }
-.kc-armory-popup .gear-tile { padding: 6px 4px; }
-.kc-armory-popup .gear-tile .equipment-art { max-width: 56px; }
-.kc-armory-popup .gear-tile strong { font-size: 13px; }
-.kc-armory-popup .gear-tile small { font-size: 12px; margin-top: 2px; }
-.kc-armory-popup .selected-workpiece { padding: 12px 14px; }
-.kc-armory-popup .workpiece-title h3 { font-size: 18px; margin: 2px 0; }
-.kc-armory-popup .showroom .workpiece-title p { font-size: 15px; margin: 4px 0; }
-.kc-armory-popup .gear-pair { margin: 6px 0; }
-.kc-armory-popup .gear-pair .equipment-art { max-width: 88px; }
-.kc-armory-popup .gear-pair figcaption { font-size: 12px; }
-.kc-armory-popup .gear-pair figcaption strong { font-size: 14px; }
-.kc-armory-popup .showroom .gear-properties { font-size: 14px; padding: 6px; }
-.kc-armory-popup .comparison-heading h4 { font-size: 14px; margin: 8px 0 4px; }
-.kc-armory-popup .gear-deltas { font-size: 14px; }
-.kc-armory-popup .workpiece-actions { margin-top: 8px; }
-.kc-armory-popup .workpiece-actions button { font-size: 15px; padding: 8px 14px; }
-.kc-armory-popup .session-caption { font-size: 13px; margin: 6px 0 0; }
-@media (max-width: 760px) {
-  .kc-armory-popup .showroom-grid { grid-template-columns: 1fr; }
-  .kc-armory-popup .gear-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+/* ------------------------------------------- the gear pop-up: a paper doll (Armory PaperDoll) --- */
+.kc.kc-armory-popup { background: transparent; font-size: 16px; --cell: 64px; --art: 52px; }
+.kc-armory-popup .doll {
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  gap: 14px 22px;
+  max-width: none;
+}
+.kc-armory-popup .doll-figure {
+  position: relative;
+  grid-row: 1;
+  width: 260px;
+  height: 390px;
+  margin: 0 auto;
+  border: 1px solid #6e522e;
+  border-radius: 6px;
+  background: radial-gradient(ellipse at 50% 40%, #3a2412 0%, #120a06 75%);
+  box-shadow: inset 0 0 30px #000c;
+}
+.kc-armory-popup .doll-body {
+  position: absolute;
+  inset: 6px 4px 4px;
+  width: calc(100% - 8px);
+  height: calc(100% - 10px);
+  object-fit: contain;
+  filter: brightness(0.55) saturate(0.6) drop-shadow(0 6px 8px #000);
+  pointer-events: none;
+}
+.kc-armory-popup .doll-slot, .kc-armory-popup .stash-cell {
+  width: var(--cell);
+  height: var(--cell);
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 2px solid #7a5a30;
+  border-radius: 3px;
+  background: radial-gradient(circle at 50% 40%, #2c1c10e6, #0c0805f2 75%);
+  box-shadow: inset 0 0 0 1px #000, inset 0 0 12px #000c, 0 2px 6px #000a;
+  cursor: pointer;
+}
+.kc-armory-popup .doll-slot { position: absolute; transform: translate(-50%, -50%); }
+.kc-armory-popup .doll-slot .equipment-art, .kc-armory-popup .stash-cell .equipment-art { width: var(--art); }
+.kc-armory-popup .doll-slot:hover, .kc-armory-popup .stash-cell:hover { border-color: #e2bc7c; }
+.kc-armory-popup .doll-selected { border-color: #ffd98c; box-shadow: inset 0 0 0 1px #000, inset 0 0 12px #000c, 0 0 0 2px #3a220e, 0 0 14px #ffb04a99; }
+.kc-armory-popup .doll-target { border-color: #9dd17a; box-shadow: inset 0 0 0 1px #000, 0 0 12px #7fd06a88; }
+.kc-armory-popup .doll-over { background: radial-gradient(circle at 50% 40%, #2f4a1ee6, #0c0805f2 75%); }
+.kc-armory-popup .doll-lock {
+  position: absolute;
+  right: -6px;
+  top: -6px;
+  width: 20px;
+  height: 20px;
+  padding: 3px;
+  border-radius: 50%;
+  color: #2a1606;
+  background: linear-gradient(#ffd98c, #b86d22);
+  box-shadow: 0 0 0 1px #2a1606, 0 2px 4px #000a;
+}
+.kc-armory-popup .doll-lock svg { width: 100%; height: 100%; display: block; }
+.kc-armory-popup .doll-stats {
+  grid-row: 2;
+  margin: 0 auto;
+  width: 260px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px 14px;
+  padding: 8px 12px;
+  border: 1px solid #5c4426;
+  border-radius: 4px;
+  background: #0f0905c0;
+}
+.kc-armory-popup .doll-stats > div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dotted #5c442680; }
+.kc-armory-popup .doll-stats dt { font-size: 13px; color: var(--muted); }
+.kc-armory-popup .doll-stats dd { margin: 0; font-family: 'Cinzel', Georgia, serif; font-size: 15px; color: var(--ivory); }
+.kc-armory-popup .doll-side { grid-column: 2; grid-row: 1 / span 2; min-width: 0; }
+.kc-armory-popup .doll-heading { margin: 0 0 6px; font: 600 13px 'Cinzel', Georgia, serif; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
+.kc-armory-popup .doll-stash {
+  display: grid;
+  grid-template-columns: repeat(4, var(--cell));
+  gap: 6px;
+  padding: 8px;
+  width: max-content;
+  border: 1px solid #5c4426;
+  border-radius: 4px;
+  background: repeating-linear-gradient(45deg, #0f0905, #0f0905 6px, #120b07 6px, #120b07 12px);
+}
+.kc-armory-popup .stash-empty { cursor: default; opacity: 0.55; }
+.kc-armory-popup .doll-card {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid #8a6634;
+  border-radius: 4px;
+  background: linear-gradient(#1d130cf2, #0d0805f7);
+  box-shadow: inset 0 0 0 1px #ffd9a014, 0 8px 20px #0009;
+}
+.kc-armory-popup .doll-card h3 { margin: 0; font: 700 18px 'Cinzel', Georgia, serif; color: var(--ivory); }
+.kc-armory-popup .doll-card.doll-spare h3 { color: #ffcf6e; text-shadow: 0 0 8px #ff9a3a66; }
+.kc-armory-popup .doll-spare.stash-cell { border-color: #a8803e; }
+.kc-armory-popup .doll-slotname { margin: 0 0 6px; font-size: 13px; color: var(--muted); text-transform: capitalize; }
+.kc-armory-popup .doll-bonuses { margin: 0; font-size: 15px; color: #e1c390; }
+.kc-armory-popup .doll-desc { margin: 4px 0 0; font-size: 14px; font-style: italic; color: var(--muted); }
+.kc-armory-popup .doll-card h4 { margin: 10px 0 4px; font: 600 12px 'Cinzel', Georgia, serif; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.kc-armory-popup .gear-deltas { gap: 2px; margin: 0; }
+.kc-armory-popup .gear-deltas > div { padding: 3px 0; }
+.kc-armory-popup .gear-deltas dt { font-size: 14px; }
+.kc-armory-popup .gear-deltas dd { font-size: 15px; }
+.kc-armory-popup .gear-deltas .stat-benefit dd strong, .kc-armory-popup .gear-deltas .stat-benefit dd small { color: #9dd17a; }
+.kc-armory-popup .gear-deltas .stat-tradeoff dd strong, .kc-armory-popup .gear-deltas .stat-tradeoff dd small { color: #ff8e72; }
+.kc-armory-popup #armory-equip { margin-top: 10px; font-size: 15px; padding: 8px 14px; }
+.kc-armory-popup .doll-result { min-height: 1.2em; margin: 6px 0 0; font-size: 13px; color: #9dd17a; }
+@media (max-height: 640px), (max-width: 760px) {
+  .kc.kc-armory-popup { --cell: 48px; --art: 38px; }
+  .kc-armory-popup .doll { grid-template-columns: 210px minmax(0, 1fr); gap: 10px 14px; }
+  .kc-armory-popup .doll-figure { width: 200px; height: 300px; }
+  .kc-armory-popup .doll-stats { width: 200px; }
 }
 /* Equip reads as the action it is (Kiln Courier's dark button looks disabled on this panel). */
 .kc-armory-popup #armory-equip:not(:disabled) {
