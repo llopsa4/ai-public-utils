@@ -58,6 +58,25 @@ const KNOCK: Command[] = [
   flag('knocked'), flag('metBryn'), go('workshop', 'fromRoad'),
 ];
 
+/** A creature from the tunnel pool comes out of `from` and lands at `land`; then the fight. */
+const critter = (from: Point, land: Point): Command => ({ type: 'creatureFight', pool: 'tunnel', from, land });
+
+/** The grate: the gauntlet levers it open, and something was nesting behind it. */
+const PRY_GRATE: Command[] = [
+  say('line2.gratePry'), shake(300), flag('grateOpen'), say('line2.grateNest'),
+  critter({ x: 465, y: 240 }, { x: 420, y: 300 }), flag('tunnel1Clear'), say('line2.tunnel1After'),
+];
+/** The right valve: the steam dies, and the sudden quiet wakes what slept in the warm pipe. */
+const RIGHT_VALVE: Command[] = [
+  say('line2.copperTurn'), flag('steamOff'), wait(500), say('line2.pipeWakes'),
+  critter({ x: 580, y: 140 }, { x: 500, y: 300 }), flag('tunnel2Clear'), say('line2.tunnel2After'),
+];
+/** The rope: the bridge drops, the nest basket falls into the pit, and its owner climbs out. */
+const CUT_ROPE: Command[] = [
+  say('line2.ropeCut'), shake(400), flag('bridgeDown'), wait(400), say('line2.nestFalls'),
+  critter({ x: 400, y: 340 }, { x: 290, y: 310 }), flag('tunnel3Clear'), say('line2.tunnel3After'),
+];
+
 /** Chapter 2's click rules, first match wins (src/engine/rules.ts); unmatched clicks get `fallback`. */
 export const RULES: readonly Rule[] = [
   // ------------------------------------------------------------ secrets ---
@@ -72,6 +91,67 @@ export const RULES: readonly Rule[] = [
   ...inventoryItem('regulator', ({ state }) => [say(state.flags.recordsRead ? 'line2.regulatorAfter' : 'line2.regulatorLook')]),
   ...inventoryItem('bread', [say('line.breadLook')]),
   ...inventoryItem('scarf', [say('line.scarfLook')]),
+
+  // ------------------------------------------------- the collapsed tunnel ---
+  { target: 'grate', verb: 'look', when: F('tunnel1Clear'), do: [say('line2.grateLookOpen')] },
+  { target: 'grate', verb: 'look', do: [say('line2.grateLook')] },
+  { target: 'grate', verb: 'go', when: F('tunnel1Clear'), walk: true, do: [go('tunnelSteam', 'start')] },
+  // Opened but the fight not won (a reload mid-fight): whatever was in the nest is still there.
+  { target: 'grate', verb: ['go', 'use', 'open'], when: [{ flag: 'grateOpen' }, { notFlag: 'tunnel1Clear' }], walk: true, do: PRY_GRATE.slice(3) },
+  { target: 'grate', item: 'gauntlet', when: NOT('grateOpen'), walk: true, do: PRY_GRATE },
+  { target: 'grate', verb: ['use', 'open', 'go'], walk: true, do: [say('line2.grateHands')] },
+  { target: 'rubble', verb: 'look', do: [say('line2.rubbleLook')] },
+  { target: 'rubble', do: [say('line2.rubbleGo')] },
+  { target: 'lamp1', verb: 'look', do: [say('line2.lampLook')] },
+  { target: 'pipes1', verb: 'look', do: [say('line2.pipesLook')] },
+  { target: 'pipes1', verb: 'use', do: [say('line2.pipesUse')] },
+  { target: 'puddles', verb: 'look', do: [say('line2.puddlesLook')] },
+
+  // ---------------------------------------------------- the steam junction ---
+  { target: 'leakPipe', verb: 'look', do: [say('line2.leakPipeLook')] },
+  { target: 'leakPipe', verb: 'use', do: [say('line2.leakPipeUse')] },
+  { target: 'gauge2', verb: 'look', when: F('steamOff'), do: [say('line2.gaugeLookOff')] },
+  { target: 'gauge2', verb: 'look', do: [say('line2.gaugeLook')] },
+  { target: 'gauge2', do: [say('line2.gaugeUse')] },
+  { target: 'gauge2', item: 'regulator', do: [say('line2.gaugeRegulator')] },
+  { target: 'copperValve', verb: 'look', do: [say('line2.copperLook')] },
+  { target: 'ironValve', verb: 'look', do: [say('line2.ironLook')] },
+  { target: ['copperValve', 'ironValve'], verb: ['use', 'open'], when: F('steamOff'), walk: true, do: [say('line2.valvesDone')] },
+  { target: 'copperValve', verb: ['use', 'open'], walk: true, do: RIGHT_VALVE },
+  { target: 'copperValve', item: 'gauntlet', walk: true, when: NOT('steamOff'), do: RIGHT_VALVE },
+  { target: 'ironValve', verb: ['use', 'open'], walk: true, do: [say('line2.ironTurn'), { type: 'hurt', amount: 5 }, flag('scalded'), say('line2.scald')] },
+  { target: 'ironValve', item: 'gauntlet', walk: true, do: [say('line2.ironTurn'), { type: 'hurt', amount: 5 }, flag('scalded'), say('line2.scald')] },
+  { target: 'steamJet', verb: 'look', when: F('steamOff'), do: [say('line2.steamGoneLook')] },
+  { target: 'steamJet', verb: 'look', do: [say('line2.steamLook')] },
+  { target: 'steamJet', when: NOT('steamOff'), do: [say('line2.steamBlocks')] },
+  { target: 'steamJet', do: [say('line2.steamGoneLook')] },
+  { target: 'passage', verb: 'look', do: [say('line2.passageLook')] },
+  { target: 'passage', verb: 'go', when: F('tunnel2Clear'), walk: true, do: [go('tunnelCistern', 'start')] },
+  { target: 'passage', verb: 'go', when: [{ flag: 'steamOff' }, { notFlag: 'tunnel2Clear' }], walk: true, do: RIGHT_VALVE.slice(4) },
+  { target: 'passage', verb: 'go', do: [say('line2.steamBlocks')] },
+  { target: 'steamBack', verb: 'look', do: [say('line2.wayBackLook')] },
+  { target: 'steamBack', verb: 'go', walk: true, do: [go('tunnelCollapse', 'fromSteam')] },
+
+  // ------------------------------------------------------- the ash cistern ---
+  { target: ['rope', 'cleat'], verb: 'look', when: F('bridgeDown'), do: [say('line2.ropeLookCut')] },
+  { target: 'rope', verb: 'look', do: [say('line2.ropeLook')] },
+  { target: 'cleat', verb: 'look', do: [say('line2.cleatLook')] },
+  { target: ['rope', 'cleat'], item: 'gauntlet', when: NOT('bridgeDown'), walk: true, do: CUT_ROPE },
+  { target: ['rope', 'cleat'], when: NOT('bridgeDown'), walk: true, do: [say('line2.ropeHands')] },
+  { target: ['rope', 'cleat'], do: [say('line2.ropeLookCut')] },
+  { target: 'basket', verb: 'look', when: F('bridgeDown'), do: [say('line2.basketGone')] },
+  { target: 'basket', verb: 'look', do: [say('line2.basketLook')] },
+  { target: 'basket', do: [say('line2.basketReach')] },
+  { target: 'bridge', verb: 'look', when: F('bridgeDown'), do: [say('line2.bridgeDownLook')] },
+  { target: 'bridge', do: [say('line2.bridgeLook')] },
+  { target: 'pit', verb: 'look', do: [say('line2.pitLook')] },
+  { target: 'pit', do: [say('line2.pitGo')] },
+  { target: 'farLedge', verb: 'look', do: [say('line2.farLedgeLook')] },
+  { target: 'farLedge', verb: 'go', when: F('tunnel3Clear'), walk: true, do: [say('line2.outOfTunnels'), go('road', 'start')] },
+  { target: 'farLedge', verb: 'go', when: [{ flag: 'bridgeDown' }, { notFlag: 'tunnel3Clear' }], walk: true, do: CUT_ROPE.slice(4) },
+  { target: 'farLedge', verb: 'go', do: [say('line2.pitGo')] },
+  { target: 'cisternBack', verb: 'look', do: [say('line2.wayBackLook')] },
+  { target: 'cisternBack', verb: 'go', walk: true, do: [go('tunnelSteam', 'fromCistern')] },
 
   // ---------------------------------------------------------------- Mara ---
   { target: 'hero', item: 'bread', do: [say('line2.breadEat')] },
@@ -157,7 +237,7 @@ export const RULES: readonly Rule[] = [
   { target: 'table', verb: 'look', do: [say('line2.tableLook')] },
   { target: 'table', verb: ['use', 'take'], do: [say('line2.tableUse')] },
   { target: 'cot', verb: 'look', do: [say('line2.cotLook')] },
-  { target: 'cot', verb: 'use', walk: true, do: [pose('hero', 'dead'), wait(900), say('line2.cotUse'), pose('hero', 'stand'), flag('rested')] },
+  { target: 'cot', verb: 'use', walk: true, do: [pose('hero', 'dead'), wait(900), say('line2.cotUse'), { type: 'heal' }, pose('hero', 'stand'), flag('rested')] },
   { target: 'toWorkshop', verb: 'look', do: [say('line2.toWorkshopLook')] },
   { target: 'toWorkshop', verb: 'go', walk: true, do: [go('workshop', 'fromBackroom')] },
 

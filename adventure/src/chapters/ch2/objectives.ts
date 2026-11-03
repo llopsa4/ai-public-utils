@@ -7,6 +7,9 @@ import type { Objective } from '../types';
  * chapters.
  */
 const STEPS: { key: string; done: (s: GameState) => boolean; optional?: boolean }[] = [
+  { key: 'obj.grate', done: s => !!s.flags.tunnel1Clear },
+  { key: 'obj.steam', done: s => !!s.flags.tunnel2Clear },
+  { key: 'obj.bridge', done: s => !!s.flags.tunnel3Clear },
   { key: 'obj.knock', done: s => !!s.flags.knocked },
   { key: 'obj.spar', done: s => !!s.flags.sparred },
   { key: 'obj.listen', done: s => !!s.flags.namedNeed },

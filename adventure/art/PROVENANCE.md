@@ -35,7 +35,7 @@ Room backgrounds, foreground cut-outs, props and the background people's sheets 
 
 Chapter 2's art (placeholders, `art/src/ch2/` and two fight pictures in `art/src/kc/`):
 - `ch2/rooms/workshop.png` comes from `FFCardGame/assets/opening/tempering-house.png` (`art/ch2.mjs`: fitted to 1280×720, 96 colours).
-- `ch2/rooms/road.png` and `ch2/rooms/backroom.png` are painted from scratch as SVG scenes (`art/ch2.mjs`).
+- `ch2/rooms/road.png`, `ch2/rooms/backroom.png` and the three tunnels (`ch2/rooms/tunnel-*.png`) are painted from scratch as SVG scenes (`art/ch2.mjs`), as are the tunnels' object sheets (`ch2/objects/`: grate, steam, bridge, basket) and the four tunnel creatures (`ch2/creatures/`: a fight picture and a small room sprite each).
 - `ch2/characters/bryn.*` and `ch2/portraits/bryn.png` are Iven's illustration (`opening/iven.png`) recoloured and re-dressed: a dark red kerchief, red-brown clothes, leather plates. It is rigged like Nell (`art/rig.mjs`, `RIGS.bryn` with a `variant`).
 - `kc/tempering-house.webp` (the sparring backdrop) and `kc/ash-sweeper.webp` (the training rig) are `opening/tempering-house.png` and `opening/ash-sweeper.png` (`art/kc.mjs`).
 

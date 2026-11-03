@@ -1,0 +1,73 @@
+{
+ "frames": [
+  {
+   "filename": "0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 80,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 80,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 80,
+    "h": 90
+   },
+   "duration": 100
+  },
+  {
+   "filename": "1",
+   "frame": {
+    "x": 80,
+    "y": 0,
+    "w": 80,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 80,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 80,
+    "h": 90
+   },
+   "duration": 100
+  }
+ ],
+ "meta": {
+  "app": "adventure art/ch2.mjs",
+  "version": "1",
+  "image": "basket.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 160,
+   "h": 90
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "hanging",
+    "from": 0,
+    "to": 0,
+    "direction": "forward"
+   },
+   {
+    "name": "gone",
+    "from": 1,
+    "to": 1,
+    "direction": "forward"
+   }
+  ]
+ }
+}

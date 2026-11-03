@@ -1,5 +1,5 @@
 import type { Chapter } from '../types';
-import { ENCOUNTERS, REWARDS, SPARES } from './combat';
+import { ENCOUNTERS, POOLS, REWARDS, SPARES } from './combat';
 import { DIALOGUES } from './dialogue';
 import { FLAGS, ITEMS, KEPT_ITEMS, MET_FLAGS, SECRET_FLAGS, START_ITEMS } from './flags';
 import { ACTOR_VERBS, ITEM_VERBS, interact } from './interactions';
@@ -9,7 +9,8 @@ import { STORY } from './story';
 import strings from './strings.en.json';
 
 /**
- * Chapter 2, Tempered Flow: Bryn's tempering house on the road out of Cinderfold country. Played
+ * Chapter 2, Tempered Flow: the tunnels under the ashways, then Bryn's tempering house on the road
+ * out of Cinderfold country. Played
  * only in debug mode for now (?debug). Its art loads with it (./art.ts), only in the browser.
  */
 export const CH2: Chapter = {
@@ -34,6 +35,7 @@ export const CH2: Chapter = {
   extras: [],
   encounters: ENCOUNTERS,
   rewards: REWARDS,
+  encounterPools: POOLS,
   spares: SPARES,
   objectives,
   objectiveKeys: OBJECTIVE_KEYS,

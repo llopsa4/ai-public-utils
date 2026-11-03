@@ -138,6 +138,59 @@ A new painting should put the things on the list where the reference image shows
 - The name board hangs from (660, 176) (about 200×72); it is painted by the game, so leave a quiet patch of wall there.
 - Flickering light pools at (848, 300): lamps, kiln mouths, hearths in the painting.
 
+### Collapsed Tunnel: `ch2/rooms/tunnel-collapse.png`
+
+![tunnelCollapse](spec/tunnel-collapse.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `grate` | rusted grate | 864, 350, 132×152 | (930, 532) |
+| `rubble` | rubble | 0, 260, 260×380 | — |
+| `lamp1` | lamp | 612, 80, 56×48 | — |
+| `pipes1` | pipes | 0, 12, 1280×68 | — |
+| `puddles` | puddles | 300, 600, 800×116 | — |
+
+- Object `ch2/objects/grate` (240×150, tags closed (1), open (1)): foot point (930, 502). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- The name board hangs from (400, 88) (about 220×64); it is painted by the game, so leave a quiet patch of wall there.
+- Flickering light pools at (640, 104): lamps, kiln mouths, hearths in the painting.
+
+### Steam Junction: `ch2/rooms/tunnel-steam.png`
+
+![tunnelSteam](spec/tunnel-steam.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `copperValve` | copper valve | 500, 300, 64×64 | (530, 524) |
+| `ironValve` | iron valve | 640, 300, 64×64 | (670, 524) |
+| `gauge2` | gauge | 576, 206, 48×48 | (600, 524) |
+| `steamJet` | steam | 1050, 300, 140×280 | (940, 592) |
+| `leakPipe` | leaking pipe | 760, 216, 400×76 | — |
+| `passage` | passage | 1200, 340, 80×220 | (1224, 592) |
+| `steamBack` | way back | 0, 360, 60×200 | (60, 592) |
+
+- Object `ch2/objects/steam` (280×260, tags on (1), off (1)): foot point (1120, 580). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- The name board hangs from (880, 88) (about 240×64); it is painted by the game, so leave a quiet patch of wall there.
+- Flickering light pools at (300, 104): lamps, kiln mouths, hearths in the painting.
+
+### Ash Cistern: `ch2/rooms/tunnel-cistern.png`
+
+![tunnelCistern](spec/tunnel-cistern.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `cleat` | cleat | 536, 476, 68×48 | (524, 580) |
+| `rope` | rope | 556, 120, 28×356 | (524, 580) |
+| `basket` | basket | 760, 152, 84×92 | — |
+| `bridge` | drawbridge | 896, 300, 52×224 | — |
+| `pit` | pit | 660, 510, 300×210 | — |
+| `farLedge` | far ledge | 960, 300, 320×420 | (636, 600) |
+| `cisternBack` | way back | 0, 360, 60×200 | (60, 600) |
+
+- Object `ch2/objects/bridge` (640×220, tags up (1), down (1)): foot point (816, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `ch2/objects/basket` (160×90, tags hanging (1), gone (1)): foot point (800, 244). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- The name board hangs from (320, 208) (about 220×64); it is painted by the game, so leave a quiet patch of wall there.
+- Flickering light pools at (160, 104), (1180, 330): lamps, kiln mouths, hearths in the painting.
+
 ### Bryn's Road: `ch2/rooms/road.png`
 
 ![road](spec/road.jpg)
@@ -173,7 +226,7 @@ A new painting should put the things on the list where the reference image shows
 | `toRoad` | Out to the road | 1220, 360, 60×240 | (1224, 540) |
 
 - Bryn stands at (880, 504).
-- The name board hangs from (600, 224) (about 220×60); it is painted by the game, so leave a quiet patch of wall there.
+- The name board hangs from (810, 252) (about 220×60); it is painted by the game, so leave a quiet patch of wall there.
 - Flickering light pools at (744, 156), (380, 120): lamps, kiln mouths, hearths in the painting.
 
 ### Back Room: `ch2/rooms/backroom.png`

@@ -1,11 +1,12 @@
 // Chapter 2's rooms (placeholders until Codex art is imported; see art/briefs):
 // - the workshop, from Kiln Courier's tempering-house painting (../FFCardGame/assets), fitted to
 //   1280x720 and palette-reduced like chapter 1's rooms;
-// - the road and the back room, painted from scratch as SVG scenes (like art/tent.mjs).
+// - the road, the back room and the three tunnels, painted from scratch as SVG scenes (like
+//   art/tent.mjs), with the tunnels' changing parts as object sheets and the four tunnel creatures.
 // Coordinates are art pixels (2x the 640x360 world); the layouts match src/chapters/ch2/rooms.ts.
 //
 //   node art/ch2.mjs   (part of npm run art; then npm run webp)
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -118,4 +119,134 @@ const render = (body) => sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/s
   s += rect(1150, 230, 120, 300, '#2a1a10') + rect(1160, 240, 104, 290, 'url(#wood)') + circle(1176, 390, 7, '#c9a15a');
   await save('backroom', render(s));
 }
-console.log('Chapter 2 rooms written to art/src/ch2/rooms.');
+// ------------------------------------------------------------- the tunnels (chapter 2's crossing) ---
+// Three dark service tunnels under the ashways, lit by failing lamps (and, in the game, Mara's
+// gauntlet). Their changing parts (grate, steam jet, drawbridge, nest basket) are object sheets.
+const tunnelBase = (glowX) => {
+  let s = rect(0, 0, W, H, '#0e0b0a');
+  // Brick vault receding to a dark far wall.
+  s += poly([[0, 0], [W, 0], [W, 120], [880, 240], [400, 240], [0, 120]], '#1e1714');
+  s += poly([[0, 120], [400, 240], [400, 500], [0, 560]], '#241c17') + poly([[W, 120], [880, 240], [880, 500], [W, 560]], '#211a15');
+  s += rect(400, 240, 480, 260, '#15110e');
+  s += stones(0, 120, 400, 540, '#0a0706') + stones(880, 120, W, 540, '#0a0706') + stones(400, 240, 880, 500, '#0a0706');
+  // Floor: wet stone with puddles.
+  s += poly([[0, 560], [400, 500], [880, 500], [W, 560], [W, H], [0, H]], '#2a221c');
+  for (let n = 0; n < 30; n++) s += ellipse(rnd() * W, 540 + rnd() * 170, 30 + rnd() * 70, 4 + rnd() * 6, '#5a6a70', `opacity="${0.12 + rnd() * 0.18}"`);
+  // Pipes along the ceiling.
+  s += rect(0, 18, W, 30, '#3a2e26') + rect(0, 58, W, 18, '#2e241e');
+  for (let x = 60; x < W; x += 210) s += rect(x, 12, 16, 70, '#4a3a2e');
+  // A failing lamp.
+  s += rect(glowX - 12, 84, 24, 30, '#3a2a1e') + rect(glowX - 8, 92, 16, 18, '#ffc870') + ellipse(glowX, 110, 160, 110, 'url(#warm)', 'opacity="0.45"');
+  return s;
+};
+const darken = '<rect width="1280" height="720" fill="#000" opacity="0.18"/>';
+{
+  // 1. The collapsed tunnel: rubble down on the way back (left), the grate at the far end (the way on).
+  let s = tunnelBase(640);
+  s += poly([[0, 300], [80, 260], [190, 330], [240, 470], [260, 600], [0, 640]], '#3a302a');
+  for (let n = 0; n < 24; n++) s += poly([[rnd() * 230, 300 + rnd() * 320], [rnd() * 230 + 30, 310 + rnd() * 320], [rnd() * 230 + 10, 340 + rnd() * 320]], '#4e4238', `opacity="${0.6 + rnd() * 0.4}"`);
+  s += rect(860, 330, 140, 170, '#0a0706');
+  await save('tunnel-collapse', render(s + darken));
+}
+{
+  // 2. The steam junction: two valve wheels (copper, iron) under a gauge; the leaking pipe with a
+  //    copper band leading back to the copper valve; the passage on (right), the way back (left).
+  let s = tunnelBase(300);
+  s += rect(760, 220, 400, 70, '#4a3a2e') + rect(760, 230, 400, 12, '#b87333') + line(780, 236, 540, 236, '#b87333', 10) + line(540, 236, 540, 300, '#b87333', 10);
+  s += rect(500, 300, 80, 60, '#3a2e26') + circle(530, 330, 26, 'none', 'stroke="#b87333" stroke-width="8"') + line(504, 330, 556, 330, '#b87333', 6) + line(530, 304, 530, 356, '#b87333', 6);
+  s += rect(640, 300, 80, 60, '#3a2e26') + circle(670, 330, 26, 'none', 'stroke="#6a7a88" stroke-width="8"') + line(644, 330, 696, 330, '#6a7a88', 6) + line(670, 304, 670, 356, '#6a7a88', 6);
+  s += circle(600, 230, 24, '#d8c8a0') + line(600, 230, 614, 218, '#7a2e1e', 4);
+  s += rect(1200, 340, 80, 220, '#0a0706') + rect(0, 360, 60, 200, '#0a0706');
+  await save('tunnel-steam', render(s + darken));
+}
+{
+  // 3. The ash cistern: a pit across the floor (centre), the far ledge and the road beyond (right),
+  //    a pulley over the pit with the counterweight rope tied to a cleat (left of the pit).
+  let s = tunnelBase(160);
+  s += poly([[660, 500], [960, 500], [980, H], [640, H]], '#050404') + poly([[660, 500], [960, 500], [952, 520], [668, 520]], '#3a302a');
+  s += rect(960, 360, 320, 360, '#2a221c') + ellipse(1180, 330, 140, 90, '#8a7a6a', 'opacity="0.25" filter="url(#softer)"');
+  s += circle(800, 120, 20, '#4a3a2e') + line(800, 120, 570, 120, '#6a5a40', 4) + line(570, 120, 570, 520, '#8a7a50', 5);
+  s += rect(552, 500, 36, 14, '#4a3a2e');
+  await save('tunnel-cistern', render(s + darken));
+}
+
+// Object sheets: frames side by side, Aseprite JSON with one tag per state (src/game/assets.ts).
+const outObj = join(here, 'src', 'ch2', 'objects');
+mkdirSync(outObj, { recursive: true });
+async function objectSheet(name, w, h, frames) {
+  if (isFinal(`ch2/objects/${name}.png`)) return;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${w * frames.length}" height="${h}">${defs}${frames.map(([, body], i) => `<g transform="translate(${i * w} 0)">${body}</g>`).join('')}</svg>`;
+  await sharp(Buffer.from(svg)).png({ palette: true, colours: 64 }).toFile(join(outObj, `${name}.png`));
+  const json = {
+    frames: frames.map((_, i) => ({ filename: String(i), frame: { x: i * w, y: 0, w, h }, rotated: false, trimmed: false, spriteSourceSize: { x: 0, y: 0, w, h }, sourceSize: { w, h }, duration: 100 })),
+    meta: { app: 'adventure art/ch2.mjs', version: '1', image: `${name}.png`, format: 'RGBA8888', size: { w: w * frames.length, h }, scale: '1',
+      frameTags: frames.map(([tag], i) => ({ name: tag, from: i, to: i, direction: 'forward' })) },
+  };
+  writeFileSync(join(outObj, `${name}.json`), JSON.stringify(json, null, 1) + '\n');
+}
+const bars = (open) => {
+  let s = rect(0, 0, 120, 150, '#2a221c') + rect(6, 6, 108, 144, '#0a0706');
+  if (open) return s + poly([[6, 6], [40, 20], [40, 150], [6, 150]], '#5a4a3a');
+  for (let x = 14; x < 112; x += 16) s += rect(x, 6, 6, 144, '#6a5a48');
+  s += rect(6, 40, 108, 6, '#6a5a48') + rect(6, 100, 108, 6, '#6a5a48');
+  for (let n = 0; n < 10; n++) s += ellipse(10 + rnd() * 100, 110 + rnd() * 40, 10 + rnd() * 14, 8 + rnd() * 8, '#4e4238');
+  return s;
+};
+await objectSheet('grate', 120, 150, [['closed', bars(false)], ['open', bars(true)]]);
+let jet = '';
+for (let n = 0; n < 9; n++) jet += ellipse(70 + (rnd() - 0.5) * 40, 260 - n * 28, 26 + n * 4, 22, '#e8e4e0', `opacity="${0.55 - n * 0.04}" filter="url(#soft)"`);
+await objectSheet('steam', 140, 260, [['on', jet], ['off', '']]);
+const bridgeUp = rect(250, 0, 30, 220, '#5a4030') + rect(256, 0, 18, 220, '#7a5a3a') + line(265, 10, 100, 0, '#8a7a50', 4);
+const bridgeDown = rect(10, 196, 300, 24, '#7a5a3a') + rect(10, 192, 300, 6, '#5a4030') + [40, 110, 180, 250].map(x => rect(x, 192, 8, 28, '#3a2a1e')).join('');
+await objectSheet('bridge', 320, 220, [['up', bridgeUp], ['down', bridgeDown]]);
+const basket = rect(36, 0, 6, 30, '#8a7a50') + poly([[6, 30], [74, 30], [64, 88], [16, 88]], '#6a4a2a') + [40, 52, 66].map(y => line(10, y, 70, y, '#4a3020', 3)).join('') + ellipse(40, 32, 30, 8, '#3a2a1e');
+await objectSheet('basket', 80, 90, [['hanging', basket], ['gone', '']]);
+
+// The four tunnel creatures (placeholders): a fight picture 768 tall, the creature trimmed to exactly
+// 60% of the height and standing 4% above the bottom (the fight screen's `ink`, src/kc/presentation.ts),
+// as wide as it needs; and a small sprite for their entrance in the room.
+const outCr = join(here, 'src', 'ch2', 'creatures');
+mkdirSync(outCr, { recursive: true });
+const eye = (x, y, r = 7) => circle(x, y, r + 5, '#ff7a20', 'opacity="0.5" filter="url(#soft)"') + circle(x, y, r, '#ffb040');
+const rat = (x, y, k = 1, flip = 1) => `<g transform="translate(${x} ${y}) scale(${k * flip} ${k})">
+  <path d="M-140 -10 C-260 -30 -300 -120 -230 -150" fill="none" stroke="#6a4a3a" stroke-width="12" stroke-linecap="round"/>
+  ${ellipse(0, -70, 150, 80, '#4a3e38')}${ellipse(30, -95, 110, 50, '#5a4e46')}
+  ${poly([[110, -110], [230, -60], [120, -30]], '#5a4e46')}${circle(228, -60, 9, '#2a1a14')}
+  ${ellipse(110, -130, 26, 34, '#6a5a52')}${ellipse(110, -128, 14, 20, '#a87a6a')}
+  ${eye(160, -85)}
+  ${[-90, -30, 40, 90].map(dx => rect(dx, -20, 16, 26, '#3a2e28')).join('')}
+  ${[...Array(9)].map((_, i) => line(-120 + i * 26, -140, -110 + i * 26, -152, '#7a6a5a', 4)).join('')}
+</g>`;
+const mite = (x, y, k) => `<g transform="translate(${x} ${y}) scale(${k})">
+  ${ellipse(0, -30, 46, 30, '#5a5650')}${[...Array(6)].map((_, i) => line(-40 + i * 16, -10, -54 + i * 22, 14, '#3a3632', 5)).join('')}
+  ${[...Array(5)].map((_, i) => poly([[-36 + i * 18, -52], [-28 + i * 18, -76], [-20 + i * 18, -52]], '#7a746a')).join('')}
+  ${eye(30, -36, 5)}${circle(-10, -30, 4, '#ff8a30')}
+</g>`;
+const beetle = `<g transform="translate(384 736)">
+  ${[...Array(6)].map((_, i) => line(-160 + i * 64, -40, -200 + i * 80, 0, '#2a2018', 12)).join('')}
+  ${ellipse(0, -150, 230, 140, '#3a2a1e')}
+  <path d="M-220 -150 Q0 -330 220 -150 Q0 -190 -220 -150 Z" fill="#b87333"/><path d="M0 -290 L0 -150" stroke="#6a4020" stroke-width="10"/>
+  ${[...Array(5)].map((_, i) => circle(-140 + i * 70, -200 + (i % 2) * 20, 10, '#d8a060')).join('')}
+  ${ellipse(240, -120, 60, 46, '#2a2018')}${eye(262, -128, 9)}${poly([[290, -110], [370, -90], [296, -80]], '#5a4030')}
+</g>`;
+const CREATURES = {
+  'cinder-rat': rat(384, 736, 1.25),
+  'rat-pack': rat(220, 736, 0.8) + rat(520, 716, 0.75, -1) + rat(380, 640, 0.6),
+  'ash-mites': [[200, 736, 1.6], [400, 716, 1.9], [580, 736, 1.5], [300, 620, 1.2], [500, 600, 1.1], [390, 520, 1]].map(([x, y, k]) => mite(x, y, k)).join(''),
+  'pipe-beetle': beetle,
+};
+for (const [id, body] of Object.entries(CREATURES)) {
+  if (isFinal(`ch2/creatures/${id}.png`)) continue;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="768" height="768">${defs}${body}</svg>`;
+  const trimmed = await sharp(Buffer.from(svg)).trim({ threshold: 1 }).png().toBuffer();
+  const inked = Math.round(768 * 0.6), floor = Math.round(768 * 0.04);
+  const fitted = await sharp(trimmed).resize({ height: inked }).png().toBuffer();
+  const { width } = await sharp(fitted).metadata();
+  const w = width + 40;
+  await sharp({ create: { width: w, height: 768, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
+    .composite([{ input: fitted, left: 20, top: 768 - floor - inked }]).webp({ quality: 82, alphaQuality: 90 }).toFile(join(outCr, `${id}.webp`));
+  // The room sprite: the creature alone, 120 tall (shown at up to 0.4, about 48 world units).
+  await sharp(trimmed).resize({ height: 120 }).png({ palette: true, colours: 64 }).toFile(join(outCr, `${id}.png`));
+}
+
+console.log('Chapter 2 rooms, objects and creatures written to art/src/ch2.');

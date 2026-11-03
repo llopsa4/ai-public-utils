@@ -5,7 +5,7 @@ const rect = (x: number, y: number, w: number, h: number): Polygon => [
 ];
 const pt = (x: number, y: number): Point => ({ x, y });
 
-// Placeholder art: the road and the back room are painted in code (art/ch2.mjs) to fit these
+// Placeholder art: the tunnels, the road and the back room are painted in code (art/ch2.mjs) to fit these
 // spots; the workshop is Kiln Courier's tempering-house painting. Hotspots are tested in list
 // order: put small things before large ones they overlap.
 
@@ -32,6 +32,35 @@ const workshopHotspots: HotspotDef[] = [
   { id: 'toRoad', name: 'name2.toRoad', polygon: rect(610, 180, 30, 120), verbs: ['look', 'go'], walkTo: pt(612, 270), face: 'right' },
 ];
 
+// The tunnels (painted in code, art/ch2.mjs): dark, lit by a failing lamp and Mara's gauntlet.
+const collapseHotspots: HotspotDef[] = [
+  { id: 'grate', name: 'name2.grate', polygon: rect(432, 175, 66, 76), verbs: ['look', 'open', 'use', 'go'], walkTo: pt(465, 266), face: 'up' },
+  { id: 'rubble', name: 'name2.rubble', polygon: rect(0, 130, 130, 190), verbs: ['look', 'use', 'go'] },
+  { id: 'lamp1', name: 'name2.lamp', polygon: rect(306, 40, 28, 24), verbs: ['look'] },
+  { id: 'pipes1', name: 'name2.ceilingPipes', polygon: rect(0, 6, 640, 34), verbs: ['look', 'use'] },
+  { id: 'puddles', name: 'name2.puddles', polygon: rect(150, 300, 400, 58), verbs: ['look'] },
+];
+
+const steamHotspots: HotspotDef[] = [
+  { id: 'copperValve', name: 'name2.copperValve', polygon: rect(250, 150, 32, 32), verbs: ['look', 'use', 'open'], walkTo: pt(265, 262), face: 'up' },
+  { id: 'ironValve', name: 'name2.ironValve', polygon: rect(320, 150, 32, 32), verbs: ['look', 'use', 'open'], walkTo: pt(335, 262), face: 'up' },
+  { id: 'gauge2', name: 'name2.gauge', polygon: rect(288, 103, 24, 24), verbs: ['look', 'use'], walkTo: pt(300, 262), face: 'up' },
+  { id: 'steamJet', name: 'name2.steamJet', polygon: rect(525, 150, 70, 140), verbs: ['look', 'use', 'go'], walkTo: pt(470, 296), face: 'right' },
+  { id: 'leakPipe', name: 'name2.leakPipe', polygon: rect(380, 108, 200, 38), verbs: ['look', 'use'] },
+  { id: 'passage', name: 'name2.passage', polygon: rect(600, 170, 40, 110), verbs: ['look', 'go'], walkTo: pt(612, 296), face: 'right' },
+  { id: 'steamBack', name: 'name2.wayBack', polygon: rect(0, 180, 30, 100), verbs: ['look', 'go'], walkTo: pt(30, 296), face: 'left' },
+];
+
+const cisternHotspots: HotspotDef[] = [
+  { id: 'cleat', name: 'name2.cleat', polygon: rect(268, 238, 34, 24), verbs: ['look', 'use', 'open'], walkTo: pt(262, 290), face: 'up' },
+  { id: 'rope', name: 'name2.rope', polygon: rect(278, 60, 14, 178), verbs: ['look', 'use', 'take'], walkTo: pt(262, 290), face: 'up' },
+  { id: 'basket', name: 'name2.basket', polygon: rect(380, 76, 42, 46), verbs: ['look', 'use', 'take'] },
+  { id: 'bridge', name: 'name2.bridge', polygon: rect(448, 150, 26, 112), verbs: ['look', 'use'] },
+  { id: 'pit', name: 'name2.pit', polygon: rect(330, 255, 150, 105), verbs: ['look', 'go'] },
+  { id: 'farLedge', name: 'name2.farLedge', polygon: rect(480, 150, 160, 210), verbs: ['look', 'go'], walkTo: pt(318, 300), face: 'right' },
+  { id: 'cisternBack', name: 'name2.wayBack', polygon: rect(0, 180, 30, 100), verbs: ['look', 'go'], walkTo: pt(30, 300), face: 'left' },
+];
+
 const backroomHotspots: HotspotDef[] = [
   { id: 'pouch', name: 'name2.pouch', polygon: rect(524, 150, 24, 34), verbs: ['look', 'open', 'take'], walkTo: pt(556, 290), face: 'up' },
   { id: 'map', name: 'name2.map', polygon: rect(280, 85, 115, 80), verbs: ['look', 'take'], walkTo: pt(340, 290), face: 'up' },
@@ -43,7 +72,73 @@ const backroomHotspots: HotspotDef[] = [
   { id: 'toWorkshop', name: 'name2.toWorkshop', polygon: rect(0, 110, 35, 165), verbs: ['look', 'go'], walkTo: pt(40, 292), face: 'left' },
 ];
 
+/** The tunnels' shared light and feel: a dim grade, Mara's gauntlet glow, damp stone underfoot. */
+const TUNNEL = {
+  surface: 'stone' as const,
+  music: 'tension' as const,
+  light: { tint: 0xb8aaa0, farDim: 0.7 },
+  heroLight: { r: 120, color: 0xff9040 },
+  look: { grade: { saturation: 0.85, brightness: 0.86, contrast: 1.1, warmth: 0.05 }, vignette: 0.6 },
+};
+const tunnelFloor = { outer: [pt(0, 282), pt(200, 254), pt(440, 254), pt(640, 282), pt(640, 358), pt(0, 358)], holes: [] };
+const tunnelScale = { farY: 254, farScale: 0.82, nearY: 358, nearScale: 1.08 };
+
 export const ROOMS: Record<string, RoomDef> = {
+  tunnelCollapse: {
+    id: 'tunnelCollapse',
+    background: 'room-tunnel-collapse',
+    ...TUNNEL,
+    // The rubble fills the left: he can't go back the way he came.
+    walkable: { outer: [pt(130, 300), pt(200, 256), pt(440, 256), pt(640, 284), pt(640, 358), pt(130, 358)], holes: [] },
+    scale: tunnelScale,
+    ambient: { particles: [{ kind: 'dust', x: 140, y: 60, w: 500, h: 200 }], glows: [{ x: 320, y: 52, r: 60, color: 0xffc870, warm: true }] },
+    sign: { x: 200, y: 44, drop: 10, w: 110, h: 22, style: 'iron' },
+    entries: {
+      start: { x: 180, y: 320, face: 'right' },
+      fromSteam: { x: 465, y: 272, face: 'down' },
+    },
+    objects: [{ id: 'grateObj', sheet: 'grate', x: 465, y: 251, depth: 200, flag: 'grateOpen', whenTrue: 'open', whenFalse: 'closed' }],
+    hotspots: collapseHotspots,
+    actors: [],
+  },
+  tunnelSteam: {
+    id: 'tunnelSteam',
+    background: 'room-tunnel-steam',
+    ...TUNNEL,
+    walkable: tunnelFloor,
+    scale: tunnelScale,
+    ambient: { particles: [{ kind: 'steam', x: 520, y: 150, w: 80, h: 130 }], glows: [{ x: 150, y: 52, r: 60, color: 0xffc870, warm: true }] },
+    sign: { x: 440, y: 44, drop: 10, w: 120, h: 22, style: 'iron' },
+    entries: {
+      start: { x: 50, y: 300, face: 'right' },
+      fromCistern: { x: 600, y: 300, face: 'left' },
+    },
+    objects: [{ id: 'steamObj', sheet: 'steam', x: 560, y: 290, depth: 600, flag: 'steamOff', whenTrue: 'off', whenFalse: 'on' }],
+    hotspots: steamHotspots,
+    actors: [],
+  },
+  tunnelCistern: {
+    id: 'tunnelCistern',
+    background: 'room-tunnel-cistern',
+    ...TUNNEL,
+    // The pit (centre) cuts the floor: the near side only, until the bridge is down.
+    walkable: { outer: [pt(0, 282), pt(200, 254), pt(326, 254), pt(326, 358), pt(0, 358)], holes: [] },
+    scale: tunnelScale,
+    ambient: {
+      particles: [{ kind: 'ash', x: 480, y: 120, w: 160, h: 140 }],
+      glows: [{ x: 80, y: 52, r: 60, color: 0xffc870, warm: true }, { x: 590, y: 165, r: 80, color: 0xc8c0d8 }],
+    },
+    sign: { x: 160, y: 104, drop: 10, w: 110, h: 22, style: 'iron' },
+    entries: {
+      start: { x: 50, y: 300, face: 'right' },
+    },
+    objects: [
+      { id: 'bridgeObj', sheet: 'bridge', x: 408, y: 262, depth: 250, flag: 'bridgeDown', whenTrue: 'down', whenFalse: 'up' },
+      { id: 'basketObj', sheet: 'basket', x: 400, y: 122, depth: 120, flag: 'bridgeDown', whenTrue: 'gone', whenFalse: 'hanging' },
+    ],
+    hotspots: cisternHotspots,
+    actors: [],
+  },
   road: {
     id: 'road',
     background: 'room-road',
@@ -109,5 +204,5 @@ export const ROOMS: Record<string, RoomDef> = {
   },
 };
 
-export const START_ROOM = 'road';
+export const START_ROOM = 'tunnelCollapse';
 export const START_ENTRY = 'start';

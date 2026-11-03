@@ -1,0 +1,73 @@
+{
+ "frames": [
+  {
+   "filename": "0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 140,
+    "h": 260
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 140,
+    "h": 260
+   },
+   "sourceSize": {
+    "w": 140,
+    "h": 260
+   },
+   "duration": 100
+  },
+  {
+   "filename": "1",
+   "frame": {
+    "x": 140,
+    "y": 0,
+    "w": 140,
+    "h": 260
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 140,
+    "h": 260
+   },
+   "sourceSize": {
+    "w": 140,
+    "h": 260
+   },
+   "duration": 100
+  }
+ ],
+ "meta": {
+  "app": "adventure art/ch2.mjs",
+  "version": "1",
+  "image": "steam.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 280,
+   "h": 260
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "on",
+    "from": 0,
+    "to": 0,
+    "direction": "forward"
+   },
+   {
+    "name": "off",
+    "from": 1,
+    "to": 1,
+    "direction": "forward"
+   }
+  ]
+ }
+}

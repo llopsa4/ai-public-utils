@@ -3,20 +3,20 @@ import { expect, test, type Page } from '@playwright/test';
 import { act, fightStep, idle, open, startNewGame, state } from './helpers';
 
 /** Runs an interaction and plays it through, winning any fight it starts. */
-async function actThroughFight(page: Page, verb: string, target: string, until: () => Promise<boolean>): Promise<void> {
+async function actThroughFight(page: Page, verb: string, target: string, until: () => Promise<boolean>, item?: string): Promise<void> {
   await idle(page);
-  await page.evaluate(([verb, target]) => {
+  await page.evaluate(([verb, target, item]) => {
     const { session, interact } = (window as any).adventure;
-    void session.scene.runScript(interact(session.state, verb, target));
-  }, [verb, target] as const);
+    void session.scene.runScript(interact(session.state, verb, target, item ?? undefined));
+  }, [verb, target, item ?? null] as const);
   for (let i = 0; i < 400 && !(await until()); i++) {
     if (await page.locator('#kc-root .combat-screen').isVisible().catch(() => false)) await fightStep(page);
     else { await page.evaluate(() => (window as any).adventure.session.ui.skip()); await page.waitForTimeout(200); }
   }
 }
 
-test('debug mode: chapter 2 plays from the road to its end card, and Bryn teaches Tempered Flow', async ({ page }) => {
-  test.setTimeout(240_000);
+test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn teaches Tempered Flow', async ({ page }) => {
+  test.setTimeout(420_000);
   const errors: string[] = [];
   await open(page, errors);
   await startNewGame(page);
@@ -26,7 +26,32 @@ test('debug mode: chapter 2 plays from the road to its end card, and Bryn teache
   await expect.poll(() => page.evaluate(() => (window as any).adventure.session.state.chapter), { timeout: 30_000 }).toBe('ch2');
   await idle(page);
   await page.keyboard.press('`');
-  expect((await state(page)).room).toBe('road');
+  expect((await state(page)).room).toBe('tunnelCollapse');
+  const full = () => page.evaluate(() => (window as any).adventure.session.state);
+  const settled = async (flag: string) => !!(await state(page)).flags[flag]
+    && await page.evaluate(() => !(window as any).adventure.session.scene.isBusy());
+
+  // The tunnels: each puzzle wakes a random creature, and each win leaves 4 salvage.
+  const salvage = (await full()).bag.salvage;
+  await act(page, 'use', 'grate');
+  expect((await state(page)).flags.grateOpen).toBeFalsy();
+  await actThroughFight(page, 'use', 'grate', () => settled('tunnel1Clear'), 'gauntlet');
+  await act(page, 'go', 'grate');
+  expect((await state(page)).room).toBe('tunnelSteam');
+  await act(page, 'go', 'passage');
+  expect((await state(page)).room).toBe('tunnelSteam');
+  // The wrong valve scalds him.
+  const before = (await full()).kit.hp;
+  await act(page, 'use', 'ironValve');
+  expect((await full()).kit.hp).toBe(before - 5);
+  await actThroughFight(page, 'use', 'copperValve', () => settled('tunnel2Clear'));
+  await act(page, 'go', 'passage');
+  expect((await state(page)).room).toBe('tunnelCistern');
+  await actThroughFight(page, 'use', 'rope', () => settled('tunnel3Clear'), 'gauntlet');
+  await act(page, 'go', 'farLedge');
+  const out = await full();
+  expect(out.room).toBe('road');
+  expect(out.bag.salvage).toBe(salvage + 12);
 
   await act(page, 'use', 'door');
   expect((await state(page)).room).toBe('workshop');
@@ -47,6 +72,9 @@ test('debug mode: chapter 2 plays from the road to its end card, and Bryn teache
   expect(tempered.kit.techniques).toEqual(['tempered-flow']);
   expect([tempered.kit.maxHp, tempered.kit.maxMp]).toEqual([66, 12]);
 
+  // Bryn's cot: health and MP back to full.
+  await act(page, 'use', 'cot');
+  expect((await full()).kit.hp).toBe(66);
   await act(page, 'use', 'hearth2');
   await act(page, 'use', 'pouch', 'notebook');
   await act(page, 'talk', 'bryn', undefined, [
