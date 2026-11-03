@@ -1,5 +1,5 @@
 import type { CardInstance, CardType, CharacterProfile, Loadout } from '../combat/types';
-import { STARTING_EQUIPMENT } from '../combat/gear';
+import { EQUIPMENT, STARTING_EQUIPMENT } from '../combat/gear';
 
 /**
  * Mara's fighting kit, the same in every chapter: health, MP, his deck (Kiln Courier's card rules,
@@ -14,6 +14,9 @@ export const STARTER_DECK: readonly CardType[] = ['strike', 'strike', 'strike', 
 export const STARTER_CARDS: readonly CardInstance[] = STARTER_DECK.map((type, i) => ({ type, id: `card-${i}` }));
 
 export { STARTING_EQUIPMENT };
+
+/** Every piece of gear in Kiln Courier's rules (the debug gear screen shows them all). */
+export const ALL_GEAR: readonly string[] = Object.keys(EQUIPMENT);
 
 /** Gear Mara starts with; the gauntlet is his mother's and cannot be swapped. */
 export const STARTING_OWNED = ['courier-gauntlet', 'patched-coat', 'plain-carrier'] as const;

@@ -60,9 +60,10 @@ export function isLocked(slot: EquipmentSlot): boolean {
 }
 
 /** Puts an owned item in its slot. False if it is not owned, not for that slot, or the slot is locked. */
-export function equip(kit: Kit, slot: EquipmentSlot, id: string): boolean {
+/** Puts an owned piece in its slot. `ignoreLock` (debug mode only) lets the locked gauntlet change too. */
+export function equip(kit: Kit, slot: EquipmentSlot, id: string, ignoreLock = false): boolean {
   const item = EQUIPMENT[id];
-  if (!item || item.slot !== slot || !kit.owned.includes(id) || isLocked(slot)) return false;
+  if (!item || item.slot !== slot || !kit.owned.includes(id) || (isLocked(slot) && !ignoreLock)) return false;
   const profile = withEquipment(maraProfile(kit), { ...kit.equipment, [slot]: { id } });
   kit.equipment = structuredClone(profile.equipment!);
   kit.mp = profile.mp;

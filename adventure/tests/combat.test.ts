@@ -107,6 +107,13 @@ test('gear: Oren\'s spares can be worn; the gauntlet stays; stats change as the 
   assert.equal(equip(s.kit, 'armor', 'light-armor'), true);
   assert.equal(equip(s.kit, 'utility', 'quick-harness'), true);
   assert.equal(equip(s.kit, 'gauntlet', 'courier-gauntlet'), false, 'the gauntlet slot is locked');
+  // Debug mode: the lock can be ignored, for a piece Mara owns.
+  s.kit.owned.push('heavy-gauntlet');
+  assert.equal(equip(s.kit, 'gauntlet', 'heavy-gauntlet'), false, 'still locked without the override');
+  assert.equal(equip(s.kit, 'gauntlet', 'heavy-gauntlet', true), true);
+  assert.equal(s.kit.equipment.gauntlet.id, 'heavy-gauntlet');
+  assert.ok(validKit(s.kit), 'a save with another gauntlet stays valid');
+  assert.equal(equip(s.kit, 'gauntlet', 'courier-gauntlet', true), true);
   assert.equal(equip(s.kit, 'armor', 'quick-harness'), false, 'wrong slot');
   assert.deepEqual(statsWith(s.kit), { power: 0, defense: 1, speed: 3, maxMp: 10, attackStrain: 0 });
   assert.equal(statsWith(s.kit, 'armor', 'patched-coat').defense, 0);

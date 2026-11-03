@@ -1,6 +1,7 @@
 // The gear screen (Kiln Courier's workshop) and Oren's forced first visit.
 import { t } from '../engine/i18n';
 import { EQUIPMENT } from '../combat/gear';
+import { ALL_GEAR } from '../content/kit';
 import { LOCKED_SLOTS, maraProfile } from '../content/kit';
 import { equip } from '../engine/kit';
 import { $, type Ui } from './ui';
@@ -43,15 +44,23 @@ export async function forceGear(ui: Ui): Promise<void> {
 export async function openGear(ui: Ui): Promise<void> {
   const kc = await import('../kc/mount');
   const dialog = $<HTMLDialogElement>('gear');
+  // ?debug: every equipable piece in the game is in the stash and nothing is locked; equipping one
+  // adds it to Mara's gear (saves accept any piece, so this survives a reload).
+  const debug = new URLSearchParams(location.search).has('debug');
   await new Promise<void>(resolve => {
     const unmount = kc.mountArmory($('gear-body'), {
-      popup: true, title: t('ui.gearTitle'), eyebrow: t('ui.gearEyebrow'), locked: [...LOCKED_SLOTS],
+      popup: true, title: t('ui.gearTitle'), eyebrow: t('ui.gearEyebrow'), locked: debug ? [] : [...LOCKED_SLOTS],
       // The paper doll shows only the gear and the stats it gives (no purse or bag).
       read: () => {
         const { kit, bag } = ui.host.getState();
-        return { profile: maraProfile(kit), owned: [...kit.owned], salvage: bag.salvage, carried: [] };
+        return { profile: maraProfile(kit), owned: debug ? [...new Set([...kit.owned, ...ALL_GEAR])] : [...kit.owned], salvage: bag.salvage, carried: [] };
       },
-      onEquip: id => { equip(ui.host.getState().kit, EQUIPMENT[id].slot, id); ui.host.autosave(); },
+      onEquip: id => {
+        const kit = ui.host.getState().kit;
+        if (debug && !kit.owned.includes(id)) kit.owned.push(id);
+        equip(kit, EQUIPMENT[id].slot, id, debug);
+        ui.host.autosave();
+      },
       onClose: () => dialog.close(),
     });
     dialog.addEventListener('close', () => { unmount(); ui.host.autosave(); resolve(); }, { once: true });

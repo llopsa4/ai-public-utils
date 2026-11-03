@@ -2,8 +2,7 @@
 // chapter, room or set of flags; give items, salvage, tonics and gear; start a fight; switch the
 // visual quality and the walk-area overlay. Loaded on demand, so it is not in the normal game.
 import { CHAPTERS, chapter } from '../chapters';
-import { EQUIPMENT } from '../combat/gear';
-import { TONIC } from '../content/kit';
+import { ALL_GEAR, TONIC } from '../content/kit';
 import { settings, updateSettings } from '../engine/settings';
 import { newGame } from '../engine/state';
 import type { GameState } from '../engine/types';
@@ -93,7 +92,7 @@ export function mountDebugPanel(session: Session): void {
     panel.append(el('div', { className: 'row' },
       button('+10 salvage', () => change(st => { st.bag.salvage += 10; })),
       button('+1 tonic', () => change(st => { st.bag.tonics = Math.min(TONIC.max, st.bag.tonics + 1); })),
-      button('All gear', () => change(st => { st.kit.owned = Object.keys(EQUIPMENT); })),
+      button('All gear', () => change(st => { st.kit.owned = [...ALL_GEAR]; })),
       button('Full health', () => change(st => { st.kit.hp = 60; })),
       button('Gear screen', () => void session.ui.openGear()),
       button('Shop', () => void session.ui.openShop()),
