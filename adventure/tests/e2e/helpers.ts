@@ -82,7 +82,7 @@ export async function fightStep(page: Page): Promise<void> {
   // Visible only: FFCardGame's closed dialog keeps an outlined Close button in the page.
   const target = root.locator('.lesson-target:not(:disabled):visible').first();
   if (await target.count()) { await target.click({ timeout: 3000 }).catch(() => {}); await page.waitForTimeout(250); return; }
-  const cont = root.locator('#modal-actions .modal-primary, .battle-result-action .modal-primary').first();
+  const cont = root.locator('#kc-victory-continue, #modal-actions .modal-primary, .battle-result-action .modal-primary').first();
   if (await cont.isVisible().catch(() => false)) { await cont.click(); await page.waitForTimeout(250); return; }
   const card = root.locator('button.card:not(:disabled)').first();
   if (await card.count()) { await card.click(); await page.waitForTimeout(250); return; }

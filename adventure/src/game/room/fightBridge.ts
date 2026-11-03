@@ -114,6 +114,9 @@ export async function fight(scene: RoomScene, id: string): Promise<void> {
       ...Object.entries(reward.materials).map(([m, n]) => t('battle.rewardMaterial', { n: String(n), name: t(MATERIALS[m].name) }))] : [];
     const close = kc.mountBattle(el, {
       profile: maraProfile(state.kit), guided: guided(chapter().story, scene.storyContext()), encounter: chapter().encounters[id], lessonPrompts: chapter().lessonPrompts, rewards,
+      loot: reward ? [{ kind: 'salvage' as const, id: 'salvage', amount: reward.salvage, name: t('battle.salvage') },
+        ...Object.entries(reward.materials).map(([m, n]) => ({ kind: 'material' as const, id: m, amount: n, name: t(MATERIALS[m].name) }))] : [],
+      onLootShown: () => sound.pickup(),
       tonics: () => state.bag.tonics,
       drink: battle => { const next = drinkTonic(battle, state.bag); return next === battle ? null : next; },
       onMenu: () => scene.session.ui.openMenu(),

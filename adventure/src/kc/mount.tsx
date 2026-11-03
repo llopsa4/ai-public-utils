@@ -13,6 +13,7 @@ import './kc.css';
 import './kc-local.css';
 import { App, type LessonView } from '@kc/App';
 import { Armory, type ArmoryProps } from './Armory';
+import { Victory, type Loot } from './Victory';
 import type { LessonAction } from '@kc/content/tutorial';
 import { createBattle, endTurn, playCard } from '@kc/game/combat';
 import { newTutorial, tutorialTransition, type TutorialState } from '@kc/game/tutorial';
@@ -29,6 +30,10 @@ export interface BattleOptions {
   /** The lesson's prompts reworded for this enemy, by step index. */
   lessonPrompts?: Readonly<Record<number, string>>;
   rewards: string[];
+  /** What a win pays, for the victory screen's loot tiles. */
+  loot: Loot[];
+  /** Plays as each loot tile appears. */
+  onLootShown?: () => void;
   tonics: () => number;
   /** Drinks a tonic: the new battle state, or null if none could be drunk. */
   drink: (battle: BattleState) => BattleState | null;
@@ -37,6 +42,8 @@ export interface BattleOptions {
 }
 
 function Battle(o: BattleOptions) {
+  const victory = (v: { state: BattleState; lesson: boolean; onContinue: () => void }) =>
+    <Victory {...v} loot={o.loot} onReveal={o.onLootShown} />;
   const [lesson, setLesson] = useState<TutorialState | null>(() => (o.guided ? newTutorial(o.encounter) : null));
   const [start, setStart] = useState<BattleState>(() => createBattle(o.profile, o.encounter));
   const [free, setFree] = useState<BattleState>(start);
@@ -69,7 +76,7 @@ function Battle(o: BattleOptions) {
         setLesson(null);
       },
     };
-    return <App key="lesson" controller={controller} lesson={view} onMenu={o.onMenu} onVictory={() => act({ type: 'finish' })} brand="Cinderfold" rewards={o.rewards} />;
+    return <App key="lesson" controller={controller} lesson={view} onMenu={o.onMenu} onVictory={() => act({ type: 'finish' })} brand="Cinderfold" rewards={o.rewards} victoryView={victory} />;
   }
 
   const controller: BattleController = {
@@ -84,7 +91,7 @@ function Battle(o: BattleOptions) {
   const drink = () => { const next = o.drink(free); if (next) { setFree(next); redraw(n => n + 1); } };
   const tonic = ({ busy, lesson, over }: { busy: boolean; lesson: boolean; over: boolean }) => tonics > 0 &&
     <button id="kc-tonic" className="session-secondary kc-tonic" disabled={busy || lesson || free.hero.hp >= free.config.hero.maxHp || over} onClick={drink}>Kiln Tonic · {tonics}<small> +15 HP</small></button>;
-  return <App key="free" controller={controller} onMenu={o.onMenu} onVictory={() => o.onWin(free)} brand="Cinderfold" rewards={o.rewards} extraControls={tonic} suppressHints />;
+  return <App key="free" controller={controller} onMenu={o.onMenu} onVictory={() => o.onWin(free)} brand="Cinderfold" rewards={o.rewards} extraControls={tonic} victoryView={victory} suppressHints />;
 }
 
 /** Shows Kiln Courier's battle screen in `el`. Returns a function that removes it. */

@@ -130,5 +130,14 @@
   "ui.shopFull": "Mara can't carry more than {max}.",
   "ui.shopPoor": "Not enough salvage.",
   "ui.gearEyebrow": "Oren's spares",
-  "ui.gearCall": "Check your gear"
+  "ui.gearCall": "Check your gear",
+  "battle.victory": "Victory",
+  "battle.defeated": "{name} defeated",
+  "battle.lessonDone": "Lesson complete",
+  "battle.loot": "Spoils",
+  "battle.turns": "Turns",
+  "battle.healthLeft": "Health",
+  "battle.damageDealt": "Damage",
+  "battle.continue": "Continue",
+  "battle.salvage": "salvage"
 }

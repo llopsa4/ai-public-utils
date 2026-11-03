@@ -20,3 +20,166 @@
 @media (min-width: 901px) {
   .kc .combat-screen[data-arena] { background-position: center calc(var(--screen-height) - var(--hand-height) - 160px - 46.7vw); }
 }
+
+/* ---------------------------------------------------------------- the victory screen (Victory.tsx) --- */
+.kc .kc-victory {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: radial-gradient(ellipse at 50% 40%, #3a200cd9 0%, #120a06f2 55%, #070403fa 100%);
+  animation: kc-victory-in 400ms ease-out both;
+  overflow: auto;
+}
+.kc .kc-victory-embers { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.kc .kc-victory-embers i {
+  position: absolute;
+  bottom: -12px;
+  left: var(--x);
+  width: var(--size);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: #ffb05a;
+  box-shadow: 0 0 8px 2px #ff7a1fb0;
+  opacity: 0;
+  animation: kc-ember var(--time) linear var(--delay) infinite;
+}
+.kc .kc-victory-card {
+  position: relative;
+  width: min(560px, 100%);
+  text-align: center;
+  padding: 26px 30px 28px;
+  border: 2px solid var(--brass);
+  border-radius: 6px;
+  background:
+    linear-gradient(#ffc8700f, transparent 30%),
+    linear-gradient(#22160ef2, #140c08f7);
+  box-shadow: 0 0 0 1px #000, inset 0 0 0 1px #ffd9a01f, inset 0 0 40px #0009, 0 18px 60px #000c, 0 0 80px #ff8a2a2e;
+  animation: kc-card-in 520ms cubic-bezier(.2, 1.3, .4, 1) 120ms both;
+}
+.kc .kc-victory-card::before, .kc .kc-victory-card::after {
+  content: '';
+  position: absolute;
+  top: 10px;
+  width: 9px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #f3d39a, #7a5426 70%);
+  box-shadow: 0 1px 1px #000;
+}
+.kc .kc-victory-card::before { left: 10px; }
+.kc .kc-victory-card::after { right: 10px; }
+.kc .kc-victory-kicker {
+  margin: 0;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 13px;
+  letter-spacing: 0.32em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+.kc .kc-victory-title {
+  margin: 4px 0 0;
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(46px, 8vw, 74px);
+  line-height: 1;
+  letter-spacing: 0.12em;
+  background: linear-gradient(#fff2c8 10%, #f0b558 55%, #a8641f 92%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 0 #2a1608) drop-shadow(0 0 18px #ff9a3a8c);
+  animation: kc-title-in 700ms cubic-bezier(.2, 1.4, .4, 1) 260ms both;
+}
+.kc .kc-victory-foe { height: 96px; margin: 6px auto 0; display: grid; place-items: center; }
+.kc .kc-victory-foe img {
+  max-height: 96px;
+  max-width: 180px;
+  filter: grayscale(0.85) brightness(0.55) drop-shadow(0 6px 6px #000);
+  transform: rotate(-9deg) translateY(8px);
+  animation: kc-foe-fall 900ms ease-in 300ms both;
+}
+.kc .kc-victory-text { margin: 8px 0 14px; font-size: 19px; color: var(--ivory); font-style: italic; }
+.kc .kc-loot-label {
+  margin: 0 0 8px;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+}
+.kc .kc-loot { list-style: none; margin: 0 0 18px; padding: 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.kc .kc-loot li {
+  width: 128px;
+  padding: 12px 8px 10px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  border: 1px solid #8a6634;
+  border-radius: 5px;
+  background: radial-gradient(circle at 50% 30%, #4a2e14, #1c120b 75%);
+  box-shadow: inset 0 0 0 1px #ffd9a014, 0 6px 14px #0008;
+  animation: kc-loot-in 420ms cubic-bezier(.2, 1.5, .4, 1) calc(900ms + var(--n) * 260ms) both;
+}
+.kc .kc-loot-icon { width: 44px; height: 44px; color: #f3c46e; filter: drop-shadow(0 0 6px #ff9a3a80); }
+.kc .kc-loot-icon svg { width: 100%; height: 100%; }
+.kc .kc-loot strong { font-family: 'Cinzel', Georgia, serif; font-size: 24px; color: #ffe2a6; line-height: 1.1; }
+.kc .kc-loot li > span:last-child { font-size: 15px; color: var(--muted); text-transform: capitalize; }
+.kc .kc-victory-stats { display: flex; justify-content: center; gap: 12px; margin: 0 0 22px; }
+.kc .kc-victory-stats > div {
+  width: 92px;
+  padding: 8px 4px;
+  border-radius: 50% / 40%;
+  border: 1px solid #5c4426;
+  background: #0f0905c0;
+}
+.kc .kc-victory-stats dt { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-family: 'Cinzel', Georgia, serif; }
+.kc .kc-victory-stats dd { margin: 0; font-family: 'Cinzel', Georgia, serif; font-size: 26px; color: var(--ivory); }
+.kc .kc-victory-continue {
+  min-width: 220px;
+  padding: 12px 28px;
+  font-family: 'Cinzel', Georgia, serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #2a1606;
+  cursor: pointer;
+  border: 1px solid #ffe2a6;
+  border-radius: 4px;
+  background: linear-gradient(#ffd98c, #e09a3e 60%, #b86d22);
+  box-shadow: 0 0 0 2px #3a220e, 0 0 0 3px #a17b40, 0 8px 20px #000a, 0 0 24px #ff9a3a66;
+  animation: kc-loot-in 420ms ease-out 1500ms both;
+}
+.kc .kc-victory-continue:hover { filter: brightness(1.08); }
+.kc .kc-victory-continue:focus-visible { outline: 3px solid #fff2c8; outline-offset: 4px; }
+.kc .kc-victory-continue:active { transform: translateY(1px); }
+@keyframes kc-victory-in { from { opacity: 0; } }
+@keyframes kc-card-in { from { opacity: 0; transform: translateY(18px) scale(0.94); } }
+@keyframes kc-title-in { from { opacity: 0; transform: scale(1.6); letter-spacing: 0.4em; } }
+@keyframes kc-foe-fall { from { opacity: 0; filter: none; transform: rotate(0) translateY(-6px); } }
+@keyframes kc-loot-in { from { opacity: 0; transform: translateY(10px) scale(0.85); } }
+@keyframes kc-ember {
+  0% { opacity: 0; transform: translate(0, 0); }
+  12% { opacity: 0.9; }
+  100% { opacity: 0; transform: translate(var(--drift), -92vh); }
+}
+.kc .kc-victory.kc-calm, .kc .kc-victory.kc-calm * { animation: none !important; }
+.kc .kc-victory.kc-calm .kc-victory-embers { display: none; }
+/* Short screens (a phone held sideways): the same screen, tighter. */
+@media (max-height: 640px) {
+  .kc .kc-victory { place-items: safe center; padding: 8px; }
+  .kc .kc-victory-card { padding: 12px 18px 14px; }
+  .kc .kc-victory-title { font-size: clamp(34px, 9vh, 52px); }
+  .kc .kc-victory-foe { display: none; }
+  .kc .kc-victory-text { margin: 4px 0 8px; font-size: 16px; }
+  .kc .kc-loot { margin-bottom: 10px; }
+  .kc .kc-loot li { width: 112px; padding: 6px 6px 5px; }
+  .kc .kc-loot-icon { width: 30px; height: 30px; }
+  .kc .kc-loot strong { font-size: 19px; }
+  .kc .kc-victory-stats { margin-bottom: 12px; }
+  .kc .kc-victory-stats > div { padding: 4px; width: 80px; }
+  .kc .kc-victory-stats dd { font-size: 20px; }
+  .kc .kc-victory-continue { padding: 9px 24px; font-size: 16px; }
+}

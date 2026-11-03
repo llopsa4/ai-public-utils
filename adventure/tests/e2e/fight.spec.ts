@@ -49,12 +49,16 @@ test('the first fight is Kiln Courier\'s lesson: only the outlined control works
   await expect(page.locator('#kc-root .lesson-banner')).toContainText('1/19');
   expect(await enemyHp(page)).toBe(30);
 
-  // Follow the lesson to the end. The victory dialog carries Cinderfold's name and what the fight paid.
+  // Follow the lesson to the end. The win shows Cinderfold's victory screen with what the fight
+  // paid, its Continue focused.
   let sawRewards = false;
   for (let i = 0; i < 200 && !(await page.locator('#force-veil').count()); i++) {
-    if (!sawRewards && await page.locator('#kc-root .kc-rewards').isVisible().catch(() => false)) {
-      await expect(page.locator('#kc-root .kc-rewards')).toContainText('+12 salvage');
-      await expect(page.locator('#kc-root .modal-top .eyebrow')).toHaveText('CINDERFOLD');
+    if (!sawRewards && await page.locator('#kc-root .kc-victory').isVisible().catch(() => false)) {
+      await expect(page.locator('#kc-root .kc-victory-title')).toHaveText('Victory');
+      await expect(page.locator('#kc-root .kc-loot')).toContainText('+12');
+      await expect(page.locator('#kc-root .kc-loot')).toContainText(/pressure coil/i);
+      await expect(page.locator('#kc-victory-continue')).toBeFocused();
+      await expect(page.locator('#kc-root dialog[open]')).toHaveCount(0);
       sawRewards = true;
     }
     if (await page.locator('#kc-root .combat-screen').isVisible().catch(() => false)) await fightStep(page);
