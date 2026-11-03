@@ -14,3 +14,9 @@
 .kc.kc-armory-screen { padding: 24px clamp(12px, 4vw, 48px); background: linear-gradient(#100d09f0, #100d09f8), url('../../art/src/kc/regulator-gallery.webp') center / cover; }
 .kc .kc-armory { max-width: 1180px; margin: 0 auto; }
 .kc .kc-build, .kc .kc-carried { text-align: center; }
+/* The regulator gallery backdrop (art/src/kc/regulator-gallery.webp) has its floor grating lower
+   in the picture than Kiln Courier's own arenas: raise it by 5% of its height so the fighters
+   stand on the grating, not on the pipe (Kiln Courier's narrow-screen placement is kept). */
+@media (min-width: 901px) {
+  .kc .combat-screen[data-arena] { background-position: center calc(var(--screen-height) - var(--hand-height) - 160px - 46.7vw); }
+}

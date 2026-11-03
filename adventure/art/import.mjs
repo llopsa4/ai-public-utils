@@ -156,7 +156,7 @@ export async function importArt(root = here) {
       report.push(`${stem}: layers saved to art/sources/characters/${stem}/. Next: measure its joints and face in art/manifest.mjs (RIGS), point its source there, then npm run rig.`);
       continue;
     }
-    if (ext !== '.png') continue;
+    if (!['.png', '.jpg', '.jpeg', '.webp'].includes(ext.toLowerCase())) { report.push(`${name}: not an image this importer reads (PNG, JPG or WebP)`); continue; }
     const before = existsSync(join(root, 'src', entry.file)) ? readFileSync(join(root, 'src', entry.file)) : null;
     let after;
     if (entry.kind === 'room' || entry.kind === 'battle-backdrop') {

@@ -1,4 +1,4 @@
-import{C as e,S as t,b as n,m as r,n as i,t as a,x as o}from"./index-DoAeKOgl.js";var s=`
+import{C as e,S as t,b as n,m as r,n as i,t as a,x as o}from"./index-D-n1hHuJ.js";var s=`
 #debug-panel { position: fixed; top: 8px; right: 8px; z-index: 9999; width: 300px; max-height: calc(100vh - 16px); overflow: auto;
   background: rgba(16, 12, 10, 0.94); color: #f0e0c8; font: 12px/1.4 system-ui, sans-serif; border: 1px solid #a0703c;
   border-radius: 6px; padding: 8px 10px; box-shadow: 0 4px 18px #000a; }
