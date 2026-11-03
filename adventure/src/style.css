@@ -112,6 +112,12 @@ html, body {
   background-repeat: no-repeat;
 }
 
+/* Portraits are drawn facing right (art/STYLE.md); those on the right of the panel are mirrored
+   so every speaker looks toward the line and toward Mara on the left. */
+#dialogue.right #dialogue-portrait {
+  transform: scaleX(-1);
+}
+
 #dialogue-portrait[hidden] {
   display: none;
 }

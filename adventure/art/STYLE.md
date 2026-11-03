@@ -21,7 +21,7 @@ Every image in the game follows these rules, so pictures made separately (by Cod
 - **Fill light:** cool and dim, from the side away from the fire.
 - **Characters and objects** are drawn **evenly lit**, with soft form shading and no strong cast light. The game adds the room's light, warmer near fires and darker toward the back.
 - **Camera:** eye level, a stage-like three-quarter view. In rooms the floor takes the lower third to two-fifths of the picture; the walkable floor is shown in each room's reference image (`art/spec/<room>.jpg`).
-- **Characters face right** in three-quarter view (the game mirrors them to face left).
+- **Characters face right** in three-quarter view (the game mirrors them to face left). Dialogue portraits are cut from these drawings, so they face right too; the game mirrors every portrait shown on the right of the dialogue panel (everyone but Mara) so it looks toward the line.
 
 ## Scale
 
