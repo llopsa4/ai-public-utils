@@ -228,6 +228,9 @@
 .kc-armory-popup .doll-slot .equipment-art, .kc-armory-popup .stash-cell .equipment-art { width: var(--art); }
 .kc-armory-popup .doll-slot:hover, .kc-armory-popup .stash-cell:hover { border-color: #e2bc7c; }
 .kc-armory-popup .doll-selected { border-color: #ffd98c; box-shadow: inset 0 0 0 1px #000, inset 0 0 12px #000c, 0 0 0 2px #3a220e, 0 0 14px #ffb04a99; }
+.kc-armory-popup .doll-viewing { outline: 2px dashed #ffd98c80; outline-offset: 3px; }
+.kc-armory-popup .doll-wear-icon { width: 100%; height: 100%; filter: drop-shadow(0 3px 3px #000a); }
+.kc-armory-popup .doll-heading span { color: #e8c88e; letter-spacing: 0.12em; }
 .kc-armory-popup .doll-target { border-color: #9dd17a; box-shadow: inset 0 0 0 1px #000, 0 0 12px #7fd06a88; }
 .kc-armory-popup .doll-over { background: radial-gradient(circle at 50% 40%, #2f4a1ee6, #0c0805f2 75%); }
 .kc-armory-popup .doll-lock {

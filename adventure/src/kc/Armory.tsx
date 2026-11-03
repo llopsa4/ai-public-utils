@@ -9,6 +9,7 @@ import { EQUIPMENT, STARTING_EQUIPMENT } from '@kc/content/equipment';
 import { deriveStats, EQUIPMENT_SLOTS, openingHandSize } from '@kc/game/equipment';
 import type { CharacterProfile, EquippedItem, EquipmentSlot } from '@kc/game/types';
 import { equipmentComparison } from '@kc/game/workshop';
+import { BASIC_WEAR, type WearSlot } from '../content/kit';
 
 export interface ArmoryProps {
   profile: CharacterProfile;
@@ -51,11 +52,25 @@ export function Armory(props: ArmoryProps) {
 }
 
 /** Where each slot sits on Mara's figure (art/src/kc/hero.webp), as a share of its width and height. */
-const SLOT_AT: Record<EquipmentSlot, { x: number; y: number }> = {
+const SLOT_AT: Record<EquipmentSlot | WearSlot, { x: number; y: number }> = {
   gauntlet: { x: 86, y: 43 }, // his right hand, in the gauntlet
   armor: { x: 55, y: 27 }, // his chest
   utility: { x: 24, y: 43 }, // the carrier at his hip
+  pants: { x: 50, y: 66 }, // his legs
+  boots: { x: 52, y: 90 }, // his feet
 };
+/** What the stash shows: one type of gear at a time. Pants and boots: only what he wears for now. */
+type GearType = EquipmentSlot | WearSlot;
+const TYPE_NAME: Record<GearType, string> = { gauntlet: 'Gauntlets', armor: 'Armor', utility: 'Utility', pants: 'Pants', boots: 'Boots' };
+const WEAR_SLOTS: WearSlot[] = ['pants', 'boots'];
+const isWear = (t: GearType): t is WearSlot => (WEAR_SLOTS as string[]).includes(t);
+
+/** Pictures of the trousers and boots once delivered (art/src/kc/equipment), else the drawn icons. */
+const wearImages = import.meta.glob<string>('../../art/src/kc/equipment/*.webp', { eager: true, import: 'default' });
+function WearArt({ slot }: { slot: WearSlot }) {
+  const src = wearImages[`../../art/src/kc/equipment/${BASIC_WEAR[slot].id}.webp`];
+  return <span className="equipment-art">{src ? <img src={src} alt={BASIC_WEAR[slot].name} width="512" height="512" decoding="async" /> : slot === 'pants' ? PANTS : BOOT}</span>;
+}
 const STASH_CELLS = 8;
 // Two per row: the last row is health next to MP (now / most).
 const STAT_ROWS: ['power' | 'defense' | 'speed' | 'cards' | 'hp' | 'mp', string][] = [['power', 'Power'], ['defense', 'Defense'], ['speed', 'Speed'], ['cards', 'Opening cards'], ['hp', 'HP'], ['mp', 'MP']];
@@ -68,12 +83,17 @@ const STAT_ROWS: ['power' | 'defense' | 'speed' | 'cards' | 'hp' | 'mp', string]
 function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
   const loadout = profile.equipment ?? STARTING_EQUIPMENT;
   const stash = owned.filter(id => loadout[EQUIPMENT[id].slot].id !== id);
-  const [selected, setSelected] = useState(stash[0] ?? loadout.armor.id);
+  const first = stash[0] ?? loadout.armor.id;
+  const [view, setView] = useState<GearType>(EQUIPMENT[first].slot);
+  const [chosen, setSelected] = useState<string | null>(first);
+  const shelf = isWear(view) ? [] : stash.filter(id => EQUIPMENT[id].slot === view);
+  // Trousers and boots have their own card (always worn, no bonuses).
+  const selected = isWear(view) ? null : chosen ?? loadout[view].id;
   const [dragging, setDragging] = useState<string | null>(null);
   const [over, setOver] = useState<EquipmentSlot | null>(null);
   const [result, setResult] = useState('');
-  const data = EQUIPMENT[selected];
-  const equipped = loadout[data.slot].id === selected, slotLocked = locked.includes(data.slot);
+  const data = selected ? EQUIPMENT[selected] : null;
+  const equipped = !!data && loadout[data.slot].id === selected, slotLocked = !!data && locked.includes(data.slot);
   const canEquip = (id: string) => !locked.includes(EQUIPMENT[id].slot) && loadout[EQUIPMENT[id].slot].id !== id;
   const equip = (id: string) => {
     if (!canEquip(id)) return;
@@ -92,9 +112,9 @@ function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
         const item = loadout[slot];
         const target = dragging !== null && EQUIPMENT[dragging].slot === slot && canEquip(dragging);
         return <button key={slot} type="button" style={{ left: `${SLOT_AT[slot].x}%`, top: `${SLOT_AT[slot].y}%` }}
-          className={`doll-slot${item.id === selected ? ' doll-selected' : ''}${target ? ' doll-target' : ''}${over === slot && target ? ' doll-over' : ''}`}
+          className={`doll-slot${item.id === selected ? ' doll-selected' : ''}${view === slot ? ' doll-viewing' : ''}${target ? ' doll-target' : ''}${over === slot && target ? ' doll-over' : ''}`}
           aria-pressed={item.id === selected} aria-label={`${slot}: ${EQUIPMENT[item.id].name}${locked.includes(slot) ? ', locked' : ''}`} title={`${EQUIPMENT[item.id].name} (${slot})`}
-          onClick={() => { setSelected(item.id); setResult(''); }}
+          onClick={() => { setView(slot); setSelected(item.id); setResult(''); }}
           onDragOver={event => { if (target) { event.preventDefault(); setOver(slot); } }}
           onDragLeave={() => setOver(null)}
           onDrop={event => { event.preventDefault(); setOver(null); if (dragging && target) equip(dragging); setDragging(null); }}>
@@ -102,12 +122,17 @@ function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
           {locked.includes(slot) && <span className="doll-lock" aria-hidden="true">{LOCK}</span>}
         </button>;
       })}
+      {WEAR_SLOTS.map(slot => <button key={slot} type="button" style={{ left: `${SLOT_AT[slot].x}%`, top: `${SLOT_AT[slot].y}%` }}
+        className={`doll-slot doll-wear${view === slot ? ' doll-viewing doll-selected' : ''}`} aria-pressed={view === slot}
+        aria-label={`${slot}: ${BASIC_WEAR[slot].name}`} title={`${BASIC_WEAR[slot].name} (${slot})`} onClick={() => { setView(slot); setResult(''); }}>
+        <WearArt slot={slot} />
+      </button>)}
     </div>
     <dl className="doll-stats">{STAT_ROWS.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{statValue(key)}</dd></div>)}</dl>
     <div className="doll-side">
-      <h3 className="doll-heading">Stash</h3>
-      <div className="doll-stash">{Array.from({ length: Math.max(STASH_CELLS, stash.length) }, (_, n) => {
-        const id = stash[n];
+      <h3 className="doll-heading">Stash <span>· {TYPE_NAME[view]}</span></h3>
+      <div className="doll-stash">{Array.from({ length: Math.max(STASH_CELLS, shelf.length) }, (_, n) => {
+        const id = shelf[n];
         if (!id) return <span key={`empty-${n}`} className="stash-cell stash-empty" aria-hidden="true" />;
         return <button key={id} type="button" draggable className={`gear-tile stash-cell${id === selected ? ' doll-selected' : ''}${spare(id) ? ' doll-spare' : ''}`}
           aria-pressed={id === selected} title={EQUIPMENT[id].name}
@@ -117,7 +142,13 @@ function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
           <EquipmentArt item={{ id }} /><span className="sr-only">{EQUIPMENT[id].name}</span>
         </button>;
       })}</div>
-      <article className={`doll-card${spare(selected) ? ' doll-spare' : ''}`} aria-live="polite">
+      {isWear(view) ? <article className="doll-card" aria-live="polite">
+        <h3>{BASIC_WEAR[view].name}</h3>
+        <p className="doll-slotname">{view} · equipped</p>
+        <p className="doll-bonuses">Standard gear</p>
+        <p className="doll-desc">{BASIC_WEAR[view].description}</p>
+        <button id="armory-equip" type="button" className="session-secondary" disabled>Equipped</button>
+      </article> : !data || !selected ? null : <article className={`doll-card${spare(selected) ? ' doll-spare' : ''}`} aria-live="polite">
         <h3>{data.name}</h3>
         <p className="doll-slotname">{data.slot}{equipped ? ' · equipped' : ''}{slotLocked ? ' · locked' : ''}</p>
         <p className="doll-bonuses">{bonuses({ id: selected })}</p>
@@ -128,12 +159,26 @@ function PaperDoll({ profile, owned, locked, onEquip }: ArmoryProps) {
           {slotLocked && !equipped ? "His mother's: it stays" : equipped ? 'Equipped' : `Equip ${data.name}`}
         </button>
         <p role="status" className="doll-result" key={result}>{result}</p>
-      </article>
+      </article>}
     </div>
   </section>;
 }
 
 const STARTING_EQUIPMENT_IDS = Object.values(STARTING_EQUIPMENT).map(e => e.id);
+/** Drawn stand-ins for the trousers and boots (until their art is delivered). */
+const PANTS = <svg className="doll-wear-icon" viewBox="0 0 48 48" aria-hidden="true">
+  <path d="M13 6h22l3 36h-9l-5-22-5 22h-9z" fill="#3a2c22" stroke="#120a06" strokeWidth="1.6" strokeLinejoin="round" />
+  <path d="M13 6h22v5H13z" fill="#6b4a2a" stroke="#120a06" strokeWidth="1.4" />
+  <ellipse cx="16.5" cy="28" rx="3.6" ry="4.4" fill="#d9cdb6" stroke="#120a06" strokeWidth="1.2" />
+  <ellipse cx="31.5" cy="28" rx="3.6" ry="4.4" fill="#d9cdb6" stroke="#120a06" strokeWidth="1.2" />
+  <path d="M23 11v6" stroke="#b08a4a" strokeWidth="1.4" />
+</svg>;
+const BOOT = <svg className="doll-wear-icon" viewBox="0 0 48 48" aria-hidden="true">
+  <path d="M15 6h11v20l11 5c3 1.5 4 4 4 7v3H9v-9l3-6z" fill="#6b4224" stroke="#120a06" strokeWidth="1.6" strokeLinejoin="round" />
+  <path d="M9 37h32v4H9z" fill="#2a1a10" stroke="#120a06" strokeWidth="1.4" />
+  <path d="M15 14h11M15 20h11" stroke="#c9a15a" strokeWidth="2" />
+  <rect x="18" y="12.5" width="4" height="3" fill="#e0b860" stroke="#120a06" strokeWidth="0.8" />
+</svg>;
 const LOCK = <svg viewBox="0 0 16 16"><path d="M5 7V5a3 3 0 0 1 6 0v2" fill="none" stroke="currentColor" strokeWidth="1.8" /><rect x="3" y="7" width="10" height="7" rx="1.5" fill="currentColor" /></svg>;
 
 /** The full-screen workshop (outside the pop-up): Kiln Courier's showroom layout. */

@@ -15,6 +15,16 @@ export const STARTER_CARDS: readonly CardInstance[] = STARTER_DECK.map((type, i)
 
 export { STARTING_EQUIPMENT };
 
+/**
+ * What Mara wears besides his gear: shown on the paper doll in their own slots, always worn and
+ * without bonuses (Kiln Courier's rules have no pants or boots slots, so fights ignore them).
+ */
+export const BASIC_WEAR = {
+  pants: { id: 'work-trousers', name: 'Work Trousers', description: 'Heavy cloth with ceramic knee plates, patched at both knees.' },
+  boots: { id: 'courier-boots', name: 'Courier Boots', description: 'Stitched leather, resoled more than once.' },
+} as const;
+export type WearSlot = keyof typeof BASIC_WEAR;
+
 /** Every piece of gear in Kiln Courier's rules (the debug gear screen shows them all). */
 export const ALL_GEAR: readonly string[] = Object.keys(EQUIPMENT);
 

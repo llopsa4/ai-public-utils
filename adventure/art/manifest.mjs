@@ -168,6 +168,9 @@ export const MANIFEST = [
   equipment('plain-carrier', 'A plain carrier bag.'),
   equipment('light-armor', 'Light armour: spaced ceramic plates.'),
   equipment('quick-harness', 'A quick-release harness.'),
+  // Worn always, shown on the gear screen's paper doll (drawn in code until delivered).
+  { ...equipment('work-trousers', "Mara's work trousers: heavy dark cloth with ceramic knee plates, patched at both knees."), status: 'requested', generator: 'src/kc/Armory.tsx (drawn in code)' },
+  { ...equipment('courier-boots', "Mara's courier boots: stitched brown leather, resoled more than once, brass buckles."), status: 'requested', generator: 'src/kc/Armory.tsx (drawn in code)' },
 ];
 
 // Statuses set by the importer (art/status.json: { "<id>": "final" }) override the defaults above.
