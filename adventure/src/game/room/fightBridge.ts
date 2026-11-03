@@ -76,6 +76,7 @@ export async function fight(scene: RoomScene, id: string): Promise<void> {
   sound.music('combat');
   scene.session.ui.setHover('');
   const kcModule = import('../../kc/mount');
+  screenOut(true);
   const cover = await shatter(scene);
   const kc = await kcModule;
   scene.hatchCreature?.destroy();
@@ -97,10 +98,11 @@ export async function fight(scene: RoomScene, id: string): Promise<void> {
         scene.session.closeBattle = null;
         close();
         el.hidden = true;
+        screenOut(false);
         resolve();
       },
     });
-    scene.session.closeBattle = () => { close(); el.hidden = true; };
+    scene.session.closeBattle = () => { close(); el.hidden = true; screenOut(false); };
   });
   scene.scene.resume();
   cover.destroy();
@@ -116,7 +118,8 @@ export async function fight(scene: RoomScene, id: string): Promise<void> {
  * then appears over it). Returns the black cover, removed after the fight.
  */
 export async function shatter(scene: RoomScene): Promise<Phaser.GameObjects.Graphics> {
-  const black = scene.add.graphics().setDepth(100000).setScrollFactor(0);
+  // Placed at the room's own coordinates (its camera is zoomed and never scrolls), like the room art.
+  const black = scene.add.graphics().setDepth(100000);
   if (settings().reducedMotion) {
     scene.cameras.main.fadeOut(400, 0, 0, 0);
     await wait(scene, 420);
@@ -136,7 +139,7 @@ export async function shatter(scene: RoomScene): Promise<Phaser.GameObjects.Grap
     const name = `shard-${r}-${c}`;
     if (!tex.has(name)) tex.add(name, 0, c * w, r * h, w, h);
     const x = (c + 0.5) * w * k, y = (r + 0.5) * h * k;
-    const shard = scene.add.image(x, y, key, name).setScale(k).setDepth(100001).setScrollFactor(0);
+    const shard = scene.add.image(x, y, key, name).setScale(k).setDepth(100001);
     shards.push(shard);
     const d = Math.hypot(x - centre.x, y - centre.y);
     scene.tweens.add({
@@ -144,14 +147,24 @@ export async function shatter(scene: RoomScene): Promise<Phaser.GameObjects.Grap
       y: y + 260 + Math.random() * 120, x: x + (x - centre.x) * 0.35, angle: (Math.random() - 0.5) * 70, alpha: 0,
     });
   }
-  const flash = scene.add.graphics().setDepth(100002).setScrollFactor(0);
-  flash.fillStyle(0xffffff, 0.85).fillRect(0, 0, LOGICAL_W, LOGICAL_H);
-  scene.tweens.add({ targets: flash, alpha: 0, duration: 260 });
+  // The flash covers the whole screen (menu bar and margins too), like the fade.
+  const flash = document.createElement('div');
+  flash.className = 'screen-flash';
+  document.body.append(flash);
   await wait(scene, 1500);
   for (const shard of shards) shard.destroy();
-  flash.destroy();
+  flash.remove();
   if (scene.textures.exists(key)) scene.textures.remove(key);
   return black;
+}
+
+/**
+ * The rest of the screen follows the room into a fight: the menu bar and the text over the stage
+ * fade out and the page around the stage turns black (style.css, `html.battle-out`); they come
+ * back when the fight is over.
+ */
+export function screenOut(out: boolean): void {
+  document.documentElement.classList.toggle('battle-out', out);
 }
 
 /** The canvas as it is now, as a texture (for the shatter). */

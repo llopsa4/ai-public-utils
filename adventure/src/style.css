@@ -489,3 +489,29 @@ button:focus-visible {
 #lang[hidden] {
   display: none;
 }
+
+/* Into a fight: the whole screen goes with the room, not just the canvas. The menu bar and the
+   text over the stage fade out and the page around the stage turns black (src/game/room/fightBridge.ts);
+   a white flash covers everything as the room breaks. */
+html, body, #bar, #overlay {
+  transition: background-color 0.6s ease-in, opacity 0.6s ease-in;
+}
+html.battle-out, html.battle-out body {
+  background: #000;
+}
+html.battle-out #bar, html.battle-out #overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+.screen-flash {
+  position: fixed;
+  inset: 0;
+  z-index: 39;
+  background: #fff;
+  opacity: 0.85;
+  pointer-events: none;
+  animation: screen-flash 260ms ease-out forwards;
+}
+@keyframes screen-flash {
+  to { opacity: 0; }
+}
