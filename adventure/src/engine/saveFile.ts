@@ -119,7 +119,8 @@ export function parseSave(text: string): ImportResult {
       equipment[slot] = { id: e.id };
     }
     if (!k.owned.every((id: unknown) => typeof id === 'string')) return invalid;
-    Object.assign(kit, { hp: k.hp, mp: k.mp, equipment, owned: [...k.owned] });
+    if (!Array.isArray(k.techniques) || !k.techniques.every((t: unknown) => typeof t === 'string')) return invalid;
+    Object.assign(kit, { hp: k.hp, mp: k.mp, maxHp: k.maxHp, maxMp: k.maxMp, techniques: [...k.techniques], equipment, owned: [...k.owned] });
     if (!validKit(kit)) return invalid;
   }
   const bag = newBag();

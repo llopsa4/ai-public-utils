@@ -141,5 +141,6 @@
   "ui.shopPrice": "Price: {price} salvage",
   "ui.buy": "Buy",
   "ui.buyPoor": "Not enough salvage",
-  "ui.buyFull": "You carry {max}"
+  "ui.buyFull": "You carry {max}",
+  "ui.learned": "Learned {name}: the Kiln Pulse runs cooler. Health and MP limits grow."
 }

@@ -5,6 +5,7 @@ import { t } from '../../engine/i18n';
 import { settings } from '../../engine/settings';
 import { sound } from '../../audio/sound';
 import { applyCommand } from '../../engine/state';
+import { TECHNIQUES } from '../../content/kit';
 import type { Command } from '../../engine/types';
 import { chapter, loadChapter, setChapter } from '../../chapters';
 import type { RoomScene } from '../scenes';
@@ -137,6 +138,15 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     scene.session.slowFadeIn = true;
     scene.scene.restart();
     return false;
+  },
+  learn: async (scene: RoomScene, command: Of<'learn'>): Promise<boolean> => {
+    const before = scene.session.state.kit.techniques.length;
+    applyCommand(scene.session.state, command);
+    if (scene.session.state.kit.techniques.length > before) {
+      sound.choose();
+      scene.session.ui.toast(t('ui.learned', { name: TECHNIQUES[command.technique].name }));
+    }
+    return true;
   },
   giveSpares: async (scene: RoomScene, command: Of<'giveSpares'>): Promise<boolean> => {
     const state = scene.session.state;

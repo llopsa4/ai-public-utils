@@ -1,4 +1,4 @@
-import type { CardInstance, CardType, CharacterProfile, Loadout } from '../combat/types';
+import type { CardInstance, CardType, CardUpgrade, CharacterProfile, Loadout } from '../combat/types';
 import { EQUIPMENT, STARTING_EQUIPMENT } from '../combat/gear';
 
 /**
@@ -44,7 +44,27 @@ export const MAX_SALVAGE = 9999;
 /** What a won fight pays. */
 export interface Reward { salvage: number; materials: Record<string, number> }
 
+/**
+ * Techniques a teacher can pass on: Kiln Courier's card upgrades, with the growth that comes with
+ * them (as Kiln Courier's teacher stop grants). Tempered Flow turns the Kiln Pulse into a cheaper,
+ * cooler strike (3 MP, 3 strain).
+ */
+export const TECHNIQUES: Partial<Record<CardUpgrade, { name: string; card: CardType; maxHp: number; maxMp: number }>> & Record<string, { name: string; card: CardType; maxHp: number; maxMp: number }> = {
+  'tempered-flow': { name: 'Tempered Flow', card: 'pulse', maxHp: 6, maxMp: 2 },
+};
+
+/** Mara's deck with what he has learned: the technique's card carries its upgrade. */
+export function maraDeck(techniques: readonly string[] = []): readonly CardInstance[] {
+  return STARTER_CARDS.map(card => {
+    const t = Object.entries(TECHNIQUES).find(([id, def]) => techniques.includes(id) && def.card === card.type);
+    return t ? { ...card, upgrade: t[0] as CardUpgrade } : { ...card };
+  });
+}
+
 /** Mara as the card rules see him, from the saved kit. */
-export function maraProfile(kit: { hp: number; mp: number; equipment: Loadout }): CharacterProfile {
-  return { id: 'mara', name: 'Mara', maxHp: HERO_MAX_HP, hp: Math.max(1, kit.hp), maxMp: HERO_MAX_MP, mp: kit.mp, deck: STARTER_CARDS, equipment: kit.equipment };
+export function maraProfile(kit: { hp: number; mp: number; equipment: Loadout; maxHp?: number; maxMp?: number; techniques?: readonly string[] }): CharacterProfile {
+  return {
+    id: 'mara', name: 'Mara', maxHp: kit.maxHp ?? HERO_MAX_HP, hp: Math.max(1, kit.hp), maxMp: kit.maxMp ?? HERO_MAX_MP, mp: kit.mp,
+    deck: maraDeck(kit.techniques), equipment: kit.equipment,
+  };
 }

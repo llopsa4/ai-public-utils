@@ -5,11 +5,12 @@ import { CHAPTERS } from '../src/chapters';
 import { migrate, READABLE_VERSIONS, SAVE_VERSION } from '../src/engine/migrations';
 import { parseSave, serializeSave } from '../src/engine/saveFile';
 import { applyCommand, newGame } from '../src/engine/state';
+import { maraProfile } from '../src/content/kit';
 
 const fixture = (v: number) => readFileSync(new URL(`./fixtures/saves/v${v}.json`, import.meta.url), 'utf8');
 
 test('saves from every older version load, upgraded to chapter 1', () => {
-  for (const v of [3, 4, 5]) {
+  for (const v of [3, 4, 5, 6]) {
     const r = parseSave(fixture(v));
     assert.ok(r.ok, `v${v}`);
     const s = r.state;
@@ -21,17 +22,19 @@ test('saves from every older version load, upgraded to chapter 1', () => {
     assert.ok(s.flags.patchFailed && s.flags.secretTally && s.flags.metHollis);
     assert.equal(s.npcs.nell!.pose, 'crouch');
     assert.deepEqual(s.looks, v === 3 ? {} : { rack: 2, 'item:gauntlet': 1 });
-    if (v === 5) assert.deepEqual([s.kit.hp, s.bag.salvage, s.bag.tonics], [41, 12, 1]);
+    if (v >= 5) assert.deepEqual([s.kit.hp, s.bag.salvage, s.bag.tonics], [41, 12, 1]);
+    // Format 7: no techniques yet, the starting limits.
+    assert.deepEqual([s.kit.techniques, s.kit.maxHp, s.kit.maxMp], [[], 60, 10]);
   }
-  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, SAVE_VERSION]);
+  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, 6, SAVE_VERSION]);
   assert.equal(migrate(2, {}), null);
 });
 
-test('version 6 keeps flags per chapter and round-trips', () => {
+test('the current version keeps flags per chapter and round-trips', () => {
   const s = newGame();
   s.flags.kilnCold = true;
   const saved = JSON.parse(serializeSave(s));
-  assert.equal(saved.version, 6);
+  assert.equal(saved.version, SAVE_VERSION);
   assert.deepEqual(saved.state.flags, { ch1: { kilnCold: true } });
   assert.equal(saved.state.earlier, undefined);
   const r = parseSave(serializeSave(s));
@@ -74,4 +77,22 @@ test('a chapter change carries the kit, bag and kept items, and keeps the old fl
   assert.deepEqual(s.inventory, ['gauntlet', 'regulator'].filter(i => CHAPTERS.ch1.keptItems.includes(i)));
   assert.deepEqual([s.kit.hp, s.bag.salvage], [30, 9]);
   assert.deepEqual(s.reached, ['ch1']);
+});
+
+test('a teacher passes on a technique once: the card changes and the limits grow, and saves keep it', () => {
+  const s = newGame();
+  s.kit.hp = 50;
+  applyCommand(s, { type: 'learn', technique: 'tempered-flow' });
+  applyCommand(s, { type: 'learn', technique: 'tempered-flow' });
+  assert.deepEqual([s.kit.techniques, s.kit.maxHp, s.kit.hp, s.kit.maxMp, s.kit.mp], [['tempered-flow'], 66, 56, 12, 12]);
+  const profile = maraProfile(s.kit);
+  assert.equal(profile.maxHp, 66);
+  assert.deepEqual(profile.deck.filter(c => c.upgrade).map(c => [c.type, c.upgrade]), [['pulse', 'tempered-flow']]);
+  const r = parseSave(serializeSave(s));
+  assert.ok(r.ok);
+  assert.deepEqual(r.state.kit, s.kit);
+  // Limits that don't match the techniques learned are rejected.
+  const d = JSON.parse(serializeSave(s));
+  d.state.kit.maxHp = 90;
+  assert.equal(parseSave(JSON.stringify(d)).ok, false);
 });

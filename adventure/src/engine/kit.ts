@@ -3,13 +3,25 @@ import { cardDefinition } from '../combat/cards';
 import { EQUIPMENT_SLOTS, deriveStats, withEquipment } from '../combat/equipment';
 import { EQUIPMENT } from '../combat/gear';
 import type { BattleState, BattleStats, EquipmentSlot } from '../combat/types';
-import { HERO_MAX_HP, LOCKED_SLOTS, MAX_SALVAGE, STARTING_EQUIPMENT, STARTING_OWNED, TONIC, maraProfile, type Reward } from '../content/kit';
+import { HERO_MAX_HP, HERO_MAX_MP, LOCKED_SLOTS, MAX_SALVAGE, STARTING_EQUIPMENT, STARTING_OWNED, TECHNIQUES, TONIC, maraProfile, type Reward } from '../content/kit';
 import type { EncounterDefinition } from '../combat/types';
 import type { Bag, GameState, Kit } from './types';
 
 /** Mara's fighting kit and bag at the start of a game (and for saves from before fights existed). */
 export function newKit(): Kit {
-  return { hp: HERO_MAX_HP, mp: maraProfile({ hp: 1, mp: 0, equipment: STARTING_EQUIPMENT }).maxMp, equipment: structuredClone(STARTING_EQUIPMENT), owned: [...STARTING_OWNED] };
+  return { hp: HERO_MAX_HP, mp: HERO_MAX_MP, maxHp: HERO_MAX_HP, maxMp: HERO_MAX_MP, techniques: [], equipment: structuredClone(STARTING_EQUIPMENT), owned: [...STARTING_OWNED] };
+}
+
+/** A teacher passes on a technique: once only; the most health and MP grow, and so do the current ones. */
+export function learn(kit: Kit, technique: string): boolean {
+  const t = TECHNIQUES[technique];
+  if (!t || kit.techniques.includes(technique)) return false;
+  kit.techniques.push(technique);
+  kit.maxHp += t.maxHp;
+  kit.hp += t.maxHp;
+  kit.maxMp += t.maxMp;
+  kit.mp += t.maxMp;
+  return true;
 }
 export function newBag(): Bag {
   return { salvage: 0, materials: {}, tonics: 0 };
@@ -83,7 +95,11 @@ export function optionsFor(kit: Kit, slot: EquipmentSlot): string[] {
 
 /** True if a saved kit only holds known, owned, correctly slotted gear and sane numbers. */
 export function validKit(kit: Kit): boolean {
-  if (!Number.isInteger(kit.hp) || kit.hp < 1 || kit.hp > HERO_MAX_HP) return false;
+  // The limits are the starting ones plus what the learned techniques add, exactly.
+  if (!Array.isArray(kit.techniques) || new Set(kit.techniques).size !== kit.techniques.length || !kit.techniques.every(t => Object.hasOwn(TECHNIQUES, t))) return false;
+  const grown = (key: 'maxHp' | 'maxMp') => kit.techniques.reduce((n, t) => n + TECHNIQUES[t][key], 0);
+  if (kit.maxHp !== HERO_MAX_HP + grown('maxHp') || kit.maxMp !== HERO_MAX_MP + grown('maxMp')) return false;
+  if (!Number.isInteger(kit.hp) || kit.hp < 1 || kit.hp > kit.maxHp) return false;
   if (!kit.owned.every(id => Object.hasOwn(EQUIPMENT, id)) || new Set(kit.owned).size !== kit.owned.length) return false;
   for (const slot of EQUIPMENT_SLOTS) {
     const e = kit.equipment[slot];

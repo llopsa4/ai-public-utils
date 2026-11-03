@@ -168,6 +168,11 @@ export interface RoomLook {
 export interface Kit {
   hp: number;
   mp: number;
+  /** Most health and (base) MP: they grow with what teachers pass on (`learn`). */
+  maxHp: number;
+  maxMp: number;
+  /** Techniques learned (Kiln Courier's card upgrades), e.g. `tempered-flow`. */
+  techniques: string[];
   equipment: Loadout;
   /** Gear Mara can choose from. */
   owned: string[];
@@ -231,6 +236,8 @@ export type Command =
   | { type: 'awaitGear' }
   /** Oren's spares become Mara's to choose from. */
   | { type: 'giveSpares' }
+  /** A teacher passes on a technique (once): the card changes and Mara's limits grow. */
+  | { type: 'learn'; technique: string }
   /** Opens the merchant's shop and waits for it to close. */
   | { type: 'shop' }
   | { type: 'end' };

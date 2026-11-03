@@ -1,5 +1,5 @@
 import { CHAPTERS, FIRST_CHAPTER } from '../chapters';
-import { newBag, newKit, giveSpares } from './kit';
+import { newBag, newKit, giveSpares, learn } from './kit';
 import type { ActorId, ActorState, Command, GameState } from './types';
 
 
@@ -42,6 +42,9 @@ export function applyCommand(state: GameState, command: Command): void {
       break;
     case 'giveSpares':
       giveSpares(state.kit, CHAPTERS[state.chapter].spares);
+      break;
+    case 'learn':
+      learn(state.kit, command.technique);
       break;
     case 'pose':
       actorState(state, command.actor).pose = command.pose;

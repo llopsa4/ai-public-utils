@@ -6,7 +6,7 @@ import { newBag, newKit } from './kit';
  * Add a step here whenever the format changes, and a fixture save of the old version in
  * tests/fixtures/saves/.
  */
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 
 type Raw = Record<string, unknown>;
 
@@ -20,6 +20,11 @@ const STEPS: Record<number, (s: Raw) => void> = {
     s.chapter = 'ch1';
     s.reached = ['ch1'];
     s.flags = { ch1: s.flags };
+  },
+  // 6 -> 7: techniques learned and the limits they raise (none yet in older saves).
+  6: s => {
+    const k = s.kit as Raw | undefined;
+    if (k && typeof k === 'object') { k.techniques ??= []; k.maxHp ??= 60; k.maxMp ??= 10; }
   },
 };
 

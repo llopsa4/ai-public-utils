@@ -1,0 +1,76 @@
+{
+  "format": "cinderfold-save",
+  "version": 6,
+  "savedAt": "2026-10-30T12:00:00.000Z",
+  "state": {
+    "chapter": "ch1",
+    "reached": [
+      "ch1"
+    ],
+    "room": "gallery",
+    "hero": {
+      "x": 600,
+      "y": 304,
+      "face": "left",
+      "pose": "stand"
+    },
+    "npcs": {
+      "oren": {
+        "pose": "stand",
+        "face": "left"
+      },
+      "nell": {
+        "pose": "crouch",
+        "face": "right"
+      }
+    },
+    "flags": {
+      "ch1": {
+        "hasGauntlet": true,
+        "hasNotebook": true,
+        "latchFixed": true,
+        "alarm": true,
+        "metNell": true,
+        "metOren": true,
+        "patchFailed": true,
+        "secretTally": true,
+        "metHollis": true
+      }
+    },
+    "inventory": [
+      "gauntlet",
+      "notebook"
+    ],
+    "looks": {
+      "rack": 2,
+      "item:gauntlet": 1
+    },
+    "kit": {
+      "hp": 41,
+      "mp": 10,
+      "equipment": {
+        "gauntlet": {
+          "id": "courier-gauntlet"
+        },
+        "armor": {
+          "id": "patched-coat"
+        },
+        "utility": {
+          "id": "plain-carrier"
+        }
+      },
+      "owned": [
+        "courier-gauntlet",
+        "patched-coat",
+        "plain-carrier"
+      ]
+    },
+    "bag": {
+      "salvage": 12,
+      "materials": {
+        "pressure-coil": 1
+      },
+      "tonics": 1
+    }
+  }
+}
