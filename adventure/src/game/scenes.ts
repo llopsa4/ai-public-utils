@@ -208,7 +208,7 @@ export class RoomScene extends Phaser.Scene {
     // After the actors exist: refreshObjects also updates the hero's sheet, the cold tint and ambience.
     this.refreshObjects();
     updateLighting(this);
-    if (this.session.debug) this.drawDebug();
+    if (this.session.debug && this.session.showWalkAreas) this.drawDebug();
 
     this.input.mouse?.disableContextMenu();
     this.input.on(Phaser.Input.Events.POINTER_DOWN, (p: Phaser.Input.Pointer) => onPointerDown(this, p));

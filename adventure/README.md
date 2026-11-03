@@ -46,7 +46,9 @@ npm run preview    # serves the repo root like GitHub Pages: http://127.0.0.1:41
 
 GitHub Pages serves the `main` branch as-is, so **commit the generated `index.html` and `build/`** together with the source changes. `dist/` and `node_modules/` are ignored.
 
-Add `?debug` to the URL to draw the walk areas (green), obstacles (red), hotspots (yellow), approach points (blue) and entries (pink), and to expose `window.adventure = { game, session, sound, interact }` (the e2e tests use it).
+Add `?debug` to the URL to draw the walk areas (green), obstacles (red), hotspots (yellow), approach points (blue) and entries (pink), and to expose `window.adventure = { game, session, sound, chapters, newGame, interact }` (the e2e tests use it). In debug mode the backtick key (`` ` ``) opens the **debug panel** (`?debug=panel` opens it at start): jump to a chapter or room, switch flags and items, add salvage, tonics or all gear, open the gear screen or shop, start a fight, and switch the visual quality or the walk-area overlay.
+
+`node scripts/probe.mjs --room gallery --flags kilnCold --items regulator [--quality low]` screenshots the built game in any room at any point of the story (`--all`: every room, warm and cold, both qualities) into `shots/`. `tests/story-graph.test.ts` explores every story state each chapter can reach (1,790 for chapter 1) and checks that the end stays reachable from all of them, and that every room, goal, secret and spoken line exists.
 
 Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, tilemaps, text or Phaser sound) built from Phaser's own sources; `vite.config.ts` sets Phaser's compile-time flags. The dev server uses the full prebuilt Phaser. If new code needs a Phaser module that is not in the custom entry, add it there; `npm run e2e` catches what's missing.
 

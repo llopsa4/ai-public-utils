@@ -25,6 +25,8 @@ export class Session {
   slowFadeIn = false;
   /** `?debug`: draw walk areas and hotspots. */
   readonly debug = new URLSearchParams(location.search).has('debug');
+  /** `?debug`: the walk-area overlay (switched in the debug panel). */
+  showWalkAreas = true;
   readonly ui: Ui;
   private autosaveTimer = 0;
 
