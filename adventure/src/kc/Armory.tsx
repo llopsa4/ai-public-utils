@@ -1,7 +1,7 @@
 // Cinderfold: Mara's gear. In the game's gear pop-up, a paper doll (PaperDoll); elsewhere Kiln Courier's workshop screen (components/Workshop.tsx) in equip-only form: Mara's
 // three slots with their pictures, the gear he owns on the shelf, the selected piece next to what
 // is equipped, and the build before and after. No buying, upgrading or card work in this chapter.
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { openingArt } from './assets';
 import { EquipmentArt } from './EquipmentArt';
 import { EquipmentIcon } from '@kc/components/EquipmentIcon';
@@ -155,31 +155,72 @@ function PaperDoll({ profile, owned, locked, onEquip, tonics = 0 }: ArmoryProps)
           <EquipmentArt item={{ id }} /><span className="sr-only">{EQUIPMENT[id].name}</span>
         </button>;
       })}</div>
-      {view === 'tonic' ? <article className="doll-card" aria-live="polite">
-        <h3>Kiln Tonic</h3>
-        <p className="doll-slotname doll-plain">On his belt · {tonics} of {TONIC.max}</p>
-        <p className="doll-bonuses">Heals {TONIC.heal} HP in a fight</p>
-        <p className="doll-desc">Drink one from the battle screen, under End turn. Corvin sells them in the ashways.</p>
-      </article> : isWear(view) ? <article className="doll-card" aria-live="polite">
-        <h3>{BASIC_WEAR[view].name}</h3>
-        <p className="doll-slotname">{view} · equipped</p>
-        <p className="doll-bonuses">Standard gear</p>
-        <p className="doll-desc">{BASIC_WEAR[view].description}</p>
-        <button id="armory-equip" type="button" className="session-secondary" disabled>Equipped</button>
-      </article> : !data || !selected ? null : <article className={`doll-card${spare(selected) ? ' doll-spare' : ''}`} aria-live="polite">
-        <h3>{data.name}</h3>
-        <p className="doll-slotname">{data.slot}{equipped ? ' · equipped' : ''}{slotLocked ? ' · locked' : ''}</p>
-        <p className="doll-bonuses">{bonuses({ id: selected })}</p>
-        {descriptions[selected] && <p className="doll-desc">{descriptions[selected]}</p>}
-        {!equipped && <><h4>Your build if equipped</h4><StatComparison profile={profile} item={{ id: selected }} /></>}
-        <button id="armory-equip" type="button" className={equipped || slotLocked ? 'session-secondary' : 'modal-primary'} disabled={equipped || slotLocked}
-          onClick={event => { if (event.detail <= 1) equip(selected); }}>
-          {slotLocked && !equipped ? "His mother's: it stays" : equipped ? 'Equipped' : `Equip ${data.name}`}
-        </button>
-        <p role="status" className="doll-result" key={result}>{result}</p>
-      </article>}
+      {view === 'tonic' ? <ItemPreview key="tonic" tier="consumable" tag={`Consumable · on his belt · ${tonics} of ${TONIC.max}`} name="Kiln Tonic"
+        art={<Potion />} lines={[{ text: `Heals ${TONIC.heal} HP`, good: true }, { text: 'Drunk in a fight, under End turn' }]}
+        flavor="Corvin sells them in the ashways." />
+      : isWear(view) ? <ItemPreview key={view} tier="common" tag={`Standard · ${view}`} name={BASIC_WEAR[view].name}
+        art={<WearArt slot={view} />} lines={[{ text: 'No bonuses' }]} flavor={BASIC_WEAR[view].description}
+        footer={<button id="armory-equip" type="button" className="session-secondary" disabled>Equipped</button>} />
+      : !data || !selected ? null : <ItemPreview key={selected} tier={spare(selected) ? 'spare' : 'common'}
+        tag={`${spare(selected) ? 'Spare' : 'Standard'} · ${data.slot}${equipped ? ' · equipped' : ''}${slotLocked ? ' · locked' : ''}`}
+        name={data.name} art={<EquipmentArt item={{ id: selected }} />} lines={bonusLines({ id: selected })} flavor={descriptions[selected]}
+        footer={<>
+          {!equipped && <Changes profile={profile} item={{ id: selected }} />}
+          <div className="preview-actions">
+            <button id="armory-equip" type="button" className={equipped || slotLocked ? 'session-secondary' : 'modal-primary'} disabled={equipped || slotLocked}
+              onClick={event => { if (event.detail <= 1) equip(selected); }}>
+              {slotLocked && !equipped ? "His mother's: it stays" : equipped ? 'Equipped' : `Equip ${data.name}`}
+            </button>
+            <p role="status" className="doll-result" key={result}>{result}</p>
+          </div>
+        </>} />}
     </div>
   </section>;
+}
+
+/** Each bonus of a piece on its own line, as a gain or a cost. */
+function bonusLines(item: EquippedItem): { text: string; good?: boolean; bad?: boolean }[] {
+  const data = EQUIPMENT[item.id], values = item.upgraded ? data.upgradedBonuses! : data.bonuses;
+  const labels: Record<string, string> = { power: 'Power', defense: 'Defense', speed: 'Speed', maxMp: 'Max MP', attackStrain: 'Attack strain' };
+  const lines = Object.entries(values).map(([key, value]) => {
+    const cost = key === 'attackStrain' ? value! > 0 : value! < 0;
+    return { text: `${value! > 0 ? '+' : ''}${value} ${labels[key]}`, good: !cost, bad: cost };
+  });
+  return lines.length ? lines : [{ text: 'No bonuses' }];
+}
+
+/** "If equipped": each stat that would change, as a chip (gain green, loss red). */
+function Changes({ profile, item }: { profile: CharacterProfile; item: EquippedItem }) {
+  const changed = equipmentComparison(profile, item).changed;
+  if (!changed.length) return <p className="preview-same">No change to your build.</p>;
+  return <div className="preview-changes"><span className="preview-label">If equipped</span>{changed.map(v => {
+    const better = (v.after > v.before) !== v.lowerBetter;
+    return <span key={v.key} className={`preview-chip ${better ? 'chip-good' : 'chip-bad'}`}>
+      {v.label} <span className="chip-from">{v.before}</span> → <strong>{v.after}</strong> <small>{v.after - v.before > 0 ? '+' : ''}{v.after - v.before}</small>
+    </span>;
+  })}</div>;
+}
+
+/**
+ * The selected piece, presented like a loot tooltip: a large picture in a glowing frame, its tier
+ * and slot, its name, each bonus on its own line, the flavour text, then what changes and Equip.
+ */
+function ItemPreview({ tier, tag, name, art, lines, flavor, footer }: {
+  tier: 'common' | 'spare' | 'consumable'; tag: string; name: string; art: ReactNode;
+  lines: { text: string; good?: boolean; bad?: boolean }[]; flavor?: string; footer?: ReactNode;
+}) {
+  return <article className={`doll-card preview tier-${tier}`} aria-live="polite">
+    <div className="preview-top">
+      <div className="preview-art"><span className="preview-glow" aria-hidden="true" />{art}</div>
+      <div className="preview-body">
+        <p className="preview-tag">{tag}</p>
+        <h3 className="preview-name">{name}</h3>
+        <ul className="preview-lines">{lines.map(l => <li key={l.text} className={l.good ? 'line-good' : l.bad ? 'line-bad' : ''}>{l.text}</li>)}</ul>
+      </div>
+    </div>
+    {flavor && <p className="preview-flavor">{flavor}</p>}
+    {footer}
+  </article>;
 }
 
 const STARTING_EQUIPMENT_IDS = Object.values(STARTING_EQUIPMENT).map(e => e.id);

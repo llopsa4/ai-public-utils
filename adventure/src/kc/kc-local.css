@@ -329,3 +329,114 @@
   letter-spacing: 0.06em;
 }
 .kc-armory-popup #armory-equip:not(:disabled):hover { filter: brightness(1.08); }
+
+/* The selected piece, presented like a loot tooltip (Armory ItemPreview). */
+.kc-armory-popup .preview {
+  --tier: #d9cdb6;
+  --tier-glow: #ffffff33;
+  position: relative;
+  padding: 14px 16px 14px;
+  border: 1px solid color-mix(in srgb, var(--tier) 55%, #000);
+  border-radius: 5px;
+  background:
+    radial-gradient(ellipse at 20% 0%, color-mix(in srgb, var(--tier) 16%, transparent), transparent 60%),
+    linear-gradient(#1e140df5, #0b0704fa);
+  box-shadow: inset 0 0 0 1px #000, inset 0 0 0 2px color-mix(in srgb, var(--tier) 14%, transparent), 0 10px 24px #000b, 0 0 22px var(--tier-glow);
+  animation: preview-in 260ms cubic-bezier(.2, 1.3, .4, 1) both;
+}
+.kc-armory-popup .preview.tier-spare { --tier: #ffc35a; --tier-glow: #ff9a3a40; }
+.kc-armory-popup .preview.tier-consumable { --tier: #ff9a4a; --tier-glow: #ff6a2a40; }
+.kc-armory-popup .preview::before, .kc-armory-popup .preview::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--tier);
+  opacity: 0.8;
+}
+.kc-armory-popup .preview::before { top: 4px; left: 4px; border-right: none; border-bottom: none; }
+.kc-armory-popup .preview::after { bottom: 4px; right: 4px; border-left: none; border-top: none; }
+.kc-armory-popup .preview-top { display: flex; gap: 16px; align-items: center; }
+.kc-armory-popup .preview-art {
+  position: relative;
+  flex: none;
+  width: 150px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  border: 2px solid color-mix(in srgb, var(--tier) 70%, #000);
+  border-radius: 4px;
+  background: radial-gradient(circle at 50% 45%, #3a2412, #0c0805 72%);
+  box-shadow: inset 0 0 0 1px #000, inset 0 0 24px #000c;
+  overflow: hidden;
+}
+.kc-armory-popup .preview-glow {
+  position: absolute;
+  inset: 18%;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--tier-glow), transparent 70%);
+  filter: blur(6px);
+  animation: preview-glow 2.6s ease-in-out infinite alternate;
+}
+.kc-armory-popup .preview-art .equipment-art, .kc-armory-popup .preview-art .doll-potion-icon,
+.kc-armory-popup .preview-art .doll-potion-icon svg { position: relative; width: 128px; height: 128px; }
+.kc-armory-popup .preview-tag {
+  margin: 0;
+  font: 600 11px 'Cinzel', Georgia, serif;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--tier) 75%, #8a7a60);
+}
+.kc-armory-popup .preview .preview-name {
+  margin: 2px 0 8px;
+  font: 700 24px 'Cinzel', Georgia, serif;
+  line-height: 1.1;
+  color: var(--tier);
+  text-shadow: 0 2px 0 #000, 0 0 12px var(--tier-glow);
+}
+.kc-armory-popup .preview-lines { list-style: none; margin: 0; padding: 8px 0 0; border-top: 1px solid #5c442680; }
+.kc-armory-popup .preview-lines li { font-size: 16px; color: var(--ivory); line-height: 1.5; }
+.kc-armory-popup .preview-lines li::before { content: '◆'; margin-right: 8px; font-size: 10px; vertical-align: 2px; color: #8a6a3a; }
+.kc-armory-popup .preview-lines .line-good { color: #a8e08a; }
+.kc-armory-popup .preview-lines .line-good::before { color: #7fbf5e; }
+.kc-armory-popup .preview-lines .line-bad { color: #ff9a80; }
+.kc-armory-popup .preview-lines .line-bad::before { color: #d0664a; }
+.kc-armory-popup .preview-flavor {
+  margin: 12px 0 0;
+  padding: 8px 10px;
+  font-size: 15px;
+  font-style: italic;
+  color: #c8b48d;
+  border-left: 2px solid color-mix(in srgb, var(--tier) 50%, #000);
+  background: #0006;
+}
+.kc-armory-popup .preview-flavor::before { content: '“'; }
+.kc-armory-popup .preview-flavor::after { content: '”'; }
+.kc-armory-popup .preview-changes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
+.kc-armory-popup .preview-label { font: 600 11px 'Cinzel', Georgia, serif; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+.kc-armory-popup .preview-chip {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: var(--ivory);
+  background: #0f0905;
+  border: 1px solid #5c4426;
+}
+.kc-armory-popup .preview-chip .chip-from { color: var(--muted); }
+.kc-armory-popup .chip-good { border-color: #5e8f46; box-shadow: inset 0 0 10px #4a7a3233; }
+.kc-armory-popup .chip-good strong, .kc-armory-popup .chip-good small { color: #a8e08a; }
+.kc-armory-popup .chip-bad { border-color: #9a4a36; box-shadow: inset 0 0 10px #7a3a2a33; }
+.kc-armory-popup .chip-bad strong, .kc-armory-popup .chip-bad small { color: #ff9a80; }
+.kc-armory-popup .preview-same { margin: 12px 0 0; font-size: 14px; color: var(--muted); }
+.kc-armory-popup .preview-actions { display: flex; align-items: center; gap: 12px; margin-top: 12px; }
+.kc-armory-popup .preview-actions #armory-equip { margin-top: 0; }
+.kc-armory-popup .preview-actions .doll-result { margin: 0; }
+@keyframes preview-in { from { opacity: 0; transform: translateY(6px) scale(0.98); } }
+@keyframes preview-glow { from { opacity: 0.6; transform: scale(0.9); } to { opacity: 1; transform: scale(1.1); } }
+.reduce-motion .kc-armory-popup .preview, .reduce-motion .kc-armory-popup .preview-glow { animation: none; }
+@media (max-height: 640px), (max-width: 760px) {
+  .kc-armory-popup .preview-art { width: 110px; height: 110px; }
+  .kc-armory-popup .preview-art .equipment-art, .kc-armory-popup .preview-art .doll-potion-icon,
+  .kc-armory-popup .preview-art .doll-potion-icon svg { width: 92px; height: 92px; }
+  .kc-armory-popup .preview .preview-name { font-size: 20px; }
+}
