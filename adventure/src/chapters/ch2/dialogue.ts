@@ -11,9 +11,10 @@ export const DIALOGUES: Record<string, DialogueTree> = {
     nodes: {
       start: {
         branch: [
-          { if: [{ flag: 'retuned' }], next: 'evening' },
-          { if: [{ flag: 'namedNeed' }], next: 'toBench' },
+          { if: [{ flag: 'recordsRead' }], next: 'evening' },
+          { if: [{ flag: 'namedNeed' }], next: 'toRecords' },
           { if: [{ flag: 'sparred' }], next: 'ask' },
+          { if: [{ flag: 'retuned' }], next: 'toRig' },
           { if: [{ flag: 'offeredPractice' }], next: 'waiting' },
           { next: 'intro' },
         ],
@@ -29,6 +30,7 @@ export const DIALOGUES: Record<string, DialogueTree> = {
         next: null,
       },
       waiting: { lines: [{ actor: 'bryn', text: 'dlg2.bryn.waiting' }], next: null },
+      toRig: { lines: [{ actor: 'bryn', text: 'dlg2.bryn.toRig' }], next: null },
       ask: {
         branch: [{ if: [{ atLeast: { count: 1, flags: TOLD } }], next: 'askHub' }],
         lines: [{ actor: 'bryn', text: 'dlg2.bryn.ask1' }, { actor: 'bryn', text: 'dlg2.bryn.ask2' }],
@@ -57,12 +59,7 @@ export const DIALOGUES: Record<string, DialogueTree> = {
         next: null,
       },
       later: { lines: [{ actor: 'bryn', text: 'dlg2.bryn.later' }], next: null },
-      toBench: {
-        branch: [{ if: [{ flag: 'recordsRead' }], next: 'benchReady' }],
-        lines: [{ actor: 'bryn', text: 'dlg2.bryn.toRecords' }],
-        next: null,
-      },
-      benchReady: { lines: [{ actor: 'bryn', text: 'dlg2.bryn.toBench' }], next: null },
+      toRecords: { lines: [{ actor: 'bryn', text: 'dlg2.bryn.toRecords' }], next: null },
       evening: {
         branch: [{ if: [{ flag: 'askedForHelp' }, { flag: 'letterSent' }, { flag: 'sawValley' }], next: 'night' }],
         lines: [{ actor: 'bryn', text: 'dlg2.bryn.evening' }],

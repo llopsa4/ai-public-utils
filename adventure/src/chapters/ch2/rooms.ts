@@ -188,8 +188,8 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     objects: [],
     hotspots: workshopHotspots,
-    // Bryn is at her bench until the gauntlet is retuned; then she goes to make supper.
-    actors: [{ id: 'bryn', x: 440, y: 252, visibleIf: [{ notFlag: 'retuned' }] }],
+    // Bryn is in her workshop until she has read the regulator; then she goes to make supper.
+    actors: [{ id: 'bryn', x: 440, y: 252, visibleIf: [{ notFlag: 'recordsRead' }] }],
   },
   backroom: {
     id: 'backroom',
@@ -205,7 +205,7 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     objects: [],
     hotspots: backroomHotspots,
-    actors: [{ id: 'bryn', x: 400, y: 312, visibleIf: [{ flag: 'retuned' }] }],
+    actors: [{ id: 'bryn', x: 400, y: 312, visibleIf: [{ flag: 'recordsRead' }] }],
   },
 };
 

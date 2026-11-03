@@ -63,8 +63,24 @@ test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn tea
   expect((await state(page)).room).toBe('workshop');
   await act(page, 'talk', 'bryn');
   expect((await state(page)).flags.offeredPractice).toBe(true);
-  await actThroughFight(page, 'use', 'cage', async () => !!(await state(page)).flags.sparred
-    && await page.evaluate(() => !(window as any).adventure.session.scene.isBusy()));
+  // Bryn retunes the gauntlet first: Tempered Flow and its growth.
+  await act(page, 'use', 'bench', 'gauntlet');
+  const tempered = await full();
+  expect(tempered.room).toBe('workshop');
+  expect(tempered.kit.techniques).toEqual(['tempered-flow']);
+  expect([tempered.kit.maxHp, tempered.kit.maxMp]).toEqual([66, 12]);
+  // Then the sparring is Kiln Courier's Tempered Flow practice: its banner, the card to play first,
+  // and nothing spent in it is lost.
+  const hpBefore = tempered.kit.hp;
+  await idle(page);
+  await page.evaluate(() => { const { session, interact } = (window as any).adventure; void session.scene.runScript(interact(session.state, 'use', 'cage')); });
+  await expect(page.locator('#practice-instruction')).toContainText('Tempered Flow', { timeout: 30_000 });
+  await expect(page.locator('#kc-root button.card:not(:disabled)')).toHaveCount(1);
+  for (let i = 0; i < 400 && !(await settled('sparred')); i++) {
+    if (await page.locator('#kc-root .combat-screen').isVisible().catch(() => false)) await fightStep(page);
+    else { await page.evaluate(() => (window as any).adventure.session.ui.skip()); await page.waitForTimeout(200); }
+  }
+  expect((await full()).kit.hp).toBe(hpBefore);
   await act(page, 'talk', 'bryn', undefined, [
     "Cinderfold's cold. Everyone there is waiting on what I'm carrying.",
     "If I slow down, I'll have to think about doing this on my own.",
@@ -72,11 +88,7 @@ test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn tea
   ]);
   expect((await state(page)).flags.namedNeed).toBe(true);
   await act(page, 'use', 'readingValve', 'regulator');
-  await act(page, 'use', 'bench', 'gauntlet');
-  const tempered = await page.evaluate(() => (window as any).adventure.session.state);
-  expect(tempered.room).toBe('backroom');
-  expect(tempered.kit.techniques).toEqual(['tempered-flow']);
-  expect([tempered.kit.maxHp, tempered.kit.maxMp]).toEqual([66, 12]);
+  expect((await state(page)).room).toBe('backroom');
 
   // Bryn's cot: health and MP back to full.
   await act(page, 'use', 'cot');

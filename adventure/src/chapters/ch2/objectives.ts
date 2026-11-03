@@ -11,10 +11,10 @@ const STEPS: { key: string; done: (s: GameState) => boolean; optional?: boolean 
   { key: 'obj.steam', done: s => !!s.flags.tunnel2Clear },
   { key: 'obj.bridge', done: s => !!s.flags.tunnel3Clear },
   { key: 'obj.knock', done: s => !!s.flags.knocked },
+  { key: 'obj.retune', done: s => !!s.flags.retuned },
   { key: 'obj.spar', done: s => !!s.flags.sparred },
   { key: 'obj.listen', done: s => !!s.flags.namedNeed },
   { key: 'obj.records', done: s => !!s.flags.recordsRead },
-  { key: 'obj.retune', done: s => !!s.flags.retuned },
   { key: 'obj.supper', done: s => !!s.flags.ate, optional: true },
   { key: 'obj.letter', done: s => !!s.flags.letterSent },
   { key: 'obj.supplies', done: s => !!s.flags.askedForHelp },
@@ -31,7 +31,7 @@ export function objectives(state: GameState): Objective[] {
     const done = step.done(state);
     const optional = !!step.optional;
     if (done) { shown.push({ key: step.key, done, optional }); continue; }
-    if (optional) { if (state.flags.retuned) shown.push({ key: step.key, done, optional }); continue; }
+    if (optional) { if (state.flags.recordsRead) shown.push({ key: step.key, done, optional }); continue; }
     shown.push({ key: step.key, done, optional });
     break;
   }

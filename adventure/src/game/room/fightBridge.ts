@@ -1,6 +1,6 @@
 // From the room to a fight and back: the hatch set piece, the shatter transition and the battle screen.
 import Phaser from 'phaser';
-import { drinkTonic, finishBattle } from '../../engine/kit';
+import { drinkTonic, finishBattle, healFully } from '../../engine/kit';
 import { t } from '../../engine/i18n';
 import { settings } from '../../engine/settings';
 import { sound } from '../../audio/sound';
@@ -10,7 +10,7 @@ import { chapter } from '../../chapters';
 import { guided, hushed, musicFor } from '../../engine/story';
 import { LOGICAL_H, LOGICAL_W } from '../../ui/ui';
 import type { RoomScene } from '../scenes';
-import type { Point } from '../../engine/types';
+import type { Kit, Point } from '../../engine/types';
 import { CREATURE_ART } from '../assets';
 import { wait } from './runner';
 
@@ -94,7 +94,14 @@ export async function blowHatch(scene: RoomScene): Promise<void> {
  * A fight: save first (a reload restarts it), shatter the room, then Kiln Courier's battle screen
  * (React: FFCardGame's code through src/kc/mount.tsx) over everything. The script carries on once it is won.
  */
-export async function fight(scene: RoomScene, id: string, pool?: readonly string[]): Promise<void> {
+/** A copy of the kit at full health and MP (for practice fights). */
+function rested(kit: Kit): Kit {
+  const copy = structuredClone(kit);
+  healFully(copy);
+  return copy;
+}
+
+export async function fight(scene: RoomScene, id: string, pool?: readonly string[], practice = false): Promise<void> {
   const state = scene.session.state;
   scene.syncHero();
   scene.session.saveNow();
@@ -115,16 +122,17 @@ export async function fight(scene: RoomScene, id: string, pool?: readonly string
     const rewards = reward ? [t('battle.rewardSalvage', { n: String(reward.salvage) }),
       ...Object.entries(reward.materials).map(([m, n]) => t('battle.rewardMaterial', { n: String(n), name: t(MATERIALS[m].name) }))] : [];
     const close = kc.mountBattle(el, {
-      profile: maraProfile(state.kit), guided: guided(chapter().story, scene.storyContext()), encounter: chapter().encounters[id], lessonPrompts: chapter().lessonPrompts, rewards,
+      profile: maraProfile(practice ? rested(state.kit) : state.kit), practice, guided: guided(chapter().story, scene.storyContext()), encounter: chapter().encounters[id], lessonPrompts: chapter().lessonPrompts, rewards,
       loot: reward ? [{ kind: 'salvage' as const, id: 'salvage', amount: reward.salvage, name: t('battle.salvage') },
         ...Object.entries(reward.materials).map(([m, n]) => ({ kind: 'material' as const, id: m, amount: n, name: t(MATERIALS[m].name) }))] : [],
       onLootShown: () => sound.pickup(),
       pickEncounter: pool ? () => chapter().encounters[pool[Math.floor(Math.random() * pool.length)]] : undefined,
-      tonics: () => state.bag.tonics,
+      tonics: () => (practice ? 0 : state.bag.tonics),
       drink: battle => { const next = drinkTonic(battle, state.bag); return next === battle ? null : next; },
       onMenu: () => scene.session.ui.openMenu(),
       onWin: battle => {
-        finishBattle(state, battle, reward);
+        // Practice protects Mara's health, MP and tonics.
+        if (!practice) finishBattle(state, battle, reward);
         scene.session.closeBattle = null;
         close();
         el.hidden = true;

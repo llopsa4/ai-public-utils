@@ -38,16 +38,36 @@ export interface BattleOptions {
   /** Drinks a tonic: the new battle state, or null if none could be drunk. */
   drink: (battle: BattleState) => BattleState | null;
   onWin: (battle: BattleState) => void;
+  /** Kiln Courier's technique practice: the Tempered Flow card in the opening hand, to be played first. */
+  practice?: boolean;
   /** Random fights: a new enemy for each retry after a fall (else the same fight again). */
   pickEncounter?: () => EncounterDefinition;
   onMenu: () => void;
+}
+
+/**
+ * Kiln Courier's teacher practice (as its opening's training stop sets it up): the Tempered Flow card
+ * is put in the opening hand and must be played first; its banner explains the technique.
+ */
+function practiceBattle(battle: BattleState): BattleState {
+  const all = [...battle.hand, ...battle.draw];
+  const card = all.find(c => c.upgrade === 'tempered-flow') ?? all.find(c => c.type === 'pulse');
+  if (!card) return battle;
+  if (!battle.hand.some(c => c.id === card.id)) {
+    const index = battle.draw.findIndex(c => c.id === card.id);
+    const [drawn] = battle.draw.splice(index, 1);
+    const swapped = battle.hand.pop();
+    if (swapped) battle.draw.push(swapped);
+    battle.hand.unshift(drawn);
+  }
+  return { ...battle, practice: { requiredCardId: card.id } };
 }
 
 function Battle(o: BattleOptions) {
   const victory = (v: { state: BattleState; lesson: boolean; onContinue: () => void }) =>
     <Victory {...v} loot={o.loot} onReveal={o.onLootShown} />;
   const [lesson, setLesson] = useState<TutorialState | null>(() => (o.guided ? newTutorial(o.encounter) : null));
-  const [start, setStart] = useState<BattleState>(() => createBattle(o.profile, o.encounter));
+  const [start, setStart] = useState<BattleState>(() => (o.practice ? practiceBattle(createBattle(o.profile, o.encounter)) : createBattle(o.profile, o.encounter)));
   const [free, setFree] = useState<BattleState>(start);
   const [, redraw] = useState(0);
 

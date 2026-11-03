@@ -233,7 +233,12 @@ export type Command =
   /** The gallery's maintenance hatch blows open and something crawls out (presentation). */
   | { type: 'hatch' }
   /** A fight (shatter transition, battle, return). Continues the script once it is won. */
-  | { type: 'fight'; id: string }
+  /**
+   * A fight. `practice`: Kiln Courier's technique practice: the first play must be the highlighted
+   * Tempered Flow card (with its banner), Mara starts at full health and MP, and nothing he spends
+   * in it is lost (no tonics, health and MP as before).
+   */
+  | { type: 'fight'; id: string; practice?: boolean }
   /**
    * A creature from the chapter's pool (`Chapter.encounterPools`), drawn at random on every attempt:
    * it comes out of `from` and lands at `land` in the room, then the fight.

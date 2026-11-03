@@ -174,7 +174,7 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     return true;
   },
   fight: async (scene: RoomScene, command: Of<'fight'>): Promise<boolean> => {
-    await fight(scene, command.id);
+    await fight(scene, command.id, undefined, command.practice);
     return true;
   },
   gear: async (scene: RoomScene): Promise<boolean> => {

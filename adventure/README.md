@@ -60,10 +60,10 @@ Chapter 2, **Tempered Flow**, is playable only in debug mode for now. Open the g
 - the ash cistern: the chain holding the drawbridge up is too hot to grip, even with the gauntlet; Mara wraps Tobi's scarf round it (a Mara who left chapter 1 without the scarf finds an oily rag in the first tunnel's rubble instead)
 
 His health carries from fight to fight (tonics can be drunk), and each win leaves 4 salvage. Then he reaches Bryn's tempering house on the road out of Cinderfold country, and her cot heals him fully:
-- he spars with her training rig
-- he answers her question about what he is rushing towards
-- she reads the regulator's records (the fault lies further along the return circuit)
 - she retunes his gauntlet: Kiln Courier's **Tempered Flow** technique, plus +6 most health and +2 most MP, kept for later chapters
+- he tries it on her training rig: Kiln Courier's technique practice (the first play must be the highlighted Tempered Flow card, its banner explains the cost; he fights at full health and MP and loses nothing)
+- he answers her question about what he is rushing towards
+- she reads the regulator's records (the fault lies further along the return circuit), then supper
 - over supper he writes home to Oren, lets Bryn pack his supplies, and finds the valley marked abandoned on her map
 
 Without `?debug` nothing changes: chapter 1 ends with its end card, and chapter 2's code and art are never downloaded. Chapter 2 lives in `src/chapters/ch2/`, loads on demand (`loadChapter` in `src/chapters/index.ts`), brings its own cast (Bryn) and its art (`src/chapters/ch2/art.ts`, `art/src/ch2/`), and has its own size budget. All of its art is placeholder, listed in the art manifest with Codex briefs.
