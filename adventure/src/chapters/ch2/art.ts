@@ -17,6 +17,9 @@ import bridgePng from '../../../art/src/ch2/objects/bridge.png';
 import bridgeJson from '../../../art/src/ch2/objects/bridge.json';
 import basketPng from '../../../art/src/ch2/objects/basket.png';
 import basketJson from '../../../art/src/ch2/objects/basket.json';
+import ragPng from '../../../art/src/ch2/objects/rag.png';
+import ragJson from '../../../art/src/ch2/objects/rag.json';
+import ragIcon from '../../../art/src/ch2/items/rag.png';
 import ratFight from '../../../art/src/ch2/creatures/cinder-rat.webp';
 import ratSprite from '../../../art/src/ch2/creatures/cinder-rat.png';
 import packFight from '../../../art/src/ch2/creatures/rat-pack.webp';
@@ -37,8 +40,10 @@ export function registerChapterArt(): void {
       bryn: { png: brynPng, json: brynJson },
       grate: { png: gratePng, json: grateJson }, steam: { png: steamPng, json: steamJson },
       bridge: { png: bridgePng, json: bridgeJson }, basket: { png: basketPng, json: basketJson },
+      rag: { png: ragPng, json: ragJson },
     },
-    lazySheets: ['bryn', 'grate', 'steam', 'bridge', 'basket'],
+    lazySheets: ['bryn', 'grate', 'steam', 'bridge', 'basket', 'rag'],
+    items: { rag: ragIcon },
     npcSheets: { bryn: 'bryn' },
     portraits: { bryn: brynPortrait },
     // The tunnel creatures fight in the tunnel they come out of (the collapsed tunnel's picture).

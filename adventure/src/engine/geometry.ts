@@ -46,5 +46,6 @@ export function conditionsHold(state: GameState, conditions: Condition[] | undef
     (c.flag === undefined || state.flags[c.flag] === true) &&
     (c.notFlag === undefined || state.flags[c.notFlag] !== true) &&
     (c.has === undefined || state.inventory.includes(c.has)) &&
+    (c.lacks === undefined || !state.inventory.includes(c.lacks)) &&
     (c.atLeast === undefined || c.atLeast.flags.filter(f => state.flags[f] === true).length >= c.atLeast.count));
 }

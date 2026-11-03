@@ -5,7 +5,7 @@ Status: **placeholder** · room · chapter ch2 · in the game as `art/src/ch2/ro
 ## Prompt for Codex
 
 ```text
-Draw for the game Cinderfold: An ash cistern: a dark pit across the floor (centre), a far ledge (right) with grey daylight from the road beyond, a pulley over the pit with the counterweight rope running down to a cleat on the near side (left of the pit). The drawbridge and the nest basket are drawn separately (objects bridge, basket).
+Draw for the game Cinderfold: An ash cistern: a dark pit across the floor (centre), a far ledge (right) with grey daylight from the road beyond, a pulley over the pit with the counterweight chain running down to a cleat on the near side (left of the pit), lying against a hot steam pipe (its lower links glow). The drawbridge and the nest basket are drawn separately (objects bridge, basket).
 Lighting: Very dark on the near side (one lamp, left, and Mara's glow); pale daylight on the far ledge.
 Style: painterly pixel art. Painted forms, worn materials and soft light falloff, finished as pixel art with crisp edges (no blur or haze around shapes) and a limited palette.
 World: an industrial-fantasy village inside an old kiln: fired clay, ceramic plates, iron, brass, soot, ash, ochre cloth, ember light. Lived-in and repaired.

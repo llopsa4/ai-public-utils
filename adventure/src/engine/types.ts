@@ -27,6 +27,8 @@ export interface Condition {
   flag?: string;
   notFlag?: string;
   has?: string;
+  /** Mara does not carry this item. */
+  lacks?: string;
   atLeast?: { count: number; flags: string[] };
 }
 

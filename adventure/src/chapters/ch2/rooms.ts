@@ -34,6 +34,8 @@ const workshopHotspots: HotspotDef[] = [
 
 // The tunnels (painted in code, art/ch2.mjs): dark, lit by a failing lamp and Mara's gauntlet.
 const collapseHotspots: HotspotDef[] = [
+  // Only for a Mara without Tobi's scarf (it is optional in chapter 1): the cistern needs one or the other.
+  { id: 'rag', name: 'name2.rag', polygon: rect(96, 284, 30, 22), verbs: ['look', 'take'], walkTo: pt(150, 318), face: 'left', visibleIf: [{ lacks: 'scarf' }, { notFlag: 'foundRag' }] },
   { id: 'grate', name: 'name2.grate', polygon: rect(432, 175, 66, 76), verbs: ['look', 'open', 'use', 'go'], walkTo: pt(465, 266), face: 'up' },
   { id: 'rubble', name: 'name2.rubble', polygon: rect(0, 130, 130, 190), verbs: ['look', 'use', 'go'] },
   { id: 'lamp1', name: 'name2.lamp', polygon: rect(306, 40, 28, 24), verbs: ['look'] },
@@ -53,7 +55,7 @@ const steamHotspots: HotspotDef[] = [
 
 const cisternHotspots: HotspotDef[] = [
   { id: 'cleat', name: 'name2.cleat', polygon: rect(268, 238, 34, 24), verbs: ['look', 'use', 'open'], walkTo: pt(262, 290), face: 'up' },
-  { id: 'rope', name: 'name2.rope', polygon: rect(278, 60, 14, 178), verbs: ['look', 'use', 'take'], walkTo: pt(262, 290), face: 'up' },
+  { id: 'chain', name: 'name2.chain', polygon: rect(278, 60, 14, 178), verbs: ['look', 'use', 'take'], walkTo: pt(262, 290), face: 'up' },
   { id: 'basket', name: 'name2.basket', polygon: rect(380, 76, 42, 46), verbs: ['look', 'use', 'take'] },
   { id: 'bridge', name: 'name2.bridge', polygon: rect(448, 150, 26, 112), verbs: ['look', 'use'] },
   { id: 'pit', name: 'name2.pit', polygon: rect(330, 255, 150, 105), verbs: ['look', 'go'] },
@@ -97,7 +99,10 @@ export const ROOMS: Record<string, RoomDef> = {
       start: { x: 180, y: 320, face: 'right' },
       fromSteam: { x: 465, y: 272, face: 'down' },
     },
-    objects: [{ id: 'grateObj', sheet: 'grate', x: 465, y: 251, depth: 200, flag: 'grateOpen', whenTrue: 'open', whenFalse: 'closed' }],
+    objects: [
+      { id: 'ragObj', sheet: 'rag', x: 111, y: 306, depth: 330, visibleIf: [{ lacks: 'scarf' }, { notFlag: 'foundRag' }] },
+      { id: 'grateObj', sheet: 'grate', x: 465, y: 251, depth: 200, flag: 'grateOpen', whenTrue: 'open', whenFalse: 'closed' },
+    ],
     hotspots: collapseHotspots,
     actors: [],
   },

@@ -57,7 +57,7 @@ Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, 
 Chapter 2, **Tempered Flow**, is playable only in debug mode for now. Open the game with `?debug` and either finish chapter 1 (its end leads into chapter 2 instead of the end card), or press `` ` `` and pick `ch2` in the debug panel's chapter menu. First he crosses the tunnels under the ashways: three dark scenes, each with a small puzzle that wakes a creature, drawn at random from four (Cinder Rat, Rat Pack, Ash Mite Swarm, Pipe Beetle) on every attempt, including after a lost fight:
 - the collapsed tunnel: pry the rusted grate open with the gauntlet
 - the steam junction: turn the valve the leaking pipe runs to (the wrong one scalds him for 5 health)
-- the ash cistern: burn through the rope holding the drawbridge up
+- the ash cistern: the chain holding the drawbridge up is too hot to grip, even with the gauntlet; Mara wraps Tobi's scarf round it (a Mara who left chapter 1 without the scarf finds an oily rag in the first tunnel's rubble instead)
 
 His health carries from fight to fight (tonics can be drunk), and each win leaves 4 salvage. Then he reaches Bryn's tempering house on the road out of Cinderfold country, and her cot heals him fully:
 - he spars with her training rig

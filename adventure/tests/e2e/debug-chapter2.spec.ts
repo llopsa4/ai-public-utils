@@ -33,6 +33,9 @@ test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn tea
 
   // The tunnels: each puzzle wakes a random creature, and each win leaves 4 salvage.
   const salvage = (await full()).bag.salvage;
+  // The debug jump brings no scarf, so the rag lies in the rubble.
+  await act(page, 'take', 'rag');
+  expect((await state(page)).inventory).toContain('rag');
   await act(page, 'use', 'grate');
   expect((await state(page)).flags.grateOpen).toBeFalsy();
   await actThroughFight(page, 'use', 'grate', () => settled('tunnel1Clear'), 'gauntlet');
@@ -47,7 +50,10 @@ test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn tea
   await actThroughFight(page, 'use', 'copperValve', () => settled('tunnel2Clear'));
   await act(page, 'go', 'passage');
   expect((await state(page)).room).toBe('tunnelCistern');
-  await actThroughFight(page, 'use', 'rope', () => settled('tunnel3Clear'), 'gauntlet');
+  await act(page, 'use', 'chain', 'gauntlet');
+  expect((await state(page)).flags.bridgeDown).toBeFalsy();
+  await actThroughFight(page, 'use', 'chain', () => settled('tunnel3Clear'), 'rag');
+  expect((await state(page)).inventory).not.toContain('rag');
   await act(page, 'go', 'farLedge');
   const out = await full();
   expect(out.room).toBe('road');

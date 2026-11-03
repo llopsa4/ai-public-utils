@@ -71,11 +71,18 @@ const RIGHT_VALVE: Command[] = [
   say('line2.copperTurn'), flag('steamOff'), wait(500), say('line2.pipeWakes'),
   critter({ x: 580, y: 140 }, { x: 500, y: 300 }), flag('tunnel2Clear'), say('line2.tunnel2After'),
 ];
-/** The rope: the bridge drops, the nest basket falls into the pit, and its owner climbs out. */
-const CUT_ROPE: Command[] = [
-  say('line2.ropeCut'), shake(400), flag('bridgeDown'), wait(400), say('line2.nestFalls'),
+/**
+ * The chain: hot from the steam pipe behind it, too hot for hands and too smooth for the gauntlet's
+ * ceramic fingers. Wrapped in Tobi's scarf (or, without it, the rag from the rubble) Mara can grip
+ * it and lift it off the cleat: the bridge drops, the nest basket falls into the pit, and its owner
+ * climbs out. The scarf comes back scorched; the rag is spent.
+ */
+const DROP_BRIDGE: Command[] = [
+  shake(400), flag('bridgeDown'), wait(400), say('line2.nestFalls'),
   critter({ x: 400, y: 340 }, { x: 290, y: 310 }), flag('tunnel3Clear'), say('line2.tunnel3After'),
 ];
+const CHAIN_SCARF: Command[] = [say('line2.chainScarf'), say('line2.chainLift'), ...DROP_BRIDGE];
+const CHAIN_RAG: Command[] = [say('line2.chainRag'), say('line2.chainLift'), { type: 'removeItem', item: 'rag' }, ...DROP_BRIDGE];
 
 /** Chapter 2's click rules, first match wins (src/engine/rules.ts); unmatched clicks get `fallback`. */
 export const RULES: readonly Rule[] = [
@@ -90,9 +97,12 @@ export const RULES: readonly Rule[] = [
   ...inventoryItem('notebook', ({ state }) => [say(state.flags.letterSent ? 'line2.notebookAfterLetter' : 'line2.notebookLook')]),
   ...inventoryItem('regulator', ({ state }) => [say(state.flags.recordsRead ? 'line2.regulatorAfter' : 'line2.regulatorLook')]),
   ...inventoryItem('bread', [say('line.breadLook')]),
-  ...inventoryItem('scarf', [say('line.scarfLook')]),
+  ...inventoryItem('scarf', ({ state }) => [say(state.flags.bridgeDown ? 'line2.scarfScorched' : 'line.scarfLook')]),
+  ...inventoryItem('rag', [say('line2.ragItemLook')]),
 
   // ------------------------------------------------- the collapsed tunnel ---
+  { target: 'rag', verb: 'look', do: [say('line2.ragLook')] },
+  { target: 'rag', verb: 'take', walk: true, do: [say('line2.ragTake'), { type: 'addItem', item: 'rag' }, flag('foundRag')] },
   { target: 'grate', verb: 'look', when: F('tunnel1Clear'), do: [say('line2.grateLookOpen')] },
   { target: 'grate', verb: 'look', do: [say('line2.grateLook')] },
   { target: 'grate', verb: 'go', when: F('tunnel1Clear'), walk: true, do: [go('tunnelSteam', 'start')] },
@@ -133,12 +143,17 @@ export const RULES: readonly Rule[] = [
   { target: 'steamBack', verb: 'go', walk: true, do: [go('tunnelCollapse', 'fromSteam')] },
 
   // ------------------------------------------------------- the ash cistern ---
-  { target: ['rope', 'cleat'], verb: 'look', when: F('bridgeDown'), do: [say('line2.ropeLookCut')] },
-  { target: 'rope', verb: 'look', do: [say('line2.ropeLook')] },
+  { target: ['chain', 'cleat'], verb: 'look', when: F('bridgeDown'), do: [say('line2.chainLookOff')] },
+  { target: 'chain', verb: 'look', do: [say('line2.chainLook')] },
   { target: 'cleat', verb: 'look', do: [say('line2.cleatLook')] },
-  { target: ['rope', 'cleat'], item: 'gauntlet', when: NOT('bridgeDown'), walk: true, do: CUT_ROPE },
-  { target: ['rope', 'cleat'], when: NOT('bridgeDown'), walk: true, do: [say('line2.ropeHands')] },
-  { target: ['rope', 'cleat'], do: [say('line2.ropeLookCut')] },
+  // Opened but the fight not won (a reload mid-fight): the creature is still in the pit.
+  { target: ['chain', 'cleat'], when: [{ flag: 'bridgeDown' }, { notFlag: 'tunnel3Clear' }], walk: true, do: DROP_BRIDGE.slice(3) },
+  { target: ['chain', 'cleat'], item: 'scarf', when: NOT('bridgeDown'), walk: true, do: CHAIN_SCARF },
+  { target: ['chain', 'cleat'], item: 'rag', when: NOT('bridgeDown'), walk: true, do: CHAIN_RAG },
+  { target: ['chain', 'cleat'], item: 'gauntlet', when: NOT('bridgeDown'), walk: true, do: [say('line2.chainGauntlet')] },
+  { target: ['chain', 'cleat'], item: '*', when: NOT('bridgeDown'), walk: true, do: [say('line2.chainWrongItem')] },
+  { target: ['chain', 'cleat'], when: NOT('bridgeDown'), walk: true, do: [say('line2.chainHands')] },
+  { target: ['chain', 'cleat'], do: [say('line2.chainLookOff')] },
   { target: 'basket', verb: 'look', when: F('bridgeDown'), do: [say('line2.basketGone')] },
   { target: 'basket', verb: 'look', do: [say('line2.basketLook')] },
   { target: 'basket', do: [say('line2.basketReach')] },
@@ -148,7 +163,7 @@ export const RULES: readonly Rule[] = [
   { target: 'pit', do: [say('line2.pitGo')] },
   { target: 'farLedge', verb: 'look', do: [say('line2.farLedgeLook')] },
   { target: 'farLedge', verb: 'go', when: F('tunnel3Clear'), walk: true, do: [say('line2.outOfTunnels'), go('road', 'start')] },
-  { target: 'farLedge', verb: 'go', when: [{ flag: 'bridgeDown' }, { notFlag: 'tunnel3Clear' }], walk: true, do: CUT_ROPE.slice(4) },
+  { target: 'farLedge', verb: 'go', when: [{ flag: 'bridgeDown' }, { notFlag: 'tunnel3Clear' }], walk: true, do: DROP_BRIDGE.slice(3) },
   { target: 'farLedge', verb: 'go', do: [say('line2.pitGo')] },
   { target: 'cisternBack', verb: 'look', do: [say('line2.wayBackLook')] },
   { target: 'cisternBack', verb: 'go', walk: true, do: [go('tunnelSteam', 'fromCistern')] },

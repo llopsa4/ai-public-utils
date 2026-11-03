@@ -161,11 +161,14 @@ const darken = '<rect width="1280" height="720" fill="#000" opacity="0.18"/>';
 }
 {
   // 3. The ash cistern: a pit across the floor (centre), the far ledge and the road beyond (right),
-  //    a pulley over the pit with the counterweight rope tied to a cleat (left of the pit).
+  //    a pulley over the pit with the counterweight chain hooked over a cleat (left of the pit), lying
+  //    against a hot steam pipe.
   let s = tunnelBase(160);
   s += poly([[660, 500], [960, 500], [980, H], [640, H]], '#050404') + poly([[660, 500], [960, 500], [952, 520], [668, 520]], '#3a302a');
   s += rect(960, 360, 320, 360, '#2a221c') + ellipse(1180, 330, 140, 90, '#8a7a6a', 'opacity="0.25" filter="url(#softer)"');
-  s += circle(800, 120, 20, '#4a3a2e') + line(800, 120, 570, 120, '#6a5a40', 4) + line(570, 120, 570, 520, '#8a7a50', 5);
+  s += rect(590, 140, 22, 380, '#4a3a2e') + rect(590, 140, 22, 380, 'url(#warm)', 'opacity="0.35"');
+  s += circle(800, 120, 20, '#4a3a2e') + line(800, 120, 570, 120, '#7a6a58', 4);
+  for (let y = 124; y < 500; y += 14) s += ellipse(570, y + 7, 5, 8, 'none', `stroke="${y > 300 ? '#c07040' : '#8a7a68'}" stroke-width="3"`);
   s += rect(552, 500, 36, 14, '#4a3a2e');
   await save('tunnel-cistern', render(s + darken));
 }
@@ -201,6 +204,13 @@ const bridgeDown = rect(10, 196, 300, 24, '#7a5a3a') + rect(10, 192, 300, 6, '#5
 await objectSheet('bridge', 320, 220, [['up', bridgeUp], ['down', bridgeDown]]);
 const basket = rect(36, 0, 6, 30, '#8a7a50') + poly([[6, 30], [74, 30], [64, 88], [16, 88]], '#6a4a2a') + [40, 52, 66].map(y => line(10, y, 70, y, '#4a3020', 3)).join('') + ellipse(40, 32, 30, 8, '#3a2a1e');
 await objectSheet('basket', 80, 90, [['hanging', basket], ['gone', '']]);
+// The oily rag caught in the rubble (only there for a Mara without Tobi's scarf), and its icon.
+const ragShape = poly([[4, 40], [20, 18], [40, 26], [58, 10], [56, 36], [36, 44]], '#5a4a32') + line(14, 32, 48, 22, '#3a2e1e', 3) + line(22, 40, 52, 32, '#3a2e1e', 2);
+await objectSheet('rag', 60, 46, [['idle', ragShape]]);
+if (!isFinal('ch2/items/rag.png')) {
+  mkdirSync(join(here, 'src', 'ch2', 'items'), { recursive: true });
+  await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><g transform="translate(2 8)">${ragShape}</g></svg>`)).png({ palette: true, colours: 32 }).toFile(join(here, 'src', 'ch2', 'items', 'rag.png'));
+}
 
 // The four tunnel creatures (placeholders): a fight picture 768 tall, the creature trimmed to exactly
 // 60% of the height and standing 4% above the bottom (the fight screen's `ink`, src/kc/presentation.ts),

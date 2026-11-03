@@ -144,12 +144,14 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
+| `rag` | rag | 192, 568, 60×44 | (300, 636) |
 | `grate` | rusted grate | 864, 350, 132×152 | (930, 532) |
 | `rubble` | rubble | 0, 260, 260×380 | — |
 | `lamp1` | lamp | 612, 80, 56×48 | — |
 | `pipes1` | pipes | 0, 12, 1280×68 | — |
 | `puddles` | puddles | 300, 600, 800×116 | — |
 
+- Object `ch2/objects/rag` (60×46, tags idle (1)): foot point (222, 612). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Object `ch2/objects/grate` (240×150, tags closed (1), open (1)): foot point (930, 502). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - The name board hangs from (400, 88) (about 220×64); it is painted by the game, so leave a quiet patch of wall there.
 - Flickering light pools at (640, 104): lamps, kiln mouths, hearths in the painting.
@@ -179,7 +181,7 @@ A new painting should put the things on the list where the reference image shows
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
 | `cleat` | cleat | 536, 476, 68×48 | (524, 580) |
-| `rope` | rope | 556, 120, 28×356 | (524, 580) |
+| `chain` | chain | 556, 120, 28×356 | (524, 580) |
 | `basket` | basket | 760, 152, 84×92 | — |
 | `bridge` | drawbridge | 896, 300, 52×224 | — |
 | `pit` | pit | 660, 510, 300×210 | — |

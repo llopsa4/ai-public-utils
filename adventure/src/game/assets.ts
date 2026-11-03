@@ -132,6 +132,7 @@ export function registerArt(art: {
   npcSheets?: Partial<Record<NpcId, string>>;
   portraits?: Record<string, string>;
   creatures?: Record<string, { fight: string; sprite: string; arena: string }>;
+  items?: Record<string, string>;
 }): void {
   Object.assign(ROOM_IMAGES, art.rooms);
   Object.assign(SHEETS, art.sheets);
@@ -139,6 +140,7 @@ export function registerArt(art: {
   Object.assign(NPC_SHEETS, art.npcSheets);
   Object.assign(PORTRAITS, art.portraits);
   Object.assign(CREATURE_ART, art.creatures);
+  Object.assign(ITEM_ICONS, art.items);
 }
 
 /** Creatures of random fights, by encounter id: their fight picture, room sprite and fight backdrop. */
