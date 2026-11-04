@@ -90,7 +90,8 @@ function functional(e: ArtEntry): string[] {
       if (e.id === 'char-mara-casual') lines.push('Mara out of his courier gear (for scenes at home and at rest): identical face, hair, skin, build and height to char-mara, so the player knows him at once.');
       break;
     }
-    case 'battle': case 'battle-portrait': lines.push(e.id === 'battle-hero' ? 'The fight screen\'s Mara (left side), facing right.' : 'Shown on the fight screen on the right, facing left towards Mara.'); break;
+    case 'battle': lines.push('The creature\'s sprite in the room: it squeezes out of the gallery\'s round hatch and leaps to the floor before the fight (the fight screen itself uses battle-enemy-scavenger). Drawn facing left; the game mirrors it as needed.'); break;
+    case 'battle-portrait': lines.push(e.id === 'battle-hero' ? 'The fight screen\'s Mara (left side), facing right.' : 'Shown on the fight screen on the right, facing left towards Mara.'); break;
     case 'battle-backdrop': lines.push('The fight screen\'s backdrop: the fighters stand on its lower third, the cards cover the bottom.'); break;
     case 'prop': lines.push(e.id.startsWith('creature-') ? 'The creature\'s small sprite in the room: it comes out of the grate, the pipe or the pit, hops towards Mara, then the fight starts.' : 'A moving part the game draws over the room (it swings or turns it).'); break;
     case 'item': lines.push('A satchel item: shown in the inventory bar and on the cursor while it is being used.'); break;

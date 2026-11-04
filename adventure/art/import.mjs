@@ -240,7 +240,8 @@ export async function importArt(root = here) {
             .resize(entry.height ? { height: entry.height } : { width: entry.width }).raw().toBuffer({ resolveWithObject: true });
           return { data: Buffer.from(buf.data), width: buf.info.width, height: buf.info.height };
         })()
-        : await fit(path, size.w, size.h, entry.anchor === 'none' ? 'centre' : entry.anchor);
+        // Cards are opaque square paintings: fitted whole (cover), never trimmed like a sprite.
+        : await fit(path, size.w, size.h, entry.anchor === 'none' ? 'centre' : entry.anchor, entry.kind === 'card');
       if (GRID_KINDS.has(entry.kind)) img = toGrid(img, { outline: true });
       else {
         snapToPalette(img.data, img.width);

@@ -13,7 +13,7 @@ A satchel item: shown in the inventory bar and on the cursor while it is being u
 ## Prompt for Codex
 
 ```text
-Draw for the game Cinderfold: Mara's pressure gauntlet as a satchel icon: brass and cream ceramic, the round ember cell on the back of the hand.
+Draw for the game Cinderfold: Mara's oversized pressure gauntlet as a satchel icon: a clenched fist of cream-ceramic knuckles and brass, the round ember cell on the back of the hand.
 Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 4-pixel grid on import, so use big clear shapes and flat colour areas.
 World: an industrial-fantasy village inside an old kiln and the ash country around it: fired clay, cream ceramic plates, iron, brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
 Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.

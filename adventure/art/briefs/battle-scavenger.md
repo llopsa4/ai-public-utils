@@ -4,7 +4,7 @@ Status: **final** · battle · chapter ch1 · in the game as `art/src/battle/sca
 
 ## What the game does with it
 
-Shown on the fight screen on the right, facing left towards Mara.
+The creature's sprite in the room: it squeezes out of the gallery's round hatch and leaps to the floor before the fight (the fight screen itself uses battle-enemy-scavenger). Drawn facing left; the game mirrors it as needed.
 
 ## Technical
 

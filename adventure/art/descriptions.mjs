@@ -7,7 +7,7 @@
 // hair, clothes, colours, one signature thing), so they read apart even at 58 pixels tall.
 
 export const CAST = {
-  mara: "Mara, the courier (he/him), about 22: the tallest of the cast but lean and long-limbed, a runner's build. Warm brown skin, short dark-brown hair swept back and a little unruly, a light stubble, hazel eyes, a determined, slightly tired face. An ochre wool scarf wrapped twice round his neck, its long end thrown over his left shoulder like a short cloak. Cream-white fired-ceramic armour plates (chest, shoulders, forearms, shins), chipped and patched, laced over dark brown leather. A worn leather satchel on his left hip. Dark work trousers with ceramic knee plates, patched at the knees; brown leather courier boots with brass buckles. His mother's pressure gauntlet on his right forearm and hand: brass and cream ceramic, rivets, a short pipe along the forearm and a round ember-cell housing on the back of the hand (unlit: dull dark red glass).",
+  mara: "Mara, the courier (he/him), about 22: the tallest of the cast but lean and long-limbed, a runner's build. Warm brown skin, short dark-brown hair swept back and a little unruly, a light stubble, hazel eyes, a determined, slightly tired face. An ochre wool scarf wrapped twice round his neck, its long end thrown over his left shoulder like a short cloak. Cream-white fired-ceramic armour plates (chest, shoulders, forearms, shins), chipped and patched, laced over dark brown leather. A worn leather satchel on his left hip. Dark work trousers with ceramic knee plates, patched at the knees; brown leather courier boots with brass buckles. His mother's pressure gauntlet on his right forearm and hand, oversized: a clenched fist of massive cream-ceramic knuckles, thick riveted brass reinforcements, a broad cuff and a pressure pipe along the forearm, the fist reaching down towards his knee; a round ember-cell housing on the back of the hand (unlit: dull dark red glass). Keep to Codex's pilot design (art/inbox/reference/gauntlet-closed-v2/mara-master.png).",
   maraLit: "The same Mara (identical drawing), with the gauntlet's ember cell lit: the glass on the back of the hand glowing orange, the seams of the gauntlet faintly warm.",
   maraCasual: "Mara off duty: the same face, hair, skin and build as Mara (identical proportions and height), but no armour, no gauntlet and no satchel. A plain undyed linen shirt with the sleeves rolled to the elbow, a faded rust-red knitted waistcoat, the ochre scarf hanging loose around his neck, dark work trousers (no knee plates), soft brown boots. Both hands bare; a thin leather cord bracelet on the right wrist where the gauntlet usually sits.",
   oren: "Oren, the old regulator keeper, about 68: tall (nearly Mara's height) but a little stooped, thin. Pale weathered skin with ruddy cheeks, white hair tied back in a short tail, a neat white beard, round brass spectacles on his nose, bushy white brows. An iron-grey waistcoat over a collarless off-white shirt, sleeve garters, a long brown leather apron with tools in its pockets, a brass pressure gauge on a chain at his belt and a small brass gauge held in his left hand. Grey trousers, black boots.",
@@ -37,7 +37,7 @@ export const GEAR_TIERS = [
 ];
 
 export const GEAR = {
-  'courier-gauntlet': "His mother's Courier Gauntlet: a pressure gauntlet for the right forearm and hand, brass and cream ceramic, a short pipe along the forearm, a round ember-cell housing on the back of the hand.",
+  'courier-gauntlet': "His mother's Courier Gauntlet: an oversized pressure gauntlet for the right forearm and hand, a clenched fist of massive cream-ceramic knuckles, thick brass reinforcements, a broad cuff, a pressure pipe along the forearm, a round ember-cell housing on the back of the hand.",
   'patched-coat': 'A patched ceramic coat: a long coat of oiled canvas with small ceramic scales sewn over the chest and shoulders.',
   'plain-carrier': 'A plain carrier: a courier\'s leather satchel and strap with a brass clasp.',
   'light-armor': 'Light armour: a chest and shoulder harness of spaced cream ceramic plates on leather.',
@@ -81,7 +81,7 @@ export const DESCRIPTIONS = {
   rag: 'An oily rag in a small heap: thick dark cloth stained with oil.',
   basket: 'The counterweight basket under the pulley: a woven basket on a chain, a nest of rags and fur in it. hanging: as described; gone: nothing (fully transparent).',
   // ---------------------------------------------------------------------- items and icons ---
-  'item-gauntlet': "Mara's pressure gauntlet as a satchel icon: brass and cream ceramic, the round ember cell on the back of the hand.",
+  'item-gauntlet': "Mara's oversized pressure gauntlet as a satchel icon: a clenched fist of cream-ceramic knuckles and brass, the round ember cell on the back of the hand.",
   'item-notebook': "His mother's notebook, closed: thick leather-bound, a red ribbon, a strap and buckle.",
   'item-regulator': 'The cracked regulator ring: a thick ceramic-and-brass ring with a crack, faint orange light in the crack.',
   'item-bread': 'A small round loaf from Nell, golden crust scored with a cross.',

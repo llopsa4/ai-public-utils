@@ -114,3 +114,22 @@ test('a room lands on the 4x pixel grid, and a sprite on a magenta background is
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+test('a card is imported whole and opaque, and imports keep the exact palette colours', async () => {
+  const root = mkdtempSync(join(tmpdir(), 'cinderfold-card-'));
+  try {
+    mkdirSync(join(root, 'inbox'), { recursive: true });
+    // An off-centre motif on a dark card: a sprite-style trim would shift it and pad it with transparency.
+    const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512"><rect width="512" height="512" fill="#2a1a10"/><circle cx="380" cy="150" r="90" fill="#e09040"/><rect x="40" y="400" width="120" height="60" fill="#c8beb0"/></svg>';
+    await sharp(Buffer.from(svg)).png().toFile(join(root, 'inbox', 'card-strike.png'));
+    await importArt(root);
+    const card = PNG.sync.read(readFileSync(join(root, 'src', 'kc', 'cards', 'strike.png')));
+    assert.deepEqual([card.width, card.height], [256, 256]);
+    let clear = 0;
+    for (let i = 3; i < card.data.length; i += 4) if (card.data[i] < 255) clear++;
+    assert.equal(clear, 0, 'every pixel of the card is opaque');
+    assert.equal(paletteConformity(card.data), 1, 'the encoder kept the palette colours exactly');
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
