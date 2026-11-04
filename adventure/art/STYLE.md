@@ -64,7 +64,7 @@ Save every picture in **`art/inbox/`** with the exact name its brief gives, then
 | --- | --- | --- | --- |
 | Room | `<id>.png` | opaque, no people | 16:9, at least 1280×720 |
 | Object | `<id>-<state>.png`, one per state | transparent or magenta | any, in the brief's proportions; standing on its bottom edge |
-| Character | folder `<id>/` with `body.png` and `arm.png` (and `back.png`, `sit.png`, `lie.png` if asked) | transparent or magenta | 1024×1536 each, the same canvas |
+| Character | folder `<id>/` with `body.png`, `arm.png`, `kneel.png` and `lie.png` (all required; `sit.png` too for background people who sit) | transparent or magenta | 1024×1536, the same canvas; `lie.png` 1536×1024 |
 | Prop, creature | `<id>.png` | transparent or magenta | any; standing on (or hanging from) the edge the brief says |
 | Fight picture | `<id>.png` | transparent or magenta (backdrops opaque) | as the brief says |
 | Item | `<id>.png` | transparent or magenta | 64×64 |
@@ -84,6 +84,10 @@ The game animates a character from **one drawing** (a cut-out rig: legs bend at 
   - `body.png`: everything except the working arm
   - `arm.png`: the working arm (Mara's gauntlet arm), with a little overlap at the shoulder
 - **The face:** lit, eyes open, mouth closed, neutral. The rig paints blinks, talking and the worried and angry moods.
+- **Two more poses, required for every character**, each one complete picture (the working arm included, no layers):
+  - `kneel.png`: down on one knee, facing right, as when looking at or fixing something low. Same 1024×1536 canvas and the same scale as `body.png` (the figure is simply lower), the down knee and the other foot on y ≈ 1500.
+  - `lie.png`: lying on the back, head to the right, eyes closed (resting or knocked down). On a 1536×1024 landscape canvas, the same scale as `body.png` (the figure as long as he is tall), lying on y ≈ 990.
+- **Keep the feet fully inside the canvas** in every pose.
 
 After import, the joints and face points are measured once (`art/manifest.mjs`, `RIGS`), then `npm run rig` builds the sheets. Dialogue portraits are cut from the same drawing.
 

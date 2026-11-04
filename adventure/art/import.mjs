@@ -6,8 +6,8 @@
 //   npm run art:import            (every file in art/inbox)
 //
 // Inbox names (see each brief in art/briefs): <id>.png for single images; <id>-<state>.png for
-// each state of an object (rack-full.png, rack-empty.png); <id>/body.png and <id>/arm.png (and
-// back/sit/lie) for characters.
+// each state of an object (rack-full.png, rack-empty.png); <id>/body.png, arm.png, kneel.png and
+// lie.png for characters (an optional sit.png for background people who sit).
 import { existsSync, mkdirSync, readFileSync, readdirSync, renameSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, parse } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -18,6 +18,8 @@ import { addOutline, snapToPalette } from './normalize.mjs';
 import { encodeIndexed } from './png.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
+/** Every character delivers these layers: standing body, working arm, a kneeling pose, a lying pose. */
+const CHARACTER_LAYERS = ['body.png', 'arm.png', 'kneel.png', 'lie.png'];
 const CARD_ORDER = ['strike', 'guard', 'pulse', 'vent', 'cycle', 'piston', 'shield', 'draw-back', 'discard-back'];
 
 /**
@@ -209,12 +211,16 @@ export async function importArt(root = here) {
         // A magenta background is keyed out first (as for every sprite).
         const raw = await sharp(join(path, layer)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
         const keyed = await sharp(keyMagenta(Buffer.from(raw.data)), { raw: { width: raw.info.width, height: raw.info.height, channels: 4 } }).png().toBuffer();
-        const { data, info } = await sharp(keyed).resize(1024, 1536, { fit: 'contain', position: 'south', background: { r: 0, g: 0, b: 0, alpha: 0 } }).raw().toBuffer({ resolveWithObject: true });
+        // Standing, arm and kneeling layers share the 1024x1536 portrait canvas; the lying pose is landscape.
+        const [cw, ch] = layer === 'lie.png' ? [1536, 1024] : [1024, 1536];
+        const { data, info } = await sharp(keyed).resize(cw, ch, { fit: 'contain', position: 'south', background: { r: 0, g: 0, b: 0, alpha: 0 } }).raw().toBuffer({ resolveWithObject: true });
         const img = { data: Buffer.from(data), width: info.width, height: info.height };
         snapToPalette(img.data, img.width);
         writeFileSync(join(dest, layer), pngOf(img));
       }
       done.push(name);
+      const missing = CHARACTER_LAYERS.filter(l => !existsSync(join(path, l)));
+      if (missing.length) report.push(`${stem}: missing required ${missing.join(', ')} (every character needs ${CHARACTER_LAYERS.join(', ')})`);
       report.push(`${stem}: layers saved to art/sources/characters/${stem}/. Next: measure its joints and face in art/manifest.mjs (RIGS), point its source there, then npm run rig.`);
       continue;
     }

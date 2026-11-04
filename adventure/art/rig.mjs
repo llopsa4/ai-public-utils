@@ -213,6 +213,31 @@ function renderPose(img, cfg, pose, k) {
   return { W, H, rgb, alpha };
 }
 
+/**
+ * A drawn pose (Codex's kneel.png or lie.png) at the character's scale k: area-averaged down, its
+ * drawn content centred on the frame's centre column (placeInFrame then stands it on the bottom row).
+ */
+function renderStill(img, k) {
+  const W = Math.ceil(img.width * k) + 2, H = Math.ceil(img.height * k) + 2;
+  const rgb = new Float64Array(W * H * 3), alpha = new Float64Array(W * H), cover = new Float64Array(W * H);
+  let minX = W, maxX = 0;
+  for (let y = 0; y < img.height; y++) for (let x = 0; x < img.width; x++) {
+    const i = (y * img.width + x) * 4, al = img.data[i + 3] / 255;
+    const o = Math.floor(y * k) * W + Math.floor(x * k);
+    cover[o] += 1;
+    if (al < 0.04) continue;
+    alpha[o] += al;
+    for (let c = 0; c < 3; c++) rgb[o * 3 + c] += img.data[i + c] * al;
+  }
+  for (let o = 0; o < W * H; o++) {
+    if (!alpha[o]) continue;
+    for (let c = 0; c < 3; c++) rgb[o * 3 + c] /= alpha[o];
+    alpha[o] = Math.min(1, alpha[o] / cover[o]);
+    if (alpha[o] >= 0.5) { minX = Math.min(minX, o % W); maxX = Math.max(maxX, o % W); }
+  }
+  return { pose: { W, H, rgb, alpha }, centerX: Math.round((minX + maxX) / 2) };
+}
+
 /** Places a rendered pose in a frame: feet on the bottom row, hips (ox) on the centre column. */
 function placeInFrame(pose, centerX) {
   const { W, H, rgb, alpha } = pose;
@@ -538,8 +563,15 @@ function buildCharacter(id) {
   add(closed, {});                  // 3 blink_side
   add(open, {});                    // 4 stand_up (no back view exists: the three-quarter pose is reused)
   for (let rep = 0; rep < 3; rep++) for (let p = 0; p < 6; p++) add(open, cfg.walks ? walkPose(p) : {}); // 5..22 walks
-  add(open, crouchPose);            // 23 crouch
-  add(closed, deadPose);            // 24 dead (rotated, eyes closed)
+  // Kneeling and lying: Codex's drawn poses when the rig has them (kneel.png, lie.png: required of
+  // every new character), else made from the standing drawing (legs squashed; the figure turned over).
+  // Looked for beside the character's source drawing (art/sources/characters/<id>/), so they are used
+  // as soon as they are imported.
+  const pose = name => { const p = cfg.source.startsWith('sources/') ? join(here, dirname(cfg.source), name) : null; return p && existsSync(p) ? p : null; };
+  const still = path => { const r = renderStill(load(path), k); frames.push(placeInFrame(r.pose, r.centerX)); };
+  const kneel = pose('kneel.png'), lie = pose('lie.png');
+  if (kneel) still(kneel); else add(open, crouchPose); // 23 crouch
+  if (lie) still(lie); else add(closed, deadPose);     // 24 dead / lying (eyes closed)
   add(open, fidgetPose);            // 25 fidget (idle gesture)
 
   // Palette from all frames, then hard alpha and a 1px dark outline for readability on busy art.

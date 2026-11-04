@@ -5,8 +5,8 @@
 // prompt to paint from (visual). art/CODEX.md says in what order to make them.
 //
 //   npm run art:briefs
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MANIFEST, PILOT, RIGS } from '../art/manifest.mjs';
 import type { ArtEntry } from '../art/manifest.mjs';
@@ -109,7 +109,7 @@ function technical(e: ArtEntry): string[] {
     case 'room': return [`File: \`art/inbox/${e.id}.png\`, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 2-pixel grid and snapped to the palette.`, `Layout to follow: \`art/spec/${e.file.split('/').pop()!.replace('.png', '.jpg')}\`.`];
     case 'battle-backdrop': return [`File: \`art/inbox/${e.id}.png\`, opaque, 1280×720 or larger at 16:9; the floor clear in the lower third.`];
     case 'object': return [`Files: ${e.tags!.map(t => `\`art/inbox/${e.id}-${t}.png\``).join(', ')}: transparent (or on flat magenta #FF00FF), the thing standing on the bottom edge.`, `Fitted into a ${e.frame?.w ?? '?'}×${e.frame?.h ?? '?'} art-pixel frame (true proportion to Mara at 232), reduced to the 2-pixel grid, outlined.`];
-    case 'character': case 'extra': return [`Folder: \`art/inbox/${e.id}/\` with \`body.png\` (everything but the working arm) and \`arm.png\` (the working arm, a little overlap at the shoulder), transparent (or flat magenta), both 1024×1536 on the same canvas; optional \`back.png\`, \`sit.png\`, \`lie.png\`.`, `Pose: full body facing right in a slight three-quarter turn, upright, arms relaxed, feet apart and both visible, feet on y ≈ 1500${e.height && e.height < 180 ? ' (a child: about 63% of an adult\'s height on the same feet line)' : ', head top at y ≈ 40'}. Face lit, eyes open, mouth closed, neutral.`];
+    case 'character': case 'extra': return [`Folder: \`art/inbox/${e.id}/\` with four required pictures, transparent (or flat magenta): \`body.png\` (standing, everything but the working arm) and \`arm.png\` (the working arm, a little overlap at the shoulder), both 1024×1536 on the same canvas; \`kneel.png\` (the whole figure down on one knee, facing right, as when looking at something low; 1024×1536, the same scale, knee and foot on y ≈ 1500); \`lie.png\` (the whole figure lying on the back, head to the right, eyes closed; 1536×1024 landscape, the same scale, lying on y ≈ 990)${e.kind === 'extra' ? '; and \`sit.png\` if they sit at work (the same canvas as body.png)' : ''}.`, `Pose: full body facing right in a slight three-quarter turn, upright, arms relaxed, feet apart and both visible, feet on y ≈ 1500${e.height && e.height < 180 ? ' (a child: about 63% of an adult\'s height on the same feet line)' : ', head top at y ≈ 40'}. Face lit, eyes open, mouth closed, neutral.`];
     case 'portrait': return ['Made by the game from the character\'s drawing: no separate picture.'];
     case 'card-atlas': return ['Assembled by the importer from the nine card pictures: no separate picture.'];
     case 'foreground': return ['Cut by the importer from the room painting: no separate picture.'];
@@ -161,12 +161,22 @@ writeFileSync(join(out, 'PILOT.md'), pilot.join('\n'));
 // screen, cards, gear, items and icons. Generated, so it always matches the manifest.
 const MAKES = (e: ArtEntry) => !['portrait', 'card-atlas', 'foreground'].includes(e.kind) && e.id !== 'room-tent';
 /** Already in the new style: imported by Codex since the reference (the older Gemini backdrop is redone too). */
+/** A rigged character's source folder (art/sources/characters/<id>/), once the rig builds from Codex's drawing. */
+const sourceDir = (e: ArtEntry) => {
+  const src = e.rig ? (RIGS as Record<string, { source: string }>)[e.rig]?.source : undefined;
+  return src?.startsWith('sources/') ? join(art, dirname(src)) : null;
+};
+/** The required character pictures still missing from its source folder. */
+const missingPoses = (e: ArtEntry) => { const dir = sourceDir(e); return dir ? ['kneel.png', 'lie.png'].filter(f => !existsSync(join(dir, f))) : []; };
 const DONE = (e: ArtEntry) => (e.status === 'final' && e.id !== 'battle-backdrop-gallery')
-  // A character is done once its rig builds from Codex's drawing (rigged sheets stay generated, not 'final').
-  || (!!e.rig && !!(RIGS as Record<string, { source: string }>)[e.rig]?.source.startsWith('sources/'));
+  // A character is done once its rig builds from Codex's drawing with all its poses (rigged sheets stay generated, not 'final').
+  || (!!sourceDir(e) && !missingPoses(e).length);
 const byId = new Map(MANIFEST.map(e => [e.id, e]));
 const output = (e: ArtEntry) => e.kind === 'object' ? e.tags!.map(t => `art/inbox/${e.id}-${t}.png`).join(', ')
-  : e.kind === 'character' || e.kind === 'extra' ? `art/inbox/${e.id}/body.png + arm.png` : `art/inbox/${e.id}.png`;
+  // A sheet built from another character's drawing (the lit-gauntlet Mara) needs no pictures of its own.
+  : sourceDir(e) && basename(sourceDir(e)!) !== e.id ? `nothing to make: built from ${basename(sourceDir(e)!)}'s drawing`
+  : sourceDir(e) && missingPoses(e).length ? `${missingPoses(e).map(f => `art/inbox/${e.id}/${f}`).join(', ')} (only these: body and arm are in)`
+  : e.kind === 'character' || e.kind === 'extra' ? `art/inbox/${e.id}/body.png, arm.png, kneel.png, lie.png` : `art/inbox/${e.id}.png`;
 const line = (e: ArtEntry) => `- [${DONE(e) ? 'x' : ' '}] **${e.id}**: [brief](briefs/${e.id}.md) → \`${output(e)}\``;
 const listed = new Set<string>(PILOT);
 const batch = (title: string, ids: string[]) => {
@@ -213,7 +223,7 @@ const codex = [
   '## For every picture',
   '',
   '1. Open its brief (the link in its line below). It has three parts: what the game does with it, the technical requirements, and the prompt to paint from. Use the prompt, attach what the brief lists, and follow the technical part exactly.',
-  '2. Save the result as the exact file name in its line, in `art/inbox/`: `<id>.png`; objects one file per state `<id>-<state>.png`; characters a folder `<id>/` with `body.png` and `arm.png`. Transparent background, or flat magenta `#FF00FF` where transparency is impossible.',
+  '2. Save the result as the exact file name in its line, in `art/inbox/`: `<id>.png`; objects one file per state `<id>-<state>.png`; characters a folder `<id>/` with `body.png`, `arm.png`, `kneel.png` and `lie.png` (all four required; keep the feet inside the canvas). Transparent background, or flat magenta `#FF00FF` where transparency is impossible.',
   '3. After each batch, from `adventure/`: `npm run art:import` (fits each picture to size, reduces it to the 2-pixel grid, snaps it to the palette, outlines sprites, puts it where the game loads it, marks it final, writes a before/after preview), then `npm run art:check`.',
   '4. Look at `art/inbox/preview/<id>.png` for each one. If it does not match the brief (wrong layout, wrong proportions, text in it, a person in a room, perspective), make it again under the same name and import again.',
   '5. Characters: after import their layers are kept in `art/sources/characters/`; Claude measures the joints and rigs them (`npm run rig`). Note them in your report.',

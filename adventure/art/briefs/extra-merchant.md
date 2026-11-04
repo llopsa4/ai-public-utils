@@ -9,7 +9,7 @@ In the game 214 art pixels tall (107 pixels on the 2-pixel grid; the face is onl
 
 ## Technical
 
-- Folder: `art/inbox/extra-merchant/` with `body.png` (everything but the working arm) and `arm.png` (the working arm, a little overlap at the shoulder), transparent (or flat magenta), both 1024×1536 on the same canvas; optional `back.png`, `sit.png`, `lie.png`.
+- Folder: `art/inbox/extra-merchant/` with four required pictures, transparent (or flat magenta): `body.png` (standing, everything but the working arm) and `arm.png` (the working arm, a little overlap at the shoulder), both 1024×1536 on the same canvas; `kneel.png` (the whole figure down on one knee, facing right, as when looking at something low; 1024×1536, the same scale, knee and foot on y ≈ 1500); `lie.png` (the whole figure lying on the back, head to the right, eyes closed; 1536×1024 landscape, the same scale, lying on y ≈ 990); and `sit.png` if they sit at work (the same canvas as body.png).
 - Pose: full body facing right in a slight three-quarter turn, upright, arms relaxed, feet apart and both visible, feet on y ≈ 1500, head top at y ≈ 40. Face lit, eyes open, mouth closed, neutral.
 
 ## Prompt for Codex
@@ -23,7 +23,7 @@ Never: text or letters in the picture, people in rooms, perspective, lens effect
 Proportions: true to the cast (art/style/scale.png): Mara is 232 px, a doorway about 328, a table top 104, a chair seat 48.
 Light: evenly lit with soft form shading and no strong cast light (the game lights it to match the room).
 Facing right in a slight three-quarter turn (the game mirrors it to face left).
-Folder: art/inbox/extra-merchant/ with body.png (everything but the working arm) and arm.png (the working arm, a little overlap at the shoulder), transparent (or flat magenta), both 1024×1536 on the same canvas; optional back.png, sit.png, lie.png.
+Folder: art/inbox/extra-merchant/ with four required pictures, transparent (or flat magenta): body.png (standing, everything but the working arm) and arm.png (the working arm, a little overlap at the shoulder), both 1024×1536 on the same canvas; kneel.png (the whole figure down on one knee, facing right, as when looking at something low; 1024×1536, the same scale, knee and foot on y ≈ 1500); lie.png (the whole figure lying on the back, head to the right, eyes closed; 1536×1024 landscape, the same scale, lying on y ≈ 990); and sit.png if they sit at work (the same canvas as body.png).
 Pose: full body facing right in a slight three-quarter turn, upright, arms relaxed, feet apart and both visible, feet on y ≈ 1500, head top at y ≈ 40. Face lit, eyes open, mouth closed, neutral.
 ```
 
