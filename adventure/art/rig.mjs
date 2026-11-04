@@ -172,7 +172,9 @@ function partsOf(cfg, x, y) {
  * applied last. Parts are splatted at output scale k and composited far -> upper -> near -> arm.
  */
 function renderPose(img, cfg, pose, k) {
-  const W = 400, H = 400, ox = 200, oy = 330; // working canvas; hips land near (ox, oy)
+  // Working canvas; hips land near (ox, oy). Tall enough for long legs below the hips (Codex's Mara's
+  // feet ran past a 400-pixel canvas and were cut off).
+  const W = 400, H = 560, ox = 200, oy = 330;
   const hipC = [(cfg.hips.near[0] + cfg.hips.far[0]) / 2, cfg.hipY];
   const layers = {};
   const ORDER = ['farShin', 'farThigh', 'upper', 'fidget', 'nearShin', 'nearThigh', 'arm'];
@@ -279,17 +281,25 @@ function rigOf(cfg, open) {
   // Six-frame step (frames 0 and 3 are the foot plants). Positive angles swing a leg backward.
   const THIGH = [-14, -5, 8, 14, 2, -10];
   const SHIN = [0, 0, 6, 12, 28, 10];
-  const BOB = [6, -8, -2, 6, -8, -2];
-  const SWAY = [-1.2, 0, 0.8, 1.2, 0, -0.8];
+  // The whole upper body moves with the step: it rises and falls (art pixels, so it shows whatever the
+  // source's size), sways a little and leans into the walk; the working arm swings against the legs.
+  const BOB = [1.5, -1.5, -0.5, 1.5, -1.5, -0.5].map(b => b / k);
+  const SWAY = [-2, 0, 1.4, 2, 0, -1.4];
+  const LEAN = cfg.walkLean ?? 2.5;
+  const ARM = [-1, -0.4, 0.5, 1, 0.4, -0.5];
   const leg = (side, thigh, shin) => {
     const t = rotateAbout(thigh, cfg.hips[side]);
     return { [`${side}Thigh`]: t, [`${side}Shin`]: mul(t, rotateAbout(shin, cfg.knees[side])) };
   };
-  const walkPose = phase => ({
-    ...leg('near', THIGH[phase], SHIN[phase]),
-    ...leg('far', THIGH[(phase + 3) % 6], SHIN[(phase + 3) % 6]),
-    upper: mul(translate(0, BOB[phase]), rotateAbout(SWAY[phase], hipC)),
-  });
+  const walkPose = phase => {
+    const upper = mul(translate(0, BOB[phase]), rotateAbout(SWAY[phase] + LEAN, hipC));
+    return {
+      ...leg('near', THIGH[phase], SHIN[phase]),
+      ...leg('far', THIGH[(phase + 3) % 6], SHIN[(phase + 3) % 6]),
+      upper,
+      ...(cfg.armPivot ? { arm: mul(upper, rotateAbout(ARM[phase] * (cfg.armSwing ?? 6), cfg.armPivot)) } : {}),
+    };
+  };
   const squashLegs = s => Object.fromEntries(['near', 'far'].flatMap(side => [[`${side}Thigh`, scaleAbout(1, s, cfg.hips[side])], [`${side}Shin`, scaleAbout(1, s, cfg.hips[side])]]));
   return { k, hipC, walkPose, squashLegs };
 }

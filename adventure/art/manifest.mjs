@@ -54,6 +54,8 @@ const card = (id, name, subject) => ({
 // gauntlet arm on the picture's left), measured on its 1024x1536 canvas.
 const MARA_RIG = {
   source: 'sources/characters/char-mara/body.png', armLayer: 'sources/characters/char-mara/arm.png', height: 232, walks: true,
+  // The gauntlet arm swings from its shoulder while he walks.
+  armPivot: [370, 320], armSwing: 6,
   hipY: 840, splitX: 505, hips: { near: [440, 840], far: [570, 840] }, knees: { near: [410, 1050], far: [595, 1030] },
   eyes: [{ x: 527, y: 115, rx: 12, ry: 6, skinAt: [527, 132] }, { x: 565, y: 115, rx: 10, ry: 6, skinAt: [565, 132] }],
   portrait: [370, 0, 360, 360],
