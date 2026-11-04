@@ -15,26 +15,26 @@ const byId = <T extends { id: string }>(list: T[]): Record<string, T> => Object.
 const HALL: CrowdDef = {
   // They keep clear of every spot Mara walks to (tests/crowd.test.ts).
   stations: byId([
-    st('mouthA', 340, 244, 'up', 'work', [3500, 6500]),
-    st('mouthB', 462, 242, 'up', 'work', [3500, 6500]),
-    st('mouthC', 540, 264, 'up', 'work', [3000, 5000]),
-    st('clayPile', 140, 282, 'left', 'work', [2500, 4500]),
-    st('pulley', 96, 272, 'up', 'reach', [3000, 5500]),
-    st('tallyWall', 150, 312, 'left', 'tap', [3000, 6000]),
-    st('bench', 130, 332, 'right', 'sit', [7000, 12000]),
-    st('talkSpot', 384, 282, 'left', 'stand', [2500, 5000]),
-    st('lookout', 500, 300, 'up', 'stand', [2000, 4000]),
-    st('nearTent', 230, 296, 'down', 'stand', [1500, 3000]),
+    st('mouthA', 338, 304, 'up', 'work', [3500, 6500]),
+    st('mouthB', 468, 304, 'up', 'work', [3500, 6500]),
+    st('mouthC', 400, 330, 'up', 'work', [3000, 5000]),
+    st('clayPile', 190, 320, 'left', 'work', [2500, 4500]),
+    st('pulley', 100, 310, 'up', 'reach', [3000, 5500]),
+    st('tallyWall', 60, 330, 'left', 'tap', [3000, 6000]),
+    st('bench', 140, 340, 'right', 'sit', [7000, 12000]),
+    st('talkSpot', 300, 330, 'left', 'stand', [2500, 5000]),
+    st('lookout', 530, 322, 'up', 'stand', [2000, 4000]),
+    st('nearTent', 220, 334, 'down', 'stand', [1500, 3000]),
     // Once the kiln is cold: standing about, looking at the dead mouths.
-    st('huddle1', 336, 284, 'up', 'stand', [5000, 9000]),
-    st('huddle3', 300, 304, 'right', 'stand', [5000, 9000]),
-    st('staring', 450, 268, 'up', 'stand', [6000, 10000]),
+    st('huddle1', 360, 326, 'up', 'stand', [5000, 9000]),
+    st('huddle3', 270, 310, 'right', 'stand', [5000, 9000]),
+    st('staring', 440, 326, 'up', 'stand', [6000, 10000]),
   ]),
   exits: {
-    curtain: { id: 'curtain', x: 592, y: 244, out: { x: 632, y: 238 } },
-    west: { id: 'west', x: 54, y: 248, out: { x: 6, y: 248 } },
+    curtain: { id: 'curtain', x: 612, y: 300, out: { x: 660, y: 300 } },
+    west: { id: 'west', x: 20, y: 312, out: { x: -24, y: 312 } },
   },
-  wander: { x: 130, y: 272, w: 400, h: 70 },
+  wander: { x: 130, y: 300, w: 400, h: 40 },
   extras: [
     {
       id: 'extra-stoker', sheet: 'extra-stoker', met: 'metHollis', body: 0.95, speed: 0.9, color: '#e8a878', carry: 'shovel',
@@ -75,26 +75,26 @@ const HALL: CrowdDef = {
 // ---------------------------------------------------------- the firing house's kids ---
 const FIRING_HOUSE: CrowdDef = {
   stations: byId([
-    st('chalk1', 230, 340, 'right', 'work', [3000, 6000]),
-    st('chalk2', 430, 336, 'left', 'work', [3000, 6000]),
-    st('soupPeek', 226, 266, 'up', 'reach', [1500, 3000]),
-    st('hearthSit', 196, 318, 'left', 'sit', [4000, 8000]),
+    st('chalk1', 180, 330, 'right', 'work', [3000, 6000]),
+    st('chalk2', 400, 336, 'left', 'work', [3000, 6000]),
+    st('soupPeek', 130, 310, 'up', 'reach', [1500, 3000]),
+    st('hearthSit', 80, 322, 'left', 'sit', [4000, 8000]),
     // Tag: short waits between far-apart spots, at a run.
-    st('tag1', 500, 300, 'left', 'stand', [400, 1200]),
-    st('tag2', 570, 342, 'left', 'stand', [400, 1200]),
-    st('tag3', 400, 296, 'right', 'stand', [400, 1200]),
-    st('tag4', 330, 344, 'right', 'stand', [400, 1200]),
-    // The alarm: close to Nell (who stands at 292,292).
-    st('byNellA', 322, 316, 'left', 'stand', [6000, 12000]),
-    st('byNellB', 262, 312, 'right', 'stand', [6000, 12000]),
+    st('tag1', 520, 312, 'left', 'stand', [400, 1200]),
+    st('tag2', 560, 340, 'left', 'stand', [400, 1200]),
+    st('tag3', 380, 306, 'right', 'stand', [400, 1200]),
+    st('tag4', 320, 340, 'right', 'stand', [400, 1200]),
+    // The alarm: close to Nell (who stands at 250,300).
+    st('byNellA', 276, 330, 'left', 'stand', [6000, 12000]),
+    st('byNellB', 226, 324, 'right', 'stand', [6000, 12000]),
     // The cold: huddled by the dead hearth.
-    st('coldA', 198, 292, 'left', 'sit', [8000, 14000]),
-    st('coldB', 214, 316, 'left', 'sit', [8000, 14000]),
+    st('coldA', 100, 340, 'left', 'sit', [8000, 14000]),
+    st('coldB', 140, 338, 'left', 'sit', [8000, 14000]),
   ]),
   exits: {
     east: { id: 'east', x: 626, y: 326, out: { x: 662, y: 326 } },
   },
-  wander: { x: 330, y: 300, w: 270, h: 50 },
+  wander: { x: 300, y: 300, w: 250, h: 40 },
   extras: [
     {
       id: 'extra-runner', sheet: 'extra-runner', met: 'metPip', curious: true, body: 0.66, speed: 1.5, color: '#f2d27a',
@@ -121,11 +121,11 @@ const FIRING_HOUSE: CrowdDef = {
 const ASHWAYS: CrowdDef = {
   // Near the way back, out of the way of the valve and the sweeper.
   stations: byId([
-    st('stall', 112, 296, 'left', 'stand', [8000, 16000]),
-    st('stall2', 128, 318, 'right', 'stand', [5000, 9000]),
+    st('stall', 90, 330, 'left', 'stand', [8000, 16000]),
+    st('stall2', 130, 334, 'right', 'stand', [5000, 9000]),
   ]),
   exits: {},
-  wander: { x: 100, y: 290, w: 40, h: 30 },
+  wander: { x: 80, y: 316, w: 60, h: 24 },
   extras: [
     {
       id: 'extra-merchant', sheet: 'extra-merchant', body: 0.95, speed: 0.6, color: '#c8d890', shop: true,

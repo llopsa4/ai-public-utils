@@ -22,7 +22,7 @@ const F = (name: string): Condition[] => [{ flag: name }];
 const NOT = (name: string): Condition[] => [{ notFlag: name }];
 
 /** Bryn's voice through the door, before it opens. */
-const DOOR_VOICE = { x: 410, y: 150 };
+const DOOR_VOICE = { x: 436, y: 150 };
 
 /** Items with their own reply when used on something that doesn't take them (chapter 1's lines). */
 const ITEM_FAILS = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf'];
@@ -79,12 +79,12 @@ const critter = (from: Point, land: Point): Command => ({ type: 'creatureFight',
 /** The grate: the gauntlet levers it open, and something was nesting behind it. */
 const PRY_GRATE: Command[] = [
   say('line2.gratePry'), shake(300), flag('grateOpen'), say('line2.grateNest'),
-  critter({ x: 465, y: 240 }, { x: 420, y: 300 }), flag('tunnel1Clear'), say('line2.tunnel1After'),
+  critter({ x: 597, y: 250 }, { x: 520, y: 300 }), flag('tunnel1Clear'), say('line2.tunnel1After'),
 ];
 /** The right valve: the steam dies, and the sudden quiet wakes what slept in the warm pipe. */
 const RIGHT_VALVE: Command[] = [
   say('line2.copperTurn'), flag('steamOff'), wait(500), say('line2.pipeWakes'),
-  critter({ x: 580, y: 140 }, { x: 500, y: 300 }), flag('tunnel2Clear'), say('line2.tunnel2After'),
+  critter({ x: 560, y: 150 }, { x: 470, y: 300 }), flag('tunnel2Clear'), say('line2.tunnel2After'),
 ];
 /**
  * The chain: hot from the steam pipe behind it, too hot for hands and too smooth for the gauntlet's

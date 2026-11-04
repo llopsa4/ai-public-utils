@@ -112,7 +112,7 @@ test('two kids play in the firing house and run to Nell when the alarm goes up',
   await idle(page);
   await expect.poll(async () => (await snapshot(page)).map(m => m.id).sort(), { timeout: 15_000 }).toEqual(['extra-kid', 'extra-runner']);
   await page.evaluate(() => (window as any).adventure.session.scene.runScript([{ type: 'setFlag', flag: 'alarm', value: true }]));
-  const nearNell = async () => (await snapshot(page)).filter(m => !m.walking && Math.hypot(m.x - 292, m.y - 292) < 40).length;
+  const nearNell = async () => (await snapshot(page)).filter(m => !m.walking && Math.hypot(m.x - 250, m.y - 300) < 40).length;
   await expect.poll(nearNell, { timeout: 120_000 }).toBe(2);
   expect(errors, errors.join('\n')).toEqual([]);
 });

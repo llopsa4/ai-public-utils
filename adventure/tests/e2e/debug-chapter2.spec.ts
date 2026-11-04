@@ -133,7 +133,7 @@ test('without debug mode, chapter 1 ends with the end card and chapter 2 is neve
   // A chapter 1 save at the ashways with the passage clear (an old-format save: it is upgraded on load).
   const save = JSON.parse(readFileSync(new URL('../fixtures/saves/v5.json', import.meta.url), 'utf8'));
   Object.assign(save.state, {
-    room: 'ashways', hero: { x: 580, y: 320, face: 'left', pose: 'stand' },
+    room: 'ashways', hero: { x: 420, y: 320, face: 'right', pose: 'stand' },
     flags: { hasGauntlet: true, hasNotebook: true, latchFixed: true, alarm: true, metOren: true, patchFailed: true, decided: true, procedureKnown: true, kilnCold: true, fought: true, gearChecked: true, valveVented: true },
     inventory: ['gauntlet', 'notebook', 'regulator'],
   });
@@ -141,10 +141,10 @@ test('without debug mode, chapter 1 ends with the end card and chapter 2 is neve
   await page.goto('./');
   await page.getByRole('button', { name: 'Continue' }).click();
   await page.waitForTimeout(2500);
-  // Click the passage (world 424, 164) and choose Go in the action ring.
+  // Click the passage under the bridge (world 600, 170) and choose Go in the action ring.
   const canvas = page.locator('#game canvas');
   const box = (await canvas.boundingBox())!;
-  await canvas.click({ position: { x: (424 / 640) * box.width, y: (164 / 360) * box.height } });
+  await canvas.click({ position: { x: (600 / 640) * box.width, y: (170 / 360) * box.height } });
   await page.locator('.verb[data-verb="go"]').click();
   await expect.poll(async () => {
     if (await page.locator('#dialogue').isVisible().catch(() => false)) await page.locator('#dialogue').click().catch(() => {});

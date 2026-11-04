@@ -28,15 +28,15 @@ export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
 
 /** Where Mara stands to talk to each character. */
 const TALK_SPOTS: Partial<Record<NpcId, { at: Point; face: 'left' | 'right'; npcFace: 'left' | 'right' }>> = {
-  oren: { at: { x: 470, y: 304 }, face: 'right', npcFace: 'left' },
-  nell: { at: { x: 346, y: 298 }, face: 'left', npcFace: 'right' },
+  oren: { at: { x: 436, y: 302 }, face: 'right', npcFace: 'left' },
+  nell: { at: { x: 290, y: 302 }, face: 'left', npcFace: 'right' },
 };
 
 /** Inventory items offer these verbs in the action ring. */
 export const ITEM_VERBS: Verb[] = ['look', 'use'];
 
 /** Off-screen voice position for Oren calling down the stairs. */
-const STAIRS_VOICE = { x: 560, y: 120 };
+const STAIRS_VOICE = { x: 538, y: 100 };
 
 /** The sweeper by the valve, and the same creature once it has moved to the pipe. */
 const SWEEPER = ['sweeper', 'sweeperAtPipe'];
@@ -240,7 +240,7 @@ export const RULES: readonly Rule[] = [
   { target: SWEEPER, verb: 'use', do: [say('line.sweeperUse')] },
   { target: 'valve', item: 'gauntlet', when: F('valveVented'), do: [say('line.valveAlready')] },
   { target: 'valve', item: 'gauntlet', walk: true, do: [wait(200), shake(250), flag('valveVented'),
-    { type: 'moveObject', id: 'sweeper', x: 172, y: 266, ms: 1600 }, say('line.valveVented')] },
+    { type: 'moveObject', id: 'sweeper', x: 195, y: 298, ms: 1600 }, say('line.valveVented')] },
   ...either('valve', 'look', 'valveVented', 'line.valveLookVented', 'line.valveLook'),
   ...either('valve', ['open', 'use'], 'valveVented', 'line.valveAlready', 'line.valveStiff', true),
   { target: 'valve', verb: 'close', do: [say('line.valveClose')] },

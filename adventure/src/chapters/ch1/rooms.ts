@@ -27,44 +27,62 @@ const tentHotspots: HotspotDef[] = [
 ];
 
 // Kiln hall outside the tent (Kiln Courier's kiln-hall illustration).
+// Every room is flat 2D (as the tent): the back wall meets the floor at y 262; a floor band from
+// y 268 to 345 is where people walk, always at the same size. Exits are at the sides, or stairs
+// for any further one, never two doors side by side. Things stand on the floor line or hang on the
+// wall above it. Each room's layout image (art/spec/<room>.jpg) shows this for the painters.
+
+// The kiln hall: the tally wall (far left), the pulley hoist hanging from the vault, storage jars,
+// Mara's tent pitched on the floor, the row of kiln mouths across the back wall, the ash cart, and
+// the curtain to the firing house (right edge).
 const maraRoomHotspots: HotspotDef[] = [
-  { id: 'tally', name: 'name.tally', polygon: rect(8, 104, 52, 92), verbs: ['look'], walkTo: pt(62, 252), face: 'up', secret: true },
-  { id: 'toTent', name: 'name.toTent', polygon: rect(195, 174, 100, 72), verbs: ['look', 'go'], walkTo: pt(245, 264), face: 'up' },
-  { id: 'niche', name: 'name.niche', polygon: rect(296, 148, 248, 84), verbs: ['look', 'use'], walkTo: pt(420, 244), face: 'up' },
-  { id: 'pulleys', name: 'name.pulleys', polygon: rect(66, 30, 76, 136), verbs: ['look', 'use'], walkTo: pt(118, 250), face: 'up' },
-  { id: 'jars', name: 'name.jars', polygon: rect(126, 186, 68, 50), verbs: ['look', 'take'], walkTo: pt(170, 252), face: 'up' },
-  { id: 'cart', name: 'name.cart', polygon: rect(474, 198, 64, 34), verbs: ['look', 'use'], walkTo: pt(506, 246), face: 'up' },
-  { id: 'roomCurtain', name: 'name.toFiringHouse', polygon: rect(546, 140, 56, 82), verbs: ['look', 'go'], walkTo: pt(584, 246), face: 'up' },
+  { id: 'tally', name: 'name.tally', polygon: rect(8, 150, 40, 70), verbs: ['look'], walkTo: pt(40, 280), face: 'up', secret: true },
+  { id: 'toTent', name: 'name.toTent', polygon: rect(204, 150, 92, 112), verbs: ['look', 'go'], walkTo: pt(250, 280), face: 'up' },
+  { id: 'niche', name: 'name.niche', polygon: rect(320, 120, 180, 120), verbs: ['look', 'use'], walkTo: pt(410, 280), face: 'up' },
+  { id: 'pulleys', name: 'name.pulleys', polygon: rect(74, 20, 52, 170), verbs: ['look', 'use'], walkTo: pt(100, 280), face: 'up' },
+  { id: 'jars', name: 'name.jars', polygon: rect(140, 214, 50, 48), verbs: ['look', 'take'], walkTo: pt(165, 280), face: 'up' },
+  { id: 'cart', name: 'name.cart', polygon: rect(504, 218, 60, 44), verbs: ['look', 'use'], walkTo: pt(534, 282), face: 'up' },
+  { id: 'roomCurtain', name: 'name.toFiringHouse', polygon: rect(592, 104, 48, 160), verbs: ['look', 'go'], walkTo: pt(616, 290), face: 'right' },
 ];
 
+// The firing house: the way back to the kiln hall (left edge), the shoe rack high on the left wall,
+// the hearth with Nell's soup pot, the chalked wall, the iron sign high up, Nell's pantry door in
+// the back wall, the stairs climbing to the regulator gallery, and the kiln gate (right edge) out to
+// the ashways.
 const firingHouseHotspots: HotspotDef[] = [
-  { id: 'chalk', name: 'name.chalk', polygon: rect(236, 122, 46, 28), verbs: ['look'], walkTo: pt(262, 286), face: 'up', secret: true },
-  { id: 'sign', name: 'name.sign', polygon: rect(312, 46, 26, 28), verbs: ['look'], secret: true },
-  { id: 'pantryDoor', name: 'name.pantryDoor', polygon: rect(434, 150, 42, 74), verbs: ['look', 'open', 'use'], walkTo: pt(455, 248), face: 'up' },
-  { id: 'soup', name: 'name.soup', polygon: rect(216, 186, 80, 30), verbs: ['look', 'take', 'use'], walkTo: pt(262, 286), face: 'up' },
-  { id: 'shoes', name: 'name.shoes', polygon: rect(18, 34, 150, 160), verbs: ['look', 'take'] },
-  { id: 'hearth', name: 'name.hearth', polygon: rect(0, 184, 64, 70), verbs: ['look', 'use'] },
-  { id: 'stairs', name: 'name.stairs', polygon: [pt(520, 136), pt(600, 112), pt(640, 120), pt(640, 224), pt(560, 224)], verbs: ['look', 'go'], walkTo: pt(596, 238), face: 'right' },
-  { id: 'kilnGate', name: 'name.kilnGate', polygon: rect(334, 138, 58, 80), verbs: ['look', 'open', 'go'], walkTo: pt(364, 248), face: 'up' },
-  { id: 'toRoom', name: 'name.toMaraRoom', polygon: rect(612, 234, 28, 72), verbs: ['look', 'go'], walkTo: pt(616, 292), face: 'right' },
+  { id: 'chalk', name: 'name.chalk', polygon: rect(170, 150, 44, 26), verbs: ['look'], walkTo: pt(190, 280), face: 'up', secret: true },
+  { id: 'sign', name: 'name.sign', polygon: rect(250, 40, 28, 28), verbs: ['look'], secret: true },
+  { id: 'pantryDoor', name: 'name.pantryDoor', polygon: rect(304, 110, 60, 152), verbs: ['look', 'open', 'use'], walkTo: pt(334, 280), face: 'up' },
+  { id: 'soup', name: 'name.soup', polygon: rect(82, 176, 44, 26), verbs: ['look', 'take', 'use'], walkTo: pt(110, 280), face: 'up' },
+  { id: 'shoes', name: 'name.shoes', polygon: rect(34, 30, 120, 110), verbs: ['look', 'take'] },
+  { id: 'hearth', name: 'name.hearth', polygon: rect(56, 170, 92, 92), verbs: ['look', 'use'] },
+  { id: 'stairs', name: 'name.stairs', polygon: [pt(410, 262), pt(510, 96), pt(566, 96), pt(470, 262)], verbs: ['look', 'go'], walkTo: pt(450, 284), face: 'up' },
+  { id: 'kilnGate', name: 'name.kilnGate', polygon: rect(586, 96, 54, 168), verbs: ['look', 'open', 'go'], walkTo: pt(616, 290), face: 'right' },
+  { id: 'toRoom', name: 'name.toMaraRoom', polygon: rect(0, 104, 30, 160), verbs: ['look', 'go'], walkTo: pt(24, 290), face: 'left' },
 ];
 
+// The regulator gallery, high in the kiln: a lantern on the left wall, Oren's desk with the logbook,
+// the great regulator in its pipe ring (centre left) with the gauge on top, the railing with names
+// scratched into it, and the stairs down to the firing house (right edge).
 const galleryHotspots: HotspotDef[] = [
-  { id: 'railNames', name: 'name.railNames', polygon: rect(306, 206, 40, 62), verbs: ['look'], walkTo: pt(400, 296), face: 'left', secret: true },
-  { id: 'gauge', name: 'name.gauge', polygon: rect(150, 6, 54, 54), verbs: ['look', 'use'] },
-  { id: 'regulator', name: 'name.regulator', polygon: rect(186, 78, 156, 146), verbs: ['look', 'use', 'take', 'open'], walkTo: pt(404, 290), face: 'left' },
-  { id: 'logbook', name: 'name.logbook', polygon: rect(118, 262, 164, 52), verbs: ['look', 'take'] },
-  { id: 'lantern', name: 'name.lantern', polygon: rect(0, 158, 50, 112), verbs: ['look', 'take'] },
-  { id: 'galleryStairs', name: 'name.toFiringHouse', polygon: rect(588, 110, 52, 150), verbs: ['look', 'go'], walkTo: pt(612, 296), face: 'right' },
+  { id: 'railNames', name: 'name.railNames', polygon: rect(360, 206, 46, 50), verbs: ['look'], walkTo: pt(384, 282), face: 'up', secret: true },
+  { id: 'gauge', name: 'name.gauge', polygon: rect(212, 16, 44, 44), verbs: ['look', 'use'] },
+  { id: 'regulator', name: 'name.regulator', polygon: rect(160, 64, 160, 190), verbs: ['look', 'use', 'take', 'open'], walkTo: pt(240, 282), face: 'up' },
+  { id: 'logbook', name: 'name.logbook', polygon: rect(58, 208, 74, 54), verbs: ['look', 'take'] },
+  { id: 'lantern', name: 'name.lantern', polygon: rect(14, 140, 34, 60), verbs: ['look', 'take'] },
+  { id: 'galleryStairs', name: 'name.toFiringHouse', polygon: rect(586, 104, 54, 160), verbs: ['look', 'go'], walkTo: pt(612, 292), face: 'right' },
 ];
 
+// The ashways: the way back into the kiln (left edge), great pipes overhead, the pressure valve on
+// the pipe, the ash sweeper blocking the passage under the old bridge (right side), and after the
+// valve is vented, the sweeper scurried off to the warm pipe.
 const ashwaysHotspots: HotspotDef[] = [
-  { id: 'sweeper', name: 'name.sweeper', polygon: rect(358, 210, 124, 64), verbs: ['look', 'talk', 'use'], visibleIf: [{ notFlag: 'valveVented' }] },
-  { id: 'sweeperAtPipe', name: 'name.sweeper', polygon: rect(110, 202, 124, 64), verbs: ['look', 'talk', 'use'], visibleIf: [{ flag: 'valveVented' }] },
-  { id: 'valve', name: 'name.valve', polygon: rect(70, 156, 56, 82), verbs: ['look', 'open', 'close', 'use'], walkTo: pt(150, 262), face: 'left' },
-  { id: 'passage', name: 'name.passage', polygon: rect(372, 112, 104, 104), verbs: ['look', 'go'], walkTo: pt(424, 234), face: 'up' },
-  { id: 'pipes', name: 'name.pipes', polygon: [pt(0, 0), pt(270, 0), pt(270, 120), pt(0, 120)], verbs: ['look', 'use'] },
-  { id: 'wayBack', name: 'name.wayBack', polygon: rect(0, 300, 34, 58), verbs: ['look', 'go'] },
+  { id: 'sweeper', name: 'name.sweeper', polygon: rect(470, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ notFlag: 'valveVented' }] },
+  { id: 'sweeperAtPipe', name: 'name.sweeper', polygon: rect(130, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ flag: 'valveVented' }] },
+  { id: 'valve', name: 'name.valve', polygon: rect(90, 160, 56, 102), verbs: ['look', 'open', 'close', 'use'], walkTo: pt(150, 282), face: 'left' },
+  { id: 'passage', name: 'name.passage', polygon: rect(560, 100, 80, 164), verbs: ['look', 'go'], walkTo: pt(608, 292), face: 'right' },
+  { id: 'pipes', name: 'name.pipes', polygon: [pt(0, 0), pt(300, 0), pt(300, 100), pt(0, 100)], verbs: ['look', 'use'] },
+  { id: 'wayBack', name: 'name.wayBack', polygon: rect(0, 120, 30, 144), verbs: ['look', 'go'], walkTo: pt(24, 292), face: 'left' },
 ];
 
 export const ROOMS: Record<string, RoomDef> = {
@@ -110,40 +128,39 @@ export const ROOMS: Record<string, RoomDef> = {
   maraRoom: {
     id: 'maraRoom',
     background: 'room-mara',
-    walkable: {
-      outer: [pt(40, 238), pt(610, 234), pt(612, 280), pt(556, 288), pt(552, 358), pt(96, 358), pt(88, 262), pt(40, 256)],
-      holes: [rect(200, 236, 90, 14)],
-    },
-    scale: { farY: 234, farScale: 0.82, nearY: 358, nearScale: 1.02 },
+    walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)], holes: [] },
+    // Flat 2D: the same size at the back and the front of the floor.
+    scale: { farY: 268, farScale: 1, nearY: 345, nearScale: 1 },
     music: 'warm',
     coldIf: COLD,
-    light: { tint: 0xffd4a8, farDim: 0.86 },
+    light: { tint: 0xffd4a8, farDim: 1 },
     look: {
       grade: { saturation: 1.08, brightness: 1.03, contrast: 1.06, warmth: 0.4 },
-      haze: [{ x: 300, y: 150, w: 244, h: 70 }],
+      haze: [{ x: 320, y: 150, w: 180, h: 80 }],
       shafts: [
-        { x: 446, y: 0, angle: 14, length: 250, width: 70, color: 0xffc890 },
-        { x: 330, y: 10, angle: 8, length: 210, width: 44, color: 0xffb070 },
+        { x: 440, y: 0, angle: 10, length: 250, width: 70, color: 0xffc890 },
+        { x: 350, y: 10, angle: 6, length: 210, width: 44, color: 0xffb070 },
       ],
       vignette: 0.35,
     },
-    foreground: [{ image: 'hall-left', x: 0, y: 248, depth: 400 }, { image: 'hall-right', x: 552, y: 280, depth: 400 }],
-    props: [{ kind: 'swing', image: 'pulley', x: 94, y: 84, pivotX: 0.5, hotspot: 'pulleys' }],
-    sign: { x: 230, y: 48, drop: 14, w: 100, h: 22, style: 'wood' },
+    // Rubble in the front corners of the floor, drawn in front of Mara (cut from the painting).
+    foreground: [{ image: 'hall-left', x: 0, y: 308, depth: 400 }, { image: 'hall-right', x: 557, y: 314, depth: 400 }],
+    props: [{ kind: 'swing', image: 'pulley', x: 100, y: 60, pivotX: 0.5, hotspot: 'pulleys' }],
+    sign: { x: 150, y: 48, drop: 14, w: 100, h: 22, style: 'wood' },
     ambient: {
-      particles: [{ kind: 'embers', x: 300, y: 150, w: 250, h: 80, warm: true }],
+      particles: [{ kind: 'embers', x: 320, y: 150, w: 180, h: 80, warm: true }],
       glows: [
-        { x: 332, y: 208, r: 30, color: 0xff8a2a, warm: true },
-        { x: 438, y: 204, r: 38, color: 0xff9a34, warm: true },
-        { x: 516, y: 218, r: 22, color: 0xff8a2a, warm: true },
+        { x: 350, y: 200, r: 30, color: 0xff8a2a, warm: true },
+        { x: 410, y: 196, r: 38, color: 0xff9a34, warm: true },
+        { x: 470, y: 200, r: 30, color: 0xff8a2a, warm: true },
       ],
     },
     entries: {
-      fromTent: { x: 245, y: 270, face: 'down' },
-      fromFiringHouse: { x: 584, y: 252, face: 'left' },
+      fromTent: { x: 250, y: 292, face: 'down' },
+      fromFiringHouse: { x: 600, y: 296, face: 'left' },
     },
     objects: [
-      { id: 'tent', sheet: 'tent', x: 245, y: 248 },
+      { id: 'tent', sheet: 'tent', x: 250, y: 264 },
     ],
     hotspots: maraRoomHotspots,
     actors: [],
@@ -151,118 +168,106 @@ export const ROOMS: Record<string, RoomDef> = {
   firingHouse: {
     id: 'firingHouse',
     background: 'room-firing-house',
-    walkable: {
-      outer: [pt(178, 252), pt(334, 248), pt(420, 228), pt(640, 228), pt(640, 358), pt(178, 358)],
-      holes: [rect(274, 284, 36, 14)],
-    },
-    scale: { farY: 228, farScale: 0.72, nearY: 358, nearScale: 0.96 },
+    walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)], holes: [rect(234, 294, 32, 12)] },
+    // Flat 2D: the same size at the back and the front of the floor.
+    scale: { farY: 268, farScale: 1, nearY: 345, nearScale: 1 },
     music: 'warm',
-    // The painting is dark already: the default cold tint made it almost black.
     coldTint: 0xb4bed8,
     coldIf: COLD,
-    light: { tint: 0xf2c49a, farDim: 0.78 },
+    light: { tint: 0xf2c49a, farDim: 1 },
     look: {
       grade: { saturation: 1.06, brightness: 1.08, contrast: 1.05, warmth: 0.35 },
       coldGrade: { saturation: 0.6, brightness: 1.02, contrast: 1.02, warmth: -0.5 },
-      haze: [{ x: 0, y: 178, w: 70, h: 64 }, { x: 160, y: 130, w: 70, h: 40 }],
-      shafts: [
-        { x: 372, y: 150, angle: -62, length: 150, width: 34, color: 0xffb070 },
-        { x: 300, y: 0, angle: 6, length: 190, width: 40, color: 0xffb070 },
-      ],
+      haze: [{ x: 60, y: 160, w: 90, h: 70 }],
+      shafts: [{ x: 300, y: 0, angle: 6, length: 190, width: 40, color: 0xffb070 }],
       vignette: 0.3,
     },
     ambient: {
-      particles: [{ kind: 'embers', x: 0, y: 190, w: 70, h: 60, warm: true }, { kind: 'steam', x: 236, y: 186, w: 30, h: 14, warm: true }],
+      particles: [{ kind: 'embers', x: 64, y: 186, w: 80, h: 60, warm: true }, { kind: 'steam', x: 92, y: 168, w: 30, h: 14, warm: true }],
       glows: [
-        { x: 30, y: 226, r: 34, color: 0xff7a24, warm: true },
-        { x: 190, y: 160, r: 18, color: 0xff8a2a, warm: true },
-        { x: 362, y: 190, r: 30, color: 0xffb060, warm: true },
+        { x: 102, y: 230, r: 40, color: 0xff7a24, warm: true },
+        { x: 612, y: 180, r: 34, color: 0xffb060, warm: true },
       ],
     },
     entries: {
-      fromMaraRoom: { x: 600, y: 300, face: 'left' },
-      fromGallery: { x: 584, y: 244, face: 'down' },
-      fromAshways: { x: 364, y: 254, face: 'down' },
+      fromMaraRoom: { x: 40, y: 296, face: 'right' },
+      fromGallery: { x: 450, y: 292, face: 'down' },
+      fromAshways: { x: 600, y: 296, face: 'left' },
     },
     objects: [
-      { id: 'pantryDoor', sheet: 'pantry-door', x: 455, y: 224, flag: 'latchFixed', whenTrue: 'fixed', whenFalse: 'stuck' },
+      { id: 'pantryDoor', sheet: 'pantry-door', x: 334, y: 262, flag: 'latchFixed', whenTrue: 'fixed', whenFalse: 'stuck' },
     ],
     hotspots: firingHouseHotspots,
     actors: [
-      { id: 'nell', x: 292, y: 292 },
+      { id: 'nell', x: 250, y: 300 },
     ],
-    props: [{ kind: 'bubbles', x: 228, y: 192, w: 22, h: 4, color: 0xf0d090, warm: true }],
-    sign: { x: 440, y: 56, drop: 12, w: 112, h: 22, style: 'wood' },
+    props: [{ kind: 'bubbles', x: 104, y: 180, w: 22, h: 4, color: 0xf0d090, warm: true }],
+    sign: { x: 480, y: 50, drop: 12, w: 112, h: 22, style: 'wood' },
   },
   gallery: {
     id: 'gallery',
     background: 'room-gallery',
-    walkable: {
-      outer: [pt(372, 274), pt(470, 268), pt(640, 268), pt(640, 358), pt(390, 358), pt(380, 318)],
-      holes: [rect(500, 292, 40, 14)],
-    },
-    scale: { farY: 268, farScale: 0.96, nearY: 358, nearScale: 1.06 },
+    walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)], holes: [rect(464, 290, 32, 12)] },
+    // Flat 2D: the same size at the back and the front of the floor.
+    scale: { farY: 268, farScale: 1, nearY: 345, nearScale: 1 },
     surface: 'metal',
     music: 'tension',
     look: {
       grade: { saturation: 1.04, brightness: 1, contrast: 1.07, warmth: 0.2 },
-      haze: [{ x: 360, y: 0, w: 80, h: 70 }],
+      haze: [{ x: 200, y: 0, w: 80, h: 60 }],
       vignette: 0.38,
-      reflective: { polygon: [{ x: 372, y: 270 }, { x: 640, y: 266 }, { x: 640, y: 360 }, { x: 384, y: 360 }], alpha: 0.2 },
+      reflective: { polygon: [{ x: 0, y: 268 }, { x: 640, y: 268 }, { x: 640, y: 345 }, { x: 0, y: 345 }], alpha: 0.2 },
     },
     coldIf: COLD,
-    light: { tint: 0xffdcb8, farDim: 0.9 },
-    foreground: [{ image: 'gallery-railing', x: 278, y: 206, depth: 300 }],
+    light: { tint: 0xffdcb8, farDim: 1 },
     ambient: {
-      particles: [{ kind: 'steam', x: 160, y: 70, w: 180, h: 60, warm: true }],
-      glows: [{ x: 24, y: 214, r: 30, color: 0xffa040 }, { x: 270, y: 32, r: 24, color: 0xff9a34, warm: true }],
+      particles: [{ kind: 'steam', x: 160, y: 60, w: 180, h: 60, warm: true }],
+      glows: [{ x: 31, y: 168, r: 30, color: 0xffa040 }, { x: 234, y: 40, r: 24, color: 0xff9a34, warm: true }],
     },
     entries: {
-      fromFiringHouse: { x: 600, y: 304, face: 'left' },
+      fromFiringHouse: { x: 600, y: 296, face: 'left' },
     },
     objects: [
-      { id: 'socket', sheet: 'socket', x: 265, y: 218, flag: 'kilnCold', whenTrue: 'removed', whenFalse: 'installed', depth: -1 },
+      { id: 'socket', sheet: 'socket', x: 240, y: 230, flag: 'kilnCold', whenTrue: 'removed', whenFalse: 'installed', depth: -1 },
     ],
     hotspots: galleryHotspots,
-    actors: [{ id: 'oren', x: 520, y: 300 }],
+    actors: [{ id: 'oren', x: 480, y: 296 }],
     props: [
       // Running: shivering near the red. Cold: at rest, near the dial's zero.
-      { kind: 'gauge', image: 'gauge-face', x: 180, y: 33.25, length: 12, angle: 36, rest: -128 },
-      { kind: 'flame', x: 22, y: 210, size: 12, color: 0xffc060, depth: 9000 },
+      { kind: 'gauge', image: 'gauge-face', x: 234, y: 38, length: 12, angle: 36, rest: -128 },
+      { kind: 'flame', x: 31, y: 166, size: 12, color: 0xffc060, depth: 9000 },
     ],
-    sign: { x: 476, y: 70, drop: 10, w: 74, h: 50, style: 'iron' },
-    // The round hatch in the pipe, open since the regulator came out (the socket's dark disc): the
-    // scavenger squeezes out of it and leaps down to the floor in front of Mara.
-    hatch: { x: 265, y: 153, r: 44, stepBack: { x: 490, y: 312 }, land: { x: 382, y: 310 } },
+    sign: { x: 520, y: 60, drop: 10, w: 74, h: 50, style: 'iron' },
+    // The round hatch in the pipe ring, open once the regulator is out: the scavenger squeezes out
+    // of it and leaps down to the floor in front of Mara.
+    hatch: { x: 240, y: 164, r: 40, stepBack: { x: 420, y: 306 }, land: { x: 320, y: 304 } },
   },
   ashways: {
     id: 'ashways',
     background: 'room-ashways',
-    walkable: {
-      outer: [pt(0, 226), pt(640, 226), pt(640, 358), pt(0, 358)],
-      holes: [],
-    },
-    scale: { farY: 226, farScale: 0.72, nearY: 358, nearScale: 1.02 },
+    walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)], holes: [] },
+    // Flat 2D: the same size at the back and the front of the floor.
+    scale: { farY: 268, farScale: 1, nearY: 345, nearScale: 1 },
     surface: 'ash',
     music: 'wind',
     look: {
       grade: { saturation: 0.96, brightness: 1, contrast: 1.04, warmth: -0.05 },
       vignette: 0.4,
     },
-    light: { tint: 0xffe6c8, farDim: 0.84 },
+    light: { tint: 0xffe6c8, farDim: 1 },
     ambient: {
       particles: [{ kind: 'ash', x: 0, y: 0, w: 640, h: 220 }],
-      glows: [{ x: 424, y: 150, r: 46, color: 0xffb060 }],
+      glows: [{ x: 600, y: 170, r: 46, color: 0xffb060 }],
     },
     entries: {
-      fromFiringHouse: { x: 70, y: 326, face: 'right' },
+      fromFiringHouse: { x: 60, y: 300, face: 'right' },
     },
     objects: [
-      { id: 'valve', sheet: 'valve', x: 96, y: 238, flag: 'valveVented', whenTrue: 'venting', whenFalse: 'closed' },
-      { id: 'sweeper', sheet: 'sweeper', x: 420, y: 274, anim: 'idle', movedTo: { flag: 'valveVented', x: 172, y: 266 }, shadow: 118 },
+      { id: 'valve', sheet: 'valve', x: 118, y: 262, flag: 'valveVented', whenTrue: 'venting', whenFalse: 'closed' },
+      { id: 'sweeper', sheet: 'sweeper', x: 535, y: 298, anim: 'idle', movedTo: { flag: 'valveVented', x: 195, y: 298 }, shadow: 118 },
     ],
     hotspots: ashwaysHotspots,
-    sign: { x: 330, y: 88, drop: 14, w: 100, h: 22, style: 'wood' },
+    sign: { x: 330, y: 60, drop: 14, w: 100, h: 22, style: 'wood' },
     actors: [],
   },
 };
