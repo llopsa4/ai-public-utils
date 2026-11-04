@@ -155,6 +155,8 @@ export const RULES: readonly Rule[] = [
   { target: 'stool', verb: 'use', do: [say('line.stoolUse')] },
   { target: 'drum', verb: 'look', do: [say('line.drumLook')] },
   { target: 'drum', verb: 'use', walk: true, do: [say('line.drumUse')] },
+  { target: 'stove', verb: 'look', do: [say('line.stoveLook')] },
+  { target: 'stove', verb: ['use', 'open'], walk: true, do: [say('line.stoveUse')] },
 
   // ------------------------------------------------------------ kiln hall ---
   { target: 'toTent', verb: 'look', do: [say('line.toTentLook')] },
@@ -276,7 +278,7 @@ export const INTERACTION_KEYS = [
   'line.notebookOnBench', 'line.notebookOpen', 'line.notebookTake',
   'line.nicheLook', 'line.nicheLookCold', 'line.nicheUse', 'line.nicheUseCold', 'line.roomCurtainLook',
   'line.tentFlapLook', 'line.tentNotYet', 'line.workbenchLook', 'line.workbenchUse', 'line.jarLook', 'line.jarTake',
-  'line.stoolLook', 'line.stoolUse', 'line.drumLook', 'line.drumUse', 'line.toTentLook',
+  'line.stoolLook', 'line.stoolUse', 'line.drumLook', 'line.drumUse', 'line.stoveLook', 'line.stoveUse', 'line.toTentLook',
   'line.pulleysLook', 'line.pulleysUse', 'line.jarsLook', 'line.jarsTake', 'line.cartLook', 'line.cartUse',
   'line.latchAlreadyFixed', 'line.nellFixed', 'line.maraLatch', 'line.nellSoup', 'line.maraNightShift', 'line.kilnGroans', 'line.orenCalls', 'line.maraAlarm',
   'line.latchLook', 'line.latchLookFixed', 'line.latchOpenFixed', 'line.latchStuck', 'line.latchStuckHint',

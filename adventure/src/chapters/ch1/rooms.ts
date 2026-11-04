@@ -9,18 +9,21 @@ const COLD = [{ flag: 'kilnCold' }];
 // Hotspots are tested in list order: put small things before large ones they overlap.
 
 // Mara's tent: his starting room (painted from scratch by art/tent.mjs to fit these spots).
-// The tent is pixel art drawn in code (art/tent.mjs, art/tent-pixels.mjs), seen side-on: the bench
-// along the left with the cradle, notebook and jar on it, the drum on its trestle by the back
-// wall, the cot and the door flap on the right. The floor starts at y 240.
+// The tent is the user's reference painting (tent-reference.png, re-gridded by art/tent-reference.mjs),
+// seen flat-on: the bench along the left (tool board above, the cradle and notebook stand on it as
+// objects), the stool in front, the drum on its trestle and a little clay stove by the back wall,
+// the cot with boots and the coat on the right, the door flap at the right edge. The floor is a
+// flat band from y 268: Mara walks sideways and a little forward and back, always the same size.
 const tentHotspots: HotspotDef[] = [
-  { id: 'notebook', name: 'name.notebook', polygon: rect(56, 164, 40, 18), verbs: ['look', 'take', 'open'], walkTo: pt(110, 266), face: 'up',
+  { id: 'notebook', name: 'name.notebook', polygon: rect(40, 184, 38, 14), verbs: ['look', 'take', 'open'], walkTo: pt(60, 278), face: 'up',
     visibleIf: [{ notFlag: 'hasNotebook' }] },
-  { id: 'rack', name: 'name.rack', polygon: rect(156, 110, 52, 72), verbs: ['look', 'take', 'use'], walkTo: pt(182, 266), face: 'up' },
-  { id: 'jar', name: 'name.jar', polygon: rect(94, 116, 46, 62), verbs: ['look', 'take'], walkTo: pt(120, 266), face: 'up' },
-  { id: 'workbench', name: 'name.workbench', polygon: rect(0, 96, 214, 162), verbs: ['look', 'use'], walkTo: pt(150, 266), face: 'up' },
-  { id: 'stool', name: 'name.stool', polygon: rect(75, 205, 94, 96), verbs: ['look', 'use'] },
-  { id: 'drum', name: 'name.drum', polygon: rect(232, 156, 124, 88), verbs: ['look', 'use'], walkTo: pt(300, 262), face: 'up' },
-  { id: 'tentFlap', name: 'name.tentFlap', polygon: rect(556, 104, 70, 138), verbs: ['look', 'go', 'open'], walkTo: pt(592, 258), face: 'up' },
+  { id: 'rack', name: 'name.rack', polygon: rect(146, 128, 52, 70), verbs: ['look', 'take', 'use'], walkTo: pt(172, 278), face: 'up' },
+  { id: 'jar', name: 'name.jar', polygon: rect(104, 168, 26, 30), verbs: ['look', 'take'], walkTo: pt(118, 278), face: 'up' },
+  { id: 'workbench', name: 'name.workbench', polygon: rect(14, 124, 178, 128), verbs: ['look', 'use'], walkTo: pt(110, 278), face: 'up' },
+  { id: 'stool', name: 'name.stool', polygon: rect(88, 228, 52, 48), verbs: ['look', 'use'] },
+  { id: 'drum', name: 'name.drum', polygon: rect(242, 194, 94, 66), verbs: ['look', 'use'], walkTo: pt(290, 278), face: 'up' },
+  { id: 'stove', name: 'name.stove', polygon: rect(366, 206, 38, 48), verbs: ['look', 'use', 'open'], walkTo: pt(385, 278), face: 'up' },
+  { id: 'tentFlap', name: 'name.tentFlap', polygon: rect(566, 84, 74, 186), verbs: ['look', 'go', 'open'], walkTo: pt(606, 284), face: 'right' },
 ];
 
 // Kiln hall outside the tent (Kiln Courier's kiln-hall illustration).
@@ -68,36 +71,38 @@ export const ROOMS: Record<string, RoomDef> = {
   tent: {
     id: 'tent',
     background: 'room-tent',
+    // A flat floor band (the canvas wall meets the floor at y 252); the stool's feet stand in it.
     walkable: {
-      outer: [pt(0, 262), pt(212, 262), pt(218, 252), pt(640, 252), pt(640, 358), pt(0, 358)],
-      holes: [rect(78, 282, 92, 22)],
+      outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)],
+      holes: [rect(86, 268, 56, 8)],
     },
-    // Side-on, so little change in size with depth.
-    scale: { farY: 252, farScale: 0.96, nearY: 358, nearScale: 1.1 },
+    // Flat 2D: the same size at the back and the front of the floor.
+    scale: { farY: 268, farScale: 1, nearY: 345, nearScale: 1 },
     music: 'warm',
     coldIf: COLD,
-    light: { tint: 0xffe4c4, farDim: 0.82 },
+    light: { tint: 0xffe8d0, farDim: 1 },
     look: {
-      grade: { saturation: 1.05, brightness: 1.02, contrast: 1.05, warmth: 0.3 },
-      // Heat shimmer over the hanging lantern.
-      haze: [{ x: 304, y: 34, w: 32, h: 30 }],
-      vignette: 0.32,
+      // The painting is already lit (lantern, candle, the kiln hall beyond the flap): a light touch only.
+      grade: { saturation: 1, brightness: 1, contrast: 1.02, warmth: 0.08 },
+      haze: [{ x: 312, y: 30, w: 24, h: 30 }],
+      vignette: 0.18,
     },
-    foreground: [{ image: 'tent-stool', x: 72, y: 204, depth: 300 }],
+    foreground: [{ image: 'tent-stool', x: 88, y: 230, depth: 276 }],
     // The cell's flame in the charging cradle, until it goes into the gauntlet.
-    props: [{ kind: 'flame', x: 182, y: 148, size: 14, color: 0xffb050, depth: 181, visibleIf: [{ notFlag: 'hasGauntlet' }] }],
-    sign: { x: 110, y: 10, drop: 12, w: 92, h: 20, style: 'wood' },
+    props: [{ kind: 'flame', x: 172, y: 164, size: 12, color: 0xffb050, depth: 197, visibleIf: [{ notFlag: 'hasGauntlet' }] }],
+    sign: { x: 120, y: 14, drop: 12, w: 92, h: 20, style: 'wood' },
     ambient: {
-      particles: [{ kind: 'dust', x: 240, y: 70, w: 200, h: 170 }],
-      glows: [{ x: 592, y: 172, r: 60, color: 0xffa040, warm: true }, { x: 320, y: 52, r: 56, color: 0xffc070 }],
+      particles: [{ kind: 'dust', x: 240, y: 60, w: 200, h: 180 }],
+      // Faint: the painting has its own light; these only flicker.
+      glows: [{ x: 606, y: 190, r: 40, color: 0xffa040, warm: true }, { x: 322, y: 52, r: 30, color: 0xffc070 }],
     },
     entries: {
-      start: { x: 330, y: 300, face: 'down' },
-      fromKilnHall: { x: 592, y: 268, face: 'left' },
+      start: { x: 320, y: 300, face: 'down' },
+      fromKilnHall: { x: 596, y: 292, face: 'left' },
     },
     objects: [
-      { id: 'rack', sheet: 'rack', x: 182, y: 180, flag: 'hasGauntlet', whenTrue: 'empty', whenFalse: 'full' },
-      { id: 'notebook', sheet: 'notebook', x: 75, y: 180, visibleIf: [{ notFlag: 'hasNotebook' }] },
+      { id: 'rack', sheet: 'rack', x: 172, y: 197, flag: 'hasGauntlet', whenTrue: 'empty', whenFalse: 'full' },
+      { id: 'notebook', sheet: 'notebook', x: 58, y: 197, visibleIf: [{ notFlag: 'hasNotebook' }] },
     ],
     hotspots: tentHotspots,
     actors: [],
