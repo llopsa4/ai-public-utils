@@ -9,18 +9,18 @@ const COLD = [{ flag: 'kilnCold' }];
 // Hotspots are tested in list order: put small things before large ones they overlap.
 
 // Mara's tent: his starting room (painted from scratch by art/tent.mjs to fit these spots).
-// The tent is painted side-on in code (art/tent.mjs): the bench along the left with the cradle,
-// notebook and jar on it, the drum on its trestle by the back wall, the cot and the door flap on
-// the right. The floor starts at y 240.
+// The tent is pixel art drawn in code (art/tent.mjs, art/tent-pixels.mjs), seen side-on: the bench
+// along the left with the cradle, notebook and jar on it, the drum on its trestle by the back
+// wall, the cot and the door flap on the right. The floor starts at y 240.
 const tentHotspots: HotspotDef[] = [
   { id: 'notebook', name: 'name.notebook', polygon: rect(56, 164, 40, 18), verbs: ['look', 'take', 'open'], walkTo: pt(110, 266), face: 'up',
     visibleIf: [{ notFlag: 'hasNotebook' }] },
   { id: 'rack', name: 'name.rack', polygon: rect(156, 110, 52, 72), verbs: ['look', 'take', 'use'], walkTo: pt(182, 266), face: 'up' },
-  { id: 'jar', name: 'name.jar', polygon: rect(112, 122, 46, 56), verbs: ['look', 'take'], walkTo: pt(140, 266), face: 'up' },
+  { id: 'jar', name: 'name.jar', polygon: rect(94, 116, 46, 62), verbs: ['look', 'take'], walkTo: pt(120, 266), face: 'up' },
   { id: 'workbench', name: 'name.workbench', polygon: rect(0, 96, 214, 162), verbs: ['look', 'use'], walkTo: pt(150, 266), face: 'up' },
   { id: 'stool', name: 'name.stool', polygon: rect(75, 205, 94, 96), verbs: ['look', 'use'] },
-  { id: 'drum', name: 'name.drum', polygon: rect(250, 164, 118, 82), verbs: ['look', 'use'], walkTo: pt(320, 262), face: 'up' },
-  { id: 'tentFlap', name: 'name.tentFlap', polygon: rect(554, 100, 72, 142), verbs: ['look', 'go', 'open'], walkTo: pt(592, 258), face: 'up' },
+  { id: 'drum', name: 'name.drum', polygon: rect(232, 156, 124, 88), verbs: ['look', 'use'], walkTo: pt(300, 262), face: 'up' },
+  { id: 'tentFlap', name: 'name.tentFlap', polygon: rect(556, 104, 70, 138), verbs: ['look', 'go', 'open'], walkTo: pt(592, 258), face: 'up' },
 ];
 
 // Kiln hall outside the tent (Kiln Courier's kiln-hall illustration).
@@ -89,7 +89,7 @@ export const ROOMS: Record<string, RoomDef> = {
     sign: { x: 110, y: 10, drop: 12, w: 92, h: 20, style: 'wood' },
     ambient: {
       particles: [{ kind: 'dust', x: 240, y: 70, w: 200, h: 170 }],
-      glows: [{ x: 592, y: 180, r: 60, color: 0xffa040, warm: true }, { x: 320, y: 55, r: 56, color: 0xffc070 }],
+      glows: [{ x: 592, y: 172, r: 60, color: 0xffa040, warm: true }, { x: 320, y: 52, r: 56, color: 0xffc070 }],
     },
     entries: {
       start: { x: 330, y: 300, face: 'down' },
