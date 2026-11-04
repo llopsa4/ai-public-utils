@@ -20,10 +20,67 @@ import { encodeIndexed } from './png.mjs';
 const here = dirname(fileURLToPath(import.meta.url));
 const CARD_ORDER = ['strike', 'guard', 'pulse', 'vent', 'cycle', 'piston', 'shield', 'draw-back', 'discard-back'];
 
+/**
+ * The game's pixel grid: rooms, characters, objects, props, creatures and fight pictures are pixel
+ * art whose pixels are GRID art pixels (4 screen pixels in a 1280x720 room, the tent reference's
+ * size). UI icons, satchel items, cards, gear and portraits keep their finer detail.
+ */
+export const GRID = 4;
+const GRID_KINDS = new Set(['room', 'battle-backdrop', 'object', 'prop', 'battle-portrait', 'battle']);
+
+/**
+ * Codex may deliver a sprite on a flat magenta background (#FF00FF) instead of transparency: every
+ * pixel close to magenta (and the pink fringe where it was blended with the subject) is cleared.
+ */
+export function keyMagenta(data) {
+  for (let i = 0; i < data.length; i += 4) {
+    const r = data[i], g = data[i + 1], b = data[i + 2];
+    // Distance from pure magenta; the fringe is a blend, so magenta-ish hue with green well below red and blue.
+    const d = Math.hypot(255 - r, g, 255 - b);
+    if (d < 90 || (r > 150 && b > 150 && g < Math.min(r, b) * 0.45)) data[i + 3] = 0;
+  }
+  return data;
+}
+
+/**
+ * Snaps an image to the pixel grid: each GRID x GRID block becomes one colour (the average of its
+ * solid pixels), solid when most of the block is, then scaled back to the same size with hard
+ * edges. Palette snapping and outlines are applied on the small image, so they match the grid.
+ */
+export function toGrid(img, { outline = false, dither = false } = {}) {
+  const bw = Math.ceil(img.width / GRID), bh = Math.ceil(img.height / GRID);
+  const small = Buffer.alloc(bw * bh * 4);
+  for (let by = 0; by < bh; by++) for (let bx = 0; bx < bw; bx++) {
+    let n = 0, a = 0, r = 0, g = 0, b = 0;
+    for (let y = by * GRID; y < Math.min(img.height, (by + 1) * GRID); y++) for (let x = bx * GRID; x < Math.min(img.width, (bx + 1) * GRID); x++) {
+      const o = (y * img.width + x) * 4;
+      n++;
+      if (img.data[o + 3] < 128) continue;
+      a++; r += img.data[o]; g += img.data[o + 1]; b += img.data[o + 2];
+    }
+    if (a * 2 < n) continue;
+    const o = (by * bw + bx) * 4;
+    small[o] = r / a; small[o + 1] = g / a; small[o + 2] = b / a; small[o + 3] = 255;
+  }
+  snapToPalette(small, bw, { dither });
+  if (outline) addOutline(small, bw, bh);
+  const out = Buffer.alloc(img.width * img.height * 4);
+  for (let y = 0; y < img.height; y++) for (let x = 0; x < img.width; x++) {
+    const s = (Math.floor(y / GRID) * bw + Math.floor(x / GRID)) * 4, o = (y * img.width + x) * 4;
+    small.copy(out, o, s, s + 4);
+  }
+  return { data: out, width: img.width, height: img.height };
+}
+
 /** RGBA pixels of an image, fitted into w x h (contain, anchored as given) on transparency. */
 async function fit(file, w, h, anchor = 'centre', cover = false) {
-  const img = sharp(file).ensureAlpha();
-  const trimmed = cover ? img : sharp(await img.trim().toBuffer());
+  let img = sharp(file).ensureAlpha();
+  if (!cover) {
+    // A magenta background (instead of transparency) is keyed out before trimming.
+    const { data, info } = await img.raw().toBuffer({ resolveWithObject: true });
+    img = sharp(keyMagenta(Buffer.from(data)), { raw: { width: info.width, height: info.height, channels: 4 } });
+  }
+  const trimmed = cover ? img : sharp(await img.png().trim().toBuffer());
   const position = anchor === 'bottom-centre' ? 'south' : anchor === 'top-left' ? 'northwest' : anchor === 'top-centre' ? 'north' : 'centre';
   const { data, info } = await trimmed.resize(w, h, { fit: cover ? 'cover' : 'contain', position, background: { r: 0, g: 0, b: 0, alpha: 0 }, kernel: 'lanczos3' })
     .raw().toBuffer({ resolveWithObject: true });
@@ -124,9 +181,10 @@ export async function importArt(root = here) {
     const missing = entry.tags.filter(t => !frames[t]);
     if (missing.length) { report.push(`${id}: waiting for ${missing.map(t => `${id}-${t}.png`).join(', ')}`); done.splice(0, done.length, ...done.filter(n => !n.startsWith(`${id}-`))); continue; }
     const json = existsSync(join(root, 'src', entry.sheet)) ? JSON.parse(readFileSync(join(root, 'src', entry.sheet), 'utf8')) : null;
-    const w = json?.frames[0].frame.w ?? 256, h = json?.frames[0].frame.h ?? 256;
+    // The manifest's frame (true proportions), else the placeholder's.
+    const w = entry.frame?.w ?? json?.frames[0].frame.w ?? 256, h = entry.frame?.h ?? json?.frames[0].frame.h ?? 256;
     const imgs = [];
-    for (const tag of entry.tags) { const f = await fit(frames[tag], w, h, 'bottom-centre'); snapToPalette(f.data, f.width); addOutline(f.data, f.width, f.height); imgs.push(f); }
+    for (const tag of entry.tags) imgs.push(toGrid(await fit(frames[tag], w, h, 'bottom-centre'), { outline: true }));
     const sheet = { data: Buffer.alloc(w * h * 4 * imgs.length), width: w * imgs.length, height: h };
     imgs.forEach((f, n) => { for (let y = 0; y < h; y++) f.data.copy(sheet.data, (y * sheet.width + n * w) * 4, y * w * 4, (y + 1) * w * 4); });
     const before = existsSync(join(root, 'src', entry.file)) ? readFileSync(join(root, 'src', entry.file)) : null;
@@ -147,7 +205,10 @@ export async function importArt(root = here) {
       const dest = join(root, 'sources', 'characters', stem);
       mkdirSync(dest, { recursive: true });
       for (const layer of readdirSync(path).filter(n => n.endsWith('.png'))) {
-        const { data, info } = await sharp(join(path, layer)).ensureAlpha().resize(1024, 1536, { fit: 'contain', position: 'south', background: { r: 0, g: 0, b: 0, alpha: 0 } }).raw().toBuffer({ resolveWithObject: true });
+        // A magenta background is keyed out first (as for every sprite).
+        const raw = await sharp(join(path, layer)).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+        const keyed = await sharp(keyMagenta(Buffer.from(raw.data)), { raw: { width: raw.info.width, height: raw.info.height, channels: 4 } }).png().toBuffer();
+        const { data, info } = await sharp(keyed).resize(1024, 1536, { fit: 'contain', position: 'south', background: { r: 0, g: 0, b: 0, alpha: 0 } }).raw().toBuffer({ resolveWithObject: true });
         const img = { data: Buffer.from(data), width: info.width, height: info.height };
         snapToPalette(img.data, img.width);
         writeFileSync(join(dest, layer), pngOf(img));
@@ -160,8 +221,7 @@ export async function importArt(root = here) {
     const before = existsSync(join(root, 'src', entry.file)) ? readFileSync(join(root, 'src', entry.file)) : null;
     let after;
     if (entry.kind === 'room' || entry.kind === 'battle-backdrop') {
-      const img = await fit(path, 1280, 720, 'top-left', true);
-      snapToPalette(img.data, img.width, { dither: true });
+      const img = toGrid(await fit(path, 1280, 720, 'top-left', true));
       after = await write(root, entry.file, img, { webp: entry.webp, quality: 80 });
       for (const piece of MANIFEST.filter(e => e.kind === 'foreground' && e.room === entry.id && e.cut)) {
         await write(root, piece.file, cut(img, piece), { webp: piece.webp });
@@ -170,11 +230,21 @@ export async function importArt(root = here) {
       }
     } else {
       const size = entry.size ?? placeholderSize(root, entry.file) ?? (entry.width ? { w: entry.width, h: entry.width } : { w: 256, h: 256 });
-      const img = entry.width && !entry.size
-        ? await (async () => { const buf = await sharp(path).ensureAlpha().trim().resize({ width: entry.width }).raw().toBuffer({ resolveWithObject: true }); return { data: Buffer.from(buf.data), width: buf.info.width, height: buf.info.height }; })()
+      // Sized by one side only (fight portraits, creatures): trimmed, magenta keyed out, scaled to it.
+      let img = (entry.width || entry.height) && !entry.size
+        ? await (async () => {
+          const raw = await sharp(path).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
+          const keyed = sharp(keyMagenta(Buffer.from(raw.data)), { raw: { width: raw.info.width, height: raw.info.height, channels: 4 } });
+          const buf = await sharp(await sharp(await keyed.png().toBuffer()).trim().toBuffer())
+            .resize(entry.height ? { height: entry.height } : { width: entry.width }).raw().toBuffer({ resolveWithObject: true });
+          return { data: Buffer.from(buf.data), width: buf.info.width, height: buf.info.height };
+        })()
         : await fit(path, size.w, size.h, entry.anchor === 'none' ? 'centre' : entry.anchor);
-      snapToPalette(img.data, img.width);
-      if (entry.kind !== 'card') addOutline(img.data, img.width, img.height);
+      if (GRID_KINDS.has(entry.kind)) img = toGrid(img, { outline: true });
+      else {
+        snapToPalette(img.data, img.width);
+        if (entry.kind !== 'card') addOutline(img.data, img.width, img.height);
+      }
       after = await write(root, entry.file, img, { webp: entry.webp });
     }
     await preview(root, entry.id, before, after);

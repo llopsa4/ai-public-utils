@@ -16,6 +16,10 @@ export interface ArtEntry {
   webp?: boolean;
   /** Exact size in art pixels (2x the world). Placeholders may differ; finals must match. */
   size?: { w: number; h: number };
+  /** An object's frame in art pixels (true proportions), standing on its bottom centre. */
+  frame?: { w: number; h: number };
+  /** Gear: its tier of art (1 = the piece's own picture, up to 10). */
+  tier?: number;
   /** Width for sprites whose height follows the drawing. */
   width?: number;
   /** Standing height in art pixels at the front of a room (characters). */
@@ -33,7 +37,7 @@ export interface ArtEntry {
   room?: string;
   /** How a foreground piece is cut from its room: polygons and box [x0, y0, x1, y1]. */
   cut?: { polygons: number[][][]; box: [number, number, number, number] };
-  chapter: 'game' | 'ch1';
+  chapter: 'game' | 'ch1' | 'ch2' | string;
   status: 'placeholder' | 'final' | 'requested';
   /** Script that makes the placeholder. */
   generator: string;

@@ -216,6 +216,54 @@ export const MANIFEST = [
     subject: "Bryn's training rig: a caged brush drum on a sprung frame that swings back at whoever strikes it." },
 ];
 
+/**
+ * Each object's frame in art pixels (2x world units; multiples of the 4-pixel grid), in true
+ * proportion to Mara (232 art pixels tall): the importer fits a Codex drawing into this box, standing
+ * on its bottom centre (the object's foot point in the room).
+ */
+const OBJECT_FRAMES = {
+  rack: { w: 56, h: 72 },          // a brass cradle on the workbench, hand-and-a-half tall
+  notebook: { w: 72, h: 24 },      // a book lying open on the bench
+  'pantry-door': { w: 120, h: 304 }, // a full-height plank door, 1.3x Mara
+  socket: { w: 160, h: 160 },      // the regulator ring set in the great pipe
+  sweeper: { w: 260, h: 140 },     // a squat machine, reaching Mara's chest
+  valve: { w: 112, h: 204 },       // a valve wheel on its standpipe
+  tent: { w: 184, h: 224 },        // Mara's tent pitched in the hall, about his height at the ridge
+  grate: { w: 148, h: 224 },       // the grate filling the tunnel's end opening
+  steam: { w: 140, h: 280 },       // the jet from floor to pipe
+  bridge: { w: 320, h: 220 },      // the drawbridge up (on end) or down across the pit
+  rag: { w: 60, h: 32 },           // an oily rag in a heap
+  basket: { w: 84, h: 92 },        // the counterweight basket with its nest
+};
+for (const e of MANIFEST) if (e.kind === 'object' && OBJECT_FRAMES[e.id]) e.frame = OBJECT_FRAMES[e.id];
+
+// ------------------------------------------------- descriptions, the cast, new requests ---
+// The detailed descriptions Codex paints from (art/descriptions.mjs) replace the short subjects.
+import { CARDS, CAST, DESCRIPTIONS, GEAR, GEAR_TIERS, LIGHTS } from './descriptions.mjs';
+const WHO = {
+  'char-mara': CAST.mara, 'char-mara-gauntlet': `${CAST.mara} ${CAST.maraLit}`, 'char-oren': CAST.oren, 'char-nell': CAST.nell, 'char-bryn': CAST.bryn,
+  'extra-stoker': CAST.hollis, 'extra-tally': CAST.ansel, 'extra-hauler': CAST.dace, 'extra-runner': CAST.pip,
+  'extra-hoist': CAST.wren, 'extra-kid': CAST.bea, 'extra-merchant': CAST.corvin,
+};
+// Mara off duty: everyday clothes, no armour, no gauntlet (requested; rigged once delivered).
+MANIFEST.push({ id: 'char-mara-casual', kind: 'character', file: 'characters/mara-casual.png', sheet: 'characters/mara-casual.json', anchor: 'bottom-centre', height: 232,
+  chapter: 'game', status: 'requested', generator: 'rig.mjs (once delivered: measure RIGS, then npm run rig)', subject: CAST.maraCasual });
+// Ten tiers of every piece of gear: tier 1 is the piece's own picture, tiers 2-10 new pictures beside it.
+for (const [id, base] of Object.entries(GEAR)) {
+  for (let tier = 2; tier <= 10; tier++) {
+    MANIFEST.push({ id: `equipment-${id}-t${tier}`, kind: 'equipment', file: `kc/equipment/${id}-t${tier}.webp`, size: { w: 320, h: 320 }, anchor: 'none', tier,
+      chapter: 'game', status: 'requested', generator: 'Codex', subject: `${base} ${GEAR_TIERS[tier - 1]}` });
+  }
+}
+for (const e of MANIFEST) {
+  if (LIGHTS[e.id]) e.light = LIGHTS[e.id];
+  if (WHO[e.id]) e.subject = WHO[e.id];
+  else if (DESCRIPTIONS[e.id]) e.subject = DESCRIPTIONS[e.id];
+  else if (e.kind === 'portrait') e.subject = `${e.subject.replace(/\.$/, '')}: cut by the game from the character's drawing.`;
+  else if (e.kind === 'card') { const [name, does, motif] = CARDS[e.id.slice(5)]; e.subject = `${name} (the card's effect: ${does}): ${motif}`; }
+  else if (e.kind === 'equipment' && !e.tier) { const id = e.id.slice('equipment-'.length); e.tier = 1; e.subject = `${GEAR[id]} ${GEAR_TIERS[0]}`; }
+}
+
 // Statuses set by the importer (art/status.json: { "<id>": "final" }) override the defaults above.
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';

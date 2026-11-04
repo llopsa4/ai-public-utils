@@ -38,7 +38,17 @@ async function referenceImage(room: RoomDef, file: string): Promise<void> {
   const label = (x: number, y: number, text: string, color: string) =>
     `<text x="${x}" y="${y}" font-family="Arial, sans-serif" font-size="17" font-weight="bold" fill="${color}" stroke="#000" stroke-width="4" paint-order="stroke">${esc(text)}</text>`;
   const dot = (p: Point, color: string, r = 7) => `<circle cx="${art(p.x)}" cy="${art(p.y)}" r="${r}" fill="${color}" stroke="#000" stroke-width="2"/>`;
+  // A room whose painting is final is marked up on its painting; any other gets a schematic: the
+  // flat back wall and floor, the floor line, true-size boxes for objects and Mara for scale.
+  const final = MANIFEST.find(e => e.id === room.background)?.status === 'final';
   let svg = '';
+  if (!final) {
+    svg += `<rect width="${ROOM_SIZE.w}" height="${art(262)}" fill="#3b3a44"/><rect y="${art(262)}" width="${ROOM_SIZE.w}" height="${ROOM_SIZE.h - art(262)}" fill="#4a3e30"/>`;
+    for (let x = 0; x <= ROOM_SIZE.w; x += 80) svg += `<line x1="${x}" y1="0" x2="${x}" y2="${ROOM_SIZE.h}" stroke="#ffffff" stroke-opacity="0.06"/>`;
+    for (let y = 0; y <= ROOM_SIZE.h; y += 80) svg += `<line x1="0" y1="${y}" x2="${ROOM_SIZE.w}" y2="${y}" stroke="#ffffff" stroke-opacity="0.06"/>`;
+    svg += label(8, art(262) - 8, 'back wall', '#9a98a8') + label(8, art(262) + 22, 'floor', '#b8a888');
+  }
+  svg += `<line x1="0" y1="${art(262)}" x2="${ROOM_SIZE.w}" y2="${art(262)}" stroke="#ffffff" stroke-width="2" stroke-dasharray="14 8"/>`;
   svg += poly(room.walkable.outer, '#3cff6a', 'rgba(60,255,106,0.10)');
   for (const h of room.walkable.holes) svg += poly(h, '#ff4040', 'rgba(255,64,64,0.25)');
   for (const f of room.foreground ?? []) {
@@ -53,17 +63,28 @@ async function referenceImage(room: RoomDef, file: string): Promise<void> {
   }
   for (const [id, e] of Object.entries(room.entries)) { svg += dot(e, '#ff3cdc', 8); svg += label(art(e.x) + 10, art(e.y) + 6, id, '#ff3cdc'); }
   for (const o of room.objects) {
+    // Its true-size frame standing on its foot point (art/manifest.mjs, OBJECT_FRAMES).
+    const frame = MANIFEST.find(e => e.kind === 'object' && e.id === o.sheet)?.frame;
+    if (frame) svg += `<rect x="${art(o.x) - frame.w / 2}" y="${art(o.y) - frame.h}" width="${frame.w}" height="${frame.h}" fill="rgba(255,140,26,0.14)" stroke="#ff8c1a" stroke-width="3"/>`;
     svg += `<path d="M${art(o.x) - 10} ${art(o.y)} h20 M${art(o.x)} ${art(o.y) - 10} v20" stroke="#ff8c1a" stroke-width="5"/>`;
     svg += label(art(o.x) + 10, art(o.y) - 8, `object: ${o.id}`, '#ff8c1a');
   }
-  for (const a of room.actors) { svg += dot(a, '#ffffff', 9); svg += label(art(a.x) + 12, art(a.y) - 6, a.id, '#ffffff'); }
+  // Mara at true size (232 art pixels) on each entry, for scale.
+  for (const e of Object.values(room.entries)) {
+    svg += `<rect x="${art(e.x) - 30}" y="${art(e.y) - 232}" width="60" height="232" rx="26" fill="rgba(255,60,220,0.16)" stroke="#ff3cdc" stroke-width="2"/>`;
+  }
+  for (const a of room.actors) {
+    svg += `<rect x="${art(a.x) - 30}" y="${art(a.y) - 226}" width="60" height="226" rx="26" fill="rgba(255,255,255,0.12)" stroke="#ffffff" stroke-width="2"/>`;
+    svg += dot(a, '#ffffff', 9); svg += label(art(a.x) + 12, art(a.y) - 6, a.id, '#ffffff');
+  }
   for (const s of Object.values(CROWDS[room.id]?.stations ?? {})) svg += dot(s, '#b4ff3c', 4);
   if (room.sign) {
     const s = room.sign;
     svg += `<rect x="${art(s.x - s.w / 2)}" y="${art(s.y)}" width="${art(s.w)}" height="${art(s.drop + s.h)}" fill="none" stroke="#ffffff" stroke-width="2" stroke-dasharray="6 6"/>`;
   }
   const overlay = `<svg xmlns="http://www.w3.org/2000/svg" width="${ROOM_SIZE.w}" height="${ROOM_SIZE.h}">${svg}</svg>`;
-  await sharp(join(ART, `${file}.png`)).composite([{ input: Buffer.from(overlay) }]).jpeg({ quality: 78 }).toFile(join(ART, '..', 'spec', `${file.split('/').pop()}.jpg`));
+  const base = final ? sharp(join(ART, `${file}.png`)) : sharp({ create: { width: ROOM_SIZE.w, height: ROOM_SIZE.h, channels: 3, background: '#202020' } });
+  await base.composite([{ input: Buffer.from(overlay) }]).jpeg({ quality: 80 }).toFile(join(ART, '..', 'spec', `${file.split('/').pop()}.jpg`));
 }
 
 function sheetInfo(path: string): { frames: number; tags: string[]; size: string } {

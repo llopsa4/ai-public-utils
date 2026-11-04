@@ -40,20 +40,21 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `notebook` | mother's notebook | 112, 328, 80×36 | (220, 532) |
-| `rack` | charging rack | 312, 220, 104×144 | (364, 532) |
-| `jar` | water jar | 188, 232, 92×124 | (240, 532) |
-| `workbench` | workbench | 0, 192, 428×324 | (300, 532) |
-| `stool` | stool | 150, 410, 188×192 | — |
-| `drum` | old brush drum | 464, 312, 248×176 | (600, 524) |
-| `tentFlap` | tent flap | 1112, 208, 140×276 | (1184, 516) |
+| `notebook` | mother's notebook | 80, 368, 76×28 | (120, 556) |
+| `rack` | charging rack | 292, 256, 104×140 | (344, 556) |
+| `jar` | water jar | 208, 336, 52×60 | (236, 556) |
+| `workbench` | workbench | 28, 248, 356×256 | (220, 556) |
+| `stool` | stool | 176, 456, 104×96 | — |
+| `drum` | old brush drum | 484, 388, 188×132 | (580, 556) |
+| `stove` | clay stove | 732, 412, 76×96 | (770, 556) |
+| `tentFlap` | tent flap | 1132, 168, 148×372 | (1212, 568) |
 
-- Object `objects/rack` (224×140, tags full (1), empty (1)): foot point (364, 360). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Object `objects/notebook` (76×30, tags idle (1)): foot point (150, 360). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Walk-behind piece `foreground/tent-stool.png` (200×200, top left at (144, 408)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
-- The name board hangs from (220, 20) (about 184×64); it is painted by the game, so leave a quiet patch of wall there.
-- Heat shimmer (High quality) over: 608, 68, 64×60: hot spots in the painting (fires, lamps, pipes).
-- Flickering light pools at (1184, 344), (640, 104): lamps, kiln mouths, hearths in the painting.
+- Object `objects/rack` (224×140, tags full (1), empty (1)): foot point (344, 394). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/notebook` (76×30, tags idle (1)): foot point (116, 394). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Walk-behind piece `foreground/tent-stool.png` (108×96, top left at (176, 460)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
+- The name board hangs from (240, 28) (about 184×64); it is painted by the game, so leave a quiet patch of wall there.
+- Heat shimmer (High quality) over: 624, 60, 48×60: hot spots in the painting (fires, lamps, pipes).
+- Flickering light pools at (1212, 380), (644, 104): lamps, kiln mouths, hearths in the painting.
 
 ### The Kiln Hall: `rooms/mara-room.png`
 
@@ -61,21 +62,21 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `tally` (secret) | scratches on the pillar | 16, 208, 104×184 | (124, 504) |
-| `toTent` | Mara's tent | 390, 348, 200×144 | (490, 528) |
-| `niche` | kiln mouths | 592, 296, 496×168 | (840, 488) |
-| `pulleys` | pulley hoist | 132, 60, 152×272 | (236, 500) |
-| `jars` | storage jars | 252, 372, 136×100 | (340, 504) |
-| `cart` | ash cart | 948, 396, 128×68 | (1012, 492) |
-| `roomCurtain` | way to the firing house | 1092, 280, 112×164 | (1168, 492) |
+| `tally` (secret) | scratches on the pillar | 16, 300, 80×140 | (80, 560) |
+| `toTent` | Mara's tent | 408, 300, 184×224 | (500, 560) |
+| `niche` | kiln mouths | 640, 240, 360×240 | (820, 560) |
+| `pulleys` | pulley hoist | 148, 40, 104×340 | (200, 560) |
+| `jars` | storage jars | 280, 428, 100×96 | (330, 560) |
+| `cart` | ash cart | 1008, 436, 120×88 | (1068, 564) |
+| `roomCurtain` | way to the firing house | 1184, 208, 96×320 | (1232, 580) |
 
-- Object `objects/tent` (200×140, tags idle (1)): foot point (490, 496). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Walk-behind piece `foreground/hall-left.png` (202×224, top left at (0, 496)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
-- Walk-behind piece `foreground/hall-right.png` (176×160, top left at (1104, 560)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
-- Animated prop `props/pulley.png` (swing) at (188, 168): hung from its top edge at that point; it swings.
-- The name board hangs from (460, 96) (about 200×72); it is painted by the game, so leave a quiet patch of wall there.
-- Heat shimmer (High quality) over: 600, 300, 488×140: hot spots in the painting (fires, lamps, pipes).
-- Flickering light pools at (664, 416), (876, 408), (1032, 436): lamps, kiln mouths, hearths in the painting.
+- Object `objects/tent` (200×140, tags idle (1)): foot point (500, 528). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Walk-behind piece `foreground/hall-left.png` (178×104, top left at (0, 616)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
+- Walk-behind piece `foreground/hall-right.png` (166×92, top left at (1114, 628)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
+- Animated prop `props/pulley.png` (swing) at (200, 120): hung from its top edge at that point; it swings.
+- The name board hangs from (300, 96) (about 200×72); it is painted by the game, so leave a quiet patch of wall there.
+- Heat shimmer (High quality) over: 640, 300, 360×160: hot spots in the painting (fires, lamps, pipes).
+- Flickering light pools at (700, 400), (820, 392), (940, 400): lamps, kiln mouths, hearths in the painting.
 
 ### The Firing House: `rooms/firing-house.png`
 
@@ -83,21 +84,21 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `chalk` (secret) | chalk marks | 472, 244, 92×56 | (524, 572) |
-| `sign` (secret) | old wooden sign | 624, 92, 52×56 | — |
-| `pantryDoor` | Nell's pantry door | 868, 300, 84×148 | (910, 496) |
-| `soup` | soup pot | 432, 372, 160×60 | (524, 572) |
-| `shoes` | shoe racks | 36, 68, 300×320 | — |
-| `hearth` | hearth | 0, 368, 128×140 | — |
-| `stairs` | stairs to the gallery | 1040, 224, 240×224 | (1192, 476) |
-| `kilnGate` | kiln gate | 668, 276, 116×160 | (728, 496) |
-| `toRoom` | way to Mara's room | 1224, 468, 56×144 | (1232, 584) |
+| `chalk` (secret) | chalk marks | 340, 300, 88×52 | (380, 560) |
+| `sign` (secret) | old wooden sign | 500, 80, 56×56 | — |
+| `pantryDoor` | Nell's pantry door | 608, 220, 120×304 | (668, 560) |
+| `soup` | soup pot | 164, 352, 88×52 | (220, 560) |
+| `shoes` | shoe racks | 68, 60, 240×220 | — |
+| `hearth` | hearth | 112, 340, 184×184 | — |
+| `stairs` | stairs to the gallery | 820, 192, 312×332 | (900, 568) |
+| `kilnGate` | kiln gate | 1172, 192, 108×336 | (1232, 580) |
+| `toRoom` | way to Mara's room | 0, 208, 60×320 | (48, 580) |
 
-- Object `objects/pantry-door` (160×96, tags stuck (1), fixed (1)): foot point (910, 448). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Nell stands at (584, 584).
-- The name board hangs from (880, 112) (about 224×68); it is painted by the game, so leave a quiet patch of wall there.
-- Heat shimmer (High quality) over: 0, 356, 140×128; 320, 260, 140×80: hot spots in the painting (fires, lamps, pipes).
-- Flickering light pools at (60, 452), (380, 320), (724, 380): lamps, kiln mouths, hearths in the painting.
+- Object `objects/pantry-door` (160×96, tags stuck (1), fixed (1)): foot point (668, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Nell stands at (500, 600).
+- The name board hangs from (960, 100) (about 224×68); it is painted by the game, so leave a quiet patch of wall there.
+- Heat shimmer (High quality) over: 120, 320, 180×140: hot spots in the painting (fires, lamps, pipes).
+- Flickering light pools at (204, 460), (1224, 360): lamps, kiln mouths, hearths in the painting.
 
 ### Regulator Gallery: `rooms/gallery.png`
 
@@ -105,20 +106,19 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `railNames` (secret) | scratched railing | 612, 412, 80×124 | (800, 592) |
-| `gauge` | pressure gauge | 300, 12, 108×108 | — |
-| `regulator` | regulator | 372, 156, 312×292 | (808, 580) |
-| `logbook` | Oren's logbook | 236, 524, 328×104 | — |
-| `lantern` | lantern | 0, 316, 100×224 | — |
-| `galleryStairs` | way to the firing house | 1176, 220, 104×300 | (1224, 592) |
+| `railNames` (secret) | scratched railing | 720, 412, 92×100 | (768, 564) |
+| `gauge` | pressure gauge | 424, 32, 88×88 | — |
+| `regulator` | regulator | 320, 128, 320×380 | (480, 564) |
+| `logbook` | Oren's logbook | 116, 416, 148×108 | — |
+| `lantern` | lantern | 28, 280, 68×120 | — |
+| `galleryStairs` | way to the firing house | 1172, 208, 108×320 | (1224, 584) |
 
-- Object `objects/socket` (524×262, tags installed (1), removed (1)): foot point (530, 436). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Walk-behind piece `foreground/gallery-railing.png` (390×222, top left at (556, 412)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
-- Animated prop `props/gauge-face.png` (gauge) at (360, 67): a needle-less dial (the game draws the needle), centred there.
-- Oren stands at (1040, 600).
-- The name board hangs from (952, 140) (about 148×120); it is painted by the game, so leave a quiet patch of wall there.
-- Heat shimmer (High quality) over: 720, 0, 160×140: hot spots in the painting (fires, lamps, pipes).
-- Flickering light pools at (48, 428), (540, 64): lamps, kiln mouths, hearths in the painting.
+- Object `objects/socket` (524×262, tags installed (1), removed (1)): foot point (480, 460). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Animated prop `props/gauge-face.png` (gauge) at (468, 76): a needle-less dial (the game draws the needle), centred there.
+- Oren stands at (960, 592).
+- The name board hangs from (1040, 120) (about 148×120); it is painted by the game, so leave a quiet patch of wall there.
+- Heat shimmer (High quality) over: 400, 0, 160×120: hot spots in the painting (fires, lamps, pipes).
+- Flickering light pools at (62, 336), (468, 80): lamps, kiln mouths, hearths in the painting.
 
 ### The Ashways: `rooms/ashways.png`
 
@@ -126,17 +126,17 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `sweeper` | ash sweeper | 716, 420, 248×128 | — |
-| `sweeperAtPipe` | ash sweeper | 220, 404, 248×128 | — |
-| `valve` | steam valve | 140, 312, 112×164 | (300, 524) |
-| `passage` | passage under the bridge | 744, 224, 208×208 | (848, 468) |
-| `pipes` | old pipes | 0, 0, 540×240 | — |
-| `wayBack` | way back to Cinderfold | 0, 600, 68×116 | — |
+| `sweeper` | ash sweeper | 940, 456, 260×140 | — |
+| `sweeperAtPipe` | ash sweeper | 260, 456, 260×140 | — |
+| `valve` | steam valve | 180, 320, 112×204 | (300, 564) |
+| `passage` | passage under the bridge | 1120, 200, 160×328 | (1216, 584) |
+| `pipes` | old pipes | 0, 0, 600×200 | — |
+| `wayBack` | way back to Cinderfold | 0, 240, 60×288 | (48, 584) |
 
-- Object `objects/valve` (224×160, tags closed (1), venting (1)): foot point (192, 476). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Object `objects/sweeper` (1120×160, tags idle (2), scurry (2)): foot point (840, 548), moves to (344, 532). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- The name board hangs from (660, 176) (about 200×72); it is painted by the game, so leave a quiet patch of wall there.
-- Flickering light pools at (848, 300): lamps, kiln mouths, hearths in the painting.
+- Object `objects/valve` (224×160, tags closed (1), venting (1)): foot point (236, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/sweeper` (1120×160, tags idle (2), scurry (2)): foot point (1070, 596), moves to (390, 596). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- The name board hangs from (660, 120) (about 200×72); it is painted by the game, so leave a quiet patch of wall there.
+- Flickering light pools at (1200, 340): lamps, kiln mouths, hearths in the painting.
 
 ### Service Line 4: `ch2/rooms/tunnel-mouth.png`
 
@@ -144,15 +144,15 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `arch` | tunnel arch | 830, 190, 260×330 | (960, 544) |
-| `plate` | iron plate | 860, 150, 180×40 | — |
-| `mouthLamp` | lamp | 776, 248, 28×32 | — |
-| `pipeSeat` | pipe | 260, 460, 430×44 | (460, 544) |
-| `dawn` | dawn | 0, 0, 760×300 | — |
-| `ashRoad` | ash road | 0, 330, 80×240 | — |
+| `plate` | iron plate | 1016, 148, 184×40 | — |
+| `mouthLamp` | lamp | 972, 260, 28×36 | — |
+| `arch` | tunnel arch | 1024, 196, 236×332 | (1200, 580) |
+| `pipeSeat` | pipe | 360, 476, 340×52 | (530, 564) |
+| `dawn` | dawn | 0, 0, 840×300 | — |
+| `ashRoad` | ash road | 0, 300, 72×228 | (48, 584) |
 
 - The name board hangs from (600, 92) (about 240×64); it is painted by the game, so leave a quiet patch of wall there.
-- Flickering light pools at (790, 266): lamps, kiln mouths, hearths in the painting.
+- Flickering light pools at (986, 280): lamps, kiln mouths, hearths in the painting.
 
 ### Collapsed Tunnel: `ch2/rooms/tunnel-collapse.png`
 
@@ -160,16 +160,16 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `rag` | rag | 192, 568, 60×44 | (300, 636) |
-| `grate` | rusted grate | 864, 350, 132×152 | (930, 532) |
-| `rubble` | rubble | 0, 260, 260×380 | — |
+| `rag` | rag | 248, 540, 60×32 | (340, 584) |
+| `grate` | rusted grate | 1120, 300, 148×224 | (1192, 580) |
+| `rubble` | rubble | 0, 220, 240×470 | — |
 | `lamp1` | lamp | 612, 80, 56×48 | — |
 | `pipes1` | pipes | 0, 12, 1280×68 | — |
-| `puddles` | puddles | 300, 600, 800×116 | — |
+| `puddles` | puddles | 320, 632, 760×58 | — |
 
-- Object `ch2/objects/rag` (60×46, tags idle (1)): foot point (222, 612). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Object `ch2/objects/grate` (240×150, tags closed (1), open (1)): foot point (930, 502). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- The name board hangs from (400, 88) (about 220×64); it is painted by the game, so leave a quiet patch of wall there.
+- Object `ch2/objects/rag` (60×46, tags idle (1)): foot point (278, 572). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `ch2/objects/grate` (240×150, tags closed (1), open (1)): foot point (1194, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- The name board hangs from (520, 88) (about 220×64); it is painted by the game, so leave a quiet patch of wall there.
 - Flickering light pools at (640, 104): lamps, kiln mouths, hearths in the painting.
 
 ### Steam Junction: `ch2/rooms/tunnel-steam.png`
@@ -178,15 +178,15 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `copperValve` | copper valve | 500, 300, 64×64 | (530, 524) |
-| `ironValve` | iron valve | 640, 300, 64×64 | (670, 524) |
-| `gauge2` | gauge | 576, 206, 48×48 | (600, 524) |
-| `steamJet` | steam | 1050, 300, 140×280 | (940, 592) |
-| `leakPipe` | leaking pipe | 760, 216, 400×76 | — |
-| `passage` | passage | 1200, 340, 80×220 | (1224, 592) |
-| `steamBack` | way back | 0, 360, 60×200 | (60, 592) |
+| `gauge2` | gauge | 576, 280, 48×48 | (600, 564) |
+| `copperValve` | copper valve | 500, 372, 64×64 | (528, 564) |
+| `ironValve` | iron valve | 640, 372, 64×64 | (676, 564) |
+| `steamJet` | steam | 1000, 320, 140×280 | (920, 592) |
+| `leakPipe` | leaking pipe | 760, 240, 400×72 | — |
+| `passage` | passage | 1192, 240, 88×288 | (1232, 584) |
+| `steamBack` | way back | 0, 240, 60×288 | (48, 584) |
 
-- Object `ch2/objects/steam` (280×260, tags on (1), off (1)): foot point (1120, 580). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `ch2/objects/steam` (280×260, tags on (1), off (1)): foot point (1070, 600). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - The name board hangs from (880, 88) (about 240×64); it is painted by the game, so leave a quiet patch of wall there.
 - Flickering light pools at (300, 104): lamps, kiln mouths, hearths in the painting.
 
@@ -196,18 +196,18 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `cleat` | cleat | 536, 476, 68×48 | (524, 580) |
-| `chain` | chain | 556, 120, 28×356 | (524, 580) |
+| `cleat` | cleat | 536, 488, 68×44 | (524, 580) |
+| `chain` | chain | 556, 120, 28×368 | (524, 580) |
 | `basket` | basket | 760, 152, 84×92 | — |
-| `bridge` | drawbridge | 896, 300, 52×224 | — |
-| `pit` | pit | 660, 510, 300×210 | — |
-| `farLedge` | far ledge | 960, 300, 320×420 | (636, 600) |
-| `cisternBack` | way back | 0, 360, 60×200 | (60, 600) |
+| `bridge` | drawbridge | 896, 380, 52×220 | — |
+| `pit` | pit | 660, 524, 300×166 | — |
+| `farLedge` | far ledge | 964, 240, 316×450 | (636, 600) |
+| `cisternBack` | way back | 0, 240, 60×288 | (48, 584) |
 
-- Object `ch2/objects/bridge` (640×220, tags up (1), down (1)): foot point (816, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `ch2/objects/bridge` (640×220, tags up (1), down (1)): foot point (816, 600). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Object `ch2/objects/basket` (160×90, tags hanging (1), gone (1)): foot point (800, 244). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - The name board hangs from (320, 208) (about 220×64); it is painted by the game, so leave a quiet patch of wall there.
-- Flickering light pools at (160, 104), (1180, 330): lamps, kiln mouths, hearths in the painting.
+- Flickering light pools at (160, 104), (1180, 360): lamps, kiln mouths, hearths in the painting.
 
 ### Bryn's Road: `ch2/rooms/road.png`
 
@@ -215,16 +215,16 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `doorframe` (secret) | Doorframe | 724, 292, 28×220 | (760, 544) |
-| `bell` | Bell | 892, 268, 44×68 | (860, 544) |
-| `door` | Heavy door | 752, 286, 142×228 | (820, 544) |
-| `window` | Lit window | 950, 320, 140×90 | (1010, 544) |
-| `signpost` | Signpost | 200, 360, 150×164 | (300, 560) |
-| `farPipes` | Pipes in the haze | 0, 140, 680×140 | — |
-| `roadBack` | Road back | 0, 480, 60×236 | — |
+| `doorframe` (secret) | Doorframe | 776, 220, 24×304 | (808, 568) |
+| `bell` | Bell | 956, 240, 44×68 | (944, 568) |
+| `door` | Heavy door | 800, 204, 144×320 | (872, 568) |
+| `window` | Lit window | 1024, 280, 152×112 | (1100, 568) |
+| `signpost` | Signpost | 160, 320, 140×204 | (230, 568) |
+| `farPipes` | Pipes in the haze | 0, 100, 720×160 | — |
+| `roadBack` | Road back | 0, 300, 60×228 | — |
 
-- The name board hangs from (1040, 112) (about 200×68); it is painted by the game, so leave a quiet patch of wall there.
-- Flickering light pools at (1020, 364), (712, 318): lamps, kiln mouths, hearths in the painting.
+- The name board hangs from (1080, 112) (about 200×68); it is painted by the game, so leave a quiet patch of wall there.
+- Flickering light pools at (1100, 336), (764, 300): lamps, kiln mouths, hearths in the painting.
 
 ### Tempering House: `ch2/rooms/workshop.png`
 
@@ -232,20 +232,20 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `crucible` (secret) | Old crucible | 96, 224, 76×88 | (320, 524) |
-| `readingValve` | Reading valve | 720, 120, 48×72 | (744, 444) |
-| `stool2` | Stool | 110, 384, 140×140 | — |
-| `bench` | Bryn's bench | 0, 300, 290×170 | (340, 524) |
-| `cage` | Training cage | 300, 230, 280×180 | (444, 464) |
-| `coal` | Coal crate | 730, 290, 80×76 | (770, 444) |
-| `toBackroom` | Curtain to the back room | 190, 144, 56×140 | (300, 524) |
-| `view` | Open side | 960, 0, 320×240 | — |
-| `returnPipe` | Return pipe | 200, 0, 580×116 | — |
-| `toRoad` | Out to the road | 1220, 360, 60×240 | (1224, 540) |
+| `crucible` (secret) | Old crucible | 140, 336, 60×52 | (220, 564) |
+| `readingValve` | Reading valve | 800, 160, 52×72 | (826, 564) |
+| `stool2` | Stool | 368, 464, 68×72 | — |
+| `bench` | Bryn's bench | 72, 380, 280×144 | (220, 564) |
+| `cage` | Training cage | 480, 300, 280×224 | (620, 568) |
+| `coal` | Coal crate | 880, 444, 92×80 | (924, 568) |
+| `toBackroom` | Curtain to the back room | 0, 220, 60×308 | (48, 584) |
+| `view` | Open side | 980, 80, 220×300 | — |
+| `returnPipe` | Return pipe | 200, 16, 880×120 | — |
+| `toRoad` | Out to the road | 1220, 220, 60×308 | (1232, 584) |
 
-- Bryn stands at (880, 504).
-- The name board hangs from (810, 252) (about 220×60); it is painted by the game, so leave a quiet patch of wall there.
-- Flickering light pools at (744, 156), (380, 120): lamps, kiln mouths, hearths in the painting.
+- Bryn stands at (1040, 592).
+- The name board hangs from (660, 240) (about 220×60); it is painted by the game, so leave a quiet patch of wall there.
+- Flickering light pools at (826, 196), (170, 360): lamps, kiln mouths, hearths in the painting.
 
 ### Back Room: `ch2/rooms/backroom.png`
 
@@ -253,17 +253,17 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `pouch` | Courier's pouch | 1048, 300, 48×68 | (1112, 580) |
-| `map` | Map on the wall | 560, 170, 230×160 | (680, 580) |
-| `farDoor` | Far door | 1150, 230, 120×300 | (1200, 580) |
-| `shelf` | Supply shelf | 370, 210, 130×230 | (440, 580) |
-| `hearth2` | Hearth | 90, 250, 250×300 | (380, 584) |
-| `table` | Table | 520, 430, 320×90 | (680, 592) |
-| `cot` | Cot | 900, 452, 300×120 | (1040, 604) |
-| `toWorkshop` | Curtain to the workshop | 0, 220, 70×330 | (80, 584) |
+| `pouch` | Courier's pouch | 1120, 300, 44×60 | (1132, 576) |
+| `map` | Map on the wall | 540, 180, 220×144 | (650, 568) |
+| `farDoor` | Far door | 1180, 208, 100×320 | (1232, 584) |
+| `shelf` | Supply shelf | 360, 208, 120×252 | (420, 568) |
+| `hearth2` | Hearth | 92, 280, 224×244 | (280, 568) |
+| `table` | Table | 520, 424, 300×100 | (600, 576) |
+| `cot` | Cot | 880, 444, 280×84 | (1020, 580) |
+| `toWorkshop` | Curtain to the workshop | 0, 208, 60×320 | (48, 584) |
 
-- Bryn stands at (800, 624).
-- Flickering light pools at (216, 510), (680, 420): lamps, kiln mouths, hearths in the painting.
+- Bryn stands at (800, 600).
+- Flickering light pools at (204, 472), (670, 400): lamps, kiln mouths, hearths in the painting.
 
 ## Characters
 

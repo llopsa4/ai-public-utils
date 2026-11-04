@@ -413,6 +413,41 @@ function buildExtra(id) {
 }
 
 /** Palette-reduces the frames, adds the outline and writes the PNG + Aseprite JSON pair. */
+/**
+ * The game's pixel grid for characters (art pixels per grid pixel), the same as the rooms: every
+ * frame is averaged into GRID x GRID blocks (a block is solid when most of it is), snapped to the
+ * sheet palette, and outlined one block thick, so people are pixel art at the rooms' pixel size.
+ */
+const GRID = 4;
+
+function writeGridFrame(sheet, f, fx, fy, pal) {
+  const BW = FW / GRID, BH = FH / GRID;
+  const solid = new Uint8Array(BW * BH), rgb = new Float32Array(BW * BH * 3);
+  for (let by = 0; by < BH; by++) for (let bx = 0; bx < BW; bx++) {
+    let count = 0, r = 0, g = 0, b = 0;
+    for (let y = 0; y < GRID; y++) for (let x = 0; x < GRID; x++) {
+      const p = (by * GRID + y) * FW + bx * GRID + x;
+      if (f.alpha[p] < 0.5) continue;
+      count++; r += f.rgb[p * 3]; g += f.rgb[p * 3 + 1]; b += f.rgb[p * 3 + 2];
+    }
+    if (count * 2 < GRID * GRID) continue;
+    const q = by * BW + bx;
+    solid[q] = 1; rgb[q * 3] = r / count; rgb[q * 3 + 1] = g / count; rgb[q * 3 + 2] = b / count;
+  }
+  const paint = (bx, by, c) => {
+    for (let y = 0; y < GRID; y++) for (let x = 0; x < GRID; x++) {
+      const o = ((fy + by * GRID + y) * sheet.width + fx + bx * GRID + x) * 4;
+      sheet.data[o] = c[0]; sheet.data[o + 1] = c[1]; sheet.data[o + 2] = c[2]; sheet.data[o + 3] = 255;
+    }
+  };
+  for (let by = 0; by < BH; by++) for (let bx = 0; bx < BW; bx++) {
+    const q = by * BW + bx;
+    if (solid[q]) { paint(bx, by, nearest(pal, rgb[q * 3], rgb[q * 3 + 1], rgb[q * 3 + 2])); continue; }
+    const near = (bx > 0 && solid[q - 1]) || (bx < BW - 1 && solid[q + 1]) || (by > 0 && solid[q - BW]) || (by < BH - 1 && solid[q + BW]);
+    if (near) paint(bx, by, [30, 20, 18]);
+  }
+}
+
 function writeSheet(id, frames, tags, duration, colours, dir = '') {
   const samples = [];
   for (const f of frames) for (let p = 0; p < FW * FH; p += 3) if (f.alpha[p] >= 0.5) samples.push([f.rgb[p * 3], f.rgb[p * 3 + 1], f.rgb[p * 3 + 2]]);
@@ -421,6 +456,7 @@ function writeSheet(id, frames, tags, duration, colours, dir = '') {
   const sheet = new PNG({ width: FW * COLS, height: FH * rows });
   frames.forEach((f, n) => {
     const fx = (n % COLS) * FW, fy = Math.floor(n / COLS) * FH;
+    if (GRID > 1) { writeGridFrame(sheet, f, fx, fy, pal); return; }
     const solid = new Uint8Array(FW * FH);
     for (let p = FW; p < FW * (FH - 1); p++) {
       if (f.alpha[p] >= 0.5) continue;

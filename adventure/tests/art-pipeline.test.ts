@@ -70,3 +70,47 @@ test('importing a room re-cuts its walk-behind pieces from the new painting', as
     rmSync(root, { recursive: true, force: true });
   }
 });
+
+/** True when every GRID x GRID block of the image is one colour (the game's pixel grid). */
+function onGrid(png: PNG, grid: number): boolean {
+  for (let by = 0; by + grid <= png.height; by += grid) for (let bx = 0; bx + grid <= png.width; bx += grid) {
+    const o0 = (by * png.width + bx) * 4;
+    for (let y = 0; y < grid; y++) for (let x = 0; x < grid; x++) {
+      const o = ((by + y) * png.width + bx + x) * 4;
+      for (let c = 0; c < 4; c++) if (png.data[o + c] !== png.data[o0 + c]) return false;
+    }
+  }
+  return true;
+}
+
+test('a room lands on the 4x pixel grid, and a sprite on a magenta background is keyed out', async () => {
+  const { GRID } = await import('../art/import.mjs');
+  const root = mkdtempSync(join(tmpdir(), 'cinderfold-grid-'));
+  try {
+    mkdirSync(join(root, 'inbox'), { recursive: true });
+    // A soft, off-grid room painting.
+    const room = '<svg xmlns="http://www.w3.org/2000/svg" width="1672" height="941"><defs><radialGradient id="g"><stop offset="0" stop-color="#e09040"/><stop offset="1" stop-color="#2a1a10"/></radialGradient></defs><rect width="1672" height="941" fill="url(#g)"/><circle cx="700" cy="400" r="123" fill="#5a4a3a"/></svg>';
+    await sharp(Buffer.from(room)).png().toFile(join(root, 'inbox', 'room-gallery.png'));
+    // The rack's two states drawn on flat magenta instead of transparency.
+    for (const state of ['full', 'empty']) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="600" height="700"><rect width="600" height="700" fill="#ff00ff"/><rect x="200" y="150" width="200" height="500" fill="${state === 'full' ? '#c8a040' : '#6a5030'}"/></svg>`;
+      await sharp(Buffer.from(svg)).png().toFile(join(root, 'inbox', `rack-${state}.png`));
+    }
+    await importArt(root);
+    const r = PNG.sync.read(readFileSync(join(root, 'src', 'rooms', 'gallery.png')));
+    assert.deepEqual([r.width, r.height], [1280, 720]);
+    assert.ok(onGrid(r, GRID), 'the room is on the pixel grid');
+    assert.equal(paletteConformity(r.data), 1);
+    const rack = PNG.sync.read(readFileSync(join(root, 'src', 'objects', 'rack.png')));
+    assert.ok(onGrid(rack, GRID), 'the object is on the pixel grid');
+    let magenta = 0, clear = 0;
+    for (let i = 0; i < rack.data.length; i += 4) {
+      if (rack.data[i + 3] === 0) clear++;
+      else if (rack.data[i] > 200 && rack.data[i + 1] < 80 && rack.data[i + 2] > 200) magenta++;
+    }
+    assert.equal(magenta, 0, 'no magenta left');
+    assert.ok(clear > rack.data.length / 16, 'the background is transparent (a quarter or more of the frame)');
+  } finally {
+    rmSync(root, { recursive: true, force: true });
+  }
+});
