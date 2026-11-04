@@ -6,7 +6,7 @@
     "x": 0,
     "y": 0,
     "w": 112,
-    "h": 160
+    "h": 204
    },
    "rotated": false,
    "trimmed": false,
@@ -14,13 +14,13 @@
     "x": 0,
     "y": 0,
     "w": 112,
-    "h": 160
+    "h": 204
    },
    "sourceSize": {
     "w": 112,
-    "h": 160
+    "h": 204
    },
-   "duration": 100
+   "duration": 1000
   },
   {
    "filename": "1",
@@ -28,7 +28,7 @@
     "x": 112,
     "y": 0,
     "w": 112,
-    "h": 160
+    "h": 204
    },
    "rotated": false,
    "trimmed": false,
@@ -36,23 +36,23 @@
     "x": 0,
     "y": 0,
     "w": 112,
-    "h": 160
+    "h": 204
    },
    "sourceSize": {
     "w": 112,
-    "h": 160
+    "h": 204
    },
-   "duration": 100
+   "duration": 1000
   }
  ],
  "meta": {
-  "app": "adventure pixelate.mjs (Aseprite JSON-array compatible)",
+  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
   "version": "1",
   "image": "valve.png",
   "format": "RGBA8888",
   "size": {
    "w": 224,
-   "h": 160
+   "h": 204
   },
   "scale": "1",
   "frameTags": [

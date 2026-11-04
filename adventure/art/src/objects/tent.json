@@ -5,32 +5,32 @@
    "frame": {
     "x": 0,
     "y": 0,
-    "w": 200,
-    "h": 140
+    "w": 184,
+    "h": 224
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 200,
-    "h": 140
+    "w": 184,
+    "h": 224
    },
    "sourceSize": {
-    "w": 200,
-    "h": 140
+    "w": 184,
+    "h": 224
    },
-   "duration": 100
+   "duration": 1000
   }
  ],
  "meta": {
-  "app": "adventure pixelate.mjs (Aseprite JSON-array compatible)",
+  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
   "version": "1",
   "image": "tent.png",
   "format": "RGBA8888",
   "size": {
-   "w": 200,
-   "h": 140
+   "w": 184,
+   "h": 224
   },
   "scale": "1",
   "frameTags": [

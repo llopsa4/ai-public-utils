@@ -10,5 +10,18 @@
  "card-strike": "final",
  "item-gauntlet": "final",
  "notebook": "final",
- "item-notebook": "final"
+ "item-notebook": "final",
+ "tent": "final",
+ "prop-pulley": "final",
+ "pantry-door": "final",
+ "item-bread": "final",
+ "item-scarf": "final",
+ "room-firing-house": "final",
+ "socket": "final",
+ "item-regulator": "final",
+ "prop-gauge-face": "final",
+ "room-gallery": "final",
+ "sweeper": "final",
+ "valve": "final",
+ "room-ashways": "final"
 }
