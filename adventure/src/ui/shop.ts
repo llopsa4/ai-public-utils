@@ -3,7 +3,7 @@ import { t } from '../engine/i18n';
 import { sound } from '../audio/sound';
 import { TONIC } from '../content/kit';
 import { buyTonic } from '../engine/kit';
-import { TONIC_ICON } from './icons';
+import { TONIC_ART } from './icons';
 import { $, type Ui } from './ui';
 
 /** The merchant's stall: Kiln Tonics for salvage. Resolves when closed. */
@@ -37,7 +37,7 @@ export function renderShop(ui: Ui, note: string, effect: Effect = ''): void {
   purse.setAttribute('aria-label', t('ui.shopPurse', { n: String(bag.salvage) }));
 
   const tile = el('div', `stall-tile${effect ? ` stall-${effect}` : ''}`);
-  tile.innerHTML = TONIC_ICON;
+  tile.innerHTML = TONIC_ART;
   tile.append(el('span', 'stall-count', `${bag.tonics} / ${TONIC.max}`));
   if (effect === 'bought') tile.append(el('span', 'stall-float', '+1'));
 

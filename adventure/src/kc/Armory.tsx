@@ -10,7 +10,7 @@ import { deriveStats, EQUIPMENT_SLOTS, openingHandSize } from '@kc/game/equipmen
 import type { CharacterProfile, EquippedItem, EquipmentSlot } from '@kc/game/types';
 import { equipmentComparison } from '@kc/game/workshop';
 import { BASIC_WEAR, TONIC, type WearSlot } from '../content/kit';
-import { TONIC_ICON } from '../ui/icons';
+import { TONIC_ART } from '../ui/icons';
 
 export interface ArmoryProps {
   profile: CharacterProfile;
@@ -65,7 +65,7 @@ const SLOT_AT: Record<EquipmentSlot | WearSlot, { x: number; y: number }> = {
 /** What the stash shows: one type of gear at a time (or the tonics on his belt). Pants and boots: only what he wears for now. */
 type GearType = EquipmentSlot | WearSlot | 'tonic';
 const TYPE_NAME: Record<GearType, string> = { gauntlet: 'Gauntlets', armor: 'Armor', utility: 'Utility', pants: 'Pants', boots: 'Boots', tonic: 'Kiln Tonics' };
-const Potion = () => <span className="doll-potion-icon" dangerouslySetInnerHTML={{ __html: TONIC_ICON }} />;
+const Potion = () => <span className="doll-potion-icon" dangerouslySetInnerHTML={{ __html: TONIC_ART }} />;
 const WEAR_SLOTS: WearSlot[] = ['pants', 'boots'];
 const isWear = (t: GearType): t is WearSlot => (WEAR_SLOTS as string[]).includes(t);
 
