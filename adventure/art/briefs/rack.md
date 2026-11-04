@@ -1,6 +1,6 @@
 # rack
 
-Status: **placeholder** · object · chapter ch1 · in the game as `art/src/objects/rack.png`
+Status: **final** · object · chapter ch1 · in the game as `art/src/objects/rack.png`
 
 ## What the game does with it
 

@@ -34,7 +34,8 @@ test('the kiln hall crowd works, moves about, talks to Mara and reacts when the 
   const later = await snapshot(page);
   const moved = later.filter(m => { const f = first.find(o => o.id === m.id)!; return Math.hypot(f.x - m.x, f.y - m.y) > 8 || m.away; });
   expect(moved.length, 'people move about').toBeGreaterThanOrEqual(3);
-  expect(later.some(m => m.task !== null), 'someone is at work').toBeTruthy();
+  // Someone reaches a station and works (the flat hall's stations are far apart: allow the walk).
+  await expect.poll(async () => (await snapshot(page)).some(m => m.task !== null), { timeout: 20_000, message: 'someone is at work' }).toBeTruthy();
   // Chatter: a bubble over someone's head, not a line in the panel, and gone after a moment.
   await page.evaluate(() => (window as any).adventure.session.scene.crowd.chat());
   await expect(page.locator('#chatter')).toBeVisible();

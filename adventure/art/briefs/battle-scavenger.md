@@ -1,6 +1,6 @@
 # battle-scavenger
 
-Status: **placeholder** · battle · chapter ch1 · in the game as `art/src/battle/scavenger.png`
+Status: **final** · battle · chapter ch1 · in the game as `art/src/battle/scavenger.png`
 
 ## What the game does with it
 

@@ -5,7 +5,7 @@ Status: **placeholder** · character · chapter ch1 · in the game as `art/src/c
 ## What the game does with it
 
 Appears in: firingHouse.
-In the game 220 art pixels tall (55 grid pixels): design for that size, a clear silhouette and colours that tell them apart from everyone else in the cast.
+In the game 220 art pixels tall (110 pixels on the people's 2-pixel grid; the face is only a dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
 
 ## Technical
 

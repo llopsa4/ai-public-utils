@@ -1,6 +1,6 @@
 # card-strike
 
-Status: **requested** · card · chapter game · in the game as `art/src/kc/cards/strike.png`
+Status: **final** · card · chapter game · in the game as `art/src/kc/cards/strike.png`
 
 ## What the game does with it
 

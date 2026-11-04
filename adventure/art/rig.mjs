@@ -69,9 +69,12 @@ function withClosedEyes(src, eyes) {
       }
       // lash line across the lower third of the eye
     }
+    // The lash line is as thick as the eye's half-height, so it survives being reduced to the pixel
+    // grid (a 3-pixel line in a 1024-wide source vanished): the closed eye reads as a dark lid.
+    const thick = Math.max(3, Math.round(e.ry * 1.1));
     for (let x = Math.floor(e.x - e.rx); x <= e.x + e.rx; x++) {
-      const yy = Math.round(e.y + e.ry * 0.35 + ((x - e.x) / e.rx) ** 2 * e.ry * -0.3);
-      for (let t = 0; t < 3; t++) { const i = ((yy + t) * img.width + x) * 4; img.data[i] = 42; img.data[i + 1] = 26; img.data[i + 2] = 20; }
+      const yy = Math.round(e.y - e.ry * 0.2 + ((x - e.x) / e.rx) ** 2 * e.ry * -0.3);
+      for (let t = 0; t < thick; t++) { const i = ((yy + t) * img.width + x) * 4; img.data[i] = 42; img.data[i + 1] = 26; img.data[i + 2] = 20; }
     }
   }
   return img;
@@ -414,11 +417,12 @@ function buildExtra(id) {
 
 /** Palette-reduces the frames, adds the outline and writes the PNG + Aseprite JSON pair. */
 /**
- * The game's pixel grid for characters (art pixels per grid pixel), the same as the rooms: every
- * frame is averaged into GRID x GRID blocks (a block is solid when most of it is), snapped to the
- * sheet palette, and outlined one block thick, so people are pixel art at the rooms' pixel size.
+ * The pixel grid for characters (art pixels per grid pixel): every frame is averaged into GRID x
+ * GRID blocks (a block is solid when most of it is), snapped to the sheet palette, and outlined one
+ * block thick. People use a grid twice as fine as the rooms' (2 against 4), so faces keep enough
+ * pixels for blinking and talking to show, while still reading as the same pixel art.
  */
-const GRID = 4;
+const GRID = 2;
 
 function writeGridFrame(sheet, f, fx, fy, pal) {
   const BW = FW / GRID, BH = FH / GRID;

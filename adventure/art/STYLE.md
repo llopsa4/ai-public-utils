@@ -21,11 +21,11 @@ Every picture in the game follows these rules, so pictures made one at a time (b
 
 Everything is in true proportion to Mara. A chair seat is at his knee, a table at his hip, a doorway well over his head. Heights below are in art pixels at 1280×720; see `art/style/scale.png`.
 
-| What | Height (art px) | On the pixel grid |
+| What | Height (art px) | On its pixel grid |
 | --- | --- | --- |
-| Mara | 232 | 58 |
-| Other adults | 206–226 (Bryn 224, and broad) | 52–57 |
-| Children | 146–150 | 37 |
+| Mara | 232 | 116 (people use the 2-pixel grid) |
+| Other adults | 206–226 (Bryn 224, and broad) | 103–113 |
+| Children | 146–150 | 73–75 |
 | A doorway | about 1.4× Mara, ≈ 328 | 82 |
 | A bench or table top | ≈ 104 | 26 |
 | A chair seat or stool | 48–52 | 12–13 |
@@ -36,13 +36,14 @@ Everything is in true proportion to Mara. A chair seat is at his knee, a table a
 
 ## The pixel grid
 
-- **Rooms, people, objects, props, creatures and fight pictures** are pixel art on a **4-pixel grid**. A 1280×720 room is a 320×180 picture shown 4× (as the tent reference is).
+- **Rooms, objects, props, creatures and fight pictures** are pixel art on a **4-pixel grid**. A 1280×720 room is a 320×180 picture shown 4× (as the tent reference is).
+- **People** are pixel art on a **2-pixel grid**, twice as fine, so their faces keep enough pixels for blinking and talking to show. Mara ends up 116 pixels tall on it; his eyes are 2 pixels.
 - **Codex may draw at any size:**
   - rooms at 16:9, 1280×720 or larger
   - characters on 1024×1536
   - objects at any size in their proportions
 
-  The importer reduces each to the grid. So draw with **big, clear shapes and flat colour areas** that survive being reduced. A person is only 58 pixels tall in the end; their face is a few pixels.
+  The importer (or, for people, the rig) reduces each to its grid. So draw with **big, clear shapes and flat colour areas** that survive being reduced. A person is about 116 pixels tall in the end; their face is only a dozen pixels, so give each a clear, distinctive head: hair shape, headwear, beard, colours.
 - **Satchel items, action icons, cards and gear pictures keep a finer grid** (their own sizes below); they are shown up close.
 
 ## Colour

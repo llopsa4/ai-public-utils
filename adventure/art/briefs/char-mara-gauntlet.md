@@ -5,7 +5,7 @@ Status: **placeholder** · character · chapter game · in the game as `art/src/
 ## What the game does with it
 
 Mara is the player's character: he walks every room, crouches, lies down, talks (the rig animates this one drawing).
-In the game 232 art pixels tall (58 grid pixels): design for that size, a clear silhouette and colours that tell them apart from everyone else in the cast.
+In the game 232 art pixels tall (116 pixels on the people's 2-pixel grid; the face is only a dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
 
 ## Technical
 

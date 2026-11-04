@@ -86,7 +86,7 @@ function functional(e: ArtEntry): string[] {
       if (e.id.startsWith('char-mara')) lines.push('Mara is the player\'s character: he walks every room, crouches, lies down, talks (the rig animates this one drawing).');
       if (rooms.length) lines.push(`Appears in: ${rooms.join(', ')}.`);
       if (crowd.length) lines.push(`A background person in: ${crowd.join(', ')} (walks about, works, now and then says a line).`);
-      lines.push(`In the game ${e.height} art pixels tall (${Math.round((e.height ?? 0) / 4)} grid pixels): design for that size, a clear silhouette and colours that tell them apart from everyone else in the cast.`);
+      lines.push(`In the game ${e.height} art pixels tall (${Math.round((e.height ?? 0) / 2)} pixels on the people's 2-pixel grid; the face is only a dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.`);
       if (e.id === 'char-mara-casual') lines.push('Mara out of his courier gear (for scenes at home and at rest): identical face, hair, skin, build and height to char-mara, so the player knows him at once.');
       break;
     }

@@ -21,9 +21,10 @@ const here = dirname(fileURLToPath(import.meta.url));
 const CARD_ORDER = ['strike', 'guard', 'pulse', 'vent', 'cycle', 'piston', 'shield', 'draw-back', 'discard-back'];
 
 /**
- * The game's pixel grid: rooms, characters, objects, props, creatures and fight pictures are pixel
- * art whose pixels are GRID art pixels (4 screen pixels in a 1280x720 room, the tent reference's
- * size). UI icons, satchel items, cards, gear and portraits keep their finer detail.
+ * The game's pixel grid: rooms, objects, props, creatures and fight pictures are pixel art whose
+ * pixels are GRID art pixels (4 screen pixels in a 1280x720 room, the tent reference's size). People
+ * are put on a finer 2-pixel grid by the rig (art/rig.mjs). UI icons, satchel items, cards, gear and
+ * portraits keep their finer detail.
  */
 export const GRID = 4;
 const GRID_KINDS = new Set(['room', 'battle-backdrop', 'object', 'prop', 'battle-portrait', 'battle']);
