@@ -140,7 +140,8 @@ export const RULES: readonly Rule[] = [
   // --------------------------------------------------------- Mara's tent ---
   ...either('rack', 'look', 'hasGauntlet', 'line.rackLookEmpty', 'line.rackLook'),
   { target: 'rack', verb: ['take', 'use'], when: F('hasGauntlet'), do: [say('line.rackEmpty')] },
-  { target: 'rack', verb: ['take', 'use'], walk: true, do: [wait(150), flag('hasGauntlet'), addItem('gauntlet'), wait(250), say('line.rackTake')] },
+  // Gearing up: kneels to the cradle, armour on and the cell into the gauntlet, stands up kitted out.
+  { target: 'rack', verb: ['take', 'use'], walk: true, do: [say('line.gearUp'), pose('hero', 'crouch'), wait(500), flag('hasGauntlet'), addItem('gauntlet'), wait(300), pose('hero', 'stand'), wait(200), say('line.rackTake')] },
   { target: 'notebook', verb: 'look', do: [say('line.notebookOnBench')] },
   { target: 'notebook', verb: 'open', walk: true, do: [say('line.notebookOpen')] },
   { target: 'notebook', verb: 'take', walk: true, do: [flag('hasNotebook'), addItem('notebook'), say('line.notebookTake')] },
@@ -274,7 +275,7 @@ export const INTERACTION_KEYS = [
   'line.useFails', 'line.nothingSpecial', 'line.cannot', 'line.alreadyStanding', 'line.askStand',
   'line.gauntletLook', 'line.notebookLook', 'line.notebookLookAfter', 'line.regulatorItemLook', 'line.breadLook', 'line.scarfLook',
   'line.breadEat', 'line.scarfWear', 'line.heroUseItem', 'line.heroLook', 'line.heroLookCold', 'line.heroTalk', 'line.heroLie', 'line.heroAlreadyStanding',
-  'line.rackLook', 'line.rackLookEmpty', 'line.rackEmpty', 'line.rackTake',
+  'line.rackLook', 'line.rackLookEmpty', 'line.rackEmpty', 'line.rackTake', 'line.gearUp',
   'line.notebookOnBench', 'line.notebookOpen', 'line.notebookTake',
   'line.nicheLook', 'line.nicheLookCold', 'line.nicheUse', 'line.nicheUseCold', 'line.roomCurtainLook',
   'line.tentFlapLook', 'line.tentNotYet', 'line.workbenchLook', 'line.workbenchUse', 'line.jarLook', 'line.jarTake',

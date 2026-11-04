@@ -24,7 +24,8 @@ export const COLD_TINT = 0x8796b8;
 export const inFlight = new Set<string>();
 
 export function queueSheet(scene: Phaser.Scene, key: string): void {
-  if (scene.textures.exists(key) || inFlight.has(key)) return;
+  // A sheet not drawn yet (casual Mara before Codex delivers it) is skipped: the scene falls back.
+  if (scene.textures.exists(key) || inFlight.has(key) || !SHEETS[key]) return;
   inFlight.add(key);
   scene.textures.once(`${Phaser.Textures.Events.ADD_KEY}${key}`, () => inFlight.delete(key));
   scene.load.atlas(key, SHEETS[key].png, SHEETS[key].json);

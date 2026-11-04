@@ -6,7 +6,7 @@ Status: **requested** · character · chapter game · in the game as `art/src/ch
 
 Mara is the player's character: he walks every room, crouches, lies down, talks (the rig animates this one drawing).
 In the game 232 art pixels tall (116 pixels on the 2-pixel grid; the face is only a couple of dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
-Mara out of his courier gear (for scenes at home and at rest): identical face, hair, skin, build and height to char-mara, so the player knows him at once.
+Mara at the start of a new adventure: he wakes in his tent in everyday clothes and gears up (armour, the gauntlet) when he takes the ember cell from its cradle. Identical face, hair, skin, build and height to char-mara, so the player knows him at once.
 
 ## Technical
 

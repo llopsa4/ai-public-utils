@@ -1,6 +1,6 @@
 # notebook
 
-Status: **placeholder** · object · chapter ch1 · in the game as `art/src/objects/notebook.png`
+Status: **final** · object · chapter ch1 · in the game as `art/src/objects/notebook.png`
 
 ## What the game does with it
 

@@ -1,6 +1,6 @@
 # item-notebook
 
-Status: **placeholder** · item · chapter ch1 · in the game as `art/src/items/notebook.png`
+Status: **final** · item · chapter ch1 · in the game as `art/src/items/notebook.png`
 
 ## What the game does with it
 

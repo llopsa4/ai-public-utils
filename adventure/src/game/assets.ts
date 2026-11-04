@@ -50,7 +50,15 @@ export interface AsepriteSheet {
   meta: { frameTags: { name: string; from: number; to: number; direction?: string }[] };
 }
 
+// Mara in everyday clothes (the start of a new adventure, before he gears up): used once Codex has
+// delivered it and it is rigged (art/src/characters/mara-casual.png + .json); until then the game
+// shows the unlit-gauntlet sheet.
+const casualFiles = import.meta.glob('../../art/src/characters/mara-casual.{png,json}', { eager: true, import: 'default' }) as Record<string, unknown>;
+const casualPng = casualFiles['../../art/src/characters/mara-casual.png'] as string | undefined;
+const casualJson = casualFiles['../../art/src/characters/mara-casual.json'] as AsepriteSheet | undefined;
+
 export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
+  ...(casualPng && casualJson ? { 'mara-casual': { png: casualPng, json: casualJson } } : {}),
   mara: { png: maraPng, json: maraJson },
   'mara-gauntlet': { png: maraGauntletPng, json: maraGauntletJson },
   oren: { png: orenPng, json: orenJson },
