@@ -50,17 +50,18 @@ const card = (id, name, subject) => ({
  * portrait is the head crop; face the mouth and brows that move. A Codex source drawn on the
  * style bible's template (art/STYLE.md, "Character sources") needs these re-measured once.
  */
+// Mara: Codex's drawing (art/sources/characters/char-mara: body.png, and arm.png for the oversized
+// gauntlet arm on the picture's left), measured on its 1024x1536 canvas.
 const MARA_RIG = {
-  source: 'kiln:hero.png', height: 232, walks: true,
-  hipY: 860, splitX: 560, hips: { near: [400, 860], far: [650, 860] }, knees: { near: [313, 1040], far: [800, 1060] },
-  arm: { minX: 790, minY: 300, maxY: 900, pivot: [800, 380] },
-  eyes: [{ x: 673, y: 109, rx: 13, ry: 7, skinAt: [668, 124] }],
-  portrait: [470, 0, 420, 420],
-  face: { mouth: { x: 682, y: 160, rx: 10, ry: 4 }, brows: [{ x0: 652, x1: 702, y0: 82, y1: 110, inner: 'right' }] },
+  source: 'sources/characters/char-mara/body.png', armLayer: 'sources/characters/char-mara/arm.png', height: 232, walks: true,
+  hipY: 840, splitX: 505, hips: { near: [440, 840], far: [570, 840] }, knees: { near: [410, 1050], far: [595, 1030] },
+  eyes: [{ x: 527, y: 115, rx: 12, ry: 6, skinAt: [527, 132] }, { x: 565, y: 115, rx: 10, ry: 6, skinAt: [565, 132] }],
+  portrait: [370, 0, 360, 360],
+  face: { mouth: { x: 552, y: 152, rx: 12, ry: 4 }, brows: [{ x0: 512, x1: 543, y0: 96, y1: 108, inner: 'right' }, { x0: 555, x1: 574, y0: 98, y1: 110, inner: 'left' }] },
 };
 export const RIGS = {
-  // Before the ember cell is fitted the gauntlet is cold: its glow is painted dark.
-  mara: { ...MARA_RIG, unpowered: { minX: 700, minY: 430, maxX: 1024, maxY: 900 } },
+  // Before the ember cell is fitted the gauntlet is cold: its glow (the red glass on the back of the fist) is painted dark.
+  mara: { ...MARA_RIG, unpowered: { minX: 210, minY: 790, maxX: 320, maxY: 900 } },
   'mara-gauntlet': MARA_RIG,
   oren: {
     source: 'kiln:opening/oren.png', height: 226, walks: false,

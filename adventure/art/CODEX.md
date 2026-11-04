@@ -28,7 +28,7 @@ Make these first, import them, and **stop**: the user looks at them in the game 
 
 - [x] **room-mara**: [brief](briefs/room-mara.md) → `art/inbox/room-mara.png`
 - [x] **rack**: [brief](briefs/rack.md) → `art/inbox/rack-full.png, art/inbox/rack-empty.png`
-- [ ] **char-mara**: [brief](briefs/char-mara.md) → `art/inbox/char-mara/body.png + arm.png`
+- [x] **char-mara**: [brief](briefs/char-mara.md) → `art/inbox/char-mara/body.png + arm.png`
 - [x] **battle-scavenger**: [brief](briefs/battle-scavenger.md) → `art/inbox/battle-scavenger.png`
 - [x] **card-strike**: [brief](briefs/card-strike.md) → `art/inbox/card-strike.png`
 - [x] **item-gauntlet**: [brief](briefs/item-gauntlet.md) → `art/inbox/item-gauntlet.png`
@@ -40,7 +40,7 @@ Make these first, import them, and **stop**: the user looks at them in the game 
 ### Mara's Tent (`tent`)
 
 - [ ] **notebook**: [brief](briefs/notebook.md) → `art/inbox/notebook-idle.png`
-- [ ] **char-mara-gauntlet**: [brief](briefs/char-mara-gauntlet.md) → `art/inbox/char-mara-gauntlet/body.png + arm.png`
+- [x] **char-mara-gauntlet**: [brief](briefs/char-mara-gauntlet.md) → `art/inbox/char-mara-gauntlet/body.png + arm.png`
 - [ ] **char-mara-casual**: [brief](briefs/char-mara-casual.md) → `art/inbox/char-mara-casual/body.png + arm.png`
 - [ ] **item-notebook**: [brief](briefs/item-notebook.md) → `art/inbox/item-notebook.png`
 

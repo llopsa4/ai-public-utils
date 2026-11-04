@@ -8,7 +8,7 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MANIFEST, PILOT } from '../art/manifest.mjs';
+import { MANIFEST, PILOT, RIGS } from '../art/manifest.mjs';
 import type { ArtEntry } from '../art/manifest.mjs';
 import { loadAllChapters } from '../src/chapters';
 import { CROWDS } from '../src/chapters/ch1/crowd';
@@ -161,7 +161,9 @@ writeFileSync(join(out, 'PILOT.md'), pilot.join('\n'));
 // screen, cards, gear, items and icons. Generated, so it always matches the manifest.
 const MAKES = (e: ArtEntry) => !['portrait', 'card-atlas', 'foreground'].includes(e.kind) && e.id !== 'room-tent';
 /** Already in the new style: imported by Codex since the reference (the older Gemini backdrop is redone too). */
-const DONE = (e: ArtEntry) => e.status === 'final' && e.id !== 'battle-backdrop-gallery';
+const DONE = (e: ArtEntry) => (e.status === 'final' && e.id !== 'battle-backdrop-gallery')
+  // A character is done once its rig builds from Codex's drawing (rigged sheets stay generated, not 'final').
+  || (!!e.rig && !!(RIGS as Record<string, { source: string }>)[e.rig]?.source.startsWith('sources/'));
 const byId = new Map(MANIFEST.map(e => [e.id, e]));
 const output = (e: ArtEntry) => e.kind === 'object' ? e.tags!.map(t => `art/inbox/${e.id}-${t}.png`).join(', ')
   : e.kind === 'character' || e.kind === 'extra' ? `art/inbox/${e.id}/body.png + arm.png` : `art/inbox/${e.id}.png`;
