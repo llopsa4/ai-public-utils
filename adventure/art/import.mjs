@@ -22,11 +22,11 @@ const CARD_ORDER = ['strike', 'guard', 'pulse', 'vent', 'cycle', 'piston', 'shie
 
 /**
  * The game's pixel grid: rooms, objects, props, creatures and fight pictures are pixel art whose
- * pixels are GRID art pixels (4 screen pixels in a 1280x720 room, the tent reference's size). People
- * are put on a finer 2-pixel grid by the rig (art/rig.mjs). UI icons, satchel items, cards, gear and
- * portraits keep their finer detail.
+ * pixels are GRID art pixels (a 1280x720 room is a 640x360 picture shown 2x). People are on the same
+ * grid, put there by the rig (art/rig.mjs). UI icons, satchel items, cards, gear and portraits keep
+ * their finer detail.
  */
-export const GRID = 4;
+export const GRID = 2;
 const GRID_KINDS = new Set(['room', 'battle-backdrop', 'object', 'prop', 'battle-portrait', 'battle']);
 
 /**

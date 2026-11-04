@@ -23,7 +23,7 @@ Later in the story the game cools this room's colours (the kiln dies): do not pa
 
 ## Technical
 
-- File: `art/inbox/room-backroom.png`, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 4-pixel grid and snapped to the palette.
+- File: `art/inbox/room-backroom.png`, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 2-pixel grid and snapped to the palette.
 - Layout to follow: `art/spec/backroom.jpg`.
 
 ## Prompt for Codex
@@ -31,13 +31,13 @@ Later in the story the game cools this room's colours (the kiln dies): do not pa
 ```text
 Draw for the game Cinderfold: Bryn's back room, seen flat-on: left edge, the curtain back to the workshop; left, a stone hearth with a pot on the fire; a shelf of supply crates, jars and rope; centre, a wooden table with a bowl and bread, and a large hand-drawn map pinned on the wall above it (a valley marked with a cross); right, a low cot under a heavy blanket; a courier's pouch on a peg by the far door; right edge, the far door to the road ahead. Warm, plain and tidy.
 Light sources in this place: the hearth (left) and a lamp over the table.
-Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 4-pixel grid on import, so use big clear shapes and flat colour areas.
+Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
 World: an industrial-fantasy village inside an old kiln and the ash country around it: fired clay, cream ceramic plates, iron, brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
 Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
 Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).
 Staging: flat 2D, like a stage set: no perspective, no vanishing point, the camera straight at the back wall at eye level, no side walls. The back wall meets the floor at y 524; the floor band below it (y 536–690) is where people walk, always the same size. Furniture stands against the back wall on the floor line or hangs on the wall above it.
 Light: paint the room evenly lit. Show the light sources named above as things in the room (lamps, fire, a lit doorway), with only soft ambient shading (darker under furniture, in the corners and high up). The game adds the glow, the flicker and the colour of the light.
-File: art/inbox/room-backroom.png, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 4-pixel grid and snapped to the palette.
+File: art/inbox/room-backroom.png, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 2-pixel grid and snapped to the palette.
 Layout to follow: art/spec/backroom.jpg.
 ```
 

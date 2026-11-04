@@ -417,10 +417,10 @@ function buildExtra(id) {
 
 /** Palette-reduces the frames, adds the outline and writes the PNG + Aseprite JSON pair. */
 /**
- * The pixel grid for characters (art pixels per grid pixel): every frame is averaged into GRID x
- * GRID blocks (a block is solid when most of it is), snapped to the sheet palette, and outlined one
- * block thick. People use a grid twice as fine as the rooms' (2 against 4), so faces keep enough
- * pixels for blinking and talking to show, while still reading as the same pixel art.
+ * The pixel grid for characters (art pixels per grid pixel), the same as the rooms' (art/import.mjs
+ * GRID): every frame is averaged into GRID x GRID blocks (a block is solid when most of it is),
+ * snapped to the sheet palette, and outlined one block thick. At 2, faces keep enough pixels for
+ * blinking and talking to show.
  */
 const GRID = 2;
 

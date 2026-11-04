@@ -5,7 +5,7 @@ Status: **placeholder** · extra · chapter ch1 · in the game as `art/src/chara
 ## What the game does with it
 
 A background person in: maraRoom (walks about, works, now and then says a line).
-In the game 224 art pixels tall (112 pixels on the people's 2-pixel grid; the face is only a dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
+In the game 224 art pixels tall (112 pixels on the 2-pixel grid; the face is only a couple of dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
 
 ## Technical
 
@@ -16,7 +16,7 @@ In the game 224 art pixels tall (112 pixels on the people's 2-pixel grid; the fa
 
 ```text
 Draw for the game Cinderfold: Dace, the clay hauler (she/her), about 30: tall and rangy, wide shoulders. Light tan skin, shaved head, a moss-green kerchief tied at her neck. A sleeveless clay-stained tunic over grey leggings, wrapped shins, sandals with straps; a heavy clay sack carried on one shoulder.
-Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 4-pixel grid on import, so use big clear shapes and flat colour areas.
+Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
 World: an industrial-fantasy village inside an old kiln and the ash country around it: fired clay, cream ceramic plates, iron, brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
 Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
 Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).

@@ -39,7 +39,7 @@ for (const c of CHAPTERS) for (const room of Object.values(c.rooms)) {
 }
 
 const STYLE = [
-  'Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 4-pixel grid on import, so use big clear shapes and flat colour areas.',
+  'Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.',
   'World: an industrial-fantasy village inside an old kiln and the ash country around it: fired clay, cream ceramic plates, iron, brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.',
   `Colour: keep to the attached master palette (art/style/palette.png, ${palette.length} colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.`,
   'Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).',
@@ -86,7 +86,7 @@ function functional(e: ArtEntry): string[] {
       if (e.id.startsWith('char-mara')) lines.push('Mara is the player\'s character: he walks every room, crouches, lies down, talks (the rig animates this one drawing).');
       if (rooms.length) lines.push(`Appears in: ${rooms.join(', ')}.`);
       if (crowd.length) lines.push(`A background person in: ${crowd.join(', ')} (walks about, works, now and then says a line).`);
-      lines.push(`In the game ${e.height} art pixels tall (${Math.round((e.height ?? 0) / 2)} pixels on the people's 2-pixel grid; the face is only a dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.`);
+      lines.push(`In the game ${e.height} art pixels tall (${Math.round((e.height ?? 0) / 2)} pixels on the 2-pixel grid; the face is only a couple of dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.`);
       if (e.id === 'char-mara-casual') lines.push('Mara out of his courier gear (for scenes at home and at rest): identical face, hair, skin, build and height to char-mara, so the player knows him at once.');
       break;
     }
@@ -106,9 +106,9 @@ function functional(e: ArtEntry): string[] {
 // ------------------------------------------------------------------------ technical ---
 function technical(e: ArtEntry): string[] {
   switch (e.kind) {
-    case 'room': return [`File: \`art/inbox/${e.id}.png\`, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 4-pixel grid and snapped to the palette.`, `Layout to follow: \`art/spec/${e.file.split('/').pop()!.replace('.png', '.jpg')}\`.`];
+    case 'room': return [`File: \`art/inbox/${e.id}.png\`, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 2-pixel grid and snapped to the palette.`, `Layout to follow: \`art/spec/${e.file.split('/').pop()!.replace('.png', '.jpg')}\`.`];
     case 'battle-backdrop': return [`File: \`art/inbox/${e.id}.png\`, opaque, 1280×720 or larger at 16:9; the floor clear in the lower third.`];
-    case 'object': return [`Files: ${e.tags!.map(t => `\`art/inbox/${e.id}-${t}.png\``).join(', ')}: transparent (or on flat magenta #FF00FF), the thing standing on the bottom edge.`, `Fitted into a ${e.frame?.w ?? '?'}×${e.frame?.h ?? '?'} art-pixel frame (true proportion to Mara at 232), reduced to the 4-pixel grid, outlined.`];
+    case 'object': return [`Files: ${e.tags!.map(t => `\`art/inbox/${e.id}-${t}.png\``).join(', ')}: transparent (or on flat magenta #FF00FF), the thing standing on the bottom edge.`, `Fitted into a ${e.frame?.w ?? '?'}×${e.frame?.h ?? '?'} art-pixel frame (true proportion to Mara at 232), reduced to the 2-pixel grid, outlined.`];
     case 'character': case 'extra': return [`Folder: \`art/inbox/${e.id}/\` with \`body.png\` (everything but the working arm) and \`arm.png\` (the working arm, a little overlap at the shoulder), transparent (or flat magenta), both 1024×1536 on the same canvas; optional \`back.png\`, \`sit.png\`, \`lie.png\`.`, `Pose: full body facing right in a slight three-quarter turn, upright, arms relaxed, feet apart and both visible, feet on y ≈ 1500${e.height && e.height < 180 ? ' (a child: about 63% of an adult\'s height on the same feet line)' : ', head top at y ≈ 40'}. Face lit, eyes open, mouth closed, neutral.`];
     case 'portrait': return ['Made by the game from the character\'s drawing: no separate picture.'];
     case 'card-atlas': return ['Assembled by the importer from the nine card pictures: no separate picture.'];
@@ -117,8 +117,8 @@ function technical(e: ArtEntry): string[] {
     case 'equipment': return [`File: \`art/inbox/${e.id}.png\`, 320×320, transparent (or flat magenta), the piece centred, seen from the front, filling about 80% of the square.`];
     case 'item': return [`File: \`art/inbox/${e.id}.png\`, 64×64, transparent (or flat magenta), the thing filling the tile.`];
     case 'icon': return [`File: \`art/inbox/${e.id}.png\`, 48×48, transparent (or flat magenta), a simple bold symbol.`];
-    case 'battle': case 'battle-portrait': return [`File: \`art/inbox/${e.id}.png\`, transparent (or flat magenta), standing on the bottom edge${e.height ? `, ${e.height} px tall (the figure about 60% of that, standing 4% above the bottom)` : e.width ? `, about ${e.width} px wide` : ''}. Reduced to the 4-pixel grid.`];
-    case 'prop': return [`File: \`art/inbox/${e.id}.png\`, transparent (or flat magenta), anchored at its ${e.anchor === 'top-centre' ? 'top' : e.anchor === 'centre' ? 'centre' : 'bottom'} edge${e.height ? `, ${e.height} px tall` : ''}. Reduced to the 4-pixel grid.`];
+    case 'battle': case 'battle-portrait': return [`File: \`art/inbox/${e.id}.png\`, transparent (or flat magenta), standing on the bottom edge${e.height ? `, ${e.height} px tall (the figure about 60% of that, standing 4% above the bottom)` : e.width ? `, about ${e.width} px wide` : ''}. Reduced to the 2-pixel grid.`];
+    case 'prop': return [`File: \`art/inbox/${e.id}.png\`, transparent (or flat magenta), anchored at its ${e.anchor === 'top-centre' ? 'top' : e.anchor === 'centre' ? 'centre' : 'bottom'} edge${e.height ? `, ${e.height} px tall` : ''}. Reduced to the 2-pixel grid.`];
     default: return [`File: \`art/inbox/${e.id}.png\`.`];
   }
 }
@@ -212,7 +212,7 @@ const codex = [
   '',
   '1. Open its brief (the link in its line below). It has three parts: what the game does with it, the technical requirements, and the prompt to paint from. Use the prompt, attach what the brief lists, and follow the technical part exactly.',
   '2. Save the result as the exact file name in its line, in `art/inbox/`: `<id>.png`; objects one file per state `<id>-<state>.png`; characters a folder `<id>/` with `body.png` and `arm.png`. Transparent background, or flat magenta `#FF00FF` where transparency is impossible.',
-  '3. After each batch, from `adventure/`: `npm run art:import` (fits each picture to size, reduces it to the 4-pixel grid, snaps it to the palette, outlines sprites, puts it where the game loads it, marks it final, writes a before/after preview), then `npm run art:check`.',
+  '3. After each batch, from `adventure/`: `npm run art:import` (fits each picture to size, reduces it to the 2-pixel grid, snaps it to the palette, outlines sprites, puts it where the game loads it, marks it final, writes a before/after preview), then `npm run art:check`.',
   '4. Look at `art/inbox/preview/<id>.png` for each one. If it does not match the brief (wrong layout, wrong proportions, text in it, a person in a room, perspective), make it again under the same name and import again.',
   '5. Characters: after import their layers are kept in `art/sources/characters/`; Claude measures the joints and rigs them (`npm run rig`). Note them in your report.',
   '',

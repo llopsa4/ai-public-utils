@@ -49,7 +49,7 @@ A new painting should put the things on the list where the reference image shows
 | `stove` | clay stove | 732, 412, 76×96 | (770, 556) |
 | `tentFlap` | tent flap | 1132, 168, 148×372 | (1212, 568) |
 
-- Object `objects/rack` (224×140, tags full (1), empty (1)): foot point (344, 394). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/rack` (112×72, tags full (1), empty (1)): foot point (344, 394). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Object `objects/notebook` (76×30, tags idle (1)): foot point (116, 394). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Walk-behind piece `foreground/tent-stool.png` (108×96, top left at (176, 460)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
 - The name board hangs from (240, 28) (about 184×64); it is painted by the game, so leave a quiet patch of wall there.
