@@ -133,6 +133,8 @@ p('- cyan dashed: walk-behind pieces (see below); white dashed: the hanging name
 p();
 p('A new painting should put the things on the list where the reference image shows them, or the positions in `src/chapters/<chapter>/rooms.ts` must be moved to match the new painting (hotspot polygons, `walkTo`, the walk area, entries, objects, foreground pieces, `look` effects, crowd stations in `src/chapters/<chapter>/crowd.ts`). `npm test` checks that the walk area, approach points and stations stay consistent.');
 p();
+p('After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-python-headless` and `numpy`): it cuts the silhouette of every clickable thing painted into the room for the hover highlight (`art/src/outlines/`). Check `art/inbox/preview/outlines-<room>.png`; where a cut misses, trace a rough hint in `art/outlines.json` and run it again. `npm run art:check` warns about any painted hotspot without an outline.');
+p();
 for (const room of CHAPTER_LIST.flatMap(c => Object.values(c.rooms))) {
   const file = roomFile(room.background);
   await referenceImage(room, file);

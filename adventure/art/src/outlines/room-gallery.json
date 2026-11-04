@@ -1,0 +1,86 @@
+{
+ "frames": {
+  "regulator": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 366,
+    "h": 470
+   }
+  },
+  "galleryStairs": {
+   "frame": {
+    "x": 368,
+    "y": 0,
+    "w": 180,
+    "h": 454
+   }
+  },
+  "lantern": {
+   "frame": {
+    "x": 550,
+    "y": 0,
+    "w": 120,
+    "h": 200
+   }
+  },
+  "gauge": {
+   "frame": {
+    "x": 672,
+    "y": 0,
+    "w": 222,
+    "h": 194
+   }
+  },
+  "logbook": {
+   "frame": {
+    "x": 0,
+    "y": 472,
+    "w": 248,
+    "h": 192
+   }
+  },
+  "railNames": {
+   "frame": {
+    "x": 250,
+    "y": 472,
+    "w": 160,
+    "h": 86
+   }
+  }
+ },
+ "meta": {
+  "image": "room-gallery.png",
+  "size": {
+   "w": 1024,
+   "h": 664
+  },
+  "scale": "1"
+ },
+ "place": {
+  "railNames": {
+   "x": 339,
+   "y": 201
+  },
+  "gauge": {
+   "x": 179,
+   "y": -3
+  },
+  "regulator": {
+   "x": 147,
+   "y": 43
+  },
+  "logbook": {
+   "x": 26,
+   "y": 182
+  },
+  "lantern": {
+   "x": 11,
+   "y": 111
+  },
+  "galleryStairs": {
+   "x": 553,
+   "y": 71
+  }
+ }
+}

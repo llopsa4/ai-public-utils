@@ -12,7 +12,8 @@ import { RoomSign } from './sign';
 import type { Mood } from '../engine/crowd';
 import { chapter } from '../chapters';
 import { crowdMoodFor, heroSheetFor, hushed, onEnter, type StoryContext } from '../engine/story';
-import { FOREGROUND_IMAGES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
+import { FOREGROUND_IMAGES, OUTLINES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
+import { outlineSheetKey } from './room/outline';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
 import { DOORWAY_STEP, FACE_VECTOR, FADE_MS, NOTICE_DISTANCE, createSheetAnims, inFlight, particleConfig, queueSheet, whenSheet } from './room/shared';
@@ -125,6 +126,8 @@ export class RoomScene extends Phaser.Scene {
   focusRing: Phaser.GameObjects.Graphics | null = null;
   /** Soft outline on whatever the pointer is over (not on touch screens). */
   hoverRing: Phaser.GameObjects.Graphics | null = null;
+  /** The hover outline pictures in use (room/outline.ts), reused frame to frame. */
+  hoverOutlines: Phaser.GameObjects.Image[] = [];
   hovered: Target | null = null;
   busy = false;
   leaving = false;
@@ -144,6 +147,8 @@ export class RoomScene extends Phaser.Scene {
     for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, NPC_SHEETS[a.id] ?? a.id);
     for (const o of room.objects) queueSheet(this, o.sheet);
     if (!this.textures.exists(room.background)) this.load.image(room.background, ROOM_IMAGES[room.background]);
+    const outlines = OUTLINES[room.background];
+    if (outlines && !this.textures.exists(outlineSheetKey(room.background))) this.load.atlas(outlineSheetKey(room.background), outlines.png, outlines.json);
     for (const p of room.props ?? []) {
       if ('image' in p && !this.textures.exists(`prop-${p.image}`)) this.load.image(`prop-${p.image}`, PROP_IMAGES[p.image]);
     }
@@ -169,6 +174,7 @@ export class RoomScene extends Phaser.Scene {
     this.focusIndex = -1;
     this.focusRing = this.add.graphics().setDepth(99999);
     this.hoverRing = this.add.graphics().setDepth(99998);
+    this.hoverOutlines = [];
     this.hovered = null;
     this.busy = false;
     this.leaving = false;

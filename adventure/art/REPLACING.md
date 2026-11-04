@@ -34,6 +34,8 @@ Each room is one painting, 1280×720, in `art/src/rooms/`. The reference image n
 
 A new painting should put the things on the list where the reference image shows them, or the positions in `src/chapters/<chapter>/rooms.ts` must be moved to match the new painting (hotspot polygons, `walkTo`, the walk area, entries, objects, foreground pieces, `look` effects, crowd stations in `src/chapters/<chapter>/crowd.ts`). `npm test` checks that the walk area, approach points and stations stay consistent.
 
+After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-python-headless` and `numpy`): it cuts the silhouette of every clickable thing painted into the room for the hover highlight (`art/src/outlines/`). Check `art/inbox/preview/outlines-<room>.png`; where a cut misses, trace a rough hint in `art/outlines.json` and run it again. `npm run art:check` warns about any painted hotspot without an outline.
+
 ### Mara's Tent: `rooms/tent.png`
 
 ![tent](spec/tent.jpg)
@@ -50,7 +52,7 @@ A new painting should put the things on the list where the reference image shows
 | `tentFlap` | tent flap | 1132, 168, 148×372 | (1212, 568) |
 
 - Object `objects/rack` (112×72, tags full (1), empty (1)): foot point (344, 394). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Object `objects/notebook` (76×30, tags idle (1)): foot point (116, 394). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/notebook` (72×24, tags idle (1)): foot point (116, 394). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Walk-behind piece `foreground/tent-stool.png` (108×96, top left at (176, 460)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
 - The name board hangs from (240, 28) (about 184×64); it is painted by the game, so leave a quiet patch of wall there.
 - Heat shimmer (High quality) over: 624, 60, 48×60: hot spots in the painting (fires, lamps, pipes).
@@ -70,9 +72,10 @@ A new painting should put the things on the list where the reference image shows
 | `cart` | ash cart | 1008, 436, 120×88 | (1068, 564) |
 | `roomCurtain` | way to the firing house | 1184, 208, 96×320 | (1232, 580) |
 
-- Object `objects/tent` (200×140, tags idle (1)): foot point (500, 528). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/tent` (184×224, tags idle (1)): foot point (500, 528). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Walk-behind piece `foreground/hall-left.png` (178×104, top left at (0, 616)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
 - Walk-behind piece `foreground/hall-right.png` (166×92, top left at (1114, 628)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
+- Walk-behind piece `foreground/hall-crate.png` (68×58, top left at (196, 622)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
 - Animated prop `props/pulley.png` (swing) at (200, 120): hung from its top edge at that point; it swings.
 - The name board hangs from (300, 96) (about 200×72); it is painted by the game, so leave a quiet patch of wall there.
 - Heat shimmer (High quality) over: 640, 300, 360×160: hot spots in the painting (fires, lamps, pipes).
@@ -84,8 +87,8 @@ A new painting should put the things on the list where the reference image shows
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `chalk` (secret) | chalk marks | 340, 300, 88×52 | (380, 560) |
-| `sign` (secret) | old wooden sign | 500, 80, 56×56 | — |
+| `chalk` (secret) | chalk marks | 320, 290, 64×48 | (380, 560) |
+| `sign` (secret) | old wooden sign | 452, 88, 68×76 | — |
 | `pantryDoor` | Nell's pantry door | 608, 220, 120×304 | (668, 560) |
 | `soup` | soup pot | 164, 352, 88×52 | (220, 560) |
 | `shoes` | shoe racks | 68, 60, 240×220 | — |
@@ -94,7 +97,7 @@ A new painting should put the things on the list where the reference image shows
 | `kilnGate` | kiln gate | 1172, 192, 108×336 | (1232, 580) |
 | `toRoom` | way to Mara's room | 0, 208, 60×320 | (48, 580) |
 
-- Object `objects/pantry-door` (160×96, tags stuck (1), fixed (1)): foot point (668, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/pantry-door` (240×304, tags stuck (1), fixed (1)): foot point (668, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Nell stands at (500, 600).
 - The name board hangs from (960, 100) (about 224×68); it is painted by the game, so leave a quiet patch of wall there.
 - Heat shimmer (High quality) over: 120, 320, 180×140: hot spots in the painting (fires, lamps, pipes).
@@ -113,7 +116,7 @@ A new painting should put the things on the list where the reference image shows
 | `lantern` | lantern | 28, 280, 68×120 | — |
 | `galleryStairs` | way to the firing house | 1172, 208, 108×320 | (1224, 584) |
 
-- Object `objects/socket` (524×262, tags installed (1), removed (1)): foot point (480, 460). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/socket` (320×160, tags installed (1), removed (1)): foot point (480, 460). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Animated prop `props/gauge-face.png` (gauge) at (468, 76): a needle-less dial (the game draws the needle), centred there.
 - Oren stands at (960, 592).
 - The name board hangs from (1040, 120) (about 148×120); it is painted by the game, so leave a quiet patch of wall there.
@@ -133,8 +136,8 @@ A new painting should put the things on the list where the reference image shows
 | `pipes` | old pipes | 0, 0, 600×200 | — |
 | `wayBack` | way back to Cinderfold | 0, 240, 60×288 | (48, 584) |
 
-- Object `objects/valve` (224×160, tags closed (1), venting (1)): foot point (236, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Object `objects/sweeper` (1120×160, tags idle (2), scurry (2)): foot point (1070, 596), moves to (390, 596). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/valve` (224×204, tags closed (1), venting (1)): foot point (236, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `objects/sweeper` (520×140, tags idle (1), scurry (1)): foot point (1070, 596), moves to (390, 596). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - The name board hangs from (660, 120) (about 200×72); it is painted by the game, so leave a quiet patch of wall there.
 - Flickering light pools at (1200, 340): lamps, kiln mouths, hearths in the painting.
 

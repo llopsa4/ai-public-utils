@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "art": "node art/pixelate.mjs && node art/tent-reference.mjs && node art/battle.mjs && node art/kc.mjs && node art/rig.mjs && node art/icons.mjs && node art/webp.mjs",
+    "art": "node art/pixelate.mjs && node art/tent-reference.mjs && node art/battle.mjs && node art/kc.mjs && node art/rig.mjs && node art/icons.mjs && node art/hall-crate.mjs && node art/webp.mjs",
     "webp": "node art/webp.mjs",
     "pixelate": "node art/pixelate.mjs",
     "rig": "node art/rig.mjs",
@@ -21,7 +21,8 @@
     "check": "npm run typecheck && npm test && npm run build",
     "e2e": "npm run build && playwright test",
     "art:briefs": "tsx scripts/art-briefs.ts",
-    "art:import": "node art/import.mjs"
+    "art:import": "node art/import.mjs",
+    "art:outlines": "python art/outlines.py"
   },
   "dependencies": {
     "@fontsource/cinzel": "5.3.0",

@@ -1,0 +1,98 @@
+{
+ "frames": {
+  "passage": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 160,
+    "h": 422
+   }
+  },
+  "steamBack": {
+   "frame": {
+    "x": 162,
+    "y": 0,
+    "w": 134,
+    "h": 422
+   }
+  },
+  "steamJet": {
+   "frame": {
+    "x": 298,
+    "y": 0,
+    "w": 274,
+    "h": 414
+   }
+  },
+  "leakPipe": {
+   "frame": {
+    "x": 0,
+    "y": 424,
+    "w": 534,
+    "h": 206
+   }
+  },
+  "copperValve": {
+   "frame": {
+    "x": 536,
+    "y": 424,
+    "w": 198,
+    "h": 198
+   }
+  },
+  "ironValve": {
+   "frame": {
+    "x": 736,
+    "y": 424,
+    "w": 198,
+    "h": 198
+   }
+  },
+  "gauge2": {
+   "frame": {
+    "x": 0,
+    "y": 632,
+    "w": 182,
+    "h": 182
+   }
+  }
+ },
+ "meta": {
+  "image": "room-tunnel-steam.png",
+  "size": {
+   "w": 1024,
+   "h": 814
+  },
+  "scale": "1"
+ },
+ "place": {
+  "gauge2": {
+   "x": 255,
+   "y": 107
+  },
+  "copperValve": {
+   "x": 217,
+   "y": 153
+  },
+  "ironValve": {
+   "x": 287,
+   "y": 153
+  },
+  "steamJet": {
+   "x": 467,
+   "y": 127
+  },
+  "leakPipe": {
+   "x": 347,
+   "y": 87
+  },
+  "passage": {
+   "x": 563,
+   "y": 87
+  },
+  "steamBack": {
+   "x": -3,
+   "y": 87
+  }
+ }
+}

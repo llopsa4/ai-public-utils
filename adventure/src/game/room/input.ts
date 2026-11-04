@@ -11,6 +11,7 @@ import type { RoomScene } from '../scenes';
 import type { Target } from './shared';
 import { runScript } from './runner';
 import { withHandling } from './shared';
+import { showOutline } from './outline';
 
 // ------------------------------------------------------------------ input ---
 export function onPointerDown(scene: RoomScene, pointer: Phaser.Input.Pointer): void {
@@ -195,26 +196,18 @@ export function targetName(scene: RoomScene, target: Target): string {
 }
 
 /**
- * A soft gold outline on what the pointer is over: the shape of a thing in the room, or a ring
- * on the floor at a person's feet. Hidden while busy and while the action ring is open.
+ * A soft gold outline around the silhouette of what the pointer is over: a thing painted into the
+ * room, an object, a prop or a person (room/outline.ts). A hotspot with no known silhouette has its
+ * click area traced instead. Hidden while busy and while the action ring is open.
  */
 export function drawHover(scene: RoomScene, time: number): void {
   const ring = scene.hoverRing;
   if (!ring) return;
   ring.clear();
-  const target = scene.hovered;
-  if (!target || scene.isBusy() || scene.session.ui.ringOpen()) return;
+  const target = scene.hovered && !scene.isBusy() && !scene.session.ui.ringOpen() ? scene.hovered : null;
+  if (showOutline(scene, target, time) || target?.kind !== 'hotspot') return;
   const pulse = 0.55 + 0.2 * Math.sin(time / 260);
-  if (target.kind === 'hotspot') {
-    const pts = target.hotspot.polygon;
-    ring.lineStyle(4, 0xffc860, 0.18 * pulse).strokePoints(pts, true, true);
-    ring.lineStyle(1.2, 0xffe2a0, 0.7 * pulse).strokePoints(pts, true, true);
-    return;
-  }
-  const actor = target.kind === 'actor' ? target.actor : target.member.actor;
-  if (target.kind === 'actor' && actor.id === 'hero') return;
-  const box = actor.hitBox();
-  const w = box.width * 0.9, h = Math.max(6, w * 0.22);
-  ring.lineStyle(3, 0xffc860, 0.25 * pulse).strokeEllipse(actor.sprite.x, actor.sprite.y - 1, w + 4, h + 3);
-  ring.lineStyle(1.2, 0xffe2a0, 0.8 * pulse).strokeEllipse(actor.sprite.x, actor.sprite.y - 1, w, h);
+  const pts = target.hotspot.polygon;
+  ring.lineStyle(4, 0xffc860, 0.18 * pulse).strokePoints(pts, true, true);
+  ring.lineStyle(1.2, 0xffe2a0, 0.7 * pulse).strokePoints(pts, true, true);
 }

@@ -42,6 +42,13 @@ export interface HotspotDef {
   walkTo?: Point;
   face?: Facing;
   visibleIf?: Condition[];
+  /**
+   * What the hover outline traces. By default a hotspot with a room object of the same id outlines that
+   * object's picture, and any other hotspot its silhouette cut from the room painting (npm run
+   * art:outlines). `objects` / `props` outline those pictures (live, as they move or swing) instead of,
+   * or with `painted: true` as well as, the painting.
+   */
+  outline?: { objects?: string[]; props?: string[]; painted?: boolean };
   /** Optional secret: not shown by the Space / eye-button labels, only found by exploring. */
   secret?: boolean;
 }

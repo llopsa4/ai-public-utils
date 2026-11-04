@@ -111,6 +111,18 @@ export const PROP_IMAGES: Record<string, string> = Object.fromEntries(
   Object.entries(propFiles).map(([path, url]) => [path.replace(/^.*\/([\w-]+)\.webp$/, '$1'), url]),
 );
 
+/** A room's hover outlines for its painted things (art/outlines.py): a sheet of frames by hotspot id. */
+export interface OutlineSheet { png: string; json: AsepriteSheet & { place: Record<string, { x: number; y: number }> }; place: Record<string, { x: number; y: number }> }
+const outlinePngs = import.meta.glob('../../art/src/outlines/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const outlineJsons = import.meta.glob('../../art/src/outlines/*.json', { eager: true, import: 'default' }) as Record<string, OutlineSheet['json']>;
+/** Keyed by room background (texture key `outline-<background>`). */
+export const OUTLINES: Record<string, OutlineSheet> = Object.fromEntries(
+  Object.entries(outlineJsons).flatMap(([path, json]) => {
+    const png = outlinePngs[path.replace(/\.json$/, '.png')];
+    return png ? [[path.replace(/^.*\/([\w-]+)\.json$/, '$1'), { png, json, place: json.place }]] : [];
+  }),
+);
+
 const portraitFiles = import.meta.glob('../../art/src/portraits/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 export { PORTRAIT_MOODS, type Mood } from '../content/art';
 

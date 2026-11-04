@@ -126,6 +126,9 @@ export const MANIFEST = [
     { polygons: [[[0, 620], [120, 636], [176, 720], [0, 720]]], box: [0, 616, 178, 720] }),
   fg('hall-right', 'room-mara', 'A few cracked jars and clinker in the front right corner of the kiln hall floor.',
     { polygons: [[[1136, 652], [1280, 630], [1280, 720], [1116, 720]]], box: [1114, 628, 1280, 720] }),
+  // Ansel's seat in the kiln hall: cut from Codex's ashways crate (art/hall-crate.mjs), so it needs no drawing of its own.
+  { id: 'hall-crate', kind: 'foreground', file: 'foreground/hall-crate.png', webp: true, anchor: 'top-left', room: 'room-mara', chapter: 'ch1', status: 'final', generator: 'hall-crate.mjs',
+    subject: "A wooden crate on the kiln hall floor that Ansel sits on (cut from Codex's ashways crate)." },
   fg('tent-stool', 'room-tent', 'The stool in the tent, in front of the floor.',
     { polygons: [[[150, 412], [336, 412], [338, 470], [332, 604], [146, 604], [150, 470]]], box: [146, 408, 340, 606] }),
   { id: 'prop-gauge-face', kind: 'prop', file: 'props/gauge-face.png', webp: true, anchor: 'centre', chapter: 'ch1', status: 'placeholder', generator: 'pixelate.mjs', subject: 'The gallery pressure gauge dial without its needle (the game draws a live needle).' },

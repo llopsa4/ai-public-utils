@@ -20,6 +20,7 @@ const HALL: CrowdDef = {
     st('clayPile', 190, 320, 'left', 'work', [2500, 4500]),
     st('pulley', 100, 310, 'up', 'reach', [3000, 5500]),
     st('tallyWall', 60, 330, 'left', 'tap', [3000, 6000]),
+    // On the crate (the kiln hall's foreground 'hall-crate', sized to his drawn sitting pose).
     st('bench', 140, 340, 'right', 'sit', [7000, 12000]),
     st('talkSpot', 300, 330, 'left', 'stand', [2500, 5000]),
     st('lookout', 530, 322, 'up', 'stand', [2000, 4000]),

@@ -37,9 +37,9 @@ const tentHotspots: HotspotDef[] = [
 // the curtain to the firing house (right edge).
 const maraRoomHotspots: HotspotDef[] = [
   { id: 'tally', name: 'name.tally', polygon: rect(8, 150, 40, 70), verbs: ['look'], walkTo: pt(40, 280), face: 'up', secret: true },
-  { id: 'toTent', name: 'name.toTent', polygon: rect(204, 150, 92, 112), verbs: ['look', 'go'], walkTo: pt(250, 280), face: 'up' },
+  { id: 'toTent', name: 'name.toTent', polygon: rect(204, 150, 92, 112), verbs: ['look', 'go'], walkTo: pt(250, 280), face: 'up', outline: { objects: ['tent'] } },
   { id: 'niche', name: 'name.niche', polygon: rect(320, 120, 180, 120), verbs: ['look', 'use'], walkTo: pt(410, 280), face: 'up' },
-  { id: 'pulleys', name: 'name.pulleys', polygon: rect(74, 20, 52, 170), verbs: ['look', 'use'], walkTo: pt(100, 280), face: 'up' },
+  { id: 'pulleys', name: 'name.pulleys', polygon: rect(74, 20, 52, 170), verbs: ['look', 'use'], walkTo: pt(100, 280), face: 'up', outline: { props: ['pulley'], painted: true } },
   { id: 'jars', name: 'name.jars', polygon: rect(140, 214, 50, 48), verbs: ['look', 'take'], walkTo: pt(165, 280), face: 'up' },
   { id: 'cart', name: 'name.cart', polygon: rect(504, 218, 60, 44), verbs: ['look', 'use'], walkTo: pt(534, 282), face: 'up' },
   { id: 'roomCurtain', name: 'name.toFiringHouse', polygon: rect(592, 104, 48, 160), verbs: ['look', 'go'], walkTo: pt(616, 290), face: 'right' },
@@ -78,7 +78,7 @@ const galleryHotspots: HotspotDef[] = [
 // valve is vented, the sweeper scurried off to the warm pipe.
 const ashwaysHotspots: HotspotDef[] = [
   { id: 'sweeper', name: 'name.sweeper', polygon: rect(470, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ notFlag: 'valveVented' }] },
-  { id: 'sweeperAtPipe', name: 'name.sweeper', polygon: rect(130, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ flag: 'valveVented' }] },
+  { id: 'sweeperAtPipe', name: 'name.sweeper', polygon: rect(130, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ flag: 'valveVented' }], outline: { objects: ['sweeper'] } },
   { id: 'valve', name: 'name.valve', polygon: rect(90, 160, 56, 102), verbs: ['look', 'open', 'close', 'use'], walkTo: pt(150, 282), face: 'left' },
   { id: 'passage', name: 'name.passage', polygon: rect(560, 100, 80, 164), verbs: ['look', 'go'], walkTo: pt(608, 292), face: 'right' },
   { id: 'pipes', name: 'name.pipes', polygon: [pt(0, 0), pt(300, 0), pt(300, 100), pt(0, 100)], verbs: ['look', 'use'] },
@@ -143,8 +143,12 @@ export const ROOMS: Record<string, RoomDef> = {
       ],
       vignette: 0.35,
     },
-    // Rubble in the front corners of the floor, drawn in front of Mara (cut from the painting).
-    foreground: [{ image: 'hall-left', x: 0, y: 308, depth: 400 }, { image: 'hall-right', x: 557, y: 314, depth: 400 }],
+    // Rubble in the front corners of the floor, drawn in front of Mara (cut from the painting), and the
+    // crate Ansel sits on (his 'bench' station, crowd.ts): behind whoever is on it or further forward.
+    foreground: [
+      { image: 'hall-left', x: 0, y: 308, depth: 400 }, { image: 'hall-right', x: 557, y: 314, depth: 400 },
+      { image: 'hall-crate', x: 98, y: 311, depth: 339 },
+    ],
     props: [{ kind: 'swing', image: 'pulley', x: 100, y: 60, pivotX: 0.5, hotspot: 'pulleys' }],
     sign: { x: 150, y: 48, drop: 14, w: 100, h: 22, style: 'wood' },
     ambient: {
