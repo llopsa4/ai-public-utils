@@ -4,7 +4,7 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 
 | Output | Source (FFCardGame/assets) | Script | Processing |
 | --- | --- | --- | --- |
-| `rooms/tent.png` (Mara's tent), `foreground/tent-stool.png` | — (original) | `tent.mjs`, `tent-pixels.mjs`, `pixel.mjs` | hand-made pixel art drawn pixel by pixel in code on a 320×180 grid, seen side-on: canvas walls with folds, seams and patches, poles, a brass lantern, the workbench with its tool board, tool roll, candle and glazed jar, the brush drum on its trestle, a coat, a camp cot with a wool blanket, boots, Tobi's drawing, a rug, the door flap; one palette of hand-picked hue-shifted ramps, selective outlines, contact shadows, and one lighting pass (lantern falloff, the door's glow) moving each pixel along its ramp with narrow dithered seams; shown 4× with hard edges; the stool cut-out takes the room's own pixels inside the stool's shape |
+| `rooms/tent.png` (Mara's tent), `foreground/tent-stool.png` | `adventure/tent-reference.png` (supplied by the author; the style master for the Codex art) | `tent-reference.mjs` | re-gridded to 320×180 by sampling each cell's centre, snapped to the master palette (itself derived from this picture), shown 4× with hard edges; the open notebook and the charging cradle painted out of the bench (the game draws them as objects); the stool cut out from the room's own pixels. Final art. |
 | `objects/tent.*` (the tent seen in the kiln hall) | `opening/tempering-house.png` (cloth over the workbench) | `pixelate.mjs` | the painted cloth mapped onto a tent silhouette (mirrored on the far slope, shaded by side), dark entrance and pole drawn |
 | `rooms/mara-room.png` (kiln hall) | `kiln-hall.png` | `pixelate.mjs` | 1280×720 area downscale, light grade, 96-colour palette |
 | `rooms/firing-house.png` | `opening/cinderfold.png` | `pixelate.mjs` | as above |
@@ -30,7 +30,7 @@ All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in
 | `characters/extra-*.png/.json/.webp` (background people in the kiln hall and firing house, placeholders) | `hero.png`, `opening/oren.png`, `opening/iven.png` | `rig.mjs` (`EXTRAS`) | the same cutout rig with every frame walking; clothes hue-rotated and desaturated, pale plates turned to leather, skin tone scaled, painted cap / hood / kerchief, Mara's gauntlet arm removed; 13 frames, 64 colours; WebP copy is what ships |
 | `icons/*.png` | — | `icons.mjs` | drawn 24×24 action-ring icons |
 
-All outputs are palette-indexed PNGs (`art/png.mjs`, upng-js).
+All outputs are palette-indexed PNGs (`art/png.mjs`, upng-js). Characters are built by the rig on the game's 4-pixel grid (`art/rig.mjs`, GRID). The master palette (`art/style/palette.json`) is derived from the tent reference (`art/derive-palette.mjs`).
 Room backgrounds, foreground cut-outs, props and the background people's sheets are also written as WebP (`art/webp.mjs`, sharp 0.35, which bundles libvips under the LGPL-3.0); the game loads the WebP copies.
 
 Chapter 2's art (placeholders, `art/src/ch2/` and two fight pictures in `art/src/kc/`):
