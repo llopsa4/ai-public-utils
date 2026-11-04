@@ -156,10 +156,14 @@ function partsOf(cfg, x, y) {
   }
   const f = cfg.fidgetPart;
   if (f && x >= f.minX && y >= f.minY && y <= f.maxY) return ['fidget'];
+  // Something carried below the hip (Hollis's shovel) stays with the body, not a leg.
+  for (const h of [cfg.held ?? []].flat()) if (x >= h.minX && y >= h.minY && x <= (h.maxX ?? Infinity) && y <= (h.maxY ?? Infinity)) return ['upper'];
   const parts = [];
   if (y < cfg.hipY) parts.push('upper');
   if (y >= cfg.hipY - OVERLAP) {
-    const side = x < cfg.splitX ? 'near' : 'far';
+    // Which leg a pixel belongs to: the one it is joined to (legMask, from the drawing), else the side of splitX.
+    const m = cfg.legMask?.[y * cfg.legMaskWidth + x];
+    const side = m === 1 ? 'near' : m === 2 ? 'far' : x < cfg.splitX ? 'near' : 'far';
     const kneeY = cfg.knees[side][1];
     if (y < kneeY + OVERLAP) parts.push(`${side}Thigh`);
     if (y >= kneeY - OVERLAP) parts.push(`${side}Shin`);
@@ -298,9 +302,44 @@ function dimGlow(src, r) {
 }
 
 /** The pose builders for one character config (source space). */
+/**
+ * Splits the legs along the drawing rather than a straight line: every opaque pixel below the hips
+ * goes to the leg it is nearest to through the drawing (a breadth-first walk from points down each
+ * leg), so where boots overlap across splitX, each keeps its own pixels and nothing trails behind a
+ * stepping foot. Seeds: each knee and a point between knee and sole, snapped onto the drawing.
+ */
+function legMaskOf(cfg, open, bottom) {
+  const W = open.width, H = open.height, top = Math.max(0, cfg.hipY - OVERLAP);
+  // The working arm and anything held are not legs: the walk does not pass through them.
+  const held = [cfg.held ?? []].flat();
+  const opaque = (x, y) => x >= 0 && y >= top && x < W && y < H && open.data[(y * W + x) * 4 + 3] > 10
+    && !cfg.armMask?.[y * W + x] && !held.some(h => x >= h.minX && y >= h.minY && x <= (h.maxX ?? Infinity) && y <= (h.maxY ?? Infinity));
+  const mask = new Uint8Array(W * H), queue = [];
+  const snap = ([x, y]) => {
+    for (let r = 0; r < 60; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) if (opaque(x + dx, y + dy)) return [x + dx, y + dy];
+    return null;
+  };
+  [['near', 1], ['far', 2]].forEach(([side, v]) => {
+    const [kx, ky] = cfg.knees[side];
+    for (const pt of [[kx, ky], [kx, Math.round(ky + (bottom - ky) * 0.6)]]) {
+      const s = snap(pt);
+      if (s && !mask[s[1] * W + s[0]]) { mask[s[1] * W + s[0]] = v; queue.push(s[1] * W + s[0]); }
+    }
+  });
+  for (let qi = 0; qi < queue.length; qi++) {
+    const o = queue[qi], x = o % W, y = (o / W) | 0;
+    for (const [nx, ny] of [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]]) {
+      if (!opaque(nx, ny) || mask[ny * W + nx]) continue;
+      mask[ny * W + nx] = mask[o]; queue.push(ny * W + nx);
+    }
+  }
+  cfg.legMask = mask; cfg.legMaskWidth = W;
+}
+
 function rigOf(cfg, open) {
   let top = open.height, bottom = 0;
   for (let y = 0; y < open.height; y++) for (let x = 0; x < open.width; x += 2) if (open.data[(y * open.width + x) * 4 + 3] > 128) { top = Math.min(top, y); bottom = Math.max(bottom, y); }
+  if (cfg.walks && !cfg.straightSplit) legMaskOf(cfg, open, bottom);
   const k = cfg.height / (bottom - top);
   const hipC = [(cfg.hips.near[0] + cfg.hips.far[0]) / 2, cfg.hipY];
   // Six-frame step (frames 0 and 3 are the foot plants). Positive angles swing a leg backward.
@@ -334,16 +373,34 @@ function rigOf(cfg, open) {
  * clothes and skin, another height, painted headgear), with a trimmed frame set and no portraits.
  * Frames: 0 stand, 1 blink, 2-7 walk, 8-9 work (crouched, bobbing), 10 carry, 11 reach, 12 sit.
  */
+const src = id => ({ source: `sources/characters/${id}/body.png`, armLayer: `sources/characters/${id}/arm.png` });
 const EXTRAS = {
-  'extra-stoker': { base: 'oren', height: 218, hue: 190, sat: 0.35, light: 0.72, skin: 0.7, headgear: { kind: 'cap', color: [58, 52, 50] } },
-  'extra-tally': { base: 'oren', height: 206, hue: 50, sat: 0.3, light: 0.9, skin: 0.95, headgear: { kind: 'hood', color: [92, 80, 70] } },
-  'extra-hauler': { base: 'mara', height: 224, hue: 0, sat: 0.55, light: 0.7, skin: 0.62, noArm: true, headgear: { kind: 'kerchief', color: [140, 60, 44] } },
-  'extra-runner': { base: 'mara', height: 150, hue: 340, sat: 0.65, light: 0.95, skin: 1.05, noArm: true, headgear: { kind: 'cap', color: [70, 84, 104] } },
-  'extra-hoist': { base: 'nell', height: 222, hue: 150, sat: 0.35, light: 0.85, skin: 1.12, headgear: { kind: 'kerchief', color: [70, 100, 84] } },
-  // The peddler in the ashways (sells Kiln Tonics).
-  'extra-merchant': { base: 'oren', height: 214, hue: 120, sat: 0.35, light: 0.78, skin: 0.85, headgear: { kind: 'hood', color: [64, 56, 46] } },
-  // A firing-house kid: Nell's body, small, the shield now a board carried like a toy shield.
-  'extra-kid': { base: 'nell', height: 146, hue: 200, sat: 0.55, light: 1.0, skin: 0.9, headgear: { kind: 'cap', color: [120, 70, 50] } },
+  // Codex's drawings, measured on their 1024x1536 canvases. Long coats and robes (Ansel, Corvin) hinge
+  // low, so only the hem and boots step.
+  'extra-stoker': { ...src('extra-stoker'), height: 218, armPivot: [225, 330],
+    hipY: 800, splitX: 430, hips: { near: [330, 800], far: [520, 800] }, knees: { near: [300, 1125], far: [555, 1125] },
+    held: [{ minX: 640, minY: 760, maxY: 1400 }, { minX: 676, minY: 1400 }],
+    eyes: [{ x: 495, y: 156, rx: 9, ry: 4, skinAt: [495, 170] }, { x: 553, y: 153, rx: 6, ry: 4, skinAt: [555, 165] }] },
+  'extra-tally': { ...src('extra-tally'), height: 206, armPivot: [310, 340],
+    hipY: 1200, splitX: 455, hips: { near: [350, 1200], far: [570, 1200] }, knees: { near: [345, 1330], far: [575, 1330] },
+    eyes: [{ x: 573, y: 149, rx: 8, ry: 4, skinAt: [573, 161] }, { x: 626, y: 147, rx: 5, ry: 4, skinAt: [626, 160] }] },
+  'extra-hauler': { ...src('extra-hauler'), height: 224, armPivot: [380, 320],
+    hipY: 790, splitX: 484, hips: { near: [420, 790], far: [540, 790] }, knees: { near: [384, 1186], far: [573, 1186] },
+    eyes: [{ x: 550, y: 114, rx: 10, ry: 4, skinAt: [550, 128] }, { x: 595, y: 114, rx: 5, ry: 4, skinAt: [594, 127] }] },
+  'extra-runner': { ...src('extra-runner'), height: 150, armPivot: [410, 810],
+    hipY: 1130, splitX: 502, hips: { near: [440, 1130], far: [560, 1130] }, knees: { near: [438, 1291], far: [560, 1291] },
+    eyes: [{ x: 526, y: 690, rx: 14, ry: 9, skinAt: [526, 706] }, { x: 576, y: 691, rx: 8, ry: 9, skinAt: [576, 706] }] },
+  'extra-hoist': { ...src('extra-hoist'), height: 222, armPivot: [375, 315],
+    hipY: 770, splitX: 487, hips: { near: [420, 770], far: [550, 770] }, knees: { near: [387, 1124], far: [597, 1124] },
+    eyes: [{ x: 543, y: 138, rx: 13, ry: 6, skinAt: [543, 155] }, { x: 587, y: 140, rx: 5, ry: 6, skinAt: [586, 157] }] },
+  // The peddler in the ashways (sells Kiln Tonics). His far eye is in shadow: only the near one blinks.
+  'extra-merchant': { ...src('extra-merchant'), height: 214, armPivot: [430, 330],
+    hipY: 1130, splitX: 495, hips: { near: [400, 1130], far: [600, 1130] }, knees: { near: [395, 1310], far: [610, 1310] },
+    eyes: [{ x: 609, y: 133, rx: 9, ry: 4, skinAt: [609, 147] }] },
+  // A firing-house kid with a board as a toy shield (drawn).
+  'extra-kid': { ...src('extra-kid'), height: 146, armPivot: [455, 830],
+    hipY: 1180, splitX: 498, hips: { near: [440, 1180], far: [560, 1180] }, knees: { near: [432, 1321], far: [552, 1321] },
+    eyes: [{ x: 518, y: 731, rx: 16, ry: 10, skinAt: [518, 748] }, { x: 569, y: 730, rx: 9, ry: 9, skinAt: [569, 745] }] },
 };
 const EXTRA_TAGS = [
   ['stand_down', 0, 0], ['stand_side', 0, 0], ['stand_up', 0, 0], ['blink_down', 1, 1], ['blink_side', 1, 1],
@@ -428,25 +485,35 @@ function paintHeadgear(img, eyeX, eyeY, gear) {
 }
 
 function buildExtra(id) {
-  const v = EXTRAS[id];
-  const base = { ...CHARACTERS[v.base], walks: true, height: v.height };
-  delete base.unpowered;
+  const base = { ...EXTRAS[id], walks: true };
   if (isFinal(`characters/${id}.png`)) { console.log(`  ${id}: final art, kept.`); return; }
-  const raw = loadSource(base);
-  const open = variantImage(raw, base, v);
+  const open = loadSource(base);
   const closed = withClosedEyes(open, base.eyes);
   const { k, hipC, walkPose, squashLegs } = rigOf(base, open);
-  const squash = base.crouchSquash ?? 0.6;
   const frames = [];
   const add = (img, pose) => frames.push(placeInFrame(renderPose(img, base, pose, k), 200));
-  add(open, {});
-  add(closed, {});
-  for (let p = 0; p < 6; p++) add(open, walkPose(p));
-  add(open, { ...squashLegs(squash), upper: rotateAbout(9, hipC) });
-  add(open, { ...squashLegs(squash), upper: mul(translate(0, 10), rotateAbout(14, hipC)), ...(base.fidgetPart ? { fidget: mul(translate(0, 10), mul(rotateAbout(14, hipC), rotateAbout(12, base.fidgetPart.pivot))) } : {}) });
-  add(open, { upper: rotateAbout(-4, hipC), ...(base.fidgetPart ? { fidget: mul(rotateAbout(-4, hipC), rotateAbout(-14, base.fidgetPart.pivot)) } : {}) });
-  add(open, { upper: mul(translate(0, -8), rotateAbout(-6, hipC)), ...(base.fidgetPart ? { fidget: mul(translate(0, -8), rotateAbout(-38, base.fidgetPart.pivot)) } : {}) });
-  add(open, { ...squashLegs(0.42), upper: rotateAbout(-2, hipC) });
+  const dir = join(here, dirname(base.source));
+  const drawn = name => existsSync(join(dir, name)) ? join(dir, name) : null;
+  // A drawn pose, optionally nudged down (in frame pixels) for the working bob.
+  const still = (path, drop = 0) => {
+    const r = renderStill(load(path), k);
+    const f = placeInFrame(r.pose, r.centerX);
+    if (drop) {
+      f.alpha.copyWithin(drop * FW, 0, FW * (FH - drop)); f.alpha.fill(0, 0, drop * FW);
+      f.rgb.copyWithin(drop * FW * 3, 0, FW * (FH - drop) * 3);
+    }
+    frames.push(f);
+  };
+  const arm = deg => (base.armPivot ? { arm: rotateAbout(deg, base.armPivot) } : {});
+  const kneel = drawn('kneel.png'), sit = drawn('sit.png');
+  add(open, {});                                                                   // 0 stand
+  add(closed, {});                                                                 // 1 blink
+  for (let p = 0; p < 6; p++) add(open, walkPose(p));                              // 2-7 walk
+  if (kneel) { still(kneel); still(kneel, 2); }                                    // 8-9 work: kneeling at a task, bobbing
+  else { add(open, { ...squashLegs(0.6), upper: rotateAbout(9, hipC) }); add(open, { ...squashLegs(0.6), upper: mul(translate(0, 10), rotateAbout(14, hipC)) }); }
+  add(open, { upper: rotateAbout(-4, hipC), ...arm(-22) });                        // 10 carry: leaning back, arm forward
+  add(open, { upper: mul(translate(0, -8), rotateAbout(-6, hipC)), ...arm(-60) });  // 11 reach: up on the toes, arm raised
+  if (sit) still(sit); else add(open, { ...squashLegs(0.42), upper: rotateAbout(-2, hipC) }); // 12 sit
   writeSheet(id, frames, EXTRA_TAGS, n => (n >= 2 && n <= 7 ? 110 : n === 8 || n === 9 ? 280 : 1000), 64);
 }
 
@@ -580,7 +647,7 @@ function buildCharacter(id) {
   // Dialogue portraits: area-averaged head-and-shoulders crops, 256x256 each, in a strip of frames
   // per mood (neutral, worried, angry), each with the mouth closed then open.
   // Mara has one portrait set (gauntlet lit), written by the 'mara-gauntlet' variant as mara.png.
-  if (cfg.unpowered) return;
+  if (cfg.unpowered || cfg.noPortrait) return;
   const portraitId = id.replace(/-gauntlet$/, '');
   const [px, py, pw, ph] = cfg.portrait;
   const moods = cfg.moods ?? MOODS;
@@ -607,6 +674,8 @@ function buildCharacter(id) {
 
 // `node art/rig.mjs extras` rebuilds only the background people.
 const only = process.argv[2];
-if (only !== 'extras') for (const id of Object.keys(CHARACTERS)) buildCharacter(id);
-for (const id of Object.keys(EXTRAS)) buildExtra(id);
-console.log(`Rigged character sheets written to art/src (${only === 'extras' ? '' : 'mara, mara-gauntlet, oren, nell, '}${Object.keys(EXTRAS).join(', ')}).`);
+// `node art/rig.mjs <id>` rebuilds one sheet.
+const one = only && only !== 'extras' ? only : null;
+if (only !== 'extras') for (const id of Object.keys(CHARACTERS)) if (!one || one === id) buildCharacter(id);
+for (const id of Object.keys(EXTRAS)) if (!one || one === id) buildExtra(id);
+console.log(`Rigged character sheets written to art/src (${one ?? (only === 'extras' ? '' : `${Object.keys(CHARACTERS).join(', ')}, `) + Object.keys(EXTRAS).join(', ')}).`);

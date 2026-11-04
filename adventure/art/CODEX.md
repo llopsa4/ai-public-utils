@@ -41,42 +41,42 @@ Make these first, import them, and **stop**: the user looks at them in the game 
 
 - [x] **notebook**: [brief](briefs/notebook.md) → `art/inbox/notebook-idle.png`
 - [x] **char-mara-gauntlet**: [brief](briefs/char-mara-gauntlet.md) → `nothing to make: built from char-mara's drawing`
-- [ ] **char-mara-casual**: [brief](briefs/char-mara-casual.md) → `art/inbox/char-mara-casual/body.png, arm.png, kneel.png, lie.png`
+- [x] **char-mara-casual**: [brief](briefs/char-mara-casual.md) → `art/inbox/char-mara-casual/body.png, arm.png, kneel.png, lie.png`
 - [x] **item-notebook**: [brief](briefs/item-notebook.md) → `art/inbox/item-notebook.png`
 
 ### The Kiln Hall (`maraRoom`)
 
-- [ ] **tent**: [brief](briefs/tent.md) → `art/inbox/tent-idle.png`
-- [ ] **prop-pulley**: [brief](briefs/prop-pulley.md) → `art/inbox/prop-pulley.png`
-- [ ] **extra-stoker**: [brief](briefs/extra-stoker.md) → `art/inbox/extra-stoker/body.png, arm.png, kneel.png, lie.png`
-- [ ] **extra-hoist**: [brief](briefs/extra-hoist.md) → `art/inbox/extra-hoist/body.png, arm.png, kneel.png, lie.png`
-- [ ] **extra-hauler**: [brief](briefs/extra-hauler.md) → `art/inbox/extra-hauler/body.png, arm.png, kneel.png, lie.png`
-- [ ] **extra-tally**: [brief](briefs/extra-tally.md) → `art/inbox/extra-tally/body.png, arm.png, kneel.png, lie.png`
+- [x] **tent**: [brief](briefs/tent.md) → `art/inbox/tent-idle.png`
+- [x] **prop-pulley**: [brief](briefs/prop-pulley.md) → `art/inbox/prop-pulley.png`
+- [x] **extra-stoker**: [brief](briefs/extra-stoker.md) → `art/inbox/extra-stoker/body.png, arm.png, kneel.png, lie.png`
+- [x] **extra-hoist**: [brief](briefs/extra-hoist.md) → `art/inbox/extra-hoist/body.png, arm.png, kneel.png, lie.png`
+- [x] **extra-hauler**: [brief](briefs/extra-hauler.md) → `art/inbox/extra-hauler/body.png, arm.png, kneel.png, lie.png`
+- [x] **extra-tally**: [brief](briefs/extra-tally.md) → `art/inbox/extra-tally/body.png, arm.png, kneel.png, lie.png`
 
 ### The Firing House (`firingHouse`)
 
-- [ ] **room-firing-house**: [brief](briefs/room-firing-house.md) → `art/inbox/room-firing-house.png`
-- [ ] **pantry-door**: [brief](briefs/pantry-door.md) → `art/inbox/pantry-door-stuck.png, art/inbox/pantry-door-fixed.png`
-- [ ] **char-nell**: [brief](briefs/char-nell.md) → `art/inbox/char-nell/body.png, arm.png, kneel.png, lie.png`
-- [ ] **extra-runner**: [brief](briefs/extra-runner.md) → `art/inbox/extra-runner/body.png, arm.png, kneel.png, lie.png`
-- [ ] **extra-kid**: [brief](briefs/extra-kid.md) → `art/inbox/extra-kid/body.png, arm.png, kneel.png, lie.png`
-- [ ] **item-bread**: [brief](briefs/item-bread.md) → `art/inbox/item-bread.png`
-- [ ] **item-scarf**: [brief](briefs/item-scarf.md) → `art/inbox/item-scarf.png`
+- [x] **room-firing-house**: [brief](briefs/room-firing-house.md) → `art/inbox/room-firing-house.png`
+- [x] **pantry-door**: [brief](briefs/pantry-door.md) → `art/inbox/pantry-door-stuck.png, art/inbox/pantry-door-fixed.png`
+- [x] **char-nell**: [brief](briefs/char-nell.md) → `art/inbox/char-nell/body.png, arm.png, kneel.png, lie.png`
+- [x] **extra-runner**: [brief](briefs/extra-runner.md) → `art/inbox/extra-runner/body.png, arm.png, kneel.png, lie.png`
+- [x] **extra-kid**: [brief](briefs/extra-kid.md) → `art/inbox/extra-kid/body.png, arm.png, kneel.png, lie.png`
+- [x] **item-bread**: [brief](briefs/item-bread.md) → `art/inbox/item-bread.png`
+- [x] **item-scarf**: [brief](briefs/item-scarf.md) → `art/inbox/item-scarf.png`
 
 ### Regulator Gallery (`gallery`)
 
-- [ ] **room-gallery**: [brief](briefs/room-gallery.md) → `art/inbox/room-gallery.png`
-- [ ] **socket**: [brief](briefs/socket.md) → `art/inbox/socket-installed.png, art/inbox/socket-removed.png`
-- [ ] **prop-gauge-face**: [brief](briefs/prop-gauge-face.md) → `art/inbox/prop-gauge-face.png`
-- [ ] **char-oren**: [brief](briefs/char-oren.md) → `art/inbox/char-oren/body.png, arm.png, kneel.png, lie.png`
-- [ ] **item-regulator**: [brief](briefs/item-regulator.md) → `art/inbox/item-regulator.png`
+- [x] **room-gallery**: [brief](briefs/room-gallery.md) → `art/inbox/room-gallery.png`
+- [x] **socket**: [brief](briefs/socket.md) → `art/inbox/socket-installed.png, art/inbox/socket-removed.png`
+- [x] **prop-gauge-face**: [brief](briefs/prop-gauge-face.md) → `art/inbox/prop-gauge-face.png`
+- [x] **char-oren**: [brief](briefs/char-oren.md) → `art/inbox/char-oren/body.png, arm.png, kneel.png, lie.png`
+- [x] **item-regulator**: [brief](briefs/item-regulator.md) → `art/inbox/item-regulator.png`
 
 ### The Ashways (`ashways`)
 
-- [ ] **room-ashways**: [brief](briefs/room-ashways.md) → `art/inbox/room-ashways.png`
-- [ ] **valve**: [brief](briefs/valve.md) → `art/inbox/valve-closed.png, art/inbox/valve-venting.png`
-- [ ] **sweeper**: [brief](briefs/sweeper.md) → `art/inbox/sweeper-idle.png, art/inbox/sweeper-scurry.png`
-- [ ] **extra-merchant**: [brief](briefs/extra-merchant.md) → `art/inbox/extra-merchant/body.png, arm.png, kneel.png, lie.png`
+- [x] **room-ashways**: [brief](briefs/room-ashways.md) → `art/inbox/room-ashways.png`
+- [x] **valve**: [brief](briefs/valve.md) → `art/inbox/valve-closed.png, art/inbox/valve-venting.png`
+- [x] **sweeper**: [brief](briefs/sweeper.md) → `art/inbox/sweeper-idle.png, art/inbox/sweeper-scurry.png`
+- [x] **extra-merchant**: [brief](briefs/extra-merchant.md) → `art/inbox/extra-merchant/body.png, arm.png, kneel.png, lie.png`
 
 ## Chapter 2
 

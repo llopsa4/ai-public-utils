@@ -1,6 +1,6 @@
 # room-ashways
 
-Status: **placeholder** · room · chapter ch1 · in the game as `art/src/rooms/ashways.png`
+Status: **final** · room · chapter ch1 · in the game as `art/src/rooms/ashways.png`
 
 ## What the game does with it
 

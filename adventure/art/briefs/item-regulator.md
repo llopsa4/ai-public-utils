@@ -1,6 +1,6 @@
 # item-regulator
 
-Status: **placeholder** · item · chapter ch1 · in the game as `art/src/items/regulator.png`
+Status: **final** · item · chapter ch1 · in the game as `art/src/items/regulator.png`
 
 ## What the game does with it
 

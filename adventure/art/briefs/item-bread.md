@@ -1,6 +1,6 @@
 # item-bread
 
-Status: **placeholder** · item · chapter ch1 · in the game as `art/src/items/bread.png`
+Status: **final** · item · chapter ch1 · in the game as `art/src/items/bread.png`
 
 ## What the game does with it
 

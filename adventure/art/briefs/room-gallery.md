@@ -1,6 +1,6 @@
 # room-gallery
 
-Status: **placeholder** · room · chapter ch1 · in the game as `art/src/rooms/gallery.png`
+Status: **final** · room · chapter ch1 · in the game as `art/src/rooms/gallery.png`
 
 ## What the game does with it
 

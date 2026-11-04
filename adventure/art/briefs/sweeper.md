@@ -1,6 +1,6 @@
 # sweeper
 
-Status: **placeholder** · object · chapter ch1 · in the game as `art/src/objects/sweeper.png`
+Status: **final** · object · chapter ch1 · in the game as `art/src/objects/sweeper.png`
 
 ## What the game does with it
 

@@ -164,7 +164,10 @@ const MAKES = (e: ArtEntry) => !['portrait', 'card-atlas', 'foreground'].include
 /** A rigged character's source folder (art/sources/characters/<id>/), once the rig builds from Codex's drawing. */
 const sourceDir = (e: ArtEntry) => {
   const src = e.rig ? (RIGS as Record<string, { source: string }>)[e.rig]?.source : undefined;
-  return src?.startsWith('sources/') ? join(art, dirname(src)) : null;
+  if (src?.startsWith('sources/')) return join(art, dirname(src));
+  // Background people and casual Mara are rigged straight from their own folder.
+  const own = join(art, 'sources', 'characters', e.id);
+  return (e.kind === 'character' || e.kind === 'extra') && existsSync(join(own, 'body.png')) ? own : null;
 };
 /** The required character pictures still missing from its source folder. */
 const missingPoses = (e: ArtEntry) => { const dir = sourceDir(e); return dir ? ['kneel.png', 'lie.png'].filter(f => !existsSync(join(dir, f))) : []; };

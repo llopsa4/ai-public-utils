@@ -1,6 +1,6 @@
 # valve
 
-Status: **placeholder** · object · chapter ch1 · in the game as `art/src/objects/valve.png`
+Status: **final** · object · chapter ch1 · in the game as `art/src/objects/valve.png`
 
 ## What the game does with it
 

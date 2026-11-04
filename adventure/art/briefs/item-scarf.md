@@ -1,6 +1,6 @@
 # item-scarf
 
-Status: **placeholder** · item · chapter ch1 · in the game as `art/src/items/scarf.png`
+Status: **final** · item · chapter ch1 · in the game as `art/src/items/scarf.png`
 
 ## What the game does with it
 

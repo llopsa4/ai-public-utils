@@ -1,9 +1,8 @@
 import { lineKind, lookKey, type CrowdDef, type ExtraDef, type Mood, type Station } from '../../engine/crowd';
 
 /**
- * Background people: the kiln hall's workers and the firing house's kids. Placeholder art
- * (recoloured variants of the three bodies, art/rig.mjs EXTRAS): each sheet can be replaced on its
- * own. Nothing here is saved or changes the story; strings live under `name.<id>`, `speaker.<id>`
+ * Background people: the kiln hall's workers and the firing house's kids, rigged from Codex's
+ * drawings (art/rig.mjs EXTRAS; the shovel, slate and sack are drawn on them). Nothing here is saved or changes the story; strings live under `name.<id>`, `speaker.<id>`
  * and `line.<id>.*` in en.json.
  */
 
@@ -37,7 +36,7 @@ const HALL: CrowdDef = {
   wander: { x: 130, y: 300, w: 400, h: 40 },
   extras: [
     {
-      id: 'extra-stoker', sheet: 'extra-stoker', met: 'metHollis', body: 0.95, speed: 0.9, color: '#e8a878', carry: 'shovel',
+      id: 'extra-stoker', sheet: 'extra-stoker', met: 'metHollis', body: 0.95, speed: 0.9, color: '#e8a878', carry: 'shovel', carryDrawn: true,
       routines: {
         warm: { stations: ['mouthA', 'mouthB', 'mouthC', 'mouthB', 'talkSpot'], detour: 0.15 },
         cold: { stations: ['staring', 'huddle1'], detour: 0.1 },
@@ -53,7 +52,7 @@ const HALL: CrowdDef = {
       talk: { warm: 3, cold: 2 }, chat: { warm: 3, cold: 1 },
     },
     {
-      id: 'extra-hauler', sheet: 'extra-hauler', met: 'metDace', leaving: 2, body: 1, speed: 0.85, color: '#d9b26a', carry: 'sack', leavesWhenCold: true,
+      id: 'extra-hauler', sheet: 'extra-hauler', met: 'metDace', leaving: 2, body: 1, speed: 0.85, color: '#d9b26a', carry: 'sack', carryDrawn: true, leavesWhenCold: true,
       carryBetween: { pick: 'clayPile', drop: ['mouthA', 'mouthB'] },
       routines: {
         warm: { stations: ['clayPile', 'mouthA', 'clayPile', 'mouthB'], detour: 0.05, leave: { exit: 'curtain', chance: 0.12, away: [9000, 16000] } },
@@ -62,7 +61,7 @@ const HALL: CrowdDef = {
       talk: { warm: 3, cold: 2 }, chat: { warm: 2, cold: 1 },
     },
     {
-      id: 'extra-tally', sheet: 'extra-tally', met: 'metAnsel', leaving: 2, body: 0.92, speed: 0.7, color: '#b8c8e8', carry: 'slate', leavesWhenCold: true,
+      id: 'extra-tally', sheet: 'extra-tally', met: 'metAnsel', leaving: 2, body: 0.92, speed: 0.7, color: '#b8c8e8', carry: 'slate', carryDrawn: true, leavesWhenCold: true,
       routines: {
         warm: { stations: ['tallyWall', 'mouthA', 'bench', 'lookout'], detour: 0.1, leave: { exit: 'west', chance: 0.1, away: [10000, 18000] } },
         cold: { stations: ['bench'], leave: { exit: 'west', chance: 1, away: [0, 0] } },

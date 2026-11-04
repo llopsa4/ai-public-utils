@@ -1,6 +1,6 @@
 # tent
 
-Status: **placeholder** · object · chapter ch1 · in the game as `art/src/objects/tent.png`
+Status: **final** · object · chapter ch1 · in the game as `art/src/objects/tent.png`
 
 ## What the game does with it
 

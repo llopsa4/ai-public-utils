@@ -137,6 +137,8 @@ export interface ExtraDef {
   /** Leaves for good when the kiln goes cold (and is gone if the room is entered cold). */
   leavesWhenCold?: boolean;
   carry?: Carry;
+  /** The carried thing is part of the character's drawing (Codex's art): the game adds no picture of it, only its sounds and errands. */
+  carryDrawn?: boolean;
   /** The hauler only has a sack between the clay pile and a kiln mouth. */
   carryBetween?: { pick: string; drop: string[] };
   /** Ring tone of the name in the dialogue panel. */

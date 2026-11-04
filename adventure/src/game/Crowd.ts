@@ -171,7 +171,7 @@ export class Crowd {
       def, actor, schedule, target: null, task: null, carrying: false, held: false, vacate: false, react: null,
       away: false, gone: false, prop: null, effect: null, talks: 0, last: { x: at.x, y: at.y }, blocker: null, follow: null,
     };
-    if (def.carry && def.carry !== 'sack') member.prop = scene.add.image(at.x, at.y, `crowd-${def.carry}`);
+    if (def.carry && def.carry !== 'sack' && !def.carryDrawn) member.prop = scene.add.image(at.x, at.y, `crowd-${def.carry}`);
     actor.onStep = () => {
       const d = Math.hypot(actor.sprite.x - this.host.hero().sprite.x, actor.sprite.y - this.host.hero().sprite.y);
       const level = 0.45 - d / 900;
@@ -367,7 +367,7 @@ export class Crowd {
   }
 
   private updateSack(m: Member): void {
-    if (m.def.carry !== 'sack') return;
+    if (m.def.carry !== 'sack' || m.def.carryDrawn) return;
     if (m.carrying && !m.prop) m.prop = this.host.scene.add.image(m.actor.sprite.x, m.actor.sprite.y, 'crowd-sack');
     else if (!m.carrying && m.prop) { m.prop.destroy(); m.prop = null; }
   }

@@ -1,6 +1,6 @@
 # prop-gauge-face
 
-Status: **placeholder** · prop · chapter ch1 · in the game as `art/src/props/gauge-face.png`
+Status: **final** · prop · chapter ch1 · in the game as `art/src/props/gauge-face.png`
 
 ## What the game does with it
 

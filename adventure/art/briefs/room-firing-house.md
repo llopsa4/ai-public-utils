@@ -1,6 +1,6 @@
 # room-firing-house
 
-Status: **placeholder** · room · chapter ch1 · in the game as `art/src/rooms/firing-house.png`
+Status: **final** · room · chapter ch1 · in the game as `art/src/rooms/firing-house.png`
 
 ## What the game does with it
 

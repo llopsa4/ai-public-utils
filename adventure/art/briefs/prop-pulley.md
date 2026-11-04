@@ -1,6 +1,6 @@
 # prop-pulley
 
-Status: **placeholder** · prop · chapter ch1 · in the game as `art/src/props/pulley.png`
+Status: **final** · prop · chapter ch1 · in the game as `art/src/props/pulley.png`
 
 ## What the game does with it
 

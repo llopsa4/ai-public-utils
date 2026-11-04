@@ -50,8 +50,8 @@ const maraRoomHotspots: HotspotDef[] = [
 // the back wall, the stairs climbing to the regulator gallery, and the kiln gate (right edge) out to
 // the ashways.
 const firingHouseHotspots: HotspotDef[] = [
-  { id: 'chalk', name: 'name.chalk', polygon: rect(170, 150, 44, 26), verbs: ['look'], walkTo: pt(190, 280), face: 'up', secret: true },
-  { id: 'sign', name: 'name.sign', polygon: rect(250, 40, 28, 28), verbs: ['look'], secret: true },
+  { id: 'chalk', name: 'name.chalk', polygon: rect(160, 145, 32, 24), verbs: ['look'], walkTo: pt(190, 280), face: 'up', secret: true },
+  { id: 'sign', name: 'name.sign', polygon: rect(226, 44, 34, 38), verbs: ['look'], secret: true },
   { id: 'pantryDoor', name: 'name.pantryDoor', polygon: rect(304, 110, 60, 152), verbs: ['look', 'open', 'use'], walkTo: pt(334, 280), face: 'up' },
   { id: 'soup', name: 'name.soup', polygon: rect(82, 176, 44, 26), verbs: ['look', 'take', 'use'], walkTo: pt(110, 280), face: 'up' },
   { id: 'shoes', name: 'name.shoes', polygon: rect(34, 30, 120, 110), verbs: ['look', 'take'] },

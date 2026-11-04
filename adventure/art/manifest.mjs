@@ -65,23 +65,38 @@ export const RIGS = {
   // Before the ember cell is fitted the gauntlet is cold: its glow (the red glass on the back of the fist) is painted dark.
   mara: { ...MARA_RIG, unpowered: { minX: 210, minY: 790, maxX: 320, maxY: 900 } },
   'mara-gauntlet': MARA_RIG,
+  // Casual Mara (everyday clothes, the start of a new adventure): Codex drew him on the same
+  // registration as the armoured drawing, so his joints and face sit where Mara's do. No portraits of
+  // its own (dialogue shows Mara's).
+  'mara-casual': {
+    source: 'sources/characters/char-mara-casual/body.png', armLayer: 'sources/characters/char-mara-casual/arm.png', height: 232, walks: true,
+    armPivot: [355, 290], armSwing: 6, noPortrait: true,
+    hipY: 820, splitX: 505, hips: { near: [450, 820], far: [560, 820] }, knees: { near: [428, 1095], far: [579, 1085] },
+    eyes: [{ x: 528, y: 115, rx: 13, ry: 6, skinAt: [528, 128] }, { x: 562, y: 115, rx: 9, ry: 6, skinAt: [562, 128] }],
+    portrait: [370, 0, 360, 360],
+    face: { mouth: { x: 549, y: 155, rx: 13, ry: 4 }, brows: [{ x0: 509, x1: 549, y0: 93, y1: 105, inner: 'right' }, { x0: 557, x1: 571, y0: 96, y1: 105, inner: 'left' }] },
+  },
+  // Oren and Nell: Codex's drawings (they stand at their posts; kneeling and lying are drawn).
   oren: {
-    source: 'kiln:opening/oren.png', height: 226, walks: false,
-    hipY: 1050, splitX: 515, hips: { near: [400, 1040], far: [630, 1040] }, knees: { near: [370, 1230], far: [620, 1215] },
-    fidgetPart: { minX: 560, minY: 300, maxY: 600, pivot: [600, 520], angle: -9 },
-    eyes: [{ x: 553, y: 116, rx: 9, ry: 5, skinAt: [553, 130] }, { x: 588, y: 112, rx: 8, ry: 5, skinAt: [590, 126] }],
-    portrait: [390, 0, 330, 330],
-    face: { mouth: { x: 570, y: 166, rx: 15, ry: 4 }, brows: [{ x0: 530, x1: 566, y0: 84, y1: 110, inner: 'right' }, { x0: 572, x1: 600, y0: 82, y1: 108, inner: 'left' }] },
+    source: 'sources/characters/char-oren/body.png', armLayer: 'sources/characters/char-oren/arm.png', height: 226, walks: false,
+    armPivot: [330, 320],
+    hipY: 960, splitX: 464, hips: { near: [400, 960], far: [540, 960] }, knees: { near: [380, 1290], far: [560, 1290] },
+    // The pocket gauge in his right hand turns as he checks it (forearm and gauge, from the elbow).
+    fidgetPart: { minX: 650, minY: 500, maxY: 700, pivot: [650, 540], angle: -9 },
+    // The far eye is hidden behind the far lens: only the near one blinks.
+    eyes: [{ x: 563, y: 150, rx: 10, ry: 5, skinAt: [563, 176] }],
+    portrait: [380, 0, 340, 340],
+    face: { mouth: { x: 583, y: 213, rx: 12, ry: 4 }, brows: [{ x0: 530, x1: 580, y0: 113, y1: 131, inner: 'right' }, { x0: 598, x1: 622, y0: 115, y1: 126, inner: 'left' }] },
   },
   nell: {
-    source: 'kiln:opening/iven.png', height: 220, walks: false,
-    hipY: 1000, splitX: 480, hips: { near: [420, 1000], far: [640, 1000] }, knees: { near: [360, 1240], far: [760, 1250] },
+    source: 'sources/characters/char-nell/body.png', armLayer: 'sources/characters/char-nell/arm.png', height: 220, walks: false,
+    armPivot: [390, 310],
+    hipY: 1010, splitX: 486, hips: { near: [400, 1010], far: [560, 1010] }, knees: { near: [390, 1320], far: [600, 1320] },
     fidgetLean: -3,
-    nearIsUpper: true, crouchSquash: 1,
-    eyes: [{ x: 452, y: 129, rx: 15, ry: 8, skinAt: [452, 148] }, { x: 507, y: 123, rx: 14, ry: 8, skinAt: [505, 142] }],
-    portrait: [320, 0, 340, 340],
+    eyes: [{ x: 546, y: 173, rx: 16, ry: 7, skinAt: [546, 190] }, { x: 592, y: 175, rx: 9, ry: 7, skinAt: [594, 192] }],
+    portrait: [380, 20, 320, 320],
     moods: ['neutral'],
-    face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
+    face: { mouth: { x: 573, y: 227, rx: 19, ry: 5 }, brows: [{ x0: 520, x1: 565, y0: 146, y1: 158, inner: 'right' }, { x0: 583, x1: 602, y0: 147, y1: 156, inner: 'left' }] },
   },
   // Chapter 2. Placeholder: Iven's body recoloured and re-dressed (a dark red kerchief, the plates
   // turned to leather), rigged like Nell, until Codex draws Bryn.
