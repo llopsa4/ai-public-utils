@@ -232,6 +232,8 @@ export type Command =
   | { type: 'dialogue'; id: string }
   | { type: 'wait'; ms: number }
   | { type: 'shake'; ms: number }
+  /** The screen fades to black (`to: 'black'`, with an optional sound) or back (`'clear'`): presentation only. */
+  | { type: 'fade'; to: 'black' | 'clear'; ms: number; sound?: 'dress' }
   | { type: 'moveObject'; id: string; x: number; y: number; ms: number }
   /** Presentation only, inserted by the scene: Mara's hands reach the target (reach pose, swinging props). */
   | { type: 'handle'; target: string }

@@ -7,6 +7,8 @@ import { newGame } from '../src/engine/state';
 /** The story in stages: the flags and items Mara has at each point (cumulative). */
 const STAGES: { flags: string[]; items: string[] }[] = [
   { flags: [], items: [] },
+  // The morning in everyday clothes: Wren's hoist, Nell's bread, dressed for work.
+  { flags: ['wrenAsked', 'hoistHelped', 'metNell', 'breadAsked', 'nellFed', 'dressed'], items: [] },
   { flags: ['hasGauntlet'], items: ['gauntlet'] },
   { flags: ['hasNotebook'], items: ['notebook'] },
   { flags: ['metNell', 'latchFixed', 'alarm'], items: [] },

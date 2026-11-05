@@ -90,6 +90,13 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     await wait(scene, Math.min(command.ms, 400));
     return true;
   },
+  fade: async (scene: RoomScene, command: Of<'fade'>): Promise<boolean> => {
+    if (command.sound) sound[command.sound]();
+    if (command.to === 'black') scene.cameras.main.fadeOut(command.ms, 0, 0, 0);
+    else scene.cameras.main.fadeIn(command.ms, 0, 0, 0);
+    await wait(scene, command.ms + 40);
+    return true;
+  },
   moveObject: async (scene: RoomScene, command: Of<'moveObject'>): Promise<boolean> => {
     const sprite = scene.objects.get(command.id);
     if (!sprite) return true;

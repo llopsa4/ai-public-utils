@@ -45,15 +45,35 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   const after = await page.evaluate(() => ({ ...(window as any).adventure.session.state.hero }));
   expect(after.x !== before.x || after.y !== before.y, 'Mara walks where the floor is clicked').toBeTruthy();
 
+  // The morning in everyday clothes: out of the tent, Wren's hoist, Nell's bread.
+  const sheet = () => page.evaluate(() => (window as any).adventure.session.scene.hero.sprite.texture.key);
+  expect(await sheet(), 'a new adventure starts in everyday clothes').toBe('mara-casual');
   await act(page, 'go', 'tentFlap');
-  expect((await state(page)).room, 'not without the gauntlet').toBe('tent');
+  expect((await state(page)).room).toBe('maraRoom');
+  expect((await state(page)).flags.wrenAsked, 'Wren calls from the hoist').toBe(true);
+  await act(page, 'look', 'tally');
+  await act(page, 'go', 'roomCurtain');
+  expect((await state(page)).room, 'he helps Wren first').toBe('maraRoom');
+  await act(page, 'use', 'pulleys');
+  await act(page, 'go', 'roomCurtain');
+  expect((await state(page)).room).toBe('firingHouse');
+  await act(page, 'talk', 'nell');
+  await act(page, 'take', 'breadBasket');
+  await act(page, 'use', 'soup', 'loaf');
+  expect((await state(page)).flags.nellFed).toBe(true);
+  await act(page, 'open', 'pantryDoor');
+  // Back to the tent to dress for work: kneel at the crate, a fade, up in armour.
+  await act(page, 'go', 'toRoom');
+  await act(page, 'go', 'toTent');
+  await act(page, 'open', 'chest');
+  expect((await state(page)).flags.dressed).toBe(true);
+  expect(await sheet(), 'dressed for work, the gauntlet still dark').toBe('mara');
   await act(page, 'take', 'rack');
   await act(page, 'take', 'notebook');
   // The lit-gauntlet sheet loads in the background and replaces the unlit one.
   await page.waitForFunction(() => (window as any).adventure.game.textures.exists('mara-gauntlet'));
   await act(page, 'go', 'tentFlap');
   expect((await state(page)).room).toBe('maraRoom');
-  await act(page, 'look', 'tally');
   await act(page, 'go', 'roomCurtain');
   expect((await state(page)).room).toBe('firingHouse');
   await act(page, 'use', 'pantryDoor', 'gauntlet');

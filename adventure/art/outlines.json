@@ -1,6 +1,9 @@
 {
   "_": "Hints for art/outlines.py: for painted hotspots whose silhouette the automatic cut misses, a rough hand-traced shape (world pixels, one or more polygons) that the cut then snaps to the painted edges. Keyed by room id, then hotspot id. 'grow' widens how far past its click area a thing may spill (default 10).",
   "tent": {
+    "chest": { "hint": [
+      [[37,219],[67,219],[67,244],[37,244]]
+    ] },
     "jar": { "hint": [
       [[111,170],[122,170],[124,173],[126,175],[127,180],[128,184],[126,190],[110,190],[107,185],[106,181],[108,175],[110,173]]
     ] },
@@ -32,6 +35,9 @@
     ] }
   },
   "firingHouse": {
+    "breadBasket": { "hint": [
+      [[519,206],[524,203],[527,199],[533,197],[540,197],[546,199],[549,203],[553,206],[552,213],[549,219],[523,219],[520,213]]
+    ] },
     "chalk": { "hint": [
       [[160,141],[170,141],[170,158],[160,158]],
       [[173,144],[184,144],[184,158],[173,158]]

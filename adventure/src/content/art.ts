@@ -12,6 +12,9 @@ export const PORTRAIT_MOODS: Record<string, Mood[]> = {
 };
 
 /** Room background texture keys → file names in art/src/rooms (the game loads the .webp copy). */
+/** Satchel items drawn with another item's picture (the loaf for Nell's soup looks like her bread). */
+export const ITEM_ART: Record<string, string> = { loaf: 'bread' };
+
 export const ROOM_FILES: Record<string, string> = {
   'room-tent': 'tent',
   'room-mara': 'mara-room',

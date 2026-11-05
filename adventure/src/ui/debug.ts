@@ -1,4 +1,4 @@
-// The debug panel (only with ?debug; ` toggles it, ?debug=panel opens it at start): jump to a
+// The debug panel (only with ?debug; comma toggles it, ?debug=panel opens it at start): jump to a
 // chapter, room or set of flags; give items, salvage, tonics and gear; start a fight; switch the
 // visual quality and the walk-area overlay. Loaded on demand, so it is not in the normal game.
 import { CHAPTER_IDS, chapter, loadChapter } from '../chapters';
@@ -30,7 +30,7 @@ export function mountDebugPanel(session: Session): void {
   panel.hidden = new URLSearchParams(location.search).get('debug') !== 'panel';
   document.body.append(panel);
   window.addEventListener('keydown', e => {
-    if (e.key !== '`') return;
+    if (e.key !== ',') return;
     panel.hidden = !panel.hidden;
     if (!panel.hidden) render();
   });

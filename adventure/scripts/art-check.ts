@@ -10,7 +10,7 @@ import { MANIFEST, RIGS } from '../art/manifest.mjs';
 import { paletteConformity } from '../art/normalize.mjs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PORTRAIT_MOODS, ROOM_FILES } from '../src/content/art';
+import { ITEM_ART, PORTRAIT_MOODS, ROOM_FILES } from '../src/content/art';
 import { EXTRAS } from '../src/chapters/ch1/crowd';
 import { ROOMS } from '../src/chapters/ch1/rooms';
 import { ITEMS } from '../src/chapters/ch1/flags';
@@ -155,7 +155,7 @@ export function checkArt(): Problem[] {
 
   // Satchel items and action-ring icons.
   for (const item of ITEMS) {
-    const file = join(ART, 'items', `${item}.png`);
+    const file = join(ART, 'items', `${ITEM_ART[item] ?? item}.png`);
     const s = needPng(file);
     if (s && (s.w !== ITEM_SIZE || s.h !== ITEM_SIZE)) fail(file, `is ${s.w}x${s.h}, expected ${ITEM_SIZE}x${ITEM_SIZE}`);
   }

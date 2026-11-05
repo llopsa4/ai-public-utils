@@ -7,6 +7,8 @@ import { resolveNode } from '../src/engine/dialogue';
 import { FLAGS, ITEMS } from '../src/chapters/ch1/flags';
 import { applyCommand, newGame } from '../src/engine/state';
 import type { Command, GameState, Verb } from '../src/engine/types';
+import { onEnter } from '../src/engine/story';
+import { STORY } from '../src/chapters/ch1/story';
 
 /** Plays commands against the state the way the scene does, returning the spoken lines and commands. */
 function run(state: GameState, verb: Verb, target: string, item?: string) {
@@ -41,11 +43,33 @@ function talk(state: GameState, id: string, pick: (next: (string | null)[]) => s
   return visited;
 }
 
+/** Plays the commands a room starts on entering (as the scene does), e.g. Wren calling in the kiln hall. */
+function enter(state: GameState): string[] {
+  const room = ROOMS[state.room];
+  const spoken: string[] = [];
+  for (const c of onEnter(STORY, { state, room, cold: false })) { applyCommand(state, c); if (c.type === 'say') spoken.push(c.text); }
+  return spoken;
+}
+
+/** The morning in everyday clothes: Wren's hoist, Nell's bread, then dressed and geared up in the tent. */
+function morning(s: GameState): void {
+  run(s, 'go', 'tentFlap'); enter(s);
+  run(s, 'use', 'pulleys');
+  run(s, 'go', 'roomCurtain');
+  talk(s, 'nell');
+  run(s, 'take', 'breadBasket');
+  run(s, 'use', 'soup', 'loaf');
+  run(s, 'go', 'toRoom');
+  run(s, 'go', 'toTent');
+  run(s, 'open', 'chest');
+  run(s, 'take', 'rack');
+  run(s, 'take', 'notebook');
+}
+
 /** Plays the scene up to (but excluding) the shutdown decision. */
 function toArgument(): GameState {
   const s = newGame();
-  run(s, 'take', 'rack');
-  run(s, 'take', 'notebook');
+  morning(s);
   run(s, 'go', 'tentFlap');
   run(s, 'go', 'roomCurtain');
   run(s, 'use', 'pantryDoor', 'gauntlet');
@@ -57,8 +81,34 @@ function toArgument(): GameState {
 test('the whole scene plays from Mara\'s tent to the ashways', () => {
   const s = newGame();
   assert.equal(s.room, 'tent');
-  assert.deepEqual(run(s, 'go', 'tentFlap').spoken, ['line.tentNotYet'], 'he needs the gauntlet working before leaving');
-  assert.equal(s.room, 'tent');
+  // The morning, in everyday clothes: nothing needs the gauntlet yet.
+  assert.deepEqual(run(s, 'take', 'rack').spoken, ['line.rackPacked'], 'the gauntlet is still packed in the crate');
+  assert.deepEqual(run(s, 'open', 'chest').spoken, ['line.chestNotYet'], 'not dressing for work yet');
+  run(s, 'go', 'tentFlap');
+  assert.equal(s.room, 'maraRoom', 'he steps out in everyday clothes');
+  assert.deepEqual(enter(s), ['line.wrenCalls', 'line.maraToWren'], 'Wren calls from the hoist');
+  assert.deepEqual(enter(s), [], 'only the first time');
+  assert.deepEqual(run(s, 'go', 'roomCurtain').spoken, ['line.curtainWren'], 'he said he would help Wren first');
+  assert.equal(s.room, 'maraRoom');
+  assert.deepEqual(run(s, 'use', 'pulleys').spoken, ['line.maraTug', 'line.wrenThanks']);
+  assert.ok(s.flags.hoistHelped);
+  run(s, 'go', 'roomCurtain');
+  assert.equal(s.room, 'firingHouse');
+  assert.deepEqual(run(s, 'take', 'breadBasket').spoken, ['line.breadBasketAsk'], 'he asks Nell first');
+  talk(s, 'nell');
+  assert.ok(s.flags.breadAsked);
+  run(s, 'take', 'breadBasket');
+  assert.deepEqual(s.inventory, ['loaf']);
+  assert.deepEqual(run(s, 'take', 'breadBasket').spoken, ['line.breadBasketHave']);
+  const soup = run(s, 'use', 'soup', 'loaf');
+  assert.ok(soup.spoken.includes('line.nellLatch') && s.flags.nellFed);
+  assert.deepEqual([...s.inventory], []);
+  assert.deepEqual(run(s, 'open', 'pantryDoor').spoken, ['line.latchGetDressed'], 'bare hands will not do: time to dress');
+  run(s, 'go', 'toRoom');
+  run(s, 'go', 'toTent');
+  const dress = run(s, 'open', 'chest');
+  assert.ok(s.flags.dressed);
+  assert.ok(dress.commands.some(c => c.type === 'fade' && c.to === 'black') && dress.commands.some(c => c.type === 'fade' && c.to === 'clear'));
 
   run(s, 'take', 'rack');
   assert.ok(s.flags.hasGauntlet);
@@ -139,6 +189,7 @@ test('every path through the argument reaches Mara\'s own decision', () => {
 test('the gauntlet changes the hero sheet flag and the cold flag tints Cinderfold', () => {
   const s = newGame();
   assert.ok(!s.flags.hasGauntlet);
+  s.flags.dressed = true;
   run(s, 'use', 'rack');
   assert.ok(s.flags.hasGauntlet);
   for (const id of ['maraRoom', 'firingHouse', 'gallery']) assert.deepEqual(ROOMS[id].coldIf, [{ flag: 'kilnCold' }]);

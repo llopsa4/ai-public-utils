@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { CHAPTERS, chapter, loadAllChapters } from '../src/chapters';
 
 await loadAllChapters();
-import { afterRelease } from '../src/chapters/ch1/interactions';
+import { afterRelease, wrenCalls } from '../src/chapters/ch1/interactions';
 import { conditionsHold } from '../src/engine/geometry';
 import { ambienceFor, crowdMoodFor, guided, heroSheetFor, hushed, musicFor, onEnter, type StoryContext } from '../src/engine/story';
 import { newGame } from '../src/engine/state';
@@ -19,11 +19,13 @@ test('chapter 1 story rules match the scene\'s old choices in every room and sta
       const f = state.flags;
       assert.equal(musicFor(story, ctx), f.fought ? 'nervous' : cold ? 'cold' : room.music ?? 'warm');
       assert.equal(ambienceFor(story, ctx), room.id === 'ashways' ? 'wind' : cold ? 'cold' : 'kiln');
-      assert.equal(crowdMoodFor(story, ctx), cold ? 'cold' : f.alarm ? 'alarm' : 'warm');
+      const errand = room.id === 'maraRoom' && f.wrenAsked && !f.hoistHelped;
+      assert.equal(crowdMoodFor(story, ctx), cold ? 'cold' : f.alarm ? 'alarm' : errand ? 'errand' : 'warm');
       assert.equal(hushed(story, ctx), !!f.fought);
       assert.equal(guided(story, ctx), !f.fought);
-      assert.equal(heroSheetFor(story, ctx), f.hasGauntlet ? 'mara-gauntlet' : 'mara-casual');
-      assert.deepEqual(onEnter(story, ctx), room.id === 'gallery' && f.kilnCold ? afterRelease(f) : []);
+      assert.equal(heroSheetFor(story, ctx), f.hasGauntlet ? 'mara-gauntlet' : f.dressed ? 'mara' : 'mara-casual');
+      const wren = room.id === 'maraRoom' && !f.wrenAsked && !f.hasGauntlet;
+      assert.deepEqual(onEnter(story, ctx), room.id === 'gallery' && f.kilnCold ? afterRelease(f) : wren ? wrenCalls() : []);
     }
   }
 });

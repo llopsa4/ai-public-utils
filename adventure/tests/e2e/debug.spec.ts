@@ -6,7 +6,11 @@ test('the debug panel jumps to a room and sets flags and items', async ({ page }
   await startNewGame(page);
   const panel = page.locator('#debug-panel');
   await expect(panel).toBeHidden();
-  await page.keyboard.press('`');
+  await page.keyboard.press(',');
+  await expect(panel).toBeVisible();
+  await page.keyboard.press(',');
+  await expect(panel).toBeHidden();
+  await page.keyboard.press(',');
   await expect(panel).toBeVisible();
 
   await panel.locator('select').nth(1).selectOption('firingHouse');

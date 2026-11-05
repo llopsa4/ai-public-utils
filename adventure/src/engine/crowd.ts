@@ -119,10 +119,11 @@ export type Carry = 'shovel' | 'broom' | 'slate' | 'sack';
  * The story moment a room's people react to: normal, the alarm (the kiln groaning, before the
  * shutdown) and the cold kiln.
  */
-export type Mood = 'warm' | 'alarm' | 'cold';
+/** `errand`: someone waits somewhere for Mara's help (Wren at the hoist); everyone else carries on as warm. */
+export type Mood = 'warm' | 'alarm' | 'cold' | 'errand';
 
 /** How many lines of a kind someone has per mood (`line.<id>.<kind>`, `<kind>Alarm`, `<kind>Cold` + `.1..n`). */
-export interface LineCounts { warm: number; alarm?: number; cold: number }
+export interface LineCounts { warm: number; alarm?: number; cold: number; errand?: number }
 
 export interface ExtraDef {
   id: ExtraId;
@@ -132,8 +133,8 @@ export interface ExtraDef {
   body: number;
   /** Walking speed relative to Mara. */
   speed: number;
-  /** Routines per mood; without an `alarm` routine the warm one carries on through the alarm. */
-  routines: { warm: Routine; alarm?: Routine; cold: Routine };
+  /** Routines per mood; without an `alarm` or `errand` routine the warm one carries on. */
+  routines: { warm: Routine; alarm?: Routine; cold: Routine; errand?: Routine };
   /** Leaves for good when the kiln goes cold (and is gone if the room is entered cold). */
   leavesWhenCold?: boolean;
   carry?: Carry;
@@ -165,15 +166,15 @@ export interface CrowdDef {
 
 /** The routine for a mood (the warm one carries on through the alarm if there is no alarm routine). */
 export function routineFor(def: ExtraDef, mood: Mood): Routine {
-  return mood === 'alarm' ? def.routines.alarm ?? def.routines.warm : def.routines[mood];
+  return def.routines[mood] ?? def.routines.warm;
 }
 
-const SUFFIX: Record<Mood, string> = { warm: '', alarm: 'Alarm', cold: 'Cold' };
+const SUFFIX: Record<Mood, string> = { warm: '', alarm: 'Alarm', cold: 'Cold', errand: 'Errand' };
 
 /** The string key prefix for a kind of line in a mood, falling back to warm lines when there are none. */
 export function lineKind(def: ExtraDef, kind: 'talk' | 'chat', mood: Mood): { key: string; count: number } {
   const counts = def[kind];
-  const m = mood === 'alarm' && !counts.alarm ? 'warm' : mood;
+  const m = (mood === 'alarm' || mood === 'errand') && !counts[mood] ? 'warm' : mood;
   return { key: `line.${def.id}.${kind}${SUFFIX[m]}`, count: counts[m]! };
 }
 
