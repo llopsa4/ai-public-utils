@@ -3,6 +3,7 @@
 // visual quality and the walk-area overlay. Loaded on demand, so it is not in the normal game.
 import { CHAPTER_IDS, chapter, loadChapter } from '../chapters';
 import { ALL_GEAR, TONIC } from '../content/kit';
+import { equip } from '../engine/kit';
 import { settings, updateSettings } from '../engine/settings';
 import { applyCommand, newGame } from '../engine/state';
 import type { GameState } from '../engine/types';
@@ -86,6 +87,16 @@ export function mountDebugPanel(session: Session): void {
     const flags = el('div', { className: 'row' });
     for (const f of c.flags) flags.append(check(f, !!s.flags[f], on => change(st => { if (on) st.flags[f] = true; else delete st.flags[f]; })));
     panel.append(flags);
+
+    panel.append(el('h2', { textContent: 'Mara’s outfit' }));
+    panel.append(check('Medium armour', s.kit.equipment.armor.id === 'layered-armor'
+      && (s.chapter !== 'ch1' || !!(s.flags.dressed || s.flags.hasGauntlet)), on => change(st => {
+      const armor = on ? 'layered-armor' : 'patched-coat';
+      if (!st.kit.owned.includes(armor)) st.kit.owned.push(armor);
+      equip(st.kit, 'armor', armor, true);
+      if (st.chapter === 'ch1') st.flags.dressed = true;
+    })));
+    panel.append(el('p', { textContent: 'Off selects light armour. Gauntlet power uses hasGauntlet.' }));
 
     panel.append(el('h2', { textContent: 'Items' }));
     const items = el('div', { className: 'row' });
