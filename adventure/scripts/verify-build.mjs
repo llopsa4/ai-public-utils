@@ -59,11 +59,14 @@ for (const n of built) {
   if (chapter) perChapter[chapter] = (perChapter[chapter] ?? 0) + size(n);
 }
 const total = built.filter(n => !laterChapter(n)).reduce((sum, n) => sum + size(n), 0);
-const later = /^(firing-house|gallery|ashways|hall-left|hall-right|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
+const later = /^(firing-house|gallery|ashways|hall-left|hall-right|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|work-trousers|courier-boots|tonic|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
+// Action-ring images are inserted when a player opens the ring, never at the title screen.
+const actionIcons = new Set(MANIFEST.filter(e => e.kind === 'icon').map(e => e.file.split('/').pop().replace(/\.\w+$/, '')));
+const actionIcon = n => actionIcons.has(n.replace(/-[\w-]{8}\.\w+$/, ''));
 // .woff fonts are fallbacks for browsers without WOFF2; current browsers never fetch them.
-const firstLoad = built.filter(n => !later.test(n) && !laterChapter(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
+const firstLoad = built.filter(n => !later.test(n) && !actionIcon(n) && !laterChapter(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;
-// Static count: it also includes portraits and icons that are only fetched when first shown, so the
+// Static count: it also includes portraits and inventory icons only fetched when first shown, so the
 // real first load (measured by npm run e2e) is lower.
 // 4.8 MB since chapter 2 (the game had reached 4.6 MB with chapter 1; later chapters are budgeted on their own below).
 const TOTAL_BUDGET = 4.8, FIRST_BUDGET = 1.75;

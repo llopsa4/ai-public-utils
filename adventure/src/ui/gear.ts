@@ -56,9 +56,14 @@ export async function openGear(ui: Ui): Promise<void> {
         return { profile: maraProfile(kit), owned: debug ? [...new Set([...kit.owned, ...ALL_GEAR])] : [...kit.owned], salvage: bag.salvage, carried: [], tonics: bag.tonics };
       },
       onEquip: id => {
-        const kit = ui.host.getState().kit;
+        const state = ui.host.getState();
+        const kit = state.kit;
         if (debug && !kit.owned.includes(id)) kit.owned.push(id);
-        equip(kit, EQUIPMENT[id].slot, id, debug);
+        const slot = EQUIPMENT[id].slot;
+        if (!equip(kit, slot, id, debug)) return;
+        // Debug armour selection also dresses Mara, so the morning's casual appearance
+        // cannot hide the chosen outfit. The gauntlet's power remains story-controlled.
+        if (debug && state.chapter === 'ch1' && slot === 'armor') state.flags.dressed = true;
         ui.host.autosave();
         ui.host.refreshHeroAppearance?.();
       },
