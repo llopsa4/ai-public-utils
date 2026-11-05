@@ -100,14 +100,14 @@ function powerCell(png,cfg){
  }
  return out;
 }
-/** Render at logical resolution, then expand 2x. Fixed floor/hip anchor, never per-frame recentering. */
+/** Sample each art pixel directly. Keep the established floor/hip geometry and 2px outline. */
 export function renderPackFrame(pack,{phase=null,blink=false,powered=false}={}){
  const isIdle=phase===null&&!!pack.idle;
  const idle=pack.cfg.idle;
  const cfg=isIdle?{...pack.cfg,sourceHeight:idle.sourceHeight,baseline:idle.baseline,eyes:idle.eyes,ember:idle.ember,
   order:['torso'],joints:{...pack.cfg.joints,nearHip:[idle.anchorX,0],farHip:[idle.anchorX,0]}}:pack.cfg;
- const k=(cfg.height/2-2)/cfg.sourceHeight,W=128,H=128;
- const hipX=(cfg.joints.nearHip[0]+cfg.joints.farHip[0])/2,ground=126;
+ const k=(cfg.height-4)/cfg.sourceHeight,W=256,H=256;
+ const hipX=(cfg.joints.nearHip[0]+cfg.joints.farHip[0])/2,ground=252;
  const data=Buffer.alloc(W*H*4),pose=phase===null?null:walkPose(cfg,phase);
  for(const name of cfg.order){
   let layer=isIdle?pack.idle:pack.layers[name];if(blink&&name==='torso')layer=closedEyes(layer,cfg);if(powered&&(name==='nearForearm'||isIdle))layer=powerCell(layer,cfg);
@@ -119,13 +119,13 @@ export function renderPackFrame(pack,{phase=null,blink=false,powered=false}={}){
    layer.data.copy(data,(y*W+x)*4,a,a+4);
   }
  }
- snapToPalette(data,W);addOutline(data,W,H);
+ snapToPalette(data,W);addOutline(data,W,H);addOutline(data,W,H);
  const out=new PNG({width:256,height:256});
- for(let y=0;y<H;y++)for(let x=0;x<W;x++)for(let dy=0;dy<2;dy++)for(let dx=0;dx<2;dx++)data.copy(out.data,((y*2+dy)*256+x*2+dx)*4,(y*W+x)*4,(y*W+x)*4+4);
+ data.copy(out.data);
  return out;
 }
 async function stillFrame(file,cfg,powered=false,poseName=''){
- const k=(cfg.height/2-2)/cfg.sourceHeight;
+ const k=(cfg.height-4)/cfg.sourceHeight;
  const rawPng=PNG.sync.read(readFileSync(file));
  const image=powered&&cfg.poseEmbers?.[poseName]?powerCell(rawPng,{...cfg,ember:cfg.poseEmbers[poseName]}):rawPng;
  const encoded=PNG.sync.write(image);
@@ -134,10 +134,10 @@ async function stillFrame(file,cfg,powered=false,poseName=''){
  for(let y=0;y<src.info.height;y++)for(let x=0;x<src.info.width;x++)if(src.data[(y*src.info.width+x)*4+3]>=128){l=Math.min(l,x);t=Math.min(t,y);r=Math.max(r,x);b=Math.max(b,y)}
  const w=Math.round((r-l+1)*k),h=Math.round((b-t+1)*k);
  const cut=await sharp(encoded).extract({left:l,top:t,width:r-l+1,height:b-t+1}).resize(w,h,{kernel:'nearest'}).ensureAlpha().raw().toBuffer();
- const raw=Buffer.alloc(128*128*4),left=Math.round((128-w)/2),top=127-h;
- for(let y=0;y<h;y++)cut.copy(raw,((top+y)*128+left)*4,y*w*4,(y+1)*w*4);
- snapToPalette(raw,128);addOutline(raw,128,128);
- const buf=await sharp(raw,{raw:{width:128,height:128,channels:4}}).resize(256,256,{kernel:'nearest'}).png().toBuffer();
+ const raw=Buffer.alloc(256*256*4),left=Math.round((256-w)/2),top=254-h;
+ for(let y=0;y<h;y++)cut.copy(raw,((top+y)*256+left)*4,y*w*4,(y+1)*w*4);
+ snapToPalette(raw,256);addOutline(raw,256,256);addOutline(raw,256,256);
+ const buf=await sharp(raw,{raw:{width:256,height:256,channels:4}}).png().toBuffer();
  return PNG.sync.read(buf);
 }
 export async function buildLayeredCharacter(id,cfg){
