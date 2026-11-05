@@ -98,15 +98,18 @@ export const DIALOGUES: Record<string, DialogueTree> = {
         branch: [
           { if: [{ flag: 'kilnCold' }], next: 'cold' },
           { if: [{ flag: 'latchFixed' }], next: 'afterLatch' },
-          { if: [{ flag: 'metNell' }], next: 'again' },
+          { if: [{ flag: 'nellFed' }], next: 'again' },
+          { if: [{ flag: 'breadAsked' }], next: 'breadAgain' },
           { next: 'first' },
         ],
       },
+      // The morning's errand: a loaf from the basket under the stairs for her soup.
       first: {
         lines: [{ actor: 'nell', text: 'dlg.nell.first1' }, { actor: 'nell', text: 'dlg.nell.first2' }],
-        set: { metNell: true },
+        set: { metNell: true, breadAsked: true },
         next: null,
       },
+      breadAgain: { lines: [{ actor: 'nell', text: 'dlg.nell.breadAgain' }], next: null },
       again: { lines: [{ actor: 'nell', text: 'dlg.nell.again' }], next: null },
       afterLatch: {
         choices: [

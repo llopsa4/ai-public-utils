@@ -8,6 +8,7 @@ import { resolveNode } from '../src/engine/dialogue';
 import { conditionsHold } from '../src/engine/geometry';
 import { TABLES } from '../src/engine/i18n';
 import { applyCommand, newGame } from '../src/engine/state';
+import { onEnter } from '../src/engine/story';
 import { VERBS, type Command, type GameState } from '../src/engine/types';
 
 /**
@@ -21,6 +22,12 @@ const key = (s: GameState) => `${s.room}|${Object.keys(s.flags).filter(f => s.fl
 
 interface Outcome { state: GameState; ended: boolean; lines: string[] }
 
+/** Scene creation runs the first matching room-entry script before accepting clicks. */
+function entryCommands(c: Chapter, state: GameState): Command[] {
+  const room = c.rooms[state.room];
+  return onEnter(c.story, { state, room, cold: !!room.coldIf && conditionsHold(state, room.coldIf) });
+}
+
 /** Plays commands on a copy of the state; conversations branch into one outcome per path. */
 function play(c: Chapter, start: GameState, commands: Command[]): Outcome[] {
   let outcomes: Outcome[] = [{ state: structuredClone(start), ended: false, lines: [] }];
@@ -32,6 +39,12 @@ function play(c: Chapter, start: GameState, commands: Command[]): Outcome[] {
       if (command.type === 'say') o.lines.push(command.text);
       if (command.type === 'dialogue') { next.push(...talk(c, o, command.id)); continue; }
       applyCommand(o.state, command);
+      if (command.type === 'room') {
+        for (const entered of play(c, o.state, entryCommands(c, o.state))) {
+          next.push({ ...entered, lines: [...o.lines, ...entered.lines] });
+        }
+        continue;
+      }
       next.push(o);
     }
     outcomes = next;
@@ -79,13 +92,14 @@ function clicks(c: Chapter, s: GameState): { verb: (typeof VERBS)[number]; targe
 
 function explore(c: Chapter) {
   const optional = new Set([...c.secretFlags, ...c.metFlags]);
-  const start = newGame(c.id);
-  const states = new Map<string, GameState>([[key(start), start]]);
+  const fresh = newGame(c.id);
+  const initial = play(c, fresh, entryCommands(c, fresh));
+  const states = new Map<string, GameState>(initial.map(o => [key(o.state), o.state]));
   const edges = new Map<string, Set<string>>();
-  const ends = new Set<string>();
-  const lines = new Set<string>();
+  const ends = new Set(initial.filter(o => o.ended).map(o => key(o.state)));
+  const lines = new Set(initial.flatMap(o => o.lines));
   const optionalFound = new Set<string>();
-  const queue = [start];
+  const queue = initial.filter(o => !o.ended).map(o => o.state);
   while (queue.length) {
     const s = queue.shift()!;
     if (states.size > 20000) throw new Error(`state explosion: ${states.size} states`);
@@ -120,6 +134,7 @@ for (const c of Object.values(CHAPTERS)) {
   test(`${c.id}: every story state can still reach the end; every room, goal and line exists`, () => {
     setChapter(c.id);
     const { states, ends, canFinish, lines, optionalFound } = explore(c);
+    if (c.id === 'ch1') assert.ok(lines.has('line.wrenCalls'), 'room-entry scripts participate in the story graph');
     assert.ok(ends.size > 0, 'the end is reachable');
     const stuck = [...states.keys()].filter(k => !canFinish.has(k));
     assert.deepEqual(stuck.slice(0, 5), [], `${stuck.length} dead-end states`);

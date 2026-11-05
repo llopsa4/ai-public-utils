@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- The debug panel now toggles with comma (`,`); `?debug=panel` still opens it directly on the published site.
+- Mara's morning starts in everyday clothes: help Wren with the hoist and bring Nell a loaf for her soup, then dress at the tent's clothes crate and power the gauntlet. Dressing fades through black with cloth and buckle sounds. Existing saves with the gauntlet skip these errands.
 - Hover highlight: a soft gold outline on what the pointer is over (a ring at the feet for people).
 - Background people glance at Mara as she walks by, step round Nell and Oren, and the kids sometimes tag along a few steps ("Where are you going? Can I come?"). Dace and Ansel announce their soup breaks on the way out.
 - Nell and Oren look about when Mara isn't near: at the kids, the room, the door.

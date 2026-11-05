@@ -6,6 +6,10 @@ import type { Objective } from '../types';
  * Shown in order; steps after the current one stay hidden so the notebook never spoils.
  */
 const STEPS: { key: string; done: (s: GameState) => boolean; optional?: boolean }[] = [
+  // The morning in everyday clothes (a game saved before these existed is already past them).
+  { key: 'obj.wren', done: s => !!(s.flags.hoistHelped || s.flags.hasGauntlet) },
+  { key: 'obj.bread', done: s => !!(s.flags.nellFed || s.flags.hasGauntlet) },
+  { key: 'obj.dress', done: s => !!(s.flags.dressed || s.flags.hasGauntlet) },
   { key: 'obj.cell', done: s => !!s.flags.hasGauntlet },
   { key: 'obj.notebook', done: s => !!s.flags.hasNotebook },
   { key: 'obj.latch', done: s => !!s.flags.latchFixed },

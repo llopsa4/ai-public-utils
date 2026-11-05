@@ -49,6 +49,8 @@ const HALL: CrowdDef = {
       routines: {
         warm: { stations: ['pulley', 'clayPile', 'pulley', 'nearTent'], detour: 0.1 },
         cold: { stations: ['pulley', 'huddle3'], detour: 0.05 },
+        // Waiting at the hoist for Mara's hand with the rope.
+        errand: { stations: ['pulley'] },
       },
       talk: { warm: 3, cold: 2 }, chat: { warm: 3, cold: 1 },
     },

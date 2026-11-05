@@ -175,6 +175,12 @@ class Sound {
   choose(): void { this.tone('triangle', 880, 640, 0.06, 0.12); }
   pickup(): void { this.tone('triangle', 520, 1040, 0.07, 0.18); this.tone('sine', 1040, 1300, 0.03, 0.2, 0.08); }
   latch(): void { this.burst('highpass', 3200, 0.25, 0.001, 0.025); this.burst('highpass', 2600, 0.2, 0.001, 0.03, 1, 0.12); this.tone('triangle', 1250, 1150, 0.06, 0.25, 0.12); }
+  /** Getting dressed: cloth rustling, then two buckles. */
+  dress(): void {
+    for (const [delay, freq] of [[0, 1700], [0.2, 1300], [0.45, 1900]]) this.burst('bandpass', freq, 0.07, 0.03, 0.22, 1.2, delay);
+    this.tone('triangle', 1600, 1400, 0.03, 0.08, 0.7);
+    this.tone('triangle', 1750, 1500, 0.03, 0.08, 0.85);
+  }
   rumble(ms: number): void { this.burst('lowpass', 90, 0.5, 0.06, ms / 1000); this.tone('sine', 48, 34, 0.18, ms / 1000); }
   hiss(ms = 1600): void { this.burst('highpass', 2400, 0.22, 0.05, ms / 1000, 0.7); }
   private crowdNodes: AudioNode[] = [];

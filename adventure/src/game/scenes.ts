@@ -247,29 +247,47 @@ export class RoomScene extends Phaser.Scene {
     this.cameras.main.fadeIn(this.session.slowFadeIn ? 1800 : FADE_MS, 0, 0, 0);
     this.session.slowFadeIn = false;
     sound.hush(hushed(chapter().story, this.storyContext()));
-    if (this.session.arrival) this.walkIn(this.session.arrival);
-    else this.session.autosave();
-    this.session.arrival = null;
-    // The chapter's entry scripts (e.g. a sequence picked up again after a reload).
+    // Hand off directly from walking in to the entry script. A fixed delay can expire while
+    // the walk is still busy, causing runScript to silently discard the chapter's commands.
     const pending = onEnter(chapter().story, this.storyContext());
-    if (pending.length) this.time.delayedCall(700, () => void runScript(this, pending));
+    const arrived = () => {
+      if (pending.length) void runScript(this, pending);
+      else this.session.autosave();
+    };
+    const entry = this.session.arrival;
+    this.session.arrival = null;
+    if (entry) this.walkIn(entry, arrived);
+    else if (pending.length) {
+      // Reloaded sequences retain their short settling delay, with input reserved throughout.
+      this.busy = true;
+      this.session.ui.setBusy(true);
+      this.time.delayedCall(700, () => {
+        this.busy = false;
+        this.session.ui.setBusy(false);
+        arrived();
+      });
+    }
+    else arrived();
   }
 
   /** On arrival Mara starts just beyond the doorway and walks in to the entry point. */
-  walkIn(entryId: string): void {
+  walkIn(entryId: string, arrived: () => void): void {
     const entry = this.room.entries[entryId];
-    if (!entry) return;
+    if (!entry) { arrived(); return; }
+    const hero = this.hero;
     const v = FACE_VECTOR[entry.face];
     this.hero.sprite.setPosition(entry.x - v.x * DOORWAY_STEP, entry.y - v.y * DOORWAY_STEP);
     this.busy = true;
     this.session.ui.setBusy(true);
     void this.hero.walk([{ x: entry.x, y: entry.y }]).then(() => {
+      // A stopped walk may settle after a restart; it must not touch the new room or run
+      // commands captured for the old one.
+      if (!this.sys.isActive() || this.hero !== hero || this.leaving) return;
       this.hero.setFacing(entry.face);
       this.syncHero();
-      if (this.leaving) return;
       this.busy = false;
       this.session.ui.setBusy(false);
-      this.session.autosave();
+      arrived();
     });
   }
 

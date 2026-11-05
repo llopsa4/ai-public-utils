@@ -1,7 +1,9 @@
 /** Chapter 1's story flags and items. Saves accept only these (per chapter). */
 export const FLAGS = [
   // Mara's room
-  'hasGauntlet', 'hasNotebook',
+  'hasGauntlet', 'hasNotebook', 'dressed',
+  // the morning's errands in everyday clothes: Wren's hoist, Nell's bread
+  'wrenAsked', 'hoistHelped', 'breadAsked', 'nellFed',
   // firing house
   'latchFixed', 'alarm', 'metNell', 'gotBread', 'gotScarf',
   // regulator gallery
@@ -21,7 +23,7 @@ export const SECRET_FLAGS = ['secretTally', 'secretChalk', 'secretSign', 'secret
 /** Set the first time Mara talks to each background person (counted in the notebook). */
 export const MET_FLAGS = ['metHollis', 'metWren', 'metDace', 'metAnsel', 'metPip', 'metBea'] as const;
 
-export const ITEMS = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf'] as const;
+export const ITEMS = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf', 'loaf'] as const;
 
 /** Items Mara keeps when the chapter ends (the rest stay behind). */
 export const KEPT_ITEMS: readonly string[] = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf'];

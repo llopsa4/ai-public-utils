@@ -7,9 +7,13 @@ import { newGame } from '../src/engine/state';
 
 test('the notebook shows finished goals plus the current one, never later ones', () => {
   const s = newGame();
-  assert.deepEqual(objectives(s).map(o => [o.key, o.done]), [['obj.cell', false]]);
+  assert.deepEqual(objectives(s).map(o => [o.key, o.done]), [['obj.wren', false]]);
+  s.flags.hoistHelped = true;
+  assert.deepEqual(objectives(s).map(o => [o.key, o.done]), [['obj.wren', true], ['obj.bread', false]]);
+  Object.assign(s.flags, { nellFed: true, dressed: true });
+  assert.deepEqual(objectives(s).map(o => [o.key, o.done]).slice(-2), [['obj.dress', true], ['obj.cell', false]]);
   s.flags.hasGauntlet = true;
-  assert.deepEqual(objectives(s).map(o => [o.key, o.done]), [['obj.cell', true], ['obj.notebook', false]]);
+  assert.deepEqual(objectives(s).map(o => [o.key, o.done]).slice(-2), [['obj.cell', true], ['obj.notebook', false]]);
   Object.assign(s.flags, { hasNotebook: true, latchFixed: true, patchFailed: true, decided: true, procedureKnown: true, kilnCold: true });
   const afterShutdown = objectives(s);
   assert.deepEqual(afterShutdown.slice(-2).map(o => [o.key, o.done, o.optional]), [['obj.goodbye', false, true], ['obj.leave', false, false]],

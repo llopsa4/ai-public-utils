@@ -19,6 +19,8 @@ const tentHotspots: HotspotDef[] = [
     visibleIf: [{ notFlag: 'hasNotebook' }] },
   { id: 'rack', name: 'name.rack', polygon: rect(146, 128, 52, 70), verbs: ['look', 'take', 'use'], walkTo: pt(172, 278), face: 'up' },
   { id: 'jar', name: 'name.jar', polygon: rect(104, 168, 26, 30), verbs: ['look', 'take'], walkTo: pt(118, 278), face: 'up' },
+  // The crate under the bench: his work clothes, armour and the gauntlet (before the workbench, which surrounds it).
+  { id: 'chest', name: 'name.chest', polygon: rect(36, 218, 32, 26), verbs: ['look', 'open', 'use'], walkTo: pt(52, 278), face: 'up' },
   { id: 'workbench', name: 'name.workbench', polygon: rect(14, 124, 178, 128), verbs: ['look', 'use'], walkTo: pt(110, 278), face: 'up' },
   { id: 'stool', name: 'name.stool', polygon: rect(88, 228, 52, 48), verbs: ['look', 'use'] },
   { id: 'drum', name: 'name.drum', polygon: rect(242, 194, 94, 66), verbs: ['look', 'use'], walkTo: pt(290, 278), face: 'up' },
@@ -57,6 +59,8 @@ const firingHouseHotspots: HotspotDef[] = [
   { id: 'shoes', name: 'name.shoes', polygon: rect(34, 30, 120, 110), verbs: ['look', 'take'] },
   { id: 'hearth', name: 'name.hearth', polygon: rect(56, 170, 92, 92), verbs: ['look', 'use'] },
   { id: 'stairs', name: 'name.stairs', polygon: [pt(410, 262), pt(510, 96), pt(566, 96), pt(470, 262)], verbs: ['look', 'go'], walkTo: pt(450, 284), face: 'up' },
+  // Nell's rolls in the basket on the table under the stairs (the morning's bread errand).
+  { id: 'breadBasket', name: 'name.breadBasket', polygon: rect(516, 192, 38, 28), verbs: ['look', 'take'], walkTo: pt(535, 282), face: 'up' },
   { id: 'kilnGate', name: 'name.kilnGate', polygon: rect(586, 96, 54, 168), verbs: ['look', 'open', 'go'], walkTo: pt(616, 290), face: 'right' },
   { id: 'toRoom', name: 'name.toMaraRoom', polygon: rect(0, 104, 30, 160), verbs: ['look', 'go'], walkTo: pt(24, 290), face: 'left' },
 ];

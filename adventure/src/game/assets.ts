@@ -134,6 +134,7 @@ export const OUTLINES: Record<string, OutlineSheet> = Object.fromEntries(
 
 const portraitFiles = import.meta.glob('../../art/src/portraits/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 export { PORTRAIT_MOODS, type Mood } from '../content/art';
+import { ITEM_ART } from '../content/art';
 
 /** Dialogue portrait strips keyed by sheet name (mara, oren, nell). */
 export const PORTRAITS: Record<string, string> = Object.fromEntries(
@@ -144,6 +145,7 @@ const itemFiles = import.meta.glob('../../art/src/items/*.png', { eager: true, q
 export const ITEM_ICONS: Record<string, string> = Object.fromEntries(
   Object.entries(itemFiles).map(([path, url]) => [path.replace(/^.*\/(\w+)\.png$/, '$1'), url]),
 );
+for (const [item, art] of Object.entries(ITEM_ART)) if (ITEM_ICONS[art]) ITEM_ICONS[item] ??= ITEM_ICONS[art];
 
 /** First frame name of a tag, for single-frame object states. */
 export function tagFrame(sheet: string, tag: string): string {

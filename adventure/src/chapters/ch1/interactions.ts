@@ -1,7 +1,7 @@
 import { ROOMS } from './rooms';
 import { SECRET_FLAGS } from './flags';
 import { applyRules, cycleLook, type Rule } from '../../engine/rules';
-import type { ActorId, Command, Condition, GameState, NpcId, Point, Verb } from '../../engine/types';
+import type { ActorId, Command, Condition, GameState, NpcId, Point, Speaker, Verb } from '../../engine/types';
 
 /**
  * What follows the release: the hatch blows, the fight, Oren's advice and the gear menu, then his
@@ -17,6 +17,14 @@ export function afterRelease(f: Record<string, boolean>): Command[] {
     out.push(say('line.orenGear', 'oren'), { type: 'giveSpares' }, { type: 'awaitGear' }, flag('gearChecked'), say('line.orenShelter', 'oren'));
   }
   return out;
+}
+
+/** Where Wren's voice comes from: the hoist in the kiln hall, where she waits for Mara's hand. */
+const HOIST_VOICE = { x: 100, y: 220 };
+
+/** The first time Mara steps into the kiln hall: Wren calls for a hand with the hoist rope. */
+export function wrenCalls(): Command[] {
+  return [flag('wrenAsked'), wait(400), say('line.wrenCalls', 'extra-hoist', HOIST_VOICE), say('line.maraToWren')];
 }
 
 /** Verbs offered for the characters (hotspot verbs live in rooms.ts). */
@@ -41,7 +49,7 @@ const STAIRS_VOICE = { x: 538, y: 100 };
 /** The sweeper by the valve, and the same creature once it has moved to the pipe. */
 const SWEEPER = ['sweeper', 'sweeperAtPipe'];
 
-const say = (text: string, actor: ActorId = 'hero', at?: Point): Command => (at ? { type: 'say', actor, text, at } : { type: 'say', actor, text });
+const say = (text: string, actor: Speaker = 'hero', at?: Point): Command => (at ? { type: 'say', actor, text, at } : { type: 'say', actor, text });
 const flag = (name: string, value = true): Command => ({ type: 'setFlag', flag: name, value });
 const pose = (actor: ActorId, p: 'stand' | 'crouch' | 'dead'): Command => ({ type: 'pose', actor, pose: p });
 const wait = (ms: number): Command => ({ type: 'wait', ms });
@@ -64,7 +72,7 @@ const VARIED_LOOKS = [
 const VARIANT_KEYS = VARIED_LOOKS.flatMap(k => [`${k}.2`, `${k}.3`]);
 
 /** Items with their own reply when used on something that doesn't take them. */
-const ITEM_FAILS = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf'];
+const ITEM_FAILS = ['gauntlet', 'notebook', 'regulator', 'bread', 'scarf', 'loaf'];
 
 /** Secrets: looking at them for the first time marks them found. */
 const SECRETS: Record<string, { flag: (typeof SECRET_FLAGS)[number]; line: string; again: string }> = {
@@ -84,6 +92,12 @@ const F = (name: string): Condition[] => [{ flag: name }];
 const NOT = (name: string): Condition[] => [{ notFlag: name }];
 const addItem = (item: string): Command => ({ type: 'addItem', item });
 const shake = (ms: number): Command => ({ type: 'shake', ms });
+
+/** Nell's loaf goes into the soup (used on the pot or handed to her): her thanks, and her latch. */
+const loafInSoup: Command[] = [
+  { type: 'removeItem', item: 'loaf' }, say('line.maraLoaf'), { type: 'face', actor: 'nell', face: 'left' },
+  say('line.nellThanksBread', 'nell'), say('line.nellLatch', 'nell'), flag('nellFed'),
+];
 
 /** An inventory item: its look line; anything else done to it can't be. */
 const inventoryItem = (id: string, look: Rule['do']): Rule[] => [
@@ -126,10 +140,12 @@ export const RULES: readonly Rule[] = [
   ...inventoryItem('regulator', [say('line.regulatorItemLook')]),
   ...inventoryItem('bread', [say('line.breadLook')]),
   ...inventoryItem('scarf', [say('line.scarfLook')]),
+  ...inventoryItem('loaf', [say('line.loafLook')]),
 
   // ---------------------------------------------------------------- Mara ---
   { target: 'hero', item: 'bread', do: [say('line.breadEat')] },
   { target: 'hero', item: 'scarf', do: [say('line.scarfWear')] },
+  { target: 'hero', item: 'loaf', do: [say('line.loafEat')] },
   { target: 'hero', item: '*', do: [say('line.heroUseItem')] },
   ...either('hero', 'look', 'kilnCold', 'line.heroLookCold', 'line.heroLook'),
   { target: 'hero', verb: 'talk', do: [say('line.heroTalk')] },
@@ -140,13 +156,22 @@ export const RULES: readonly Rule[] = [
   // --------------------------------------------------------- Mara's tent ---
   ...either('rack', 'look', 'hasGauntlet', 'line.rackLookEmpty', 'line.rackLook'),
   { target: 'rack', verb: ['take', 'use'], when: F('hasGauntlet'), do: [say('line.rackEmpty')] },
-  // Gearing up: kneels to the cradle, armour on and the cell into the gauntlet, stands up kitted out.
-  { target: 'rack', verb: ['take', 'use'], walk: true, do: [say('line.gearUp'), pose('hero', 'crouch'), wait(500), flag('hasGauntlet'), addItem('gauntlet'), wait(300), pose('hero', 'stand'), wait(200), say('line.rackTake')] },
+  // The gauntlet is still packed in the crate until he dresses for work.
+  { target: 'rack', verb: ['take', 'use'], when: NOT('dressed'), do: [say('line.rackPacked')] },
+  { target: 'rack', verb: ['take', 'use'], walk: true, do: [pose('hero', 'crouch'), wait(500), flag('hasGauntlet'), addItem('gauntlet'), wait(300), pose('hero', 'stand'), wait(200), say('line.rackTake')] },
+  // The crate under the bench: dressing for work once Nell's latch has asked for the gauntlet.
+  ...either('chest', 'look', 'dressed', 'line.chestLookDressed', 'line.chestLook'),
+  { target: 'chest', verb: ['open', 'use'], when: F('dressed'), walk: true, do: [say('line.chestEmpty')] },
+  { target: 'chest', verb: ['open', 'use'], when: NOT('nellFed'), walk: true, do: [say('line.chestNotYet')] },
+  { target: 'chest', verb: ['open', 'use'], walk: true, do: [
+    pose('hero', 'crouch'), wait(300), say('line.gearUp'),
+    { type: 'fade', to: 'black', ms: 500, sound: 'dress' }, flag('dressed'), pose('hero', 'stand'), wait(500),
+    { type: 'fade', to: 'clear', ms: 500 },
+  ] },
   { target: 'notebook', verb: 'look', do: [say('line.notebookOnBench')] },
   { target: 'notebook', verb: 'open', walk: true, do: [say('line.notebookOpen')] },
   { target: 'notebook', verb: 'take', walk: true, do: [flag('hasNotebook'), addItem('notebook'), say('line.notebookTake')] },
   { target: 'tentFlap', verb: 'look', do: [say('line.tentFlapLook')] },
-  { target: 'tentFlap', verb: ['go', 'open'], when: NOT('hasGauntlet'), walk: true, do: [say('line.tentNotYet')] },
   { target: 'tentFlap', verb: ['go', 'open'], walk: true, do: [go('maraRoom', 'fromTent')] },
   { target: 'workbench', verb: 'look', do: [say('line.workbenchLook')] },
   { target: 'workbench', verb: 'use', walk: true, do: [say('line.workbenchUse')] },
@@ -165,12 +190,18 @@ export const RULES: readonly Rule[] = [
   ...either('niche', 'look', 'kilnCold', 'line.nicheLookCold', 'line.nicheLook'), // the kiln mouths
   ...either('niche', 'use', 'kilnCold', 'line.nicheUseCold', 'line.nicheUse'),
   { target: 'pulleys', verb: 'look', do: [say('line.pulleysLook')] },
+  // Wren's errand: one good tug puts the rope back on its hook.
+  { target: 'pulleys', verb: 'use', when: [{ flag: 'wrenAsked' }, { notFlag: 'hoistHelped' }], walk: true, do: [
+    say('line.maraTug'), flag('hoistHelped'), say('line.wrenThanks', 'extra-hoist', HOIST_VOICE),
+  ] },
   { target: 'pulleys', verb: 'use', walk: true, do: [say('line.pulleysUse')] },
   { target: 'jars', verb: 'look', do: [say('line.jarsLook')] },
   { target: 'jars', verb: 'take', do: [say('line.jarsTake')] },
   { target: 'cart', verb: 'look', do: [say('line.cartLook')] },
   { target: 'cart', verb: 'use', do: [say('line.cartUse')] },
   { target: 'roomCurtain', verb: 'look', do: [say('line.roomCurtainLook')] },
+  // He said he'd help Wren first (games saved before the morning errands are already past this).
+  { target: 'roomCurtain', verb: 'go', when: [{ flag: 'wrenAsked' }, { notFlag: 'hoistHelped' }, { notFlag: 'hasGauntlet' }], do: [say('line.curtainWren')] },
   { target: 'roomCurtain', verb: 'go', walk: true, do: [go('firingHouse', 'fromMaraRoom')] },
 
   // -------------------------------------------------------- firing house ---
@@ -184,7 +215,16 @@ export const RULES: readonly Rule[] = [
   ] },
   ...either('pantryDoor', 'look', 'latchFixed', 'line.latchLookFixed', 'line.latchLook'),
   { target: 'pantryDoor', verb: ['open', 'use'], when: F('latchFixed'), do: [say('line.latchOpenFixed')] },
+  // Once Nell has mentioned it: bare hands won't shift it, so he goes to dress for work.
+  { target: 'pantryDoor', verb: ['open', 'use'], when: [{ flag: 'nellFed' }, { notFlag: 'dressed' }, { notFlag: 'hasGauntlet' }], walk: true, do: [say('line.latchGetDressed')] },
   ...either('pantryDoor', ['open', 'use'], 'hasGauntlet', 'line.latchStuckHint', 'line.latchStuck', true),
+  { target: 'soup', item: 'loaf', walk: true, do: loafInSoup },
+  { target: 'nell', item: 'loaf', do: [...toNpc('nell'), ...loafInSoup] },
+  { target: 'breadBasket', verb: 'look', do: [say('line.breadBasketLook')] },
+  { target: 'breadBasket', verb: 'take', when: [{ has: 'loaf' }], do: [say('line.breadBasketHave')] },
+  { target: 'breadBasket', verb: 'take', when: F('nellFed'), do: [say('line.breadBasketDone')] },
+  { target: 'breadBasket', verb: 'take', when: NOT('breadAsked'), do: [say('line.breadBasketAsk')] },
+  { target: 'breadBasket', verb: 'take', walk: true, do: [addItem('loaf'), say('line.loafTake')] },
   { target: 'soup', item: 'bread', do: [say('line.soupBread')] },
   ...either('soup', 'look', 'kilnCold', 'line.soupLookCold', 'line.soupLook'),
   { target: 'soup', verb: 'take', do: [say('line.soupTake')] },
@@ -275,10 +315,14 @@ export const INTERACTION_KEYS = [
   'line.useFails', 'line.nothingSpecial', 'line.cannot', 'line.alreadyStanding', 'line.askStand',
   'line.gauntletLook', 'line.notebookLook', 'line.notebookLookAfter', 'line.regulatorItemLook', 'line.breadLook', 'line.scarfLook',
   'line.breadEat', 'line.scarfWear', 'line.heroUseItem', 'line.heroLook', 'line.heroLookCold', 'line.heroTalk', 'line.heroLie', 'line.heroAlreadyStanding',
-  'line.rackLook', 'line.rackLookEmpty', 'line.rackEmpty', 'line.rackTake', 'line.gearUp',
+  'line.rackLook', 'line.rackLookEmpty', 'line.rackEmpty', 'line.rackTake', 'line.rackPacked', 'line.gearUp',
+  'line.chestLook', 'line.chestLookDressed', 'line.chestEmpty', 'line.chestNotYet',
+  'line.wrenCalls', 'line.maraToWren', 'line.maraTug', 'line.wrenThanks', 'line.curtainWren',
+  'line.breadBasketLook', 'line.breadBasketHave', 'line.breadBasketDone', 'line.breadBasketAsk', 'line.loafTake', 'line.loafLook', 'line.loafEat',
+  'line.maraLoaf', 'line.nellThanksBread', 'line.nellLatch', 'line.latchGetDressed',
   'line.notebookOnBench', 'line.notebookOpen', 'line.notebookTake',
   'line.nicheLook', 'line.nicheLookCold', 'line.nicheUse', 'line.nicheUseCold', 'line.roomCurtainLook',
-  'line.tentFlapLook', 'line.tentNotYet', 'line.workbenchLook', 'line.workbenchUse', 'line.jarLook', 'line.jarTake',
+  'line.tentFlapLook', 'line.workbenchLook', 'line.workbenchUse', 'line.jarLook', 'line.jarTake',
   'line.stoolLook', 'line.stoolUse', 'line.drumLook', 'line.drumUse', 'line.stoveLook', 'line.stoveUse', 'line.toTentLook',
   'line.pulleysLook', 'line.pulleysUse', 'line.jarsLook', 'line.jarsTake', 'line.cartLook', 'line.cartUse',
   'line.latchAlreadyFixed', 'line.nellFixed', 'line.maraLatch', 'line.nellSoup', 'line.maraNightShift', 'line.kilnGroans', 'line.orenCalls', 'line.maraAlarm',
