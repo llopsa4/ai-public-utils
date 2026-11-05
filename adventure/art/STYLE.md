@@ -36,6 +36,8 @@ Everything is in true proportion to Mara. A chair seat is at his knee, a table a
 
 ## The pixel grid
 
+- **Mara detail exception:** his layered standing, walking, kneeling and lying frames use a 1-art-pixel grid to retain more of the approved source drawings. His outlined standing height remains 232 art pixels / 116 world pixels; the source scale, anchors, two-art-pixel outline and walk stride are unchanged. Other world artwork keeps the 2-pixel grid below.
+
 - **Everything drawn in the world** (rooms, people, objects, props, creatures and fight pictures) is pixel art on a **2-pixel grid**: a 1280×720 room is a 640×360 picture shown 2×, and Mara is 116 of its pixels tall, enough for faces, blinking and talking to show.
 - **Codex may draw at any size:**
   - rooms at 16:9, 1280×720 or larger

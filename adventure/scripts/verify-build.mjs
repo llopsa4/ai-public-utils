@@ -59,7 +59,8 @@ for (const n of built) {
   if (chapter) perChapter[chapter] = (perChapter[chapter] ?? 0) + size(n);
 }
 const total = built.filter(n => !laterChapter(n)).reduce((sum, n) => sum + size(n), 0);
-const later = /^(firing-house|gallery|ashways|hall-left|hall-right|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|work-trousers|courier-boots|tonic|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
+// Room foregrounds and inventory pictures also wait until their room or inventory entry is shown.
+const later = /^(firing-house|gallery|ashways|hall-left|hall-right|hall-crate|tent-stool|mara-casual|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|work-trousers|courier-boots|tonic|gauntlet|regulator|bread|scarf|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
 // Action-ring images are inserted when a player opens the ring, never at the title screen.
 const actionIcons = new Set(MANIFEST.filter(e => e.kind === 'icon').map(e => e.file.split('/').pop().replace(/\.\w+$/, '')));
 const actionIcon = n => actionIcons.has(n.replace(/-[\w-]{8}\.\w+$/, ''));

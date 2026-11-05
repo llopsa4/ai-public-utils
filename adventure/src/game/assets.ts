@@ -90,7 +90,7 @@ for (const key of ['mara-medium', 'mara-medium-gauntlet']) {
 }
 
 /** Sheets loaded only when a room needs them (the rest load at boot): saves ~550 KB before the title. */
-export const LAZY_SHEETS = new Set(['mara-gauntlet', 'mara-medium', 'mara-medium-gauntlet', 'oren', 'nell', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
+export const LAZY_SHEETS = new Set(['mara-casual', 'mara-gauntlet', 'mara-medium', 'mara-medium-gauntlet', 'oren', 'nell', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
 
 /** Sheet used for each non-player character. */
 export const NPC_SHEETS: Partial<Record<NpcId, string>> = { oren: 'oren', nell: 'nell' };

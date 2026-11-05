@@ -52,14 +52,16 @@ test('planted feet stay at the same world point while the actor moves forward',(
   }
 });
 
-test('rendered poses retain palette, binary transparency, 2px grid, safe edges and covered joints',()=>{
+test('rendered poses retain palette, binary transparency, fine pixel detail, safe edges and covered joints',()=>{
   for(const pack of packs)for(let phase=0;phase<8;phase++){
     const frame=renderPackFrame(pack,{phase});assert.equal(paletteConformity(frame.data),1);
+    let detailedBlocks=0;
     for(let y=0;y<256;y+=2)for(let x=0;x<256;x+=2){
       const o=(y*256+x)*4;
-      for(const [dx,dy] of [[1,0],[0,1],[1,1]])assert.deepEqual(frame.data.subarray(o,o+4),frame.data.subarray(((y+dy)*256+x+dx)*4,((y+dy)*256+x+dx)*4+4));
-      assert.ok(frame.data[o+3]===0||frame.data[o+3]===255);
+      if([[1,0],[0,1],[1,1]].some(([dx,dy])=>!frame.data.subarray(o,o+4).equals(frame.data.subarray(((y+dy)*256+x+dx)*4,((y+dy)*256+x+dx)*4+4))))detailedBlocks++;
     }
+    assert.ok(detailedBlocks>100,'Samples preserve detail inside the former doubled 2px blocks');
+    for(let o=3;o<frame.data.length;o+=4)assert.ok(frame.data[o]===0||frame.data[o]===255);
     for(let y=0;y<256;y++)assert.equal(frame.data[(y*256)*4+3]+frame.data[(y*256+255)*4+3],0,'horizontal clipping');
     const pose=walkPose(pack.cfg,phase),k=(pack.cfg.height/2-2)/pack.cfg.sourceHeight,hx=(pack.cfg.joints.nearHip[0]+pack.cfg.joints.farHip[0])/2;
     for(const side of ['near','far'])for(const [joint,part] of [['Elbow','UpperArm'],['Knee','Thigh'],['Ankle','Shin']]){

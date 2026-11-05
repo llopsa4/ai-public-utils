@@ -4,6 +4,8 @@ import { act, idle, open, state, startNewGame } from './helpers';
 
 test('the whole scene plays in the browser, from the title screen into chapter 2 (debug)', async ({ page }) => {
   const errors: string[] = [];
+  const casualRequests: string[] = [];
+  page.on('request', r => { if (/\/mara-casual-[\w-]{8}\.png/.test(r.url())) casualRequests.push(r.url()); });
   // What is downloaded before the title screen is usable (raw, and as GitHub Pages sends it: JS/CSS gzipped).
   let raw = 0, wire = 0, counting = true;
   page.on('response', async r => {
@@ -17,6 +19,7 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   await open(page, errors);
   await page.waitForTimeout(500);
   counting = false;
+  expect(casualRequests, 'casual Mara loads with the opening room, not the title').toEqual([]);
   console.log(`First load: ${(raw / 1048576).toFixed(2)} MB raw, ${(wire / 1048576).toFixed(2)} MB as served by GitHub Pages`);
   expect(wire, 'first load as served').toBeLessThan(1.5 * 1048576);
 
@@ -36,6 +39,7 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   await expect(intro).toBeHidden({ timeout: 10_000 });
   await idle(page);
   expect((await state(page)).room).toBe('tent');
+  expect(casualRequests).toHaveLength(1);
   const before = await page.evaluate(() => ({ ...(window as any).adventure.session.state.hero }));
   const canvas = page.locator('#game canvas');
   const box = (await canvas.boundingBox())!;
