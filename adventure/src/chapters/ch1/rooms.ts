@@ -176,7 +176,7 @@ export const ROOMS: Record<string, RoomDef> = {
   firingHouse: {
     id: 'firingHouse',
     background: 'room-firing-house',
-    walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)], holes: [rect(234, 294, 32, 12)] },
+    walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)], holes: [rect(234, 294, 32, 12), rect(145, 294, 20, 12)] },
     // Flat 2D: the same size at the back and the front of the floor.
     scale: { farY: 268, farScale: 1, nearY: 345, nearScale: 1 },
     music: 'warm',
@@ -208,6 +208,7 @@ export const ROOMS: Record<string, RoomDef> = {
     hotspots: firingHouseHotspots,
     actors: [
       { id: 'nell', x: 250, y: 300 },
+      { id: 'tobi', x: 155, y: 300, body: 0.6 },
     ],
     props: [{ kind: 'bubbles', x: 104, y: 180, w: 22, h: 4, color: 0xf0d090, warm: true }],
     sign: { x: 480, y: 50, drop: 12, w: 112, h: 22, style: 'wood' },

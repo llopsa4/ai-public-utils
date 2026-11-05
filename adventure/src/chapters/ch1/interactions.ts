@@ -32,12 +32,14 @@ export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
   hero: ['look', 'talk', 'crouch', 'lie', 'stand'],
   oren: ['look', 'talk', 'crouch', 'lie', 'stand'],
   nell: ['look', 'talk', 'crouch', 'lie', 'stand'],
+  tobi: ['look', 'talk'],
 };
 
 /** Where Mara stands to talk to each character. */
 const TALK_SPOTS: Partial<Record<NpcId, { at: Point; face: 'left' | 'right'; npcFace: 'left' | 'right' }>> = {
   oren: { at: { x: 436, y: 302 }, face: 'right', npcFace: 'left' },
   nell: { at: { x: 290, y: 302 }, face: 'left', npcFace: 'right' },
+  tobi: { at: { x: 195, y: 300 }, face: 'left', npcFace: 'right' },
 };
 
 /** Inventory items offer these verbs in the action ring. */
@@ -296,6 +298,8 @@ export const RULES: readonly Rule[] = [
   // -------------------------------------------------------------- people ---
   ...npcRules('oren'),
   ...npcRules('nell'),
+  ...either('tobi', 'look', 'kilnCold', 'line.tobiLookCold', 'line.tobiLook'),
+  { target: 'tobi', verb: 'talk', do: [...toNpc('tobi'), { type: 'dialogue', id: 'tobi' }] },
 ];
 
 /**
@@ -312,6 +316,7 @@ const NPC_KEYS = ['Item', 'Look', 'LookCold', 'LookDown', 'Crouch', 'Lie', 'Stan
 
 /** Every string key that interactions can emit (used by the translation completeness test). */
 export const INTERACTION_KEYS = [
+  'line.tobiLook', 'line.tobiLookCold',
   'line.useFails', 'line.nothingSpecial', 'line.cannot', 'line.alreadyStanding', 'line.askStand',
   'line.gauntletLook', 'line.notebookLook', 'line.notebookLookAfter', 'line.regulatorItemLook', 'line.breadLook', 'line.scarfLook',
   'line.breadEat', 'line.scarfWear', 'line.heroUseItem', 'line.heroLook', 'line.heroLookCold', 'line.heroTalk', 'line.heroLie', 'line.heroAlreadyStanding',

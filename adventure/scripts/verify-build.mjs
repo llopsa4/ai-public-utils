@@ -21,7 +21,7 @@ for (const name of built) {
 }
 // Vite names assets <name>-<8-character hash>.<ext>.
 const has = (name, ext) => built.some(n => new RegExp(`^${name}-[\\w-]{8}\\.${ext}$`).test(n));
-for (const art of ['mara', 'mara-gauntlet', 'oren', 'nell', 'sweeper', 'valve', 'socket', 'rack', 'pantry-door', 'notebook', 'tent', 'gauntlet', 'regulator', 'bread', 'scarf']) {
+for (const art of ['mara', 'mara-gauntlet', 'oren', 'nell', 'tobi', 'sweeper', 'valve', 'socket', 'rack', 'pantry-door', 'notebook', 'tent', 'gauntlet', 'regulator', 'bread', 'scarf']) {
   assert.ok(has(art, 'png'), `missing art: ${art}`);
 }
 // Rooms and foreground cut-outs ship as WebP only (the tent object sprite shares the room's name and stays PNG).
@@ -60,7 +60,7 @@ for (const n of built) {
 }
 const total = built.filter(n => !laterChapter(n)).reduce((sum, n) => sum + size(n), 0);
 // Room foregrounds and inventory pictures also wait until their room or inventory entry is shown.
-const later = /^(firing-house|gallery|ashways|hall-left|hall-right|hall-crate|tent-stool|mara-casual|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|work-trousers|courier-boots|tonic|gauntlet|regulator|bread|scarf|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
+const later = /^(firing-house|gallery|ashways|hall-left|hall-right|hall-crate|tent-stool|mara-casual|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|tobi|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|work-trousers|courier-boots|tonic|gauntlet|regulator|bread|scarf|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
 // Action-ring images are inserted when a player opens the ring, never at the title screen.
 const actionIcons = new Set(MANIFEST.filter(e => e.kind === 'icon').map(e => e.file.split('/').pop().replace(/\.\w+$/, '')));
 const actionIcon = n => actionIcons.has(n.replace(/-[\w-]{8}\.\w+$/, ''));

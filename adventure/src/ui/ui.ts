@@ -26,7 +26,7 @@ export const FLAP_MS = 130;
 export const FLAP_PER_CHAR = 42;
 
 export const SPEECH_COLORS: Record<string, string> = {
-  hero: '#ffc26b', oren: '#a8dcff', nell: '#c4f29a', bryn: '#ff9f7a',
+  hero: '#ffc26b', oren: '#a8dcff', nell: '#c4f29a', bryn: '#ff9f7a', tobi: '#f5d589',
   ...Object.fromEntries(chapter().extras.map(e => [e.id, e.color])),
 };
 

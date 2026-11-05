@@ -9,6 +9,8 @@ import orenJson from '../../art/src/characters/oren.json';
 import orenPng from '../../art/src/characters/oren.png';
 import nellJson from '../../art/src/characters/nell.json';
 import nellPng from '../../art/src/characters/nell.png';
+import tobiJson from '../../art/src/characters/tobi.json';
+import tobiPng from '../../art/src/characters/tobi.png';
 import extraStokerJson from '../../art/src/characters/extra-stoker.json';
 import extraStokerPng from '../../art/src/characters/extra-stoker.webp';
 import extraTallyJson from '../../art/src/characters/extra-tally.json';
@@ -64,6 +66,7 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   'mara-gauntlet': { png: maraGauntletPng, json: maraGauntletJson },
   oren: { png: orenPng, json: orenJson },
   nell: { png: nellPng, json: nellJson },
+  tobi: { png: tobiPng, json: tobiJson },
   notebook: { png: notebookPng, json: notebookJson },
   'pantry-door': { png: pantryDoorPng, json: pantryDoorJson },
   rack: { png: rackPng, json: rackJson },
@@ -90,10 +93,10 @@ for (const key of ['mara-medium', 'mara-medium-gauntlet']) {
 }
 
 /** Sheets loaded only when a room needs them (the rest load at boot): saves ~550 KB before the title. */
-export const LAZY_SHEETS = new Set(['mara-casual', 'mara-gauntlet', 'mara-medium', 'mara-medium-gauntlet', 'oren', 'nell', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
+export const LAZY_SHEETS = new Set(['mara-casual', 'mara-gauntlet', 'mara-medium', 'mara-medium-gauntlet', 'oren', 'nell', 'tobi', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
 
 /** Sheet used for each non-player character. */
-export const NPC_SHEETS: Partial<Record<NpcId, string>> = { oren: 'oren', nell: 'nell' };
+export const NPC_SHEETS: Partial<Record<NpcId, string>> = { oren: 'oren', nell: 'nell', tobi: 'tobi' };
 
 export const ROOM_IMAGES: Record<string, string> = {
   'room-tent': tentRoomPng,

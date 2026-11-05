@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { CHAPTERS } from '../src/chapters';
+import { CHAPTERS, loadChapter } from '../src/chapters';
 import { migrate, READABLE_VERSIONS, SAVE_VERSION } from '../src/engine/migrations';
 import { parseSave, serializeSave } from '../src/engine/saveFile';
 import { applyCommand, newGame } from '../src/engine/state';
@@ -9,8 +9,41 @@ import { maraProfile } from '../src/content/kit';
 
 const fixture = (v: number) => readFileSync(new URL(`./fixtures/saves/v${v}.json`, import.meta.url), 'utf8');
 
+test('version 7 chapter 1 saves gain Tobi without changing learned techniques or supplies', () => {
+  const s = newGame();
+  applyCommand(s, { type: 'learn', technique: 'tempered-flow' });
+  s.inventory = ['gauntlet', 'bread', 'scarf'];
+  s.bag.salvage = 17;
+  const legacy = JSON.parse(serializeSave(s));
+  legacy.version = 7;
+  delete legacy.state.npcs.tobi;
+  const r = parseSave(JSON.stringify(legacy));
+  assert.ok(r.ok);
+  assert.deepEqual(r.state.npcs, { ...s.npcs, tobi: { pose: 'stand', face: 'right' } });
+  assert.deepEqual(r.state.kit, s.kit);
+  assert.deepEqual(r.state.bag, s.bag);
+  assert.deepEqual(r.state.inventory, s.inventory);
+  for (const npcs of [null, [], { nell: legacy.state.npcs.nell }, { ...legacy.state.npcs, stranger: { pose: 'stand', face: 'left' } }]) {
+    const invalid = structuredClone(legacy);
+    invalid.state.npcs = npcs;
+    assert.equal(parseSave(JSON.stringify(invalid)).ok, false, 'migration keeps malformed casts invalid');
+  }
+});
+
+test('version 7 chapter 2 saves keep Bryn as their only NPC', async () => {
+  await loadChapter('ch2');
+  const s = newGame('ch2');
+  applyCommand(s, { type: 'learn', technique: 'tempered-flow' });
+  const legacy = JSON.parse(serializeSave(s));
+  legacy.version = 7;
+  const r = parseSave(JSON.stringify(legacy));
+  assert.ok(r.ok);
+  assert.deepEqual(r.state, s);
+  assert.deepEqual(Object.keys(r.state.npcs), ['bryn']);
+});
+
 test('saves from every older version load, upgraded to chapter 1', () => {
-  for (const v of [3, 4, 5, 6]) {
+  for (const v of [3, 4, 5, 6, 7]) {
     const r = parseSave(fixture(v));
     assert.ok(r.ok, `v${v}`);
     const s = r.state;
@@ -21,12 +54,13 @@ test('saves from every older version load, upgraded to chapter 1', () => {
     assert.deepEqual(s.inventory, ['gauntlet', 'notebook']);
     assert.ok(s.flags.patchFailed && s.flags.secretTally && s.flags.metHollis);
     assert.equal(s.npcs.nell!.pose, 'crouch');
+    assert.deepEqual(s.npcs.tobi, { pose: 'stand', face: 'right' });
     assert.deepEqual(s.looks, v === 3 ? {} : { rack: 2, 'item:gauntlet': 1 });
     if (v >= 5) assert.deepEqual([s.kit.hp, s.bag.salvage, s.bag.tonics], [41, 12, 1]);
     // Format 7: no techniques yet, the starting limits.
     assert.deepEqual([s.kit.techniques, s.kit.maxHp, s.kit.maxMp], [[], 60, 10]);
   }
-  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, 6, SAVE_VERSION]);
+  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, 6, 7, SAVE_VERSION]);
   assert.equal(migrate(2, {}), null);
 });
 

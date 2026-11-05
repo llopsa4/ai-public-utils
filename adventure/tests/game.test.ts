@@ -43,6 +43,23 @@ function talk(state: GameState, id: string, pick: (next: (string | null)[]) => s
   return visited;
 }
 
+test('Tobi is a visible, talkable child and speaks during the scarf farewell', () => {
+  const s = newGame();
+  assert.ok(ROOMS.firingHouse.actors.some(a => (a.id as string) === 'tobi'), 'Tobi stands by the hearth');
+  assert.deepEqual((ACTOR_VERBS as Record<string, Verb[]>).tobi, ['look', 'talk']);
+  assert.ok(run(s, 'talk', 'tobi').commands.some(c => c.type === 'dialogue' && c.id === 'tobi'));
+  assert.ok(DIALOGUES.tobi, 'his own conversation is available');
+  talk(s, 'tobi');
+  s.flags.kilnCold = true;
+  const farewell = resolveNode(DIALOGUES.nell, 'cold', s);
+  assert.ok(farewell.lines.some(l => (l.actor as string) === 'tobi'), 'the scarf comes with his own words');
+  talk(s, 'nell');
+  talk(s, 'nell');
+  assert.equal(s.inventory.filter(i => i === 'scarf').length, 1, 'the farewell gives one scarf');
+  talk(s, 'tobi');
+  assert.equal(s.inventory.filter(i => i === 'scarf').length, 1, 'talking to Tobi cannot duplicate the scarf');
+});
+
 /** Plays the commands a room starts on entering (as the scene does), e.g. Wren calling in the kiln hall. */
 function enter(state: GameState): string[] {
   const room = ROOMS[state.room];

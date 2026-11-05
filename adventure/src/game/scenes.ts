@@ -211,7 +211,7 @@ export class RoomScene extends Phaser.Scene {
     for (const a of this.room.actors) {
       if (!conditionsHold(state, a.visibleIf)) continue;
       const s = state.npcs[a.id] ?? { pose: 'stand' as const, face: 'down' as const };
-      this.actors.set(a.id, new Actor(this, a.id, NPC_SHEETS[a.id] ?? a.id, a.x, a.y, s.face, s.pose, this.room.scale));
+      this.actors.set(a.id, new Actor(this, a.id, NPC_SHEETS[a.id] ?? a.id, a.x, a.y, s.face, s.pose, this.room.scale, a.body));
     }
     this.crowd = chapter().crowds[this.room.id] ? new Crowd({
       scene: this, room: this.room, area: this.area, props: this.props,

@@ -33,7 +33,12 @@ test('the kiln hall crowd works, moves about, talks to Mara and reacts when the 
   await page.waitForTimeout(9000);
   const later = await snapshot(page);
   const moved = later.filter(m => { const f = first.find(o => o.id === m.id)!; return Math.hypot(f.x - m.x, f.y - m.y) > 8 || m.away; });
-  expect(moved.length, 'people move about').toBeGreaterThanOrEqual(3);
+  expect(moved.length, 'some workers still move about').toBeGreaterThanOrEqual(1);
+  const dace = later.find(m => m.id === 'extra-hauler')!;
+  expect(dace.task, 'Dace kneels to sort pottery').toBe('work');
+  expect(dace.walking).toBe(false);
+  expect(dace.x).toBeGreaterThanOrEqual(555);
+  expect(dace.y).toBeGreaterThanOrEqual(310);
   // Someone reaches a station and works (the flat hall's stations are far apart: allow the walk).
   await expect.poll(async () => (await snapshot(page)).some(m => m.task !== null), { timeout: 20_000, message: 'someone is at work' }).toBeTruthy();
   // Chatter: a bubble over someone's head, not a line in the panel, and gone after a moment.
@@ -72,6 +77,25 @@ test('the kiln hall crowd works, moves about, talks to Mara and reacts when the 
   // Headless Chromium without a GPU can run the game at a few frames per second, and game timers slow with it.
   await expect.poll(async () => (await snapshot(page)).filter(m => m.gone).length, { timeout: 120_000 }).toBe(2);
   await page.screenshot({ path: info.outputPath('hall-cold.png') });
+  expect(errors, errors.join('\n')).toEqual([]);
+});
+
+test('Hollis shovels at the fire, empties ash at the cart and returns; Dace stays by the pottery', async ({ page }, info) => {
+  const errors: string[] = [];
+  await enterHall(page, errors, 'low');
+  const hollis = async () => (await snapshot(page)).find(m => m.id === 'extra-stoker')!;
+  await expect.poll(async () => (await hollis()).task, { timeout: 45_000 }).toBe('work');
+  await page.screenshot({ path: info.outputPath('workers-at-work.png') });
+  await expect.poll(async () => {
+    const m = await hollis();
+    return m.task === 'reach' && m.x >= 500 && m.x <= 555;
+  }, { timeout: 60_000, intervals: [200] }).toBe(true);
+  await expect.poll(async () => (await hollis()).task, { timeout: 30_000 }).toBe('work');
+  const dace = (await snapshot(page)).find(m => m.id === 'extra-hauler')!;
+  expect(dace.task).toBe('work');
+  expect(dace.away || dace.gone || dace.walking).toBe(false);
+  expect(dace.x).toBeGreaterThanOrEqual(555);
+  expect(dace.y).toBeGreaterThanOrEqual(310);
   expect(errors, errors.join('\n')).toEqual([]);
 });
 

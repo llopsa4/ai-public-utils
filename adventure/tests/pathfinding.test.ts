@@ -59,3 +59,15 @@ test('every room entry and hotspot approach point is reachable', () => {
     }
   }
 });
+
+test('Mara routes around Tobi at the hearth while his conversation approach remains reachable', () => {
+  const room = ROOMS.firingHouse;
+  const tobi = room.actors.find(a => a.id === 'tobi')!;
+  const area = new WalkArea(room.walkable.outer, room.walkable.holes);
+  assert.equal(area.contains(tobi), false, 'his feet occupy a small obstacle like the other story characters');
+  const approach = { x: 195, y: 300 };
+  const start = room.entries.fromMaraRoom;
+  const path = area.findPath(start, approach);
+  assertPathInside(area, start, path);
+  assert.deepEqual(path.at(-1), approach);
+});

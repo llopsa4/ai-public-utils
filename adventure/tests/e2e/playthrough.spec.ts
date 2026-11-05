@@ -2,6 +2,55 @@ import { gzipSync } from 'node:zlib';
 import { expect, test } from '@playwright/test';
 import { act, idle, open, state, startNewGame } from './helpers';
 
+test('Tobi is a child by the hearth, talks about his drawings and gives his scarf farewell once', async ({ page }, info) => {
+  const errors: string[] = [];
+  await open(page, errors);
+  await startNewGame(page);
+  await page.evaluate(() => {
+    const { session } = (window as any).adventure;
+    const s = structuredClone(session.state);
+    s.room = 'firingHouse';
+    s.hero = { x: 200, y: 325, face: 'left', pose: 'stand' };
+    s.flags = { hasGauntlet: true };
+    session.replaceState(s);
+  });
+  await idle(page);
+  const target = await page.evaluate(() => {
+    const actor = (window as any).adventure.session.scene.actors.get('tobi');
+    const box = actor.hitBox();
+    return { x: box.centerX, y: box.centerY, h: box.height };
+  });
+  expect(target.h, 'a child-sized click target').toBeLessThan(80);
+  const canvas = page.locator('#game canvas');
+  const box = (await canvas.boundingBox())!;
+  await canvas.click({ position: { x: target.x / 640 * box.width, y: target.y / 360 * box.height } });
+  await page.locator('.verb[data-verb="talk"]').click();
+  await expect(page.locator('#dialogue-name')).toHaveText('Tobi');
+  await expect(page.locator('#dialogue-line')).toContainText('enormous hand');
+  await expect(page.locator('#dialogue-portrait')).toBeVisible();
+  await page.screenshot({ path: info.outputPath('tobi-at-hearth.png') });
+  for (let i = 0; i < 10; i++) {
+    await page.evaluate(() => (window as any).adventure.session.ui.skip());
+    await page.waitForTimeout(60);
+  }
+  await idle(page);
+  await page.evaluate(() => (window as any).adventure.session.scene.runScript([{ type: 'setFlag', flag: 'kilnCold', value: true }]));
+  await act(page, 'talk', 'tobi');
+  expect((await state(page)).inventory).not.toContain('scarf');
+  await act(page, 'talk', 'nell');
+  expect(await page.evaluate(() => (window as any).adventure.session.ui.history.some((line: any) => line.actor === 'tobi' && line.text.includes('Take my scarf')))).toBe(true);
+  await act(page, 'talk', 'nell');
+  await act(page, 'talk', 'tobi');
+  expect((await state(page)).inventory.filter(i => i === 'scarf')).toHaveLength(1);
+  await page.evaluate(() => (window as any).adventure.session.saveNow());
+  await page.reload();
+  await page.getByRole('button', { name: 'Continue' }).click();
+  await idle(page);
+  expect(await page.evaluate(() => (window as any).adventure.session.scene.actors.has('tobi'))).toBe(true);
+  expect((await state(page)).inventory.filter(i => i === 'scarf')).toHaveLength(1);
+  expect(errors, errors.join('\n')).toEqual([]);
+});
+
 test('the whole scene plays in the browser, from the title screen into chapter 2 (debug)', async ({ page }) => {
   const errors: string[] = [];
   const casualRequests: string[] = [];

@@ -9,6 +9,7 @@ export const PORTRAIT_MOODS: Record<string, Mood[]> = {
   mara: ['neutral', 'worried', 'angry'],
   oren: ['neutral', 'worried', 'angry'],
   nell: ['neutral'],
+  tobi: ['neutral', 'worried'],
 };
 
 /** Room background texture keys → file names in art/src/rooms (the game loads the .webp copy). */

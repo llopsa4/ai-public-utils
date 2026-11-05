@@ -62,6 +62,14 @@ const MARA_RIG = {
   face: { mouth: { x: 552, y: 152, rx: 12, ry: 4 }, brows: [{ x0: 512, x1: 543, y0: 96, y1: 108, inner: 'right' }, { x0: 555, x1: 574, y0: 98, y1: 110, inner: 'left' }] },
 };
 export const RIGS = {
+  // Tobi's original drawing: a younger child by the firing-house hearth.
+  tobi: {
+    source: 'sources/characters/char-tobi/body.png', height: 140, walks: false,
+    hipY: 1080, splitX: 510, hips: { near: [454, 1080], far: [559, 1080] }, knees: { near: [450, 1260], far: [560, 1260] },
+    eyes: [{ x: 530, y: 712, rx: 12, ry: 7, skinAt: [529, 730] }, { x: 573, y: 707, rx: 9, ry: 6, skinAt: [576, 722] }],
+    portrait: [365, 585, 300, 300], moods: ['neutral', 'worried'],
+    face: { mouth: { x: 558, y: 751, rx: 13, ry: 4 }, brows: [{ x0: 510, x1: 545, y0: 684, y1: 697, inner: 'right' }, { x0: 562, x1: 585, y0: 680, y1: 693, inner: 'left' }] },
+  },
   // Before the ember cell is fitted the gauntlet is cold: its glow (the red glass on the back of the fist) is painted dark.
   mara: { ...MARA_RIG, unpowered: { minX: 210, minY: 790, maxX: 320, maxY: 900 } },
   'mara-gauntlet': MARA_RIG,
@@ -161,6 +169,9 @@ export const MANIFEST = [
     subject: 'Oren, the old regulator keeper: grey hair and beard, a leather apron, a pressure gauge in his hands.' },
   { id: 'char-nell', kind: 'character', file: 'characters/nell.png', sheet: 'characters/nell.json', anchor: 'bottom-centre', height: 220, rig: 'nell', chapter: 'ch1', status: 'placeholder', generator: 'rig.mjs',
     subject: 'Nell, who runs the firing house kitchen: short curly hair, an orange scarf, work clothes, leaning on her old counter shutter.' },
+  { id: 'char-tobi', kind: 'character', file: 'characters/tobi.png', sheet: 'characters/tobi.json', anchor: 'bottom-centre', height: 140, rig: 'tobi', chapter: 'ch1', status: 'placeholder', generator: 'rig.mjs',
+    subject: 'Tobi, a young boy with tousled dark curls, patched teal tunic, brown trousers and a chalk stub. He draws by the firing-house hearth and offers Mara his orange scarf.' },
+  { id: 'portrait-tobi', kind: 'portrait', file: 'portraits/tobi.png', anchor: 'none', moods: ['neutral', 'worried'], chapter: 'ch1', status: 'placeholder', generator: 'rig.mjs', subject: "Tobi's head and shoulders." },
   extra('extra-stoker', 'Hollis, the stoker: an older, broad worker with a cap and a shovel.', 218, 'oren'),
   extra('extra-tally', 'Ansel, the old tally-keeper: hooded, with a slate and chalk.', 206, 'oren'),
   extra('extra-hauler', 'Dace, the clay hauler: strong, kerchief, carries clay sacks.', 224, 'mara'),

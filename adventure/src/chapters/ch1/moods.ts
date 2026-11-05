@@ -31,4 +31,6 @@ export const LINE_MOODS: Record<string, Mood> = {
   'dlg.oren.stillWarm2': 'worried',
   'line.orenStand': 'angry',
   'dlg.oren.minute': 'worried',
+  // Tobi's worry shows before the farewell, then his usual face returns for the promised story.
+  'dlg.tobi.cold': 'worried',
 };

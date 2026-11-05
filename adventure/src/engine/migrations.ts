@@ -6,7 +6,7 @@ import { newBag, newKit } from './kit';
  * Add a step here whenever the format changes, and a fixture save of the old version in
  * tests/fixtures/saves/.
  */
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 
 type Raw = Record<string, unknown>;
 
@@ -25,6 +25,14 @@ const STEPS: Record<number, (s: Raw) => void> = {
   6: s => {
     const k = s.kit as Raw | undefined;
     if (k && typeof k === 'object') { k.techniques ??= []; k.maxHp ??= 60; k.maxMp ??= 10; }
+  },
+  // 7 -> 8: Tobi joins chapter 1's named cast; chapter 2 still has only Bryn.
+  7: s => {
+    const npcs = s.npcs;
+    if (s.chapter === 'ch1' && npcs && typeof npcs === 'object' && !Array.isArray(npcs)
+      && Object.keys(npcs).length === 2 && Object.hasOwn(npcs, 'oren') && Object.hasOwn(npcs, 'nell')) {
+      (npcs as Raw).tobi = { pose: 'stand', face: 'right' };
+    }
   },
 };
 

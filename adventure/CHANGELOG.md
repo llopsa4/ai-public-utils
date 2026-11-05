@@ -2,10 +2,12 @@
 
 ## Unreleased
 
+- Tobi now appears by the firing-house hearth with his own art, portrait and conversation. He speaks during the scarf farewell; older saves gain him through a version 8 migration.
+- Hollis kneels at the fire, making short trips to empty ash into the cart. Dace stays by the broken jars, sorting pottery for reuse. Both keep their reactions when the kiln goes cold.
 - The debug panel now toggles with comma (`,`); `?debug=panel` still opens it directly on the published site.
 - Mara's morning starts in everyday clothes: help Wren with the hoist and bring Nell a loaf for her soup, then dress at the tent's clothes crate and power the gauntlet. Dressing fades through black with cloth and buckle sounds. Existing saves with the gauntlet skip these errands.
 - Hover highlight: a soft gold outline on what the pointer is over (a ring at the feet for people).
-- Background people glance at Mara as she walks by, step round Nell and Oren, and the kids sometimes tag along a few steps ("Where are you going? Can I come?"). Dace and Ansel announce their soup breaks on the way out.
+- Background people glance at Mara as she walks by, step round Nell and Oren, and the kids sometimes tag along a few steps ("Where are you going? Can I come?"). Ansel announces his soup breaks on the way out.
 - Nell and Oren look about when Mara isn't near: at the kids, the room, the door.
 - The kiln hall and firing house sound inhabited: a murmur of voices and the odd distant clank, quieter once the kiln is cold.
 - An optional count in the notebook of the people of Cinderfold Mara has talked to (six), with a note each time she meets someone new.

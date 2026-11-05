@@ -5,7 +5,7 @@ import { READABLE_VERSIONS, SAVE_VERSION, migrate } from './migrations';
 import { type ActorState, type Facing, type GameState, type NpcId, type Pose } from './types';
 
 const SAVE_FORMAT = 'cinderfold-save';
-// Version 6: chapters (flags kept per chapter). Older versions are upgraded (src/engine/migrations.ts).
+// Version 8: Tobi joins chapter 1's cast. Older saves are upgraded (src/engine/migrations.ts).
 const MAX_LOOK_KEYS = 64;
 export const MAX_SAVE_BYTES = 64 * 1024;
 

@@ -17,6 +17,11 @@ const HALL: CrowdDef = {
     st('mouthA', 338, 304, 'up', 'work', [3500, 6500]),
     st('mouthB', 468, 304, 'up', 'work', [3500, 6500]),
     st('mouthC', 400, 330, 'up', 'work', [3000, 5000]),
+    // Hollis spends most of his time clearing the fire, then tips the ash into the cart.
+    st('stokerFire', 360, 300, 'up', 'work', [15000, 25000]),
+    st('ashCart', 552, 310, 'up', 'reach', [3000, 5000]),
+    // Dace sorts reusable pieces from the broken pots in the front-right corner.
+    st('brokenPottery', 580, 330, 'right', 'work', [15000, 25000]),
     st('clayPile', 190, 320, 'left', 'work', [2500, 4500]),
     st('pulley', 100, 310, 'up', 'reach', [3000, 5500]),
     st('tallyWall', 60, 330, 'left', 'tap', [3000, 6000]),
@@ -39,7 +44,7 @@ const HALL: CrowdDef = {
     {
       id: 'extra-stoker', sheet: 'extra-stoker', met: 'metHollis', body: 0.95, speed: 0.9, color: '#e8a878', carry: 'shovel', carryDrawn: true,
       routines: {
-        warm: { stations: ['mouthA', 'mouthB', 'mouthC', 'mouthB', 'talkSpot'], detour: 0.15 },
+        warm: { stations: ['stokerFire', 'ashCart'] },
         cold: { stations: ['staring', 'huddle1'], detour: 0.1 },
       },
       talk: { warm: 3, cold: 2 }, chat: { warm: 3, cold: 1 },
@@ -55,10 +60,9 @@ const HALL: CrowdDef = {
       talk: { warm: 3, cold: 2 }, chat: { warm: 3, cold: 1 },
     },
     {
-      id: 'extra-hauler', sheet: 'extra-hauler', met: 'metDace', leaving: 2, body: 1, speed: 0.85, color: '#d9b26a', carry: 'sack', carryDrawn: true, leavesWhenCold: true,
-      carryBetween: { pick: 'clayPile', drop: ['mouthA', 'mouthB'] },
+      id: 'extra-hauler', sheet: 'extra-hauler', met: 'metDace', body: 1, speed: 0.85, color: '#d9b26a', leavesWhenCold: true,
       routines: {
-        warm: { stations: ['clayPile', 'mouthA', 'clayPile', 'mouthB'], detour: 0.05, leave: { exit: 'curtain', chance: 0.12, away: [9000, 16000] } },
+        warm: { stations: ['brokenPottery'] },
         cold: { stations: ['huddle1'], leave: { exit: 'curtain', chance: 1, away: [0, 0] } },
       },
       talk: { warm: 3, cold: 2 }, chat: { warm: 2, cold: 1 },

@@ -12,6 +12,44 @@ import { WalkArea } from '../src/engine/pathfinding';
 
 const HALL = CROWDS.maraRoom;
 
+test('Hollis works at the fire and empties ash at the cart without wandering', () => {
+  const hollis = HALL.extras.find(e => e.id === 'extra-stoker')!;
+  const schedule = new Schedule(hollis.routines.warm, HALL.stations, HALL.exits, HALL.wander, seeded(7));
+  let previous = schedule.current.id;
+  const tasks = new Set<string>();
+  for (let i = 0; i < 100; i++) {
+    const step = schedule.next();
+    assert.equal(step.kind, 'go', 'only purposeful trips between work stations');
+    if (step.kind !== 'go') continue;
+    assert.notEqual(step.station.id, previous, 'alternate between fire and cart');
+    previous = step.station.id;
+    tasks.add(step.station.task);
+    if (step.station.task === 'work') {
+      assert.ok(step.station.x >= 320 && step.station.x <= 480, 'kneel beside a kiln mouth');
+      assert.ok(step.wait >= 15000 && step.wait <= 25000, 'spend most of the time shovelling');
+    } else {
+      assert.equal(step.station.task, 'reach', 'empty ash into the cart');
+      assert.ok(step.station.x >= 500 && step.station.x <= 555, 'stop beside the ash cart');
+      assert.ok(step.wait >= 3000 && step.wait <= 5000, 'brief stop at the cart');
+    }
+  }
+  assert.deepEqual([...tasks].sort(), ['reach', 'work']);
+});
+
+test('Dace kneels at the broken pottery without hauling, wandering or taking breaks', () => {
+  const dace = HALL.extras.find(e => e.id === 'extra-hauler')!;
+  const schedule = new Schedule(dace.routines.warm, HALL.stations, HALL.exits, HALL.wander, seeded(3));
+  const workplace = schedule.current;
+  assert.equal(workplace.task, 'work', 'use the kneeling work animation');
+  assert.ok(workplace.x >= 555 && workplace.y >= 310, 'sort the broken pottery in the front-right corner');
+  for (let i = 0; i < 100; i++) {
+    const step = schedule.next();
+    assert.equal(step.kind, 'go', 'stay at work until the shutdown');
+    if (step.kind === 'go') assert.equal(step.station.id, workplace.id);
+  }
+  assert.equal(dace.carryBetween, undefined, 'no remaining clay delivery bookkeeping');
+});
+
 test('crowds are in the kiln hall (four workers), the firing house (two kids) and the ashways (the peddler)', () => {
   assert.deepEqual(Object.keys(CROWDS).sort(), ['ashways', 'firingHouse', 'maraRoom']);
   assert.equal(CROWDS.ashways.extras.length, 1);

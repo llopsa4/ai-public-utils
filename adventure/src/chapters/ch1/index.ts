@@ -15,7 +15,7 @@ export const CH1: Chapter = {
   id: 'ch1',
   title: 'chapter.ch1',
   start: { room: START_ROOM, entry: START_ENTRY },
-  npcs: { oren: { pose: 'stand', face: 'left' }, nell: { pose: 'stand', face: 'right' } },
+  npcs: { oren: { pose: 'stand', face: 'left' }, nell: { pose: 'stand', face: 'right' }, tobi: { pose: 'stand', face: 'right' } },
   rooms: ROOMS,
   flags: FLAGS,
   items: ITEMS,

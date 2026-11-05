@@ -11,7 +11,7 @@ export type Facing = 'down' | 'up' | 'left' | 'right';
 export type Pose = 'stand' | 'crouch' | 'dead';
 
 /** Every named character in the game; each chapter brings its own cast (`Chapter.npcs`). */
-export const NPC_IDS = ['oren', 'nell', 'bryn'] as const;
+export const NPC_IDS = ['oren', 'nell', 'bryn', 'tobi'] as const;
 export type NpcId = (typeof NPC_IDS)[number];
 export type ActorId = 'hero' | NpcId;
 /** Background people (the kiln-hall crowd): not saved, not part of the story. */
@@ -136,7 +136,7 @@ export interface RoomDef {
   entries: Record<string, { x: number; y: number; face: Facing }>;
   objects: ObjectDef[];
   hotspots: HotspotDef[];
-  actors: { id: NpcId; x: number; y: number; visibleIf?: Condition[] }[];
+  actors: { id: NpcId; x: number; y: number; body?: number; visibleIf?: Condition[] }[];
 }
 
 export interface ActorState {

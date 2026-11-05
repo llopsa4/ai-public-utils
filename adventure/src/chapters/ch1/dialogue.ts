@@ -90,7 +90,7 @@ export const DIALOGUES: Record<string, DialogueTree> = {
     },
   },
 
-  // Nell, the neighbour with the sticking latch and the soup pot. Tobi (off-screen) sends his scarf through her.
+  // Nell, the neighbour with the sticking latch and the soup pot. Tobi gives Mara his scarf beside her.
   nell: {
     start: 'start',
     nodes: {
@@ -128,12 +128,48 @@ export const DIALOGUES: Record<string, DialogueTree> = {
           { actor: 'nell', text: 'dlg.nell.cold2' },
           { actor: 'nell', text: 'dlg.nell.cold3' },
           { actor: 'nell', text: 'dlg.nell.cold4' },
+          { actor: 'tobi', text: 'dlg.tobi.scarf' },
+          { actor: 'hero', text: 'dlg.hero.tobiScarf' },
         ],
         set: { gotBread: true, gotScarf: true },
         items: ['bread', 'scarf'],
         next: null,
       },
       coldAgain: { lines: [{ actor: 'nell', text: 'dlg.nell.coldAgain' }], next: null },
+    },
+  },
+  tobi: {
+    start: 'start',
+    nodes: {
+      start: {
+        branch: [
+          { if: [{ flag: 'gotScarf' }], next: 'afterScarf' },
+          { if: [{ flag: 'kilnCold' }], next: 'cold' },
+          { next: 'warm' },
+        ],
+      },
+      warm: {
+        lines: [
+          { actor: 'tobi', text: 'dlg.tobi.chalk' },
+          { actor: 'hero', text: 'dlg.hero.tobiChalk' },
+          { actor: 'tobi', text: 'dlg.tobi.chalkReply' },
+        ],
+        next: null,
+      },
+      cold: {
+        lines: [
+          { actor: 'tobi', text: 'dlg.tobi.cold' },
+          { actor: 'hero', text: 'dlg.hero.tobiCold' },
+        ],
+        next: null,
+      },
+      afterScarf: {
+        lines: [
+          { actor: 'tobi', text: 'dlg.tobi.story' },
+          { actor: 'hero', text: 'dlg.hero.tobiStory' },
+        ],
+        next: null,
+      },
     },
   },
 };

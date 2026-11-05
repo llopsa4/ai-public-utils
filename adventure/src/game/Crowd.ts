@@ -400,8 +400,10 @@ export class Crowd {
         every(1300 + Math.random() * 600, () => sound.clink(level()));
         break;
       case 'reach':
-        props.swing('pulleys');
-        every(3200, () => props.swing('pulleys'));
+        if (station.id === 'pulley') {
+          props.swing('pulleys');
+          every(3200, () => props.swing('pulleys'));
+        }
         break;
       default:
         break;
