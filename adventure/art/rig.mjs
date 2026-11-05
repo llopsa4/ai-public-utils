@@ -14,6 +14,7 @@ import { PNG } from 'pngjs';
 import { encodeIndexed } from './png.mjs';
 import { RIGS } from './manifest.mjs';
 import { isFinal } from './guard.mjs';
+import { buildLayeredCharacter } from './layered-rig.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const kiln = join(here, '..', '..', 'FFCardGame', 'assets');
@@ -606,11 +607,12 @@ function writeSheet(id, frames, tags, duration, colours, dir = '') {
   writeFileSync(join(out, `${dir}characters`, `${id}.json`), JSON.stringify(json, null, 1) + '\n');
 }
 
-function buildCharacter(id) {
+async function buildCharacter(id) {
   const cfg = { ...CHARACTERS[id] };
   // Later chapters' characters live in their chapter's folder (art/src/<chapter>/characters, portraits).
   const dir = cfg.dir ?? '';
   if (isFinal(`${dir}characters/${id}.png`)) { console.log(`  ${id}: final art, kept.`); return; }
+  if (cfg.layeredPack) return buildLayeredCharacter(id, cfg);
   // A placeholder can be a recoloured, re-dressed copy of another body (like the background people).
   const raw = cfg.variant ? variantImage(loadSource(cfg), cfg, cfg.variant) : loadSource(cfg);
   const open = cfg.unpowered ? dimGlow(raw, cfg.unpowered) : raw;
@@ -676,6 +678,6 @@ function buildCharacter(id) {
 const only = process.argv[2];
 // `node art/rig.mjs <id>` rebuilds one sheet.
 const one = only && only !== 'extras' ? only : null;
-if (only !== 'extras') for (const id of Object.keys(CHARACTERS)) if (!one || one === id) buildCharacter(id);
+if (only !== 'extras') for (const id of Object.keys(CHARACTERS)) if (!one || one === id) await buildCharacter(id);
 for (const id of Object.keys(EXTRAS)) if (!one || one === id) buildExtra(id);
 console.log(`Rigged character sheets written to art/src (${one ?? (only === 'extras' ? '' : `${Object.keys(CHARACTERS).join(', ')}, `) + Object.keys(EXTRAS).join(', ')}).`);

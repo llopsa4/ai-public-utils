@@ -59,7 +59,7 @@ for (const n of built) {
   if (chapter) perChapter[chapter] = (perChapter[chapter] ?? 0) + size(n);
 }
 const total = built.filter(n => !laterChapter(n)).reduce((sum, n) => sum + size(n), 0);
-const later = /^(firing-house|gallery|ashways|hall-left|hall-right|mara-gauntlet|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
+const later = /^(firing-house|gallery|ashways|hall-left|hall-right|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
 // .woff fonts are fallbacks for browsers without WOFF2; current browsers never fetch them.
 const firstLoad = built.filter(n => !later.test(n) && !laterChapter(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;

@@ -22,6 +22,7 @@ export const DIALOGUES: Record<string, DialogueTree> = {
           { actor: 'oren', text: 'dlg.oren.before2' },
         ],
         set: { metOren: true },
+        gear: { give: ['layered-armor'], equip: 'layered-armor' },
         next: null,
       },
       argue: {

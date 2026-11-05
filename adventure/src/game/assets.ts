@@ -43,11 +43,12 @@ import firingHousePng from '../../art/src/rooms/firing-house.webp';
 import galleryPng from '../../art/src/rooms/gallery.webp';
 import ashwaysPng from '../../art/src/rooms/ashways.webp';
 import type { NpcId, Verb } from '../engine/types';
+import type { WalkTiming } from './walk';
 
 /** Aseprite "JSON array" export (also produced by LibreSprite and the art scripts). */
 export interface AsepriteSheet {
   frames: { filename: string; frame: { x: number; y: number; w: number; h: number }; duration: number }[];
-  meta: { frameTags: { name: string; from: number; to: number; direction?: string }[] };
+  meta: { frameTags: { name: string; from: number; to: number; direction?: string }[]; walk?: WalkTiming };
 }
 
 // Mara in everyday clothes (the start of a new adventure, before he gears up): used once Codex has
@@ -80,8 +81,16 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   'extra-merchant': { png: extraMerchantPng, json: extraMerchantJson },
 };
 
+// Articulated medium-armour variants share the same runtime tags as the light outfit.
+const mediumFiles = import.meta.glob('../../art/src/characters/mara-medium*.{png,json}', { eager: true, import: 'default' }) as Record<string, unknown>;
+for (const key of ['mara-medium', 'mara-medium-gauntlet']) {
+  const png = mediumFiles[`../../art/src/characters/${key}.png`] as string | undefined;
+  const json = mediumFiles[`../../art/src/characters/${key}.json`] as AsepriteSheet | undefined;
+  if (png && json) SHEETS[key] = { png, json };
+}
+
 /** Sheets loaded only when a room needs them (the rest load at boot): saves ~550 KB before the title. */
-export const LAZY_SHEETS = new Set(['mara-gauntlet', 'oren', 'nell', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
+export const LAZY_SHEETS = new Set(['mara-gauntlet', 'mara-medium', 'mara-medium-gauntlet', 'oren', 'nell', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
 
 /** Sheet used for each non-player character. */
 export const NPC_SHEETS: Partial<Record<NpcId, string>> = { oren: 'oren', nell: 'nell' };

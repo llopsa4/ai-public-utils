@@ -131,6 +131,7 @@ export class RoomScene extends Phaser.Scene {
   hovered: Target | null = null;
   busy = false;
   leaving = false;
+  private heroLoading: string | null = null;
 
   constructor(readonly session: Session) { super('room'); }
 
@@ -178,6 +179,7 @@ export class RoomScene extends Phaser.Scene {
     this.hovered = null;
     this.busy = false;
     this.leaving = false;
+    this.heroLoading = null;
 
     this.cameras.main.setZoom(ART_SCALE).centerOn(LOGICAL_W / 2, LOGICAL_H / 2);
     this.background = this.add.image(0, 0, this.room.background, '__BASE').setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-10000);
@@ -295,6 +297,11 @@ export class RoomScene extends Phaser.Scene {
   /** Mara's sheet for the story so far, as soon as it has loaded. */
   heroSheet(): string {
     const sheet = heroSheetFor(chapter().story, this.storyContext());
+    if (!this.textures.exists(sheet) && this.heroLoading !== sheet) {
+      this.heroLoading = sheet;
+      // Subscribe even if a previous room already queued this texture.
+      this.loadLazySheet(sheet, () => { this.heroLoading = null; this.refreshObjects(); });
+    }
     return this.textures.exists(sheet) ? sheet : 'mara';
   }
 

@@ -75,7 +75,11 @@ export function hushed(story: StoryRules, ctx: StoryContext): boolean {
 
 /** Mara's sheet for the story so far (the scene falls back to `mara` until it has loaded). */
 export function heroSheetFor(story: StoryRules, ctx: StoryContext): string {
-  return first(story.heroSheet, ctx) ?? 'mara';
+  const sheet = first(story.heroSheet, ctx) ?? 'mara';
+  if ((sheet === 'mara' || sheet === 'mara-gauntlet') && ctx.state.kit.equipment.armor.id === 'layered-armor') {
+    return sheet === 'mara-gauntlet' ? 'mara-medium-gauntlet' : 'mara-medium';
+  }
+  return sheet;
 }
 
 export function guided(story: StoryRules, ctx: StoryContext): boolean {

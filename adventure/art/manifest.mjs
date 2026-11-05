@@ -114,6 +114,15 @@ export const RIGS = {
   },
 };
 
+// Explicit source packs are opt-in: every other character retains the legacy rig.
+for (const [id, outfit, powered] of [
+  ['mara-casual', 'casual', false], ['mara', 'light', false], ['mara-gauntlet', 'light', true],
+  ['mara-medium', 'medium', false], ['mara-medium-gauntlet', 'medium', true],
+]) {
+  const layeredPack = `sources/characters/mara-${outfit}-layered`;
+  RIGS[id] = { source: `${layeredPack}/master.png`, layeredPack, powered, height: 232, walks: true };
+}
+
 /** @type {ArtEntry[]} */
 export const MANIFEST = [
   // ------------------------------------------------------------------------------ rooms ---
@@ -160,6 +169,8 @@ export const MANIFEST = [
   extra('extra-kid', 'Bea, a child carrying a board as a toy shield.', 146, 'nell'),
   extra('extra-merchant', 'Corvin, a travelling peddler: hood, a pack of clinking bottles.', 214, 'oren'),
   { id: 'portrait-mara', kind: 'portrait', file: 'portraits/mara.png', anchor: 'none', moods: ['neutral', 'worried', 'angry'], chapter: 'game', status: 'placeholder', generator: 'rig.mjs', subject: "Mara's head and shoulders." },
+  { id: 'char-mara-medium', kind: 'character', file: 'characters/mara-medium.png', sheet: 'characters/mara-medium.json', anchor: 'bottom-centre', height: 232, rig: 'mara-medium', chapter: 'game', status: 'placeholder', generator: 'rig.mjs', subject: 'Athletic Mara in medium ceramic armour, neck-only scarf, unpowered gauntlet.' },
+  { id: 'char-mara-medium-gauntlet', kind: 'character', file: 'characters/mara-medium-gauntlet.png', sheet: 'characters/mara-medium-gauntlet.json', anchor: 'bottom-centre', height: 232, rig: 'mara-medium-gauntlet', chapter: 'game', status: 'placeholder', generator: 'rig.mjs', subject: 'Athletic Mara in medium ceramic armour, neck-only scarf, powered gauntlet.' },
   { id: 'portrait-oren', kind: 'portrait', file: 'portraits/oren.png', anchor: 'none', moods: ['neutral', 'worried', 'angry'], chapter: 'ch1', status: 'placeholder', generator: 'rig.mjs', subject: "Oren's head and shoulders." },
   { id: 'portrait-nell', kind: 'portrait', file: 'portraits/nell.png', anchor: 'none', moods: ['neutral'], chapter: 'ch1', status: 'placeholder', generator: 'rig.mjs', subject: "Nell's head and shoulders." },
 

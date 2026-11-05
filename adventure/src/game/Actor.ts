@@ -1,15 +1,12 @@
 import Phaser from 'phaser';
 import type { DepthScale, Facing, Point, Pose, Speaker } from '../engine/types';
+import { SHEETS } from './assets';
+import { walkFrameAt, walkTiming } from './walk';
 
 const WALK_SPEED = 110; // logical pixels per second at scale 1
 const BLINK_MIN = 1500;
 const BLINK_MAX = 2500;
 const BLINK_LENGTH = 150;
-/** World units travelled per walk frame at depth scale 1 (keeps the feet from sliding). */
-const STRIDE = 7;
-/** Frames of the walk cycle where a foot lands (footstep sounds). */
-const PLANT_FRAMES = [0, 3];
-
 /** Art is drawn at 2x the world: sprites are shown at half size. */
 const ART_SCALE = 2;
 /** Contact shadows sit on the floor: above the background, below everything standing on it. */
@@ -200,11 +197,12 @@ export class Actor {
     const anim = this.scene.anims.get(`${this.sheet}:walk_${this.direction()}`);
     if (!anim) return;
     this.strideDistance += moved / Math.max(0.2, this.depth);
-    const frame = Math.floor(this.strideDistance / STRIDE) % anim.frames.length;
+    const timing = walkTiming(SHEETS[this.sheet]?.json.meta.walk);
+    const frame = walkFrameAt(this.strideDistance, anim.frames.length, timing);
     if (frame === this.walkFrame) return;
     this.walkFrame = frame;
     this.sprite.setFrame(anim.frames[frame].frame.name);
-    if (PLANT_FRAMES.includes(frame)) this.onStep?.();
+    if (timing.plantFrames.includes(frame)) this.onStep?.();
   }
 
   /** Perspective scale at the current position. */

@@ -30,6 +30,9 @@ export const EXTRA_TAGS = ['stand_down', 'stand_side', 'stand_up', 'blink_down',
 /** Character sheets: Mara (unlit and lit gauntlet), the story characters, then the background people. */
 /** `dir`: a later chapter's characters live in its folder (art/src/<chapter>/characters). */
 export const CHARACTER_SHEETS: { sheet: string; role: string; tags: string[]; optional?: string[]; dir?: string }[] = [
+  { sheet: 'mara-casual', role: 'Mara in casual clothes', tags: STORY_TAGS },
+  { sheet: 'mara-medium', role: 'Mara in medium armour, unlit', tags: STORY_TAGS },
+  { sheet: 'mara-medium-gauntlet', role: 'Mara in medium armour, lit', tags: STORY_TAGS },
   { sheet: 'mara', role: 'Mara, gauntlet unlit (start of the game)', tags: STORY_TAGS },
   { sheet: 'mara-gauntlet', role: 'Mara, gauntlet lit', tags: STORY_TAGS },
   ...NPC_IDS.map(id => ({ sheet: id, role: `${id[0].toUpperCase()}${id.slice(1)} (story character)`, tags: STORY_TAGS, optional: ['fidget'], dir: (RIGS as Record<string, { dir?: string }>)[id]?.dir })),

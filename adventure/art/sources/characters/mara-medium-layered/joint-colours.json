@@ -1,0 +1,46 @@
+{
+  "joints": [
+    {
+      "name": "nearShoulder",
+      "colour": "#ff5c68"
+    },
+    {
+      "name": "nearElbow",
+      "colour": "#ffcf4a"
+    },
+    {
+      "name": "farShoulder",
+      "colour": "#50caff"
+    },
+    {
+      "name": "farElbow",
+      "colour": "#71df81"
+    },
+    {
+      "name": "nearHip",
+      "colour": "#c98aff"
+    },
+    {
+      "name": "farHip",
+      "colour": "#ff8c50"
+    },
+    {
+      "name": "nearKnee",
+      "colour": "#52e0d0"
+    },
+    {
+      "name": "farKnee",
+      "colour": "#fa87cf"
+    },
+    {
+      "name": "nearAnkle",
+      "colour": "#a8b45c"
+    },
+    {
+      "name": "farAnkle",
+      "colour": "#b8c7ff"
+    }
+  ],
+  "eyes": "white",
+  "mouth": "red"
+}
