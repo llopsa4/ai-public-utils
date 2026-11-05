@@ -2,7 +2,8 @@ import { readAutosave, writeAutosave } from '../engine/autosave';
 import { onSettingsChange, settings } from '../engine/settings';
 import { setChapter } from '../chapters';
 import { newGame } from '../engine/state';
-import type { GameState } from '../engine/types';
+import type { GameState, Point } from '../engine/types';
+import { useCarriedItem, hitTest, targetId } from './room/input';
 import { Ui } from '../ui/ui';
 import type { RoomScene, TitleScene } from './scenes';
 
@@ -37,6 +38,12 @@ export class Session {
       selectedItem: () => this.selectedItem,
       selectItem: item => this.selectItem(item),
       itemClicked: (item, index) => this.scene?.openItemRing(item, index),
+      useItemOnInventory: (item, target) => {
+        if (this.scene && this.state.inventory.includes(target)) useCarriedItem(this.scene, item, `item:${target}`);
+        else this.selectItem(null);
+      },
+      useItemAt: (item, client) => this.useItemAt(item, client),
+      moveDirection: direction => { if (!this.onTitle) this.scene?.setMoveDirection(direction); },
       replaceState: state => this.replaceState(state),
       hotspotLabels: () => (this.onTitle ? [] : this.scene?.hotspotLabels() ?? []),
       newGame,
@@ -58,13 +65,30 @@ export class Session {
   }
 
   selectItem(item: string | null): void {
-    this.selectedItem = item;
+    this.selectedItem = item && this.state.inventory.includes(item) ? item : null;
     this.ui.renderInventory();
     this.ui.setHover('');
   }
 
+  /** DOM inventory drags begin outside Phaser's canvas; convert their release point afresh. */
+  private useItemAt(item: string, client: Point): void {
+    const scene = this.scene;
+    if (!scene) return;
+    const canvas = scene.game.canvas, bounds = canvas.getBoundingClientRect();
+    if (client.x < bounds.left || client.x >= bounds.right || client.y < bounds.top || client.y >= bounds.bottom) {
+      this.selectItem(null); return;
+    }
+    const at = scene.cameras.main.getWorldPoint(
+      (client.x - bounds.left) * scene.scale.gameSize.width / bounds.width,
+      (client.y - bounds.top) * scene.scale.gameSize.height / bounds.height,
+    );
+    const target = hitTest(scene, at);
+    useCarriedItem(scene, item, target ? targetId(target) : null, at);
+  }
+
   /** Starts a different game (new, imported or continued): from the title or in place of the current one. */
   replaceState(state: GameState): void {
+    this.ui.controls.cancel();
     this.endBattle();
     setChapter(state.chapter);
     this.state = state;
@@ -89,6 +113,7 @@ export class Session {
   }
 
   toTitle(): void {
+    this.ui.controls.cancel();
     if (this.onTitle || !this.scene) return;
     window.clearTimeout(this.autosaveTimer);
     if (!this.scene.isBusy()) writeAutosave(this.state);

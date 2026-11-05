@@ -16,6 +16,8 @@ import { showOutline } from './outline';
 // ------------------------------------------------------------------ input ---
 export function onPointerDown(scene: RoomScene, pointer: Phaser.Input.Pointer): void {
   const ui = scene.session.ui;
+  ui.controls.stopMovement();
+  ui.controls.cancelPendingClick();
   clearFocus(scene);
   if (scene.isBusy()) { ui.skip(); return; }
   if (pointer.rightButtonDown()) {
@@ -27,9 +29,7 @@ export function onPointerDown(scene: RoomScene, pointer: Phaser.Input.Pointer): 
   const item = scene.session.selectedItem;
 
   if (item) {
-    scene.session.selectItem(null);
-    if (target) void runScript(scene, chapter().interact(scene.session.state, 'use', targetId(target), item));
-    else void scene.walkTo(at);
+    useCarriedItem(scene, item, target ? targetId(target) : null, at);
     return;
   }
   if (target && target.kind === 'hotspot' && target.hotspot.verbs.includes('go')) {
@@ -47,6 +47,19 @@ export function onPointerDown(scene: RoomScene, pointer: Phaser.Input.Pointer): 
     return;
   }
   void scene.walkTo(at);
+}
+
+/** One item-use path for scene clicks, inventory pairs, keyboard activation and drops. */
+export function useCarriedItem(scene: RoomScene, item: string, target: string | null, at?: Point): void {
+  if (!scene.session.ui.controls.available() || !scene.session.state.inventory.includes(item)) {
+    scene.session.ui.controls.cancel(); return;
+  }
+  scene.session.ui.controls.stopMovement();
+  scene.session.selectItem(null);
+  scene.input.setDefaultCursor(cursorFor(null));
+  clearFocus(scene);
+  if (target) void runScript(scene, chapter().interact(scene.session.state, 'use', target, item));
+  else if (at) void scene.walkTo(at);
 }
 
 export function openTargetRing(scene: RoomScene, target: Target, at: Point): void {
@@ -113,7 +126,9 @@ export function activateFocus(scene: RoomScene): boolean {
   if (scene.focusIndex === -1 || scene.isBusy()) return false;
   const entry = focusTargets(scene)[scene.focusIndex];
   if (!entry) return false;
-  openTargetRing(scene, entry.target, { x: entry.box.centerX, y: entry.box.centerY });
+  const item = scene.session.selectedItem;
+  if (item) useCarriedItem(scene, item, targetId(entry.target));
+  else openTargetRing(scene, entry.target, { x: entry.box.centerX, y: entry.box.centerY });
   return true;
 }
 

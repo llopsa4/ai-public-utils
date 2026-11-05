@@ -13,6 +13,7 @@ import { chapterIntro, newStory } from './intro';
 import { choose, closeRadial, openRadial } from './radial';
 import { bindFullscreen, bindLongPress, hideLabels, revealFor, showLabels } from './labels';
 import { exportSave, importSave } from './saves';
+import { RoomControls } from './controls';
 
 /** World size in logical units; all content coordinates use it. */
 export const LOGICAL_W = 640;
@@ -38,6 +39,9 @@ export interface UiHost {
   selectItem(item: string | null): void;
   /** An inventory item was clicked: the host opens its action ring. */
   itemClicked(item: string, index: number): void;
+  useItemOnInventory(item: string, target: string): void;
+  useItemAt(item: string, client: Point): void;
+  moveDirection(direction: Point): void;
   replaceState(state: GameState): void;
   newGame(): GameState;
   /** Starts a new story after the opening (the first room fades in slowly). */
@@ -64,6 +68,7 @@ export interface UiHost {
  * sharp at any zoom.
  */
 export class Ui {
+  readonly controls: RoomControls;
   zoom = 1;
   readonly stage = $('stage');
   readonly overlay = $('overlay');
@@ -87,6 +92,7 @@ export class Ui {
   closeRadialHandler: (() => void) | null = null;
 
   constructor(readonly host: UiHost) {
+    this.controls = new RoomControls(this);
     this.buildLanguageButtons();
     this.menuButton.addEventListener('click', () => this.menu.showModal());
     $('menu-close').addEventListener('click', () => this.menu.close());
@@ -128,13 +134,15 @@ export class Ui {
     this.fileInput.addEventListener('change', () => void importSave(this));
     this.menu.addEventListener('click', e => { if (e.target === this.menu) this.menu.close(); });
     window.addEventListener('keydown', e => {
+      if (this.controls.keyDown(e)) return;
       if (this.introActive || !$('kc-root').hidden) return;
       // Keyboard play: with nothing else focused, Tab walks through the room before the bar buttons.
       const free = (document.activeElement === document.body || document.activeElement === null)
         && !this.anyDialogOpen() && !this.radialOpen && this.choices.hidden && $('title').hidden;
       if (free && e.key === 'Tab' && this.host.cycleFocus(e.shiftKey ? -1 : 1)) e.preventDefault();
       if (free && e.key === 'Enter' && this.host.activateFocus()) e.preventDefault();
-      if (e.key === ' ' && !e.repeat && !this.anyDialogOpen() && !(e.target instanceof HTMLInputElement)) {
+      if (e.key === ' ' && !e.repeat && !this.anyDialogOpen() && !(e.target instanceof HTMLInputElement)
+        && !(e.target instanceof Element && e.target.closest('#inventory button'))) {
         e.preventDefault();
         showLabels(this);
       }
@@ -379,6 +387,7 @@ export class Ui {
   }
 
   setBusy(busy: boolean): void {
+    if (busy) this.controls.cancel();
     this.menuButton.disabled = busy;
     this.stage.classList.toggle('busy', busy);
   }
@@ -395,10 +404,11 @@ export class Ui {
       empty.textContent = t('ui.inventoryEmpty');
       this.inventory.append(empty);
     }
-    for (const item of state.inventory) {
+    for (const [index, item] of state.inventory.entries()) {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'item';
+      b.dataset.item = item;
       b.setAttribute('aria-pressed', String(selected === item));
       b.setAttribute('aria-label', t(`name.${item}`));
       b.title = t(`name.${item}`);
@@ -406,16 +416,16 @@ export class Ui {
       img.src = ITEM_ICONS[item];
       img.alt = '';
       b.append(img);
-      const index = state.inventory.indexOf(item);
-      b.addEventListener('click', () => {
-        if (this.host.isBusy()) return;
-        if (this.host.selectedItem() === item) this.host.selectItem(null);
-        else this.host.itemClicked(item, index);
-      });
+      if (index < 10) {
+        const key = index === 9 ? '0' : String(index + 1);
+        const label = document.createElement('span');
+        label.className = 'item-key'; label.textContent = key; label.setAttribute('aria-hidden', 'true');
+        b.append(label); b.setAttribute('aria-keyshortcuts', key);
+        b.title += ` (${key})`;
+      }
       this.inventory.append(b);
     }
-    const icon = selected ? ITEM_ICONS[selected] : null;
-    this.stage.style.cursor = icon ? `url("${icon}") 16 16, pointer` : '';
+    this.controls.refreshItem();
   }
 
   // ---------------------------------------------------------- language ---

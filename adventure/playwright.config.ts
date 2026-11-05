@@ -24,7 +24,7 @@ export default defineConfig({
     reuseExistingServer: false,
   },
   projects: [
-    { name: 'desktop', testMatch: /playthrough|saves|crowd|fight|debug/, use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 }, launchOptions: { args: GPU } } },
-    { name: 'phone', testMatch: /mobile/, use: { ...devices['Pixel 7'] } },
+    { name: 'desktop', testMatch: /(?:^|[\\/])(?:playthrough|saves|crowd|fight|debug|controls)\.spec\.ts$/, use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 }, launchOptions: { args: GPU } } },
+    { name: 'phone', testMatch: /(?:^|[\\/])mobile\.spec\.ts$/, use: { ...devices['Pixel 7'], launchOptions: { args: GPU } } },
   ],
 });

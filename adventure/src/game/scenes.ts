@@ -18,9 +18,10 @@ import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
 import { DOORWAY_STEP, FACE_VECTOR, FADE_MS, NOTICE_DISTANCE, createSheetAnims, inFlight, particleConfig, queueSheet, whenSheet } from './room/shared';
 import type { Target } from './room/shared';
-import { activateFocus, cycleFocus, drawHover, hotspotLabels, onPointerDown, onPointerMove, openItemRing } from './room/input';
+import { activateFocus, clearFocus, cycleFocus, drawHover, hotspotLabels, onPointerDown, onPointerMove, openItemRing } from './room/input';
 import { applyTint, tintScenery, updateLighting } from './room/lighting';
 import { runScript } from './room/runner';
+import { directionalStep } from './movement';
 
 /** Loads the shared sheets (props and Mara) and builds their animations. */
 export class BootScene extends Phaser.Scene {
@@ -132,6 +133,8 @@ export class RoomScene extends Phaser.Scene {
   busy = false;
   leaving = false;
   private heroLoading: string | null = null;
+  private moveDirection: Point = { x: 0, y: 0 };
+  private keyboardMoved = false;
 
   constructor(readonly session: Session) { super('room'); }
 
@@ -180,6 +183,9 @@ export class RoomScene extends Phaser.Scene {
     this.busy = false;
     this.leaving = false;
     this.heroLoading = null;
+    this.moveDirection = { x: 0, y: 0 };
+    this.keyboardMoved = false;
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.session.ui.controls.cancel());
 
     this.cameras.main.setZoom(ART_SCALE).centerOn(LOGICAL_W / 2, LOGICAL_H / 2);
     this.background = this.add.image(0, 0, this.room.background, '__BASE').setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-10000);
@@ -381,6 +387,7 @@ export class RoomScene extends Phaser.Scene {
   // --------------------------------------------------------------- movement ---
   /** Free walking from a click; a new click interrupts it. */
   async walkTo(target: Point): Promise<void> {
+    this.session.ui.controls.stopMovement();
     const state = this.session.state;
     if (this.hero.pose !== 'stand') { this.hero.setPose('stand'); state.hero.pose = 'stand'; }
     this.crowd?.heroHeading(target);
@@ -398,6 +405,36 @@ export class RoomScene extends Phaser.Scene {
     h.y = Math.round(this.hero.position.y);
     h.face = this.hero.face;
     h.pose = this.hero.pose;
+  }
+
+  setMoveDirection(direction: Point): void {
+    if (!direction.x && !direction.y) {
+      this.moveDirection = { x: 0, y: 0 };
+      this.hero?.stopManual();
+      if (this.keyboardMoved && this.hero?.sprite.active) {
+        this.syncHero(); this.session.autosave();
+      }
+      this.keyboardMoved = false;
+      return;
+    }
+    if (!this.session.ui.controls.available() || !this.hero?.sprite.active) return;
+    this.moveDirection = direction;
+    clearFocus(this);
+  }
+
+  private updateKeyboardMovement(delta: number): void {
+    this.session.ui.controls.reconcile();
+    const direction = this.moveDirection;
+    if (!direction.x && !direction.y) return;
+    if (!this.session.ui.controls.available()) { this.setMoveDirection({ x: 0, y: 0 }); return; }
+    const from = this.hero.position;
+    const next = directionalStep(this.area, from, direction,
+      110 * this.hero.speed * this.hero.perspective * Math.min(delta, 100) / 1000);
+    if (Math.hypot(next.x - from.x, next.y - from.y) < 0.001) { this.hero.stopManual(); return; }
+    this.hero.manualStep(next);
+    this.keyboardMoved = true;
+    this.syncHero();
+    this.crowd?.heroHeading(next);
   }
 
   objectPosition(def: ObjectDef): Point {
@@ -441,9 +478,10 @@ export class RoomScene extends Phaser.Scene {
 
 
 
-  update(time: number): void {
+  update(time: number, delta: number): void {
     updateLighting(this);
     if (!this.hero?.sprite.active) return;
+    this.updateKeyboardMovement(delta);
     this.props.update(time);
     this.crowd?.update();
     drawHover(this, time);

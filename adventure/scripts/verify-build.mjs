@@ -64,11 +64,21 @@ const later = /^(firing-house|gallery|ashways|hall-left|hall-right|hall-crate|te
 // Action-ring images are inserted when a player opens the ring, never at the title screen.
 const actionIcons = new Set(MANIFEST.filter(e => e.kind === 'icon').map(e => e.file.split('/').pop().replace(/\.\w+$/, '')));
 const actionIcon = n => actionIcons.has(n.replace(/-[\w-]{8}\.\w+$/, ''));
+// Portraits and satchel icons are DOM images fetched when shown. Match bytes as well as names:
+// e.g. the notebook sprite and inventory icon share a stem but only the sprite loads at boot.
+const deferredImages = new Set();
+for (const entry of MANIFEST.filter(e => e.kind === 'portrait' || e.kind === 'item')) {
+  const source = await readFile(resolve(project, 'art/src', entry.file)).catch(() => null);
+  if (!source) continue;
+  const stem = entry.file.split('/').pop().replace(/\.\w+$/, '');
+  for (const name of built.filter(n => n.startsWith(stem + '-') && n.endsWith('.png'))) {
+    if (source.equals(await readFile(resolve(project, 'build', name)))) deferredImages.add(name);
+  }
+}
 // .woff fonts are fallbacks for browsers without WOFF2; current browsers never fetch them.
-const firstLoad = built.filter(n => !later.test(n) && !actionIcon(n) && !laterChapter(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
+const firstLoad = built.filter(n => !later.test(n) && !actionIcon(n) && !deferredImages.has(n) && !laterChapter(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;
-// Static count: it also includes portraits and inventory icons only fetched when first shown, so the
-// real first load (measured by npm run e2e) is lower.
+// Static count remains conservative about other UI assets; npm run e2e measures real requests.
 // 4.8 MB since chapter 2 (the game had reached 4.6 MB with chapter 1; later chapters are budgeted on their own below).
 const TOTAL_BUDGET = 4.8, FIRST_BUDGET = 1.75;
 assert.ok(total < TOTAL_BUDGET * MB, `build is ${(total / MB).toFixed(2)} MB (budget ${TOTAL_BUDGET} MB)`);

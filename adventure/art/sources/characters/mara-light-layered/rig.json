@@ -133,13 +133,44 @@
     ],
     "hipSwing": 22,
     "armSwing": 20,
-    "lift": 175,
+    "lift": 117,
+    "torsoLeanDegrees": 5,
+    "widthScale": 1.15,
     "strideSource": 505,
     "references": {
       "contact": "walk-contact.png",
       "passing": "walk-passing.png"
     },
-    "calibration": "Reference-guided 22-degree hip stride and 20-degree opposite arm swing; fixed source bone lengths and planted-foot IK constrain the silhouette."
+    "calibration": "Reference-guided 22-degree hip stride and 20-degree opposite arm swing; fixed source bone lengths and planted-foot IK constrain the silhouette.",
+    "footRollDegrees": 6,
+    "hipSwayDegrees": 1.5,
+    "torsoSwayDegrees": 1,
+    "weightDrop": 8,
+    "gauntletSwingScale": 0.7,
+    "gauntletLagDegrees": 18,
+    "transitionMs": 90,
+    "soles": {
+      "near": {
+        "heel": [
+          405,
+          1500
+        ],
+        "toe": [
+          501,
+          1500
+        ]
+      },
+      "far": {
+        "heel": [
+          647,
+          1495
+        ],
+        "toe": [
+          741,
+          1495
+        ]
+      }
+    }
   },
   "extraction": {
     "hiddenPixels": 59182,
@@ -148,7 +179,7 @@
   },
   "idle": {
     "file": "idle.png",
-    "sha256": "0a75859f191e95771dab8b7778cf1c1efeab62aacd344ad286e24e7f76233186",
+    "sha256": "be9134112a56091f4434a526ed625e4d3e8b173639083cf21a95a8b2bad564f7",
     "sourceHeight": 1493,
     "baseline": 1505,
     "anchorX": 520,
@@ -182,10 +213,10 @@
     ],
     "ember": {
       "center": [
-        274,
-        811
+        248,
+        834
       ],
-      "radius": 22
+      "radius": 23
     }
   }
 }

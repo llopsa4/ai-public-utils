@@ -32,6 +32,7 @@ export class Actor {
   face: Facing;
   private side: 'left' | 'right';
   private walking = false;
+  private manualWalking = false;
   private walkToken = 0;
   private tween: Phaser.Tweens.Tween | null = null;
   private finishStep: (() => void) | null = null;
@@ -39,6 +40,8 @@ export class Actor {
   private sheet: string;
   private strideDistance = 0;
   private walkFrame = -1;
+  private walkBlend: Phaser.GameObjects.Sprite | null = null;
+  private walkBlendTween: Phaser.Tweens.Tween | null = null;
   /** Called on each footstep (used for sound). */
   onStep: (() => void) | null = null;
   /** Busy with a gesture (fidget) that should not be interrupted by the idle refresh. */
@@ -75,7 +78,7 @@ export class Actor {
     this.place();
     this.refresh();
     this.scheduleBlink();
-    this.sprite.once(Phaser.GameObjects.Events.DESTROY, () => { this.blinkTimer?.remove(); this.shadow?.destroy(); });
+    this.sprite.once(Phaser.GameObjects.Events.DESTROY, () => { this.clearWalkBlend(); this.blinkTimer?.remove(); this.shadow?.destroy(); });
   }
 
   get position(): Point {
@@ -93,6 +96,7 @@ export class Actor {
   }
 
   setPose(pose: Pose): void {
+    this.clearWalkBlend();
     this.pose = pose;
     this.refresh();
     this.placeShadow();
@@ -101,6 +105,7 @@ export class Actor {
   /** Swaps the sprite sheet (e.g. Mara with or without the gauntlet), keeping pose and facing. */
   setSheet(sheet: string): void {
     if (sheet === this.sheet) return;
+    this.clearWalkBlend();
     this.sheet = sheet;
     this.sprite.anims.stop();
     this.sprite.setTexture(sheet);
@@ -114,6 +119,7 @@ export class Actor {
     if (path.length === 0) return true;
     if (this.pose !== 'stand') this.pose = 'stand';
     this.task = null;
+    this.blendWalkChange();
     this.walking = true;
     for (const target of path) {
       const dx = target.x - this.sprite.x, dy = target.y - this.sprite.y;
@@ -139,6 +145,7 @@ export class Actor {
     }
     this.tween = null;
     this.finishStep = null;
+    this.blendWalkChange();
     this.walking = false;
     this.refresh();
     return true;
@@ -146,15 +153,41 @@ export class Actor {
 
   /** Stops walking where the actor stands. */
   stop(): void {
+    this.manualWalking = false;
     if (!this.walking) return;
     this.walkToken++;
     this.tween?.stop();
     this.tween = null;
     const finish = this.finishStep;
     this.finishStep = null;
+    this.blendWalkChange();
     this.walking = false;
     finish?.();
     this.refresh();
+  }
+
+  /** A direct-input step, sharing the normal facing, distance-based frames and footsteps. */
+  manualStep(to: Point): void {
+    const dx = to.x - this.sprite.x, dy = to.y - this.sprite.y;
+    if (Math.hypot(dx, dy) < 0.001) { this.stopManual(); return; }
+    const starting = !this.manualWalking;
+    if (starting) {
+      this.stop();
+      this.blendWalkChange();
+      this.manualWalking = true;
+      this.walking = true;
+      this.pose = 'stand';
+      this.task = null;
+    }
+    const face = Math.abs(dx) >= Math.abs(dy) * 0.8 ? (dx < 0 ? 'left' : 'right') : dy < 0 ? 'up' : 'down';
+    if (starting || face !== this.face) this.setFacing(face);
+    this.sprite.setPosition(to.x, to.y);
+    this.place();
+    this.advanceStride(Math.hypot(dx, dy));
+  }
+
+  stopManual(): void {
+    if (this.manualWalking) this.stop();
   }
 
   /** Screen-space hit box around the visible body for the current pose. */
@@ -176,7 +209,35 @@ export class Actor {
     this.depth = farScale + (nearScale - farScale) * t;
     this.sprite.setScale(this.depth / ART_SCALE);
     this.sprite.setDepth(this.sprite.y);
+    this.placeWalkBlend();
     this.placeShadow();
+  }
+
+  /** Briefly blend existing frames; world motion and planted-foot timing stay immediate. */
+  private blendWalkChange(): void {
+    this.clearWalkBlend();
+    const ms = SHEETS[this.sheet]?.json.meta.walk?.transitionMs;
+    if (!ms || !this.sprite.active || this.id !== 'hero') return;
+    this.walkBlend = this.scene.add.sprite(this.sprite.x, this.sprite.y, this.sheet, this.sprite.frame.name)
+      .setOrigin(0.5, 1).setTint(this.sprite.tintTopLeft);
+    this.placeWalkBlend();
+    this.sprite.setAlpha(0);
+    this.walkBlendTween = this.scene.tweens.add({
+      targets: this.sprite, alpha: 1, duration: ms, ease: 'Sine.easeOut',
+      onUpdate: () => { this.placeWalkBlend(); this.walkBlend?.setAlpha(1 - this.sprite.alpha); },
+      onComplete: () => this.clearWalkBlend(),
+    });
+  }
+
+  private placeWalkBlend(): void {
+    this.walkBlend?.setPosition(this.sprite.x, this.sprite.y).setScale(this.sprite.scaleX, this.sprite.scaleY)
+      .setDepth(this.sprite.depth + 0.01).setFlipX(this.sprite.flipX);
+  }
+
+  private clearWalkBlend(): void {
+    this.walkBlendTween?.stop(); this.walkBlendTween = null;
+    this.walkBlend?.destroy(); this.walkBlend = null;
+    this.sprite.setAlpha(1);
   }
 
   /** The shadow follows the feet and the pose: a wide pool when lying down, a small one standing. */
@@ -213,6 +274,7 @@ export class Actor {
   /** Holds a task tag (work, carry, reach, sit...) while standing; null goes back to standing. */
   perform(tag: string | null): void {
     if (this.walking) return;
+    this.clearWalkBlend();
     this.task = tag && this.scene.anims.exists(`${this.sheet}:${tag}`) ? tag : null;
     this.refresh();
   }
@@ -231,6 +293,7 @@ export class Actor {
   /** Plays the idle gesture (fidget frame) for a moment, if the sheet has one. */
   fidget(ms = 1300): void {
     if (this.walking || this.pose !== 'stand' || this.gesturing || !this.scene.anims.exists(`${this.sheet}:fidget`)) return;
+    this.clearWalkBlend();
     this.gesturing = true;
     this.play('fidget', this.face === 'left');
     this.scene.time.delayedCall(ms, () => { this.gesturing = false; if (this.sprite.active) this.refresh(); });
@@ -258,7 +321,9 @@ export class Actor {
   private play(tag: string, flip: boolean): void {
     this.sprite.setFlipX(flip);
     const key = `${this.sheet}:${tag}`;
-    if (this.sprite.anims.currentAnim?.key !== key) this.sprite.play(key);
+    // Distance-driven walking stops the idle animation but leaves its key cached.
+    // Restart it on return so the original standing bitmap replaces the last walk frame.
+    if (this.sprite.anims.currentAnim?.key !== key || !this.sprite.anims.isPlaying) this.sprite.play(key);
   }
 
   /** Eyes close briefly at a random 1.5–2.5 s interval while standing still and visible from the front or side. */

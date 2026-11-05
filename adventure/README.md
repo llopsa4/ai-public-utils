@@ -9,7 +9,7 @@ Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 - **New game** opens with a few lines of context over black (click for the next, or Skip).
 - **Walk:** click or tap the floor.
 - **Act:** click or tap a person or object to open the action ring, then choose an action (Look at, Open, Close, Pick up, Use, Talk to, Go to). Arrow keys move around the ring and Esc closes it.
-- **Satchel:** click an item for Look at / Use. Use carries it, so you then click what to use it on. Right-click or Esc puts it back.
+- **Satchel:** click an item or press its numbered slot (1–9, then 0) to carry it at the pointer. Click a target or another satchel item to use it, or drag and drop it there. Each attempt puts the cursor back to normal, including a rejected use. Clicking/dropping onto empty floor cancels the item and walks there. Double-click/double-tap an item for its Look / Use menu; inventory clicks wait 300 ms to distinguish these gestures. Enter opens the menu when an item has keyboard focus. Right-click, Esc, clicking the selected item again, or dropping outside the game cancels it.
 - **Poses:** click Mara, Oren or Nell for Crouch, Lie down and Stand up.
 - **Background people:** four workers go about their day in the kiln hall (a stoker at the kiln mouths, a hoist hand at the pulley, a clay hauler and the old tally-keeper), and two kids, Pip and Bea, play in the firing house. They walk between their stations, work or play, leave and come back, and chat in speech bubbles. Click one to look at them or talk (they stop, turn to Mara and say a line). When the alarm goes up the kids run to Nell; when the kiln goes cold the workers stare at it and two of them leave, and the kids huddle by the dead hearth.
 - **Room names** hang on a board in every room (an iron shield-plate in the regulator gallery).
@@ -17,7 +17,7 @@ Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 - **Explore:** looking at something again often gets a different line, and four small secrets are hidden around Cinderfold (the notebook counts the ones you've found).
 - **Labels:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
 - **Exits:** double-click a doorway to go straight through.
-- **Keyboard:** Tab moves between the things in the room (then on to the bar), Enter opens the action ring, arrow keys move around it, number keys pick replies.
+- **Keyboard:** hold arrows to walk, including diagonals, and release to stop. Obstacles stop direct movement; exits still need an explicit action. Tab moves between room targets and bar buttons; Enter acts on the focused target. Arrow keys navigate an open action ring, and number keys choose dialogue replies instead of inventory slots while choices are shown. Movement and item shortcuts are suspended during scripts, menus, text entry and combat.
 - **Touch:** press and hold on the scene to label everything. The ⛶ button switches to full screen where the browser allows it.
 - **Menu** (pause): Resume, **History** (everything said so far), **How to play**, saves, **Settings** (text speed, effects and music volume, mute, auto-advance, reduced motion, text size, high contrast) and **Title screen**.
 - **Hints:** the notebook's **Hint** button gives a nudge for the current goal, then the plain answer.

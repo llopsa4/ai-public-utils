@@ -112,13 +112,44 @@
     ],
     "hipSwing": 22,
     "armSwing": 20,
-    "lift": 180,
+    "lift": 120,
+    "torsoLeanDegrees": 5,
+    "widthScale": 1.15,
     "strideSource": 498,
     "references": {
       "contact": "walk-contact.png",
       "passing": "walk-passing.png"
     },
-    "calibration": "Reference-guided 22-degree hip stride and 20-degree opposite arm swing; fixed source bone lengths and planted-foot IK constrain the silhouette."
+    "calibration": "Reference-guided 22-degree hip stride and 20-degree opposite arm swing; fixed source bone lengths and planted-foot IK constrain the silhouette.",
+    "footRollDegrees": 6,
+    "hipSwayDegrees": 1.5,
+    "torsoSwayDegrees": 1,
+    "weightDrop": 8,
+    "gauntletSwingScale": 0.7,
+    "gauntletLagDegrees": 18,
+    "transitionMs": 90,
+    "soles": {
+      "near": {
+        "heel": [
+          377,
+          1500
+        ],
+        "toe": [
+          472,
+          1500
+        ]
+      },
+      "far": {
+        "heel": [
+          552,
+          1496
+        ],
+        "toe": [
+          722,
+          1496
+        ]
+      }
+    }
   },
   "extraction": {
     "hiddenPixels": 37327,
