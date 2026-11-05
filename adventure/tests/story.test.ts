@@ -22,7 +22,7 @@ test('chapter 1 story rules match the scene\'s old choices in every room and sta
       assert.equal(crowdMoodFor(story, ctx), cold ? 'cold' : f.alarm ? 'alarm' : 'warm');
       assert.equal(hushed(story, ctx), !!f.fought);
       assert.equal(guided(story, ctx), !f.fought);
-      assert.equal(heroSheetFor(story, ctx), f.hasGauntlet ? 'mara-gauntlet' : 'mara');
+      assert.equal(heroSheetFor(story, ctx), f.hasGauntlet ? 'mara-gauntlet' : 'mara-casual');
       assert.deepEqual(onEnter(story, ctx), room.id === 'gallery' && f.kilnCold ? afterRelease(f) : []);
     }
   }

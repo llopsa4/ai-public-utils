@@ -1,8 +1,11 @@
 import { conditionsHold } from './geometry';
-import type { ActorId, Condition, GameState } from './types';
+import { EQUIPMENT } from '../combat/gear';
+import { equip, giveSpares } from './kit';
+import type { ActorId, Condition, GameState, Kit } from './types';
 
 export interface DialogueLine { actor: ActorId; text: string }
 export interface DialogueChoice { text: string; next: string | null; if?: Condition[] }
+export interface DialogueGear { give: readonly string[]; equip?: string }
 export interface DialogueNode {
   /** Redirects: the first entry whose conditions hold decides the node actually entered. */
   branch?: { if?: Condition[]; next: string }[];
@@ -11,6 +14,8 @@ export interface DialogueNode {
   set?: Record<string, boolean>;
   /** Items handed to Mara after the lines are spoken. */
   items?: string[];
+  /** Gear granted after the lines; equip applies only when that piece is first received. */
+  gear?: DialogueGear;
   /** Shown after the lines; the hero speaks the chosen text, then the dialogue moves on. */
   choices?: DialogueChoice[];
   /** Used when there are no choices; null or absent ends the conversation. */
@@ -23,6 +28,7 @@ export interface ResolvedNode {
   lines: DialogueLine[];
   set: Record<string, boolean>;
   items: string[];
+  gear?: DialogueGear;
   choices: DialogueChoice[];
   next: string | null;
 }
@@ -40,11 +46,25 @@ export function resolveNode(tree: DialogueTree, id: string, state: GameState): R
       lines: node.lines ?? [],
       set: node.set ?? {},
       items: node.items ?? [],
+      gear: node.gear,
       choices: (node.choices ?? []).filter(c => conditionsHold(state, c.if)),
       next: node.next ?? null,
     };
   }
   throw new Error(`Dialogue branch loop at: ${id}`);
+}
+
+/** Grants dialogue equipment once, without overriding an outfit chosen after the reward. */
+export function applyDialogueGear(kit: Kit, reward: DialogueGear | undefined): boolean {
+  if (!reward) return false;
+  const received = reward.give.filter(id => !kit.owned.includes(id));
+  if (!received.length) return false;
+  giveSpares(kit, received);
+  if (reward.equip && received.includes(reward.equip)) {
+    const item = EQUIPMENT[reward.equip];
+    if (item) equip(kit, item.slot, reward.equip);
+  }
+  return true;
 }
 
 /** Collects every string key used by a tree (for translation completeness checks). */

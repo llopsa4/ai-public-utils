@@ -80,6 +80,11 @@ export class Props {
     return conditionsHold(this.state(), def.visibleIf) && !(def.warm && this.cold() >= 1);
   }
 
+  /** A swinging prop's picture by its image name (for the hover outline), if this room has one. */
+  image(name: string): Phaser.GameObjects.Image | undefined {
+    return [...this.swings.values()].find(img => img.texture.key === `prop-${name}`);
+  }
+
   private build(def: PropDef): void {
     const scene = this.scene;
     switch (def.kind) {

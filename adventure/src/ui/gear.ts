@@ -60,6 +60,7 @@ export async function openGear(ui: Ui): Promise<void> {
         if (debug && !kit.owned.includes(id)) kit.owned.push(id);
         equip(kit, EQUIPMENT[id].slot, id, debug);
         ui.host.autosave();
+        ui.host.refreshHeroAppearance?.();
       },
       onClose: () => dialog.close(),
     });

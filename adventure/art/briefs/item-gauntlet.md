@@ -1,22 +1,32 @@
 # item-gauntlet
 
-Status: **placeholder** · item · chapter ch1 · in the game as `art/src/items/gauntlet.png`
+Status: **final** · item · chapter ch1 · in the game as `art/src/items/gauntlet.png`
+
+## What the game does with it
+
+A satchel item: shown in the inventory bar and on the cursor while it is being used.
+
+## Technical
+
+- File: `art/inbox/item-gauntlet.png`, 64×64, transparent (or flat magenta), the thing filling the tile.
 
 ## Prompt for Codex
 
 ```text
-Draw for the game Cinderfold: Mara's pressure gauntlet.
-Style: painterly pixel art. Painted forms, worn materials and soft light falloff, finished as pixel art with crisp edges (no blur or haze around shapes) and a limited palette.
-World: an industrial-fantasy village inside an old kiln: fired clay, ceramic plates, iron, brass, soot, ash, ochre cloth, ember light. Lived-in and repaired.
-Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochres, rust, brass, ember orange, clay; soot greys and iron blue-greys). Every pixel is snapped to it on import.
-Do not paint glows, haze, light shafts, particles or text: the game adds them. No photographic detail, lens effects, neon or modern objects.
-Light: evenly lit with soft form shading and no strong cast light (the game lights it to match each room). Facing right in three-quarter view unless it is a flat icon.
-Deliver: art/inbox/item-gauntlet.png, transparent PNG, 64×64, centred.
+Draw for the game Cinderfold: Mara's oversized pressure gauntlet as a satchel icon: a clenched fist of cream-ceramic knuckles and brass, the round ember cell on the back of the hand.
+Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
+World: an industrial-fantasy village inside an old kiln and the ash country around it: fired clay, cream ceramic plates, iron, brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
+Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
+Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).
+Proportions: true to the cast (art/style/scale.png): Mara is 232 px, a doorway about 328, a table top 104, a chair seat 48.
+Light: evenly lit with soft form shading and no strong cast light (the game lights it to match the room).
+File: art/inbox/item-gauntlet.png, 64×64, transparent (or flat magenta), the thing filling the tile.
 ```
 
 ## Attach
 
-- `art/STYLE.md` (the style bible) and `art/style/palette.png`
-- The current placeholder for reference: `art/src/items/gauntlet.png`
+- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
 
-Then: `npm run art:import`, check `art/inbox/preview/item-gauntlet.png`, `npm run art:check`, and look at it in the game.
+## Then
+
+`npm run art:import`, look at `art/inbox/preview/item-gauntlet.png`, `npm run art:check`.

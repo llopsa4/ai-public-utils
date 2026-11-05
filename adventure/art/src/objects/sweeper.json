@@ -5,111 +5,67 @@
    "frame": {
     "x": 0,
     "y": 0,
-    "w": 280,
-    "h": 160
+    "w": 260,
+    "h": 140
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 280,
-    "h": 160
+    "w": 260,
+    "h": 140
    },
    "sourceSize": {
-    "w": 280,
-    "h": 160
+    "w": 260,
+    "h": 140
    },
-   "duration": 420
+   "duration": 1000
   },
   {
    "filename": "1",
    "frame": {
-    "x": 280,
+    "x": 260,
     "y": 0,
-    "w": 280,
-    "h": 160
+    "w": 260,
+    "h": 140
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 280,
-    "h": 160
+    "w": 260,
+    "h": 140
    },
    "sourceSize": {
-    "w": 280,
-    "h": 160
+    "w": 260,
+    "h": 140
    },
-   "duration": 420
-  },
-  {
-   "filename": "2",
-   "frame": {
-    "x": 560,
-    "y": 0,
-    "w": 280,
-    "h": 160
-   },
-   "rotated": false,
-   "trimmed": false,
-   "spriteSourceSize": {
-    "x": 0,
-    "y": 0,
-    "w": 280,
-    "h": 160
-   },
-   "sourceSize": {
-    "w": 280,
-    "h": 160
-   },
-   "duration": 110
-  },
-  {
-   "filename": "3",
-   "frame": {
-    "x": 840,
-    "y": 0,
-    "w": 280,
-    "h": 160
-   },
-   "rotated": false,
-   "trimmed": false,
-   "spriteSourceSize": {
-    "x": 0,
-    "y": 0,
-    "w": 280,
-    "h": 160
-   },
-   "sourceSize": {
-    "w": 280,
-    "h": 160
-   },
-   "duration": 110
+   "duration": 1000
   }
  ],
  "meta": {
-  "app": "adventure pixelate.mjs (Aseprite JSON-array compatible)",
+  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
   "version": "1",
   "image": "sweeper.png",
   "format": "RGBA8888",
   "size": {
-   "w": 1120,
-   "h": 160
+   "w": 520,
+   "h": 140
   },
   "scale": "1",
   "frameTags": [
    {
     "name": "idle",
     "from": 0,
-    "to": 1,
+    "to": 0,
     "direction": "forward"
    },
    {
     "name": "scurry",
-    "from": 2,
-    "to": 3,
+    "from": 1,
+    "to": 1,
     "direction": "forward"
    }
   ]

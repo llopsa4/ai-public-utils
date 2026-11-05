@@ -17,3 +17,11 @@ export const TONIC_ICON = `<svg viewBox="0 0 64 64" aria-hidden="true" focusable
   <path d="M27 15h10v9c8 3 13 9 13 17 0 10-8 17-18 17s-18-7-18-17c0-8 5-14 13-17z" fill="url(#tonic-glass)" stroke="#c89b5a" stroke-width="1.2" stroke-opacity="0.6"/>
   <path d="M21 33c-2 3-3 6-3 9" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity="0.45"/>
 </svg>`;
+
+// Codex's Kiln Tonic picture (art/inbox/item-tonic.png, imported to art/src/items/tonic.png) takes
+// over from the drawn icon as soon as it exists.
+const tonicFiles = import.meta.glob('../../art/src/items/tonic.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const tonicUrl = Object.values(tonicFiles)[0];
+
+/** The Kiln Tonic's icon as markup: Codex's picture once delivered, else the drawn one. */
+export const TONIC_ART = tonicUrl ? `<img src="${tonicUrl}" alt="" aria-hidden="true" width="64" height="64" decoding="async">` : TONIC_ICON;

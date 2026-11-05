@@ -50,35 +50,53 @@ const card = (id, name, subject) => ({
  * portrait is the head crop; face the mouth and brows that move. A Codex source drawn on the
  * style bible's template (art/STYLE.md, "Character sources") needs these re-measured once.
  */
+// Mara: Codex's drawing (art/sources/characters/char-mara: body.png, and arm.png for the oversized
+// gauntlet arm on the picture's left), measured on its 1024x1536 canvas.
 const MARA_RIG = {
-  source: 'kiln:hero.png', height: 232, walks: true,
-  hipY: 860, splitX: 560, hips: { near: [400, 860], far: [650, 860] }, knees: { near: [313, 1040], far: [800, 1060] },
-  arm: { minX: 790, minY: 300, maxY: 900, pivot: [800, 380] },
-  eyes: [{ x: 673, y: 109, rx: 13, ry: 7, skinAt: [668, 124] }],
-  portrait: [470, 0, 420, 420],
-  face: { mouth: { x: 682, y: 160, rx: 10, ry: 4 }, brows: [{ x0: 652, x1: 702, y0: 82, y1: 110, inner: 'right' }] },
+  source: 'sources/characters/char-mara/body.png', armLayer: 'sources/characters/char-mara/arm.png', height: 232, walks: true,
+  // The gauntlet arm swings from its shoulder while he walks.
+  armPivot: [370, 320], armSwing: 6,
+  hipY: 840, splitX: 505, hips: { near: [440, 840], far: [570, 840] }, knees: { near: [410, 1050], far: [595, 1030] },
+  eyes: [{ x: 527, y: 115, rx: 12, ry: 6, skinAt: [527, 132] }, { x: 565, y: 115, rx: 10, ry: 6, skinAt: [565, 132] }],
+  portrait: [370, 0, 360, 360],
+  face: { mouth: { x: 552, y: 152, rx: 12, ry: 4 }, brows: [{ x0: 512, x1: 543, y0: 96, y1: 108, inner: 'right' }, { x0: 555, x1: 574, y0: 98, y1: 110, inner: 'left' }] },
 };
 export const RIGS = {
-  // Before the ember cell is fitted the gauntlet is cold: its glow is painted dark.
-  mara: { ...MARA_RIG, unpowered: { minX: 700, minY: 430, maxX: 1024, maxY: 900 } },
+  // Before the ember cell is fitted the gauntlet is cold: its glow (the red glass on the back of the fist) is painted dark.
+  mara: { ...MARA_RIG, unpowered: { minX: 210, minY: 790, maxX: 320, maxY: 900 } },
   'mara-gauntlet': MARA_RIG,
+  // Casual Mara (everyday clothes, the start of a new adventure): Codex drew him on the same
+  // registration as the armoured drawing, so his joints and face sit where Mara's do. No portraits of
+  // its own (dialogue shows Mara's).
+  'mara-casual': {
+    source: 'sources/characters/char-mara-casual/body.png', armLayer: 'sources/characters/char-mara-casual/arm.png', height: 232, walks: true,
+    armPivot: [355, 290], armSwing: 6, noPortrait: true,
+    hipY: 820, splitX: 505, hips: { near: [450, 820], far: [560, 820] }, knees: { near: [428, 1095], far: [579, 1085] },
+    eyes: [{ x: 528, y: 115, rx: 13, ry: 6, skinAt: [528, 128] }, { x: 562, y: 115, rx: 9, ry: 6, skinAt: [562, 128] }],
+    portrait: [370, 0, 360, 360],
+    face: { mouth: { x: 549, y: 155, rx: 13, ry: 4 }, brows: [{ x0: 509, x1: 549, y0: 93, y1: 105, inner: 'right' }, { x0: 557, x1: 571, y0: 96, y1: 105, inner: 'left' }] },
+  },
+  // Oren and Nell: Codex's drawings (they stand at their posts; kneeling and lying are drawn).
   oren: {
-    source: 'kiln:opening/oren.png', height: 226, walks: false,
-    hipY: 1050, splitX: 515, hips: { near: [400, 1040], far: [630, 1040] }, knees: { near: [370, 1230], far: [620, 1215] },
-    fidgetPart: { minX: 560, minY: 300, maxY: 600, pivot: [600, 520], angle: -9 },
-    eyes: [{ x: 553, y: 116, rx: 9, ry: 5, skinAt: [553, 130] }, { x: 588, y: 112, rx: 8, ry: 5, skinAt: [590, 126] }],
-    portrait: [390, 0, 330, 330],
-    face: { mouth: { x: 570, y: 166, rx: 15, ry: 4 }, brows: [{ x0: 530, x1: 566, y0: 84, y1: 110, inner: 'right' }, { x0: 572, x1: 600, y0: 82, y1: 108, inner: 'left' }] },
+    source: 'sources/characters/char-oren/body.png', armLayer: 'sources/characters/char-oren/arm.png', height: 226, walks: false,
+    armPivot: [330, 320],
+    hipY: 960, splitX: 464, hips: { near: [400, 960], far: [540, 960] }, knees: { near: [380, 1290], far: [560, 1290] },
+    // The pocket gauge in his right hand turns as he checks it (forearm and gauge, from the elbow).
+    fidgetPart: { minX: 650, minY: 500, maxY: 700, pivot: [650, 540], angle: -9 },
+    // The far eye is hidden behind the far lens: only the near one blinks.
+    eyes: [{ x: 563, y: 150, rx: 10, ry: 5, skinAt: [563, 176] }],
+    portrait: [380, 0, 340, 340],
+    face: { mouth: { x: 583, y: 213, rx: 12, ry: 4 }, brows: [{ x0: 530, x1: 580, y0: 113, y1: 131, inner: 'right' }, { x0: 598, x1: 622, y0: 115, y1: 126, inner: 'left' }] },
   },
   nell: {
-    source: 'kiln:opening/iven.png', height: 220, walks: false,
-    hipY: 1000, splitX: 480, hips: { near: [420, 1000], far: [640, 1000] }, knees: { near: [360, 1240], far: [760, 1250] },
+    source: 'sources/characters/char-nell/body.png', armLayer: 'sources/characters/char-nell/arm.png', height: 220, walks: false,
+    armPivot: [390, 310],
+    hipY: 1010, splitX: 486, hips: { near: [400, 1010], far: [560, 1010] }, knees: { near: [390, 1320], far: [600, 1320] },
     fidgetLean: -3,
-    nearIsUpper: true, crouchSquash: 1,
-    eyes: [{ x: 452, y: 129, rx: 15, ry: 8, skinAt: [452, 148] }, { x: 507, y: 123, rx: 14, ry: 8, skinAt: [505, 142] }],
-    portrait: [320, 0, 340, 340],
+    eyes: [{ x: 546, y: 173, rx: 16, ry: 7, skinAt: [546, 190] }, { x: 592, y: 175, rx: 9, ry: 7, skinAt: [594, 192] }],
+    portrait: [380, 20, 320, 320],
     moods: ['neutral'],
-    face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
+    face: { mouth: { x: 573, y: 227, rx: 19, ry: 5 }, brows: [{ x0: 520, x1: 565, y0: 146, y1: 158, inner: 'right' }, { x0: 583, x1: 602, y0: 147, y1: 156, inner: 'left' }] },
   },
   // Chapter 2. Placeholder: Iven's body recoloured and re-dressed (a dark red kerchief, the plates
   // turned to leather), rigged like Nell, until Codex draws Bryn.
@@ -96,21 +114,30 @@ export const RIGS = {
   },
 };
 
+// Explicit source packs are opt-in: every other character retains the legacy rig.
+for (const [id, outfit, powered] of [
+  ['mara-casual', 'casual', false], ['mara', 'light', false], ['mara-gauntlet', 'light', true],
+  ['mara-medium', 'medium', false], ['mara-medium-gauntlet', 'medium', true],
+]) {
+  const layeredPack = `sources/characters/mara-${outfit}-layered`;
+  RIGS[id] = { source: `${layeredPack}/master.png`, layeredPack, powered, height: 232, walks: true };
+}
+
 /** @type {ArtEntry[]} */
 export const MANIFEST = [
   // ------------------------------------------------------------------------------ rooms ---
-  room('room-tent', 'tent', "Mara's tent from inside, hand-made pixel art (a 320x180 grid shown 4x), seen side-on with very little perspective and believable proportions: a canvas back wall sagging between two poles under a ridge pole, seams and patches (a FINEST flour sack); his workbench along the left (tools on a board above it: wrench, handsaw, pliers, claw hammer, file; a tool roll, a candle, gloves, a glazed water jar; the charging cradle and the notebook stand on it), a crate and rope under it, a stool in front; the old brush drum, smaller, on a trestle against the back wall (centre, chalked PARTS); a coat on a hook on the right pole; a low cot with a blanket and laced boots along the right, Tobi's drawing pinned above; the door flap at the right edge open on the kiln hall's warm light; a striped rug on packed earth.", 'Warm hanging lantern (centre top) as the main light, falling off into dark corners, soft cast shadows under everything; warm light from the door flap (right) across the floor.'),
+  room('room-tent', 'tent', "Mara's tent from inside, pixel art (a 640x360 grid shown 2x), seen side-on with very little perspective and believable proportions: a canvas back wall sagging between two poles under a ridge pole, seams and patches (a FINEST flour sack); his workbench along the left (tools on a board above it: wrench, handsaw, pliers, claw hammer, file; a tool roll, a candle, gloves, a glazed water jar; the charging cradle and the notebook stand on it), a crate and rope under it, a stool in front; the old brush drum, smaller, on a trestle against the back wall (centre, chalked PARTS); a coat on a hook on the right pole; a low cot with a blanket and laced boots along the right, Tobi's drawing pinned above; the door flap at the right edge open on the kiln hall's warm light; a striped rug on packed earth.", 'Warm hanging lantern (centre top) as the main light, falling off into dark corners, soft cast shadows under everything; warm light from the door flap (right) across the floor.'),
   room('room-mara', 'mara-room', 'The kiln hall: a vast vaulted hall built inside an old kiln, the glowing kiln mouths across the back, a pulley hoist (left), storage jars, an ash cart, the curtain to the firing house (right), and the spot where Mara\'s tent stands.', 'Key light from the three kiln mouths at the back (orange); cool dim fill from the left; the vault fades to darkness above.', { pilot: true }),
   room('room-firing-house', 'firing-house', 'The firing house: a communal kitchen and workshop on a lower level, with a hearth (left), a soup pot on the long table, shoe racks, Nell\'s pantry door, stairs up to the regulator gallery (right) and the kiln gate.', 'Warm key light from the hearth (left) and the kiln gate (centre); cool fill from the stair well (right).'),
   room('room-gallery', 'gallery', 'The regulator gallery: huge ceramic pipes, the regulator housing with its ring in the middle, a pressure gauge, a lantern and a workbench with an open notebook; a railing and a wet metal floor on the right where people stand.', 'Warm key light from the lantern (left) and the regulator\'s glow; cool, darker right side.'),
   room('room-ashways', 'ashways', 'The ashways: an open stone causeway under great pipes, a bridge and arches, a valve on a pipe (left), the passage out through an arch (centre right), ash drifting.', 'Hazy warm daylight through the arches at the back; cooler foreground; no fire.'),
-  fg('hall-left', 'room-mara', 'Rubble and broken pots at the lower left edge of the kiln hall, drawn in front of anyone behind them.',
-    { polygons: [[[0, 500], [110, 520], [190, 600], [200, 720], [0, 720]]], box: [0, 496, 202, 720] }),
-  fg('hall-right', 'room-mara', 'Rubble and jars at the lower right edge of the kiln hall.',
-    { polygons: [[[1110, 620], [1180, 570], [1280, 560], [1280, 720], [1100, 720]]], box: [1104, 560, 1280, 720] }),
-  fg('gallery-railing', 'room-gallery', 'The gallery railing posts and rails, in front of the floor.',
-    { polygons: [[[620, 415], [945, 432], [945, 450], [620, 435]], [[560, 474], [945, 478], [945, 492], [560, 490]],
-      rect(615, 415, 45, 155), rect(762, 420, 20, 212), rect(840, 420, 16, 130), rect(918, 430, 14, 170)], box: [556, 412, 946, 634] }),
+  fg('hall-left', 'room-mara', 'Rubble and broken pots in the front left corner of the kiln hall floor, drawn in front of anyone walking behind them.',
+    { polygons: [[[0, 620], [120, 636], [176, 720], [0, 720]]], box: [0, 616, 178, 720] }),
+  fg('hall-right', 'room-mara', 'A few cracked jars and clinker in the front right corner of the kiln hall floor.',
+    { polygons: [[[1136, 652], [1280, 630], [1280, 720], [1116, 720]]], box: [1114, 628, 1280, 720] }),
+  // Ansel's seat in the kiln hall: cut from Codex's ashways crate (art/hall-crate.mjs), so it needs no drawing of its own.
+  { id: 'hall-crate', kind: 'foreground', file: 'foreground/hall-crate.png', webp: true, anchor: 'top-left', room: 'room-mara', chapter: 'ch1', status: 'final', generator: 'hall-crate.mjs',
+    subject: "A wooden crate on the kiln hall floor that Ansel sits on (cut from Codex's ashways crate)." },
   fg('tent-stool', 'room-tent', 'The stool in the tent, in front of the floor.',
     { polygons: [[[150, 412], [336, 412], [338, 470], [332, 604], [146, 604], [150, 470]]], box: [146, 408, 340, 606] }),
   { id: 'prop-gauge-face', kind: 'prop', file: 'props/gauge-face.png', webp: true, anchor: 'centre', chapter: 'ch1', status: 'placeholder', generator: 'pixelate.mjs', subject: 'The gallery pressure gauge dial without its needle (the game draws a live needle).' },
@@ -142,6 +169,8 @@ export const MANIFEST = [
   extra('extra-kid', 'Bea, a child carrying a board as a toy shield.', 146, 'nell'),
   extra('extra-merchant', 'Corvin, a travelling peddler: hood, a pack of clinking bottles.', 214, 'oren'),
   { id: 'portrait-mara', kind: 'portrait', file: 'portraits/mara.png', anchor: 'none', moods: ['neutral', 'worried', 'angry'], chapter: 'game', status: 'placeholder', generator: 'rig.mjs', subject: "Mara's head and shoulders." },
+  { id: 'char-mara-medium', kind: 'character', file: 'characters/mara-medium.png', sheet: 'characters/mara-medium.json', anchor: 'bottom-centre', height: 232, rig: 'mara-medium', chapter: 'game', status: 'placeholder', generator: 'rig.mjs', subject: 'Athletic Mara in medium ceramic armour, neck-only scarf, unpowered gauntlet.' },
+  { id: 'char-mara-medium-gauntlet', kind: 'character', file: 'characters/mara-medium-gauntlet.png', sheet: 'characters/mara-medium-gauntlet.json', anchor: 'bottom-centre', height: 232, rig: 'mara-medium-gauntlet', chapter: 'game', status: 'placeholder', generator: 'rig.mjs', subject: 'Athletic Mara in medium ceramic armour, neck-only scarf, powered gauntlet.' },
   { id: 'portrait-oren', kind: 'portrait', file: 'portraits/oren.png', anchor: 'none', moods: ['neutral', 'worried', 'angry'], chapter: 'ch1', status: 'placeholder', generator: 'rig.mjs', subject: "Oren's head and shoulders." },
   { id: 'portrait-nell', kind: 'portrait', file: 'portraits/nell.png', anchor: 'none', moods: ['neutral'], chapter: 'ch1', status: 'placeholder', generator: 'rig.mjs', subject: "Nell's head and shoulders." },
 
@@ -218,6 +247,54 @@ export const MANIFEST = [
   { id: 'battle-enemy-rig', kind: 'battle-portrait', file: 'kc/ash-sweeper.webp', anchor: 'bottom-centre', width: 768, chapter: 'ch2', status: 'placeholder', generator: 'kc.mjs',
     subject: "Bryn's training rig: a caged brush drum on a sprung frame that swings back at whoever strikes it." },
 ];
+
+/**
+ * Each object's frame in art pixels (2x world units; multiples of the 2-pixel grid), in true
+ * proportion to Mara (232 art pixels tall): the importer fits a Codex drawing into this box, standing
+ * on its bottom centre (the object's foot point in the room).
+ */
+const OBJECT_FRAMES = {
+  rack: { w: 56, h: 72 },          // a brass cradle on the workbench, hand-and-a-half tall
+  notebook: { w: 72, h: 24 },      // a book lying open on the bench
+  'pantry-door': { w: 120, h: 304 }, // a full-height plank door, 1.3x Mara
+  socket: { w: 160, h: 160 },      // the regulator ring set in the great pipe
+  sweeper: { w: 260, h: 140 },     // a squat machine, reaching Mara's chest
+  valve: { w: 112, h: 204 },       // a valve wheel on its standpipe
+  tent: { w: 184, h: 224 },        // Mara's tent pitched in the hall, about his height at the ridge
+  grate: { w: 148, h: 224 },       // the grate filling the tunnel's end opening
+  steam: { w: 140, h: 280 },       // the jet from floor to pipe
+  bridge: { w: 320, h: 220 },      // the drawbridge up (on end) or down across the pit
+  rag: { w: 60, h: 32 },           // an oily rag in a heap
+  basket: { w: 84, h: 92 },        // the counterweight basket with its nest
+};
+for (const e of MANIFEST) if (e.kind === 'object' && OBJECT_FRAMES[e.id]) e.frame = OBJECT_FRAMES[e.id];
+
+// ------------------------------------------------- descriptions, the cast, new requests ---
+// The detailed descriptions Codex paints from (art/descriptions.mjs) replace the short subjects.
+import { CARDS, CAST, DESCRIPTIONS, GEAR, GEAR_TIERS, LIGHTS } from './descriptions.mjs';
+const WHO = {
+  'char-mara': CAST.mara, 'char-mara-gauntlet': `${CAST.mara} ${CAST.maraLit}`, 'char-oren': CAST.oren, 'char-nell': CAST.nell, 'char-bryn': CAST.bryn,
+  'extra-stoker': CAST.hollis, 'extra-tally': CAST.ansel, 'extra-hauler': CAST.dace, 'extra-runner': CAST.pip,
+  'extra-hoist': CAST.wren, 'extra-kid': CAST.bea, 'extra-merchant': CAST.corvin,
+};
+// Mara off duty: everyday clothes, no armour, no gauntlet (requested; rigged once delivered).
+MANIFEST.push({ id: 'char-mara-casual', kind: 'character', file: 'characters/mara-casual.png', sheet: 'characters/mara-casual.json', anchor: 'bottom-centre', height: 232,
+  chapter: 'game', status: 'requested', generator: 'rig.mjs (once delivered: measure RIGS, then npm run rig)', subject: CAST.maraCasual });
+// Ten tiers of every piece of gear: tier 1 is the piece's own picture, tiers 2-10 new pictures beside it.
+for (const [id, base] of Object.entries(GEAR)) {
+  for (let tier = 2; tier <= 10; tier++) {
+    MANIFEST.push({ id: `equipment-${id}-t${tier}`, kind: 'equipment', file: `kc/equipment/${id}-t${tier}.webp`, size: { w: 320, h: 320 }, anchor: 'none', tier,
+      chapter: 'game', status: 'requested', generator: 'Codex', subject: `${base} ${GEAR_TIERS[tier - 1]}` });
+  }
+}
+for (const e of MANIFEST) {
+  if (LIGHTS[e.id]) e.light = LIGHTS[e.id];
+  if (WHO[e.id]) e.subject = WHO[e.id];
+  else if (DESCRIPTIONS[e.id]) e.subject = DESCRIPTIONS[e.id];
+  else if (e.kind === 'portrait') e.subject = `${e.subject.replace(/\.$/, '')}: cut by the game from the character's drawing.`;
+  else if (e.kind === 'card') { const [name, does, motif] = CARDS[e.id.slice(5)]; e.subject = `${name} (the card's effect: ${does}): ${motif}`; }
+  else if (e.kind === 'equipment' && !e.tier) { const id = e.id.slice('equipment-'.length); e.tier = 1; e.subject = `${GEAR[id]} ${GEAR_TIERS[0]}`; }
+}
 
 // Statuses set by the importer (art/status.json: { "<id>": "final" }) override the defaults above.
 import { existsSync, readFileSync } from 'node:fs';

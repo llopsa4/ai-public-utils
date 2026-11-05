@@ -25,7 +25,7 @@ for (const art of ['mara', 'mara-gauntlet', 'oren', 'nell', 'sweeper', 'valve', 
   assert.ok(has(art, 'png'), `missing art: ${art}`);
 }
 // Rooms and foreground cut-outs ship as WebP only (the tent object sprite shares the room's name and stays PNG).
-for (const room of ['tent', 'mara-room', 'firing-house', 'gallery', 'ashways', 'tent-stool', 'hall-left', 'hall-right', 'gallery-railing']) {
+for (const room of ['tent', 'mara-room', 'firing-house', 'gallery', 'ashways', 'tent-stool', 'hall-left', 'hall-right']) {
   assert.ok(has(room, 'webp'), `missing WebP: ${room}`);
   if (room !== 'tent') assert.ok(!has(room, 'png'), `PNG copy of ${room} shipped`);
 }
@@ -59,7 +59,7 @@ for (const n of built) {
   if (chapter) perChapter[chapter] = (perChapter[chapter] ?? 0) + size(n);
 }
 const total = built.filter(n => !laterChapter(n)).reduce((sum, n) => sum + size(n), 0);
-const later = /^(firing-house|gallery|ashways|hall-left|hall-right|gallery-railing|mara-gauntlet|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
+const later = /^(firing-house|gallery|ashways|hall-left|hall-right|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
 // .woff fonts are fallbacks for browsers without WOFF2; current browsers never fetch them.
 const firstLoad = built.filter(n => !later.test(n) && !laterChapter(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;

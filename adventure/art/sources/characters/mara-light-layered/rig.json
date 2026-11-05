@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "outfit": "light",
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "height": 232,
+  "baseline": 1500,
+  "sourceHeight": 1460,
+  "overlap": 25,
+  "order": [
+    "farUpperArm",
+    "farForearm",
+    "farThigh",
+    "farShin",
+    "farBoot",
+    "nearThigh",
+    "nearShin",
+    "nearBoot",
+    "torso",
+    "nearUpperArm",
+    "nearForearm"
+  ],
+  "joints": {
+    "nearShoulder": [
+      396,
+      356
+    ],
+    "nearElbow": [
+      347,
+      532
+    ],
+    "farShoulder": [
+      606,
+      354
+    ],
+    "farElbow": [
+      650,
+      570
+    ],
+    "nearHip": [
+      478,
+      720
+    ],
+    "farHip": [
+      591,
+      720
+    ],
+    "nearKnee": [
+      449,
+      1020
+    ],
+    "farKnee": [
+      620,
+      1020
+    ],
+    "nearAnkle": [
+      393,
+      1390
+    ],
+    "farAnkle": [
+      605,
+      1390
+    ]
+  },
+  "eyes": [
+    {
+      "x": 567,
+      "y": 153,
+      "rx": 11,
+      "ry": 5,
+      "skinAt": [
+        567,
+        167
+      ],
+      "blinkRy": 12,
+      "lashTop": -1,
+      "lashBottom": 9
+    }
+  ],
+  "face": {
+    "mouth": {
+      "x": 579,
+      "y": 195,
+      "rx": 11,
+      "ry": 4
+    },
+    "brows": [
+      {
+        "x0": 549,
+        "x1": 582,
+        "y0": 132,
+        "y1": 143,
+        "inner": "right"
+      }
+    ]
+  },
+  "portrait": [
+    355,
+    26,
+    320,
+    320
+  ],
+  "ember": {
+    "center": [
+      347,
+      791
+    ],
+    "radius": 18
+  },
+  "poseEmbers": {
+    "kneel": {
+      "center": [
+        246,
+        1216
+      ],
+      "radius": 19
+    },
+    "lie": {
+      "center": [
+        686,
+        718
+      ],
+      "radius": 15
+    }
+  },
+  "walk": {
+    "frames": 8,
+    "contactFrames": [
+      0,
+      4
+    ],
+    "hipSwing": 22,
+    "armSwing": 20,
+    "lift": 175,
+    "strideSource": 505,
+    "references": {
+      "contact": "walk-contact.png",
+      "passing": "walk-passing.png"
+    },
+    "calibration": "Reference-guided 22-degree hip stride and 20-degree opposite arm swing; fixed source bone lengths and planted-foot IK constrain the silhouette."
+  },
+  "extraction": {
+    "hiddenPixels": 59182,
+    "sharedOverlapPixels": 2642,
+    "neutralDifferencePixels": 0
+  },
+  "idle": {
+    "file": "idle.png",
+    "sha256": "0a75859f191e95771dab8b7778cf1c1efeab62aacd344ad286e24e7f76233186",
+    "sourceHeight": 1493,
+    "baseline": 1505,
+    "anchorX": 520,
+    "eyes": [
+      {
+        "x": 528,
+        "y": 115,
+        "rx": 12,
+        "ry": 6,
+        "blinkRy": 12,
+        "lashTop": -1,
+        "lashBottom": 9,
+        "skinAt": [
+          528,
+          131
+        ]
+      },
+      {
+        "x": 565,
+        "y": 115,
+        "rx": 8,
+        "ry": 6,
+        "blinkRy": 12,
+        "lashTop": -1,
+        "lashBottom": 9,
+        "skinAt": [
+          565,
+          131
+        ]
+      }
+    ],
+    "ember": {
+      "center": [
+        274,
+        811
+      ],
+      "radius": 22
+    }
+  }
+}

@@ -30,6 +30,9 @@ export const EXTRA_TAGS = ['stand_down', 'stand_side', 'stand_up', 'blink_down',
 /** Character sheets: Mara (unlit and lit gauntlet), the story characters, then the background people. */
 /** `dir`: a later chapter's characters live in its folder (art/src/<chapter>/characters). */
 export const CHARACTER_SHEETS: { sheet: string; role: string; tags: string[]; optional?: string[]; dir?: string }[] = [
+  { sheet: 'mara-casual', role: 'Mara in casual clothes', tags: STORY_TAGS },
+  { sheet: 'mara-medium', role: 'Mara in medium armour, unlit', tags: STORY_TAGS },
+  { sheet: 'mara-medium-gauntlet', role: 'Mara in medium armour, lit', tags: STORY_TAGS },
   { sheet: 'mara', role: 'Mara, gauntlet unlit (start of the game)', tags: STORY_TAGS },
   { sheet: 'mara-gauntlet', role: 'Mara, gauntlet lit', tags: STORY_TAGS },
   ...NPC_IDS.map(id => ({ sheet: id, role: `${id[0].toUpperCase()}${id.slice(1)} (story character)`, tags: STORY_TAGS, optional: ['fidget'], dir: (RIGS as Record<string, { dir?: string }>)[id]?.dir })),
@@ -113,6 +116,15 @@ export function checkArt(): Problem[] {
       const prop = join(ART, 'props', `${p.image}.png`);
       if (needPng(prop)) webpFor(prop);
     }
+    // Hover outlines: every hotspot painted into the room (no object of its own) has one cut from the
+    // painting (npm run art:outlines; the game traces the click area if not).
+    const outlines = join(ART, 'outlines', `${room.background}.json`);
+    const place: Record<string, unknown> = existsSync(outlines) ? JSON.parse(readFileSync(outlines, 'utf8')).place ?? {} : {};
+    const objects = new Set((room.objects ?? []).map(o => o.id));
+    for (const h of room.hotspots) {
+      const painted = h.outline?.painted ?? !(h.outline?.objects?.length || objects.has(h.id));
+      if (painted && !place[h.id]) warn(outlines, `no hover outline for ${room.id}'s "${h.id}" (run npm run art:outlines)`);
+    }
     for (const o of room.objects) {
       const tags = [o.whenTrue, o.whenFalse, o.anim].filter((x): x is string => !!x);
       sheet(join(ART, 'objects', o.sheet), tags);
@@ -177,7 +189,8 @@ export function checkManifest(): Problem[] {
   }
   const walk = (dir: string): string[] => readdirSync(join(ART, dir), { withFileTypes: true })
     .flatMap(d => (d.isDirectory() ? walk(`${dir}${d.name}/`) : [`${dir}${d.name}`]));
-  for (const f of walk('')) if (!listed.has(f)) problems.push({ file: `art/src/${f}`, message: 'not in the art manifest (art/manifest.mjs)' });
+  // Hover outline sheets are generated from the room paintings (npm run art:outlines), checked with the rooms.
+  for (const f of walk('')) if (!listed.has(f) && !f.startsWith('outlines/')) problems.push({ file: `art/src/${f}`, message: 'not in the art manifest (art/manifest.mjs)' });
   return problems;
 }
 

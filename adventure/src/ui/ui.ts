@@ -44,6 +44,8 @@ export interface UiHost {
   startStory(): void;
   /** Saves soon (after gear changes and purchases). */
   autosave(): void;
+  /** Equipment appearance changed; preserve the active actor's position and pose. */
+  refreshHeroAppearance?(): void;
   /** Labels for everything interactive in the room, in world coordinates. */
   hotspotLabels(): { text: string; x: number; y: number }[];
   /** Title screen: load the autosave and start playing. */
@@ -384,7 +386,7 @@ export class Ui {
   // --------------------------------------------------------- inventory ---
   renderInventory(): void {
     const state = this.host.getState();
-    $('gear-btn').hidden = !state.flags.fought;
+    $('gear-btn').hidden = !state.flags.fought && !state.flags.metOren;
     const selected = this.host.selectedItem();
     this.inventory.replaceChildren();
     if (state.inventory.length === 0) {

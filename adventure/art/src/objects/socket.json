@@ -5,54 +5,54 @@
    "frame": {
     "x": 0,
     "y": 0,
-    "w": 262,
-    "h": 262
+    "w": 160,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 262,
-    "h": 262
+    "w": 160,
+    "h": 160
    },
    "sourceSize": {
-    "w": 262,
-    "h": 262
+    "w": 160,
+    "h": 160
    },
-   "duration": 100
+   "duration": 1000
   },
   {
    "filename": "1",
    "frame": {
-    "x": 262,
+    "x": 160,
     "y": 0,
-    "w": 262,
-    "h": 262
+    "w": 160,
+    "h": 160
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 262,
-    "h": 262
+    "w": 160,
+    "h": 160
    },
    "sourceSize": {
-    "w": 262,
-    "h": 262
+    "w": 160,
+    "h": 160
    },
-   "duration": 100
+   "duration": 1000
   }
  ],
  "meta": {
-  "app": "adventure pixelate.mjs (Aseprite JSON-array compatible)",
+  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
   "version": "1",
   "image": "socket.png",
   "format": "RGBA8888",
   "size": {
-   "w": 524,
-   "h": 262
+   "w": 320,
+   "h": 160
   },
   "scale": "1",
   "frameTags": [

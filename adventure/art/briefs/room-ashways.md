@@ -1,25 +1,53 @@
 # room-ashways
 
-Status: **placeholder** · room · chapter ch1 · in the game as `art/src/rooms/ashways.png`
+Status: **final** · room · chapter ch1 · in the game as `art/src/rooms/ashways.png`
+
+## What the game does with it
+
+In the game as the room `ashways` (ch1). Mara (232 px tall) and the others walk in the floor band: x 0–1280, y 536–690.
+
+Everything the player can click, at these places (art pixels), each must be painted there and recognisable:
+- **ash sweeper** (`sweeper`, x 940–1200, y 456–596): look at, talk to, use. Only there at some points of the story.
+- **ash sweeper** (`sweeperAtPipe`, x 260–520, y 456–596): look at, talk to, use. Only there at some points of the story.
+- **steam valve** (`valve`, x 180–292, y 320–524): look at, open, close, use.
+- **passage under the bridge** (`passage`, x 1120–1280, y 200–528): look at, go through (an exit).
+- **old pipes** (`pipes`, x 0–600, y 0–200): look at, use.
+- **way back to Cinderfold** (`wayBack`, x 0–60, y 240–528): look at, go through (an exit).
+
+Drawn separately as objects (leave their spot plain in the painting, they stand there):
+- `valve` standing on (236, 524).
+- `sweeper` standing on (1070, 596), later moved to (390, 596).
+
+Background people walk about the floor band here (the crowd); keep the band open.
+
+The game hangs the room's name board around (660, 120): keep that patch of wall plain.
+
+
+## Technical
+
+- File: `art/inbox/room-ashways.png`, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 2-pixel grid and snapped to the palette.
+- Layout to follow: `art/spec/ashways.jpg`.
 
 ## Prompt for Codex
 
 ```text
-Draw for the game Cinderfold: The ashways: an open stone causeway under great pipes, a bridge and arches, a valve on a pipe (left), the passage out through an arch (centre right), ash drifting.
-Lighting: Hazy warm daylight through the arches at the back; cooler foreground; no fire.
-Style: painterly pixel art. Painted forms, worn materials and soft light falloff, finished as pixel art with crisp edges (no blur or haze around shapes) and a limited palette.
-World: an industrial-fantasy village inside an old kiln: fired clay, ceramic plates, iron, brass, soot, ash, ochre cloth, ember light. Lived-in and repaired.
-Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochres, rust, brass, ember orange, clay; soot greys and iron blue-greys). Every pixel is snapped to it on import.
-Do not paint glows, haze, light shafts, particles or text: the game adds them. No photographic detail, lens effects, neon or modern objects.
-Light: warm key light from the fire named above, cool dim fill from the opposite side. Camera at eye level, stage-like three-quarter view; floor in the lower third to two-fifths.
-Deliver: art/inbox/room-ashways.png, 1280×720 (or larger at 16:9), opaque, no people in it.
-Composition: keep the layout of art/spec/ashways.jpg (attached): the walkable floor (green), the doorways and every outlined thing must stay where it is shown.
+Draw for the game Cinderfold: The ashways, outside the kiln, seen flat-on: an open stone causeway under great overhead pipes at dusk, grey ash everywhere. Left edge: the arched way back into the kiln. Top left: a tangle of great pipes overhead. Left: a pressure valve on a standpipe (drawn separately as an object; leave its spot plain). In the background: an old stone bridge spanning the view on arches, and under its right end the dark passage out of Cinderfold country (right side, the way on). Drifts of ash, a few cracked flagstones, distant chimneys in the haze. The ash sweeper machine is drawn separately.
+Light sources in this place: dusk daylight through the bridge arches; no fire.
+Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
+World: an industrial-fantasy village inside an old kiln and the ash country around it: fired clay, cream ceramic plates, iron, brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
+Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
+Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).
+Staging: flat 2D, like a stage set: no perspective, no vanishing point, the camera straight at the back wall at eye level, no side walls. The back wall meets the floor at y 524; the floor band below it (y 536–690) is where people walk, always the same size. Furniture stands against the back wall on the floor line or hangs on the wall above it.
+Light: paint the room evenly lit. Show the light sources named above as things in the room (lamps, fire, a lit doorway), with only soft ambient shading (darker under furniture, in the corners and high up). The game adds the glow, the flicker and the colour of the light.
+File: art/inbox/room-ashways.png, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 2-pixel grid and snapped to the palette.
+Layout to follow: art/spec/ashways.jpg.
 ```
 
 ## Attach
 
-- `art/STYLE.md` (the style bible) and `art/style/palette.png`
-- `art/spec/ashways.jpg` (layout to keep)
-- The current placeholder for reference: `art/src/rooms/ashways.png`
+- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
+- `art/spec/ashways.jpg` (the layout to follow)
 
-Then: `npm run art:import`, check `art/inbox/preview/room-ashways.png`, `npm run art:check`, and look at it in the game.
+## Then
+
+`npm run art:import`, look at `art/inbox/preview/room-ashways.png`, `npm run art:check`.

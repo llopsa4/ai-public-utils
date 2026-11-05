@@ -1,5 +1,5 @@
 // Plays scripts: commands in order (src/game/room/commands.ts), speech and conversations.
-import { resolveNode } from '../../engine/dialogue';
+import { applyDialogueGear, resolveNode } from '../../engine/dialogue';
 import { t } from '../../engine/i18n';
 import { sound } from '../../audio/sound';
 import { applyCommand } from '../../engine/state';
@@ -58,7 +58,9 @@ export async function runDialogue(scene: RoomScene, id: string): Promise<void> {
     for (const line of node.lines) await say(scene, line.actor, line.text);
     for (const [flag, value] of Object.entries(node.set)) applyCommand(state, { type: 'setFlag', flag, value });
     for (const item of node.items) applyCommand(state, { type: 'addItem', item });
-    if (node.items.length > 0) scene.session.ui.renderInventory();
+    const receivedGear = applyDialogueGear(state.kit, node.gear);
+    if (receivedGear) scene.refreshObjects();
+    if (node.items.length > 0 || receivedGear) scene.session.ui.renderInventory();
     if (node.choices.length > 0) {
       const index = await scene.session.ui.choose(node.choices.map(c => t(c.text)));
       sound.choose();

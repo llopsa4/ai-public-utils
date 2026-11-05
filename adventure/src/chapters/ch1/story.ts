@@ -18,8 +18,9 @@ export const STORY: StoryRules = {
   // restarts from its beginning).
   onEnter: [{ room: 'gallery', if: [{ flag: 'kilnCold' }], run: s => afterRelease(s.flags) }],
   flagSounds: { latchFixed: 'latch', valveVented: 'hiss' },
-  // Mara with the gauntlet lit once the cell is fitted.
-  heroSheet: [{ if: [{ flag: 'hasGauntlet' }], pick: 'mara-gauntlet' }],
+  // A new adventure starts with Mara in everyday clothes; he gears up (armour, the gauntlet lit) when
+  // he takes the cell from its cradle. Until casual Mara is drawn the game shows the unlit-gauntlet sheet.
+  heroSheet: [{ if: [{ flag: 'hasGauntlet' }], pick: 'mara-gauntlet' }, { pick: 'mara-casual' }],
   guided: [{ if: [{ notFlag: 'fought' }] }],
   // After the fight, the nervous score alone until the chapter ends.
   afterFight: { music: 'nervous', hush: true },

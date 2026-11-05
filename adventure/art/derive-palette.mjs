@@ -1,5 +1,5 @@
-// Derives the master palette (art/style/palette.json + palette.png) from today's rooms and
-// character sheets, and draws the scale reference (art/style/scale.png). Every imported image is
+// Derives the master palette (art/style/palette.json + palette.png) from the tent reference (the
+// style master for the Codex art), and draws the scale reference (art/style/scale.png). Every imported image is
 // snapped to this palette (art/import.mjs), which is what keeps Codex's images in one tone.
 //
 //   node art/derive-palette.mjs   (run once; re-run only to deliberately re-base the palette)
@@ -15,21 +15,13 @@ const style = join(here, 'style');
 mkdirSync(style, { recursive: true });
 const COLOURS = 160;
 
-// A montage: the five rooms at half size, plus the characters' standing frames.
-const rooms = ['tent', 'mara-room', 'firing-house', 'gallery', 'ashways'];
-const tiles = [];
-for (const [i, r] of rooms.entries()) {
-  tiles.push({ input: await sharp(join(src, 'rooms', `${r}.png`)).resize(640, 360).png().toBuffer(), left: (i % 3) * 640, top: Math.floor(i / 3) * 360 });
-}
-const sheets = ['mara-gauntlet', 'oren', 'nell', 'extra-stoker', 'extra-hoist', 'extra-runner'];
-for (const [i, s] of sheets.entries()) {
-  tiles.push({ input: await sharp(join(src, 'characters', `${s}.png`)).extract({ left: 0, top: 0, width: 256, height: 256 }).png().toBuffer(), left: 1280 + (i % 2) * 256, top: 360 + Math.floor(i / 2) * 120 });
-}
-const montage = await sharp({ create: { width: 1920, height: 720, channels: 4, background: { r: 0, g: 0, b: 0, alpha: 0 } } })
-  .composite(tiles).raw().toBuffer({ resolveWithObject: true });
+// The source: the user's tent reference (adventure/tent-reference.png), the style master for all
+// the Codex art, at the game's pixel grid size so the palette matches what the importer snaps.
+const montage = await sharp(join(here, '..', 'tent-reference.png')).resize(640, 360, { kernel: 'lanczos3' }).ensureAlpha()
+  .raw().toBuffer({ resolveWithObject: true });
 // k-means over every 7th opaque pixel (as art/rig.mjs builds its sheet palettes).
 const samples = [];
-for (let i = 0; i < montage.data.length; i += 4 * 7) if (montage.data[i + 3] >= 128) samples.push([montage.data[i], montage.data[i + 1], montage.data[i + 2]]);
+for (let i = 0; i < montage.data.length; i += 4 * 3) if (montage.data[i + 3] >= 128) samples.push([montage.data[i], montage.data[i + 1], montage.data[i + 2]]);
 const sorted = [...samples].sort((a, b) => (a[0] * 3 + a[1] * 6 + a[2]) - (b[0] * 3 + b[1] * 6 + b[2]));
 let centres = Array.from({ length: COLOURS }, (_, j) => [...sorted[Math.floor(((j + 0.5) / COLOURS) * sorted.length)]]);
 for (let it = 0; it < 12; it++) {
@@ -46,7 +38,7 @@ const seen = new Map(centres.map(c => { const [r, g, b] = c.map(Math.round); ret
 const palette = [...seen.keys()].map(k => [k >> 16, (k >> 8) & 255, k & 255])
   .sort((a, b) => (a[0] * 0.3 + a[1] * 0.59 + a[2] * 0.11) - (b[0] * 0.3 + b[1] * 0.59 + b[2] * 0.11));
 writeFileSync(join(style, 'palette.json'), JSON.stringify({
-  note: 'Cinderfold master palette: every image is snapped to these colours on import (art/import.mjs). Derived from the chapter 1 placeholders by art/derive-palette.mjs.',
+  note: 'Cinderfold master palette: every image is snapped to these colours on import (art/import.mjs). Derived from the tent reference (tent-reference.png, the style master) by art/derive-palette.mjs.',
   colours: palette.map(([r, g, b]) => `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`),
 }, null, 1) + '\n');
 
@@ -62,24 +54,30 @@ palette.forEach(([r, g, b], n) => {
 });
 writeFileSync(join(style, 'palette.png'), PNG.sync.write(swatch));
 
-// Scale reference: Mara, an adult, a child, a doorway and a workbench, on one floor line, at the
-// heights a brief asks for (art pixels at the front of a room).
-const W = 900, H = 420, floor = 380;
-// Sheet frames are 256x256 at true art size, feet on the bottom row: placed unscaled, they show
-// the real heights (232 for Mara, 226 for Oren, 146 for a child).
-const people = [['mara-gauntlet', 30], ['oren', 230], ['extra-kid', 400]];
-const comps = [];
-for (const [sheet, x] of people) {
-  comps.push({ input: await sharp(join(src, 'characters', `${sheet}.png`)).extract({ left: 0, top: 0, width: 256, height: 256 }).png().toBuffer(), left: x, top: floor - 255 });
+// Scale reference: the cast and the furniture side by side on one floor line, at the heights the
+// briefs ask for, in art pixels (grid pixels x 4): what every Codex picture must respect.
+const SCALE_ITEMS = [
+  // [label, width, height, colour]
+  ['Mara 232', 64, 232, '#d08a3a'], ['Bryn 224 (broad)', 84, 224, '#b0503a'], ['Oren 226', 56, 226, '#8a8a70'],
+  ['Nell 220', 60, 220, '#a07850'], ['Adult 206-224', 58, 216, '#7a6a58'], ['Child 146-150', 44, 148, '#c8a060'],
+  ['Doorway 328', 130, 328, null], ['Bench / table top 104', 140, 104, '#6a4a2e'], ['Chair seat 48', 44, 48, '#6a4a2e'],
+  ['Stool 52', 44, 52, '#6a4a2e'], ['Cot top 44', 150, 44, '#5a6a4a'], ['Crate 48', 52, 48, '#6a4a2e'],
+  ['Jar 56', 36, 56, '#a86a40'], ['Lantern 32', 20, 32, '#c8a040'],
+];
+const W = 1680, H = 470, floor = 400;
+let x = 24, shapes = '';
+for (const [label, w, h, colour] of SCALE_ITEMS) {
+  shapes += colour
+    ? `<rect x="${x}" y="${floor - h}" width="${w}" height="${h}" rx="${h > 140 ? 18 : 4}" fill="${colour}" stroke="#1e1412" stroke-width="3"/>`
+    : `<rect x="${x}" y="${floor - h}" width="${w}" height="${h}" fill="none" stroke="#c89a5a" stroke-width="4"/>`;
+  shapes += `<text x="${x + w / 2}" y="${floor + 26}" font-family="Arial" font-size="15" fill="#e8d8c0" text-anchor="middle">${label.split(' ').slice(0, 2).join(' ')}</text>`;
+  shapes += `<text x="${x + w / 2}" y="${floor + 46}" font-family="Arial" font-size="15" fill="#e8d8c0" text-anchor="middle">${label.split(' ').slice(2).join(' ')}</text>`;
+  x += w + 26;
 }
-const labels = `
-  <rect x="600" y="${floor - 325}" width="120" height="325" fill="none" stroke="#c89a5a" stroke-width="4"/>
-  <rect x="760" y="${floor - 104}" width="110" height="104" fill="#6a4a2e" stroke="#2a1a10" stroke-width="3"/>
-  <line x1="20" y1="${floor}" x2="${W - 20}" y2="${floor}" stroke="#8a7a6a" stroke-width="2"/>
-  ${[['Mara 232', 100], ['Adult 226', 280], ['Child 146', 440], ['Doorway 325', 610], ['Bench 104', 765]].map(([t, x]) => `<text x="${x}" y="${floor + 30}" font-family="Arial" font-size="18" fill="#e8d8c0">${t}</text>`).join('')}
-`;
-const scale = await sharp({ create: { width: W, height: H, channels: 4, background: '#1a120c' } })
-  .composite([{ input: Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${labels}</svg>`), left: 0, top: 0 }, ...comps])
-  .png().toBuffer();
-writeFileSync(join(style, 'scale.png'), scale);
+const chart = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}"><rect width="${W}" height="${H}" fill="#2a2420"/>
+  ${[...Array(Math.floor(floor / 16))].map((_, i) => `<line x1="0" y1="${floor - i * 16}" x2="${W}" y2="${floor - i * 16}" stroke="#ffffff" stroke-opacity="${i % 5 ? 0.04 : 0.1}"/>`).join('')}
+  <line x1="0" y1="${floor}" x2="${W}" y2="${floor}" stroke="#8a7a6a" stroke-width="2"/>
+  <text x="24" y="34" font-family="Arial" font-size="20" fill="#f0e0c8">Heights in art pixels (2x world; a room is 1280x720, its pixel grid 4 art pixels): every figure and object is drawn in these proportions.</text>
+  ${shapes}</svg>`;
+await sharp(Buffer.from(chart)).png().toFile(join(style, 'scale.png'));
 console.log(`Master palette: ${palette.length} colours (art/style/palette.json, palette.png); scale reference art/style/scale.png.`);

@@ -43,14 +43,23 @@ import firingHousePng from '../../art/src/rooms/firing-house.webp';
 import galleryPng from '../../art/src/rooms/gallery.webp';
 import ashwaysPng from '../../art/src/rooms/ashways.webp';
 import type { NpcId, Verb } from '../engine/types';
+import type { WalkTiming } from './walk';
 
 /** Aseprite "JSON array" export (also produced by LibreSprite and the art scripts). */
 export interface AsepriteSheet {
   frames: { filename: string; frame: { x: number; y: number; w: number; h: number }; duration: number }[];
-  meta: { frameTags: { name: string; from: number; to: number; direction?: string }[] };
+  meta: { frameTags: { name: string; from: number; to: number; direction?: string }[]; walk?: WalkTiming };
 }
 
+// Mara in everyday clothes (the start of a new adventure, before he gears up): used once Codex has
+// delivered it and it is rigged (art/src/characters/mara-casual.png + .json); until then the game
+// shows the unlit-gauntlet sheet.
+const casualFiles = import.meta.glob('../../art/src/characters/mara-casual.{png,json}', { eager: true, import: 'default' }) as Record<string, unknown>;
+const casualPng = casualFiles['../../art/src/characters/mara-casual.png'] as string | undefined;
+const casualJson = casualFiles['../../art/src/characters/mara-casual.json'] as AsepriteSheet | undefined;
+
 export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
+  ...(casualPng && casualJson ? { 'mara-casual': { png: casualPng, json: casualJson } } : {}),
   mara: { png: maraPng, json: maraJson },
   'mara-gauntlet': { png: maraGauntletPng, json: maraGauntletJson },
   oren: { png: orenPng, json: orenJson },
@@ -72,8 +81,16 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   'extra-merchant': { png: extraMerchantPng, json: extraMerchantJson },
 };
 
+// Articulated medium-armour variants share the same runtime tags as the light outfit.
+const mediumFiles = import.meta.glob('../../art/src/characters/mara-medium*.{png,json}', { eager: true, import: 'default' }) as Record<string, unknown>;
+for (const key of ['mara-medium', 'mara-medium-gauntlet']) {
+  const png = mediumFiles[`../../art/src/characters/${key}.png`] as string | undefined;
+  const json = mediumFiles[`../../art/src/characters/${key}.json`] as AsepriteSheet | undefined;
+  if (png && json) SHEETS[key] = { png, json };
+}
+
 /** Sheets loaded only when a room needs them (the rest load at boot): saves ~550 KB before the title. */
-export const LAZY_SHEETS = new Set(['mara-gauntlet', 'oren', 'nell', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
+export const LAZY_SHEETS = new Set(['mara-gauntlet', 'mara-medium', 'mara-medium-gauntlet', 'oren', 'nell', ...Object.keys(SHEETS).filter(k => k.startsWith('extra-'))]);
 
 /** Sheet used for each non-player character. */
 export const NPC_SHEETS: Partial<Record<NpcId, string>> = { oren: 'oren', nell: 'nell' };
@@ -101,6 +118,18 @@ const propFiles = import.meta.glob('../../art/src/props/*.webp', { eager: true, 
 /** Animated set pieces keyed by file name (texture key `prop-<name>`). */
 export const PROP_IMAGES: Record<string, string> = Object.fromEntries(
   Object.entries(propFiles).map(([path, url]) => [path.replace(/^.*\/([\w-]+)\.webp$/, '$1'), url]),
+);
+
+/** A room's hover outlines for its painted things (art/outlines.py): a sheet of frames by hotspot id. */
+export interface OutlineSheet { png: string; json: AsepriteSheet & { place: Record<string, { x: number; y: number }> }; place: Record<string, { x: number; y: number }> }
+const outlinePngs = import.meta.glob('../../art/src/outlines/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+const outlineJsons = import.meta.glob('../../art/src/outlines/*.json', { eager: true, import: 'default' }) as Record<string, OutlineSheet['json']>;
+/** Keyed by room background (texture key `outline-<background>`). */
+export const OUTLINES: Record<string, OutlineSheet> = Object.fromEntries(
+  Object.entries(outlineJsons).flatMap(([path, json]) => {
+    const png = outlinePngs[path.replace(/\.json$/, '.png')];
+    return png ? [[path.replace(/^.*\/([\w-]+)\.json$/, '$1'), { png, json, place: json.place }]] : [];
+  }),
 );
 
 const portraitFiles = import.meta.glob('../../art/src/portraits/*.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;

@@ -28,15 +28,15 @@ export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
 
 /** Where Mara stands to talk to each character. */
 const TALK_SPOTS: Partial<Record<NpcId, { at: Point; face: 'left' | 'right'; npcFace: 'left' | 'right' }>> = {
-  oren: { at: { x: 470, y: 304 }, face: 'right', npcFace: 'left' },
-  nell: { at: { x: 346, y: 298 }, face: 'left', npcFace: 'right' },
+  oren: { at: { x: 436, y: 302 }, face: 'right', npcFace: 'left' },
+  nell: { at: { x: 290, y: 302 }, face: 'left', npcFace: 'right' },
 };
 
 /** Inventory items offer these verbs in the action ring. */
 export const ITEM_VERBS: Verb[] = ['look', 'use'];
 
 /** Off-screen voice position for Oren calling down the stairs. */
-const STAIRS_VOICE = { x: 560, y: 120 };
+const STAIRS_VOICE = { x: 538, y: 100 };
 
 /** The sweeper by the valve, and the same creature once it has moved to the pipe. */
 const SWEEPER = ['sweeper', 'sweeperAtPipe'];
@@ -140,7 +140,8 @@ export const RULES: readonly Rule[] = [
   // --------------------------------------------------------- Mara's tent ---
   ...either('rack', 'look', 'hasGauntlet', 'line.rackLookEmpty', 'line.rackLook'),
   { target: 'rack', verb: ['take', 'use'], when: F('hasGauntlet'), do: [say('line.rackEmpty')] },
-  { target: 'rack', verb: ['take', 'use'], walk: true, do: [wait(150), flag('hasGauntlet'), addItem('gauntlet'), wait(250), say('line.rackTake')] },
+  // Gearing up: kneels to the cradle, armour on and the cell into the gauntlet, stands up kitted out.
+  { target: 'rack', verb: ['take', 'use'], walk: true, do: [say('line.gearUp'), pose('hero', 'crouch'), wait(500), flag('hasGauntlet'), addItem('gauntlet'), wait(300), pose('hero', 'stand'), wait(200), say('line.rackTake')] },
   { target: 'notebook', verb: 'look', do: [say('line.notebookOnBench')] },
   { target: 'notebook', verb: 'open', walk: true, do: [say('line.notebookOpen')] },
   { target: 'notebook', verb: 'take', walk: true, do: [flag('hasNotebook'), addItem('notebook'), say('line.notebookTake')] },
@@ -155,6 +156,8 @@ export const RULES: readonly Rule[] = [
   { target: 'stool', verb: 'use', do: [say('line.stoolUse')] },
   { target: 'drum', verb: 'look', do: [say('line.drumLook')] },
   { target: 'drum', verb: 'use', walk: true, do: [say('line.drumUse')] },
+  { target: 'stove', verb: 'look', do: [say('line.stoveLook')] },
+  { target: 'stove', verb: ['use', 'open'], walk: true, do: [say('line.stoveUse')] },
 
   // ------------------------------------------------------------ kiln hall ---
   { target: 'toTent', verb: 'look', do: [say('line.toTentLook')] },
@@ -238,7 +241,7 @@ export const RULES: readonly Rule[] = [
   { target: SWEEPER, verb: 'use', do: [say('line.sweeperUse')] },
   { target: 'valve', item: 'gauntlet', when: F('valveVented'), do: [say('line.valveAlready')] },
   { target: 'valve', item: 'gauntlet', walk: true, do: [wait(200), shake(250), flag('valveVented'),
-    { type: 'moveObject', id: 'sweeper', x: 172, y: 266, ms: 1600 }, say('line.valveVented')] },
+    { type: 'moveObject', id: 'sweeper', x: 195, y: 298, ms: 1600 }, say('line.valveVented')] },
   ...either('valve', 'look', 'valveVented', 'line.valveLookVented', 'line.valveLook'),
   ...either('valve', ['open', 'use'], 'valveVented', 'line.valveAlready', 'line.valveStiff', true),
   { target: 'valve', verb: 'close', do: [say('line.valveClose')] },
@@ -272,11 +275,11 @@ export const INTERACTION_KEYS = [
   'line.useFails', 'line.nothingSpecial', 'line.cannot', 'line.alreadyStanding', 'line.askStand',
   'line.gauntletLook', 'line.notebookLook', 'line.notebookLookAfter', 'line.regulatorItemLook', 'line.breadLook', 'line.scarfLook',
   'line.breadEat', 'line.scarfWear', 'line.heroUseItem', 'line.heroLook', 'line.heroLookCold', 'line.heroTalk', 'line.heroLie', 'line.heroAlreadyStanding',
-  'line.rackLook', 'line.rackLookEmpty', 'line.rackEmpty', 'line.rackTake',
+  'line.rackLook', 'line.rackLookEmpty', 'line.rackEmpty', 'line.rackTake', 'line.gearUp',
   'line.notebookOnBench', 'line.notebookOpen', 'line.notebookTake',
   'line.nicheLook', 'line.nicheLookCold', 'line.nicheUse', 'line.nicheUseCold', 'line.roomCurtainLook',
   'line.tentFlapLook', 'line.tentNotYet', 'line.workbenchLook', 'line.workbenchUse', 'line.jarLook', 'line.jarTake',
-  'line.stoolLook', 'line.stoolUse', 'line.drumLook', 'line.drumUse', 'line.toTentLook',
+  'line.stoolLook', 'line.stoolUse', 'line.drumLook', 'line.drumUse', 'line.stoveLook', 'line.stoveUse', 'line.toTentLook',
   'line.pulleysLook', 'line.pulleysUse', 'line.jarsLook', 'line.jarsTake', 'line.cartLook', 'line.cartUse',
   'line.latchAlreadyFixed', 'line.nellFixed', 'line.maraLatch', 'line.nellSoup', 'line.maraNightShift', 'line.kilnGroans', 'line.orenCalls', 'line.maraAlarm',
   'line.latchLook', 'line.latchLookFixed', 'line.latchOpenFixed', 'line.latchStuck', 'line.latchStuckHint',

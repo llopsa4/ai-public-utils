@@ -5,54 +5,54 @@
    "frame": {
     "x": 0,
     "y": 0,
-    "w": 112,
-    "h": 140
+    "w": 56,
+    "h": 72
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 112,
-    "h": 140
+    "w": 56,
+    "h": 72
    },
    "sourceSize": {
-    "w": 112,
-    "h": 140
+    "w": 56,
+    "h": 72
    },
-   "duration": 100
+   "duration": 1000
   },
   {
    "filename": "1",
    "frame": {
-    "x": 112,
+    "x": 56,
     "y": 0,
-    "w": 112,
-    "h": 140
+    "w": 56,
+    "h": 72
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 112,
-    "h": 140
+    "w": 56,
+    "h": 72
    },
    "sourceSize": {
-    "w": 112,
-    "h": 140
+    "w": 56,
+    "h": 72
    },
-   "duration": 100
+   "duration": 1000
   }
  ],
  "meta": {
-  "app": "adventure pixelate.mjs (Aseprite JSON-array compatible)",
+  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
   "version": "1",
   "image": "rack.png",
   "format": "RGBA8888",
   "size": {
-   "w": 224,
-   "h": 140
+   "w": 112,
+   "h": 72
   },
   "scale": "1",
   "frameTags": [
