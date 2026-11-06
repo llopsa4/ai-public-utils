@@ -1,11 +1,12 @@
 import { gzipSync } from 'node:zlib';
 import { expect, test } from '@playwright/test';
-import { act, idle, open, state, startNewGame } from './helpers';
+import { act, finishDialogue, fixtureReady, holdCrowd, idle, open, state, startNewGame } from './helpers';
 
-test('Tobi is a child by the hearth, talks about his drawings and gives his scarf farewell once', async ({ page }, info) => {
+test('Tobi is a child by the hearth, talks about his drawings and gives his scarf farewell once', { tag: ["@focused","@story","@art","@saves"] }, async ({ page }, info) => {
   const errors: string[] = [];
   await open(page, errors);
   await startNewGame(page);
+  await fixtureReady(page);
   await page.evaluate(() => {
     const { session } = (window as any).adventure;
     const s = structuredClone(session.state);
@@ -15,6 +16,7 @@ test('Tobi is a child by the hearth, talks about his drawings and gives his scar
     session.replaceState(s);
   });
   await idle(page);
+  await holdCrowd(page, 2);
   const target = await page.evaluate(() => {
     const actor = (window as any).adventure.session.scene.actors.get('tobi');
     const box = actor.hitBox();
@@ -29,10 +31,7 @@ test('Tobi is a child by the hearth, talks about his drawings and gives his scar
   await expect(page.locator('#dialogue-line')).toContainText('enormous hand');
   await expect(page.locator('#dialogue-portrait')).toBeVisible();
   await page.screenshot({ path: info.outputPath('tobi-at-hearth.png') });
-  for (let i = 0; i < 10; i++) {
-    await page.evaluate(() => (window as any).adventure.session.ui.skip());
-    await page.waitForTimeout(60);
-  }
+  await finishDialogue(page);
   await idle(page);
   await page.evaluate(() => (window as any).adventure.session.scene.runScript([{ type: 'setFlag', flag: 'kilnCold', value: true }]));
   await act(page, 'talk', 'tobi');
@@ -51,7 +50,7 @@ test('Tobi is a child by the hearth, talks about his drawings and gives his scar
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
-test('the whole scene plays in the browser, from the title screen into chapter 2 (debug)', async ({ page }) => {
+test('the whole scene plays in the browser, from the title screen into chapter 2 (debug)', { tag: ["@journey","@story","@runtime"] }, async ({ page }) => {
   const errors: string[] = [];
   const casualRequests: string[] = [];
   page.on('request', r => { if (/\/mara-casual-[\w-]{8}\.png/.test(r.url())) casualRequests.push(r.url()); });
@@ -169,7 +168,7 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
-test('keyboard play: Tab focuses things in the room and Enter opens the action ring', async ({ page }) => {
+test('keyboard play: Tab focuses things in the room and Enter opens the action ring', { tag: ["@focused","@input"] }, async ({ page }) => {
   const errors: string[] = [];
   await open(page, errors);
   await startNewGame(page);
@@ -188,7 +187,7 @@ test('keyboard play: Tab focuses things in the room and Enter opens the action r
 });
 
 for (const quality of ['high', 'low'] as const) {
-  test(`${quality} visual quality: every room renders and the kiln goes cold without errors`, async ({ page }) => {
+  test(`${quality} visual quality: every room renders and the kiln goes cold without errors`, { tag: ["@focused","@art","@runtime"] }, async ({ page }) => {
     const errors: string[] = [];
     await page.addInitScript(q => localStorage.setItem('cinderfold.settings', JSON.stringify({ visualQuality: q })), quality);
     await open(page, errors, { clear: false });

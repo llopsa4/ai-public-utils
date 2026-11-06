@@ -19,6 +19,41 @@ export async function idle(page: Page): Promise<void> {
 }
 
 /**
+ * Direct debug state replacement restarts the scene without a doorway walk/fade. Let its
+ * queued background assets finish first so the fixture does not interrupt that loader.
+ * Ordinary journey interactions deliberately use idle(), not this fixture prerequisite.
+ */
+export async function fixtureReady(page: Page): Promise<void> {
+  await idle(page);
+  await page.waitForFunction(() => {
+    const { session, game, chapters } = (window as any).adventure;
+    return !session.scene.load.isLoading()
+      && chapters[session.state.chapter].extras.every((extra: any) => game.textures.exists(extra.sheet));
+  });
+}
+
+/** Isolate input/renderer checks from unrelated crowd movement after lazy sheets arrive. */
+export async function holdCrowd(page: Page, expectedCount: number): Promise<void> {
+  await expect.poll(() => page.evaluate(() => (window as any).adventure.session.scene.crowd?.visible().length ?? 0), {
+    timeout: 15_000,
+    message: 'the fixture crowd has loaded',
+  }).toBe(expectedCount);
+  await page.evaluate(() => {
+    const crowd = (window as any).adventure.session.scene.crowd;
+    for (const member of crowd.visible()) crowd.hold(member);
+  });
+}
+
+/** Finish a conversation with no choices, without assuming how many lines or frames it takes. */
+export async function finishDialogue(page: Page): Promise<void> {
+  await expect.poll(() => page.evaluate(() => {
+    const { session } = (window as any).adventure;
+    session.ui.skip();
+    return !session.scene.isBusy();
+  }), { timeout: 30_000, intervals: [60] }).toBe(true);
+}
+
+/**
  * Plays one interaction through the real scene: the action as the action ring would run it.
  * Spoken lines are skipped as they appear; dialogue choices are clicked by their text, in order.
  */

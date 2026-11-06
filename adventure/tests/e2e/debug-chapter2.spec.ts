@@ -15,7 +15,7 @@ async function actThroughFight(page: Page, verb: string, target: string, until: 
   }
 }
 
-test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn teaches Tempered Flow', async ({ page }) => {
+test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn teaches Tempered Flow', { tag: ["@journey","@story","@runtime"] }, async ({ page }) => {
   test.setTimeout(420_000);
   const errors: string[] = [];
   await open(page, errors);
@@ -126,7 +126,7 @@ test('debug mode: chapter 2 plays from the tunnels to its end card, and Bryn tea
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
-test('without debug mode, chapter 1 ends with the end card and chapter 2 is never downloaded', async ({ page }) => {
+test('without debug mode, chapter 1 ends with the end card and chapter 2 is never downloaded', { tag: ["@focused","@story","@runtime"] }, async ({ page }) => {
   test.setTimeout(120_000);
   const requests: string[] = [];
   page.on('request', r => requests.push(r.url()));

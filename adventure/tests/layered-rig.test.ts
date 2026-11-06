@@ -4,12 +4,6 @@ import { readFileSync } from 'node:fs';
 import { PNG } from 'pngjs';
 import { loadPack, compositeNeutral, renderPackFrame, walkPose, walkMetadata, partWidthTransform, point, PARTS } from '../art/layered-rig.mjs';
 import { paletteConformity } from '../art/normalize.mjs';
-import { walkFrameAt, walkTiming, LEGACY_WALK } from '../src/game/walk';
-import { CHAPTERS, loadAllChapters } from '../src/chapters';
-import { newGame } from '../src/engine/state';
-import { equip } from '../src/engine/kit';
-import { heroSheetFor } from '../src/engine/story';
-await loadAllChapters();
 const packs=['casual','light','medium'].map(id=>loadPack(`art/sources/characters/mara-${id}-layered`));
 const distance=(a:number[],b:number[])=>Math.hypot(a[0]-b[0],a[1]-b[1]);
 
@@ -22,24 +16,6 @@ test('eleven complete registered layers reconstruct each approved master byte fo
       assert.ok(png.data.some((a,i)=>i%4===3&&a===255),name);
     }
     for(const [name,p] of Object.entries(pack.cfg.joints))assert.ok(p[0]>0&&p[0]<1024&&p[1]>0&&p[1]<1536,name);
-  }
-});
-
-test('hierarchical joints meet and bone lengths stay fixed through the complete walk',()=>{
-  for(const {cfg} of packs)for(let phase=0;phase<8;phase+=.25){
-    const pose=walkPose(cfg,phase);
-    for(const side of ['near','far']){
-      const hip=cfg.joints[side+'Hip'],knee=cfg.joints[side+'Knee'],ankle=cfg.joints[side+'Ankle'];
-      const h=point(pose.mats[side+'Thigh'],hip),k=point(pose.mats[side+'Thigh'],knee),a=point(pose.mats[side+'Shin'],ankle);
-      assert.ok(Math.abs(distance(h,k)-distance(hip,knee))<1e-7);
-      assert.ok(Math.abs(distance(k,a)-distance(knee,ankle))<1e-7);
-      assert.ok(distance(k,point(pose.mats[side+'Shin'],knee))<1e-7,'knee continuity');
-      assert.ok(distance(a,point(pose.mats[side+'Boot'],ankle))<1e-7,'ankle continuity');
-      const elbow=cfg.joints[side+'Elbow'];
-      const shoulder=cfg.joints[side+'Shoulder'];
-      assert.ok(distance(point(pose.mats.torso,shoulder),point(pose.mats[side+'UpperArm'],shoulder))<1e-7,'shoulder continuity');
-      assert.ok(distance(point(pose.mats[side+'UpperArm'],elbow),point(pose.mats[side+'Forearm'],elbow))<1e-7,'elbow continuity');
-    }
   }
 });
 
@@ -61,37 +37,6 @@ test('Mara walks with lower passing feet and a five-degree upper-body lean only'
     assert.ok(walkPose(cfg,6).knees.near[1]>walkPose(previous,6).knees.near[1],'passing knee is lower');
     assert.deepEqual(walkMetadata(cfg),walkMetadata(previous));
     assert.deepEqual(renderPackFrame(pack).data,renderPackFrame({...pack,cfg:previous}).data,'idle remains unchanged');
-  }
-});
-
-test('heel, flat-foot and toe contacts stay on their footprint while the actor moves forward',()=>{
-  for(const {cfg} of packs)for(const [side,start] of [['near',0],['far',4]] as const){
-    for(let phase=start;phase<start+4;phase+=.25){
-      const foot=walkPose(cfg,phase).feet[side];assert.ok(foot.planted);
-      const q=(phase+(side==='near'?0:4))%8;
-      const world=[foot.contact[0]+q*cfg.walk.strideSource/4,foot.contact[1]];
-      assert.ok(distance(world,[foot.contactSource[0]+cfg.walk.strideSource/2,foot.contactSource[1]])<1e-7);
-    }
-  }
-});
-
-test('walk has restrained heel-to-toe roll, counter-sway and a heavier gauntlet arm',()=>{
-  const rotation=(m:number[])=>Math.atan2(m[1],m[0]);
-  for(const {cfg} of packs){
-    assert.equal(cfg.walk.footRollDegrees,6);assert.equal(cfg.walk.transitionMs,90);
-    const heel=walkPose(cfg,0),flat=walkPose(cfg,1.5),toe=walkPose(cfg,3.5);
-    assert.ok(rotation(heel.mats.nearBoot)<0);assert.ok(Math.abs(rotation(flat.mats.nearBoot))<1e-7);assert.ok(rotation(toe.mats.nearBoot)>0);
-    const a=walkPose(cfg,2),b=walkPose(cfg,6);
-    assert.ok(rotation(a.mats.torso)<5*Math.PI/180);assert.ok(rotation(b.mats.torso)>5*Math.PI/180);
-    if(cfg.outfit!=='casual'){
-      let near=0,far=0;
-      for(let p=0;p<8;p+=.125){const pose=walkPose(cfg,p),torso=rotation(pose.mats.torso);near=Math.max(near,Math.abs(rotation(pose.mats.nearUpperArm)-torso));far=Math.max(far,Math.abs(rotation(pose.mats.farUpperArm)-torso));}
-      assert.ok(near<far*.75,'heavy arm has less swing');
-    }
-    for(let p=0;p<8;p+=.125){
-      const a=walkPose(cfg,p),b=walkPose(cfg,p+1e-5);
-      for(const side of ['near','far'])assert.ok(distance(a.feet[side].ankle,b.feet[side].ankle)<.1,'foot targets are continuous through lift and contact');
-    }
   }
 });
 
@@ -140,15 +85,6 @@ test('rendered poses retain palette, binary transparency, fine pixel detail, saf
   }
 });
 
-test('eight-frame timing lands on 0/4 and legacy sheets keep six-frame 7px timing',()=>{
-  assert.deepEqual(walkTiming(),LEGACY_WALK);
-  for(const {cfg} of packs){
-    const timing=walkTiming(walkMetadata(cfg));assert.deepEqual(timing.plantFrames,[0,4]);
-    assert.deepEqual(Array.from({length:9},(_,i)=>walkFrameAt((i+.001)*timing.distancePerFrame,8,timing)),[0,1,2,3,4,5,6,7,0]);
-  }
-  assert.deepEqual(Array.from({length:7},(_,i)=>walkFrameAt(i*7,6,LEGACY_WALK)),[0,1,2,3,4,5,0]);
-});
-
 test('every outfit has a visible blink after reduction to the game grid',()=>{
   for(const pack of packs){
     const open=renderPackFrame(pack),closed=renderPackFrame(pack,{blink:true});let changed=0,top=256,bottom=-1;
@@ -156,22 +92,6 @@ test('every outfit has a visible blink after reduction to the game grid',()=>{
     assert.equal(bottom-top+1,232,'Standing art height');
     assert.ok(changed>0&&changed<=64,`${pack.cfg.outfit}: ${changed} eye pixels changed`);
   }
-});
-
-test('outfit equipment and gauntlet power are independent across chapters',()=>{
-  const state=newGame(),ch1=CHAPTERS.ch1,ctx={state,room:ch1.rooms[state.room],cold:false};
-  state.kit.owned.push('layered-armor','light-armor');
-  assert.ok(equip(state.kit,'armor','layered-armor'));
-  assert.equal(heroSheetFor(ch1.story,ctx),'mara-casual');
-  const unpoweredStory={...ch1.story,heroSheet:[{pick:'mara'}]};
-  assert.equal(heroSheetFor(unpoweredStory,ctx),'mara-medium');
-  state.flags.hasGauntlet=true;assert.equal(heroSheetFor(ch1.story,ctx),'mara-medium-gauntlet');
-  for(const armor of ['patched-coat','light-armor']){
-    assert.ok(equip(state.kit,'armor',armor));assert.equal(heroSheetFor(ch1.story,ctx),'mara-gauntlet');
-    state.flags.hasGauntlet=false;assert.equal(heroSheetFor(unpoweredStory,ctx),'mara');state.flags.hasGauntlet=true;
-  }
-  assert.ok(equip(state.kit,'armor','layered-armor'));
-  const ch2=CHAPTERS.ch2;assert.equal(heroSheetFor(ch2.story,{state,room:ch2.rooms[ch2.start.room],cold:false}),'mara-medium-gauntlet');
 });
 
 test('powered variants retain the same silhouette and change only the ember cell',()=>{

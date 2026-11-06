@@ -1,6 +1,7 @@
 import { conditionsHold } from './geometry';
 import { EQUIPMENT } from '../combat/gear';
 import { equip, giveSpares } from './kit';
+import { applyCommand } from './state';
 import type { ActorId, Condition, GameState, Kit } from './types';
 
 export interface DialogueLine { actor: ActorId; text: string }
@@ -65,6 +66,15 @@ export function applyDialogueGear(kit: Kit, reward: DialogueGear | undefined): b
     if (item) equip(kit, item.slot, reward.equip);
   }
   return true;
+}
+
+/** Applies a resolved node after its lines finish, before presenting its already-resolved choices. */
+export function applyDialogueEffects(state: GameState, node: ResolvedNode): { inventoryChanged: boolean; gearReceived: boolean } {
+  for (const [flag, value] of Object.entries(node.set)) applyCommand(state, { type: 'setFlag', flag, value });
+  const before = state.inventory.length;
+  for (const item of node.items) applyCommand(state, { type: 'addItem', item });
+  const gearReceived = applyDialogueGear(state.kit, node.gear);
+  return { inventoryChanged: state.inventory.length !== before, gearReceived };
 }
 
 /** Collects every string key used by a tree (for translation completeness checks). */

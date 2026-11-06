@@ -29,7 +29,7 @@ async function releaseIntoFight(page: Page): Promise<void> {
 /** The enemy's health as Kiln Courier's battle screen shows it. */
 const enemyHp = async (page: Page) => Number((await page.locator('#kc-root .enemy-status').textContent())?.match(/(\d+)\s*\/\s*30/)?.[1]);
 
-test('the first fight is Kiln Courier\'s lesson: only the outlined control works; a reload starts it again; winning pays out once', async ({ page }) => {
+test('the first fight is Kiln Courier\'s lesson: only the outlined control works; a reload starts it again; winning pays out once', { tag: ["@journey","@runtime","@input","@story"] }, async ({ page }) => {
   const errors: string[] = [];
   await readyToRelease(page, errors);
   await releaseIntoFight(page);
@@ -90,7 +90,7 @@ test('the first fight is Kiln Courier\'s lesson: only the outlined control works
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
-test('Skip tutorial turns the lesson into a free fight on the same screen', async ({ page }) => {
+test('Skip tutorial turns the lesson into a free fight on the same screen', { tag: ["@journey","@runtime","@input"] }, async ({ page }) => {
   const errors: string[] = [];
   await readyToRelease(page, errors);
   await releaseIntoFight(page);
@@ -102,7 +102,7 @@ test('Skip tutorial turns the lesson into a free fight on the same screen', asyn
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
-test('the peddler in the ashways sells tonics for salvage, and a tonic heals in a fight', async ({ page }) => {
+test('the peddler in the ashways sells tonics for salvage, and a tonic heals in a fight', { tag: ["@focused","@runtime","@story"] }, async ({ page }) => {
   const errors: string[] = [];
   await open(page, errors);
   await startNewGame(page);

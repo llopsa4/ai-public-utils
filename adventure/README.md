@@ -38,11 +38,16 @@ Requires Node 22.12+.
 ```sh
 npm ci
 npm run dev        # http://127.0.0.1:5173 with live reload
-npm test           # logic tests (full scene chain, argument paths, pathfinding, saves, strings)
-npm run e2e        # build, then play the whole scene in headless Chromium (Playwright), plus saves, keyboard and phone checks
+npm test           # fast typecheck + logic/integration tests; no browser or build
+npm run test:feature -- crowd       # selected Node contracts (story, saves, crowd, input, art, runtime)
+npm run test:browser -- story       # build once, then short browser checks for this feature
+npm run test:release                # all Node tests, one verified build, all browser checks and journeys
+npm run e2e        # build once, then every browser check (including complete journeys)
 npm run build      # typecheck → Vite build → publish to index.html + build/ → verify
 npm run preview    # serves the repo root like GitHub Pages: http://127.0.0.1:4173/adventure/
 ```
+
+See [TESTING.md](TESTING.md) for feature selection, test classification, headless-driver limits and release rules. Ordinary edits use fast/feature checks; publishing and shared runtime changes require release verification. `npm run test:inventory -- --list` audits and lists every suite without launching a browser or building the site.
 
 GitHub Pages serves the `main` branch as-is, so **commit the generated `index.html` and `build/`** together with the source changes. `dist/` and `node_modules/` are ignored.
 

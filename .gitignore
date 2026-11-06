@@ -7,6 +7,42 @@ secrets/
 node_modules/
 __pycache__/
 
+# Local caches and generated test reports.
+.cache/
+.vite/
+.npm/
+.eslintcache
+*.tsbuildinfo
+coverage/
+.nyc_output/
+test-results/
+playwright-report/
+blob-report/
+
+# Logs and temporary editor files.
+*.log
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+
+# Machine-specific IDE and assistant settings; shared skills stay versioned.
+.vs/
+**/.idea/workspace.xml
+**/.idea/tasks.xml
+*.suo
+*.user
+*.code-workspace
+**/.claude/settings.local.json
+
+# Operating-system metadata.
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Published build/ assets are intentionally tracked for GitHub Pages.
+
 # Private Kiln Courier story and development planning (never publish).
 /FFCardGame/STORY.md
 /FFCardGame/PLAN.md

@@ -10,6 +10,7 @@ test('Oren grants and equips medium armour only after his initial repair-advice 
   const state = newGame();
   const node = resolveNode(DIALOGUES.oren, DIALOGUES.oren.start, state);
   assert.equal(node.id, 'before');
+  assert.deepEqual(node.gear, { give: ['layered-armor'], equip: 'layered-armor' }, 'the reward declaration grants only the intended armour');
   assert.ok(node.lines.some(line => line.text === 'dlg.oren.before2'));
   assert.ok(!state.kit.owned.includes('layered-armor'), 'resolving speech does not grant equipment');
   assert.equal(state.kit.equipment.armor.id, 'patched-coat');

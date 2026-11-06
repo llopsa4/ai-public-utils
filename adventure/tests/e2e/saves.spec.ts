@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { act, idle, open, state, startNewGame } from './helpers';
 
-test('progress is autosaved: reload, Continue, and the game resumes where it was', async ({ page }) => {
+test('progress is autosaved: reload, Continue, and the game resumes where it was', { tag: ["@focused","@saves","@story"] }, async ({ page }) => {
   const errors: string[] = [];
   await open(page, errors);
   await expect(page.getByRole('button', { name: 'Continue' })).toBeHidden();

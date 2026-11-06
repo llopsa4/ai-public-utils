@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { idle, startNewGame } from './helpers';
 
-test('the debug panel jumps to a room and sets flags and items', async ({ page }) => {
+test('the debug panel jumps to a room and sets flags and items', { tag: ["@focused","@runtime"] }, async ({ page }) => {
   await page.goto('./?debug');
   await startNewGame(page);
   const panel = page.locator('#debug-panel');
@@ -29,7 +29,7 @@ test('the debug panel jumps to a room and sets flags and items', async ({ page }
   expect(await page.evaluate(() => (window as any).adventure.session.state.bag.salvage)).toBe(10);
 });
 
-test('debug medium armour is visible before dressing and survives reload without powering the gauntlet', async ({ page }) => {
+test('debug medium armour is visible before dressing and survives reload without powering the gauntlet', { tag: ["@focused","@runtime","@art","@saves"] }, async ({ page }) => {
   await page.goto('./?debug');
   await startNewGame(page);
   await page.keyboard.press(',');
@@ -53,7 +53,7 @@ test('debug medium armour is visible before dressing and survives reload without
   await expect.poll(appearance).toBe('mara-medium-gauntlet');
 });
 
-test('the Medium armour debug checkbox dresses Mara and toggles both power variants', async ({ page }) => {
+test('the Medium armour debug checkbox dresses Mara and toggles both power variants', { tag: ["@focused","@runtime","@art"] }, async ({ page }) => {
   await page.goto('./?debug');
   await startNewGame(page);
   await page.keyboard.press(',');

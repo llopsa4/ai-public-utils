@@ -1,15 +1,16 @@
 import { expect, test, type Page } from '@playwright/test';
-import { idle, open, startNewGame } from './helpers';
+import { fixtureReady, holdCrowd, idle, open, startNewGame } from './helpers';
 import { conditionsHold, pointInPolygon } from '../../src/engine/geometry';
 
 async function setup(page: Page): Promise<string[]> {
   const errors:string[]=[];await open(page,errors);await startNewGame(page);
+  await fixtureReady(page);
   await page.evaluate(()=>{
     const s=(window as any).adventure.session,st=structuredClone(s.state);
     st.room='firingHouse';st.hero={x:330,y:320,face:'right',pose:'stand'};
     st.flags={hasGauntlet:true,dressed:true,breadAsked:true,metNell:true,hoistHelped:true};
     st.inventory=['gauntlet','notebook','loaf','scarf'];s.replaceState(st);
-  });await idle(page);return errors;
+  });await idle(page);await holdCrowd(page,2);return errors;
 }
 async function point(page:Page,x:number,y:number){
   const box=(await page.locator('#stage').boundingBox())!;
@@ -23,7 +24,7 @@ async function settle(page:Page){
 const selected=(page:Page)=>page.evaluate(()=>(window as any).adventure.session.selectedItem);
 const position=(page:Page)=>page.evaluate(()=>({...((window as any).adventure.session.scene.hero.position)}));
 
-test('inventory keys, use responses, slot updates and the normal cursor share one use path',async({page})=>{
+test('inventory keys, use responses, slot updates and the normal cursor share one use path', { tag: ["@focused","@input"] }, async({page})=>{
   const errors=await setup(page);
   await expect(page.locator('#inventory [data-item="loaf"] .item-key')).toHaveText('3');
   await page.mouse.move(500,350);await page.keyboard.press('3');
@@ -42,7 +43,7 @@ test('inventory keys, use responses, slot updates and the normal cursor share on
   expect(errors).toEqual([]);
 });
 
-test('single click selects, double click inspects without using a carried item, and Enter retains menus',async({page})=>{
+test('single click selects, double click inspects without using a carried item, and Enter retains menus', { tag: ["@focused","@input"] }, async({page})=>{
   const errors=await setup(page),notebook=page.locator('#inventory [data-item="notebook"]');
   await notebook.click();await expect.poll(()=>selected(page)).toBe('notebook');
   await notebook.click();await expect.poll(()=>selected(page)).toBeNull();
@@ -61,7 +62,7 @@ test('single click selects, double click inspects without using a carried item, 
   expect(errors).toEqual([]);
 });
 
-test('dragging uses targets once, cancels outside or on its source, and drops on floor walk',async({page})=>{
+test('dragging uses targets once, cancels outside or on its source, and drops on floor walk', { tag: ["@focused","@input"] }, async({page})=>{
   const errors=await setup(page);
   async function drag(item:string,to:{x:number;y:number}){
     const box=(await page.locator(`#inventory [data-item="${item}"]`).boundingBox())!;
@@ -105,7 +106,7 @@ test('dragging uses targets once, cancels outside or on its source, and drops on
   expect(await selected(page)).toBeNull();expect(errors).toEqual([]);
 });
 
-test('arrow walking stops on release, respects bounds, modal/script priority and save reload',async({page})=>{
+test('arrow walking stops on release, respects bounds, modal/script priority and save reload', { tag: ["@focused","@input","@saves"] }, async({page})=>{
   const errors=await setup(page);const from=await position(page);
   await page.keyboard.down('ArrowRight');await page.waitForTimeout(400);await page.keyboard.up('ArrowRight');
   const after=await position(page);expect(after.x).toBeGreaterThan(from.x+15);
@@ -125,7 +126,7 @@ test('arrow walking stops on release, respects bounds, modal/script priority and
   expect(await position(page)).toEqual({x:saved.x,y:saved.y});expect(errors).toEqual([]);
 });
 
-test('mouse and arrows replace free movement, while room edges never trigger exits',async({page})=>{
+test('mouse and arrows replace free movement, while room edges never trigger exits', { tag: ["@focused","@input"] }, async({page})=>{
   const errors=await setup(page);
   const to=await point(page,530,325);await page.mouse.click(to.x,to.y);await page.waitForTimeout(120);
   const before=await position(page);await page.keyboard.down('ArrowLeft');await page.waitForTimeout(300);await page.keyboard.up('ArrowLeft');
@@ -142,7 +143,7 @@ test('mouse and arrows replace free movement, while room edges never trigger exi
   expect(errors).toEqual([]);
 });
 
-test('Mara blends walk starts and stops and clears the blend for a pose change',async({page})=>{
+test('Mara blends walk starts and stops and clears the blend for a pose change', { tag: ["@focused","@input","@art","@runtime"] }, async({page})=>{
   const errors=await setup(page);
   const start=await page.evaluate(()=>{
     const h=(window as any).adventure.session.scene.hero,p=h.position;

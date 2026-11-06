@@ -5,20 +5,18 @@ import { ACTOR_VERBS, INTERACTION_KEYS, ITEM_VERBS, interact } from '../src/chap
 import { ROOMS } from '../src/chapters/ch1/rooms';
 import { resolveNode } from '../src/engine/dialogue';
 import { FLAGS, ITEMS } from '../src/chapters/ch1/flags';
-import { applyCommand, newGame } from '../src/engine/state';
-import type { Command, GameState, Verb } from '../src/engine/types';
-import { onEnter } from '../src/engine/story';
-import { STORY } from '../src/chapters/ch1/story';
+import { newGame } from '../src/engine/state';
+import type { GameState, Verb } from '../src/engine/types';
+import { enterStoryRoom, interactStory, runStoryCommands, type StoryOptions } from './support/story-driver';
+
+// Story reachability assumes successful fights and closed menus. Combat and browser suites test those adapters.
+const STORY_FIXTURES: StoryOptions = {
+  fixtures: { fight: () => 'won', screen: () => 'closed' },
+};
 
 /** Plays commands against the state the way the scene does, returning the spoken lines and commands. */
 function run(state: GameState, verb: Verb, target: string, item?: string) {
-  const commands: Command[] = interact(state, verb, target, item);
-  const spoken: string[] = [];
-  for (const c of commands) {
-    applyCommand(state, c);
-    if (c.type === 'say') spoken.push(c.text);
-  }
-  return { spoken, commands };
+  return interactStory(state, verb, target, item, STORY_FIXTURES);
 }
 
 /**
@@ -26,22 +24,22 @@ function run(state: GameState, verb: Verb, target: string, item?: string) {
  * target node; when it returns undefined the last choice is taken.
  */
 function talk(state: GameState, id: string, pick: (next: (string | null)[]) => string | null | undefined = () => undefined): string[] {
-  const tree = DIALOGUES[id];
-  const visited: string[] = [];
-  let nodeId: string | null = tree.start;
-  for (let guard = 0; nodeId && guard < 50; guard++) {
-    const node = resolveNode(tree, nodeId, state);
-    visited.push(node.id);
-    for (const [flag, value] of Object.entries(node.set)) applyCommand(state, { type: 'setFlag', flag, value });
-    for (const item of node.items) applyCommand(state, { type: 'addItem', item });
-    if (node.choices.length) {
-      const options = node.choices.map(c => c.next);
+  return runStoryCommands(state, [{ type: 'dialogue', id }], {
+    ...STORY_FIXTURES,
+    choose: options => {
       const wanted = pick(options);
-      nodeId = wanted !== undefined && options.includes(wanted) ? wanted : options.at(-1)!;
-    } else nodeId = node.next;
-  }
-  return visited;
+      return wanted !== undefined && options.includes(wanted) ? wanted : options.at(-1)!;
+    },
+  }).visited;
 }
+
+test('playing Oren advice applies the same equipment reward as the room dialogue runner', () => {
+  const s = newGame();
+  talk(s, 'oren');
+  assert.equal(s.flags.metOren, true);
+  assert.equal(s.kit.equipment.armor.id, 'layered-armor');
+  assert.equal(s.kit.owned.filter(id => id === 'layered-armor').length, 1);
+});
 
 test('Tobi is a visible, talkable child and speaks during the scarf farewell', () => {
   const s = newGame();
@@ -62,15 +60,12 @@ test('Tobi is a visible, talkable child and speaks during the scarf farewell', (
 
 /** Plays the commands a room starts on entering (as the scene does), e.g. Wren calling in the kiln hall. */
 function enter(state: GameState): string[] {
-  const room = ROOMS[state.room];
-  const spoken: string[] = [];
-  for (const c of onEnter(STORY, { state, room, cold: false })) { applyCommand(state, c); if (c.type === 'say') spoken.push(c.text); }
-  return spoken;
+  return enterStoryRoom(state, STORY_FIXTURES).spoken;
 }
 
 /** The morning in everyday clothes: Wren's hoist, Nell's bread, then dressed and geared up in the tent. */
 function morning(s: GameState): void {
-  run(s, 'go', 'tentFlap'); enter(s);
+  run(s, 'go', 'tentFlap');
   run(s, 'use', 'pulleys');
   run(s, 'go', 'roomCurtain');
   talk(s, 'nell');
@@ -101,9 +96,9 @@ test('the whole scene plays from Mara\'s tent to the ashways', () => {
   // The morning, in everyday clothes: nothing needs the gauntlet yet.
   assert.deepEqual(run(s, 'take', 'rack').spoken, ['line.rackPacked'], 'the gauntlet is still packed in the crate');
   assert.deepEqual(run(s, 'open', 'chest').spoken, ['line.chestNotYet'], 'not dressing for work yet');
-  run(s, 'go', 'tentFlap');
+  const arrival = run(s, 'go', 'tentFlap');
   assert.equal(s.room, 'maraRoom', 'he steps out in everyday clothes');
-  assert.deepEqual(enter(s), ['line.wrenCalls', 'line.maraToWren'], 'Wren calls from the hoist');
+  assert.deepEqual(arrival.spoken, ['line.wrenCalls', 'line.maraToWren'], 'Wren calls from the hoist');
   assert.deepEqual(enter(s), [], 'only the first time');
   assert.deepEqual(run(s, 'go', 'roomCurtain').spoken, ['line.curtainWren'], 'he said he would help Wren first');
   assert.equal(s.room, 'maraRoom');

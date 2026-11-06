@@ -4,12 +4,11 @@ import { CHAPTERS, loadAllChapters, setChapter, type Chapter } from '../src/chap
 
 // Every chapter, chapters after the first included (they load on demand in the game).
 await loadAllChapters();
-import { resolveNode } from '../src/engine/dialogue';
 import { conditionsHold } from '../src/engine/geometry';
 import { TABLES } from '../src/engine/i18n';
-import { applyCommand, newGame } from '../src/engine/state';
-import { onEnter } from '../src/engine/story';
+import { newGame } from '../src/engine/state';
 import { VERBS, type Command, type GameState } from '../src/engine/types';
+import { enterStoryRoom, runStoryCommands, visitStoryDialogueNode, type StoryOptions } from './support/story-driver';
 
 /**
  * Explores every story state a chapter can reach through clicks, items and conversation choices
@@ -20,13 +19,13 @@ import { VERBS, type Command, type GameState } from '../src/engine/types';
 
 const key = (s: GameState) => `${s.room}|${Object.keys(s.flags).filter(f => s.flags[f]).sort().join(',')}|${[...s.inventory].sort().join(',')}`;
 
-interface Outcome { state: GameState; ended: boolean; lines: string[] }
+interface Outcome { state: GameState; ended: boolean; lines: string[]; stopped?: boolean }
 
-/** Scene creation runs the first matching room-entry script before accepting clicks. */
-function entryCommands(c: Chapter, state: GameState): Command[] {
-  const room = c.rooms[state.room];
-  return onEnter(c.story, { state, room, cold: !!room.coldIf && conditionsHold(state, room.coldIf) });
-}
+// This graph proves story reachability assuming won fights and closed blocking screens.
+// Combat mechanics, losses, rendering and screen dismissal are tested in their own suites.
+const STORY_FIXTURES: StoryOptions = {
+  fixtures: { fight: () => 'won', screen: () => 'closed' },
+};
 
 /** Plays commands on a copy of the state; conversations branch into one outcome per path. */
 function play(c: Chapter, start: GameState, commands: Command[]): Outcome[] {
@@ -34,18 +33,10 @@ function play(c: Chapter, start: GameState, commands: Command[]): Outcome[] {
   for (const command of commands) {
     const next: Outcome[] = [];
     for (const o of outcomes) {
-      if (o.ended) { next.push(o); continue; }
-      if (command.type === 'end') { next.push({ ...o, ended: true }); continue; }
-      if (command.type === 'say') o.lines.push(command.text);
+      if (o.ended || o.stopped) { next.push(o); continue; }
       if (command.type === 'dialogue') { next.push(...talk(c, o, command.id)); continue; }
-      applyCommand(o.state, command);
-      if (command.type === 'room') {
-        for (const entered of play(c, o.state, entryCommands(c, o.state))) {
-          next.push({ ...entered, lines: [...o.lines, ...entered.lines] });
-        }
-        continue;
-      }
-      next.push(o);
+      const trace = runStoryCommands(o.state, [command], STORY_FIXTURES);
+      next.push({ ...o, ended: trace.ended, stopped: trace.stopped !== null, lines: [...o.lines, ...trace.spoken] });
     }
     outcomes = next;
   }
@@ -61,11 +52,9 @@ function talk(c: Chapter, o: Outcome, id: string): Outcome[] {
     const visit = `${nodeId}|${key(state)}`;
     if (seen.has(visit)) return;
     seen.add(visit);
-    const node = resolveNode(tree, nodeId, state);
     const s = structuredClone(state);
-    for (const line of node.lines) o.lines.push(line.text);
-    for (const [flag, value] of Object.entries(node.set)) applyCommand(s, { type: 'setFlag', flag, value });
-    for (const item of node.items) applyCommand(s, { type: 'addItem', item });
+    const { node, trace } = visitStoryDialogueNode(s, id, nodeId);
+    o.lines.push(...trace.spoken);
     if (node.choices.length) for (const ch of node.choices) { o.lines.push(ch.text); walk(ch.next, s); }
     else walk(node.next, s);
   };
@@ -93,7 +82,8 @@ function clicks(c: Chapter, s: GameState): { verb: (typeof VERBS)[number]; targe
 function explore(c: Chapter) {
   const optional = new Set([...c.secretFlags, ...c.metFlags]);
   const fresh = newGame(c.id);
-  const initial = play(c, fresh, entryCommands(c, fresh));
+  const entered = enterStoryRoom(fresh, STORY_FIXTURES);
+  const initial: Outcome[] = [{ state: fresh, ended: entered.ended, lines: entered.spoken }];
   const states = new Map<string, GameState>(initial.map(o => [key(o.state), o.state]));
   const edges = new Map<string, Set<string>>();
   const ends = new Set(initial.filter(o => o.ended).map(o => key(o.state)));
