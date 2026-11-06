@@ -4,7 +4,7 @@
 // adventure until replaced (see art/REPLACING.md).
 //
 //   node art/kc.mjs   (part of npm run art)
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -24,7 +24,9 @@ await webp('opening/regulator-gallery.png', 'regulator-gallery.webp', 1280, 72);
 // training rig with the sweeper picture).
 await webp('opening/tempering-house.png', 'tempering-house.webp', 1280, 72);
 await webp('opening/ash-sweeper.png', 'ash-sweeper.webp', 768);
-for (const id of ['courier-gauntlet', 'patched-coat', 'plain-carrier', 'light-armor', 'quick-harness']) {
-  if (!isFinal(`kc/equipment/${id}.webp`)) await sharp(join(kc, 'equipment', 'runtime', `${id}.webp`)).resize({ width: 320 }).webp({ quality: 80, alphaQuality: 90, effort: 6 }).toFile(join(out, 'equipment', `${id}.webp`));
+// Include every base item exposed by the gear screen (including debug/later-game gear).
+// Reinforced variants keep their existing base-art fallback until separately delivered.
+for (const name of readdirSync(join(kc, 'equipment', 'runtime')).filter(n => n.endsWith('.webp') && !n.endsWith('-upgraded.webp')).sort()) {
+  await webp(`equipment/runtime/${name}`, `equipment/${name}`, 320);
 }
 console.log('Kiln Courier battle art written to art/src/kc.');

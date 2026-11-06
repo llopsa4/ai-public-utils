@@ -1,6 +1,65 @@
 import { expect, test } from '@playwright/test';
 import { idle, startNewGame } from './helpers';
 
+test('medium armour and every additional base gear type show loaded illustrations when equipped', async ({ page }, info) => {
+  const errors:string[]=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('./?debug');await startNewGame(page);
+  await page.evaluate(()=>{
+    const s=(window as any).adventure.session,st=structuredClone(s.state);
+    st.flags={...st.flags,metOren:true,hasGauntlet:true,dressed:true};
+    if(!st.kit.owned.includes('layered-armor'))st.kit.owned.push('layered-armor');
+    st.kit.equipment.armor={id:'layered-armor'};s.replaceState(st);
+  });await idle(page);
+  await page.locator('#gear-btn').click();await expect(page.locator('#gear')).toBeVisible();
+  const armor=page.getByRole('button',{name:'armor: Layered Armor',exact:true});
+  await expect(armor.locator('.equipment-art img')).toHaveCount(1);
+  await armor.click();await expect(page.locator('#gear .preview .equipment-art img')).toHaveCount(1);
+  await page.screenshot({path:info.outputPath('medium-armour-gear.png')});
+  for(const [slot,name] of [['gauntlet','Heavy Gauntlet'],['gauntlet','Balanced Gauntlet'],['utility','Insulated Kit']]){
+    await page.getByRole('button',{name:new RegExp('^'+slot+':')}).click();
+    const button=page.locator('#gear .stash-cell[title="'+name+'"]');
+    await expect(button.locator('.equipment-art img')).toHaveCount(1);
+    await button.click();await page.locator('#armory-equip').click();
+    await expect(page.getByRole('button',{name:slot+': '+name,exact:true}).locator('.equipment-art img')).toHaveCount(1);
+  }
+  for(const img of await page.locator('#gear .equipment-art img').all())await expect.poll(()=>img.evaluate((e:HTMLImageElement)=>e.complete&&e.naturalWidth>0)).toBe(true);
+  expect(errors).toEqual([]);
+});
+
+test('every existing room sign uses illustrated art and keeps its name inside the original placement',async({page},info)=>{
+  const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
+  page.on('response',r=>{if(r.status()>=400)errors.push(r.url()+': '+r.status());});
+  await page.goto('./?debug');await startNewGame(page);
+  for(const chapter of ['ch1','ch2']){
+    if(chapter==='ch2'){
+      await page.evaluate(()=>{const s=(window as any).adventure.session;if(!s.state.reached.includes('ch2'))s.state.reached.push('ch2');});
+      await page.keyboard.press(',');await page.locator('#debug-panel select').first().selectOption('ch2');
+      await expect.poll(()=>page.evaluate(()=>(window as any).adventure.session.state.chapter)).toBe('ch2');await idle(page);
+      await page.evaluate(()=>(document.activeElement as HTMLElement)?.blur());await page.keyboard.press(',');
+    }
+    const rooms=await page.evaluate(id=>Object.entries((window as any).adventure.chapters[id].rooms).filter(([,room]:any)=>room.sign).map(([key])=>key),chapter);
+    for(const room of rooms){
+      await page.evaluate(id=>{
+        const a=(window as any).adventure,s=a.session,st=structuredClone(s.state),c=a.chapters[st.chapter],r=c.rooms[id];
+        st.room=id;st.flags=Object.fromEntries(c.flags.map((f:string)=>[f,true]));delete st.flags.kilnCold;
+        st.hero={...Object.values(r.entries)[0] as object,pose:'stand'};s.replaceState(st);
+      },room);await idle(page);
+      const sign=await page.evaluate(()=>{
+        const s=(window as any).adventure.session.scene,image=s.sign.image,def=s.room.sign,key=image.getData('material');
+        const source=s.textures.get(key).getSourceImage(),bounds=image.getBounds();
+        return {key,label:image.getData('label'),loaded:source.width>0,x:image.x,y:image.y,w:bounds.width,h:bounds.height,expected:def};
+      });
+      const expected=sign.expected.style==='wood'?'sign-art-wood':sign.expected.h>sign.expected.w*.4?'sign-art-shield':'sign-art-iron';
+      expect(sign.key).toBe(expected);expect(sign.loaded).toBe(true);expect(sign.label.length).toBeGreaterThan(2);
+      expect(sign.x).toBe(sign.expected.x);expect(sign.y).toBe(sign.expected.y);
+      expect(sign.w).toBeGreaterThan(60);expect(sign.h).toBeLessThan(80);
+      await page.screenshot({path:info.outputPath(room+'-sign.png')});
+    }
+  }
+  expect(errors).toEqual([]);
+});
+
 test('the debug panel jumps to a room and sets flags and items', async ({ page }) => {
   await page.goto('./?debug');
   await startNewGame(page);
@@ -35,7 +94,7 @@ test('debug medium armour is visible before dressing and survives reload without
   await page.keyboard.press(',');
   await page.locator('#debug-panel').getByRole('button', { name: 'Gear screen', exact: true }).click();
   await page.locator('#gear').getByRole('button', { name: /^armor:/ }).click();
-  await page.locator('#gear .doll-stash').getByRole('button', { name: 'Layered Armor', exact: true }).click();
+  await page.locator('#gear .doll-stash button[title="Layered Armor"]').click();
   await page.locator('#armory-equip').click();
   await page.locator('#armory-done').click();
   const appearance = () => page.evaluate(() => (window as any).adventure.session.scene.hero.sprite.texture.key);

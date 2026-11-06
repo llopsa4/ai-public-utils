@@ -52,5 +52,9 @@
  "card-pulse": "final",
  "card-shield": "final",
  "card-vent": "final",
- "card-atlas": "final"
+ "card-atlas": "final",
+ "equipment-layered-armor": "final",
+ "sign-iron": "final",
+ "sign-shield": "final",
+ "sign-wood": "final"
 }

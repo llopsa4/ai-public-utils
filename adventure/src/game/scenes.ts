@@ -8,7 +8,7 @@ import { Actor, SHADOW_DEPTH } from './Actor';
 import { Atmosphere, createAtmosphereTextures } from './atmosphere';
 import { Props, createParticleTextures } from './props';
 import { Crowd } from './Crowd';
-import { RoomSign } from './sign';
+import { RoomSign, SIGN_IMAGES } from './sign';
 import type { Mood } from '../engine/crowd';
 import { chapter } from '../chapters';
 import { crowdMoodFor, heroSheetFor, hushed, onEnter, type StoryContext } from '../engine/story';
@@ -28,6 +28,7 @@ export class BootScene extends Phaser.Scene {
   constructor() { super('boot'); }
 
   preload(): void {
+    for (const [key, url] of Object.entries(SIGN_IMAGES)) this.load.image(key, url);
     for (const key of Object.keys(SHEETS)) if (!LAZY_SHEETS.has(key)) queueSheet(this, key);
     // Room backgrounds, foreground pieces and the other characters load per room, when first needed.
   }

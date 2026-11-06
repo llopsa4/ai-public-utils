@@ -1,5 +1,9 @@
 # Art provenance
 
+The medium-armour gear picture (`kc/equipment/layered-armor.webp`) and blank wood, iron and shield sign faces (`props/sign-*.png`) were generated with OpenAI ImageGen on 2026-11-06. Medium Mara's standing art, the existing light-armour icon and the approved tent image provided equipment and style references. The existing importer normalizes the deliveries; sign lettering and suspension remain runtime graphics. Prompts and in-game review screenshots are recorded under `art/inbox/art-completion-review/`.
+
+The base gear-screen pictures for Heavy Gauntlet, Balanced Gauntlet and Insulated Kit (`kc/equipment/heavy-gauntlet.webp`, `balanced-gauntlet.webp`, `insulated-kit.webp`) reuse the corresponding already-published originals in `FFCardGame/assets/equipment/runtime/`. `art/kc.mjs` resizes them to 320×320 and re-encodes them as WebP, while preserving all imported final equipment art, including medium armour. These are placeholders for dedicated Cinderfold illustrations; no new image generation was used to fill these missing base pictures.
+
 Tobi's original character source (`sources/characters/char-tobi/body.png`) was generated with OpenAI ImageGen on 2026-11-05, using Pip's existing source only as a style reference. His curly hair, teal tunic and chalk identify him separately from Pip and Bea. The source alpha is hardened for the game pipeline; `node art/rig.mjs tobi` builds his 140-pixel character sheet and neutral/worried talking portraits. No third-party character image is used for Tobi.
 
 All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in the same repository (`FFCardGame/assets`, already published there). Only the derived files are committed here. The scripts that regenerate them read the originals from `../FFCardGame/assets`.

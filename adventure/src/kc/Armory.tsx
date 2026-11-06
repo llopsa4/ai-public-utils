@@ -39,6 +39,7 @@ const descriptions: Record<string, string> = {
   'patched-coat': 'Ceramic patches over a well-travelled coat.',
   'plain-carrier': 'Room for a delivery. Nothing to slow you down.',
   'light-armor': "Oren's spare: spaced plates keep protection light and joints free.",
+  'layered-armor': "Oren's layered cuirass: overlapping ceramic plates and brass fastenings over quilted leather.",
   'quick-harness': "Oren's spare: quick-release fittings keep the next move within reach.",
 };
 function totals(profile: CharacterProfile) {
