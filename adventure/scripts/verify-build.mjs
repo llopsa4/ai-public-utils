@@ -64,14 +64,14 @@ const later = /^(firing-house|gallery|ashways|hall-left|hall-right|hall-crate|te
 // Action-ring images are inserted when a player opens the ring, never at the title screen.
 const actionIcons = new Set(MANIFEST.filter(e => e.kind === 'icon').map(e => e.file.split('/').pop().replace(/\.\w+$/, '')));
 const actionIcon = n => actionIcons.has(n.replace(/-[\w-]{8}\.\w+$/, ''));
-// Portraits and satchel icons are DOM images fetched when shown. Match bytes as well as names:
+// Portraits, equipment and fight pictures are DOM images fetched when shown. Match bytes as well as names:
 // e.g. the notebook sprite and inventory icon share a stem but only the sprite loads at boot.
 const deferredImages = new Set();
-for (const entry of MANIFEST.filter(e => e.kind === 'portrait' || e.kind === 'item')) {
+for (const entry of MANIFEST.filter(e => ['portrait', 'item', 'equipment', 'battle-portrait'].includes(e.kind))) {
   const source = await readFile(resolve(project, 'art/src', entry.file)).catch(() => null);
   if (!source) continue;
   const stem = entry.file.split('/').pop().replace(/\.\w+$/, '');
-  for (const name of built.filter(n => n.startsWith(stem + '-') && n.endsWith('.png'))) {
+  for (const name of built.filter(n => n.startsWith(stem + '-') && /\.(png|webp)$/.test(n))) {
     if (source.equals(await readFile(resolve(project, 'build', name)))) deferredImages.add(name);
   }
 }

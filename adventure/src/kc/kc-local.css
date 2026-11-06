@@ -7,6 +7,60 @@
   background: #100d09;
 }
 .kc.kc-screen { min-height: 100%; }
+/* Adventure's three-pose attack: 200 ms approach, 500 ms contact, 200 ms return.
+   This continuous animation retains its node/key when the displayed battle updates at contact. */
+.kc .battlefield[data-phase] .hero-art { max-width: none; }
+.kc .battlefield[data-phase] {
+  /* The extended reference punch reaches the machine's upper body, rather than stopping in air. */
+  --hero-advance: max(24px, calc(var(--duel-gap) - var(--hero-size) * .1 - var(--enemy-size) * .5));
+}
+.kc .battlefield[data-phase][data-actor="hero"]:not([data-phase="idle"]) .hero-motion {
+  animation: adventure-attack-travel 900ms ease-in-out both;
+  z-index: 3;
+}
+.kc .battlefield[data-phase][data-actor="hero"]:not([data-phase="idle"]) .hero-art { animation: none; }
+.kc .battlefield[data-phase][data-actor="hero"]:not([data-phase="idle"]) .intent { visibility: hidden; }
+.kc .battlefield[data-phase][data-actor="hero"]:not([data-phase="idle"]) .enemy-motion { animation: none; }
+.kc .battlefield[data-phase="contact"][data-actor="hero"] .fighter-motion.enemy-motion {
+  animation: adventure-contact-recoil 500ms ease-out both;
+}
+.kc .battlefield[data-phase][data-actor="hero"]:not([data-phase="idle"]) .contact-burst {
+  animation: adventure-contact-burst 500ms ease-out both;
+}
+.kc .battlefield[data-phase][data-actor="hero"]:not([data-phase="idle"]) .motion-trail {
+  animation: adventure-contact-trail 500ms ease-out both;
+}
+.kc .battlefield[data-phase][data-actor="hero"]:not([data-phase="idle"]) .action-flash.show {
+  animation: adventure-contact-feedback 500ms ease-out both;
+}
+@keyframes adventure-attack-travel {
+  0%, 100% { translate: 0 0; }
+  22.222222%, 77.777778% { translate: var(--advance) 0; }
+}
+@keyframes adventure-contact-recoil {
+  0%, 100% { translate: 0 0; }
+  15% { translate: var(--recoil) 0; }
+}
+@keyframes adventure-contact-burst {
+  0% { opacity: 1; scale: .7; rotate: 0deg; }
+  100% { opacity: 0; scale: 1.35; rotate: 12deg; }
+}
+@keyframes adventure-contact-trail {
+  0% { opacity: .65; scale: 1 1; }
+  100% { opacity: 0; scale: .5 1; }
+}
+@keyframes adventure-contact-feedback {
+  0%, 75% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.reduce-motion .kc .battlefield[data-phase] :is(.fighter-motion.hero-motion, .fighter-motion.enemy-motion, .fighter.hero-art, .fighter.enemy-art) {
+  animation: none; translate: 0 0; rotate: 0deg;
+}
+@media (prefers-reduced-motion: reduce) {
+  .kc .battlefield[data-phase][data-actor] :is(.fighter-motion.hero-motion, .fighter-motion.enemy-motion, .fighter.hero-art, .fighter.enemy-art) {
+    animation: none; translate: 0 0; rotate: 0deg;
+  }
+}
 .kc .kc-tonic { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 10px; }
 .kc .kc-tonic small { font-size: 12px; opacity: 0.8; }
 .kc .kc-rewards { list-style: none; margin: 10px 0; padding: 0; display: flex; gap: 14px; justify-content: center; font-family: 'Cinzel', Georgia, serif; color: var(--gold); }
@@ -439,4 +493,134 @@
   .kc-armory-popup .preview-art .equipment-art, .kc-armory-popup .preview-art .doll-potion-icon,
   .kc-armory-popup .preview-art .doll-potion-icon svg { width: 92px; height: 92px; }
   .kc-armory-popup .preview .preview-name { font-size: 20px; }
+}
+
+/* Short landscape screens get a compact battle, rather than the tall phone card grid.
+   Size decoration with the viewport; keep readable card copy and 44px action targets. */
+@media (max-height: 700px) and (min-width: 560px) and (orientation: landscape),
+       (max-width: 1100px) and (min-width: 560px) and (orientation: landscape) {
+  .kc .combat-screen {
+    --screen-height: 100svh;
+    --hand-height: clamp(150px, 40svh, 210px);
+    height: 100svh;
+    min-height: 360px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: center;
+  }
+  .kc .combat-screen[data-arena] { background-position: center; }
+  .kc .masthead {
+    height: 44px; padding: 0 8px; gap: 8px;
+    grid-template-columns: minmax(100px, 1fr) auto minmax(180px, 1fr);
+  }
+  .kc .wordmark { font-size: clamp(12px, 1.5vw, 16px); letter-spacing: 1px; }
+  .kc .chapter {
+    grid-column: auto; grid-row: auto; margin: 0;
+    font-size: clamp(9px, 1vw, 12px); letter-spacing: .5px;
+  }
+  .kc .chapter > span:first-child { margin: 0 4px; }
+  .kc .masthead nav { gap: 0; }
+  .kc .masthead .quiet { min-width: 44px; min-height: 44px; padding: 4px 6px; font-size: 12px; }
+  .kc .masthead .icon-button { font-size: 22px; }
+  .kc .game { flex: 1; min-height: 0; }
+  .kc .battlefield {
+    flex: 1; height: auto; min-height: 0;
+    --floor: 4px;
+    --hero-size: clamp(64px, 18svh, 110px);
+    --enemy-size: clamp(64px, 18svh, 110px);
+    --duel-gap: 52vw;
+  }
+  .kc .hero { left: 8%; width: 32%; }
+  .kc .enemy { right: 8%; width: 32%; }
+  .kc .status-panel {
+    top: 4px; width: clamp(145px, 21vw, 230px); min-height: 0;
+    padding: 7px 10px 5px;
+  }
+  .kc .hero-status { left: 8px; }
+  .kc .enemy-status { right: 8px; }
+  .kc .status-crest { display: none; }
+  .kc .status-panel h2 { font-size: clamp(11px, 1.4vw, 15px); letter-spacing: .4px; margin-bottom: 2px; }
+  .kc .status-row { grid-template-columns: 12px minmax(0, 1fr) 60px; gap: 3px; margin: 2px 0; }
+  .kc .status-icon .resource-symbol { width: 12px; height: 16px; }
+  .kc .status-track { height: 8px; padding: 1px; }
+  .kc .status-value { font-size: 13px; }
+  .kc .resource-label { font-size: 9px; }
+  .kc .block-badge {
+    position: absolute; top: 100%; right: 6px; min-height: 0;
+    margin: 0; padding: 1px 4px; background: #100d09e8; font-size: 11px;
+  }
+  .kc .block-badge.empty { display: none; }
+  .kc .block-badge .resource-symbol { width: 12px; height: 14px; }
+  .kc .intent {
+    /* The central gap between health panels leaves both the figures and HP unobscured. */
+    top: 4px; bottom: auto; left: -31.25%;
+    min-width: 110px; min-height: 44px; padding: 4px 8px;
+  }
+  .kc .intent strong { font-size: 16px; }
+  .kc .intent strong > span, .kc .intent small { font-size: 11px; }
+  .kc .intent-mark { font-size: 15px; margin-right: 3px; }
+  .kc .action-flash { font-size: 16px; }
+  .kc .resources-row { flex-direction: row; gap: 8px; padding: 2px 8px 4px; min-height: 36px; }
+  .kc .strain-panel { flex-shrink: 0; width: clamp(210px, 32vw, 340px); height: 30px; padding: 3px 8px 3px 34px; }
+  .kc .strain-gauntlet { width: 32px; height: 32px; top: -2px; left: 0; }
+  .kc .strain-title { font-size: 9px; margin-bottom: 2px; letter-spacing: .2px; }
+  .kc .strain-title strong { font-size: 9px; }
+  .kc .strain-meter { height: 6px; }
+  .kc .strain-hint { display: none; }
+  .kc .equipment-summary { font-size: 12px; padding: 2px 6px; margin: 0; gap: 0 8px; min-width: 0; }
+  .kc .combat-deck {
+    flex-shrink: 0; grid-template-columns: clamp(60px, 8vw, 84px) minmax(0, 1fr) clamp(88px, 12vw, 124px);
+    gap: 8px; padding: 0 8px; align-items: end;
+  }
+  .kc .left-controls { grid-column: 1; grid-row: 1; }
+  .kc .right-controls { grid-column: 3; grid-row: 1; }
+  .kc .deck-side { flex-direction: column; gap: 6px; padding: 0 0 4px; }
+  .kc .hand-area { grid-column: 2; grid-row: 1; --hand-gap: 6px; --card-max: clamp(112px, calc((100cqw - 34px) / 5), 168px); }
+  .kc .hand {
+    flex-wrap: nowrap; justify-content: flex-start; align-items: end;
+    min-height: 0; gap: var(--hand-gap); overflow-x: auto; overflow-y: hidden;
+    padding: 10px 5px 4px; margin: 0;
+    scroll-padding-inline: 5px; overscroll-behavior-x: contain; touch-action: pan-x;
+  }
+  .kc .hand::before, .kc .hand::after { display: none; }
+  .kc .card {
+    flex: 0 0 var(--card-max); width: var(--card-max); min-width: 0;
+    height: var(--hand-height); padding-bottom: 4px;
+  }
+  .kc .card:hover:not(:disabled), .kc .card:focus-visible { transform: translateY(-4px); }
+  .kc .card-illustration { height: 28%; }
+  .kc .card-cost { top: 3px; left: 3px; width: 24px; height: 24px; font-size: 19px; }
+  .kc .card-mp { top: 3px; right: 3px; padding: 2px 3px; gap: 2px; font-size: 13px; }
+  .kc .card-mp .resource-symbol { width: 10px; height: 13px; }
+  .kc .card-mp small { font-size: 9px; }
+  .kc .card-name { min-height: 28px; margin: 0 3px; padding: 3px 0; font-size: 12px; }
+  .kc .card-description { font-size: 13px; line-height: 1.05; padding: 3px 3px 0; }
+  .kc .card-strain, .kc .card-technique { font-size: 12px; line-height: 1.05; margin-top: 2px; }
+  .kc .card-warning, .kc .card-hot-note, .kc .card-unavailable, .kc .card-condition { font-size: 11px; line-height: 1.05; margin-top: 2px; }
+  .kc .energy-orb { width: 52px; height: 52px; }
+  .kc .energy-orb > div { display: flex; align-items: baseline; gap: 1px; }
+  .kc .energy-orb strong { font-size: 18px; }
+  .kc .energy-orb > div > span { font-size: 10px; }
+  .kc .energy-label { font-size: 8px; letter-spacing: .5px; }
+  .kc .pile-stack { display: none; }
+  .kc .pile-button { min-width: 44px; min-height: 44px; padding: 4px; font-size: 11px; gap: 0; letter-spacing: 0; }
+  .kc .end-turn-group { max-width: none; }
+  .kc .end-turn { min-height: 44px; padding: 4px; font-size: 12px; letter-spacing: 0; }
+  .kc .end-turn-arrow { display: none; }
+  .kc .enemy-reminder { display: none; }
+  .kc .kc-tonic { min-height: 44px; padding: 3px; font-size: 12px; }
+  .kc .kc-tonic small { font-size: 11px; }
+  .kc .effect-preview { flex-shrink: 0; min-height: 24px; padding: 4px 8px; font-size: 12px; line-height: 1.15; }
+  .kc .lesson-banner { position: relative; flex-shrink: 0; flex-wrap: nowrap; gap: 8px; padding: 2px 8px; }
+  .kc .lesson-banner strong { font-size: 10px; }
+  .kc .lesson-banner p { font-size: 12px; line-height: 1.15; }
+  .kc .lesson-banner .quiet { flex-shrink: 0; min-height: 44px; padding: 4px; font-size: 11px; }
+  .kc .guided-combat { --hand-height: clamp(132px, 34svh, 190px); }
+  .kc .guided-combat .lesson-target { scroll-margin: 8px; }
+  .kc dialog { max-height: calc(100svh - 16px); padding: 14px; }
+  .kc dialog button { min-width: 44px; min-height: 44px; }
+  .kc dialog h2 { font-size: 22px; margin: 8px 0; }
+  .kc #modal-body { font-size: 15px; line-height: 1.25; }
+  .kc #modal-actions { margin-top: 12px; }
+  .kc #modal-actions button { min-height: 44px; }
 }

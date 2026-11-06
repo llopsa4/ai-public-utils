@@ -27,6 +27,8 @@ The scene covers: Mara's tent → the kiln hall (help Wren with the hoist) → t
 
 After Mara learns the shutdown procedure, speak to Oren again before releasing the regulator. Oren gives and equips his medium armour, then asks Mara to check its fit in Gear (press G or the highlighted button). The gift and guided visit happen once; later outfit choices remain yours. After the fight Oren still gives his spare light coat and harness, without another forced Gear visit. Older saves retain their equipment and progress; saves already past shutdown continue without being rewound.
 
+Combat uses the approved lower guard at rest, the raised guard during a 200 ms approach, and an extended punch held for 500 ms at contact before a 200 ms return. Damage appears at contact; input stays locked until the return finishes. Reduced motion keeps the poses and timing without travel or shake. On smaller landscape screens, health panels, cards and decoration become compact so the battle and controls fit together. Extra cards scroll horizontally; action buttons retain a 44-pixel minimum tap target.
+
 Text is **English only** for now. Languages can be added back by dropping a `strings/<code>.json` beside `en.json` and listing it in `src/engine/i18n.ts`. The switcher reappears once there are two.
 
 ### Saves

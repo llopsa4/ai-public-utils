@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Combat adapts to short and narrow landscape screens: smaller health panels and cards, a horizontal hand, and on-screen controls with 44-pixel action targets. Resizing keeps the active battle.
+
+- Combat now uses the approved lower fighting stance, raised guard during a 200 ms approach, and a punch held for 500 ms before returning. Damage appears at contact; input and victory wait for the full attack to finish.
+
 - G toggles unlocked Gear, N the Notebook, and M the Menu during exploration. Shortcuts respect dialogue, combat, text entry and modal focus; opening a screen cancels movement and pending inventory gestures.
 - After reading the shutdown procedure, Mara must speak to Oren about protection and complete a guided Gear visit before releasing the regulator. Oren equips medium armour once; post-fight spares and shelter advice remain, without a second tutorial. Version 9 saves preserve older progress and chosen equipment.
 - Testing now separates fast Node contracts, feature suites, focused browser checks and full release journeys. `npm test` skips expensive image rendering and browsers; `test:release` validates everything with one production build. Story integration shares production dialogue rewards, and chapter-two browser checks are included in discovery.
