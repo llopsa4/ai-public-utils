@@ -14,6 +14,7 @@ import { choose, closeRadial, openRadial } from './radial';
 import { bindFullscreen, bindLongPress, hideLabels, revealFor, showLabels } from './labels';
 import { exportSave, importSave } from './saves';
 import { RoomControls } from './controls';
+import { gearAvailable } from './shortcuts';
 
 /** World size in logical units; all content coordinates use it. */
 export const LOGICAL_W = 640;
@@ -90,11 +91,13 @@ export class Ui {
   skipSpeech: (() => void) | null = null;
   toastTimer = 0;
   closeRadialHandler: (() => void) | null = null;
+  /** A lazy gear-screen import is in progress; this is transient UI state, never saved. */
+  gearPending = false;
 
   constructor(readonly host: UiHost) {
     this.controls = new RoomControls(this);
     this.buildLanguageButtons();
-    this.menuButton.addEventListener('click', () => this.menu.showModal());
+    this.menuButton.addEventListener('click', () => this.openMenu());
     $('menu-close').addEventListener('click', () => this.menu.close());
     $('menu-help').addEventListener('click', () => $<HTMLDialogElement>('help').showModal());
     $('menu-export').addEventListener('click', () => exportSave(this));
@@ -102,8 +105,14 @@ export class Ui {
     $('end-new').addEventListener('click', () => { this.hideEnd(); void newStory(this); });
     $('menu-history').addEventListener('click', () => openHistory(this)); // stacks over the pause menu; Back returns to it
     $('menu-settings').addEventListener('click', () => openSettings());
-    $('notebook-btn').addEventListener('click', () => openNotebook(this));
-    $('gear-btn').addEventListener('click', () => { if (!this.forcingGear) void openGear(this); });
+    $('notebook-btn').addEventListener('click', () => {
+      if (this.gearPending) return;
+      this.controls.cancel();
+      openNotebook(this);
+    });
+    $('gear-btn').addEventListener('click', () => {
+      if (!this.forcingGear && gearAvailable(this.host.getState())) void openGear(this);
+    });
     $('reveal-btn').addEventListener('click', () => revealFor(this, 3000));
     bindFullscreen();
     bindLongPress(this);
@@ -135,6 +144,7 @@ export class Ui {
     this.menu.addEventListener('click', e => { if (e.target === this.menu) this.menu.close(); });
     window.addEventListener('keydown', e => {
       if (this.controls.keyDown(e)) return;
+      if (this.gearPending) { e.preventDefault(); e.stopImmediatePropagation(); return; }
       if (this.introActive || !$('kc-root').hidden) return;
       // Keyboard play: with nothing else focused, Tab walks through the room before the bar buttons.
       const free = (document.activeElement === document.body || document.activeElement === null)
@@ -254,6 +264,8 @@ export class Ui {
 
   /** Opens the pause menu (also from Kiln Courier's battle screen). */
   openMenu(): void {
+    if (this.gearPending) return;
+    this.controls.cancel();
     if (!this.menu.open) this.menu.showModal();
   }
 
@@ -388,14 +400,23 @@ export class Ui {
 
   setBusy(busy: boolean): void {
     if (busy) this.controls.cancel();
-    this.menuButton.disabled = busy;
+    this.syncScreenButtons();
     this.stage.classList.toggle('busy', busy);
+  }
+
+  /** Keep button availability aligned with the shortcut policy while gear loads or unlocks. */
+  syncScreenButtons(): void {
+    this.menuButton.disabled = this.host.isBusy() || this.gearPending;
+    $<HTMLButtonElement>('notebook-btn').disabled = this.gearPending;
+    const gear = $<HTMLButtonElement>('gear-btn');
+    gear.hidden = !this.forcingGear && !gearAvailable(this.host.getState());
+    gear.disabled = this.gearPending;
   }
 
   // --------------------------------------------------------- inventory ---
   renderInventory(): void {
     const state = this.host.getState();
-    $('gear-btn').hidden = !state.flags.fought && !state.flags.metOren;
+    this.syncScreenButtons();
     const selected = this.host.selectedItem();
     this.inventory.replaceChildren();
     if (state.inventory.length === 0) {
@@ -448,6 +469,7 @@ export class Ui {
     document.title = t('ui.title');
     for (const el of document.querySelectorAll<HTMLElement>('[data-i18n]')) el.textContent = t(el.dataset.i18n!);
     for (const el of document.querySelectorAll<HTMLElement>('[data-i18n-label]')) el.setAttribute('aria-label', t(el.dataset.i18nLabel!));
+    for (const el of document.querySelectorAll<HTMLElement>('[data-i18n-title]')) el.title = t(el.dataset.i18nTitle!);
     for (const b of document.querySelectorAll<HTMLButtonElement>('#lang button')) b.setAttribute('aria-pressed', String(b.dataset.lang === lang));
     this.renderInventory();
   }

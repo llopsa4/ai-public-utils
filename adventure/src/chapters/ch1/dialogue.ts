@@ -22,7 +22,6 @@ export const DIALOGUES: Record<string, DialogueTree> = {
           { actor: 'oren', text: 'dlg.oren.before2' },
         ],
         set: { metOren: true },
-        gear: { give: ['layered-armor'], equip: 'layered-armor' },
         next: null,
       },
       argue: {
@@ -87,6 +86,23 @@ export const DIALOGUES: Record<string, DialogueTree> = {
       },
       stillWarm: { lines: [{ actor: 'oren', text: 'dlg.oren.stillWarm1' }, { actor: 'oren', text: 'dlg.oren.stillWarm2' }], next: null },
       back: { lines: [{ actor: 'oren', text: 'dlg.oren.back' }], next: null },
+    },
+  },
+
+  // Before the shutdown, Oren prepares Mara for the heat and flying ceramic.
+  orenProtection: {
+    start: 'advice',
+    nodes: {
+      advice: {
+        lines: [
+          { actor: 'oren', text: 'dlg.oren.protection1' },
+          { actor: 'oren', text: 'dlg.oren.protection2' },
+          { actor: 'hero', text: 'dlg.hero.protection' },
+        ],
+        set: { metOren: true },
+        gear: { give: ['layered-armor'], equip: 'layered-armor' },
+        next: null,
+      },
     },
   },
 

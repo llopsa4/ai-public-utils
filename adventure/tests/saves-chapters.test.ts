@@ -43,7 +43,7 @@ test('version 7 chapter 2 saves keep Bryn as their only NPC', async () => {
 });
 
 test('saves from every older version load, upgraded to chapter 1', () => {
-  for (const v of [3, 4, 5, 6, 7]) {
+  for (const v of [3, 4, 5, 6, 7, 8]) {
     const r = parseSave(fixture(v));
     assert.ok(r.ok, `v${v}`);
     const s = r.state;
@@ -53,6 +53,8 @@ test('saves from every older version load, upgraded to chapter 1', () => {
     assert.equal(s.room, 'gallery');
     assert.deepEqual(s.inventory, ['gauntlet', 'notebook']);
     assert.ok(s.flags.patchFailed && s.flags.secretTally && s.flags.metHollis);
+    assert.equal(s.flags.gearUnlocked, true, 'old Oren contact keeps Gear available');
+    assert.equal(s.flags.protectionPrepared, undefined, 'old games before shutdown still receive preparation');
     assert.equal(s.npcs.nell!.pose, 'crouch');
     assert.deepEqual(s.npcs.tobi, { pose: 'stand', face: 'right' });
     assert.deepEqual(s.looks, v === 3 ? {} : { rack: 2, 'item:gauntlet': 1 });
@@ -60,7 +62,7 @@ test('saves from every older version load, upgraded to chapter 1', () => {
     // Format 7: no techniques yet, the starting limits.
     assert.deepEqual([s.kit.techniques, s.kit.maxHp, s.kit.maxMp], [[], 60, 10]);
   }
-  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, 6, 7, SAVE_VERSION]);
+  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, 6, 7, 8, SAVE_VERSION]);
   assert.equal(migrate(2, {}), null);
 });
 
@@ -74,6 +76,43 @@ test('the current version keeps flags per chapter and round-trips', () => {
   const r = parseSave(serializeSave(s));
   assert.ok(r.ok);
   assert.deepEqual(r.state, s);
+});
+
+test('version 8 preparation migration preserves old Gear access and never rewinds completed shutdowns', () => {
+  const cases: Record<string, boolean>[] = [{}, { metOren: true }, { kilnCold: true }, { fought: true }, { gearChecked: true }];
+  for (const flags of cases) {
+    const s = newGame();
+    s.room = 'gallery';
+    s.flags = { ...flags };
+    s.kit.owned.push('layered-armor');
+    const old = JSON.parse(serializeSave(s));
+    old.version = 8;
+    const r = parseSave(JSON.stringify(old));
+    assert.ok(r.ok);
+    const advanced = !!(flags.kilnCold || flags.fought || flags.gearChecked);
+    assert.equal(!!r.state.flags.gearUnlocked, !!flags.metOren || advanced);
+    assert.equal(!!r.state.flags.protectionPrepared, advanced);
+    for (const [flag, value] of Object.entries(flags)) assert.equal(r.state.flags[flag], value);
+    assert.equal(r.state.room, s.room);
+    assert.deepEqual(r.state.kit, s.kit, 'migration never grants or equips armour');
+    assert.deepEqual(r.state.inventory, s.inventory);
+    assert.deepEqual(r.state.bag, s.bag);
+  }
+});
+
+test('version 8 later-chapter saves retain Bryn, kit and progress while upgrading earlier chapter flags', async () => {
+  await loadChapter('ch2');
+  const s = newGame('ch2');
+  s.reached = ['ch1', 'ch2'];
+  s.earlier = { ch1: { metOren: true, kilnCold: true, gearChecked: true } };
+  s.flags.sat = true;
+  applyCommand(s, { type: 'learn', technique: 'tempered-flow' });
+  const old = JSON.parse(serializeSave(s));
+  old.version = 8;
+  const r = parseSave(JSON.stringify(old));
+  assert.ok(r.ok);
+  assert.deepEqual(r.state.earlier.ch1, { ...s.earlier.ch1, gearUnlocked: true, protectionPrepared: true });
+  assert.deepEqual({ ...r.state, earlier: s.earlier }, s);
 });
 
 test('saves are checked against each chapter\'s own flags, items and rooms', () => {

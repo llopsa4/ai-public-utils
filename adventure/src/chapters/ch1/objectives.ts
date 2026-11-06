@@ -16,6 +16,7 @@ const STEPS: { key: string; done: (s: GameState) => boolean; optional?: boolean 
   { key: 'obj.oren', done: s => !!s.flags.patchFailed },
   { key: 'obj.talk', done: s => !!s.flags.decided },
   { key: 'obj.procedure', done: s => !!s.flags.procedureKnown },
+  { key: 'obj.protection', done: s => !!(s.flags.protectionPrepared || s.flags.kilnCold) },
   { key: 'obj.release', done: s => !!s.flags.kilnCold },
   { key: 'obj.goodbye', done: s => !!s.flags.gotBread, optional: true },
   { key: 'obj.leave', done: s => s.room === 'ashways' },

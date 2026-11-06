@@ -10,7 +10,7 @@ import { enterStoryRoom, interactStory, runStoryCommands } from './support/story
 
 test('dialogue effects grant flags, inventory and Oren equipment without re-equipping old rewards', () => {
   const s = newGame();
-  const node = resolveNode(DIALOGUES.oren, 'before', s);
+  const node = resolveNode(DIALOGUES.orenProtection, 'advice', s);
   assert.equal(s.kit.equipment.armor.id, 'patched-coat', 'resolving speech has no effects');
   assert.deepEqual(applyDialogueEffects(s, node), { inventoryChanged: false, gearReceived: true });
   assert.equal(s.flags.metOren, true);

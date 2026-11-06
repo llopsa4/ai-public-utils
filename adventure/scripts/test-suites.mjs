@@ -22,6 +22,8 @@ export const NODE_SUITES = {
   'movement.test.ts': entry(true, 'input', 'runtime'),
   'objectives-settings.test.ts': entry(true, 'story', 'input'),
   'pathfinding.test.ts': entry(true, 'crowd', 'input', 'runtime'),
+  'protection.test.ts': entry(true, 'story', 'saves'),
+  'shortcuts.test.ts': entry(true, 'input', 'runtime'),
   'rules-golden.test.ts': entry(false, 'story', 'runtime'),
   'save-i18n.test.ts': entry(true, 'story', 'saves'),
   'saves-chapters.test.ts': entry(true, 'story', 'saves', 'runtime'),

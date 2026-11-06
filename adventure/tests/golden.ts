@@ -15,6 +15,9 @@ const STAGES: { flags: string[]; items: string[] }[] = [
   { flags: ['metOren', 'patchFailed'], items: [] },
   { flags: ['toldRepair', 'toldMother', 'decided'], items: [] },
   { flags: ['procedureKnown'], items: [] },
+  // The guided visit can be resumed before it is closed; shutdown remains blocked until prepared.
+  { flags: ['gearUnlocked'], items: [] },
+  { flags: ['protectionPrepared'], items: [] },
   { flags: ['kilnCold', 'fought', 'gearChecked'], items: ['regulator'] },
   { flags: ['gotBread', 'gotScarf'], items: ['bread', 'scarf'] },
   { flags: ['sawSweeper', 'valveVented', 'secretTally', 'secretChalk', 'secretSign', 'secretRail'], items: [] },

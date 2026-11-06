@@ -33,12 +33,15 @@ function talk(state: GameState, id: string, pick: (next: (string | null)[]) => s
   }).visited;
 }
 
-test('playing Oren advice applies the same equipment reward as the room dialogue runner', () => {
+test('playing Oren protection advice applies the same equipment reward as the room dialogue runner', () => {
   const s = newGame();
-  talk(s, 'oren');
+  s.room = 'gallery';
+  s.flags.procedureKnown = true;
+  run(s, 'talk', 'oren');
   assert.equal(s.flags.metOren, true);
   assert.equal(s.kit.equipment.armor.id, 'layered-armor');
   assert.equal(s.kit.owned.filter(id => id === 'layered-armor').length, 1);
+  assert.equal(s.flags.protectionPrepared, true);
 });
 
 test('Tobi is a visible, talkable child and speaks during the scarf farewell', () => {
@@ -156,6 +159,9 @@ test('the whole scene plays from Mara\'s tent to the ashways', () => {
   assert.deepEqual(run(s, 'use', 'regulator', 'gauntlet').spoken, ['line.needProcedure'], 'the notebook comes first');
   run(s, 'use', 'regulator', 'notebook');
   assert.ok(s.flags.procedureKnown);
+  assert.deepEqual(run(s, 'use', 'regulator', 'gauntlet').spoken, ['line.needProtection'], 'Oren prepares him before the release');
+  run(s, 'talk', 'oren');
+  assert.ok(s.flags.protectionPrepared && s.flags.gearUnlocked);
   const release = run(s, 'use', 'regulator', 'gauntlet');
   assert.ok(s.flags.kilnCold);
   assert.ok(s.inventory.includes('regulator'));

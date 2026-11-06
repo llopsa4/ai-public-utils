@@ -135,6 +135,8 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   await act(page, 'talk', 'oren', undefined, ['There has to be another repair.', 'My mother built half of this.', 'All right. I\'ll do it.']);
   expect((await state(page)).flags.decided).toBe(true);
   await act(page, 'use', 'regulator', 'notebook');
+  await act(page, 'talk', 'oren');
+  expect((await state(page)).flags.protectionPrepared).toBe(true);
   await act(page, 'use', 'regulator', 'gauntlet');
   expect((await state(page)).flags.kilnCold).toBe(true);
   await act(page, 'go', 'galleryStairs');

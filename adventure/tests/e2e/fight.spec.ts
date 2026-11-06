@@ -1,10 +1,11 @@
 import { expect, test, type Page } from '@playwright/test';
-import { fightStep, idle, open, startNewGame } from './helpers';
+import { act, fightStep, fixtureReady, idle, open, startNewGame } from './helpers';
 
 /** A game in the regulator gallery, ready for the release (everything before it done). */
 async function readyToRelease(page: Page, errors: string[]): Promise<void> {
   await open(page, errors);
   await startNewGame(page);
+  await fixtureReady(page);
   await page.evaluate(() => {
     const s = (window as any).adventure.session;
     const st = structuredClone(s.state);
@@ -15,6 +16,8 @@ async function readyToRelease(page: Page, errors: string[]): Promise<void> {
     s.replaceState(st);
   });
   await idle(page);
+  await act(page, 'talk', 'oren');
+  expect(await page.evaluate(() => (window as any).adventure.session.state.flags.protectionPrepared)).toBe(true);
 }
 
 /** Runs the release and skips lines until the fight is on screen. */
@@ -52,7 +55,10 @@ test('the first fight is Kiln Courier\'s lesson: only the outlined control works
   // Follow the lesson to the end. The win shows Cinderfold's victory screen with what the fight
   // paid, its Continue focused.
   let sawRewards = false;
-  for (let i = 0; i < 200 && !(await page.locator('#force-veil').count()); i++) {
+  for (let i = 0; i < 200 && !(await page.evaluate(() => {
+    const s = (window as any).adventure.session;
+    return s.state.flags.fought && s.state.flags.gearChecked && !s.scene.isBusy();
+  })); i++) {
     if (!sawRewards && await page.locator('#kc-root .kc-victory').isVisible().catch(() => false)) {
       await expect(page.locator('#kc-root .kc-victory-title')).toHaveText('Victory');
       await expect(page.locator('#kc-root .kc-loot')).toContainText('+12');
@@ -65,11 +71,9 @@ test('the first fight is Kiln Courier\'s lesson: only the outlined control works
     else { await page.evaluate(() => (window as any).adventure.session.ui.skip()); await page.waitForTimeout(250); }
   }
 
-  // Oren's advice: everything is dimmed but the Gear button, which has to be pressed.
-  await expect(page.locator('#force-veil')).toBeVisible();
-  await page.keyboard.press('Escape');
-  await expect(page.locator('#force-veil')).toBeVisible();
-  await page.locator('#gear-btn').click();
+  // Preparation already happened before shutdown. Spares and the send-off do not force it again.
+  await expect(page.locator('#force-veil')).toHaveCount(0);
+  await page.keyboard.press('g');
   await expect(page.locator('#gear .kc-armory')).toBeVisible({ timeout: 30_000 });
   // The equipment is shown with its pictures (not the fallback icons).
   await expect(page.locator('#gear .kc-armory .equipment-art img').first()).toBeVisible();
