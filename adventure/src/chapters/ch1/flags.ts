@@ -7,7 +7,7 @@ export const FLAGS = [
   // firing house
   'latchFixed', 'alarm', 'metNell', 'gotBread', 'gotScarf',
   // regulator gallery
-  'metOren', 'patchFailed', 'toldRepair', 'toldMother', 'toldLeaving', 'toldWhyMe', 'decided', 'procedureKnown', 'kilnCold',
+  'metOren', 'patchFailed', 'toldRepair', 'toldMother', 'toldLeaving', 'toldWhyMe', 'decided', 'procedureKnown', 'gearUnlocked', 'protectionPrepared', 'kilnCold',
   // ashways
   'valveVented', 'sawSweeper',
   // optional secrets (none gate progress)

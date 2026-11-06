@@ -6,7 +6,7 @@ import { newBag, newKit } from './kit';
  * Add a step here whenever the format changes, and a fixture save of the old version in
  * tests/fixtures/saves/.
  */
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 
 type Raw = Record<string, unknown>;
 
@@ -32,6 +32,19 @@ const STEPS: Record<number, (s: Raw) => void> = {
     if (s.chapter === 'ch1' && npcs && typeof npcs === 'object' && !Array.isArray(npcs)
       && Object.keys(npcs).length === 2 && Object.hasOwn(npcs, 'oren') && Object.hasOwn(npcs, 'nell')) {
       (npcs as Raw).tobi = { pose: 'stand', face: 'right' };
+    }
+  },
+  // 8 -> 9: move the guided Gear visit before shutdown, preserving old progress and equipment.
+  8: s => {
+    const flags = s.flags;
+    if (!flags || typeof flags !== 'object' || Array.isArray(flags)) return;
+    const ch1 = (flags as Raw).ch1;
+    if (!ch1 || typeof ch1 !== 'object' || Array.isArray(ch1)) return;
+    const f = ch1 as Raw;
+    if (f.metOren === true) f.gearUnlocked = true;
+    if (f.kilnCold === true || f.fought === true || f.gearChecked === true) {
+      f.gearUnlocked = true;
+      f.protectionPrepared = true;
     }
   },
 };

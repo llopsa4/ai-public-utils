@@ -6,12 +6,24 @@ import { LOCKED_SLOTS, maraProfile } from '../content/kit';
 import { equip } from '../engine/kit';
 import { $, type Ui } from './ui';
 
+const guidedVisits = new WeakMap<Ui, Promise<void>>();
+const gearVisits = new WeakMap<Ui, Promise<void>>();
+
 /**
  * Oren's advice: the Gear button appears and is the only thing that can be used (the screen is
  * dimmed around it, other keys and clicks do nothing) until it is pressed; then the gear screen
  * opens. Resolves when it is closed.
  */
-export async function forceGear(ui: Ui): Promise<void> {
+export function forceGear(ui: Ui): Promise<void> {
+  const existing = guidedVisits.get(ui);
+  if (existing) return existing;
+  const visit = guidedGear(ui);
+  guidedVisits.set(ui, visit);
+  void visit.then(() => guidedVisits.delete(ui), () => guidedVisits.delete(ui));
+  return visit;
+}
+
+async function guidedGear(ui: Ui): Promise<void> {
   const button = $<HTMLButtonElement>('gear-btn');
   button.hidden = false;
   button.disabled = false;
@@ -21,10 +33,12 @@ export async function forceGear(ui: Ui): Promise<void> {
   veil.id = 'force-veil';
   document.body.append(veil);
   ui.forcingGear = true;
+  ui.controls.cancel();
+  ui.syncScreenButtons();
   const keys = (e: KeyboardEvent) => {
-    if (document.activeElement === button && (e.key === 'Enter' || e.key === ' ' || e.key === 'Tab')) { if (e.key === 'Tab') { e.preventDefault(); } return; }
     e.preventDefault();
     e.stopImmediatePropagation();
+    if (ui.controls.screenShortcut(e)?.type === 'guide') { button.click(); return; }
     button.focus({ preventScroll: true });
   };
   window.addEventListener('keydown', keys, true);
@@ -34,6 +48,7 @@ export async function forceGear(ui: Ui): Promise<void> {
   ui.forcingGear = false;
   button.classList.remove('forced');
   veil.remove();
+  ui.syncScreenButtons();
   await openGear(ui);
 }
 
@@ -41,35 +56,55 @@ export async function forceGear(ui: Ui): Promise<void> {
  * Mara's gear: Kiln Courier's workshop (equip-only, src/kc/Armory.tsx, loaded on first use) in a
  * pop-up over the room, like the shop. Resolves when it is closed (Done, Escape or a click outside).
  */
-export async function openGear(ui: Ui): Promise<void> {
-  const kc = await import('../kc/mount');
-  const dialog = $<HTMLDialogElement>('gear');
-  // ?debug: every equipable piece in the game is in the stash and nothing is locked; equipping one
-  // adds it to Mara's gear (saves accept any piece, so this survives a reload).
-  const debug = new URLSearchParams(location.search).has('debug');
-  await new Promise<void>(resolve => {
-    const unmount = kc.mountArmory($('gear-body'), {
-      popup: true, title: t('ui.gearTitle'), eyebrow: t('ui.gearEyebrow'), locked: debug ? [] : [...LOCKED_SLOTS],
-      // The paper doll shows only the gear and the stats it gives (no purse or bag).
-      read: () => {
-        const { kit, bag } = ui.host.getState();
-        return { profile: maraProfile(kit), owned: debug ? [...new Set([...kit.owned, ...ALL_GEAR])] : [...kit.owned], salvage: bag.salvage, carried: [], tonics: bag.tonics };
-      },
-      onEquip: id => {
-        const state = ui.host.getState();
-        const kit = state.kit;
-        if (debug && !kit.owned.includes(id)) kit.owned.push(id);
-        const slot = EQUIPMENT[id].slot;
-        if (!equip(kit, slot, id, debug)) return;
-        // Debug armour selection also dresses Mara, so the morning's casual appearance
-        // cannot hide the chosen outfit. The gauntlet's power remains story-controlled.
-        if (debug && state.chapter === 'ch1' && slot === 'armor') state.flags.dressed = true;
-        ui.host.autosave();
-        ui.host.refreshHeroAppearance?.();
-      },
-      onClose: () => dialog.close(),
+export function openGear(ui: Ui): Promise<void> {
+  const existing = gearVisits.get(ui);
+  if (existing) return existing;
+  if (ui.anyDialogOpen()) return Promise.resolve();
+  const visit = showGear(ui);
+  gearVisits.set(ui, visit);
+  void visit.then(() => gearVisits.delete(ui), () => gearVisits.delete(ui));
+  return visit;
+}
+
+async function showGear(ui: Ui): Promise<void> {
+  ui.gearPending = true;
+  ui.controls.cancel();
+  ui.syncScreenButtons();
+  try {
+    const kc = await import('../kc/mount');
+    ui.gearPending = false;
+    ui.syncScreenButtons();
+    const dialog = $<HTMLDialogElement>('gear');
+    // ?debug: every equipable piece in the game is in the stash and nothing is locked; equipping one
+    // adds it to Mara's gear (saves accept any piece, so this survives a reload).
+    const debug = new URLSearchParams(location.search).has('debug');
+    await new Promise<void>(resolve => {
+      const unmount = kc.mountArmory($('gear-body'), {
+        popup: true, title: t('ui.gearTitle'), eyebrow: t('ui.gearEyebrow'), locked: debug ? [] : [...LOCKED_SLOTS],
+        // The paper doll shows only the gear and the stats it gives (no purse or bag).
+        read: () => {
+          const { kit, bag } = ui.host.getState();
+          return { profile: maraProfile(kit), owned: debug ? [...new Set([...kit.owned, ...ALL_GEAR])] : [...kit.owned], salvage: bag.salvage, carried: [], tonics: bag.tonics };
+        },
+        onEquip: id => {
+          const state = ui.host.getState();
+          const kit = state.kit;
+          if (debug && !kit.owned.includes(id)) kit.owned.push(id);
+          const slot = EQUIPMENT[id].slot;
+          if (!equip(kit, slot, id, debug)) return;
+          // Debug armour selection also dresses Mara, so the morning's casual appearance
+          // cannot hide the chosen outfit. The gauntlet's power remains story-controlled.
+          if (debug && state.chapter === 'ch1' && slot === 'armor') state.flags.dressed = true;
+          ui.host.autosave();
+          ui.host.refreshHeroAppearance?.();
+        },
+        onClose: () => dialog.close(),
+      });
+      dialog.addEventListener('close', () => { unmount(); ui.host.autosave(); resolve(); }, { once: true });
+      dialog.showModal();
     });
-    dialog.addEventListener('close', () => { unmount(); ui.host.autosave(); resolve(); }, { once: true });
-    dialog.showModal();
-  });
+  } finally {
+    ui.gearPending = false;
+    ui.syncScreenButtons();
+  }
 }

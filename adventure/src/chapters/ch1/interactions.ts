@@ -4,8 +4,8 @@ import { applyRules, cycleLook, type Rule } from '../../engine/rules';
 import type { ActorId, Command, Condition, GameState, NpcId, Point, Speaker, Verb } from '../../engine/types';
 
 /**
- * What follows the release: the hatch blows, the fight, Oren's advice and the gear menu, then his
- * send-off. Also used to pick up where a reload left off (fight not yet won, gear not yet checked).
+ * What follows the release: the hatch blows, the fight, Oren's spare gear and his send-off.
+ * Also used to resume after a reload (fight not yet won or spares not yet received).
  */
 export function afterRelease(f: Record<string, boolean>): Command[] {
   const out: Command[] = [];
@@ -14,7 +14,7 @@ export function afterRelease(f: Record<string, boolean>): Command[] {
       say('line.orenAfterFight', 'oren'), say('line.maraAfterFight'));
   }
   if (!f.gearChecked) {
-    out.push(say('line.orenGear', 'oren'), { type: 'giveSpares' }, { type: 'awaitGear' }, flag('gearChecked'), say('line.orenShelter', 'oren'));
+    out.push(say('line.orenGear', 'oren'), { type: 'giveSpares' }, flag('gearChecked'), say('line.orenShelter', 'oren'));
   }
   return out;
 }
@@ -252,6 +252,7 @@ export const RULES: readonly Rule[] = [
   ] },
   { target: 'regulator', item: 'gauntlet', when: NOT('decided'), do: [say('line.notReady')] },
   { target: 'regulator', item: 'gauntlet', when: NOT('procedureKnown'), do: [say('line.needProcedure')] },
+  { target: 'regulator', item: 'gauntlet', when: NOT('protectionPrepared'), do: [say('line.needProtection')] },
   { target: 'regulator', item: 'gauntlet', walk: true, do: ({ state }) => [
     pose('hero', 'crouch'), wait(500), say('line.releaseOne'), wait(300),
     shake(900), flag('kilnCold'), addItem('regulator'), wait(400), pose('hero', 'stand'),
@@ -296,6 +297,11 @@ export const RULES: readonly Rule[] = [
   { target: 'wayBack', verb: 'go', do: [say('line.wayBackGo')] },
 
   // -------------------------------------------------------------- people ---
+  { target: 'oren', verb: 'talk', when: [{ flag: 'procedureKnown' }, { notFlag: 'kilnCold' }, { notFlag: 'protectionPrepared' }], do: ({ state }) => [
+    ...toNpc('oren'),
+    ...(state.npcs.oren?.pose === 'stand' ? [] : [pose('oren', 'stand')]),
+    { type: 'dialogue', id: 'orenProtection' }, flag('gearUnlocked'), { type: 'awaitGear' }, flag('protectionPrepared'),
+  ] },
   ...npcRules('oren'),
   ...npcRules('nell'),
   ...either('tobi', 'look', 'kilnCold', 'line.tobiLookCold', 'line.tobiLook'),
@@ -318,6 +324,7 @@ const NPC_KEYS = ['Item', 'Look', 'LookCold', 'LookDown', 'Crouch', 'Lie', 'Stan
 export const INTERACTION_KEYS = [
   'line.tobiLook', 'line.tobiLookCold',
   'line.useFails', 'line.nothingSpecial', 'line.cannot', 'line.alreadyStanding', 'line.askStand',
+  'line.needProtection',
   'line.gauntletLook', 'line.notebookLook', 'line.notebookLookAfter', 'line.regulatorItemLook', 'line.breadLook', 'line.scarfLook',
   'line.breadEat', 'line.scarfWear', 'line.heroUseItem', 'line.heroLook', 'line.heroLookCold', 'line.heroTalk', 'line.heroLie', 'line.heroAlreadyStanding',
   'line.rackLook', 'line.rackLookEmpty', 'line.rackEmpty', 'line.rackTake', 'line.rackPacked', 'line.gearUp',

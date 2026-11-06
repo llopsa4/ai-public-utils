@@ -17,13 +17,15 @@ Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 - **Explore:** looking at something again often gets a different line, and four small secrets are hidden around Cinderfold (the notebook counts the ones you've found).
 - **Labels:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
 - **Exits:** double-click a doorway to go straight through.
-- **Keyboard:** hold arrows to walk, including diagonals, and release to stop. Obstacles stop direct movement; exits still need an explicit action. Tab moves between room targets and bar buttons; Enter acts on the focused target. Arrow keys navigate an open action ring, and number keys choose dialogue replies instead of inventory slots while choices are shown. Movement and item shortcuts are suspended during scripts, menus, text entry and combat.
+- **Keyboard:** hold arrows to walk, including diagonals, and release to stop. Obstacles stop direct movement; exits still need an explicit action. **G** toggles Gear when unlocked, **N** the Notebook, and **M** the Menu; each key closes its own screen, and Escape still works. These shortcuts do not interrupt speech, choices, fights, text entry or other dialogs; G also opens Oren's guided Gear prompt. Tab moves between room targets and bar buttons; Enter acts on the focused target. Arrow keys navigate an open action ring, and number keys choose dialogue replies instead of inventory slots while choices are shown. Opening a screen cancels held movement and pending satchel gestures.
 - **Touch:** press and hold on the scene to label everything. The ⛶ button switches to full screen where the browser allows it.
 - **Menu** (pause): Resume, **History** (everything said so far), **How to play**, saves, **Settings** (text speed, effects and music volume, mute, auto-advance, reduced motion, text size, high contrast) and **Title screen**.
 - **Hints:** the notebook's **Hint** button gives a nudge for the current goal, then the plain answer.
 - **Cursor:** the pointer shows the name of what it is over and what a click will do (look, handle, talk, leave).
 
-The scene covers: Mara's tent → the kiln hall (help Wren with the hoist) → the firing house (bring Nell bread for her soup) → the tent (dress at the clothes crate, then take the charged cell) → the firing house (Nell's latch, then the alarm) → the regulator gallery (the failed patch, the conversation with Oren, his mother's notebook, the shutdown) → the cold firing house (goodbyes) → the ashways (the ash sweeper and the steam valve) → "To be continued".
+The scene covers: Mara's tent → the kiln hall (help Wren with the hoist) → the firing house (bring Nell bread for her soup) → the tent (dress at the clothes crate, then take the charged cell) → the firing house (Nell's latch, then the alarm) → the regulator gallery (the failed patch, the conversation with Oren, his mother's notebook, Oren's protection advice and guided Gear visit, the shutdown) → the cold firing house (goodbyes) → the ashways (the ash sweeper and the steam valve) → "To be continued".
+
+After Mara learns the shutdown procedure, speak to Oren again before releasing the regulator. Oren gives and equips his medium armour, then asks Mara to check its fit in Gear (press G or the highlighted button). The gift and guided visit happen once; later outfit choices remain yours. After the fight Oren still gives his spare light coat and harness, without another forced Gear visit. Older saves retain their equipment and progress; saves already past shutdown continue without being rewound.
 
 Text is **English only** for now. Languages can be added back by dropping a `strings/<code>.json` beside `en.json` and listing it in `src/engine/i18n.ts`. The switcher reappears once there are two.
 
@@ -38,11 +40,16 @@ Requires Node 22.12+.
 ```sh
 npm ci
 npm run dev        # http://127.0.0.1:5173 with live reload
-npm test           # logic tests (full scene chain, argument paths, pathfinding, saves, strings)
-npm run e2e        # build, then play the whole scene in headless Chromium (Playwright), plus saves, keyboard and phone checks
+npm test           # fast typecheck + logic/integration tests; no browser or build
+npm run test:feature -- crowd       # selected Node contracts (story, saves, crowd, input, art, runtime)
+npm run test:browser -- story       # build once, then short browser checks for this feature
+npm run test:release                # all Node tests, one verified build, all browser checks and journeys
+npm run e2e        # build once, then every browser check (including complete journeys)
 npm run build      # typecheck → Vite build → publish to index.html + build/ → verify
 npm run preview    # serves the repo root like GitHub Pages: http://127.0.0.1:4173/adventure/
 ```
+
+See [TESTING.md](TESTING.md) for feature selection, test classification, headless-driver limits and release rules. Ordinary edits use fast/feature checks; publishing and shared runtime changes require release verification. `npm run test:inventory -- --list` audits and lists every suite without launching a browser or building the site.
 
 GitHub Pages serves the `main` branch as-is, so **commit the generated `index.html` and `build/`** together with the source changes. `dist/` and `node_modules/` are ignored.
 

@@ -1,13 +1,13 @@
 import { expect, test } from '@playwright/test';
 import { idle, startNewGame } from './helpers';
 
-test('medium armour and every additional base gear type show loaded illustrations when equipped', async ({ page }, info) => {
+test('medium armour and every additional base gear type show loaded illustrations when equipped', { tag: ['@focused','@art'] }, async ({ page }, info) => {
   const errors:string[]=[];
   page.on('pageerror',e=>errors.push(e.message));
   await page.goto('./?debug');await startNewGame(page);
   await page.evaluate(()=>{
     const s=(window as any).adventure.session,st=structuredClone(s.state);
-    st.flags={...st.flags,metOren:true,hasGauntlet:true,dressed:true};
+    st.flags={...st.flags,metOren:true,gearUnlocked:true,hasGauntlet:true,dressed:true};
     if(!st.kit.owned.includes('layered-armor'))st.kit.owned.push('layered-armor');
     st.kit.equipment.armor={id:'layered-armor'};s.replaceState(st);
   });await idle(page);
@@ -27,7 +27,7 @@ test('medium armour and every additional base gear type show loaded illustration
   expect(errors).toEqual([]);
 });
 
-test('every existing room sign uses illustrated art and keeps its name inside the original placement',async({page},info)=>{
+test('every existing room sign uses illustrated art and keeps its name inside the original placement', { tag: ['@focused','@art'] }, async({page},info)=>{
   const errors:string[]=[];page.on('pageerror',e=>errors.push(e.message));
   page.on('response',r=>{if(r.status()>=400)errors.push(r.url()+': '+r.status());});
   await page.goto('./?debug');await startNewGame(page);
@@ -60,7 +60,7 @@ test('every existing room sign uses illustrated art and keeps its name inside th
   expect(errors).toEqual([]);
 });
 
-test('the debug panel jumps to a room and sets flags and items', async ({ page }) => {
+test('the debug panel jumps to a room and sets flags and items', { tag: ["@focused","@runtime"] }, async ({ page }) => {
   await page.goto('./?debug');
   await startNewGame(page);
   const panel = page.locator('#debug-panel');
@@ -88,7 +88,7 @@ test('the debug panel jumps to a room and sets flags and items', async ({ page }
   expect(await page.evaluate(() => (window as any).adventure.session.state.bag.salvage)).toBe(10);
 });
 
-test('debug medium armour is visible before dressing and survives reload without powering the gauntlet', async ({ page }) => {
+test('debug medium armour is visible before dressing and survives reload without powering the gauntlet', { tag: ["@focused","@runtime","@art","@saves"] }, async ({ page }) => {
   await page.goto('./?debug');
   await startNewGame(page);
   await page.keyboard.press(',');
@@ -112,7 +112,7 @@ test('debug medium armour is visible before dressing and survives reload without
   await expect.poll(appearance).toBe('mara-medium-gauntlet');
 });
 
-test('the Medium armour debug checkbox dresses Mara and toggles both power variants', async ({ page }) => {
+test('the Medium armour debug checkbox dresses Mara and toggles both power variants', { tag: ["@focused","@runtime","@art"] }, async ({ page }) => {
   await page.goto('./?debug');
   await startNewGame(page);
   await page.keyboard.press(',');

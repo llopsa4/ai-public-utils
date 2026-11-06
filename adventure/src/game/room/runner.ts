@@ -1,8 +1,7 @@
 // Plays scripts: commands in order (src/game/room/commands.ts), speech and conversations.
-import { applyDialogueGear, resolveNode } from '../../engine/dialogue';
+import { applyDialogueEffects, resolveNode } from '../../engine/dialogue';
 import { t } from '../../engine/i18n';
 import { sound } from '../../audio/sound';
-import { applyCommand } from '../../engine/state';
 import type { ActorId, Command, Point, Speaker } from '../../engine/types';
 import { chapter } from '../../chapters';
 import type { RoomScene } from '../scenes';
@@ -56,11 +55,9 @@ export async function runDialogue(scene: RoomScene, id: string): Promise<void> {
   while (nodeId) {
     const node = resolveNode(tree, nodeId, state);
     for (const line of node.lines) await say(scene, line.actor, line.text);
-    for (const [flag, value] of Object.entries(node.set)) applyCommand(state, { type: 'setFlag', flag, value });
-    for (const item of node.items) applyCommand(state, { type: 'addItem', item });
-    const receivedGear = applyDialogueGear(state.kit, node.gear);
-    if (receivedGear) scene.refreshObjects();
-    if (node.items.length > 0 || receivedGear) scene.session.ui.renderInventory();
+    const { inventoryChanged, gearReceived } = applyDialogueEffects(state, node);
+    if (gearReceived) scene.refreshObjects();
+    if (inventoryChanged || gearReceived) scene.session.ui.renderInventory();
     if (node.choices.length > 0) {
       const index = await scene.session.ui.choose(node.choices.map(c => t(c.text)));
       sound.choose();

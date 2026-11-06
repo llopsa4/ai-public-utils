@@ -9,6 +9,8 @@ const GPU = process.platform === 'win32' ? ['--use-angle=d3d11', '--enable-gpu',
 
 export default defineConfig({
   testDir: 'tests/e2e',
+  // All specs are discovered. Test-level tags select feature/tier and the phone project.
+  testMatch: '**/*.spec.{ts,tsx,js,mjs,cts,mts,cjs}',
   timeout: 180_000,
   fullyParallel: false,
   workers: 1,
@@ -24,7 +26,7 @@ export default defineConfig({
     reuseExistingServer: false,
   },
   projects: [
-    { name: 'desktop', testMatch: /(?:^|[\\/])(?:playthrough|saves|crowd|fight|debug|controls)\.spec\.ts$/, use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 }, launchOptions: { args: GPU } } },
-    { name: 'phone', testMatch: /(?:^|[\\/])mobile\.spec\.ts$/, use: { ...devices['Pixel 7'], launchOptions: { args: GPU } } },
+    { name: 'desktop', grepInvert: /@phone/, use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 }, launchOptions: { args: GPU } } },
+    { name: 'phone', grep: /@phone/, use: { ...devices['Pixel 7'], launchOptions: { args: GPU } } },
   ],
 });

@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- G toggles unlocked Gear, N the Notebook, and M the Menu during exploration. Shortcuts respect dialogue, combat, text entry and modal focus; opening a screen cancels movement and pending inventory gestures.
+- After reading the shutdown procedure, Mara must speak to Oren about protection and complete a guided Gear visit before releasing the regulator. Oren equips medium armour once; post-fight spares and shelter advice remain, without a second tutorial. Version 9 saves preserve older progress and chosen equipment.
+- Testing now separates fast Node contracts, feature suites, focused browser checks and full release journeys. `npm test` skips expensive image rendering and browsers; `test:release` validates everything with one production build. Story integration shares production dialogue rewards, and chapter-two browser checks are included in discovery.
 - Tobi now appears by the firing-house hearth with his own art, portrait and conversation. He speaks during the scarf farewell; older saves gain him through a version 8 migration.
 - Hollis kneels at the fire, making short trips to empty ash into the cart. Dace stays by the broken jars, sorting pottery for reuse. Both keep their reactions when the kiln goes cold.
 - The debug panel now toggles with comma (`,`); `?debug=panel` still opens it directly on the published site.

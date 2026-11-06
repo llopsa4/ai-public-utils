@@ -1,20 +1,21 @@
 import { expect, test } from '@playwright/test';
-import { idle, open, startNewGame } from './helpers';
+import { fixtureReady, holdCrowd, idle, open, startNewGame } from './helpers';
 
-test('a phone held upright is asked to turn sideways', async ({ page }) => {
+test('a phone held upright is asked to turn sideways', { tag: ["@focused","@phone","@art","@runtime"] }, async ({ page }) => {
   await page.goto('?debug');
   await expect(page.locator('#rotate')).toBeVisible();
 });
 
-test('touch inventory tap, double-tap and drag use the same item behavior after resizing', async ({ page }) => {
+test('touch inventory tap, double-tap and drag use the same item behavior after resizing', { tag: ["@focused","@phone","@input"] }, async ({ page }) => {
   const errors:string[]=[];
   await page.setViewportSize({width:915,height:412});await open(page,errors);await startNewGame(page,true);
+  await fixtureReady(page);
   await page.evaluate(()=>{
     const s=(window as any).adventure.session,st=structuredClone(s.state);
     st.room='firingHouse';st.hero={x:330,y:320,face:'right',pose:'stand'};
     st.flags={hasGauntlet:true,dressed:true,breadAsked:true,hoistHelped:true};
     st.inventory=['loaf','notebook'];s.replaceState(st);
-  });await idle(page);
+  });await idle(page);await holdCrowd(page,2);
   const loaf=page.locator('#inventory [data-item="loaf"]');
   await loaf.tap();await expect.poll(()=>page.evaluate(()=>(window as any).adventure.session.selectedItem)).toBe('loaf');
   await loaf.tap();await expect.poll(()=>page.evaluate(()=>(window as any).adventure.session.selectedItem)).toBeNull();
@@ -46,7 +47,7 @@ test('touch inventory tap, double-tap and drag use the same item behavior after 
   await expect(loaf).toHaveCount(0);expect(errors).toEqual([]);
 });
 
-test('on a phone held sideways the game fits, tap targets are large enough and taps work', async ({ page }) => {
+test('on a phone held sideways the game fits, tap targets are large enough and taps work', { tag: ["@focused","@phone","@input","@art"] }, async ({ page }) => {
   const errors: string[] = [];
   await page.setViewportSize({ width: 915, height: 412 });
   await open(page, errors);

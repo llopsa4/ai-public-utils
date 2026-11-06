@@ -1,5 +1,6 @@
 import { ITEM_ICONS } from '../game/assets';
 import type { Ui } from './ui';
+import { gearAvailable, screenShortcut, type ScreenShortcut } from './shortcuts';
 
 const CLICK_MS = 300, DRAG_PX = 8;
 const arrows = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
@@ -90,16 +91,27 @@ export class RoomControls {
 
   available(): boolean {
     return !!(!this.ui.host.isBusy() && !this.ui.anyDialogOpen() && !this.ui.radialOpen
-      && this.ui.choices.hidden && !this.ui.introActive && !this.ui.forcingGear
+      && this.ui.choices.hidden && !this.ui.introActive && !this.ui.forcingGear && !this.ui.gearPending
       && document.getElementById('title')!.hidden && document.getElementById('kc-root')!.hidden
       && document.getElementById('end')!.hidden);
   }
 
   keyDown(e: KeyboardEvent): boolean {
+    const shortcut = this.screenShortcut(e);
+    if (shortcut) {
+      e.preventDefault();
+      if (shortcut.type === 'close') document.querySelector<HTMLDialogElement>(`#${shortcut.panel}`)!.close();
+      else if (shortcut.type === 'guide') document.getElementById('gear-btn')!.click();
+      else {
+        this.cancel();
+        document.getElementById(`${shortcut.panel}-btn`)!.click();
+      }
+      return true;
+    }
     if (e.key === 'Escape' && (this.gesture || this.pending || this.ui.host.selectedItem())) {
       e.preventDefault(); this.cancel(); return true;
     }
-    const editing = e.target instanceof Element && e.target.closest('input,textarea,select,[contenteditable="true"],#debug-panel');
+    const editing = e.target instanceof Element && e.target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"]),#debug-panel');
     if (!this.available() || editing || e.ctrlKey || e.altKey || e.metaKey) return false;
     if (arrows.has(e.key)) {
       e.preventDefault();
@@ -123,6 +135,21 @@ export class RoomControls {
       return true;
     }
     return false;
+  }
+
+  /** The guided prompt uses the same policy from its capture-phase key handler. */
+  screenShortcut(e: KeyboardEvent): ScreenShortcut | null {
+    return screenShortcut(e, {
+      editing: !!(e.target instanceof Element && e.target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"]),#debug-panel')),
+      blocked: !this.ui.dialogue.hidden || !this.ui.choices.hidden || this.ui.introActive || this.ui.radialOpen
+        || !document.getElementById('title')!.hidden || !document.getElementById('kc-root')!.hidden || !document.getElementById('end')!.hidden,
+      busy: this.ui.host.isBusy(),
+      dialogs: [...document.querySelectorAll<HTMLDialogElement>('dialog[open]')].map(dialog => dialog.id),
+      gearAvailable: gearAvailable(this.ui.host.getState()),
+      gearPending: this.ui.gearPending,
+      forcingGear: this.ui.forcingGear,
+      gearButtonFocused: document.activeElement === document.getElementById('gear-btn'),
+    });
   }
 
   private scheduleClick(item: string, time: number): void {
