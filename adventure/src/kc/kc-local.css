@@ -624,3 +624,8 @@
   .kc #modal-actions { margin-top: 12px; }
   .kc #modal-actions button { min-height: 44px; }
 }
+
+/* The game's text face on the fight and gear screens too (kc.css is generated from Kiln Courier and
+   names its own fonts), except dialogue, which keeps the plain face (src/fonts.css). */
+.kc, .kc * { font-family: "IM Fell English", Georgia, serif !important; }
+.kc .scene-dialogue, .kc .scene-dialogue * { font-family: "Zilla Slab", Georgia, serif !important; }
