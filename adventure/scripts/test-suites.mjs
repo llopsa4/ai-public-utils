@@ -17,6 +17,7 @@ export const NODE_SUITES = {
   'combat.test.ts': entry(true, 'story', 'runtime'),
   'crowd.test.ts': entry(true, 'crowd'),
   'flavour-secrets.test.ts': entry(true, 'story'),
+  'journal.test.ts': entry(true, 'story', 'saves'),
   'game.test.ts': entry(true, 'story', 'runtime'),
   'layered-rig.test.ts': entry(false, 'art'),
   'lighting-visual.test.ts': entry(true, 'art', 'runtime'),

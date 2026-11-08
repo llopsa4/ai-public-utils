@@ -1,6 +1,6 @@
 # card-vent
 
-Status: **requested** · card · chapter game · in the game as `art/src/kc/cards/vent.png`
+Status: **final** · card · chapter game · in the game as `art/src/kc/cards/vent.png`
 
 ## What the game does with it
 

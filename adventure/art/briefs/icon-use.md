@@ -1,6 +1,6 @@
 # icon-use
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/use.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/use.png`
 
 ## What the game does with it
 

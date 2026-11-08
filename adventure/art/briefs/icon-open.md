@@ -1,6 +1,6 @@
 # icon-open
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/open.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/open.png`
 
 ## What the game does with it
 

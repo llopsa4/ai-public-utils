@@ -1,6 +1,6 @@
 # card-pulse
 
-Status: **requested** · card · chapter game · in the game as `art/src/kc/cards/pulse.png`
+Status: **final** · card · chapter game · in the game as `art/src/kc/cards/pulse.png`
 
 ## What the game does with it
 

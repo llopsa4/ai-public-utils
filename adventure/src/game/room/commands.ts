@@ -12,6 +12,7 @@ import type { RoomScene } from '../scenes';
 import { runDialogue, say, wait } from './runner';
 import { blowHatch, creatureFight, fight } from './fightBridge';
 import { DOORWAY_STEP, FACE_VECTOR, FADE_MS } from './shared';
+import { dayLine } from '../../ui/journalData';
 
 type Of<K extends Command['type']> = Extract<Command, { type: K }>;
 type Handler<K extends Command['type']> = (scene: RoomScene, command: Of<K>) => Promise<boolean>;
@@ -158,7 +159,7 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     await wait(scene, FADE_MS * 3 + 80);
     const next = await loadChapter(command.id, { art: true });
     // Its opening lines over black, the first time he enters it.
-    if (next.intro && !state.reached.includes(command.id)) await scene.session.ui.chapterIntro(next.intro);
+    if (next.intro && !state.reached.includes(command.id)) await scene.session.ui.chapterIntro(next.intro, dayLine(next));
     applyCommand(state, command);
     setChapter(command.id);
     scene.session.arrival = null;

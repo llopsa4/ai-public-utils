@@ -1,6 +1,6 @@
 # battle-enemy-scavenger
 
-Status: **placeholder** · battle-portrait · chapter ch1 · in the game as `art/src/kc/pressure-scavenger.webp`
+Status: **final** · battle-portrait · chapter ch1 · in the game as `art/src/kc/pressure-scavenger.webp`
 
 ## What the game does with it
 

@@ -1,6 +1,6 @@
 # icon-talk
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/talk.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/talk.png`
 
 ## What the game does with it
 

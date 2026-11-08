@@ -359,6 +359,91 @@ dialog[open] {
   color: #8a2a18;
 }
 
+/* The day, and the Notes / Diary / Map tabs: inked words on the page, the open one underlined. */
+.notebook-day {
+  margin: -0.4rem 0 0.5rem;
+  font-size: 0.95em;
+  font-style: italic;
+  color: rgb(74 42 20 / 0.8);
+}
+
+.notebook-tabs {
+  display: flex;
+  gap: 1.2rem;
+  margin: 0 0 0.8rem;
+  border-bottom: 1.5px solid rgb(90 58 32 / 0.35);
+}
+
+.notebook-tabs [role="tab"] {
+  padding: 0.15rem 0.1rem 0.3rem;
+  border: 0;
+  border-bottom: 2.5px solid transparent;
+  margin-bottom: -1.5px;
+  background: none;
+  color: rgb(74 42 20 / 0.65);
+  font: inherit;
+  font-size: 1.05em;
+  font-style: italic;
+  cursor: pointer;
+}
+
+.notebook-tabs [role="tab"][aria-selected="true"] {
+  color: #4a2a14;
+  font-weight: 600;
+  border-bottom-color: #8a2a18;
+}
+
+.notebook-tabs [role="tab"]:focus-visible { outline: 2px dashed #8a2a18; outline-offset: 2px; }
+
+#notes-panel[hidden], #diary-panel[hidden], #map-panel[hidden] { display: none; }
+
+/* The diary: a day, then each chapter's place and writer, then the entries in their voice. */
+.diary-day {
+  margin: 0.6rem 0 0.1rem;
+  font-size: 1.15rem;
+  font-style: italic;
+  color: #4a2a14;
+}
+
+.diary-chapter {
+  margin: 0.2rem 0 0.3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: rgb(138 42 24 / 0.85);
+}
+
+.diary-entry {
+  margin: 0 0 0.45rem;
+  line-height: 1.9rem;
+}
+
+/* The page opens wider for the map. */
+.paper.wide { width: min(54rem, 96vw); }
+
+/* The world map: placeholder land in ink (or Codex's painting), known places named, a pin for here. */
+.world-map { display: block; width: 100%; height: auto; }
+.map-land { fill: rgb(214 190 140 / 0.55); stroke: #5a3a20; stroke-width: 2.5; }
+.map-snow { fill: rgb(255 255 255 / 0.5); stroke: rgb(90 58 32 / 0.25); stroke-dasharray: 4 5; }
+.map-rift { fill: none; stroke: #3a2414; stroke-width: 6; stroke-linejoin: round; }
+.map-river { fill: none; stroke: rgb(70 110 150 / 0.75); stroke-width: 3.5; }
+.map-road { fill: none; stroke: rgb(120 70 30 / 0.7); stroke-width: 2.5; stroke-dasharray: 2 7; stroke-linecap: round; }
+.map-peak { fill: none; stroke: #5a3a20; stroke-width: 2; }
+.map-peak.big { stroke-width: 2.5; }
+.map-tree { fill: rgb(70 100 50 / 0.5); stroke: rgb(50 70 30 / 0.7); }
+.map-ash { fill: rgb(80 70 60 / 0.6); }
+.map-place { fill: #f4e6c6; stroke: #4a2a14; stroke-width: 2.5; }
+.map-name { font: italic 600 22px Georgia, serif; fill: #3a2414; paint-order: stroke; stroke: rgb(244 230 198 / 0.85); stroke-width: 4; }
+.map-here-ring { fill: none; stroke: #8a2a18; stroke-width: 3; }
+.map-here-pin { fill: #b0301c; stroke: #4a1408; stroke-width: 2; }
+.map-here-label { font: italic 600 20px Georgia, serif; fill: #8a2a18; text-anchor: middle; paint-order: stroke; stroke: rgb(244 230 198 / 0.9); stroke-width: 4; }
+@media (prefers-reduced-motion: no-preference) {
+  .map-here-ring { animation: map-here 1.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+}
+@keyframes map-here { 50% { transform: scale(1.35); opacity: 0.45; } }
+
+.high-contrast .notebook-day, .high-contrast .notebook-tabs [role="tab"], .high-contrast .diary-day, .high-contrast .diary-chapter, .high-contrast .diary-entry { color: #000; }
+
 #hint-box {
   margin-top: 0.9rem;
 }
@@ -835,6 +920,7 @@ dialog[open] {
 #intro-text p.in { opacity: 1; transform: none; }
 /* A later chapter's title, before its lines. */
 #intro-text p.intro-title { font-style: normal; font-size: 1.5em; letter-spacing: 0.06em; color: #ffd8a0; margin-bottom: 1.4em; }
+#intro-text p.intro-day { font-style: italic; font-size: 0.95em; letter-spacing: 0.08em; color: #d9b98a; margin-bottom: 1.2em; }
 #intro-text p.past { color: #a8957a; }
 #intro-text.out p { opacity: 0; transition-duration: 1.2s; }
 #intro-more {

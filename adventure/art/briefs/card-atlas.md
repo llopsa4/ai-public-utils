@@ -1,5 +1,5 @@
 # card-atlas
 
-Status: **placeholder** · card-atlas · chapter game · in the game as `art/src/kc/card-atlas.webp`
+Status: **final** · card-atlas · chapter game · in the game as `art/src/kc/card-atlas.webp`
 
 Assembled by the importer from the nine card pictures: no separate picture.

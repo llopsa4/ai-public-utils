@@ -1,6 +1,6 @@
 # icon-go
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/go.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/go.png`
 
 ## What the game does with it
 

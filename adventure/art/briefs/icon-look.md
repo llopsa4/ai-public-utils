@@ -1,6 +1,6 @@
 # icon-look
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/look.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/look.png`
 
 ## What the game does with it
 

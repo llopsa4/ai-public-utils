@@ -1,17 +1,33 @@
 # equipment-layered-armor
 
-Base picture for the medium armour obtained from Oren in Chapter 1. Used in the gear screen's paper-doll slot, stash and selection preview.
+Status: **final** · equipment · chapter game · in the game as `art/src/kc/equipment/layered-armor.webp`
 
-## Delivery
+## What the game does with it
 
-- Save `art/inbox/equipment-layered-armor.png`.
-- Transparent 320×320 PNG; centred front view, the complete piece filling about 80% of the square.
-- Import to `art/src/kc/equipment/layered-armor.webp` with `npm run art:import`.
+A gear picture on the gear screen (the paper doll's slot and the loot-style preview). Tier 1 of 10: keep the same silhouette, framing and angle as the other tiers of this piece.
 
-## Subject and style
+## Technical
 
-Draw medium Mara's armour as a standalone cuirass with shoulder plates: overlapping chipped ivory ceramic plates, worn brass rivets and edging, brown leather straps and quilted leather backing. Keep its silhouette and materials consistent with the approved medium standing image. No person or mannequin, scarf, gauntlet, trousers, labels, letters, card frame or background. Use clear pixel shapes, soft form shading and the game's warm palette. Keep the entire armour inside the canvas.
+- File: `art/inbox/equipment-layered-armor.png`, 320×320, transparent (or flat magenta), the piece centred, seen from the front, filling about 80% of the square.
 
-References: `art/sources/characters/mara-medium-layered/idle.png` for the equipment design, `tent-reference.png` for visual character, `art/style/palette.png` for colour, and `art/STYLE.md` for rendering rules.
+## Prompt for Codex
 
-After import, inspect `art/inbox/preview/equipment-layered-armor.png`, run `npm run art:check`, and verify the actual gear slot and selected-item preview.
+```text
+Draw for the game Cinderfold: Medium armour: an overlapping chipped ivory ceramic cuirass and shoulder plates, worn brass rivets and edging, brown leather straps and a quilted leather backing. Match medium Mara; show the armour alone without a person, scarf or gauntlet.
+Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
+World: an industrial-fantasy village inside an old kiln and the ash country around it: fired clay, cream ceramic plates, iron, brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
+Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
+Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).
+Proportions: true to the cast (art/style/scale.png): Mara is 232 px, a doorway about 328, a table top 104, a chair seat 48.
+Light: evenly lit with soft form shading and no strong cast light (the game lights it to match the room).
+File: art/inbox/equipment-layered-armor.png, 320×320, transparent (or flat magenta), the piece centred, seen from the front, filling about 80% of the square.
+```
+
+## Attach
+
+- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
+- the other tiers of this piece already made (`art/src/kc/equipment/`), to keep them consistent
+
+## Then
+
+`npm run art:import`, look at `art/inbox/preview/equipment-layered-armor.png`, `npm run art:check`.

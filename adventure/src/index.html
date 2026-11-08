@@ -90,14 +90,28 @@
   <!-- Mara's notebook: a page, not a list box. -->
   <dialog id="notebook" class="paper" aria-labelledby="notebook-heading">
     <h1 id="notebook-heading" data-i18n="ui.notebookTitle">Mara's notebook</h1>
-    <ol id="objectives"></ol>
-    <div id="hint-box">
-      <p id="hint-text" class="hint" hidden></p>
-      <button id="hint-btn" class="ink-btn" type="button" data-i18n="ui.hint">Hint</button>
+    <p id="notebook-day" class="notebook-day"></p>
+    <div class="notebook-tabs" role="tablist" aria-labelledby="notebook-heading">
+      <button type="button" role="tab" id="tab-notes" aria-controls="notes-panel" aria-selected="true" data-i18n="ui.tab.notes">Notes</button>
+      <button type="button" role="tab" id="tab-diary" aria-controls="diary-panel" aria-selected="false" tabindex="-1" data-i18n="ui.tab.diary">Diary</button>
+      <button type="button" role="tab" id="tab-map" aria-controls="map-panel" aria-selected="false" tabindex="-1" data-i18n="ui.tab.map">Map</button>
     </div>
-    <p id="secrets" class="secrets" hidden></p>
-    <ul id="secret-list" class="secret-list" hidden></ul>
-    <p id="met" class="secrets" hidden></p>
+    <div id="notes-panel" role="tabpanel" aria-labelledby="tab-notes">
+      <ol id="objectives"></ol>
+      <div id="hint-box">
+        <p id="hint-text" class="hint" hidden></p>
+        <button id="hint-btn" class="ink-btn" type="button" data-i18n="ui.hint">Hint</button>
+      </div>
+      <p id="secrets" class="secrets" hidden></p>
+      <ul id="secret-list" class="secret-list" hidden></ul>
+      <p id="met" class="secrets" hidden></p>
+    </div>
+    <div id="diary-panel" role="tabpanel" aria-labelledby="tab-diary" hidden>
+      <div id="diary"></div>
+    </div>
+    <div id="map-panel" role="tabpanel" aria-labelledby="tab-map" hidden>
+      <div id="world-map"></div>
+    </div>
     <button type="button" class="dialog-close corner-close" data-i18n-label="ui.close" aria-label="Close">&times;</button>
   </dialog>
 

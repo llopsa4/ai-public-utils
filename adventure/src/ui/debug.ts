@@ -2,6 +2,7 @@
 // chapter, room or set of flags; give items, salvage, tonics and gear; start a fight; switch the
 // visual quality and the walk-area overlay. Loaded on demand, so it is not in the normal game.
 import { CHAPTER_IDS, chapter, loadChapter } from '../chapters';
+import { dayLine } from './journalData';
 import { ALL_GEAR, TONIC } from '../content/kit';
 import { equip } from '../engine/kit';
 import { settings, updateSettings } from '../engine/settings';
@@ -70,7 +71,7 @@ export function mountDebugPanel(session: Session): void {
       const id = chapterSelect.value;
       void loadChapter(id, { art: true }).then(async next => {
         // As in the game: the chapter's opening lines, the first time this save enters it.
-        if (next.intro && !session.state.reached.includes(id)) await session.ui.chapterIntro(next.intro);
+        if (next.intro && !session.state.reached.includes(id)) await session.ui.chapterIntro(next.intro, dayLine(next));
         change(st => applyCommand(st, { type: 'chapter', id }));
       });
     };

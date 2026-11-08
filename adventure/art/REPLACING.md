@@ -45,6 +45,7 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 | `notebook` | mother's notebook | 80, 368, 76×28 | (120, 556) |
 | `rack` | charging rack | 292, 256, 104×140 | (344, 556) |
 | `jar` | water jar | 208, 336, 52×60 | (236, 556) |
+| `chest` | clothes crate | 72, 436, 64×52 | (104, 556) |
 | `workbench` | workbench | 28, 248, 356×256 | (220, 556) |
 | `stool` | stool | 176, 456, 104×96 | — |
 | `drum` | old brush drum | 484, 388, 188×132 | (580, 556) |
@@ -94,11 +95,13 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 | `shoes` | shoe racks | 68, 60, 240×220 | — |
 | `hearth` | hearth | 112, 340, 184×184 | — |
 | `stairs` | stairs to the gallery | 820, 192, 312×332 | (900, 568) |
+| `breadBasket` | bread basket | 1032, 384, 76×56 | (1070, 564) |
 | `kilnGate` | kiln gate | 1172, 192, 108×336 | (1232, 580) |
 | `toRoom` | way to Mara's room | 0, 208, 60×320 | (48, 580) |
 
 - Object `objects/pantry-door` (240×304, tags stuck (1), fixed (1)): foot point (668, 524). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Nell stands at (500, 600).
+- Tobi stands at (310, 600).
 - The name board hangs from (960, 100) (about 224×68); it is painted by the game, so leave a quiet patch of wall there.
 - Heat shimmer (High quality) over: 120, 320, 180×140: hot spots in the painting (fires, lamps, pipes).
 - Flickering light pools at (204, 460), (1224, 360): lamps, kiln mouths, hearths in the painting.
@@ -129,6 +132,8 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
+| `pressureCell` | brass pressure cell | 352, 404, 56×72 | (440, 600) |
+| `sweeperDisabled` | ash sweeper | 580, 470, 280×140 | — |
 | `sweeper` | ash sweeper | 940, 456, 260×140 | — |
 | `sweeperAtPipe` | ash sweeper | 260, 456, 260×140 | — |
 | `valve` | steam valve | 180, 320, 112×204 | (300, 564) |
@@ -283,11 +288,15 @@ Tags (the frames each one plays):
 
 | Sheet | Who | Must have | Now |
 | --- | --- | --- | --- |
-| `mara` | Mara, gauntlet unlit (start of the game) | 10 tags | 1280×1536, 26 frames |
-| `mara-gauntlet` | Mara, gauntlet lit | 10 tags | 1280×1536, 26 frames |
+| `mara-casual` | Mara in casual clothes | 10 tags | 1280×768, 32 frames |
+| `mara-medium` | Mara in medium armour, unlit | 10 tags | 1280×768, 32 frames |
+| `mara-medium-gauntlet` | Mara in medium armour, lit | 10 tags | 1280×768, 32 frames |
+| `mara` | Mara, gauntlet unlit (start of the game) | 10 tags | 1280×768, 32 frames |
+| `mara-gauntlet` | Mara, gauntlet lit | 10 tags | 1280×768, 32 frames |
 | `oren` | Oren (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `nell` | Nell (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `bryn` | Bryn (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
+| `tobi` | Tobi (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `extra-stoker` (ships as WebP) | background person (stoker) | 13 tags | 1280×768, 13 frames |
 | `extra-hoist` (ships as WebP) | background person (hoist) | 13 tags | 1280×768, 13 frames |
 | `extra-hauler` (ships as WebP) | background person (hauler) | 13 tags | 1280×768, 13 frames |
@@ -311,12 +320,13 @@ Dialogue portraits in `art/src/portraits/`: head and shoulders, **256×256 per f
 | `portraits/mara.png` | neutral, worried, angry | 1536×256 |
 | `portraits/oren.png` | neutral, worried, angry | 1536×256 |
 | `portraits/nell.png` | neutral | 512×256 |
+| `portraits/tobi.png` | neutral, worried | 1024×256 |
 
 Background people have no portraits. To give one a portrait, add its strip and an entry in `PORTRAIT_MOODS` (`src/content/art.ts`).
 
 ## Satchel items and action icons
 
-- Items: `art/src/items/<id>.png`, **64×64**, transparent background: `gauntlet` (pressure gauntlet), `notebook` (mother's notebook), `regulator` (regulator), `bread` (Nell's bread), `scarf` (Tobi's scarf).
+- Items: `art/src/items/<id>.png`, **64×64**, transparent background: `gauntlet` (pressure gauntlet), `notebook` (mother's notebook), `regulator` (regulator), `bread` (Nell's bread), `scarf` (Tobi's scarf), `loaf` (a loaf).
 - Action-ring icons: `art/src/icons/<verb>.png`, square, shown at 24×24 (a larger square, such as 48×48, is fine and looks sharper): `look` (Look at), `open` (Open), `close` (Close), `take` (Pick up), `use` (Use), `talk` (Talk to), `go` (Go to), `crouch` (Crouch), `lie` (Lie down), `stand` (Stand up).
 
 ## Drawn by the game (no files)

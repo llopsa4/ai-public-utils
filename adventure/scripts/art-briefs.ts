@@ -97,6 +97,7 @@ function functional(e: ArtEntry): string[] {
     case 'item': lines.push('A satchel item: shown in the inventory bar and on the cursor while it is being used.'); break;
     case 'icon': lines.push('An action-ring icon (the verbs that appear around a clicked thing).'); break;
     case 'card': lines.push('A card picture on the fight screen, shown at about 120 px in the hand and larger when looked at.'); break;
+    case 'map': lines.push("The world map in the notebook's Map tab, shown about 480 px wide. The game writes each known place's name next to its mark and pins where the character is, so the painting has no lettering at all."); break;
     case 'equipment': lines.push(`A gear picture on the gear screen (the paper doll's slot and the loot-style preview). Tier ${e.tier ?? 1} of 10: keep the same silhouette, framing and angle as the other tiers of this piece.`); break;
     default: break;
   }
@@ -114,6 +115,7 @@ function technical(e: ArtEntry): string[] {
     case 'card-atlas': return ['Assembled by the importer from the nine card pictures: no separate picture.'];
     case 'foreground': return ['Cut by the importer from the room painting: no separate picture.'];
     case 'card': return [`File: \`art/inbox/${e.id}.png\`, 256×256, opaque, the motif centred and readable at 120 px.`];
+    case 'map': return [`File: \`art/inbox/${e.id}.png\`, 1000×700 (or larger at the same 10:7), opaque parchment. No text.`, 'Layout to follow: `art/spec/world-map.png` (every place where its mark is; the names there are only for you).'];
     case 'equipment': return [`File: \`art/inbox/${e.id}.png\`, 320×320, transparent (or flat magenta), the piece centred, seen from the front, filling about 80% of the square.`];
     case 'item': return [`File: \`art/inbox/${e.id}.png\`, 64×64, transparent (or flat magenta), the thing filling the tile.`];
     case 'icon': return [`File: \`art/inbox/${e.id}.png\`, 48×48, transparent (or flat magenta), a simple bold symbol.`];
@@ -139,6 +141,7 @@ function brief(e: ArtEntry): string {
   for (const t of technical(e)) lines.push(t.replace(/`/g, ''));
   lines.push('```', '', '## Attach', '', '- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`');
   if (e.kind === 'room') lines.push(`- \`art/spec/${e.file.split('/').pop()!.replace('.png', '.jpg')}\` (the layout to follow)`);
+  if (e.kind === 'map') lines.push('- `art/spec/world-map.png` (the layout to follow)');
   if (e.kind === 'equipment') lines.push(`- the other tiers of this piece already made (\`art/src/kc/equipment/\`), to keep them consistent`);
   lines.push('', '## Then', '', `\`npm run art:import\`, look at \`art/inbox/preview/${e.id}.png\`, \`npm run art:check\`.`);
   if (e.kind === 'character' || e.kind === 'extra') lines.push('', 'After import its layers are in `art/sources/characters/`: the joints and face are measured once in `art/manifest.mjs` (RIGS), then `npm run rig` (this step is for Claude, not Codex).');
@@ -208,6 +211,7 @@ sections.push('## Gear, ten tiers each', '');
 for (const id of Object.keys(Object.fromEntries(MANIFEST.filter(e => e.kind === 'equipment').map(e => [e.id.replace(/^equipment-/, '').replace(/-t\d+$/, ''), 1])))) {
   sections.push(...batch(`${id} (make tier 1 first, then 2 to 10 keeping the same silhouette and framing)`, MANIFEST.filter(e => e.id === `equipment-${id}` || e.id.startsWith(`equipment-${id}-t`)).sort((a, b) => (a.tier ?? 1) - (b.tier ?? 1)).map(e => e.id)));
 }
+sections.push("## The notebook's world map", '', ...batch('One painting (the game writes the names)', MANIFEST.filter(e => e.kind === 'map').map(e => e.id)));
 sections.push('## Satchel items and action icons', '', ...batch('Items', MANIFEST.filter(e => e.kind === 'item').map(e => e.id)), ...batch('Icons', MANIFEST.filter(e => e.kind === 'icon').map(e => e.id)));
 const leftovers = MANIFEST.filter(e => MAKES(e) && !listed.has(e.id));
 if (leftovers.length) sections.push('## Anything else', '', ...leftovers.map(line), '');

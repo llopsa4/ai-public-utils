@@ -133,6 +133,9 @@ for (const [id, outfit, powered] of [
 
 /** @type {ArtEntry[]} */
 export const MANIFEST = [
+  // The notebook's world map (src/content/world.ts): painted without lettering; the game writes the names and the marker.
+  { id: 'world-map', kind: 'map', file: 'ui/world-map.png', size: { w: 1000, h: 700 }, anchor: 'none', chapter: 'game', status: 'requested', generator: 'Codex',
+    subject: "An invented world map on worn parchment, drawn in ink and soft watercolour pixel art: one continent split north to south by the Rift, a deep jagged chasm crossed by a single bridge (Spanwick) at its middle; west of it the grey ash plains around Cinderfold, low foundry hills, and a snowy north with a walled town (Ironhaven); east of it a river with waterwheels (Alderweir), a forest in the south-east, a large old hearth-works further east (the First Hearth), and mountains in the north-east with a lone hut. A dotted road runs from Cinderfold east over the bridge. Follow the layout image exactly: every place sits where its mark is. No words, letters or labels anywhere (the game writes them)." },
   {"id": "regulator-closeup-housing", "kind": "prop", "file": "props/regulator-closeup-housing.png", "size": {"w": 512, "h": 320}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup housing"},
   {"id": "regulator-closeup-ring", "kind": "prop", "file": "props/regulator-closeup-ring.png", "size": {"w": 160, "h": 160}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup ring"},
   {"id": "regulator-closeup-bolt", "kind": "prop", "file": "props/regulator-closeup-bolt.png", "size": {"w": 48, "h": 48}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup bolt"},

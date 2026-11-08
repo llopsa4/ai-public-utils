@@ -1,6 +1,6 @@
 # equipment-plain-carrier
 
-Status: **placeholder** · equipment · chapter game · in the game as `art/src/kc/equipment/plain-carrier.webp`
+Status: **final** · equipment · chapter game · in the game as `art/src/kc/equipment/plain-carrier.webp`
 
 ## What the game does with it
 

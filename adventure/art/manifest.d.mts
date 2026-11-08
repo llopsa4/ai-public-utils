@@ -1,6 +1,8 @@
 export type ArtKind =
   | 'room' | 'foreground' | 'prop' | 'object' | 'character' | 'extra' | 'portrait' | 'item' | 'icon'
-  | 'battle' | 'battle-portrait' | 'battle-backdrop' | 'card' | 'card-atlas' | 'equipment';
+  | 'battle' | 'battle-portrait' | 'battle-backdrop' | 'card' | 'card-atlas' | 'equipment'
+  /** The notebook's world map: one opaque painting without lettering. */
+  | 'map';
 
 export type Anchor = 'top-left' | 'top-centre' | 'centre' | 'bottom-centre' | 'none';
 

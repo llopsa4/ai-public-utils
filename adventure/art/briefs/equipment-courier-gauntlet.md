@@ -1,6 +1,6 @@
 # equipment-courier-gauntlet
 
-Status: **placeholder** · equipment · chapter game · in the game as `art/src/kc/equipment/courier-gauntlet.webp`
+Status: **final** · equipment · chapter game · in the game as `art/src/kc/equipment/courier-gauntlet.webp`
 
 ## What the game does with it
 

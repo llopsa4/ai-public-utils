@@ -1,6 +1,6 @@
 # card-shield
 
-Status: **requested** · card · chapter game · in the game as `art/src/kc/cards/shield.png`
+Status: **final** · card · chapter game · in the game as `art/src/kc/cards/shield.png`
 
 ## What the game does with it
 

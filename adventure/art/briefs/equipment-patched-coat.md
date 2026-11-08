@@ -1,6 +1,6 @@
 # equipment-patched-coat
 
-Status: **placeholder** · equipment · chapter game · in the game as `art/src/kc/equipment/patched-coat.webp`
+Status: **final** · equipment · chapter game · in the game as `art/src/kc/equipment/patched-coat.webp`
 
 ## What the game does with it
 

@@ -10,6 +10,7 @@ import { ROOMS, START_ENTRY, START_ROOM } from './rooms';
 import { STORY } from './story';
 import strings from './strings.en.json';
 import { concernKey } from './progression';
+import { DIARY, MAP } from './diary';
 
 /** Chapter 1, Kiln Courier: from Mara's tent to the ashways. */
 export const CH1: Chapter = {
@@ -34,6 +35,10 @@ export const CH1: Chapter = {
   rewards: REWARDS,
   lessonPrompts: LESSON_PROMPTS,
   spares: OREN_SPARES,
+  // Day 1 of STORY.md's five: the first malfunctions, seen by Mara in Cinderfold.
+  when: { day: 1, time: 'when.ch1.time', place: 'when.ch1.place', viewpoint: 'when.ch1.viewpoint' },
+  diary: DIARY,
+  map: MAP,
   objectives,
   reflections:s=>s.flags.decided?[concernKey(s.flags,'note.concern')]:[],
   objectiveKeys: OBJECTIVE_KEYS,

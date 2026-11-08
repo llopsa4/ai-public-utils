@@ -8,6 +8,19 @@ import type { StoryRules } from '../engine/story';
 
 export interface Objective { key: string; done: boolean; optional: boolean }
 
+/** When and through whose eyes a chapter happens: one of STORY.md's five days (string keys). */
+export interface ChapterWhen { day: number; time: string; place: string; viewpoint: string }
+
+/** A diary entry in the viewpoint character's voice, written once all its flags are set. */
+export interface DiaryEntry { key: string; after: readonly string[] }
+
+/** The world map (src/content/world.ts): where the viewpoint character is, and the places they know. */
+export interface ChapterMap {
+  at(state: GameState): string;
+  /** Places known from this chapter (with its flags); earlier chapters' places stay known. */
+  known(flags: Record<string, boolean>, room: string | null): readonly string[];
+}
+
 /**
  * Everything one chapter of the story brings: its rooms, people, click rules, conversations,
  * fights and strings. The engine, scene and interface read the active chapter through
@@ -58,6 +71,11 @@ export interface Chapter {
   lessonPrompts?: Readonly<Record<number, string>>;
   /** Gear handed over by the `giveSpares` command. */
   spares: readonly string[];
+  /** The day, time, place and viewpoint (title card, notebook, diary). */
+  when: ChapterWhen;
+  /** The viewpoint character's diary for this chapter, in story order. */
+  diary: readonly DiaryEntry[];
+  map: ChapterMap;
   objectives(state: GameState): Objective[];
   reflections?: (state: GameState) => string[];
   objectiveKeys: readonly string[];

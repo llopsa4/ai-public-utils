@@ -7,6 +7,7 @@ import { OBJECTIVE_KEYS, objectives } from './objectives';
 import { ROOMS, START_ENTRY, START_ROOM } from './rooms';
 import { STORY } from './story';
 import strings from './strings.en.json';
+import { DIARY, MAP } from './diary';
 
 /**
  * Chapter 2, Tempered Flow: the tunnels under the ashways, then Bryn's tempering house on the road
@@ -38,6 +39,10 @@ export const CH2: Chapter = {
   rewards: REWARDS,
   encounterPools: POOLS,
   spares: SPARES,
+  // Day 2: the service tunnels at dawn, Bryn's tempering house that night (Mara's view).
+  when: { day: 2, time: 'when.ch2.time', place: 'when.ch2.place', viewpoint: 'when.ch2.viewpoint' },
+  diary: DIARY,
+  map: MAP,
   objectives,
   objectiveKeys: OBJECTIVE_KEYS,
   lineMoods: {},

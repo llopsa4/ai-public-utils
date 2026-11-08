@@ -1,6 +1,6 @@
 # item-tonic
 
-Status: **requested** · item · chapter game · in the game as `art/src/items/tonic.png`
+Status: **final** · item · chapter game · in the game as `art/src/items/tonic.png`
 
 ## What the game does with it
 

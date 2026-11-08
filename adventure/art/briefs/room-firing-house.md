@@ -4,23 +4,24 @@ Status: **final** · room · chapter ch1 · in the game as `art/src/rooms/firing
 
 ## What the game does with it
 
-In the game as the room `firingHouse` (ch1). Mara (232 px tall) and the others walk in the floor band: x 0–1280, y 536–690, around 1 obstacle(s).
+In the game as the room `firingHouse` (ch1). Mara (232 px tall) and the others walk in the floor band: x 0–1280, y 536–690, around 2 obstacle(s).
 
 Everything the player can click, at these places (art pixels), each must be painted there and recognisable:
-- **chalk marks** (`chalk`, x 340–428, y 300–352): look at. A secret: a small, easy-to-miss detail, not highlighted.
-- **old wooden sign** (`sign`, x 500–556, y 80–136): look at. A secret: a small, easy-to-miss detail, not highlighted.
+- **chalk marks** (`chalk`, x 320–384, y 290–338): look at. A secret: a small, easy-to-miss detail, not highlighted.
+- **old wooden sign** (`sign`, x 452–520, y 88–164): look at. A secret: a small, easy-to-miss detail, not highlighted.
 - **Nell's pantry door** (`pantryDoor`, x 608–728, y 220–524): look at, open, use.
 - **soup pot** (`soup`, x 164–252, y 352–404): look at, take, use.
 - **shoe racks** (`shoes`, x 68–308, y 60–280): look at, take.
 - **hearth** (`hearth`, x 112–296, y 340–524): look at, use.
 - **stairs to the gallery** (`stairs`, x 820–1132, y 192–524): look at, go through (an exit).
+- **bread basket** (`breadBasket`, x 1032–1108, y 384–440): look at, take.
 - **kiln gate** (`kilnGate`, x 1172–1280, y 192–528): look at, open, go through (an exit).
 - **way to Mara's room** (`toRoom`, x 0–60, y 208–528): look at, go through (an exit).
 
 Drawn separately as objects (leave their spot plain in the painting, they stand there):
 - `pantry-door` standing on (668, 524).
 
-Story characters stand at: Nell (500, 600). Keep the wall behind them uncluttered at head height.
+Story characters stand at: Nell (500, 600); Tobi (310, 600). Keep the wall behind them uncluttered at head height.
 
 Background people walk about the floor band here (the crowd); keep the band open.
 

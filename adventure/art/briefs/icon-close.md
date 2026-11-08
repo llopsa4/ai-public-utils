@@ -1,6 +1,6 @@
 # icon-close
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/close.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/close.png`
 
 ## What the game does with it
 

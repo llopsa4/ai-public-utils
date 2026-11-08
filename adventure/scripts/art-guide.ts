@@ -3,6 +3,7 @@
 // Re-run after changing rooms or sheets:
 //
 //   npm run art:guide
+import { writeWorldMapSpec } from './world-map-spec';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import sharp from 'sharp';
@@ -213,4 +214,6 @@ p();
 p('The room name boards, light effects (glows, haze, shafts, reflections), particles, the gauge needle, the held tools of the background people, the cursor and all interface panels are drawn in code or CSS.');
 p();
 writeFileSync(join(ART, '..', 'REPLACING.md'), md.join('\n'));
-console.log('Wrote art/REPLACING.md and art/spec/*.jpg.');
+// The notebook's world map: the layout Codex paints from (the game pins places at the same spots).
+await writeWorldMapSpec();
+console.log('Wrote art/REPLACING.md, art/spec/*.jpg and art/spec/world-map.png.');

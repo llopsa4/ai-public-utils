@@ -7,6 +7,8 @@ Status: **final** · room · chapter ch1 · in the game as `art/src/rooms/ashway
 In the game as the room `ashways` (ch1). Mara (232 px tall) and the others walk in the floor band: x 0–1280, y 536–690.
 
 Everything the player can click, at these places (art pixels), each must be painted there and recognisable:
+- **brass pressure cell** (`pressureCell`, x 352–408, y 404–476): look at, use.
+- **ash sweeper** (`sweeperDisabled`, x 580–860, y 470–610): look at. Only there at some points of the story.
 - **ash sweeper** (`sweeper`, x 940–1200, y 456–596): look at, talk to, use. Only there at some points of the story.
 - **ash sweeper** (`sweeperAtPipe`, x 260–520, y 456–596): look at, talk to, use. Only there at some points of the story.
 - **steam valve** (`valve`, x 180–292, y 320–524): look at, open, close, use.

@@ -1,6 +1,6 @@
 # icon-lie
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/lie.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/lie.png`
 
 ## What the game does with it
 

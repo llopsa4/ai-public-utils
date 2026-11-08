@@ -1,6 +1,6 @@
 # equipment-quick-harness
 
-Status: **placeholder** · equipment · chapter game · in the game as `art/src/kc/equipment/quick-harness.webp`
+Status: **final** · equipment · chapter game · in the game as `art/src/kc/equipment/quick-harness.webp`
 
 ## What the game does with it
 

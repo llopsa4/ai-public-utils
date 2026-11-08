@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- The story is told across five days, from the first malfunctions (Day 1) to the war (Day 5). Each chapter is set on one day: its title card shows it ("Day 1 · Morning · Cinderfold"), and so does the notebook. Chapter 1 is Day 1; the debug-only chapter 2 is Day 2.
+- The notebook has three tabs. Notes holds the goals, hints, secrets and people met. Diary is the story so far, grouped by day, written in the viewpoint character's own voice and growing at each milestone (earlier chapters stay). Map is an invented world map: the places the character knows are named, and a pin shows where they are. Its painting is requested from Codex (`world-map`); until it arrives the game draws the land itself.
+
+- The story is told across five days, from the first malfunctions (Day 1) to the war (Day 5). Each chapter is set on one day: its title card shows it ("Day 1 · Morning · Cinderfold"), and so does the notebook. Chapter 1 is Day 1; the debug-only chapter 2 is Day 2.
+- The notebook has three tabs. Notes holds the goals, hints, secrets and people met. Diary is the story so far, grouped by day, written in the viewpoint character's own voice and growing at each milestone (earlier chapters stay). Map is an invented world map: the places the character knows are named, and a pin shows where they are. Its painting is requested from Codex (`world-map`); until it arrives the game draws the land itself.
+
 - Chapter 1 has a forgiving mechanical regulator close-up, flexible morning errands, first-concern callbacks and a shared optional farewell through Nell or Tobi.
 - Corvin's Ashways salvage accident now triggers a 52-HP sweeper boss, followed by a brief aftermath. Defeat retries restore health and MP, resources carry onward, and rewards/checkpoints are single-use.
 - Version 10 saves retain puzzle and finale progress and migrate earlier chapter progress without rewinding it.

@@ -6,6 +6,7 @@ import type { GameState, Point, Speaker, Verb } from '../engine/types';
 import { chapter } from '../chapters';
 import { say } from './speech';
 import { nextHint, openHistory, openNotebook } from './notebook';
+import { initNotebookTabs } from './journal';
 import { bindSettingsForm, openSettings } from './settingsMenu';
 import { forceGear, openGear } from './gear';
 import { openShop } from './shop';
@@ -140,6 +141,7 @@ export class Ui {
     $('title-import').addEventListener('click', () => this.fileInput.click());
     $('title-settings').addEventListener('click', () => openSettings());
     $('hint-btn').addEventListener('click', () => nextHint(this));
+    initNotebookTabs();
     this.fileInput.addEventListener('change', () => void importSave(this));
     this.menu.addEventListener('click', e => { if (e.target === this.menu) this.menu.close(); });
     window.addEventListener('keydown', e => {
@@ -299,8 +301,8 @@ export class Ui {
   introActive = false;
 
   /** A later chapter's opening lines over black (see `Chapter.intro`). */
-  chapterIntro(keys: readonly string[]): Promise<void> {
-    return chapterIntro(this, keys);
+  chapterIntro(keys: readonly string[], day?: string): Promise<void> {
+    return chapterIntro(this, keys, day);
   }
 
 

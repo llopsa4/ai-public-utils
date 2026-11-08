@@ -341,5 +341,18 @@
   "intro2.title": "Chapter 2: Tempered Flow",
   "intro2.1": "Behind him, Cinderfold waits in the cold, and Oren keeps the gauges company. Mara carries the regulator onward.",
   "intro2.2": "The First Hearth is far. The ash road is longer still; the old service tunnels promise a shortcut.",
-  "intro2.3": "He walks through the night, and at dawn he reaches the mouth of service line 4."
+  "intro2.3": "He walks through the night, and at dawn he reaches the mouth of service line 4.",
+  "when.ch2.time": "Dawn",
+  "when.ch2.place": "The service tunnels",
+  "when.ch2.viewpoint": "Mara",
+  "diary.ch2.dawn": "Walked all night. Service line 4 at dawn. The tunnels should save me a day, if they're still standing.",
+  "diary.ch2.tunnels": "Three tunnels: a jammed grate, a steam junction, a cistern with its bridge up. Something living in every one. I'm through.",
+  "diary.ch2.bryn": "Evening. A tempering house on the road. The smith, Bryn, let me in before I'd finished explaining.",
+  "diary.ch2.retuned": "Bryn retuned the gauntlet. It vents through the wrist now and keeps a little back. It feels like it isn't holding its breath.",
+  "diary.ch2.question": "She asked what I'm trying to get through so fast. It took me a while to answer honestly.",
+  "diary.ch2.records": "Bryn read the regulator. It wasn't failing: it was working too hard. The real damage is further out on the return circuit. It could be fixed properly.",
+  "diary.ch2.letter": "Wrote to Oren. The truest letter I've ever written. He'll complain about my handwriting.",
+  "diary.ch2.help": "Asked Bryn for help with supplies instead of doing it all myself. Harder than the tunnels.",
+  "diary.ch2.valley": "Bryn's map: the records point to a valley marked abandoned.",
+  "diary.ch2.tremor": "Night. The whole line shook. A surge this far up, the first in twelve years. Whatever broke is still breaking. Leaving before first light."
 }

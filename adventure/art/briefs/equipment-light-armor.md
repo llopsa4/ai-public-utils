@@ -1,6 +1,6 @@
 # equipment-light-armor
 
-Status: **placeholder** · equipment · chapter game · in the game as `art/src/kc/equipment/light-armor.webp`
+Status: **final** · equipment · chapter game · in the game as `art/src/kc/equipment/light-armor.webp`
 
 ## What the game does with it
 

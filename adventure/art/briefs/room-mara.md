@@ -21,7 +21,7 @@ Drawn separately as objects (leave their spot plain in the painting, they stand 
 
 Background people walk about the floor band here (the crowd); keep the band open.
 
-Walk-behind pieces are cut from this painting: `hall-left` (from (0, 616)), `hall-right` (from (1114, 628)): paint those things in front of the floor there.
+Walk-behind pieces are cut from this painting: `hall-left` (from (0, 616)), `hall-right` (from (1114, 628)), `hall-crate` (from (196, 622)): paint those things in front of the floor there.
 
 The game hangs the room's name board around (300, 96): keep that patch of wall plain.
 

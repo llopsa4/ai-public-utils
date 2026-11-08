@@ -247,11 +247,12 @@ export async function importArt(root = here) {
           return { data: Buffer.from(buf.data), width: buf.info.width, height: buf.info.height };
         })()
         // Cards are opaque square paintings: fitted whole (cover), never trimmed like a sprite.
-        : await fit(path, size.w, size.h, entry.anchor === 'none' ? 'centre' : entry.anchor, entry.kind === 'card');
+        : await fit(path, size.w, size.h, entry.anchor === 'none' ? 'centre' : entry.anchor, entry.kind === 'card' || entry.kind === 'map');
       if (GRID_KINDS.has(entry.kind)) img = toGrid(img, { outline: true });
       else {
         snapToPalette(img.data, img.width);
-        if (entry.kind !== 'card') addOutline(img.data, img.width, img.height);
+        // Cards and the world map are opaque paintings: no outline.
+        if (entry.kind !== 'card' && entry.kind !== 'map') addOutline(img.data, img.width, img.height);
       }
       after = await write(root, entry.file, img, { webp: entry.webp });
     }

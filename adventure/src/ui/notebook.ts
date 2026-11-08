@@ -2,6 +2,8 @@
 import { t } from '../engine/i18n';
 import { chapter } from '../chapters';
 import { $, SPEECH_COLORS, type Ui } from './ui';
+import { renderDiary, renderMap } from './journal';
+import { dayLine } from './journalData';
 
 export function openNotebook(ui: Ui): void {
   const list = $('objectives');
@@ -29,6 +31,12 @@ export function openNotebook(ui: Ui): void {
   $('met').hidden = met === 0;
   $('met').textContent = t('ui.met', { found: String(met), total: String(chapter().metFlags.length) });
   renderHint(ui);
+  // Whose notebook, which day, the story so far and where they are (ui/journal.ts).
+  const ch = chapter(), state = ui.host.getState();
+  $('notebook-heading').textContent = t('ui.notebookOf', { who: t(ch.when.viewpoint) });
+  $('notebook-day').textContent = dayLine(ch);
+  renderDiary($('diary'), state);
+  renderMap($('world-map'), state);
   $<HTMLDialogElement>('notebook').showModal();
 }
 

@@ -1,13 +1,32 @@
 # regulator-closeup-bolt
 
-Deliver `art/inbox/regulator-closeup-bolt.png`; normalize through plain `npm run art:import` to the exact size and anchor in the manifest.
+Status: **final** · prop · chapter ch1 · in the game as `art/src/props/regulator-closeup-bolt.png`
 
-## Generation instructions
+## What the game does with it
 
-Create one large worn brass hexagonal bolt head seen straight-on, isolated on genuine transparent PNG, square canvas. Cinderfold pixel-art material style matching attached reference: worn dull brass, one straight diagonal screwdriver slot, chipped corners, subtle soot at edge. One bolt only. No text or numbers, background, perspective or cast shadow. Simple strong pixel clusters to normalize to 48x48.
+A moving part the game draws over the room (it swings or turns it).
 
+## Technical
 
+- File: `art/inbox/regulator-closeup-bolt.png`, transparent (or flat magenta), anchored at its bottom edge. Reduced to the 2-pixel grid.
 
-## References and provenance
+## Prompt for Codex
 
-Generated with built-in OpenAI ImageGen. Gallery material reference: `art/src/rooms/gallery.webp`. The disabled machine uses `art/src/kc/ash-sweeper.webp` as its edit target. The two cell states share the same initial design and framing. Exact raw source and prompt records: `art/inbox/chapter1-improvements/prompts.json`.
+```text
+Draw for the game Cinderfold: regulator closeup bolt
+Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
+World: an industrial-fantasy village inside an old kiln and the ash country around it: fired clay, cream ceramic plates, iron, brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
+Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
+Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).
+Proportions: true to the cast (art/style/scale.png): Mara is 232 px, a doorway about 328, a table top 104, a chair seat 48.
+Light: evenly lit with soft form shading and no strong cast light (the game lights it to match the room).
+File: art/inbox/regulator-closeup-bolt.png, transparent (or flat magenta), anchored at its bottom edge. Reduced to the 2-pixel grid.
+```
+
+## Attach
+
+- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
+
+## Then
+
+`npm run art:import`, look at `art/inbox/preview/regulator-closeup-bolt.png`, `npm run art:check`.

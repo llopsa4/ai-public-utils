@@ -1,6 +1,6 @@
 # equipment-work-trousers
 
-Status: **requested** · equipment · chapter game · in the game as `art/src/kc/equipment/work-trousers.webp`
+Status: **final** · equipment · chapter game · in the game as `art/src/kc/equipment/work-trousers.webp`
 
 ## What the game does with it
 

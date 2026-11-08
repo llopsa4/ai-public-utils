@@ -2,6 +2,8 @@
 import { t } from '../engine/i18n';
 import { lineDuration, settings } from '../engine/settings';
 import { $, type Ui } from './ui';
+import { CHAPTERS, FIRST_CHAPTER } from '../chapters';
+import { dayLine } from './journalData';
 
 /**
  * A new story: the screen fades slowly to black, a few lines of context appear one after
@@ -12,7 +14,7 @@ export async function newStory(ui: Ui): Promise<void> {
   if (ui.introActive) return;
   ui.introActive = true;
   ui.setHover('');
-  await playIntro();
+  await playIntro(undefined, undefined, dayLine(CHAPTERS[FIRST_CHAPTER]));
   ui.host.startStory();
   ui.introActive = false;
   fadeIntroAway();
@@ -22,11 +24,11 @@ export async function newStory(ui: Ui): Promise<void> {
  * A later chapter's opening (`Chapter.intro`): its title, then its lines, over black; then the
  * black fades away over the new chapter's first room.
  */
-export async function chapterIntro(ui: Ui, keys: readonly string[]): Promise<void> {
+export async function chapterIntro(ui: Ui, keys: readonly string[], day?: string): Promise<void> {
   if (ui.introActive || !keys.length) return;
   ui.introActive = true;
   ui.setHover('');
-  await playIntro(keys.slice(1), keys[0]);
+  await playIntro(keys.slice(1), keys[0], day);
   ui.introActive = false;
   fadeIntroAway();
 }
@@ -45,8 +47,11 @@ function fadeIntroAway(): void {
   }, 50));
 }
 
-/** The lines over black (chapter 1's opening by default); an optional title comes first, larger. */
-export function playIntro(keys: readonly string[] = ['intro.1', 'intro.2', 'intro.3', 'intro.4'], titleKey?: string): Promise<void> {
+/**
+ * The lines over black (chapter 1's opening by default); an optional title comes first, larger, and
+ * the chapter's day line ("Day 1 · Morning · Cinderfold") with the first line.
+ */
+export function playIntro(keys: readonly string[] = ['intro.1', 'intro.2', 'intro.3', 'intro.4'], titleKey?: string, day?: string): Promise<void> {
   const intro = $('intro'), text = $('intro-text'), more = $('intro-more');
   const calm = settings().reducedMotion;
   const lines = [...(titleKey ? [t(titleKey)] : []), ...keys.map(k => t(k))];
@@ -78,6 +83,14 @@ export function playIntro(keys: readonly string[] = ['intro.1', 'intro.2', 'intr
       if (done) return;
       if (shown >= lines.length) { finish(); return; }
       for (const p of text.children) p.classList.add('past');
+      if (shown === 0 && day) {
+        const d = document.createElement('p');
+        d.className = 'intro-day';
+        d.textContent = day;
+        text.append(d);
+        void d.offsetWidth;
+        d.classList.add('in');
+      }
       const p = document.createElement('p');
       if (titleKey && shown === 0) p.className = 'intro-title';
       p.textContent = lines[shown++];

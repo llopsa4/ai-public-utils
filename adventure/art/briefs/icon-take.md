@@ -1,6 +1,6 @@
 # icon-take
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/take.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/take.png`
 
 ## What the game does with it
 

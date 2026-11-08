@@ -1,6 +1,6 @@
 # icon-stand
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/stand.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/stand.png`
 
 ## What the game does with it
 

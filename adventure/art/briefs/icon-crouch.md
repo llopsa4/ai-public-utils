@@ -1,6 +1,6 @@
 # icon-crouch
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/crouch.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/crouch.png`
 
 ## What the game does with it
 

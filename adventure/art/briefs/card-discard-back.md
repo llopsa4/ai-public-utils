@@ -1,6 +1,6 @@
 # card-discard-back
 
-Status: **requested** · card · chapter game · in the game as `art/src/kc/cards/discard-back.png`
+Status: **final** · card · chapter game · in the game as `art/src/kc/cards/discard-back.png`
 
 ## What the game does with it
 

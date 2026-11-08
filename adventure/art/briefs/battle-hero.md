@@ -1,6 +1,6 @@
 # battle-hero
 
-Status: **placeholder** · battle-portrait · chapter game · in the game as `art/src/kc/hero.webp`
+Status: **final** · battle-portrait · chapter game · in the game as `art/src/kc/hero.webp`
 
 ## What the game does with it
 

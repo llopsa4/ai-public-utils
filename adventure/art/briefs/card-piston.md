@@ -1,6 +1,6 @@
 # card-piston
 
-Status: **requested** · card · chapter game · in the game as `art/src/kc/cards/piston.png`
+Status: **final** · card · chapter game · in the game as `art/src/kc/cards/piston.png`
 
 ## What the game does with it
 

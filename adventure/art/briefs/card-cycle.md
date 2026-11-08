@@ -1,6 +1,6 @@
 # card-cycle
 
-Status: **requested** · card · chapter game · in the game as `art/src/kc/cards/cycle.png`
+Status: **final** · card · chapter game · in the game as `art/src/kc/cards/cycle.png`
 
 ## What the game does with it
 
