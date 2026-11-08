@@ -63,7 +63,7 @@
 }
 .kc .kc-tonic { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 10px; }
 .kc .kc-tonic small { font-size: 12px; opacity: 0.8; }
-.kc .kc-rewards { list-style: none; margin: 10px 0; padding: 0; display: flex; gap: 14px; justify-content: center; font-family: 'Cinzel', Georgia, serif; color: var(--gold); }
+.kc .kc-rewards { list-style: none; margin: 10px 0; padding: 0; display: flex; gap: 14px; justify-content: center; font-family: "IM Fell English", Georgia, serif; color: var(--gold); }
 .kc .kc-rewards li { padding: 4px 12px; border: 1px solid var(--brass); border-radius: 999px; background: #241a10; }
 .kc .kc-armory { max-width: 1180px; margin: 0 auto; }
 .kc .kc-build, .kc .kc-carried { text-align: center; }
@@ -126,7 +126,7 @@
 .kc .kc-victory-card::after { right: 10px; }
 .kc .kc-victory-kicker {
   margin: 0;
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: "IM Fell English", Georgia, serif;
   font-size: 13px;
   letter-spacing: 0.32em;
   color: var(--muted);
@@ -134,7 +134,7 @@
 }
 .kc .kc-victory-title {
   margin: 4px 0 0;
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: "IM Fell English", Georgia, serif;
   font-weight: 700;
   font-size: clamp(46px, 8vw, 74px);
   line-height: 1;
@@ -157,7 +157,7 @@
 .kc .kc-victory-text { margin: 8px 0 14px; font-size: 19px; color: var(--ivory); font-style: italic; }
 .kc .kc-loot-label {
   margin: 0 0 8px;
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: "IM Fell English", Georgia, serif;
   font-size: 12px;
   letter-spacing: 0.3em;
   color: var(--gold);
@@ -177,7 +177,7 @@
 }
 .kc .kc-loot-icon { width: 44px; height: 44px; color: #f3c46e; filter: drop-shadow(0 0 6px #ff9a3a80); }
 .kc .kc-loot-icon svg { width: 100%; height: 100%; }
-.kc .kc-loot strong { font-family: 'Cinzel', Georgia, serif; font-size: 24px; color: #ffe2a6; line-height: 1.1; }
+.kc .kc-loot strong { font-family: "IM Fell English", Georgia, serif; font-size: 24px; color: #ffe2a6; line-height: 1.1; }
 .kc .kc-loot li > span:last-child { font-size: 15px; color: var(--muted); text-transform: capitalize; }
 .kc .kc-victory-stats { display: flex; justify-content: center; gap: 12px; margin: 0 0 22px; }
 .kc .kc-victory-stats > div {
@@ -187,12 +187,12 @@
   border: 1px solid #5c4426;
   background: #0f0905c0;
 }
-.kc .kc-victory-stats dt { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-family: 'Cinzel', Georgia, serif; }
-.kc .kc-victory-stats dd { margin: 0; font-family: 'Cinzel', Georgia, serif; font-size: 26px; color: var(--ivory); }
+.kc .kc-victory-stats dt { font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); font-family: "IM Fell English", Georgia, serif; }
+.kc .kc-victory-stats dd { margin: 0; font-family: "IM Fell English", Georgia, serif; font-size: 26px; color: var(--ivory); }
 .kc .kc-victory-continue {
   min-width: 220px;
   padding: 12px 28px;
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: "IM Fell English", Georgia, serif;
   font-weight: 700;
   font-size: 18px;
   letter-spacing: 0.2em;
@@ -308,12 +308,12 @@
   position: absolute;
   right: 3px;
   bottom: 1px;
-  font: 700 14px 'Cinzel', Georgia, serif;
+  font: 700 14px "IM Fell English", Georgia, serif;
   color: #ffe2a6;
   text-shadow: 0 1px 0 #000, 0 0 4px #000;
 }
 .kc-armory-popup .doll-belt-label { font-size: 14px; color: var(--muted); }
-.kc-armory-popup .doll-belt-label strong { margin-left: 4px; font-family: 'Cinzel', Georgia, serif; color: var(--ivory); }
+.kc-armory-popup .doll-belt-label strong { margin-left: 4px; font-family: "IM Fell English", Georgia, serif; color: var(--ivory); }
 .kc-armory-popup .stash-tonic { cursor: default; }
 .kc-armory-popup .doll-stats {
   grid-row: 3;
@@ -329,9 +329,9 @@
 }
 .kc-armory-popup .doll-stats > div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dotted #5c442680; }
 .kc-armory-popup .doll-stats dt { font-size: 13px; color: var(--muted); }
-.kc-armory-popup .doll-stats dd { margin: 0; font-family: 'Cinzel', Georgia, serif; font-size: 15px; color: var(--ivory); }
+.kc-armory-popup .doll-stats dd { margin: 0; font-family: "IM Fell English", Georgia, serif; font-size: 15px; color: var(--ivory); }
 .kc-armory-popup .doll-side { grid-column: 2; grid-row: 1 / span 3; min-width: 0; }
-.kc-armory-popup .doll-heading { margin: 0 0 6px; font: 600 13px 'Cinzel', Georgia, serif; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
+.kc-armory-popup .doll-heading { margin: 0 0 6px; font: 600 13px "IM Fell English", Georgia, serif; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
 .kc-armory-popup .doll-stash {
   display: grid;
   grid-template-columns: repeat(4, var(--cell));
@@ -351,13 +351,13 @@
   background: linear-gradient(#1d130cf2, #0d0805f7);
   box-shadow: inset 0 0 0 1px #ffd9a014, 0 8px 20px #0009;
 }
-.kc-armory-popup .doll-card h3 { margin: 0; font: 700 18px 'Cinzel', Georgia, serif; color: var(--ivory); }
+.kc-armory-popup .doll-card h3 { margin: 0; font: 700 18px "IM Fell English", Georgia, serif; color: var(--ivory); }
 .kc-armory-popup .doll-card.doll-spare h3 { color: #ffcf6e; text-shadow: 0 0 8px #ff9a3a66; }
 .kc-armory-popup .doll-spare.stash-cell { border-color: #a8803e; }
 .kc-armory-popup .doll-slotname { margin: 0 0 6px; font-size: 13px; color: var(--muted); text-transform: capitalize; }
 .kc-armory-popup .doll-bonuses { margin: 0; font-size: 15px; color: #e1c390; }
 .kc-armory-popup .doll-desc { margin: 4px 0 0; font-size: 14px; font-style: italic; color: var(--muted); }
-.kc-armory-popup .doll-card h4 { margin: 10px 0 4px; font: 600 12px 'Cinzel', Georgia, serif; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.kc-armory-popup .doll-card h4 { margin: 10px 0 4px; font: 600 12px "IM Fell English", Georgia, serif; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .kc-armory-popup .gear-deltas { gap: 2px; margin: 0; }
 .kc-armory-popup .gear-deltas > div { padding: 3px 0; }
 .kc-armory-popup .gear-deltas dt { font-size: 14px; }
@@ -378,7 +378,7 @@
   border: 1px solid #ffe2a6;
   background: linear-gradient(#ffd98c, #e09a3e 60%, #b86d22);
   box-shadow: 0 0 0 2px #3a220e, 0 4px 12px #0009;
-  font-family: 'Cinzel', Georgia, serif;
+  font-family: "IM Fell English", Georgia, serif;
   font-weight: 700;
   letter-spacing: 0.06em;
 }
@@ -436,14 +436,14 @@
 .kc-armory-popup .preview-art .doll-potion-icon svg { position: relative; width: 128px; height: 128px; }
 .kc-armory-popup .preview-tag {
   margin: 0;
-  font: 600 11px 'Cinzel', Georgia, serif;
+  font: 600 11px "IM Fell English", Georgia, serif;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--tier) 75%, #8a7a60);
 }
 .kc-armory-popup .preview .preview-name {
   margin: 2px 0 8px;
-  font: 700 24px 'Cinzel', Georgia, serif;
+  font: 700 24px "IM Fell English", Georgia, serif;
   line-height: 1.1;
   color: var(--tier);
   text-shadow: 0 2px 0 #000, 0 0 12px var(--tier-glow);
@@ -467,7 +467,7 @@
 .kc-armory-popup .preview-flavor::before { content: '“'; }
 .kc-armory-popup .preview-flavor::after { content: '”'; }
 .kc-armory-popup .preview-changes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 12px; }
-.kc-armory-popup .preview-label { font: 600 11px 'Cinzel', Georgia, serif; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+.kc-armory-popup .preview-label { font: 600 11px "IM Fell English", Georgia, serif; letter-spacing: 0.16em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
 .kc-armory-popup .preview-chip {
   padding: 3px 10px;
   border-radius: 999px;

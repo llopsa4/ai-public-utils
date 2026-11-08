@@ -2,13 +2,6 @@
 // starts, so React, the battle code, its art and fonts never weigh on the title screen.
 import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@fontsource/cinzel/latin-400.css';
-import '@fontsource/cinzel/latin-600.css';
-import '@fontsource/cinzel/latin-700.css';
-import '@fontsource/cormorant-garamond/latin-400.css';
-import '@fontsource/cormorant-garamond/latin-500.css';
-import '@fontsource/cormorant-garamond/latin-600.css';
-import '@fontsource/cormorant-garamond/latin-500-italic.css';
 import './kc.css';
 import './kc-local.css';
 import { App, type LessonView } from '@kc/App';

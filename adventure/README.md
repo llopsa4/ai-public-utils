@@ -1,6 +1,6 @@
 # The Rift: Ashlands
 
-A point-and-click adventure built from the first scene of **Kiln Courier**'s story. Mara, a courier and kiln-minder in Cinderfold (a village built inside an old industrial kiln), must shut down the cracked regulator and carry it away for assessment. He doesn't want to go. The game runs entirely in the browser as static files on GitHub Pages: no server, no accounts, no tracking. It uses only free software: Phaser 3 (MIT), React (MIT, for the fight and gear screens), TypeScript, Vite and the Zilla Slab, Cinzel and Cormorant Garamond fonts (OFL); the art and test tools (pngjs, upng-js, sharp, Playwright) are development-only.
+A point-and-click adventure built from the first scene of **Kiln Courier**'s story. Mara, a courier and kiln-minder in Cinderfold (a village built inside an old industrial kiln), must shut down the cracked regulator and carry it away for assessment. He doesn't want to go. The game runs entirely in the browser as static files on GitHub Pages: no server, no accounts, no tracking. It uses only free software: Phaser 3 (MIT), React (MIT, for the fight and gear screens), TypeScript, Vite and the IM Fell English, UnifrakturMaguntia and Zilla Slab fonts (OFL); the art and test tools (pngjs, upng-js, sharp, Playwright) are development-only.
 
 ## Play
 

@@ -1,7 +1,7 @@
 /*
  * Cinderfold's game interface: iron-and-ember panels with brass edges and rivets, a parchment
  * notebook, menu lists instead of form buttons, and drawn toggles, sliders and segmented choices
- * instead of the browser's own controls. Zilla Slab (SIL OFL) is bundled from @fontsource.
+ * instead of the browser's own controls. Fonts: src/fonts.css (IM Fell English for the game's text, Zilla Slab for dialogue).
  */
 :root {
   --iron: #17100f;
