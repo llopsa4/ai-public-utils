@@ -1,4 +1,4 @@
-import{A as e,E as t,L as n,R as r,c as i,j as a,k as o,n as s,o as c,s as l,w as u}from"./index-DjIy8DY6.js";var d=`
+import{A as e,E as t,L as n,R as r,c as i,j as a,k as o,n as s,o as c,s as l,w as u}from"./index-GkYXEdQv.js";var d=`
 #debug-panel { position: fixed; top: 8px; right: 8px; z-index: 9999; width: 300px; max-height: calc(100vh - 16px); overflow: auto;
   background: rgba(16, 12, 10, 0.94); color: #f0e0c8; font: 12px/1.4 system-ui, sans-serif; border: 1px solid #a0703c;
   border-radius: 6px; padding: 8px 10px; box-shadow: 0 4px 18px #000a; }

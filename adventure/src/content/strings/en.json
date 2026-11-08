@@ -1,5 +1,5 @@
 {
-  "ui.title": "Cinderfold: A delivery he does not want",
+  "ui.title": "The Rift: Ashlands",
   "ui.loading": "Loading…",
   "ui.menu": "Menu",
   "ui.inventory": "Inventory",
@@ -57,7 +57,7 @@
   "ui.reducedMotion": "Reduce motion",
   "ui.clickToContinue": "Click to continue",
   "ui.confirmNewTitle": "Start a new game? Your autosave will be replaced once you start playing.",
-  "ui.titleName": "Cinderfold",
+  "ui.titleName": "The Rift: Ashlands",
   "ui.continue": "Continue",
   "ui.toTitle": "Title screen",
   "ui.autosaveCorrupt": "The autosave in this browser could not be read, so it was ignored.",
