@@ -22,7 +22,7 @@ test('eleven complete registered layers reconstruct each approved master byte fo
 test('Mara walks with lower passing feet and a five-degree upper-body lean only',()=>{
   for(const [i,pack] of packs.entries()){
     const cfg=pack.cfg;
-    assert.equal(cfg.walk.lift,[120,117,107][i]);
+    assert.equal(cfg.walk.lift,[70,68,62][i]);
     assert.equal(cfg.walk.torsoLeanDegrees,5);
     const straight=structuredClone(cfg);delete straight.walk.torsoLeanDegrees;
     for(let phase=0;phase<8;phase+=.25){
@@ -31,7 +31,8 @@ test('Mara walks with lower passing feet and a five-degree upper-body lean only'
       assert.ok(Math.abs(torsoAngle-neutralAngle-5*Math.PI/180)<1e-10,'base lean is retained beneath the subtle counter-sway');
       assert.deepEqual(pose.feet,neutral.feet,'lean cannot move planted feet');
       assert.deepEqual(pose.knees,neutral.knees,'lean cannot change leg geometry');
-      for(const side of ['near','far'])assert.ok(cfg.joints[side+'Ankle'][1]-pose.feet[side].ankle[1]<=cfg.walk.lift+1e-7);
+      // The early lift peaks a little above walk.lift just after toe-off, and the toe-off roll raises the heel.
+      for(const side of ['near','far'])assert.ok(cfg.joints[side+'Ankle'][1]-pose.feet[side].ankle[1]<=cfg.walk.lift*1.25+1e-7);
     }
     const previous=structuredClone(cfg);previous.walk.lift=[180,175,160][i];delete previous.walk.torsoLeanDegrees;
     assert.ok(walkPose(cfg,6).knees.near[1]>walkPose(previous,6).knees.near[1],'passing knee is lower');
@@ -112,6 +113,23 @@ test('installed kneeling and lying frames preserve the gauntlet power state',()=
         const k=(y*a.width+x)*4;assert.equal(a.data[k+3],b.data[k+3]);if(!a.data.subarray(k,k+3).equals(b.data.subarray(k,k+3)))changed++;
       }
       assert.ok(changed>0&&changed<100,`${base}/${tag}: ${changed}`);
+    }
+  }
+});
+
+test('Mara steps evenly on both legs, lands on a nearly straight leg and swings the foot low as it reaches',()=>{
+  const bend=(h:number[],k:number[],a:number[])=>{const u=[h[0]-k[0],h[1]-k[1]],v=[a[0]-k[0],a[1]-k[1]];return 180-Math.acos((u[0]*v[0]+u[1]*v[1])/Math.hypot(...u)/Math.hypot(...v))*180/Math.PI;};
+  for(const pack of packs){
+    const cfg=pack.cfg,j=cfg.joints;
+    const contact=[0,4].map(p=>walkPose(cfg,p));
+    // Both steps dip the body by about the same amount (no limp).
+    assert.ok(Math.abs(contact[0].bodyDrop-contact[1].bodyDrop)<=8,`${cfg.outfit}: steps dip ${contact[0].bodyDrop.toFixed(0)} and ${contact[1].bodyDrop.toFixed(0)}`);
+    for(const [p,side] of [[0,'near'],[4,'far']] as const){
+      const pose=walkPose(cfg,p),hip=[j[side+'Hip'][0],j[side+'Hip'][1]+pose.bodyDrop];
+      assert.ok(bend(hip,pose.knees[side],pose.feet[side].ankle)<=28,`${cfg.outfit}: the ${side} leg lands nearly straight`);
+      // Late in the swing (the foot ahead, about to land) it is low and the knee is opening, not marching.
+      const late=walkPose(cfg,(p+7)%8),swingSide=side;
+      assert.ok(j[swingSide+'Ankle'][1]-late.feet[swingSide].ankle[1]<=cfg.walk.lift*0.6,`${cfg.outfit}: the ${swingSide} foot is low as it reaches`);
     }
   }
 });

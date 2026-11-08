@@ -133,16 +133,16 @@
     ],
     "hipSwing": 22,
     "armSwing": 20,
-    "lift": 117,
+    "lift": 68,
     "torsoLeanDegrees": 5,
     "widthScale": 1.15,
-    "strideSource": 505,
+    "strideSource": 446,
     "references": {
       "contact": "walk-contact.png",
       "passing": "walk-passing.png"
     },
-    "calibration": "Reference-guided 22-degree hip stride and 20-degree opposite arm swing; fixed source bone lengths and planted-foot IK constrain the silhouette.",
-    "footRollDegrees": 6,
+    "calibration": "Reference-guided 22-degree hip stride and 20-degree opposite arm swing; fixed source bone lengths and planted-foot IK constrain the silhouette. Feet swing about one point under the hips (footCentre), so both steps match; the swinging foot clears the floor just after toe-off and lowers as the leg straightens (liftEarly); a stronger toe-off roll keeps the landing knee nearly straight.",
+    "footRollDegrees": 14,
     "hipSwayDegrees": 1.5,
     "torsoSwayDegrees": 1,
     "weightDrop": 8,
@@ -170,7 +170,12 @@
           1495
         ]
       }
-    }
+    },
+    "footCentre": {
+      "near": -7,
+      "far": -57
+    },
+    "liftEarly": 1
   },
   "extraction": {
     "hiddenPixels": 59182,

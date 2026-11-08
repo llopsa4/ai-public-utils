@@ -118,7 +118,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -140,7 +140,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -162,7 +162,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -184,7 +184,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -206,7 +206,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -228,7 +228,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -250,7 +250,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -272,7 +272,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -294,7 +294,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -316,7 +316,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -338,7 +338,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -360,7 +360,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -382,7 +382,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -404,7 +404,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -426,7 +426,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -448,7 +448,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -470,7 +470,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -492,7 +492,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -514,7 +514,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -536,7 +536,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -558,7 +558,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -580,7 +580,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -602,7 +602,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -624,7 +624,7 @@
     "w": 256,
     "h": 256
    },
-   "duration": 88,
+   "duration": 78,
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
@@ -784,7 +784,7 @@
    }
   ],
   "walk": {
-   "distancePerFrame": 9.721232876712328,
+   "distancePerFrame": 8.58904109589041,
    "plantFrames": [
     0,
     4

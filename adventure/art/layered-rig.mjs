@@ -43,8 +43,17 @@ export function solveLeg(hip,target,l1,l2){
 }
 function footMotion(cfg,side,q){
  const t=(q%4)/4,stance=q<4,ankle=cfg.joints[side+'Ankle'],stride=cfg.walk.strideSource;
- const x=stance?stride/2-stride*t:-stride/2+stride*(.5-.5*Math.cos(Math.PI*t));
- const lift=stance?0:Math.sin(Math.PI*t)*cfg.walk.lift;
+ // Both feet swing about the same point under the hips (walk.footCentre, from each hip), not about
+ // where the drawing happened to put each ankle: the masters stand with one foot back, which made
+ // one leg reach further than the other and the body dip more on that step (a limp).
+ // A number for both feet, or {near, far} when the drawing's legs differ enough to need evening out.
+ const fc=cfg.walk.footCentre,offset=typeof fc==='object'?fc[side]:fc;
+ const centre=offset===undefined?0:cfg.joints[side+'Hip'][0]+offset-ankle[0];
+ const x=centre+(stance?stride/2-stride*t:-stride/2+stride*(.5-.5*Math.cos(Math.PI*t)));
+ // The swinging foot clears the floor early, just after toe-off, then lowers as the leg straightens
+ // to reach for the next step (walk.liftEarly 0..1; 0 keeps the even arc).
+ const early=cfg.walk.liftEarly??0;
+ const lift=stance?0:Math.sin(Math.PI*t)*(1+early*(.5-t)*1.6)*cfg.walk.lift;
  const roll=(cfg.walk.footRollDegrees??0)*Math.PI/180,sole=cfg.walk.soles?.[side];
  if(!roll||!sole)return {target:[ankle[0]+x,ankle[1]-lift],angle:stance?0:-.16*Math.sin(Math.PI*t),contactSource:ankle,stance};
  const width=partWidthTransform(cfg,side+'Boot'),heel=point(width,sole.heel),toe=point(width,sole.toe);
