@@ -8,6 +8,8 @@ export interface DialogueLine { actor: ActorId; text: string }
 export interface DialogueChoice { text: string; next: string | null; if?: Condition[] }
 export interface DialogueGear { give: readonly string[]; equip?: string }
 export interface DialogueNode {
+  /** Remember this choice only if no flag in its group has been remembered yet. */
+  remember?: { flag: string; unless: readonly string[] };
   /** Redirects: the first entry whose conditions hold decides the node actually entered. */
   branch?: { if?: Condition[]; next: string }[];
   lines?: DialogueLine[];
@@ -25,6 +27,7 @@ export interface DialogueNode {
 export interface DialogueTree { start: string; nodes: Record<string, DialogueNode> }
 
 export interface ResolvedNode {
+  remember?: DialogueNode['remember'];
   id: string;
   lines: DialogueLine[];
   set: Record<string, boolean>;
@@ -44,6 +47,7 @@ export function resolveNode(tree: DialogueTree, id: string, state: GameState): R
     if (redirect) { current = redirect.next; continue; }
     return {
       id: current,
+      remember: node.remember,
       lines: node.lines ?? [],
       set: node.set ?? {},
       items: node.items ?? [],
@@ -70,6 +74,7 @@ export function applyDialogueGear(kit: Kit, reward: DialogueGear | undefined): b
 
 /** Applies a resolved node after its lines finish, before presenting its already-resolved choices. */
 export function applyDialogueEffects(state: GameState, node: ResolvedNode): { inventoryChanged: boolean; gearReceived: boolean } {
+  if(node.remember&&!node.remember.unless.some(f=>state.flags[f]))applyCommand(state,{type:'setFlag',flag:node.remember.flag,value:true});
   for (const [flag, value] of Object.entries(node.set)) applyCommand(state, { type: 'setFlag', flag, value });
   const before = state.inventory.length;
   for (const item of node.items) applyCommand(state, { type: 'addItem', item });

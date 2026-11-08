@@ -14,7 +14,7 @@ test('the notebook shows finished goals plus the current one, never later ones',
   assert.deepEqual(objectives(s).map(o => [o.key, o.done]).slice(-2), [['obj.dress', true], ['obj.cell', false]]);
   s.flags.hasGauntlet = true;
   assert.deepEqual(objectives(s).map(o => [o.key, o.done]).slice(-2), [['obj.cell', true], ['obj.notebook', false]]);
-  Object.assign(s.flags, { hasNotebook: true, latchFixed: true, patchFailed: true, decided: true, procedureKnown: true });
+  Object.assign(s.flags, { hasNotebook: true, latchFixed: true, alarm:true, patchFailed: true, decided: true, procedureKnown: true });
   assert.deepEqual(objectives(s).slice(-1).map(o => [o.key, o.done]), [['obj.protection', false]]);
   s.flags.protectionPrepared = true;
   assert.deepEqual(objectives(s).slice(-2).map(o => [o.key, o.done]), [['obj.protection', true], ['obj.release', false]]);
@@ -24,6 +24,8 @@ test('the notebook shows finished goals plus the current one, never later ones',
     'the optional goodbye shows alongside the next required goal');
   s.room = 'ashways';
   s.flags.valveVented = true;
+  assert.equal(objectives(s).find(o=>!o.done&&!o.optional)?.key,'obj.ashwaysBoss');
+  s.flags.ashwaysWon=true;
   assert.ok(objectives(s).filter(o => !o.optional).every(o => o.done));
   for (const key of OBJECTIVE_KEYS) assert.ok(TABLES.en[key], `missing text for ${key}`);
 });

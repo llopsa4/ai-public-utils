@@ -81,8 +81,10 @@ const galleryHotspots: HotspotDef[] = [
 // the pipe, the ash sweeper blocking the passage under the old bridge (right side), and after the
 // valve is vented, the sweeper scurried off to the warm pipe.
 const ashwaysHotspots: HotspotDef[] = [
+  { id: 'pressureCell', name:'name.pressureCell', polygon:rect(176,202,28,36),verbs:['look','use'],walkTo:pt(220,300),face:'left',outline:{objects:['pressureCell']} },
+  { id:'sweeperDisabled',name:'name.sweeper',polygon:rect(290,235,140,70),verbs:['look'],visibleIf:[{flag:'ashwaysWon'}],outline:{objects:['sweeperDisabled']} },
   { id: 'sweeper', name: 'name.sweeper', polygon: rect(470, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ notFlag: 'valveVented' }] },
-  { id: 'sweeperAtPipe', name: 'name.sweeper', polygon: rect(130, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ flag: 'valveVented' }], outline: { objects: ['sweeper'] } },
+  { id: 'sweeperAtPipe', name: 'name.sweeper', polygon: rect(130, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ flag: 'valveVented' },{notFlag:'ashwaysExploded'}], outline: { objects: ['sweeper'] } },
   { id: 'valve', name: 'name.valve', polygon: rect(90, 160, 56, 102), verbs: ['look', 'open', 'close', 'use'], walkTo: pt(150, 282), face: 'left' },
   { id: 'passage', name: 'name.passage', polygon: rect(560, 100, 80, 164), verbs: ['look', 'go'], walkTo: pt(608, 292), face: 'right' },
   { id: 'pipes', name: 'name.pipes', polygon: [pt(0, 0), pt(300, 0), pt(300, 100), pt(0, 100)], verbs: ['look', 'use'] },

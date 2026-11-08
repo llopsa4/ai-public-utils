@@ -118,21 +118,25 @@ export async function fight(scene: RoomScene, id: string, pool?: readonly string
   el.hidden = false;
   scene.scene.pause();
   await new Promise<void>(resolve => {
-    const reward = chapter().rewards[id];
+    const boss=id==='ashwaysBoss';
+    const reward = boss&&state.flags.ashwaysRewarded?undefined:chapter().rewards[id];
     const rewards = reward ? [t('battle.rewardSalvage', { n: String(reward.salvage) }),
       ...Object.entries(reward.materials).map(([m, n]) => t('battle.rewardMaterial', { n: String(n), name: t(MATERIALS[m].name) }))] : [];
     const close = kc.mountBattle(el, {
-      profile: maraProfile(practice ? rested(state.kit) : state.kit), practice, guided: guided(chapter().story, scene.storyContext()), encounter: chapter().encounters[id], lessonPrompts: chapter().lessonPrompts, rewards,
+      profile: maraProfile(practice || boss&&state.flags.ashwaysRetry ? rested(state.kit) : state.kit), practice, guided: !boss&&guided(chapter().story, scene.storyContext()), encounter: chapter().encounters[id], lessonPrompts: chapter().lessonPrompts, rewards,
+      onDefeat:boss?()=>{state.flags.ashwaysRetry=true;scene.session.saveNow();}:undefined,
+      retryProfile:boss?()=>{healFully(state.kit);state.flags.ashwaysRetry=true;scene.session.saveNow();return maraProfile(state.kit);}:undefined,
       loot: reward ? [{ kind: 'salvage' as const, id: 'salvage', amount: reward.salvage, name: t('battle.salvage') },
         ...Object.entries(reward.materials).map(([m, n]) => ({ kind: 'material' as const, id: m, amount: n, name: t(MATERIALS[m].name) }))] : [],
       onLootShown: () => sound.pickup(),
       pickEncounter: pool ? () => chapter().encounters[pool[Math.floor(Math.random() * pool.length)]] : undefined,
       tonics: () => (practice ? 0 : state.bag.tonics),
-      drink: battle => { const next = drinkTonic(battle, state.bag); return next === battle ? null : next; },
+      drink: battle => { const next = drinkTonic(battle, state.bag); if(next!==battle)scene.session.saveNow();return next === battle ? null : next; },
       onMenu: () => scene.session.ui.openMenu(),
       onWin: battle => {
         // Practice protects Mara's health, MP and tonics.
         if (!practice) finishBattle(state, battle, reward);
+        if(boss){state.flags.ashwaysWon=true;state.flags.ashwaysRewarded=true;scene.session.saveNow();}
         scene.session.closeBattle = null;
         close();
         el.hidden = true;

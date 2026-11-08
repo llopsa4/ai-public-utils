@@ -59,6 +59,7 @@ export interface Chapter {
   /** Gear handed over by the `giveSpares` command. */
   spares: readonly string[];
   objectives(state: GameState): Objective[];
+  reflections?: (state: GameState) => string[];
   objectiveKeys: readonly string[];
   /** Music mood of particular spoken lines. */
   lineMoods: Record<string, MusicMood>;

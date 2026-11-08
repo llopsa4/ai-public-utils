@@ -62,7 +62,7 @@ test('saves from every older version load, upgraded to chapter 1', () => {
     // Format 7: no techniques yet, the starting limits.
     assert.deepEqual([s.kit.techniques, s.kit.maxHp, s.kit.maxMp], [[], 60, 10]);
   }
-  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, 6, 7, 8, SAVE_VERSION]);
+  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, 6, 7, 8, 9, SAVE_VERSION]);
   assert.equal(migrate(2, {}), null);
 });
 
@@ -111,7 +111,9 @@ test('version 8 later-chapter saves retain Bryn, kit and progress while upgradin
   old.version = 8;
   const r = parseSave(JSON.stringify(old));
   assert.ok(r.ok);
-  assert.deepEqual(r.state.earlier.ch1, { ...s.earlier.ch1, gearUnlocked: true, protectionPrepared: true });
+  assert.deepEqual(r.state.earlier.ch1, { ...s.earlier.ch1, gearUnlocked: true, protectionPrepared: true,
+    hoistHelped:true,nellFed:true,boltLeft:true,boltRight:true,pressureBled:true,ringReleased:true,galleryQuiet:true,
+    ashwaysStarted:true,ashwaysExploded:true,ashwaysWon:true,ashwaysAftermath:true,ashwaysRewarded:true });
   assert.deepEqual({ ...r.state, earlier: s.earlier }, s);
 });
 

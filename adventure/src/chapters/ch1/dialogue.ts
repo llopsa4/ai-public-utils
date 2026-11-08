@@ -1,4 +1,5 @@
 import type { DialogueTree } from '../../engine/dialogue';
+import { CONCERN_FLAGS } from './progression';
 
 const CONCERNS = ['toldRepair', 'toldMother', 'toldLeaving', 'toldWhyMe'];
 
@@ -40,21 +41,25 @@ export const DIALOGUES: Record<string, DialogueTree> = {
         ],
       },
       repair: {
+        remember:{flag:'concern-repair',unless:CONCERN_FLAGS},
         lines: [{ actor: 'oren', text: 'dlg.oren.repair1' }, { actor: 'oren', text: 'dlg.oren.repair2' }],
         set: { toldRepair: true },
         next: 'hub',
       },
       mother: {
+        remember:{flag:'concern-mother',unless:CONCERN_FLAGS},
         lines: [{ actor: 'oren', text: 'dlg.oren.mother1' }, { actor: 'oren', text: 'dlg.oren.mother2' }],
         set: { toldMother: true },
         next: 'hub',
       },
       leaving: {
+        remember:{flag:'concern-leaving',unless:CONCERN_FLAGS},
         lines: [{ actor: 'oren', text: 'dlg.oren.leaving1' }, { actor: 'oren', text: 'dlg.oren.leaving2' }],
         set: { toldLeaving: true },
         next: 'hub',
       },
       whyMe: {
+        remember:{flag:'concern-whyMe',unless:CONCERN_FLAGS},
         lines: [{ actor: 'oren', text: 'dlg.oren.whyMe1' }, { actor: 'oren', text: 'dlg.oren.whyMe2' }],
         set: { toldWhyMe: true },
         next: 'hub',
@@ -189,3 +194,6 @@ export const DIALOGUES: Record<string, DialogueTree> = {
     },
   },
 };
+
+// Both children and Nell lead into the same one-time family farewell and gift effects.
+DIALOGUES.farewell={start:'cold',nodes:{cold:DIALOGUES.nell.nodes.cold,coldAgain:DIALOGUES.nell.nodes.coldAgain}};

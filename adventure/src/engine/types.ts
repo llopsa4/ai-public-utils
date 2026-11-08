@@ -218,6 +218,11 @@ export interface GameState {
 
 /** One step of a scripted interaction. The scene plays them in order. */
 export type Command =
+  | { type: 'regulatorPuzzle' }
+  | { type: 'checkpoint' }
+  | { type: 'quietBeat' }
+  | { type: 'farewellReminder' }
+  | { type: 'ashwaysBeat'; phase: 'depart' | 'rupture' | 'return' | 'settle' }
   | { type: 'walk'; to: Point; face?: Facing }
   | { type: 'face'; actor: ActorId; face: Facing }
   /** `at` places the line for a voice from off-screen. */

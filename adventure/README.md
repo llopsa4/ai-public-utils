@@ -23,7 +23,7 @@ Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 - **Hints:** the notebook's **Hint** button gives a nudge for the current goal, then the plain answer.
 - **Cursor:** the pointer shows the name of what it is over and what a click will do (look, handle, talk, leave).
 
-The scene covers: Mara's tent → the kiln hall (help Wren with the hoist) → the firing house (bring Nell bread for her soup) → the tent (dress at the clothes crate, then take the charged cell) → the firing house (Nell's latch, then the alarm) → the regulator gallery (the failed patch, the conversation with Oren, his mother's notebook, Oren's protection advice and guided Gear visit, the shutdown) → the cold firing house (goodbyes) → the ashways (the ash sweeper and the steam valve) → "To be continued".
+The chapter covers the morning errands in Mara's tent, the kiln hall and firing house; the regulator problem and shutdown in the Gallery; farewells by the cold hearth; and departure through the Ashways. Dressing, collecting bread, helping Wren, feeding Nell and fixing the latch can be done in a flexible order. The alarm starts once the hoist, soup and latch are dealt with.
 
 After Mara learns the shutdown procedure, speak to Oren again before releasing the regulator. Oren gives and equips his medium armour, then asks Mara to check its fit in Gear (press G or the highlighted button). The gift and guided visit happen once; later outfit choices remain yours. After the fight Oren still gives his spare light coat and harness, without another forced Gear visit. Older saves retain their equipment and progress; saves already past shutdown continue without being rewound.
 
@@ -62,6 +62,16 @@ The debug panel's **Medium armour** checkbox dresses Mara and equips Layered Arm
 `node scripts/probe.mjs --room gallery --flags kilnCold --items regulator [--quality low]` screenshots the built game in any room at any point of the story (`--all`: every room, warm and cold, both qualities) into `shots/`. `tests/story-graph.test.ts` explores every story state each chapter can reach (930 for chapter 1) and checks that the end stays reachable from all of them, and that every room, goal, secret and spoken line exists.
 
 Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, tilemaps, text or Phaser sound) built from Phaser's own sources; `vite.config.ts` sets Phaser's compile-time flags. The dev server uses the full prebuilt Phaser. If new code needs a Phaser module that is not in the custom entry, add it there; `npm run e2e` catches what's missing.
+
+## Chapter 1: regulator and departure
+
+The regulator now opens a mechanical close-up after Mara has learned the procedure and Oren has prepared him. Loosen both outer bolts, open the bleed valve until the gauge settles into the marked safe band, then turn the ring a quarter-turn and lift out the regulator. Wrong actions give feedback without damage or resetting progress. The close-up includes the notebook procedure and two-stage hints; Escape returns to the room, retaining progress. Keyboard focus and touch controls are supported.
+
+Oren remembers Mara's first voiced concern and echoes it after the Gallery fight; Mara also records a reflection in his notebook. A brief quiet moment follows the fight. At the kiln gate, a one-time reminder offers an optional goodbye. Either Nell or Tobi can initiate the family's shared farewell, giving bread and scarf only once.
+
+In the Ashways, the valve still distracts the sweeper. When Mara steps out, Corvin tries to salvage a pressure cell from its pipe. The cell bursts, injuring Corvin and sending the sweeper berserk. Mara returns for a normal boss fight: Pressure winding (4 block), Brush surge (12 damage), Motor stall (recovery). The boss has 52 HP. Existing health and MP carry into the first attempt; defeat retries restore both but do not refund tonics. Victory pays 8 salvage once, and a brief aftermath precedes departure. The actual Ashways backdrop and Ash Sweeper artwork are used.
+
+Version 10 saves preserve puzzle and finale checkpoints. Older saves retain established morning and shutdown progress; saves already in Chapter 2 are not returned to the new boss.
 
 ## Chapter 2 (debug only)
 

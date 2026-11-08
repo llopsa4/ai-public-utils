@@ -76,6 +76,7 @@ export function openTargetRing(scene: RoomScene, target: Target, at: Point): voi
 export function openExtraRing(scene: RoomScene, m: Member, at: Point): void {
   const crowd = scene.crowd;
   if (!crowd) return;
+  if(m.def.shop&&scene.session.state.flags.ashwaysStarted){void runScript(scene,[{type:'say',actor:m.def.id,text:'line.corvinSurvives'}]);return;}
   sound.blip();
   scene.session.ui.openRadial(at, crowd.name(m), ['look', 'talk'], verb => {
     if (verb === 'look') { void runScript(scene, [{ type: 'say', actor: 'hero', text: crowd.lookLine(m) }]); return; }

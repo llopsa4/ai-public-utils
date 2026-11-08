@@ -1,6 +1,6 @@
 import { gzipSync } from 'node:zlib';
 import { expect, test } from '@playwright/test';
-import { act, finishDialogue, fixtureReady, holdCrowd, idle, open, state, startNewGame } from './helpers';
+import { act, fightStep, finishDialogue, fixtureReady, holdCrowd, idle, open, state, startNewGame } from './helpers';
 
 test('Tobi is a child by the hearth, talks about his drawings and gives his scarf farewell once', { tag: ["@focused","@story","@art","@saves"] }, async ({ page }, info) => {
   const errors: string[] = [];
@@ -35,7 +35,7 @@ test('Tobi is a child by the hearth, talks about his drawings and gives his scar
   await idle(page);
   await page.evaluate(() => (window as any).adventure.session.scene.runScript([{ type: 'setFlag', flag: 'kilnCold', value: true }]));
   await act(page, 'talk', 'tobi');
-  expect((await state(page)).inventory).not.toContain('scarf');
+  expect((await state(page)).inventory).toContain('scarf');
   await act(page, 'talk', 'nell');
   expect(await page.evaluate(() => (window as any).adventure.session.ui.history.some((line: any) => line.actor === 'tobi' && line.text.includes('Take my scarf')))).toBe(true);
   await act(page, 'talk', 'nell');
@@ -51,6 +51,7 @@ test('Tobi is a child by the hearth, talks about his drawings and gives his scar
 });
 
 test('the whole scene plays in the browser, from the title screen into chapter 2 (debug)', { tag: ["@journey","@story","@runtime"] }, async ({ page }) => {
+  test.setTimeout(300_000);
   const errors: string[] = [];
   const casualRequests: string[] = [];
   page.on('request', r => { if (/\/mara-casual-[\w-]{8}\.png/.test(r.url())) casualRequests.push(r.url()); });
@@ -104,8 +105,6 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   expect((await state(page)).room).toBe('maraRoom');
   expect((await state(page)).flags.wrenAsked, 'Wren calls from the hoist').toBe(true);
   await act(page, 'look', 'tally');
-  await act(page, 'go', 'roomCurtain');
-  expect((await state(page)).room, 'he helps Wren first').toBe('maraRoom');
   await act(page, 'use', 'pulleys');
   await act(page, 'go', 'roomCurtain');
   expect((await state(page)).room).toBe('firingHouse');
@@ -145,21 +144,19 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   await act(page, 'go', 'kilnGate');
   expect((await state(page)).room).toBe('ashways');
   await act(page, 'use', 'valve', 'gauntlet');
-  await page.evaluate(() => {
-    const { session, interact } = (window as any).adventure;
-    void session.scene.runScript(interact(session.state, 'go', 'passage'));
-  });
+  await page.evaluate(()=>{const a=(window as any).adventure;void a.session.scene.runScript(a.interact(a.session.state,'go','passage'));});
   // With ?debug (as these tests run) chapter 1's end leads into chapter 2, with Mara's things carried
   // over; without it the end card shows (tests/e2e/debug-chapter2.spec.ts checks both).
   // Chapter 2 opens with its title and lines over black (skipped here).
   await expect.poll(async () => {
+    if(await page.locator('#kc-root .combat-screen').isVisible())await fightStep(page);
     await page.evaluate(() => {
       const intro = document.getElementById('intro')!;
       if (!intro.hidden) document.getElementById('intro-skip')!.click();
       else (window as any).adventure.session.ui.skip();
     });
     return page.evaluate(() => (window as any).adventure.session.state.chapter);
-  }, { timeout: 60_000, intervals: [200] }).toBe('ch2');
+  }, { timeout: 90_000, intervals: [200] }).toBe('ch2');
   await idle(page);
   const next = await state(page);
   expect(next.room).toBe('tunnelMouth');

@@ -46,7 +46,7 @@ test('shutdown waits for the guided visit; repeating preparation preserves the c
   assert.equal(s.kit.owned.filter(id => id === 'layered-armor').length, 1);
   const repeated = interactStory(s, 'talk', 'oren');
   assert.equal(repeated.commands.some(c => c.type === 'awaitGear'), false);
-  const release = interactStory(s, 'use', 'regulator', 'gauntlet', { fixtures: { fight: () => 'won' } });
+  const release = interactStory(s, 'use', 'regulator', 'gauntlet', { fixtures: { fight: () => 'won', puzzle:()=> 'completed' } });
   assert.equal(s.flags.kilnCold, true);
   assert.equal(s.flags.fought, true);
   assert.equal(s.flags.gearChecked, true);

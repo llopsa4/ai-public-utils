@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { act, fightStep, fixtureReady, idle, open, startNewGame } from './helpers';
+import { act, fightStep, fixtureReady, idle, open, solveRegulator, startNewGame } from './helpers';
 
 /** A game in the regulator gallery, ready for the release (everything before it done). */
 async function readyToRelease(page: Page, errors: string[]): Promise<void> {
@@ -24,6 +24,7 @@ async function readyToRelease(page: Page, errors: string[]): Promise<void> {
 async function releaseIntoFight(page: Page): Promise<void> {
   await page.evaluate(() => { const { session, interact } = (window as any).adventure; void session.scene.runScript(interact(session.state, 'use', 'regulator', 'gauntlet')); });
   await expect.poll(async () => {
+    if(await page.locator('#regulator-puzzle').isVisible())await solveRegulator(page);
     await page.evaluate(() => (window as any).adventure.session.ui.skip());
     return page.locator('#kc-root .combat-screen').isVisible();
   }, { timeout: 120_000, intervals: [300] }).toBe(true);

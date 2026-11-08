@@ -5,10 +5,13 @@ import { conditionsHold } from '../../src/engine/geometry';
 import { applyCommand } from '../../src/engine/state';
 import { onEnter } from '../../src/engine/story';
 import type { Command, GameState, Verb } from '../../src/engine/types';
+import { REGULATOR_FLAGS } from '../../src/chapters/ch1/progression';
 
 type FightCommand = Extract<Command, { type: 'fight' | 'creatureFight' }>;
 type ScreenCommand = Extract<Command, { type: 'gear' | 'awaitGear' | 'shop' }>;
 export interface StoryFixtures {
+  puzzle?: (state: GameState) => 'completed' | 'interrupted';
+  farewell?: (state: GameState) => 'leave' | 'return';
   fight?: (state: GameState, command: FightCommand) => 'won' | 'interrupted';
   screen?: (state: GameState, command: ScreenCommand) => 'closed' | 'interrupted';
 }
@@ -72,6 +75,25 @@ export function runStoryCommands(state: GameState, commands: readonly Command[],
       if (--budget < 0) throw new Error('Story driver command loop');
       result.commands.push(command);
       switch (command.type) {
+        case 'regulatorPuzzle': {
+          if(!options.fixtures?.puzzle)throw new Error('Puzzle fixture required for regulatorPuzzle');
+          const outcome=options.fixtures.puzzle(state);
+          if(outcome==='interrupted'){result.stopped='interrupted';return;}
+          if(outcome!=='completed')throw new Error('Invalid puzzle fixture outcome');
+          for(const flag of REGULATOR_FLAGS)state.flags[flag]=true;
+          break;
+        }
+        case 'farewellReminder': {
+          if(state.flags.gotScarf||state.flags.farewellReminded)break;
+          if(!options.fixtures?.farewell)throw new Error('Farewell fixture required for farewellReminder');
+          state.flags.farewellReminded=true;
+          const outcome=options.fixtures.farewell(state);
+          if(outcome==='return'){state.hero.x=195;state.hero.y=300;result.stopped='interrupted';return;}
+          if(outcome!=='leave')throw new Error('Invalid farewell fixture outcome');
+          break;
+        }
+        case 'quietBeat': result.spoken.push('line.quietKiln');break;
+        case 'ashwaysBeat': case 'checkpoint': break;
         case 'dialogue': {
           const tree = chapterFor(state).dialogues[command.id];
           if (!tree) throw new Error(`Unknown dialogue ${state.chapter}/${command.id}`);

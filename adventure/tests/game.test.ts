@@ -11,7 +11,7 @@ import { enterStoryRoom, interactStory, runStoryCommands, type StoryOptions } fr
 
 // Story reachability assumes successful fights and closed menus. Combat and browser suites test those adapters.
 const STORY_FIXTURES: StoryOptions = {
-  fixtures: { fight: () => 'won', screen: () => 'closed' },
+  fixtures: { fight: () => 'won', screen: () => 'closed', puzzle:()=> 'completed', farewell:()=> 'leave' },
 };
 
 /** Plays commands against the state the way the scene does, returning the spoken lines and commands. */
@@ -98,18 +98,15 @@ test('the whole scene plays from Mara\'s tent to the ashways', () => {
   assert.equal(s.room, 'tent');
   // The morning, in everyday clothes: nothing needs the gauntlet yet.
   assert.deepEqual(run(s, 'take', 'rack').spoken, ['line.rackPacked'], 'the gauntlet is still packed in the crate');
-  assert.deepEqual(run(s, 'open', 'chest').spoken, ['line.chestNotYet'], 'not dressing for work yet');
   const arrival = run(s, 'go', 'tentFlap');
   assert.equal(s.room, 'maraRoom', 'he steps out in everyday clothes');
   assert.deepEqual(arrival.spoken, ['line.wrenCalls', 'line.maraToWren'], 'Wren calls from the hoist');
   assert.deepEqual(enter(s), [], 'only the first time');
-  assert.deepEqual(run(s, 'go', 'roomCurtain').spoken, ['line.curtainWren'], 'he said he would help Wren first');
-  assert.equal(s.room, 'maraRoom');
   assert.deepEqual(run(s, 'use', 'pulleys').spoken, ['line.maraTug', 'line.wrenThanks']);
   assert.ok(s.flags.hoistHelped);
   run(s, 'go', 'roomCurtain');
   assert.equal(s.room, 'firingHouse');
-  assert.deepEqual(run(s, 'take', 'breadBasket').spoken, ['line.breadBasketAsk'], 'he asks Nell first');
+  assert.deepEqual(run(s, 'take', 'breadBasket').spoken, ['line.loafTake'], 'bread can be collected before asking');
   talk(s, 'nell');
   assert.ok(s.flags.breadAsked);
   run(s, 'take', 'breadBasket');

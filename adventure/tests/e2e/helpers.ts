@@ -71,6 +71,9 @@ export async function act(page: Page, verb: string, target: string, item?: strin
       return game.scene.isActive('room') && !session.scene.isBusy() && document.getElementById('choices')!.hidden;
     });
     if (done) return;
+    if(await page.locator('#regulator-puzzle').isVisible()){
+      await solveRegulator(page);continue;
+    }
     // A fight: follow the guide, else play the first playable card, else end the turn; then Continue.
     // Oren's forced Gear button, the gear screen and the shop wait for the player.
     if (await page.locator('#force-veil').count()) { await page.locator('#gear-btn').click(); continue; }
@@ -95,6 +98,15 @@ export async function act(page: Page, verb: string, target: string, item?: strin
 
 export async function state(page: Page): Promise<{ room: string; flags: Record<string, boolean>; inventory: string[] }> {
   return page.evaluate(() => structuredClone((window as any).adventure.session.state));
+}
+
+/** Perform the actual controls in journey tests; focused tests exercise partial/invalid sequences. */
+export async function solveRegulator(page: Page): Promise<void> {
+  for(const action of ['left','right','vent','ring']){
+    const part=page.locator(`#regulator-puzzle [data-action="${action}"]`);
+    if(await part.getAttribute('aria-pressed')!=='true')await part.click();
+  }
+  await page.locator('#regulator-release').click();
 }
 
 /** Title screen → New game → skips the opening, and waits for the first room. */

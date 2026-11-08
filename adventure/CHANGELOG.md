@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Chapter 1 has a forgiving mechanical regulator close-up, flexible morning errands, first-concern callbacks and a shared optional farewell through Nell or Tobi.
+- Corvin's Ashways salvage accident now triggers a 52-HP sweeper boss, followed by a brief aftermath. Defeat retries restore health and MP, resources carry onward, and rewards/checkpoints are single-use.
+- Version 10 saves retain puzzle and finale progress and migrate earlier chapter progress without rewinding it.
+- Wooden room names are knife-scratched; metal room names use rough chalk strokes.
+
 - Combat adapts to short and narrow landscape screens: smaller health panels and cards, a horizontal hand, and on-screen controls with 44-pixel action targets. Resizing keeps the active battle.
 
 - Combat now uses the approved lower fighting stance, raised guard during a 200 ms approach, and a punch held for 500 ms before returning. Damage appears at contact; input and victory wait for the full attack to finish.

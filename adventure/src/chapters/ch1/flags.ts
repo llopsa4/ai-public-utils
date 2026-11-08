@@ -1,5 +1,9 @@
 /** Chapter 1's story flags and items. Saves accept only these (per chapter). */
 export const FLAGS = [
+  'boltLeft', 'boltRight', 'pressureBled', 'ringReleased',
+  'concern-repair', 'concern-mother', 'concern-leaving', 'concern-whyMe',
+  'galleryQuiet', 'farewellReminded', 'ashwaysStarted', 'ashwaysExploded', 'ashwaysWon',
+  'ashwaysAftermath', 'ashwaysRetry', 'ashwaysRewarded', 'ashwaysConfronted',
   // Mara's room
   'hasGauntlet', 'hasNotebook', 'dressed',
   // the morning's errands in everyday clothes: Wren's hoist, Nell's bread

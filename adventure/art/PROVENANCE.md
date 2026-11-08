@@ -1,5 +1,8 @@
 # Art provenance
 
+The Chapter 1 regulator close-up housing, locking ring, outer bolt and bleed-valve wheel, Ashways pressure-cell states and disabled sweeper were generated with built-in OpenAI ImageGen on 2026-11-06. The Gallery painting supplied the ceramic/brass material reference; the existing Ash Sweeper image supplied machine identity. Each was imported through the palette/grid pipeline, preserving separate interactive layers. Briefs record the prompts and `art/inbox/chapter1-improvements/` holds the raw generation record and local review artifacts. The gauge needle and mechanical feedback are runtime graphics.
+
+
 The medium-armour gear picture (`kc/equipment/layered-armor.webp`) and blank wood, iron and shield sign faces (`props/sign-*.png`) were generated with OpenAI ImageGen on 2026-11-06. Medium Mara's standing art, the existing light-armour icon and the approved tent image provided equipment and style references. The existing importer normalizes the deliveries; sign lettering and suspension remain runtime graphics. Prompts and in-game review screenshots are recorded under `art/inbox/art-completion-review/`.
 
 The base gear-screen pictures for Heavy Gauntlet, Balanced Gauntlet and Insulated Kit (`kc/equipment/heavy-gauntlet.webp`, `balanced-gauntlet.webp`, `insulated-kit.webp`) reuse the corresponding already-published originals in `FFCardGame/assets/equipment/runtime/`. `art/kc.mjs` resizes them to 320×320 and re-encodes them as WebP, while preserving all imported final equipment art, including medium armour. These are placeholders for dedicated Cinderfold illustrations; no new image generation was used to fill these missing base pictures.

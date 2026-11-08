@@ -8,6 +8,7 @@ import { conditionsHold } from '../src/engine/geometry';
 import { TABLES } from '../src/engine/i18n';
 import { newGame } from '../src/engine/state';
 import { VERBS, type Command, type GameState } from '../src/engine/types';
+import { CONCERN_FLAGS } from '../src/chapters/ch1/progression';
 import { enterStoryRoom, runStoryCommands, visitStoryDialogueNode, type StoryOptions } from './support/story-driver';
 
 /**
@@ -24,7 +25,7 @@ interface Outcome { state: GameState; ended: boolean; lines: string[]; stopped?:
 // This graph proves story reachability assuming won fights and closed blocking screens.
 // Combat mechanics, losses, rendering and screen dismissal are tested in their own suites.
 const STORY_FIXTURES: StoryOptions = {
-  fixtures: { fight: () => 'won', screen: () => 'closed' },
+  fixtures: { fight: () => 'won', screen: () => 'closed', puzzle:()=> 'completed', farewell:()=> 'leave' },
 };
 
 /** Plays commands on a copy of the state; conversations branch into one outcome per path. */
@@ -80,7 +81,7 @@ function clicks(c: Chapter, s: GameState): { verb: (typeof VERBS)[number]; targe
 }
 
 function explore(c: Chapter) {
-  const optional = new Set([...c.secretFlags, ...c.metFlags]);
+  const optional = new Set([...c.secretFlags, ...c.metFlags, ...CONCERN_FLAGS]);
   const fresh = newGame(c.id);
   const entered = enterStoryRoom(fresh, STORY_FIXTURES);
   const initial: Outcome[] = [{ state: fresh, ended: entered.ended, lines: entered.spoken }];

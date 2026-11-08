@@ -9,6 +9,10 @@ import type { BattleState } from '@kc/game/types';
 import type * as Original from '@kc/presentation';
 
 export function battleVisual(state: BattleState): ReturnType<typeof Original.battleVisual> {
+  if (state.config.encounter.id === 'berserk-ash-sweeper') return {
+    machine: 'sweeper', sprite: openingArt['ash-sweeper'], arena: openingArt.ashways,
+    ink: { height: .74707, gap: .139648 }, training: false, reinforced: false,
+  };
   const creature = CREATURE_ART[state.config.encounter.id];
   if (creature) {
     // Chapter 2's tunnel creatures (art/ch2.mjs trims each to 60% of its picture's height, 4% above

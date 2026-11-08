@@ -18,12 +18,13 @@ export function openNotebook(ui: Ui): void {
   secrets.textContent = t('ui.secrets', { found: String(found), total: String(chapter().secretFlags.length) });
   // What Mara noted about each one found (`note.<flag>`); the rest stay unmentioned.
   const notes = $('secret-list');
-  notes.replaceChildren(...chapter().secretFlags.filter(f => ui.host.getState().flags[f]).map(f => {
+  const noteKeys=[...chapter().secretFlags.filter(f => ui.host.getState().flags[f]).map(f=>`note.${f}`),...(chapter().reflections?.(ui.host.getState())??[])];
+  notes.replaceChildren(...noteKeys.map(key => {
     const li = document.createElement('li');
-    li.textContent = t(`note.${f}`);
+    li.textContent = t(key);
     return li;
   }));
-  notes.hidden = found === 0;
+  notes.hidden = noteKeys.length === 0;
   const met = chapter().metFlags.filter(f => ui.host.getState().flags[f]).length;
   $('met').hidden = met === 0;
   $('met').textContent = t('ui.met', { found: String(met), total: String(chapter().metFlags.length) });

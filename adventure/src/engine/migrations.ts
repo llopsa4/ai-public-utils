@@ -6,11 +6,19 @@ import { newBag, newKit } from './kit';
  * Add a step here whenever the format changes, and a fixture save of the old version in
  * tests/fixtures/saves/.
  */
-export const SAVE_VERSION = 9;
+export const SAVE_VERSION = 10;
 
 type Raw = Record<string, unknown>;
 
 const STEPS: Record<number, (s: Raw) => void> = {
+  9: s => {
+    const f = (s.flags as Record<string, Raw> | undefined)?.ch1;
+    if (!f) return;
+    if (f.hasGauntlet || f.alarm || f.kilnCold) { f.hoistHelped = true; f.nellFed = true; }
+    if (f.kilnCold) for (const key of ['boltLeft', 'boltRight', 'pressureBled', 'ringReleased']) f[key] = true;
+    if (f.gearChecked) f.galleryQuiet = true;
+    if (s.chapter !== 'ch1') for (const key of ['ashwaysStarted', 'ashwaysExploded', 'ashwaysWon', 'ashwaysAftermath', 'ashwaysRewarded']) f[key] = true;
+  },
   // 3 → 4: look counters (repeated looks cycle through their lines).
   3: s => { s.looks ??= {}; },
   // 4 → 5: Mara's kit (health, gear) and bag (salvage, materials, tonics).

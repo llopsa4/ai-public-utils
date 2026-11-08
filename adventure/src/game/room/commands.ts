@@ -42,6 +42,24 @@ const storyChange = async (scene: RoomScene, command: Of<'setFlag' | 'addItem' |
 };
 
 export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
+  checkpoint: async scene=>{
+    scene.syncHero();
+    // Cinematics may walk beyond the camera; saves must keep a valid room position.
+    Object.assign(scene.session.state.hero,scene.area.clamp(scene.session.state.hero));
+    scene.session.saveNow();return true;
+  },
+  regulatorPuzzle: async scene=>{const {openRegulator}=await import('../../ui/regulator');return openRegulator(scene);},
+  ashwaysBeat: async (scene,command)=>{await scene.ashways?.beat(command.phase);return true;},
+  quietBeat: async scene=>{sound.hush(true);sound.music('cold');await say(scene,'hero','line.quietKiln');return true;},
+  farewellReminder: async scene=>{
+    const f=scene.session.state.flags;
+    if(f.gotScarf||f.farewellReminded)return true;
+    f.farewellReminded=true;scene.session.saveNow();
+    await say(scene,'hero','line.farewellReminder');
+    const answer=await scene.session.ui.choose([t('choice.farewellBack'),t('choice.farewellLeave')]);
+    if(answer===0){await scene.hero.walk(scene.area.findPath(scene.hero.position,{x:195,y:300}));scene.syncHero();return false;}
+    return true;
+  },
   walk: async (scene: RoomScene, command: Of<'walk'>): Promise<boolean> => {
     if (scene.hero.pose !== 'stand') scene.hero.setPose('stand');
     scene.crowd?.heroHeading(command.to);

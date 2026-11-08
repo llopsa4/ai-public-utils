@@ -1,5 +1,6 @@
 import type { StoryRules } from '../../engine/story';
 import { afterRelease, wrenCalls } from './interactions';
+import { ashwaysFinale } from './progression';
 
 const fought = [{ flag: 'fought' }];
 
@@ -22,9 +23,10 @@ export const STORY: StoryRules = {
   // A reload between the release and Oren's send-off picks the sequence up again (the fight
   // restarts from its beginning).
   onEnter: [
+    { room: 'ashways', if: [{ flag: 'ashwaysStarted' },{notFlag:'ashwaysAftermath'}], run: s => ashwaysFinale(s.flags) },
     { room: 'gallery', if: [{ flag: 'kilnCold' }], run: s => afterRelease(s.flags) },
     // The first time Mara steps into the hall, Wren calls from the hoist.
-    { room: 'maraRoom', if: [{ notFlag: 'wrenAsked' }, { notFlag: 'hasGauntlet' }], run: () => wrenCalls() },
+    { room: 'maraRoom', if: [{ notFlag: 'wrenAsked' }, { notFlag: 'hoistHelped' }, { notFlag: 'alarm' }], run: () => wrenCalls() },
   ],
   flagSounds: { latchFixed: 'latch', valveVented: 'hiss' },
   // A new adventure starts with Mara in everyday clothes. He dresses for work at the crate in his tent

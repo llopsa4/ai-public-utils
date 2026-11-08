@@ -1,6 +1,6 @@
 // Cinderfold: the bridge to Kiln Courier's React screens. Loaded with import() when the first fight
 // starts, so React, the battle code, its art and fonts never weigh on the title screen.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import '@fontsource/cinzel/latin-400.css';
 import '@fontsource/cinzel/latin-600.css';
@@ -21,6 +21,8 @@ import type { BattleState, CharacterProfile, EncounterDefinition } from '@kc/gam
 import type { BattleController } from '@kc/hooks/useBattle';
 
 export interface BattleOptions {
+  onDefeat?: () => void;
+  retryProfile?: () => CharacterProfile;
   /** Mara as the rules see him (from the saved kit). */
   profile: CharacterProfile;
   /** The first fight is Kiln Courier's guided lesson; Skip turns it into a free fight. */
@@ -69,6 +71,7 @@ function Battle(o: BattleOptions) {
   const [lesson, setLesson] = useState<TutorialState | null>(() => (o.guided ? newTutorial(o.encounter) : null));
   const [start, setStart] = useState<BattleState>(() => (o.practice ? practiceBattle(createBattle(o.profile, o.encounter)) : createBattle(o.profile, o.encounter)));
   const [free, setFree] = useState<BattleState>(start);
+  useEffect(()=>{if(free.outcome==='defeat')o.onDefeat?.();},[free.outcome]);
   const [, redraw] = useState(0);
 
   if (lesson) {
@@ -107,7 +110,7 @@ function Battle(o: BattleOptions) {
     endTurn: revision => { const next = endTurn(free, revision); if (next === free) return null; setFree(next); return next; },
     // A fall is not a game over: the fight starts again as it began.
     retry: () => {
-      const fresh = o.pickEncounter ? createBattle(o.profile, o.pickEncounter()) : structuredClone(start);
+      const fresh = o.retryProfile ? createBattle(o.retryProfile(),o.encounter) : o.pickEncounter ? createBattle(o.profile, o.pickEncounter()) : structuredClone(start);
       setFree(fresh);
       return fresh;
     },

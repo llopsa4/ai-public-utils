@@ -9,6 +9,7 @@ import regulator_gallery from '../../art/src/kc/regulator-gallery.webp';
 import cardAtlas from '../../art/src/kc/card-atlas.webp';
 import tempering_house from '../../art/src/kc/tempering-house.webp';
 import ash_sweeper from '../../art/src/kc/ash-sweeper.webp';
+import ashways from '../../art/src/rooms/ashways.webp';
 
 // The page icon is the adventure's own (the battle screen gets `brand`, which leaves it out).
 export const assets = { hero, guardian: pressure_scavenger, mark: '', cardAtlas } satisfies Record<keyof typeof Original.assets, string>;
@@ -16,6 +17,6 @@ export const assets = { hero, guardian: pressure_scavenger, mark: '', cardAtlas 
 // Only keys Kiln Courier has (the compiler checks); pictures this chapter never shows are left out.
 export const openingArt: Record<string, string> = {
   'pressure-scavenger': pressure_scavenger, 'ash-sweeper': ash_sweeper, 'cable-warden': pressure_scavenger,
-  'regulator-gallery': regulator_gallery, 'ashways': regulator_gallery, 'tempering-house': tempering_house, 'hanging-crossing': regulator_gallery,
+  'regulator-gallery': regulator_gallery, 'ashways': ashways, 'tempering-house': tempering_house, 'hanging-crossing': regulator_gallery,
   'iven': hero,
 } satisfies Partial<Record<keyof typeof Original.openingArt, string>>;

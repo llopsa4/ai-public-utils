@@ -1,4 +1,5 @@
 import { ROOMS } from './rooms';
+import { ashwaysFinale, concernKey, morningAlarm } from './progression';
 import { SECRET_FLAGS } from './flags';
 import { applyRules, cycleLook, type Rule } from '../../engine/rules';
 import type { ActorId, Command, Condition, GameState, NpcId, Point, Speaker, Verb } from '../../engine/types';
@@ -14,6 +15,7 @@ export function afterRelease(f: Record<string, boolean>): Command[] {
       say('line.orenAfterFight', 'oren'), say('line.maraAfterFight'));
   }
   if (!f.gearChecked) {
+    if (!f.galleryQuiet) out.push({ type: 'quietBeat' }, flag('galleryQuiet'), say(concernKey(f, 'line.orenConcern'), 'oren'), { type: 'checkpoint' });
     out.push(say('line.orenGear', 'oren'), { type: 'giveSpares' }, flag('gearChecked'), say('line.orenShelter', 'oren'));
   }
   return out;
@@ -46,7 +48,6 @@ const TALK_SPOTS: Partial<Record<NpcId, { at: Point; face: 'left' | 'right'; npc
 export const ITEM_VERBS: Verb[] = ['look', 'use'];
 
 /** Off-screen voice position for Oren calling down the stairs. */
-const STAIRS_VOICE = { x: 538, y: 100 };
 
 /** The sweeper by the valve, and the same creature once it has moved to the pipe. */
 const SWEEPER = ['sweeper', 'sweeperAtPipe'];
@@ -96,9 +97,9 @@ const addItem = (item: string): Command => ({ type: 'addItem', item });
 const shake = (ms: number): Command => ({ type: 'shake', ms });
 
 /** Nell's loaf goes into the soup (used on the pot or handed to her): her thanks, and her latch. */
-const loafInSoup: Command[] = [
+const loafInSoup = (state:GameState): Command[] => [
   { type: 'removeItem', item: 'loaf' }, say('line.maraLoaf'), { type: 'face', actor: 'nell', face: 'left' },
-  say('line.nellThanksBread', 'nell'), say('line.nellLatch', 'nell'), flag('nellFed'),
+  say('line.nellThanksBread', 'nell'), say(state.flags.latchFixed?'line.nellLatchAlready':'line.nellLatch', 'nell'), flag('nellFed'),
 ];
 
 /** An inventory item: its look line; anything else done to it can't be. */
@@ -164,7 +165,6 @@ export const RULES: readonly Rule[] = [
   // The crate under the bench: dressing for work once Nell's latch has asked for the gauntlet.
   ...either('chest', 'look', 'dressed', 'line.chestLookDressed', 'line.chestLook'),
   { target: 'chest', verb: ['open', 'use'], when: F('dressed'), walk: true, do: [say('line.chestEmpty')] },
-  { target: 'chest', verb: ['open', 'use'], when: NOT('nellFed'), walk: true, do: [say('line.chestNotYet')] },
   { target: 'chest', verb: ['open', 'use'], walk: true, do: [
     pose('hero', 'crouch'), wait(300), say('line.gearUp'),
     { type: 'fade', to: 'black', ms: 500, sound: 'dress' }, flag('dressed'), pose('hero', 'stand'), wait(500),
@@ -193,7 +193,7 @@ export const RULES: readonly Rule[] = [
   ...either('niche', 'use', 'kilnCold', 'line.nicheUseCold', 'line.nicheUse'),
   { target: 'pulleys', verb: 'look', do: [say('line.pulleysLook')] },
   // Wren's errand: one good tug puts the rope back on its hook.
-  { target: 'pulleys', verb: 'use', when: [{ flag: 'wrenAsked' }, { notFlag: 'hoistHelped' }], walk: true, do: [
+  { target: 'pulleys', verb: 'use', when: [{ notFlag: 'hoistHelped' }], walk: true, do: [
     say('line.maraTug'), flag('hoistHelped'), say('line.wrenThanks', 'extra-hoist', HOIST_VOICE),
   ] },
   { target: 'pulleys', verb: 'use', walk: true, do: [say('line.pulleysUse')] },
@@ -203,29 +203,27 @@ export const RULES: readonly Rule[] = [
   { target: 'cart', verb: 'use', do: [say('line.cartUse')] },
   { target: 'roomCurtain', verb: 'look', do: [say('line.roomCurtainLook')] },
   // He said he'd help Wren first (games saved before the morning errands are already past this).
-  { target: 'roomCurtain', verb: 'go', when: [{ flag: 'wrenAsked' }, { notFlag: 'hoistHelped' }, { notFlag: 'hasGauntlet' }], do: [say('line.curtainWren')] },
   { target: 'roomCurtain', verb: 'go', walk: true, do: [go('firingHouse', 'fromMaraRoom')] },
 
   // -------------------------------------------------------- firing house ---
   { target: 'pantryDoor', item: 'gauntlet', when: F('latchFixed'), do: [say('line.latchAlreadyFixed')] },
-  { target: 'pantryDoor', item: 'gauntlet', walk: true, do: [
+  { target: 'pantryDoor', item: 'gauntlet', walk: true, do: ({state})=>[
     pose('hero', 'crouch'), wait(350), flag('latchFixed'), wait(250), pose('hero', 'stand'),
     { type: 'face', actor: 'nell', face: 'right' },
-    say('line.nellFixed', 'nell'), say('line.maraLatch'), say('line.nellSoup', 'nell'), say('line.maraNightShift'),
-    wait(400), shake(700), say('line.kilnGroans'),
-    say('line.orenCalls', 'oren', STAIRS_VOICE), flag('alarm'), say('line.maraAlarm'),
+    say('line.nellFixed', 'nell'), say('line.maraLatch'),
+    say(state.flags.nellFed?'line.nellSoup':'line.nellLatchBeforeFood', 'nell'),
+    say(state.flags.nellFed?'line.maraNightShift':'line.maraLatchBeforeFood'),
   ] },
   ...either('pantryDoor', 'look', 'latchFixed', 'line.latchLookFixed', 'line.latchLook'),
   { target: 'pantryDoor', verb: ['open', 'use'], when: F('latchFixed'), do: [say('line.latchOpenFixed')] },
   // Once Nell has mentioned it: bare hands won't shift it, so he goes to dress for work.
   { target: 'pantryDoor', verb: ['open', 'use'], when: [{ flag: 'nellFed' }, { notFlag: 'dressed' }, { notFlag: 'hasGauntlet' }], walk: true, do: [say('line.latchGetDressed')] },
   ...either('pantryDoor', ['open', 'use'], 'hasGauntlet', 'line.latchStuckHint', 'line.latchStuck', true),
-  { target: 'soup', item: 'loaf', walk: true, do: loafInSoup },
-  { target: 'nell', item: 'loaf', do: [...toNpc('nell'), ...loafInSoup] },
+  { target: 'soup', item: 'loaf', walk: true, do: ({state})=>loafInSoup(state) },
+  { target: 'nell', item: 'loaf', do: ({state})=>[...toNpc('nell'), ...loafInSoup(state)] },
   { target: 'breadBasket', verb: 'look', do: [say('line.breadBasketLook')] },
   { target: 'breadBasket', verb: 'take', when: [{ has: 'loaf' }], do: [say('line.breadBasketHave')] },
   { target: 'breadBasket', verb: 'take', when: F('nellFed'), do: [say('line.breadBasketDone')] },
-  { target: 'breadBasket', verb: 'take', when: NOT('breadAsked'), do: [say('line.breadBasketAsk')] },
   { target: 'breadBasket', verb: 'take', walk: true, do: [addItem('loaf'), say('line.loafTake')] },
   { target: 'soup', item: 'bread', do: [say('line.soupBread')] },
   ...either('soup', 'look', 'kilnCold', 'line.soupLookCold', 'line.soupLook'),
@@ -240,7 +238,9 @@ export const RULES: readonly Rule[] = [
   { target: 'stairs', verb: 'go', walk: true, do: [go('gallery', 'fromFiringHouse')] },
   { target: 'kilnGate', verb: 'look', when: [{ has: 'regulator' }], do: [say('line.gateLookReady')] },
   { target: 'kilnGate', verb: 'look', do: [say('line.gateLook')] },
-  { target: 'kilnGate', verb: ['open', 'go'], when: [{ has: 'regulator' }], walk: true, do: [say('line.gateLeave'), go('ashways', 'fromFiringHouse')] },
+  { target: 'kilnGate', verb: ['open', 'go'], when: [{ has: 'regulator' }], walk: true, do: [
+    { type: 'farewellReminder' }, say('line.gateLeave'), go('ashways', 'fromFiringHouse')
+  ] },
   { target: 'kilnGate', verb: ['open', 'go'], walk: true, do: [say('line.gateNotYet')] },
   { target: 'toRoom', verb: 'look', do: [say('line.toRoomLook')] },
   { target: 'toRoom', verb: 'go', walk: true, do: [go('maraRoom', 'fromFiringHouse')] },
@@ -254,7 +254,7 @@ export const RULES: readonly Rule[] = [
   { target: 'regulator', item: 'gauntlet', when: NOT('procedureKnown'), do: [say('line.needProcedure')] },
   { target: 'regulator', item: 'gauntlet', when: NOT('protectionPrepared'), do: [say('line.needProtection')] },
   { target: 'regulator', item: 'gauntlet', walk: true, do: ({ state }) => [
-    pose('hero', 'crouch'), wait(500), say('line.releaseOne'), wait(300),
+    { type: 'regulatorPuzzle' }, pose('hero', 'crouch'), wait(300),
     shake(900), flag('kilnCold'), addItem('regulator'), wait(400), pose('hero', 'stand'),
     say('line.releaseDone'), say('line.maraPulse'), ...afterRelease(state.flags),
   ] },
@@ -290,7 +290,10 @@ export const RULES: readonly Rule[] = [
   { target: 'valve', verb: 'close', do: [say('line.valveClose')] },
   ...either('passage', 'look', 'valveVented', 'line.passageLookClear', 'line.passageLook'),
   { target: 'passage', verb: 'go', when: NOT('valveVented'), do: [say('line.passageBlocked')] },
-  { target: 'passage', verb: 'go', walk: true, do: [say('line.farewell'), wait(300), { type: 'end' }] },
+  { target: 'passage', verb: 'go', walk: true, do: ({ state }) => ashwaysFinale(state.flags) },
+  { target: 'pressureCell', verb: 'look', do: ({ state }) => [say(state.flags.ashwaysExploded ? 'line.cellRuptured' : 'line.cellLook')] },
+  { target: 'pressureCell', do: ({state})=>[say(state.flags.ashwaysExploded?'line.cellLeaveBroken':'line.cellLeave')] },
+  { target:'sweeperDisabled',verb:'look',do:[say('line.sweeperDisabled')] },
   { target: 'pipes', verb: 'look', do: [say('line.pipesLook')] },
   { target: 'pipes', verb: 'use', do: [say('line.pipesUse')] },
   { target: 'wayBack', verb: 'look', do: [say('line.wayBackLook')] },
@@ -305,7 +308,7 @@ export const RULES: readonly Rule[] = [
   ...npcRules('oren'),
   ...npcRules('nell'),
   ...either('tobi', 'look', 'kilnCold', 'line.tobiLookCold', 'line.tobiLook'),
-  { target: 'tobi', verb: 'talk', do: [...toNpc('tobi'), { type: 'dialogue', id: 'tobi' }] },
+  { target: 'tobi', verb: 'talk', do: ({ state }) => [...toNpc('tobi'), { type: 'dialogue', id: state.flags.kilnCold && !state.flags.gotScarf ? 'farewell' : 'tobi' }] },
 ];
 
 /**
@@ -315,6 +318,8 @@ export const RULES: readonly Rule[] = [
  */
 export function interact(state: GameState, verb: Verb, target: string, item?: string): Command[] {
   const commands = applyRules(RULES, ROOMS, state, verb, target, item) ?? fallback(verb, item);
+  const completed = commands.find(c => c.type === 'setFlag' && ['hoistHelped', 'nellFed', 'latchFixed'].includes(c.flag));
+  if (completed?.type === 'setFlag') commands.push(...morningAlarm(state, completed.flag));
   return verb === 'look' && !item ? cycleLook(state, target, commands, VARIED_LOOKS) : commands;
 }
 
@@ -322,6 +327,11 @@ const NPC_KEYS = ['Item', 'Look', 'LookCold', 'LookDown', 'Crouch', 'Lie', 'Stan
 
 /** Every string key that interactions can emit (used by the translation completeness test). */
 export const INTERACTION_KEYS = [
+  'line.cellLeaveBroken','line.sweeperDisabled',
+  'line.nellLatchAlready','line.nellLatchBeforeFood','line.maraLatchBeforeFood',
+  'line.cellEcho','line.corvinSalvage', 'line.maraCorvin', 'line.corvinHelp', 'line.maraCorvinCheck', 'line.corvinAdmits',
+  'line.maraNetwork', 'line.corvinSurvives', 'line.farewellUrgent', 'line.cellLook', 'line.cellRuptured', 'line.cellLeave',
+  ...['repair', 'mother', 'leaving', 'whyMe', 'neutral'].map(c => `line.orenConcern.${c}`),
   'line.tobiLook', 'line.tobiLookCold',
   'line.useFails', 'line.nothingSpecial', 'line.cannot', 'line.alreadyStanding', 'line.askStand',
   'line.needProtection',

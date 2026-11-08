@@ -56,5 +56,12 @@
  "equipment-layered-armor": "final",
  "sign-iron": "final",
  "sign-shield": "final",
- "sign-wood": "final"
+ "sign-wood": "final",
+ "ashways-pressure-cell-ruptured": "final",
+ "ashways-pressure-cell": "final",
+ "ashways-sweeper-disabled": "final",
+ "regulator-closeup-bolt": "final",
+ "regulator-closeup-housing": "final",
+ "regulator-closeup-ring": "final",
+ "regulator-closeup-valve": "final"
 }

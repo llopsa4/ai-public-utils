@@ -6,8 +6,8 @@ import { ART_SCALE } from '../ui/ui';
 import woodFace from '../../art/src/props/sign-wood.png';
 import ironFace from '../../art/src/props/sign-iron.png';
 import shieldFace from '../../art/src/props/sign-shield.png';
+import { carvedWidth, carveLine } from './carvedLetters';
 
-const FONT = '"Zilla Slab", Georgia, serif';
 type SignDef = NonNullable<RoomDef['sign']>;
 export const SIGN_IMAGES = { 'sign-art-wood': woodFace, 'sign-art-iron': ironFace, 'sign-art-shield': shieldFace };
 
@@ -39,19 +39,12 @@ function paint(canvas: Phaser.Textures.CanvasTexture, def: SignDef, text: string
   // Fit the separate words before reducing the font on the Gallery's shield.
   const words = text.split(' ');
   const lines = shield && words.length > 1 ? [words.slice(0, Math.ceil(words.length / 2)).join(' '), words.slice(Math.ceil(words.length / 2)).join(' ')] : [text];
-  let size = (shield ? 0.24 : 0.56) * h;
   const room = w * (shield ? 0.74 : 0.76);
-  const font = () => { ctx.font = '700 ' + size + 'px ' + FONT; };
-  font();
-  while (Math.max(...lines.map(line => ctx.measureText(line).width)) > room && size > 10) { size--; font(); }
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const unit = Math.min((shield ? 0.24 : 0.52) * h / 7, room / Math.max(...lines.map(carvedWidth)));
   const cy = top + h * (shield ? 0.43 : 0.52);
   lines.forEach((line, i) => {
-    const y = cy + (i - (lines.length - 1) / 2) * size * 1.12;
-    ctx.fillStyle = iron ? '#100e0c' : '#e9b76c';
-    ctx.fillText(line, W / 2 + 1, y + 1);
-    ctx.fillStyle = iron ? '#f5ddb5' : '#2a160c';
-    ctx.fillText(line, W / 2, y);
+    const y = cy + (i - (lines.length - 1) / 2) * unit * 9;
+    carveLine(ctx, line, W / 2, y, unit, iron);
   });
   canvas.refresh();
 }
@@ -67,9 +60,6 @@ export class RoomSign {
     if (!scene.textures.exists(key)) {
       const canvas = scene.textures.createCanvas(key, Math.ceil((def.w + 4) * ART_SCALE), Math.ceil((def.drop + def.h + 2) * ART_SCALE))!;
       paint(canvas, def, text, face);
-      if (document.fonts && !document.fonts.check('700 20px ' + FONT)) {
-        void document.fonts.load('700 20px ' + FONT).then(() => { if (scene.textures.exists(key)) paint(canvas, def, text, face); });
-      }
     }
     this.image = scene.add.image(def.x, def.y, key).setOrigin(0.5, 0).setScale(1 / ART_SCALE).setDepth(def.depth ?? -8000);
     this.image.setData({ material, label: text });

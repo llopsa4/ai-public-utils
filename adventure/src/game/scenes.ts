@@ -9,6 +9,7 @@ import { Atmosphere, createAtmosphereTextures } from './atmosphere';
 import { Props, createParticleTextures } from './props';
 import { Crowd } from './Crowd';
 import { RoomSign, SIGN_IMAGES } from './sign';
+import { AshwaysSet, queueAshways } from './ashways';
 import type { Mood } from '../engine/crowd';
 import { chapter } from '../chapters';
 import { crowdMoodFor, heroSheetFor, hushed, onEnter, type StoryContext } from '../engine/story';
@@ -118,6 +119,7 @@ export class RoomScene extends Phaser.Scene {
   crowd: Crowd | null = null;
   /** The room's hanging name board, if it has one. */
   sign: RoomSign | null = null;
+  ashways: AshwaysSet | null = null;
   /** Last cold state seen, to animate the shutdown when it happens in this room (null until created). */
   knownCold: boolean | null = null;
   /** Cold factor last applied to the background tint (Low quality). */
@@ -146,6 +148,7 @@ export class RoomScene extends Phaser.Scene {
   /** Loads this room's background and foreground pieces if they are not cached yet. */
   preload(): void {
     const room = chapter().rooms[this.session.state.room];
+    if(room.id==='ashways'){queueAshways(this);queueSheet(this,'extra-merchant');}
     const state = this.session.state;
     const sheet = heroSheetFor(chapter().story, { state, room, cold: false });
     if (sheet !== 'mara') queueSheet(this, sheet);
@@ -223,6 +226,7 @@ export class RoomScene extends Phaser.Scene {
       bubble: (text, at) => this.session.ui.chatter(text, at),
     }, this.crowdMood()) : null;
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => { this.crowd?.destroy(); this.crowd = null; });
+    this.ashways=this.room.id==='ashways'?new AshwaysSet(this):null;
     // After the actors exist: refreshObjects also updates the hero's sheet, the cold tint and ambience.
     this.refreshObjects();
     updateLighting(this);
@@ -485,6 +489,7 @@ export class RoomScene extends Phaser.Scene {
     this.updateKeyboardMovement(delta);
     this.props.update(time);
     this.crowd?.update();
+    this.ashways?.update(time);
     drawHover(this, time);
     tintScenery(this);
     if (this.atmosphere.enabled) this.atmosphere.updateReflections(this.allActors().map(a => a.sprite), time);

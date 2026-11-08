@@ -148,8 +148,9 @@ test('without debug mode, chapter 1 ends with the end card and chapter 2 is neve
   await page.locator('.verb[data-verb="go"]').click();
   await expect.poll(async () => {
     if (await page.locator('#dialogue').isVisible().catch(() => false)) await page.locator('#dialogue').click().catch(() => {});
+    if(await page.locator('#kc-root .combat-screen').isVisible())await fightStep(page);
     return page.locator('#end').isVisible();
-  }, { timeout: 30_000, intervals: [300] }).toBe(true);
+  }, { timeout: 90_000, intervals: [150] }).toBe(true);
   await expect(page.locator('#end')).toContainText('To be continued');
   await expect(page.locator('#end-title')).toHaveText('A delivery he does not want');
   expect(requests.filter(u => /\/build\/ch2-[\w-]+\.js/.test(u) || /\/build\/(road|workshop|backroom|bryn)-/.test(u))).toEqual([]);

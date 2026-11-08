@@ -9,6 +9,7 @@ import { OBJECTIVE_KEYS, objectives } from './objectives';
 import { ROOMS, START_ENTRY, START_ROOM } from './rooms';
 import { STORY } from './story';
 import strings from './strings.en.json';
+import { concernKey } from './progression';
 
 /** Chapter 1, Kiln Courier: from Mara's tent to the ashways. */
 export const CH1: Chapter = {
@@ -34,6 +35,7 @@ export const CH1: Chapter = {
   lessonPrompts: LESSON_PROMPTS,
   spares: OREN_SPARES,
   objectives,
+  reflections:s=>s.flags.decided?[concernKey(s.flags,'note.concern')]:[],
   objectiveKeys: OBJECTIVE_KEYS,
   lineMoods: LINE_MOODS,
   strings,

@@ -4,6 +4,16 @@ import type { Reward } from '../../content/kit';
 /** Chapter 1's fight, what it pays, and the gear Oren hands over afterwards. */
 
 export const ENCOUNTERS: Record<string, EncounterDefinition> = {
+  ashwaysBoss: {
+    id: 'berserk-ash-sweeper', title: 'ASHWAYS', energyPerTurn: 3, handSize: 5,
+    enemy: { name: 'Berserk Ash Sweeper', label: 'Sweeper', maxHp: 52, intents: [
+      { name: 'Pressure winding', damage: 0, block: 4 },
+      { name: 'Brush surge', damage: 12, block: 0 },
+      { name: 'Motor stall', damage: 0, block: 0 },
+    ] },
+    introduction: 'Pressure gathers behind the damaged brushes. Watch for the heavy sweep; strike when its motor stalls.',
+    victoryText: 'The brushes slow. The damaged motor clicks once and goes safely still.',
+  },
   // A pressure scavenger squeezed out of the gallery's maintenance hatch, drawn by the regulator's
   // pulse. The first fight is Kiln Courier's guided lesson taught against it (same cards and steps).
   hatchScavenger: {
@@ -23,6 +33,7 @@ export const LESSON_PROMPTS: Readonly<Record<number, string>> = {
 };
 
 export const REWARDS: Record<string, Reward> = {
+  ashwaysBoss: { salvage: 8, materials: {} },
   hatchScavenger: { salvage: 12, materials: { 'pressure-coil': 1 } },
 };
 
