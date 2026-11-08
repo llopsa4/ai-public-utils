@@ -18,11 +18,11 @@
 - Hollis kneels at the fire, making short trips to empty ash into the cart. Dace stays by the broken jars, sorting pottery for reuse. Both keep their reactions when the kiln goes cold.
 - The debug panel now toggles with comma (`,`); `?debug=panel` still opens it directly on the published site.
 - Mara's morning starts in everyday clothes: help Wren with the hoist and bring Nell a loaf for her soup, then dress at the tent's clothes crate and power the gauntlet. Dressing fades through black with cloth and buckle sounds. Existing saves with the gauntlet skip these errands.
-- Hover highlight: a soft gold outline on what the pointer is over (a ring at the feet for people).
-- Background people glance at Mara as she walks by, step round Nell and Oren, and the kids sometimes tag along a few steps ("Where are you going? Can I come?"). Ansel announces his soup breaks on the way out.
+- Hover highlight: a soft gold outline around the silhouette of the thing under the pointer, cut from the room painting or made from the object's own picture; people and characters get a ring at their feet.
+- Background people glance at Mara as he walks by, step round Nell and Oren, and the kids sometimes tag along a few steps ("Where are you going? Can I come?"). Ansel announces his soup breaks on the way out.
 - Nell and Oren look about when Mara isn't near: at the kids, the room, the door.
 - The kiln hall and firing house sound inhabited: a murmur of voices and the odd distant clank, quieter once the kiln is cold.
-- An optional count in the notebook of the people of Cinderfold Mara has talked to (six), with a note each time she meets someone new.
+- An optional count in the notebook of the people of Cinderfold Mara has talked to (six), with a note each time he meets someone new.
 - Settings show a sample line at the chosen text size and contrast.
 
 ## 0.5.0: a lived-in Cinderfold, still scene 1
@@ -35,7 +35,7 @@
 **Background people**
 - Four workers in the kiln hall: Hollis the stoker, Wren the hoist hand, Dace the clay hauler and old Ansel the tally-keeper. Each walks a routine of stations with random waits and detours, and works there with a pose, a held thing (shovel, slate, sack) and a small effect: sparks at the kiln mouths, the pulley swinging, chalk taps, scraping. Dace and Ansel leave and come back now and then.
 - Two kids in the firing house, Pip and Bea (Bea carries a board as a toy shield): they play tag, chalk on the floor, peek into the soup and sit by the hearth. When the alarm goes up they run to Nell and stay by her; once the kiln is cold they huddle by the dead hearth.
-- They don't walk through each other or into Mara: whoever is in the way makes them pause and step round. They make way when Mara walks through, and step aside when she heads to where they work.
+- They don't walk through each other or into Mara: whoever is in the way makes them pause and step round. They make way when Mara walks through, and step aside when he heads to where they work.
 - Look at them or talk to them: they stop, turn to Mara and say one of a few lines, which change with the alarm and the cold. Nothing they say changes the story or the save.
 - They chat now and then in speech bubbles, which are hidden during conversations and kept out of the history.
 - When the kiln goes cold in front of them, the workers stop and stare at it, then change routine; Dace and Ansel leave for good.

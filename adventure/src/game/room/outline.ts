@@ -1,7 +1,7 @@
-// The hover highlight: a gold outline around the silhouette of whatever the pointer is over.
+// The hover highlight for things: a gold outline around the silhouette of what the pointer is over.
 // Things painted into the room use the outline cut from the painting (art/outlines.py, one sheet per
-// room); objects, swinging props and people get one made from their own picture, live, so it follows
-// them as they move, swing or animate.
+// room); objects and swinging props get one made from their own picture, live, so it follows them as
+// they move or swing. People get a ring at their feet instead (room/input.ts drawHover).
 import Phaser from 'phaser';
 import { ART_SCALE } from '../../ui/ui';
 import { OUTLINES } from '../assets';
@@ -60,8 +60,8 @@ type Shape = Phaser.GameObjects.Sprite | Phaser.GameObjects.Image;
 
 /** The pictures and painted outlines that make up a hover target's silhouette (empty: none known). */
 function partsOf(scene: RoomScene, target: Target): { shapes: Shape[]; painted: string | null } {
-  if (target.kind === 'actor') return { shapes: target.actor.id === 'hero' ? [] : [target.actor.sprite], painted: null };
-  if (target.kind === 'extra') return { shapes: [target.member.actor.sprite], painted: null };
+  // People (story characters and the crowd) get a ring at their feet instead (room/input.ts drawHover).
+  if (target.kind !== 'hotspot') return { shapes: [], painted: null };
   const h = target.hotspot, o = h.outline ?? {};
   const objects = o.objects ?? (scene.objects.has(h.id) ? [h.id] : []);
   const shapes: Shape[] = [

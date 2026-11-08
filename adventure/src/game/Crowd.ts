@@ -66,7 +66,7 @@ const HOLD: Record<Carry, { x: number; y: number; angle: number; origin: [number
 const BUBBLE_MS = 2600;
 const CHATTER_MIN = 8000;
 const CHATTER_MAX = 20000;
-/** How close Mara may stand before someone walking into her waits. */
+/** How close Mara may stand before someone walking into him waits. */
 const BLOCK_DISTANCE = 16;
 /** How far someone steps to the side to get round a person in the way. */
 const SIDESTEP = 24;
@@ -280,7 +280,7 @@ export class Crowd {
     m.schedule.change(routineFor(m.def, mood), mood === 'cold' && !!m.def.leavesWhenCold);
   }
 
-  /** Walks to a point, waiting for Mara if she stands in the way. False if interrupted. */
+  /** Walks to a point, waiting for Mara if he stands in the way. False if interrupted. */
   /**
    * Walks to a point. Someone in the way (Mara standing still, or another person) stops the walk;
    * the walker waits a moment, steps to the side away from them, and carries on. False if
@@ -418,7 +418,7 @@ export class Crowd {
   }
 
   // ------------------------------------------------------------ with Mara ---
-  /** Stops someone so Mara can talk to them; they turn to face her. */
+  /** Stops someone so Mara can talk to them; they turn to face him. */
   hold(m: Member): void {
     m.held = true;
     m.actor.stop();
@@ -431,7 +431,7 @@ export class Crowd {
     m.held = false;
   }
 
-  /** Where Mara stands to talk to someone: beside them, on her side. */
+  /** Where Mara stands to talk to someone: beside them, on his side. */
   talkSpot(m: Member): { at: Point; face: 'left' | 'right' } {
     const p = m.actor.position, hero = this.host.hero().position;
     const side = hero.x < p.x ? -1 : 1;
@@ -495,7 +495,7 @@ export class Crowd {
         && Math.hypot(hero.sprite.x - a.sprite.x, (hero.sprite.y - a.sprite.y) * 1.6) < MAKE_WAY) m.vacate = true;
       m.last = { x: a.sprite.x, y: a.sprite.y };
       if (m.held) a.lookAt(hero.sprite.x);
-      // People standing about glance at Mara as she walks by.
+      // People standing about glance at Mara as he walks by.
       else if (hero.isWalking && !a.isWalking && !m.task && Math.hypot(hero.sprite.x - a.sprite.x, hero.sprite.y - a.sprite.y) < 80) a.lookAt(hero.sprite.x);
       this.placeProp(m);
     }
