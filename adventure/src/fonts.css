@@ -1,0 +1,16 @@
+/* The title screen's fonts (SIL OFL, from @fontsource), WOFF2 only: every browser the game supports
+   reads it, and skipping the older WOFF copies keeps the download small. */
+@font-face {
+  font-family: "UnifrakturMaguntia";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("@fontsource/unifrakturmaguntia/files/unifrakturmaguntia-latin-400-normal.woff2") format("woff2");
+}
+@font-face {
+  font-family: "IM Fell English";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("@fontsource/im-fell-english/files/im-fell-english-latin-400-normal.woff2") format("woff2");
+}

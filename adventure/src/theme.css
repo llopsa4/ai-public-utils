@@ -277,10 +277,19 @@ dialog[open] {
 }
 
 /* --------------------------------------------------------------- title --- */
+/* The title as if lettered by a priest in an old church book (blackletter), the subtitle and menu
+   in an old printed face (IM Fell English); both SIL OFL, bundled from @fontsource. */
 #title h1 {
-  font-weight: 700;
-  font-size: 4em;
-  letter-spacing: 0.04em;
+  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-weight: 400;
+  font-size: 4.4em;
+  letter-spacing: 0.01em;
+}
+
+#title .title-sub {
+  font-family: "IM Fell English", Georgia, serif;
+  font-style: normal;
+  font-size: 1.3em;
 }
 
 #title .menu-list {
@@ -288,7 +297,8 @@ dialog[open] {
 }
 
 #title .menu-list button {
-  font-size: 1.35em;
+  font-family: "IM Fell English", Georgia, serif;
+  font-size: 1.45em;
   text-shadow: 0 2px 6px rgb(0 0 0 / 0.9);
 }
 

@@ -33,7 +33,7 @@ Text is **English only** for now. Languages can be added back by dropping a `str
 
 ### Saves
 
-Progress is **autosaved in this browser** (localStorage, one slot) after each walk, action and room change; the title screen offers **Continue**. Use **Menu → Export save** to download a `.json` copy and **Import save** to load one. Autosaves and imports go through the same validation: a damaged or foreign save is rejected and never loaded. Saves from older versions of the game are upgraded step by step (`src/engine/migrations.ts`, with a fixture save per old version in `tests/fixtures/saves/`). A save records the chapter, the chapters reached and each chapter's flags separately; Mara's kit, bag and the items a chapter marks as kept carry into the next chapter.
+Progress is **autosaved in this browser** (localStorage, one slot) after each walk, action and room change; the title screen offers **Continue**. Use **Save game** (in the Menu, or on the title screen) to download a `.json` copy and **Load game** on the title screen to load one. Autosaves and imports go through the same validation: a damaged or foreign save is rejected and never loaded. Saves from older versions of the game are upgraded step by step (`src/engine/migrations.ts`, with a fixture save per old version in `tests/fixtures/saves/`). A save records the chapter, the chapters reached and each chapter's flags separately; Mara's kit, bag and the items a chapter marks as kept carry into the next chapter.
 
 ## Develop
 

@@ -2,12 +2,17 @@
 import { t } from '../engine/i18n';
 import { loadChapterOf } from '../chapters';
 import { MAX_SAVE_BYTES, parseSave, saveFileName, serializeSave } from '../engine/saveFile';
+import type { GameState } from '../engine/types';
 import { $, type Ui } from './ui';
 
-export function exportSave(ui: Ui): void {
-  if (ui.host.isBusy()) return;
+/**
+ * Save game: downloads the game as a .json file. In play it is the game as it stands; on the title
+ * screen, the game saved in this browser (`state`).
+ */
+export function exportSave(ui: Ui, state?: GameState): void {
+  if (!state && ui.host.isBusy()) return;
   const now = new Date();
-  const blob = new Blob([serializeSave(ui.host.getState(), now)], { type: 'application/json' });
+  const blob = new Blob([serializeSave(state ?? ui.host.getState(), now)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;

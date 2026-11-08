@@ -139,6 +139,11 @@ export class Ui {
       void this.confirm(t('ui.confirmNewTitle')).then(yes => { if (yes) start(); });
     });
     $('title-import').addEventListener('click', () => this.fileInput.click());
+    // Save game on the title: the game saved in this browser, as a file.
+    $('title-save').addEventListener('click', () => {
+      const saved = readAutosave();
+      if (saved.kind === 'ok') exportSave(this, saved.state);
+    });
     $('title-settings').addEventListener('click', () => openSettings());
     $('hint-btn').addEventListener('click', () => nextHint(this));
     initNotebookTabs();
@@ -211,6 +216,7 @@ export class Ui {
     $('title').hidden = false;
     const cont = $<HTMLButtonElement>('title-continue');
     cont.hidden = !canContinue;
+    $('title-save').hidden = !canContinue;
     (canContinue ? cont : $<HTMLButtonElement>('title-new')).focus({ preventScroll: true });
     this.setHover('');
     hideLabels(this);

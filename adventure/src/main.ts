@@ -8,6 +8,8 @@ import { newGame } from './engine/state';
 import { BootScene, RoomScene, TitleScene } from './game/scenes';
 import { Session } from './game/session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from './ui/ui';
+// The title screen: blackletter for the game's name, an old printed face for its subtitle and menu.
+import './fonts.css';
 import '@fontsource/zilla-slab/latin-400.css';
 import '@fontsource/zilla-slab/latin-400-italic.css';
 import '@fontsource/zilla-slab/latin-600.css';
