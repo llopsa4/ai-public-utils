@@ -1,0 +1,45 @@
+{
+ "frames": [
+  {
+   "filename": "0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 44,
+    "h": 28
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 44,
+    "h": 28
+   },
+   "sourceSize": {
+    "w": 44,
+    "h": 28
+   },
+   "duration": 100
+  }
+ ],
+ "meta": {
+  "app": "adventure art/intro.mjs",
+  "version": "1",
+  "image": "window-plate.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 44,
+   "h": 28
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "idle",
+    "from": 0,
+    "to": 0,
+    "direction": "forward"
+   }
+  ]
+ }
+}

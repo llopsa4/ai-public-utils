@@ -59,10 +59,15 @@ export const ROOMS: Record<string, RoomDef> = {
     ambient: { particles: [{ kind: 'dust', x: 40, y: 60, w: 560, h: 200 }], glows: [{ x: 470, y: 212, r: 46, color: 0xffb860 }] },
     props: [{ kind: 'flame', x: 470, y: 210, size: 9, color: 0xffc070, depth: 9000 }],
     entries: { start: { x: 110, y: 304, face: 'right' }, fromGuardroom: { x: 330, y: 300, face: 'left' } },
-    objects: [],
+    // The tin plate stays wedged in the window bars once it has thrown the moonlight in.
+    objects: [
+      { id: 'floorPlate', sheet: 'floor-plate', x: 173, y: 312, depth: 50, visibleIf: [{ notFlag: 'tookPlate' }] },
+      { id: 'windowPlate', sheet: 'window-plate', x: 176, y: 114, depth: 50, visibleIf: [{ flag: 'cellLit' }] },
+    ],
     hotspots: cellHotspots,
     actors: [
-      { id: 'guard', x: 566, y: 300, visibleIf: [{ notFlag: 'guardGone' }] },
+      // Benn, asleep on his chair by the candle until "Sergeant Harrow" wakes him.
+      { id: 'guard', x: 566, y: 300, visibleIf: [{ notFlag: 'guardGone' }], task: { tag: 'sit', if: [{ notFlag: 'guardAwake' }] } },
     ],
   },
   guardroom: {

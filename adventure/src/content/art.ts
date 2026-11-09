@@ -10,6 +10,8 @@ export const PORTRAIT_MOODS: Record<string, Mood[]> = {
   oren: ['neutral', 'worried', 'angry'],
   nell: ['neutral'],
   tobi: ['neutral', 'worried'],
+  // Silas (his pack's portraits; his disguises have one mood).
+  silas: ['neutral', 'worried', 'angry'],
 };
 
 /** Room background texture keys → file names in art/src/rooms (the game loads the .webp copy). */

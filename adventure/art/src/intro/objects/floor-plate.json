@@ -1,0 +1,45 @@
+{
+ "frames": [
+  {
+   "filename": "0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 60,
+    "h": 24
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 60,
+    "h": 24
+   },
+   "sourceSize": {
+    "w": 60,
+    "h": 24
+   },
+   "duration": 100
+  }
+ ],
+ "meta": {
+  "app": "adventure art/intro.mjs",
+  "version": "1",
+  "image": "floor-plate.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 60,
+   "h": 24
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "idle",
+    "from": 0,
+    "to": 0,
+    "direction": "forward"
+   }
+  ]
+ }
+}

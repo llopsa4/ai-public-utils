@@ -216,6 +216,16 @@ dialog[open] {
   opacity: 0.6;
 }
 
+
+/* Panel headings in the title's blackletter (it is unreadable in capitals: no uppercase or tracking). */
+.plaque {
+  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
 /* -------------------------------------------------- menu lists (pause, title) --- */
 .menu-list {
   display: flex;
@@ -270,8 +280,9 @@ dialog[open] {
   transform: translateY(-50%) rotate(45deg) scale(1);
 }
 
-/* The title's flame occupies the old diamond's rotated bounding box. */
-#title .menu-list button::before {
+/* The title's flame occupies the old diamond's rotated bounding box (the pause menu has it too). */
+#title .menu-list button::before,
+#menu .menu-list button::before {
   left: 0.357em;
   width: 0.636em;
   height: 0.636em;
@@ -280,17 +291,20 @@ dialog[open] {
   transform: translateY(-50%) scale(0.4);
 }
 
-#title .menu-list button:hover::before, #title .menu-list button:focus-visible::before {
+#title .menu-list button:hover::before, #title .menu-list button:focus-visible::before,
+#menu .menu-list button:hover::before, #menu .menu-list button:focus-visible::before {
   transform: translateY(-50%) scale(1);
 }
 
-.reduce-motion #title .menu-list button::before {
+.reduce-motion #title .menu-list button::before,
+.reduce-motion #menu .menu-list button::before {
   background-image: url('../art/src/ui/menu-flame-still.png');
   transition: none;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  #title .menu-list button::before {
+  #title .menu-list button::before,
+  #menu .menu-list button::before {
     background-image: url('../art/src/ui/menu-flame-still.png');
     transition: none;
   }
@@ -325,7 +339,8 @@ dialog[open] {
   width: 16em;
 }
 
-#title .menu-list button {
+#title .menu-list button,
+#menu .menu-list button {
   font-family: "IM Fell English", Georgia, serif;
   font-size: 1.45em;
   text-shadow: 0 2px 6px rgb(0 0 0 / 0.9);
@@ -357,11 +372,13 @@ dialog[open] {
   transform: rotate(-0.6deg);
 }
 
+/* The notebook's title in the title screen's blackletter, inked on the page. */
 .paper h1 {
   margin: 0 0 0.6rem;
-  font-size: 1.5rem;
-  font-style: italic;
-  font-weight: 600;
+  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-size: 2.1rem;
+  font-weight: 400;
+  line-height: 1.1;
   color: #4a2a14;
 }
 

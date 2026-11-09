@@ -54,7 +54,7 @@ test("debug mode: Silas's intro, from the dark cell through two disguises to Sig
   await expect(choices.locator('.choice-read')).toHaveCount(1);
   await expect(page.locator('#suspicion')).toBeVisible();
   await shot(page, '3-harrow-choices');
-  for (const text of [/Asleep\. Again\./, /warm yourself/, /lift the key ring/]) {
+  for (const text of [/locked it behind me/, /up to the captain/, /warm yourself/, /lift the key ring/]) {
     for (let i = 0; i < 100 && !(await choices.isVisible()); i++) { await page.evaluate(() => (window as any).adventure.session.ui.skip()); await page.waitForTimeout(80); }
     await choices.getByRole('button', { name: text }).click();
   }

@@ -18,6 +18,22 @@ node art/rig.mjs mara-medium-gauntlet
 
 The usual final-art guard is still respected. These Mara entries are generated sheets backed by approved source artwork. Originals of the replaced runtime sheets and all production/review prompts remain in the local inbox handoff.
 
+## Silas
+
+Silas, the intro's hero, has a pack in the same format: `art/sources/characters/silas-layered/` (Codex's handoff in `art/inbox/silas-layered/`), one outfit, 220 art px tall. Its `rig.json` adds `overlays`: his disguises as layers on the same coordinates, one per pose (`mask-harrow-{stand,kneel,lie}.png`, `mask-clerk-hood-{stand,kneel,lie}.png`, and `mask-clerk-ledger.png` on the near forearm). `RIGS` builds three sheets from it into `art/src/intro/`:
+
+- `silas`, standing still in the three-quarter `idle.png`;
+- `silas-harrow` (`overlay: 'harrow'`, no blink: the mask covers his eyes), standing in the walk master's pose because the masks are drawn to it;
+- `silas-clerk` (`overlay: 'clerk'`, `forearmRaise`: the near forearm held up so the ledger rests on his chest).
+
+Each has its portrait strip (`portraitId`, `moods`). `hooded-idle.png` (a cape costume) is a standing drawing only, not rigged.
+
+```powershell
+node art/rig.mjs silas
+node art/rig.mjs silas-harrow
+node art/rig.mjs silas-clerk
+```
+
 ## Pack contract
 
 `rig.json` version 1 supplies the canvas, height, baseline, layer stacking order, near/far shoulders, elbows, hips, knees and ankles. Eyes include centres, regions, skin samples and grid-aware eyelid dimensions; face data includes mouth/brow regions and the portrait crop. Ember regions identify glass only, including its locations in the complete kneeling/lying drawings.

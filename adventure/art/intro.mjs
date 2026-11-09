@@ -5,7 +5,7 @@
 // tin plate throws the moonlight across it.
 //
 //   node art/intro.mjs   (part of npm run art; then npm run webp)
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
@@ -19,7 +19,8 @@ const W = 1280, H = 720;
 async function save(name, image) {
   const file = `intro/rooms/${name}.png`;
   if (isFinal(file)) { console.log(`  ${file}: final art, kept.`); return; }
-  await image.png({ palette: true, colours: 96, dither: 0.6, effort: 8 }).toFile(join(out, `${name}.png`));
+  // Encoded in memory, then written: sharp can fail to reopen a PNG it wrote earlier in place on Windows.
+  writeFileSync(join(out, `${name}.png`), await image.png({ palette: true, colours: 96, dither: 0.6, effort: 8 }).toBuffer());
 }
 
 let seed = 31;
@@ -68,7 +69,6 @@ const render = body => sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg
   // The cot (straw and a ragged blanket), the tin plate with its crust, the bucket.
   s += rect(68, 500, 240, 40, '#5a4630') + rect(76, 474, 224, 32, '#8a7448') + poly([[90, 470], [290, 474], [280, 520], [96, 520]], '#4a4e5e');
   s += rect(80, 540, 14, 40, '#3a2a1a') + rect(282, 540, 14, 40, '#3a2a1a');
-  s += ellipse(346, 612, 28, 10, '#a8acb8') + ellipse(342, 608, 12, 5, '#7a6040');
   s += poly([[600, 534], [656, 534], [650, 596], [606, 596]], '#4a3e36') + ellipse(628, 534, 28, 7, '#2a3040');
   // The bars and their door.
   s += rect(712, 160, 16, 520, '#2a2a30');
@@ -80,9 +80,11 @@ const render = body => sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg
   s += rect(934, 432, 12, 28, '#e8dcc0') + ellipse(940, 424, 5, 10, '#ffd27a') + rect(1000, 444, 18, 18, '#6a5a4a');
   s += rect(1080, 272, 76, 96, '#d8cca8') + line(1092, 292, 1144, 292, '#5a4a3a', 3) + line(1092, 308, 1140, 308, '#5a4a3a', 3);
   s += ellipse(1118, 340, 14, 16, '#a89070') + line(1106, 350, 1130, 350, '#3a2a1a', 4);
-  // The stairs up (far right), and the guard's chair.
+  // The stairs up (far right), and the guard's chair (he sits facing the cell, its back to the right).
   for (let n = 0; n < 7; n++) s += rect(1180 + n * 4, 500 - n * 52, 100, 18, '#2a2630');
-  s += rect(1100, 470, 60, 12, '#4a3020') + rect(1150, 400, 10, 82, '#4a3020');
+  s += rect(1084, 562, 96, 10, '#6a4428') + rect(1084, 572, 96, 4, '#3a2414');
+  s += rect(1088, 576, 8, 26, '#3a2414') + rect(1168, 576, 8, 26, '#3a2414');
+  s += rect(1170, 440, 10, 124, '#5a3a22') + rect(1166, 440, 18, 8, '#6a4428') + rect(1170, 486, 10, 6, '#3a2414');
   await save('cell', render(s));
 }
 
@@ -142,4 +144,18 @@ for (const [name, body] of Object.entries(ITEMS)) {
   if (isFinal(file)) continue;
   await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">${body}</svg>`)).png({ palette: true, colours: 32 }).toFile(join(itemsDir, `${name}.png`));
 }
-console.log('Intro rooms and items written to art/src/intro.');
+
+// ----------------------------------------------------------------- objects ---
+// The tin plate wedged in the window bars, tilted to throw the moonlight (shown once the cell is lit).
+const objDir = join(here, 'src', 'intro', 'objects');
+mkdirSync(objDir, { recursive: true });
+async function objectSheet(name, w, h, body) {
+  if (isFinal(`intro/objects/${name}.png`)) return;
+  await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">${body}</svg>`)).png({ palette: true, colours: 32 }).toFile(join(objDir, `${name}.png`));
+  const frame = { filename: '0', frame: { x: 0, y: 0, w, h }, rotated: false, trimmed: false, spriteSourceSize: { x: 0, y: 0, w, h }, sourceSize: { w, h }, duration: 100 };
+  writeFileSync(join(objDir, `${name}.json`), JSON.stringify({ frames: [frame], meta: { app: 'adventure art/intro.mjs', version: '1', image: `${name}.png`, format: 'RGBA8888', size: { w, h }, scale: '1', frameTags: [{ name: 'idle', from: 0, to: 0, direction: 'forward' }] } }, null, 1) + '\n');
+}
+await objectSheet('window-plate', 44, 28, `<g transform="rotate(-24 22 16)">${ellipse(22, 16, 19, 8, '#8a8e9a')}${ellipse(22, 15, 13, 5, '#c8ccd8')}${ellipse(28, 13, 5, 2, '#f4f8ff')}</g>`);
+// The plate on the floor by the cot, with its crust (until Silas takes it).
+await objectSheet('floor-plate', 60, 24, ellipse(30, 13, 28, 10, '#a8acb8') + ellipse(26, 9, 12, 5, '#7a6040'));
+console.log('Intro rooms, items and objects written to art/src/intro.');

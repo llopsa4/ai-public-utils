@@ -366,7 +366,9 @@ function rigOf(cfg, open) {
     };
   };
   const squashLegs = s => Object.fromEntries(['near', 'far'].flatMap(side => [[`${side}Thigh`, scaleAbout(1, s, cfg.hips[side])], [`${side}Shin`, scaleAbout(1, s, cfg.hips[side])]]));
-  return { k, hipC, walkPose, squashLegs };
+  // Sitting on a chair: thighs swung forward to level, shins hanging straight down from the knees.
+  const sitLegs = () => ({ ...leg('near', -82, 82), ...leg('far', -76, 76) });
+  return { k, hipC, walkPose, squashLegs, sitLegs };
 }
 
 /**
@@ -617,7 +619,7 @@ async function buildCharacter(id) {
   const raw = cfg.variant ? variantImage(loadSource(cfg), cfg, cfg.variant) : loadSource(cfg);
   const open = cfg.unpowered ? dimGlow(raw, cfg.unpowered) : raw;
   const closed = withClosedEyes(open, cfg.eyes);
-  const { k, hipC, walkPose, squashLegs } = rigOf(cfg, open);
+  const { k, hipC, walkPose, squashLegs, sitLegs } = rigOf(cfg, open);
   const crouchPose = { ...squashLegs(cfg.crouchSquash ?? 0.6), upper: rotateAbout(9, hipC) };
   const fidgetPose = cfg.fidgetPart
     ? { fidget: rotateAbout(cfg.fidgetPart.angle, cfg.fidgetPart.pivot) }
@@ -636,15 +638,22 @@ async function buildCharacter(id) {
   // every new character), else made from the standing drawing (legs squashed; the figure turned over).
   // Looked for beside the character's source drawing (art/sources/characters/<id>/), so they are used
   // as soon as they are imported.
-  const pose = name => { const p = cfg.source.startsWith('sources/') ? join(here, dirname(cfg.source), name) : null; return p && existsSync(p) ? p : null; };
+  // A recoloured stand-in (cfg.variant) borrows only the base's standing drawing: its other poses are
+  // made from that, or they would show the base character's own colours.
+  const pose = name => { const p = cfg.source.startsWith('sources/') && !cfg.variant ? join(here, dirname(cfg.source), name) : null; return p && existsSync(p) ? p : null; };
   const still = path => { const r = renderStill(load(path), k); frames.push(placeInFrame(r.pose, r.centerX)); };
   const kneel = pose('kneel.png'), lie = pose('lie.png');
   if (kneel) still(kneel); else add(open, crouchPose); // 23 crouch
   if (lie) still(lie); else add(closed, deadPose);     // 24 dead / lying (eyes closed)
   add(open, fidgetPose);            // 25 fidget (idle gesture)
+  // 26 sit, for a character who sits on a chair (cfg.sits): drawn sit.png, else the thighs level and
+  // the shins down (the feet stay on the floor) and, asleep, slumped forward with the eyes shut.
+  const sit = cfg.sits ? pose('sit.png') : null;
+  if (sit) still(sit); else if (cfg.sits) add(closed, { ...sitLegs(), upper: rotateAbout(cfg.sits === 'asleep' ? 9 : -2, hipC) });
+  const tags = cfg.sits ? [...TAGS, ['sit', 26, 26]] : TAGS;
 
   // Palette from all frames, then hard alpha and a 1px dark outline for readability on busy art.
-  writeSheet(id, frames, TAGS, n => (n >= 5 && n <= 22 ? 110 : 1000), 112, dir);
+  writeSheet(id, frames, tags, n => (n >= 5 && n <= 22 ? 110 : 1000), 112, dir);
 
   // Dialogue portraits: area-averaged head-and-shoulders crops, 256x256 each, in a strip of frames
   // per mood (neutral, worried, angry), each with the mouth closed then open.

@@ -502,6 +502,18 @@ export class RoomScene extends Phaser.Scene {
       }
       this.objectShadows.get(def.id)?.setVisible(sprite.visible).setPosition(sprite.x, sprite.y - 1);
     }
+    // People: their held task (asleep on a chair), and leaving once they no longer belong here.
+    for (const def of this.room.actors) {
+      const actor = this.actors.get(def.id);
+      if (!actor?.sprite.active) continue;
+      if (!conditionsHold(state, def.visibleIf)) {
+        this.actors.delete(def.id);
+        this.tweens.add({ targets: actor.sprite, alpha: 0, duration: 700, onComplete: () => actor.sprite.destroy() });
+        continue;
+      }
+      const task = def.task && conditionsHold(state, def.task.if) ? def.task.tag : null;
+      if (actor.currentTask !== task) actor.perform(task);
+    }
     if (this.hero?.sprite.active) this.hero.setSheet(this.heroSheet());
     applyTint(this);
   }

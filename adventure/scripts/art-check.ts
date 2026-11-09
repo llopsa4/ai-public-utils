@@ -139,7 +139,9 @@ export function checkArt(): Problem[] {
 
   // Portraits: one 256x256 frame per mood and mouth state, side by side.
   for (const [who, moods] of Object.entries(PORTRAIT_MOODS)) {
-    const file = join(ART, 'portraits', `${who}.png`);
+    // Where the art list keeps it (later chapters' people have their chapter's folder).
+    const listed = MANIFEST.find(e => e.kind === 'portrait' && (e.file === `portraits/${who}.png` || e.file.endsWith(`/portraits/${who}.png`)));
+    const file = join(ART, listed?.file ?? `portraits/${who}.png`);
     const s = needPng(file);
     if (s && (s.w !== FRAME * moods.length * 2 || s.h !== FRAME)) {
       fail(file, `is ${s.w}x${s.h}, expected ${FRAME * moods.length * 2}x${FRAME} (${moods.join(', ')}; mouth closed then open)`);

@@ -16,7 +16,7 @@ setChapter('intro');
 const choosing = (prefer: string[]): StoryOptions => ({
   choose: next => prefer.find(p => next.includes(p)) ?? (() => { throw new Error(`no preferred choice among ${next.join(', ')}`); })(),
 });
-const good = choosing(['scolded', 'warm', 'palmed', 'tally', 'kitchen', 'clerk']);
+const good = choosing(['scolded', 'moved', 'warm', 'palmed', 'tally', 'kitchen', 'clerk']);
 
 function play(s: GameState, verb: Parameters<typeof interactStory>[1], target: string, item?: string, options: StoryOptions = good) {
   return interactStory(s, verb, target, item, options);
@@ -52,11 +52,26 @@ test('the intro comes first in the order of play, and opens only Mara 1 once don
   assert.deepEqual(openChapters(['intro', 'ch1']), ['ch2']);
 });
 
-test('the cell is dark until Silas lights it, and far things only show once lit', () => {
+test('nothing goes on until the plate lights the cell: "I can\'t see", with clues; the plate stays in the window', () => {
   const s = newGame('intro');
   assert.equal(s.room, 'cell');
   assert.ok(INTRO.rooms.cell.dark);
-  assert.deepEqual(play(s, 'use', 'table', 'hookLine').spoken, ['line.i.fishDark']);
+  // In the dark: the cot, the door and reading the guard only get clues, stronger each time.
+  assert.deepEqual(play(s, 'take', 'cot').spoken, ['line.i.dark.noPlate.1']);
+  assert.deepEqual(play(s, 'open', 'cellDoor').spoken, ['line.i.dark.noPlate.2']);
+  assert.deepEqual(play(s, 'read', 'guard').spoken, ['line.i.dark.noPlate.3']);
+  assert.ok(!s.flags.tookNail && !s.flags.readGuard);
+  // Shouting, looking about and the window still answer.
+  assert.ok(play(s, 'talk', 'guard').spoken.includes('line.i.shout1'));
+  assert.deepEqual(play(s, 'look', 'window').spoken, ['line.i.windowLook']);
+  play(s, 'take', 'plate');
+  // With the plate in hand, the clues point at the window.
+  assert.match(play(s, 'take', 'cot').spoken[0], /^line\.i\.dark\.plate\./);
+  play(s, 'use', 'window', 'plate');
+  assert.ok(s.flags.cellLit && !s.inventory.includes('plate'), 'lit, and the plate stays wedged in the bars');
+  assert.ok(INTRO.rooms.cell.objects.some(o => o.id === 'windowPlate'));
+  play(s, 'take', 'cot');
+  assert.ok(s.flags.tookNail, 'once lit, the cot gives up its nail');
 });
 
 test('the full escape: Harrow fools Benn, the clerk fools Kell, Sigrid waits, then the chapter map', () => {
@@ -114,7 +129,7 @@ test('three wrong notes and Benn sees through him; Silas starts the confrontatio
 test('without the keys, the bent nail picks the cell lock once Benn has gone', () => {
   const s = toHarrow();
   play(s, 'read', 'guard');
-  play(s, 'talk', 'guard', undefined, choosing(['scolded', 'warm', 'dismissed']));
+  play(s, 'talk', 'guard', undefined, choosing(['scolded', 'moved', 'warm', 'dismissed']));
   assert.ok(s.flags.guardGone && !s.inventory.includes('keys'));
   play(s, 'use', 'cellDoor', 'nail');
   assert.ok(s.flags.cellOpen);
@@ -143,4 +158,16 @@ test("every line the intro can say has a string", () => {
     for (const room of Object.values(INTRO.rooms)) for (const h of room.hotspots) walk(INTRO.interact(newGame('intro'), verb, h.id));
   }
   for (const k of said) assert.ok(keys.has(k), `missing string ${k}`);
+});
+
+test('Benn sleeps sitting on his chair until "Harrow" wakes him, and leaves once sent upstairs', async () => {
+  const { conditionsHold } = await import('../src/engine/geometry');
+  const benn = INTRO.rooms.cell.actors.find(a => a.id === 'guard')!;
+  const s = newGame('intro');
+  assert.equal(benn.task?.tag, 'sit');
+  assert.ok(conditionsHold(s, benn.task?.if) && conditionsHold(s, benn.visibleIf), 'asleep on his chair');
+  s.flags.guardAwake = true;
+  assert.ok(!conditionsHold(s, benn.task?.if), 'awake: he stands');
+  s.flags.guardGone = true;
+  assert.ok(!conditionsHold(s, benn.visibleIf), 'gone up the stairs');
 });

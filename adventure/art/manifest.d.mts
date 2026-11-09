@@ -2,7 +2,9 @@ export type ArtKind =
   | 'room' | 'foreground' | 'prop' | 'object' | 'character' | 'extra' | 'portrait' | 'item' | 'icon'
   | 'battle' | 'battle-portrait' | 'battle-backdrop' | 'card' | 'card-atlas' | 'equipment'
   /** The notebook's world map: one opaque painting without lettering. */
-  | 'map';
+  | 'map'
+  /** A piece of a main character's articulated source pack (art/LAYERED-RIG.md): Silas's. */
+  | 'pack';
 
 export type Anchor = 'top-left' | 'top-centre' | 'centre' | 'bottom-centre' | 'none';
 
@@ -49,6 +51,14 @@ export interface ArtEntry {
   light?: string;
   /** Part of the pilot pack. */
   pilot?: boolean;
+  /** A pack piece: the pack folder, the file name in it, and its phase (1 is approved before 2). */
+  pack?: string;
+  piece?: string;
+  phase?: 1 | 2;
+  /** Technical requirements written for this picture (replace the kind's own). */
+  spec?: string[];
+  /** A game sheet or portrait built from a character's pack: nothing to make for it alone. */
+  builtFrom?: string;
 }
 
 export declare const MANIFEST: ArtEntry[];

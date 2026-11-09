@@ -95,6 +95,9 @@ function functional(e: ArtEntry): string[] {
     case 'battle-backdrop': lines.push('The fight screen\'s backdrop: the fighters stand on its lower third, the cards cover the bottom.'); break;
     case 'prop': lines.push(e.id.startsWith('creature-') ? 'The creature\'s small sprite in the room: it comes out of the grate, the pipe or the pit, hops towards Mara, then the fight starts.' : 'A moving part the game draws over the room (it swings or turns it).'); break;
     case 'item': lines.push('A satchel item: shown in the inventory bar and on the cursor while it is being used.'); break;
+    case 'pack': lines.push(e.phase === 1
+      ? 'Phase 1 of Silas\'s articulated pack (art/LAYERED-RIG.md): the standing figure every other piece is cut from. The user approves it before anything of Phase 2 is made.'
+      : 'Phase 2 of Silas\'s articulated pack (art/LAYERED-RIG.md), made from the approved Phase 1 master: the game rigs his walk, kneeling and lying from these pieces (as for Mara), and draws his masks over him in every pose.'); break;
     case 'icon': lines.push('An action-ring icon (the verbs that appear around a clicked thing).'); break;
     case 'card': lines.push('A card picture on the fight screen, shown at about 120 px in the hand and larger when looked at.'); break;
     case 'map': lines.push("The world map in the notebook's Map tab, shown about 480 px wide. The game writes each known place's name next to its mark and pins where the character is, so the painting has no lettering at all."); break;
@@ -106,6 +109,7 @@ function functional(e: ArtEntry): string[] {
 
 // ------------------------------------------------------------------------ technical ---
 function technical(e: ArtEntry): string[] {
+  if (e.spec) return e.kind === 'pack' ? [`File: \`art/inbox/${e.pack}/${e.piece}.png\`.`, ...e.spec] : e.spec;
   switch (e.kind) {
     case 'room': return [`File: \`art/inbox/${e.id}.png\`, opaque, 16:9 (1280×720 or larger). No people. It is fitted to 1280×720, reduced to the 2-pixel grid and snapped to the palette.`, `Layout to follow: \`art/spec/${e.file.split('/').pop()!.replace('.png', '.jpg')}\`.`];
     case 'battle-backdrop': return [`File: \`art/inbox/${e.id}.png\`, opaque, 1280×720 or larger at 16:9; the floor clear in the lower third.`];
@@ -126,7 +130,12 @@ function technical(e: ArtEntry): string[] {
 }
 
 function brief(e: ArtEntry): string {
-  const lines: string[] = [`# ${e.id}`, '', `Status: **${e.status}** · ${e.kind} · chapter ${e.chapter} · in the game as \`art/src/${e.file}\``, ''];
+  const kept = e.kind === 'pack' ? `kept in \`art/sources/characters/${e.pack}/${e.piece}.png\`` : `in the game as \`art/src/${e.file}\``;
+  const lines: string[] = [`# ${e.id}`, '', `Status: **${e.status}** · ${e.kind} · chapter ${e.chapter} · ${kept}`, ''];
+  if (e.builtFrom) {
+    lines.push(`Built by the game from the \`${e.builtFrom}\` pack (see "Silas, a main character" in art/CODEX.md): nothing to make for this one alone.`, '');
+    return lines.join('\n');
+  }
   if (['portrait', 'card-atlas', 'foreground'].includes(e.kind) || e.id === 'room-tent') {
     lines.push(e.id === 'room-tent' ? 'The tent is the reference picture itself (`tent-reference.png`): nothing to make.' : technical(e)[0], '');
     return lines.join('\n');
@@ -138,11 +147,18 @@ function brief(e: ArtEntry): string {
   lines.push(...STYLE, room ? FLAT : 'Proportions: true to the cast (art/style/scale.png): Mara is 232 px, a doorway about 328, a table top 104, a chair seat 48.', room ? ROOM_LIGHT : EVEN);
   if (e.kind === 'battle-portrait' && e.id !== 'battle-hero') lines.push('Facing left (it stands on the right of the fight).');
   if (e.kind === 'character' || e.kind === 'extra') lines.push('Facing right in a slight three-quarter turn (the game mirrors it to face left).');
+  if (e.kind === 'pack') lines.push('Facing right (the game mirrors it to face left). Same look as Mara\'s pack: the same line, shading, pixel density and palette.');
   for (const t of technical(e)) lines.push(t.replace(/`/g, ''));
   lines.push('```', '', '## Attach', '', '- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`');
   if (e.kind === 'room') lines.push(`- \`art/spec/${e.file.split('/').pop()!.replace('.png', '.jpg')}\` (the layout to follow)`);
   if (e.kind === 'map') lines.push('- `art/spec/world-map.png` (the layout to follow)');
   if (e.kind === 'equipment') lines.push(`- the other tiers of this piece already made (\`art/src/kc/equipment/\`), to keep them consistent`);
+  if (e.kind === 'pack') {
+    lines.push('- `art/sources/characters/mara-casual-layered/` (Mara\'s pack: the format to match, piece by piece) and `art/LAYERED-RIG.md` (the pack contract)');
+    if (e.phase === 2) lines.push(`- the approved Phase 1 pictures: \`art/inbox/${e.pack}/master.png\` and \`idle.png\``);
+    lines.push('', '## Then', '', `Save it as \`art/inbox/${e.pack}/${e.piece}.png\`. Do **not** run \`npm run art:import\` for this folder: Claude brings the whole pack into \`art/sources/characters/${e.pack}/\`, measures its joints (rig.json) and rigs it. Report which pieces are in.`, '');
+    return lines.join('\n');
+  }
   lines.push('', '## Then', '', `\`npm run art:import\`, look at \`art/inbox/preview/${e.id}.png\`, \`npm run art:check\`.`);
   if (e.kind === 'character' || e.kind === 'extra') lines.push('', 'After import its layers are in `art/sources/characters/`: the joints and face are measured once in `art/manifest.mjs` (RIGS), then `npm run rig` (this step is for Claude, not Codex).');
   lines.push('');
@@ -162,7 +178,7 @@ writeFileSync(join(out, 'PILOT.md'), pilot.join('\n'));
 // The one file Codex follows: setup, the rules, the pilot pack (then stop), then every picture in
 // batches, room by room (each room, then what stands in it and who is seen there), then the fight
 // screen, cards, gear, items and icons. Generated, so it always matches the manifest.
-const MAKES = (e: ArtEntry) => !['portrait', 'card-atlas', 'foreground'].includes(e.kind) && e.id !== 'room-tent';
+const MAKES = (e: ArtEntry) => !['portrait', 'card-atlas', 'foreground'].includes(e.kind) && e.id !== 'room-tent' && !e.builtFrom;
 /** Already in the new style: imported by Codex since the reference (the older Gemini backdrop is redone too). */
 /** A rigged character's source folder (art/sources/characters/<id>/), once the rig builds from Codex's drawing. */
 const sourceDir = (e: ArtEntry) => {
@@ -174,17 +190,42 @@ const sourceDir = (e: ArtEntry) => {
 };
 /** The required character pictures still missing from its source folder. */
 const missingPoses = (e: ArtEntry) => { const dir = sourceDir(e); return dir ? ['kneel.png', 'lie.png'].filter(f => !existsSync(join(dir, f))) : []; };
-const DONE = (e: ArtEntry) => (e.status === 'final' && e.id !== 'battle-backdrop-gallery')
+const DONE = (e: ArtEntry) => (e.kind === 'pack' && existsSync(join(art, 'sources', 'characters', e.pack!, `${e.piece}.png`)))
+  || (e.status === 'final' && e.id !== 'battle-backdrop-gallery')
   // A character is done once its rig builds from Codex's drawing with all its poses (rigged sheets stay generated, not 'final').
   || (!!sourceDir(e) && !missingPoses(e).length);
 const byId = new Map(MANIFEST.map(e => [e.id, e]));
-const output = (e: ArtEntry) => e.kind === 'object' ? e.tags!.map(t => `art/inbox/${e.id}-${t}.png`).join(', ')
+const output = (e: ArtEntry) => e.kind === 'pack' ? `art/inbox/${e.pack}/${e.piece}.png`
+  : e.builtFrom ? `nothing to make: built from the ${e.builtFrom} pack`
+  : e.kind === 'object' ? e.tags!.map(t => `art/inbox/${e.id}-${t}.png`).join(', ')
   // A sheet built from another character's drawing (the lit-gauntlet Mara) needs no pictures of its own.
   : sourceDir(e) && basename(sourceDir(e)!) !== e.id ? `nothing to make: built from ${basename(sourceDir(e)!)}'s drawing`
   : sourceDir(e) && missingPoses(e).length ? `${missingPoses(e).map(f => `art/inbox/${e.id}/${f}`).join(', ')} (only these: body and arm are in)`
   : e.kind === 'character' || e.kind === 'extra' ? `art/inbox/${e.id}/body.png, arm.png, kneel.png, lie.png` : `art/inbox/${e.id}.png`;
 const line = (e: ArtEntry) => `- [${DONE(e) ? 'x' : ' '}] **${e.id}**: [brief](briefs/${e.id}.md) → \`${output(e)}\``;
 const listed = new Set<string>(PILOT);
+// Silas, a main character: his pack in two phases (its own section below), and the sheets built from it.
+const packLines = (phase: 1 | 2) => MANIFEST.filter(e => e.kind === 'pack' && e.phase === phase).map(e => { listed.add(e.id); return line(e); });
+const silas = [
+  '## Silas, a main character (like Mara)',
+  '',
+  'Silas gets an articulated pack like Mara\'s (`art/LAYERED-RIG.md`, `art/sources/characters/mara-casual-layered/`): one outfit, 220 art px tall. Save every piece in `art/inbox/silas-layered/` and do not import that folder: Claude brings it in and rigs it.',
+  '',
+  '### Phase 1: the standing figure, then stop',
+  '',
+  'Make these two, and **stop**: the user looks at them and approves Silas\'s look before Phase 2.',
+  '',
+  ...packLines(1),
+  '',
+  '### Phase 2: walking, kneeling, lying and his masks (after Phase 1 is approved)',
+  '',
+  'Everything here is cut from or drawn over the approved master, on its canvas and coordinates.',
+  '',
+  ...packLines(2),
+  '',
+  `Then the game builds ${MANIFEST.filter(e => e.builtFrom).map(e => `\`${e.id}\``).join(', ')} from the pack: nothing to make for those.`,
+  '',
+];
 const batch = (title: string, ids: string[]) => {
   const items = ids.map(id => byId.get(id)).filter((e): e is ArtEntry => !!e && MAKES(e) && !listed.has(e.id));
   items.forEach(e => listed.add(e.id));
@@ -230,7 +271,7 @@ const codex = [
   '## For every picture',
   '',
   '1. Open its brief (the link in its line below). It has three parts: what the game does with it, the technical requirements, and the prompt to paint from. Use the prompt, attach what the brief lists, and follow the technical part exactly.',
-  '2. Save the result as the exact file name in its line, in `art/inbox/`: `<id>.png`; objects one file per state `<id>-<state>.png`; characters a folder `<id>/` with `body.png`, `arm.png`, `kneel.png` and `lie.png` (all four required; keep the feet inside the canvas). Transparent background, or flat magenta `#FF00FF` where transparency is impossible.',
+  '2. Save the result as the exact file name in its line, in `art/inbox/`: `<id>.png`; objects one file per state `<id>-<state>.png`; characters a folder `<id>/` with `body.png`, `arm.png`, `kneel.png` and `lie.png` (all four required; keep the feet inside the canvas); a main character\'s pack pieces in its pack folder (`silas-layered/<piece>.png`). Transparent background, or flat magenta `#FF00FF` where transparency is impossible.',
   '3. After each batch, from `adventure/`: `npm run art:import` (fits each picture to size, reduces it to the 2-pixel grid, snaps it to the palette, outlines sprites, puts it where the game loads it, marks it final, writes a before/after preview), then `npm run art:check`.',
   '4. Look at `art/inbox/preview/<id>.png` for each one. If it does not match the brief (wrong layout, wrong proportions, text in it, a person in a room, perspective), make it again under the same name and import again.',
   '5. Characters: after import their layers are kept in `art/sources/characters/`; Claude measures the joints and rigs them (`npm run rig`). Note them in your report.',
@@ -247,6 +288,7 @@ const codex = [
   '',
   ...PILOT.map(id => byId.get(id)).filter((e): e is ArtEntry => !!e && MAKES(e)).map(line),
   '',
+  ...silas,
   '## 2. Everything else, in batches (after the pilot is approved)',
   '',
   ...sections,

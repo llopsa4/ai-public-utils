@@ -19,6 +19,10 @@ Everything the player can click, at these places (art pixels), each must be pain
 - **Cell door** (`cellDoor`, x 732–800, y 224–684): look at, open, go through, use (an exit).
 - **Stairs up** (`corridorStairs`, x 1180–1280, y 180–524): look at, go through (an exit). Only there at some points of the story.
 
+Drawn separately as objects (leave their spot plain in the painting, they stand there):
+- `floor-plate` standing on (346, 624).
+- `window-plate` standing on (352, 228).
+
 Story characters stand at: name.guard (1132, 600). Keep the wall behind them uncluttered at head height.
 
 

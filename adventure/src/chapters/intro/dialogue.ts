@@ -18,8 +18,10 @@ const raise = (id: string, p: 'g' | 'w', then: string): Record<string, DialogueN
 });
 
 export const DIALOGUES: Record<string, DialogueTree> = {
-  // Benn, the night guard, woken by "Sergeant Harrow" behind the bars: half asleep, cold, afraid of
-  // his sergeant. What Silas read in him (the cold, the fear) is what works; plain orders do not.
+  // Benn, the night guard, woken by "Sergeant Harrow" behind the bars. Half asleep and frightened,
+  // he wants to know how his sergeant got into a locked cell, and where the prisoner went. Each
+  // marked reply uses what Silas read in him: afraid of being caught asleep, afraid of the captain,
+  // cold to the bone. Plain orders, or a wrong answer, make him look harder.
   guard: {
     start: 'wake',
     nodes: {
@@ -32,7 +34,7 @@ export const DIALOGUES: Record<string, DialogueTree> = {
       },
       hub1: {
         choices: [
-          { text: 'dlgI.choice.asleep', next: 'scolded', read: true, if: [{ flag: 'readGuard' }] },
+          { text: 'dlgI.choice.lockedIn', next: 'scolded', read: true, if: [{ flag: 'readGuard' }] },
           { text: 'dlgI.choice.keys', next: 'keysAsk' },
           { text: 'dlgI.choice.friend', next: 'friend' },
         ],
@@ -48,18 +50,38 @@ export const DIALOGUES: Record<string, DialogueTree> = {
         ],
         next: 'hub2',
       },
+      // Where is the prisoner? The answer that works makes it Benn's fault, and the captain's business.
       hub2: {
+        choices: [
+          { text: 'dlgI.choice.moved', next: 'moved', read: true, if: [{ flag: 'readGuard' }] },
+          { text: 'dlgI.choice.whatPrisoner', next: 'whatPrisoner' },
+          { text: 'dlgI.choice.underCot', next: 'underCot' },
+        ],
+      },
+      whatPrisoner: { lines: [{ actor: 'guard', text: 'dlgI.guard.whatPrisoner' }], next: 'gMore' },
+      underCot: { lines: [{ actor: 'guard', text: 'dlgI.guard.underCot' }], next: 'gMore' },
+      ...raise('gMore', 'g', 'gAgain2'),
+      gAgain2: { lines: [{ actor: 'guard', text: 'dlgI.guard.again2' }], next: 'hub2' },
+      moved: {
+        lines: [
+          { actor: 'guard', text: 'dlgI.guard.moved1' },
+          { actor: 'guard', text: 'dlgI.guard.moved2' },
+        ],
+        next: 'hub3',
+      },
+      // Now he only wants to be told what to do: the kind order (the cold) sends him away.
+      hub3: {
         choices: [
           { text: 'dlgI.choice.warm', next: 'warm', read: true, if: [{ flag: 'readGuard' }] },
           { text: 'dlgI.choice.report', next: 'report' },
-          { text: 'dlgI.choice.prisoner', next: 'prisoner' },
+          { text: 'dlgI.choice.stay', next: 'stay' },
         ],
       },
-      report: { lines: [{ actor: 'guard', text: 'dlgI.guard.report' }], next: 'gMore' },
-      prisoner: { lines: [{ actor: 'guard', text: 'dlgI.guard.prisoner' }], next: 'gMore' },
-      ...raise('gMore', 'g', 'gAgain2'),
-      gAgain2: { lines: [{ actor: 'guard', text: 'dlgI.guard.again' }], next: 'hub2' },
-      // He comes to the bars to thank his sergeant; the key ring hangs at his belt.
+      report: { lines: [{ actor: 'guard', text: 'dlgI.guard.report' }], next: 'gLast' },
+      stay: { lines: [{ actor: 'guard', text: 'dlgI.guard.stay' }], next: 'gLast' },
+      ...raise('gLast', 'g', 'gAgain3'),
+      gAgain3: { lines: [{ actor: 'guard', text: 'dlgI.guard.again3' }], next: 'hub3' },
+      // He comes to the bars to thank his sergeant; the key ring swings at his belt.
       warm: {
         lines: [
           { actor: 'guard', text: 'dlgI.guard.warm1' },

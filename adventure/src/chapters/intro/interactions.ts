@@ -89,14 +89,13 @@ export const RULES: readonly Rule[] = [
   // ------------------------------------------------------------- cell ---
   { target: 'plate', verb: 'look', do: [say('line.i.plateLook')] },
   { target: 'plate', verb: 'take', walk: true, do: [pose('hero', 'crouch'), wait(300), add('plate'), add('crust'), flag('tookPlate'), pose('hero', 'stand'), say('line.i.plateTake')] },
-  // The tin plate throws the window's moonlight across the cell: the darkness lifts.
-  { target: 'window', item: 'plate', when: F('cellLit'), do: [say('line.i.alreadyLit')] },
-  { target: 'window', item: 'plate', walk: true, do: [say('line.i.angle1'), wait(500), flag('cellLit'), wait(900), say('line.i.angle2'), say('line.i.angle3')] },
+  // The tin plate, wedged in the window bars, throws the moonlight across the cell: the darkness
+  // lifts, and the plate stays there.
+  { target: 'window', item: 'plate', walk: true, do: [say('line.i.angle1'), wait(500), drop('plate'), flag('cellLit'), wait(900), say('line.i.angle2'), say('line.i.angle3')] },
   { target: 'window', verb: 'look', when: F('cellLit'), do: [say('line.i.windowLookLit')] },
   { target: 'window', verb: 'look', do: [say('line.i.windowLook')] },
   { target: 'window', verb: 'use', do: [say('line.i.windowUse')] },
   { target: 'cot', verb: 'look', do: [say('line.i.cotLook')] },
-  { target: 'cot', verb: ['take', 'use'], when: NOT('cellLit'), walk: true, do: [say('line.i.cotDark')] },
   { target: 'cot', verb: ['take', 'use'], when: NOT('tookNail'), walk: true, do: [pose('hero', 'crouch'), wait(400), add('nail'), flag('tookNail'), pose('hero', 'stand'), say('line.i.nailTake')] },
   { target: 'cot', verb: ['take', 'use'], when: NOT('tookStrip'), walk: true, do: [add('strip'), flag('tookStrip'), say('line.i.stripTake')] },
   { target: 'cot', verb: ['take', 'use'], do: [say('line.i.cotEmpty')] },
@@ -109,7 +108,6 @@ export const RULES: readonly Rule[] = [
   { target: 'bucket', verb: ['use', 'take'], do: [say('line.i.bucketUse')] },
   { target: 'candle', verb: 'look', do: [say('line.i.candleLook')] },
   { target: 'candle', verb: 'take', do: [say('line.i.candleTake')] },
-  { target: 'table', item: 'hookLine', when: NOT('cellLit'), do: [say('line.i.fishDark')] },
   { target: 'table', item: 'hookLine', when: NOT('gotFrame'), do: FISH },
   { target: 'frame', item: 'hookLine', do: FISH },
   { target: 'table', verb: 'look', when: F('gotFrame'), do: [say('line.i.tableLookEmpty')] },
@@ -134,7 +132,6 @@ export const RULES: readonly Rule[] = [
   { target: 'corridorStairs', verb: 'go', do: [say('line.i.barsFirst')] },
 
   // ------------------------------------------------------- Benn, the guard ---
-  { target: 'guard', verb: 'read', when: NOT('cellLit'), do: [say('line.i.readDark')] },
   { target: 'guard', verb: 'read', when: F('readGuard'), do: [say('line.i.readGuardAgain')] },
   { target: 'guard', verb: 'read', walk: false, do: [say('line.i.guardMumble', 'guard'), say('line.i.readGuard1'), say('line.i.readGuard2'), flag('readGuard')] },
   { target: 'guard', verb: 'look', when: NOT('cellLit'), do: [say('line.i.guardLookDark')] },
@@ -178,7 +175,29 @@ export const RULES: readonly Rule[] = [
   { target: 'sigrid', verb: 'read', do: [say('line.i.readSigrid')] },
 ];
 
+/**
+ * Until the moonlight is thrown across the cell, only what is in reach of Silas's eyes works: the
+ * window and its thread of moonlight, the plate by his feet, the candle-lit table and guard beyond
+ * the bars (look, and shouting), and Silas himself. Anything else gets "I can't see", each time a
+ * stronger clue towards the plate and the window.
+ */
+const IN_THE_DARK: Partial<Record<string, readonly Verb[]>> = {
+  window: ['look', 'use'], plate: ['look', 'take'], candle: ['look'], table: ['look'],
+  guard: ['look', 'talk'], hero: ['look', 'talk', 'crouch', 'stand'], 'item:plate': ['look'], 'item:crust': ['look'],
+};
+
+function inTheDark(state: GameState, verb: Verb, target: string, item?: string): Command[] | null {
+  if (state.room !== 'cell' || state.flags.cellLit) return null;
+  if (item === 'plate' && target === 'window') return null;
+  if (!item && IN_THE_DARK[target]?.includes(verb)) return null;
+  const stage = state.inventory.includes('plate') ? 'plate' : 'noPlate';
+  const n = (state.looks['intro.dark'] ?? 0) % 3 + 1;
+  return [say(`line.i.dark.${stage}.${n}`), { type: 'looked', id: 'intro.dark' }];
+}
+
 export function interact(state: GameState, verb: Verb, target: string, item?: string): Command[] {
+  const dark = inTheDark(state, verb, target, item);
+  if (dark) return dark;
   const commands = applyRules(RULES, ROOMS, state, verb, target, item) ?? fallback(verb, item);
   return verb === 'look' && !item ? cycleLook(state, target, commands, []) : commands;
 }

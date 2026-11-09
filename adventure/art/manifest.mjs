@@ -124,21 +124,21 @@ export const RIGS = {
   // (dark, a red neckcloth), his masks are variants of that (a sergeant's cap for Harrow, a grey hood
   // for the clerk); the guards are Oren's and Iven's bodies re-dressed in Ironhaven grey, and Sigrid
   // is Nell's in officer's blue.
+  // Silas: Codex's articulated pack (art/sources/characters/silas-layered, art/LAYERED-RIG.md). His
+  // disguises are the same rig with the mask drawn over him (rig.json overlays); the clerk carries the
+  // ledger against his chest. Portraits are cut from the walk master.
   ...(() => {
-    const casual = { source: 'sources/characters/char-mara-casual/body.png', armLayer: 'sources/characters/char-mara-casual/arm.png', height: 224, walks: true,
-      armPivot: [355, 290], armSwing: 6,
-      hipY: 820, splitX: 505, hips: { near: [450, 820], far: [560, 820] }, knees: { near: [428, 1095], far: [579, 1085] },
-      eyes: [{ x: 528, y: 115, rx: 13, ry: 6, skinAt: [528, 128] }, { x: 562, y: 115, rx: 9, ry: 6, skinAt: [562, 128] }],
-      portrait: [370, 0, 360, 360], moods: ['neutral'],
-      face: { mouth: { x: 549, y: 155, rx: 13, ry: 4 }, brows: [{ x0: 509, x1: 549, y0: 93, y1: 105, inner: 'right' }, { x0: 557, x1: 571, y0: 96, y1: 105, inner: 'left' }] } };
+    const pack = { layeredPack: 'sources/characters/silas-layered', dir: 'intro/', height: 220, walks: true };
     return {
-      silas: { ...casual, dir: 'intro/', variant: { hue: 200, sat: 0.35, light: 0.62, skin: 0.95 } },
-      'silas-harrow': { ...casual, dir: 'intro/', variant: { hue: 200, sat: 0.35, light: 0.62, skin: 0.78, headgear: { kind: 'cap', color: [70, 72, 82] } } },
-      'silas-clerk': { ...casual, dir: 'intro/', variant: { hue: 200, sat: 0.2, light: 0.7, skin: 0.95, headgear: { kind: 'hood', color: [92, 92, 96] } } },
+      silas: { ...pack, portraitId: 'silas', moods: ['neutral', 'worried', 'angry'] },
+      'silas-harrow': { ...pack, overlay: 'harrow', noBlink: true, portraitId: 'silas-harrow', moods: ['neutral'] },
+      'silas-clerk': { ...pack, overlay: 'clerk', forearmRaise: 1.6, portraitId: 'silas-clerk', moods: ['neutral'] },
     };
   })(),
   guard: {
     dir: 'intro/', variant: { hue: 200, sat: 0.25, light: 0.85, skin: 1.02, headgear: { kind: 'cap', color: [84, 86, 96] } },
+    // Benn dozes on his chair by the candle (a sitting frame, asleep).
+    sits: 'asleep',
     source: 'sources/characters/char-oren/body.png', armLayer: 'sources/characters/char-oren/arm.png', height: 214, walks: false,
     armPivot: [330, 320],
     hipY: 960, splitX: 464, hips: { near: [400, 960], far: [540, 960] }, knees: { near: [380, 1290], far: [560, 1290] },
@@ -336,9 +336,9 @@ export const MANIFEST = [
   { ...room('room-guardroom', 'guardroom', "The guardroom at the top of the prison stairs: the stairs going down at the left edge, a peg with a grey clerk's hood, a shelf with a thick red tally ledger, a black iron stove with its door glowing in the middle, the guard's desk (right of centre), and an iron grate at the right edge opening onto the snowy night.", 'Warm orange light from the stove (centre); cold blue night through the grate (right).'), file: 'intro/rooms/guardroom.png', chapter: 'intro', generator: 'intro.mjs' },
   { ...room('room-prison-door', 'prison-door', "Outside Ironhaven's prison at night: a small heavy door with a lantern (left) in a black stone wall with crenellations, snow on the ground and falling, the city's iron roofs faint in the distance.", 'Cold blue night; the lantern by the door the one warm light.'), file: 'intro/rooms/prison-door.png', chapter: 'intro', generator: 'intro.mjs' },
   ...[
-    ['silas', 'Silas, the con man.', 224],
-    ['silas-harrow', 'Silas wearing the Harrow mask (only the face and head differ from char-silas).', 224],
-    ['silas-clerk', "Silas as the tally clerk: hood up, a ledger held to his chest (only the head and arms differ from char-silas).", 224],
+    ['silas', 'Silas, the con man.', 220],
+    ['silas-harrow', 'Silas wearing the Harrow mask (only the face and head differ from char-silas).', 220],
+    ['silas-clerk', "Silas as the tally clerk: hood up, a ledger held to his chest (only the head and arms differ from char-silas).", 220],
     ['guard', "Benn, the young night guard of Ironhaven's cells.", 214],
     ['warden', "Kell, the guardroom guard of Ironhaven's prison.", 230],
     ['sigrid', 'Captain Sigrid of Ironhaven.', 226],
@@ -356,6 +356,10 @@ export const MANIFEST = [
     ['keys', 'An iron key ring with three heavy keys.'], ['hood', "A drab grey clerk's hood."], ['ledger', 'A thick red tally ledger.'],
     ['maskClerk', "The clerk's guise: the grey hood folded over the red ledger."],
   ].map(([id, subject]) => ({ ...item(id, subject), file: `intro/items/${id}.png`, chapter: 'intro', generator: 'intro.mjs' })),
+  { ...object('window-plate', "The dented tin plate wedged at the bottom of the cell's barred window, tilted to throw the moonlight into the cell, its dent shining.", ['idle']),
+    file: 'intro/objects/window-plate.png', sheet: 'intro/objects/window-plate.json', chapter: 'intro', generator: 'intro.mjs' },
+  { ...object('floor-plate', 'A dented tin plate with a stale crust on it, lying on the cell floor by the cot.', ['idle']),
+    file: 'intro/objects/floor-plate.png', sheet: 'intro/objects/floor-plate.json', chapter: 'intro', generator: 'intro.mjs' },
   icon('read', 'Read people: a face in profile with a small gold glint of insight above it.'),
 ];
 
@@ -408,6 +412,72 @@ for (const e of MANIFEST) {
   else if (e.kind === 'card') { const [name, does, motif] = CARDS[e.id.slice(5)]; e.subject = `${name} (the card's effect: ${does}): ${motif}`; }
   else if (e.kind === 'equipment' && !e.tier) { const id = e.id.slice('equipment-'.length); e.tier = 1; e.subject = `${GEAR[id]} ${GEAR_TIERS[0]}`; }
 }
+
+// ------------------------------------------ Silas, a main character: his articulated pack ---
+// Like Mara (art/LAYERED-RIG.md): one standing master, then eleven body layers, joints, two walk
+// references, kneeling and lying, all on the master's canvas; plus his two masks as overlay layers.
+// Phase 1 (the standing figure) is approved by the user before Phase 2 is made. Codex saves every
+// piece in art/inbox/silas-layered/; Claude brings the pack into art/sources/characters/silas-layered/
+// and writes its rig.json. Until then the char-silas sheets are the recoloured stand-in.
+const SILAS_PACK = 'silas-layered';
+const MARA_PACK = 'art/sources/characters/mara-casual-layered/';
+const LAYERS = {
+  farUpperArm: 'the far upper arm, shoulder to elbow', farForearm: 'the far forearm and hand, elbow to fingertips',
+  farThigh: 'the far thigh, hip to knee', farShin: 'the far shin, knee to ankle', farBoot: 'the far boot, ankle to toe',
+  nearThigh: 'the near thigh, hip to knee', nearShin: 'the near shin, knee to ankle', nearBoot: 'the near boot, ankle to toe',
+  torso: 'the head, neck, torso and hips: everything that is not an arm or a leg segment',
+  nearUpperArm: 'the near upper arm, shoulder to elbow', nearForearm: 'the near forearm and hand, elbow to fingertips',
+};
+// Mara's pack stands 1460 px from head to sole on the 1024x1536 canvas (232 in the game); Silas, 220.
+const SETUP = 'On a 1024x1536 transparent canvas (or flat magenta #FF00FF): soles on y 1500, about 1385 px from head to sole (head top near y 115), horizontally centred, the same scale as Mara\'s master.png. In the game he stands 220 art px, a little shorter than Mara at 232.';
+const CANVAS = 'On a 1024x1536 transparent canvas (or flat magenta #FF00FF), exactly the canvas, scale and position of the approved master.png (soles on y 1500).';
+const piece = (piece, phase, subject, spec, extra = {}) => ({
+  id: `silas-${piece}`, kind: 'pack', pack: SILAS_PACK, piece, phase, file: `../sources/characters/${SILAS_PACK}/${piece}.png`, anchor: 'none',
+  chapter: 'intro', status: 'requested', generator: 'Codex', subject, spec, ...extra,
+});
+const GAIT = 'His walk: light, loose and theatrical, a bit mad: a springy stride with a hint of a skip, the hips swinging, arms loose and swinging a little too freely, the chin up, as if he were walking onto a stage to applause only he can hear. (Mara walks like a courier on a job; Silas walks like a man about to talk his way past you, humming.)';
+MANIFEST.push(
+  // Phase 1: the standing figure, then stop for the user's approval.
+  piece('master', 1, `${CAST.silas} The walk master: standing in profile facing right, in the neutral stance the walk cycle starts from (feet slightly apart, both visible, arms hanging relaxed and a little away from the body so no arm hides the torso or the other arm). Only one eye shows (profile).`,
+    [SETUP, 'This drawing is the anatomy every later piece is cut from and must recompose exactly: draw clean, separate limbs (nothing overlapping that would be hard to split at the shoulders, elbows, hips, knees and ankles).', `Match the format of Mara's: ${MARA_PACK}master.png.`]),
+  piece('idle', 1, `${CAST.silas} His standing picture when he is still: the same figure, clothes and scale as the master, turned a little more towards us (a slight three-quarter view), both eyes visible, weight on one leg, head cocked as if listening to a voice nobody else hears, a lopsided, slightly manic grin with the mouth closed, one hand mid-flourish.`,
+    [SETUP, 'Exactly the same scale and soles line as master.png. This is the picture the game shows whenever he stands still, and his dialogue portrait is cut from its head (so the face must be clear and well lit).', `Match the format of Mara's: ${MARA_PACK}idle.png.`]),
+  // Phase 2: everything cut from the approved master.
+  ...Object.entries(LAYERS).map(([name, what]) => piece(name, 2, `Silas's ${what}, cut from the approved master.png.`,
+    [CANVAS, `Exactly where it sits in master.png (same coordinates). Layer order, back to front: farUpperArm, farForearm, farThigh, farShin, farBoot, nearThigh, nearShin, nearBoot, torso, nearUpperArm, nearForearm. Stacked in that order on a neutral background the eleven layers must reproduce master.png pixel for pixel.`,
+      'Extend the piece about 25 px past each joint with a rounded end drawn as the hidden part would look (cloth folding round an elbow or knee), lying under the neighbouring layer so the stack still matches master.png exactly, and the joint never shows a gap when it bends.',
+      `Match Mara's layers: ${MARA_PACK}${name}.png.`])),
+  piece('joints', 2, 'The joint map: master.png with a small solid dot of a fixed colour at the centre of each joint: near and far shoulder, elbow, hip, knee and ankle.',
+    [CANVAS, `Use exactly the colours of ${MARA_PACK}joint-colours.json (copy the file beside it, renamed for Silas). Each dot about 12 px across, exactly on the joint's pivot.`]),
+  piece('walk-contact', 2, `${CAST.silas} A walk reference, the contact pose: the front heel just touching the floor, the back toe about to lift, the arms swung opposite the legs. ${GAIT}`,
+    [CANVAS, 'Drawn from the approved master (same face, clothes and scale); it guides the rig, it is not shown in the game.', `Match ${MARA_PACK}walk-contact.png.`]),
+  piece('walk-passing', 2, `${CAST.silas} A walk reference, the passing pose: one leg straight under the body, the other passing it with the knee bent and the foot lifted. ${GAIT}`,
+    [CANVAS, 'Drawn from the approved master; it guides the rig, it is not shown in the game.', `Match ${MARA_PACK}walk-passing.png.`]),
+  piece('kneel', 2, `${CAST.silas} The whole figure down on one knee, facing right, looking at something low (as when picking something up or picking a lock).`,
+    ['On a 1024x1536 transparent canvas (or flat magenta), the same scale as master.png, knee and foot on y 1500.', `Match ${MARA_PACK}kneel.png.`]),
+  piece('lie', 2, `${CAST.silas} The whole figure lying on his back on the floor, head to the right, eyes closed.`,
+    ['On a 1536x1024 landscape transparent canvas (or flat magenta), the same scale as the master, lying on y 990.', `Match ${MARA_PACK}lie.png.`]),
+  // The masks: overlay layers the game stacks over his head and arms in every pose.
+  ...[['stand', 'master.png'], ['kneel', 'kneel.png'], ['lie', 'lie.png']].flatMap(([pose, over]) => [
+    piece(`mask-harrow-${pose}`, 2, `${CAST.silasHarrow} Only the mask itself, on its own layer: the grey plaster-and-bread face with Harrow's heavy jaw, pouched eyes and broom moustache of Silas's hair, the brass frame's rivets at the temples; nothing else of Silas.`,
+      [pose === 'lie' ? 'On the 1536x1024 canvas of lie.png, exactly over his face there.' : `On the 1024x1536 canvas of ${over}, exactly over his face there.`, 'Transparent everywhere else: the game draws it on top of Silas in this pose.']),
+    piece(`mask-clerk-hood-${pose}`, 2, `${CAST.silasClerk} Only the drab grey clerk's hood, on its own layer, pulled up over his head and forward over his brow.`,
+      [pose === 'lie' ? 'On the 1536x1024 canvas of lie.png, exactly over his head there.' : `On the 1024x1536 canvas of ${over}, exactly over his head there.`, 'Transparent everywhere else: the game draws it on top of Silas in this pose.']),
+  ]),
+  piece('mask-clerk-ledger', 2, "The tally clerk's thick red ledger, held in Silas's near hand against his chest.",
+    ['On the 1024x1536 canvas of nearForearm.png, in the hand of that layer, so it moves with the forearm as he walks.', 'Transparent everywhere else.']),
+);
+// The game's Silas sheets and portraits are built from that pack once it is in.
+for (const e of MANIFEST) if (/^(char|portrait)-silas(-|$)/.test(e.id)) e.builtFrom = SILAS_PACK;
+
+// Extras for Silas: the Read icon (sharpened), the suspicion eye, Nessa's mask frame in detail.
+const read = MANIFEST.find(e => e.id === 'icon-read');
+read.subject = "Read people: a face in profile, looking right, with a small gold glint of insight above the brow (a thought caught). The same style, line weight and colours as the other action-ring icons (art/src/icons/look.png, talk.png...), so it sits in the ring beside them; it is also shown small (about 18 px) before a dialogue reply built on a reading, so it must read at that size.";
+MANIFEST.push({ id: 'ui-suspicion-eye', kind: 'icon', file: 'ui/suspicion-eye.png', size: { w: 192, h: 48 }, anchor: 'none', chapter: 'intro', status: 'requested', generator: 'Codex',
+  subject: "The suspicion eye: how close the person Silas is deceiving is to seeing through him, shown beside the satchel. Four states, left to right: calm (the eye wide open, a pale white, dark pupil); narrowing (the lids half down); narrow (a suspicious slit, the white turned warm); seeing through him (a red-rimmed slit, the white turned red). One eye, the same size and position in each state, drawn like an ink illustration on the game's dark wooden bar.",
+  spec: ['File: art/inbox/ui-suspicion-eye.png, a 192x48 strip of four 48x48 frames left to right (calm, narrowing, narrow, red), transparent (or flat magenta).'] });
+const frame = MANIFEST.find(e => e.id === 'item-frame');
+frame.subject = "Nessa's mask frame, the artifact that lets Silas be anyone: a thin articulated frame of polished brass ribs shaped like the outline of a face (brow band, cheek ribs, a hinged jaw piece), tiny riveted hinges at the temples and jaw, a few fine adjusting screws, a worn leather strap at the back. Fine craftsmanship, a little theatrical; it should look precious next to everything else in a prison satchel.";
 
 // Statuses set by the importer (art/status.json: { "<id>": "final" }) override the defaults above.
 import { existsSync, readFileSync } from 'node:fs';

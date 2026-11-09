@@ -154,6 +154,8 @@ export function partWidthTransform(cfg,name){
 /** Sample each art pixel directly. Keep the established floor/hip geometry and 2px outline. */
 export function renderPackFrame(pack,{phase=null,blink=false,powered=false}={}){
  const isIdle=phase===null&&!!pack.idle;
+ // A forearm held up against the chest (Silas carrying the clerk's ledger), about the elbow.
+ const raise=pack.forearmRaise?rotate(-pack.forearmRaise,pack.cfg.joints.nearElbow):null;
  const idle=pack.cfg.idle;
  const cfg=isIdle?{...pack.cfg,sourceHeight:idle.sourceHeight,baseline:idle.baseline,eyes:idle.eyes,ember:idle.ember,
   order:['torso'],joints:{...pack.cfg.joints,nearHip:[idle.anchorX,0],farHip:[idle.anchorX,0]}}:pack.cfg;
@@ -162,7 +164,8 @@ export function renderPackFrame(pack,{phase=null,blink=false,powered=false}={}){
  const data=Buffer.alloc(W*H*4),pose=phase===null?null:walkPose(cfg,phase);
  for(const name of cfg.order){
   let layer=isIdle?pack.idle:pack.layers[name];if(blink&&name==='torso')layer=closedEyes(layer,cfg);if(powered&&(name==='nearForearm'||isIdle))layer=powerCell(layer,cfg);
-  const inv=inverse(pose?mul(pose.mats[name],partWidthTransform(cfg,name)):identity());
+  const base=pose?pose.mats[name]:identity(),held=raise&&name==='nearForearm'&&!isIdle?mul(base,raise):base;
+  const inv=inverse(pose?mul(held,partWidthTransform(cfg,name)):held);
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){
    const src=point(inv,[hipX+(x+.5-W/2)/k,cfg.baseline+(y+.5-ground)/k]);
    const sx=Math.floor(src[0]),sy=Math.floor(src[1]);if(sx<0||sy<0||sx>=1024||sy>=1536)continue;
@@ -177,7 +180,7 @@ export function renderPackFrame(pack,{phase=null,blink=false,powered=false}={}){
 }
 async function stillFrame(file,cfg,powered=false,poseName=''){
  const k=(cfg.height-4)/cfg.sourceHeight;
- const rawPng=PNG.sync.read(readFileSync(file));
+ const rawPng=typeof file==='string'?PNG.sync.read(readFileSync(file)):file;
  const image=powered&&cfg.poseEmbers?.[poseName]?powerCell(rawPng,{...cfg,ember:cfg.poseEmbers[poseName]}):rawPng;
  const encoded=PNG.sync.write(image);
  const src=await sharp(encoded).ensureAlpha().raw().toBuffer({resolveWithObject:true});
@@ -191,26 +194,52 @@ async function stillFrame(file,cfg,powered=false,poseName=''){
  const buf=await sharp(raw,{raw:{width:256,height:256,channels:4}}).png().toBuffer();
  return PNG.sync.read(buf);
 }
+/** `top` drawn over `base` (same canvas): the opaque pixels of the overlay win. */
+function over(base,top){
+ if(base.width!==top.width||base.height!==top.height)throw Error('Overlay canvas differs from its pose');
+ const out={...base,data:Buffer.from(base.data)};
+ for(let k=0;k<out.data.length;k+=4)if(top.data[k+3]>=128)top.data.copy(out.data,k,k,k+4);
+ return out;
+}
+/**
+ * A disguise (rig.json `overlays.<name>`): the mask drawn into the head (torso layer) for walking and
+ * standing, over the kneeling and lying drawings, and anything held (the ledger) over the forearm.
+ * Disguised, he stands in the walk master's pose (the masks are drawn to it, not to idle.png).
+ */
+function disguise(pack,name){
+ const o=pack.cfg.overlays?.[name];if(!o)throw Error('No overlay '+name+' in '+pack.dir);
+ const read=f=>PNG.sync.read(readFileSync(join(pack.dir,f)));
+ const layers={...pack.layers,torso:over(pack.layers.torso,read(o.stand))};
+ if(o.nearForearm)layers.nearForearm=over(pack.layers.nearForearm,read(o.nearForearm));
+ return {...pack,layers,master:over(pack.master,read(o.stand)),idle:undefined,
+  poses:{kneel:over(read('kneel.png'),read(o.kneel)),lie:over(read('lie.png'),read(o.lie))}};
+}
 export async function buildLayeredCharacter(id,cfg){
- const pack=loadPack(join(art,cfg.layeredPack)),powered=!!cfg.powered;
- const stand=renderPackFrame(pack,{powered}),blink=renderPackFrame(pack,{powered,blink:true});
+ let pack=loadPack(join(art,cfg.layeredPack));const powered=!!cfg.powered;
+ if(cfg.overlay)pack=disguise(pack,cfg.overlay);
+ if(cfg.forearmRaise)pack={...pack,forearmRaise:cfg.forearmRaise};
+ const stand=renderPackFrame(pack,{powered});
+ // A mask over the eyes does not blink.
+ const blink=cfg.noBlink?stand:renderPackFrame(pack,{powered,blink:true});
  const frames=[stand,blink,stand,blink,stand],tags=[['stand_down',0,0],['blink_down',1,1],['stand_side',2,2],['blink_side',3,3],['stand_up',4,4]];
  for(const direction of ['down','side','up']){const from=frames.length;for(let p=0;p<8;p++)frames.push(renderPackFrame(pack,{phase:p,powered}));tags.push(['walk_'+direction,from,frames.length-1])}
- for(const [name,file] of [['crouch','kneel.png'],['dead','lie.png']]){tags.push([name,frames.length,frames.length]);frames.push(await stillFrame(join(pack.dir,file),pack.cfg,powered,file.replace('.png','')))}
+ for(const [name,file] of [['crouch','kneel.png'],['dead','lie.png']]){const still=pack.poses?.[file.replace('.png','')]??join(pack.dir,file);tags.push([name,frames.length,frames.length]);frames.push(await stillFrame(still,pack.cfg,powered,file.replace('.png','')))}
  tags.push(['fidget',frames.length,frames.length]);frames.push(blink);
  // Direction tags reuse the same side-on art. Alias equal frames instead of storing three copies.
  const unique=[],slots=frames.map(frame=>{let slot=unique.findIndex(f=>f.data.equals(frame.data));if(slot<0){slot=unique.length;unique.push(frame)}return slot});
  const cols=5,rows=Math.ceil(unique.length/cols),sheet=new PNG({width:cols*256,height:rows*256});
  unique.forEach((f,n)=>{for(let y=0;y<256;y++)f.data.copy(sheet.data,((Math.floor(n/cols)*256+y)*sheet.width+(n%cols)*256)*4,y*256*4,(y+1)*256*4)});
- const dest=join(art,'src','characters');mkdirSync(dest,{recursive:true});
+ const dir=cfg.dir??'',dest=join(art,'src',dir+'characters');mkdirSync(dest,{recursive:true});
  writeFileSync(join(dest,id+'.png'),encodeIndexed(sheet));
  const walk=walkMetadata(pack.cfg);
  const json={frames:frames.map((_,n)=>({filename:String(n),frame:{x:slots[n]%cols*256,y:Math.floor(slots[n]/cols)*256,w:256,h:256},duration:n>=5&&n<29?Math.round(walk.distancePerFrame/110*1000):1000,rotated:false,trimmed:false,spriteSourceSize:{x:0,y:0,w:256,h:256},sourceSize:{w:256,h:256}})),meta:{app:'Cinderfold layered rig v1',version:'1',image:id+'.png',format:'RGBA8888',size:{w:sheet.width,h:sheet.height},scale:'1',frameTags:tags.map(([name,from,to])=>({name,from,to,direction:'forward'})),walk}};
  writeFileSync(join(dest,id+'.json'),JSON.stringify(json,null,1)+'\n');
- if(id==='mara-gauntlet'){
-  // Keep the established portrait strip contract: neutral/worried/angry × closed/open mouth.
-  const [x,y,w,h]=pack.cfg.portrait,images=[];
-  for(let mood=0;mood<3;mood++)for(let talking=0;talking<2;talking++){
+ // Mara's portraits come from the lit-gauntlet sheet; other characters name theirs (cfg.portraitId).
+ const portraitId=id==='mara-gauntlet'?'mara':cfg.portraitId;
+ if(portraitId){
+  // The portrait strip contract: each mood (neutral, worried, angry) × closed/open mouth.
+  const [x,y,w,h]=pack.cfg.portrait,images=[],moods=(cfg.moods??['neutral','worried','angry']).length;
+  for(let mood=0;mood<moods;mood++)for(let talking=0;talking<2;talking++){
    const face={...pack.master,data:Buffer.from(pack.master.data)},m=pack.cfg.face.mouth;
    if(talking)for(let sy=m.y-m.ry;sy<=m.y+m.ry;sy++)for(let sx=m.x-m.rx;sx<=m.x+m.rx;sx++)if(((sx-m.x)/m.rx)**2+((sy-m.y)/m.ry)**2<=1){const o=(sy*1024+sx)*4;if(face.data[o+3]){face.data[o]=45;face.data[o+1]=22;face.data[o+2]=18}}
    for(const brow of pack.cfg.face.brows)if(mood)for(let sy=brow.y0;sy<=brow.y1;sy++)for(let sx=brow.x0;sx<=brow.x1;sx++){
@@ -218,7 +247,8 @@ export async function buildLayeredCharacter(id,cfg){
    }
    images.push({input:await sharp(face.data,{raw:{width:1024,height:1536,channels:4}}).extract({left:x,top:y,width:w,height:h}).resize(256,256,{kernel:'nearest'}).png().toBuffer(),left:(mood*2+talking)*256,top:0});
   }
-  await sharp({create:{width:1536,height:256,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite(images).png().toFile(join(art,'src','portraits','mara.png'));
+  mkdirSync(join(art,'src',dir+'portraits'),{recursive:true});
+  await sharp({create:{width:moods*512,height:256,channels:4,background:{r:0,g:0,b:0,alpha:0}}}).composite(images).png().toFile(join(art,'src',dir+'portraits',portraitId+'.png'));
  }
  console.log('  '+id+': eleven-piece rig, eight-frame walk.');
  return {frames,json,pack};

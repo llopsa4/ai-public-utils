@@ -292,7 +292,7 @@ export class Actor {
 
   /** Plays the idle gesture (fidget frame) for a moment, if the sheet has one. */
   fidget(ms = 1300): void {
-    if (this.walking || this.pose !== 'stand' || this.gesturing || !this.scene.anims.exists(`${this.sheet}:fidget`)) return;
+    if (this.walking || this.pose !== 'stand' || this.gesturing || this.task || !this.scene.anims.exists(`${this.sheet}:fidget`)) return;
     this.clearWalkBlend();
     this.gesturing = true;
     this.play('fidget', this.face === 'left');

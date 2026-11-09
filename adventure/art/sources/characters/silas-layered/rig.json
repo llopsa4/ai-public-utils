@@ -1,0 +1,203 @@
+{
+  "version": 1,
+  "outfit": "casual",
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "height": 220,
+  "baseline": 1498,
+  "sourceHeight": 1409,
+  "overlap": 25,
+  "order": [
+    "farUpperArm",
+    "farForearm",
+    "farThigh",
+    "farShin",
+    "farBoot",
+    "nearThigh",
+    "nearShin",
+    "nearBoot",
+    "torso",
+    "nearUpperArm",
+    "nearForearm"
+  ],
+  "joints": {
+    "nearShoulder": [
+      411,
+      377
+    ],
+    "nearElbow": [
+      355,
+      598
+    ],
+    "farShoulder": [
+      555,
+      371
+    ],
+    "farElbow": [
+      618,
+      596
+    ],
+    "nearHip": [
+      477,
+      746
+    ],
+    "farHip": [
+      564,
+      746
+    ],
+    "nearKnee": [
+      428,
+      1043
+    ],
+    "farKnee": [
+      569,
+      1040
+    ],
+    "nearAnkle": [
+      364,
+      1369
+    ],
+    "farAnkle": [
+      576,
+      1369
+    ]
+  },
+  "eyes": [
+    {
+      "x": 550,
+      "y": 179,
+      "rx": 10,
+      "ry": 4,
+      "skinAt": [
+        550,
+        191
+      ],
+      "blinkRy": 9,
+      "lashTop": -1,
+      "lashBottom": 7
+    }
+  ],
+  "face": {
+    "mouth": {
+      "x": 567,
+      "y": 224,
+      "rx": 12,
+      "ry": 3
+    },
+    "brows": [
+      {
+        "x0": 535,
+        "x1": 574,
+        "y0": 152,
+        "y1": 170,
+        "inner": "right"
+      }
+    ]
+  },
+  "portrait": [
+    400,
+    70,
+    260,
+    260
+  ],
+  "ember": null,
+  "poseEmbers": {},
+  "walk": {
+    "frames": 8,
+    "contactFrames": [
+      0,
+      4
+    ],
+    "hipSwing": 24,
+    "armSwing": 26,
+    "lift": 80,
+    "torsoLeanDegrees": 2,
+    "widthScale": 1.15,
+    "strideSource": 440,
+    "references": {
+      "contact": "walk-contact.png",
+      "passing": "walk-passing.png"
+    },
+    "calibration": "Silas's springy, theatrical stride: a little more hip and arm swing than Mara's, a higher foot lift and a bounce at each contact, the chin up (less lean). Fixed source bone lengths and planted-foot IK constrain the silhouette.",
+    "footRollDegrees": 16,
+    "hipSwayDegrees": 2,
+    "torsoSwayDegrees": 1.5,
+    "weightDrop": 11,
+    "transitionMs": 90,
+    "soles": {
+      "near": {
+        "heel": [
+          340,
+          1498
+        ],
+        "toe": [
+          485,
+          1498
+        ]
+      },
+      "far": {
+        "heel": [
+          565,
+          1496
+        ],
+        "toe": [
+          730,
+          1496
+        ]
+      }
+    },
+    "footCentre": -40,
+    "liftEarly": 1
+  },
+  "idle": {
+    "file": "idle.png",
+    "sha256": "c613390031966df06f4750a2b85342c0c91baebdaec604dd03c1a6dfb73d8e6e",
+    "sourceHeight": 1404,
+    "baseline": 1498,
+    "anchorX": 520,
+    "eyes": [
+      {
+        "x": 535,
+        "y": 186,
+        "rx": 9,
+        "ry": 5,
+        "blinkRy": 9,
+        "lashTop": -1,
+        "lashBottom": 7,
+        "skinAt": [
+          535,
+          199
+        ]
+      },
+      {
+        "x": 573,
+        "y": 200,
+        "rx": 4,
+        "ry": 4,
+        "blinkRy": 7,
+        "lashTop": -1,
+        "lashBottom": 5,
+        "skinAt": [
+          571,
+          211
+        ]
+      }
+    ],
+    "ember": null
+  },
+  "overlays": {
+    "harrow": {
+      "stand": "mask-harrow-stand.png",
+      "kneel": "mask-harrow-kneel.png",
+      "lie": "mask-harrow-lie.png"
+    },
+    "clerk": {
+      "stand": "mask-clerk-hood-stand.png",
+      "kneel": "mask-clerk-hood-kneel.png",
+      "lie": "mask-clerk-hood-lie.png",
+      "nearForearm": "mask-clerk-ledger.png"
+    }
+  }
+}

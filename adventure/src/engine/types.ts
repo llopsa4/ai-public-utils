@@ -141,7 +141,11 @@ export interface RoomDef {
   entries: Record<string, { x: number; y: number; face: Facing }>;
   objects: ObjectDef[];
   hotspots: HotspotDef[];
-  actors: { id: NpcId; x: number; y: number; body?: number; visibleIf?: Condition[] }[];
+  /**
+   * The room's people. `task` holds an animation tag while its conditions hold (Benn asleep on his
+   * chair); once `visibleIf` stops holding, the person leaves (fades out).
+   */
+  actors: { id: NpcId; x: number; y: number; body?: number; visibleIf?: Condition[]; task?: { tag: string; if?: Condition[] } }[];
 }
 
 export interface ActorState {
