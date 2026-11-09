@@ -1,4 +1,4 @@
-import type { Condition, GameState, Point, Polygon } from './types';
+import type { ActorTask, Condition, GameState, Point, Polygon } from './types';
 
 const EPS = 1e-6;
 
@@ -38,6 +38,11 @@ function cross(o: Point, a: Point, b: Point): number {
 export function segmentsCross(a: Point, b: Point, c: Point, d: Point): boolean {
   const d1 = cross(c, d, a), d2 = cross(c, d, b), d3 = cross(a, b, c), d4 = cross(a, b, d);
   return ((d1 > EPS && d2 < -EPS) || (d1 < -EPS && d2 > EPS)) && ((d3 > EPS && d4 < -EPS) || (d3 < -EPS && d4 > EPS));
+}
+
+/** The animation a room's person holds now: the first task whose conditions hold, or null. */
+export function heldTask(task: ActorTask | readonly ActorTask[] | undefined, state: GameState): string | null {
+  return (task ? ([] as ActorTask[]).concat(task) : []).find(k => conditionsHold(state, k.if))?.tag ?? null;
 }
 
 export function conditionsHold(state: GameState, conditions: Condition[] | undefined): boolean {

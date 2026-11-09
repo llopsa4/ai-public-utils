@@ -14,6 +14,8 @@ const caught = (who: 'guard' | 'warden', p: 'g' | 'w', reset: string[]): Command
   { type: 'shake', ms: 400 },
   { type: 'fade', to: 'black', ms: 700 },
   say(`line.i.caught.think.${who}`),
+  // Only imagined: Benn is back asleep on his chair (he had come over to the bars).
+  ...(who === 'guard' ? [{ type: 'step', actor: 'guard', to: { x: 570, y: 326 }, instant: true } as Command] : []),
   ...unset(`${p}Sus1`, `${p}Sus2`, `${p}Sus3`, ...reset),
   { type: 'fade', to: 'clear', ms: 700 },
   { type: 'checkpoint' },
@@ -33,8 +35,8 @@ export const STORY: StoryRules = {
   onEnter: [{
     // The calm start: the dark, the candle, the snoring.
     room: 'cell', if: [{ notFlag: 'cellLit' }],
-    run: s => s.looks['intro.wake'] ? [] : [
-      { type: 'looked', id: 'intro.wake' },
+    run: s => s.looks['intro:wake'] ? [] : [
+      { type: 'looked', id: 'intro:wake' },
       { type: 'wait', ms: 700 },
       say('line.i.wake1'), say('line.i.wake2'),
     ],
@@ -64,7 +66,13 @@ export const STORY: StoryRules = {
     if (id === 'warden' && s.flags.wSus3) return caught('warden', 'w', []);
     if (id === 'guard' && s.flags.guardGone) return [say(s.flags.gotKeys ? 'line.i.afterGuardKeys' : 'line.i.afterGuard')];
     if (id === 'warden' && s.flags.wardenBusy) return [say('line.i.afterWarden')];
-    if (id === 'sigrid' && s.flags.metSigrid) return [{ type: 'chooseChapter' }];
+    // "Walk with me": Silas walks off towards the snow, Sigrid turns to go with him, and the camera
+    // pulls back into the Ashlands reveal.
+    if (id === 'sigrid' && s.flags.metSigrid) return [
+      { type: 'walk', to: { x: 610, y: 304 }, face: 'right' },
+      { type: 'face', actor: 'sigrid', face: 'right' },
+      { type: 'chooseChapter', reveal: 'ashlands' },
+    ];
     return [];
   },
   // The eye shows while someone is being deceived face to face.

@@ -57,3 +57,21 @@ for (const phone of [false, true]) test(`Ironhaven title has the empty courtyard
   await expect(page.locator('#title')).toBeHidden();
   expect(errors).toEqual([]);
 });
+
+test('After every page load the title waits for "click anywhere to begin", then shows the options', {
+  tag: ['@focused', '@runtime'],
+}, async ({ page }) => {
+  // Look like a player's browser: automated ones skip the prompt (src/ui/ui.ts showTitle).
+  await page.addInitScript(() => Object.defineProperty(navigator, 'webdriver', { get: () => false }));
+  const errors: string[] = [];
+  await open(page, errors);
+  await expect(page.locator('#title-begin')).toHaveText('Click anywhere to begin');
+  await expect(page.locator('#title-new')).toBeHidden();
+  await page.mouse.click(200, 200);
+  await expect(page.locator('#title-begin')).toBeHidden();
+  await expect(page.locator('#title-new')).toBeVisible();
+  await expect(page.locator('#title')).toBeVisible();
+  await page.reload();
+  await expect(page.locator('#title-begin')).toBeVisible();
+  expect(errors).toEqual([]);
+});

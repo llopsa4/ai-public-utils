@@ -59,7 +59,11 @@ function talk(c: Chapter, o: Outcome, id: string): Outcome[] {
     const s = structuredClone(state);
     const { node, trace } = visitStoryDialogueNode(s, id, nodeId);
     o.lines.push(...trace.spoken);
-    if (node.choices.length) for (const ch of node.choices) { o.lines.push(ch.text); walk(ch.next, s); }
+    if (node.choices.length) {
+      for (const ch of node.choices) { o.lines.push(ch.text); walk(ch.next, s); }
+      // A timed choice can also run out.
+      if (node.timed) walk(node.timed.next, s);
+    }
     else walk(node.next, s);
   };
   walk(tree.start, o.state);

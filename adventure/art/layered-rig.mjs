@@ -152,10 +152,13 @@ export function partWidthTransform(cfg,name){
  return [xx,xy,xy,yy,a[0]-xx*a[0]-xy*a[1],a[1]-xy*a[0]-yy*a[1]];
 }
 /** Sample each art pixel directly. Keep the established floor/hip geometry and 2px outline. */
-export function renderPackFrame(pack,{phase=null,blink=false,powered=false}={}){
+export function renderPackFrame(pack,{phase=null,blink=false,powered=false,reach=false}={}){
  const isIdle=phase===null&&!!pack.idle;
  // A forearm held up against the chest (Silas carrying the clerk's ledger), about the elbow.
  const raise=pack.forearmRaise?rotate(-pack.forearmRaise,pack.cfg.joints.nearElbow):null;
+ // A reach (Silas lifting Benn's keys through the bars): the near arm swung forward about the
+ // shoulder to about shoulder height, straight. A stand-in until a drawn reach.png arrives.
+ const reachMat=reach?rotate(-(pack.cfg.reachAngle??1.45),pack.cfg.joints.nearShoulder):null;
  const idle=pack.cfg.idle;
  const cfg=isIdle?{...pack.cfg,sourceHeight:idle.sourceHeight,baseline:idle.baseline,eyes:idle.eyes,ember:idle.ember,
   order:['torso'],joints:{...pack.cfg.joints,nearHip:[idle.anchorX,0],farHip:[idle.anchorX,0]}}:pack.cfg;
@@ -164,7 +167,8 @@ export function renderPackFrame(pack,{phase=null,blink=false,powered=false}={}){
  const data=Buffer.alloc(W*H*4),pose=phase===null?null:walkPose(cfg,phase);
  for(const name of cfg.order){
   let layer=isIdle?pack.idle:pack.layers[name];if(blink&&name==='torso')layer=closedEyes(layer,cfg);if(powered&&(name==='nearForearm'||isIdle))layer=powerCell(layer,cfg);
-  const base=pose?pose.mats[name]:identity(),held=raise&&name==='nearForearm'&&!isIdle?mul(base,raise):base;
+  const base=pose?pose.mats[name]:identity();
+  const held=reachMat&&(name==='nearUpperArm'||name==='nearForearm')?mul(base,reachMat):raise&&name==='nearForearm'&&!isIdle?mul(base,raise):base;
   const inv=inverse(pose?mul(held,partWidthTransform(cfg,name)):held);
   for(let y=0;y<H;y++)for(let x=0;x<W;x++){
    const src=point(inv,[hipX+(x+.5-W/2)/k,cfg.baseline+(y+.5-ground)/k]);
@@ -242,7 +246,7 @@ async function sideFrames(pack,powered,noBlink){
  const stand=renderPackFrame(pack,{powered}),blink=noBlink?stand:renderPackFrame(pack,{powered,blink:true});
  const walk=[];for(let p=0;p<8;p++)walk.push(renderPackFrame(pack,{phase:p,powered}));
  const still=async file=>stillFrame(pack.poses?.[file.replace('.png','')]??join(pack.dir,file),pack.cfg,powered,file.replace('.png',''));
- return {stand,blink,walk,crouch:await still('kneel.png'),dead:await still('lie.png')};
+ return {stand,blink,walk,crouch:await still('kneel.png'),dead:await still('lie.png'),reach:renderPackFrame(pack,{powered,reach:true})};
 }
 export async function buildLayeredCharacter(id,cfg){
  let pack=loadPack(join(art,cfg.layeredPack));const powered=!!cfg.powered;
@@ -252,7 +256,7 @@ export async function buildLayeredCharacter(id,cfg){
  const side=await sideFrames(pack,powered,cfg.noBlink),{stand,blink}=side;
  const frames=[stand,blink,stand,blink,stand],tags=[['stand_down',0,0],['blink_down',1,1],['stand_side',2,2],['blink_side',3,3],['stand_up',4,4]];
  for(const direction of ['down','side','up']){tags.push(['walk_'+direction,frames.length,frames.length+side.walk.length-1]);frames.push(...side.walk)}
- for(const name of ['crouch','dead']){tags.push([name,frames.length,frames.length]);frames.push(side[name])}
+ for(const name of ['crouch','dead','reach']){tags.push([name,frames.length,frames.length]);frames.push(side[name])}
  tags.push(['fidget',frames.length,frames.length]);frames.push(blink);
  // Two-sided characters (a left/ set with its own rig.json): their own left-facing frames, tagged
  // <tag>@left; the game plays those instead of mirroring the right-facing ones.
@@ -261,7 +265,7 @@ export async function buildLayeredCharacter(id,cfg){
   const left=await sideFrames(mirrorPack(loadPack(leftDir)),powered,cfg.noBlink);
   const add=(name,list)=>{tags.push([name+'@left',frames.length,frames.length+list.length-1]);for(const f of list)frames.push(flipPng(f))};
   add('stand_side',[left.stand]);add('blink_side',[left.blink]);add('walk_side',left.walk);
-  add('crouch',[left.crouch]);add('dead',[left.dead]);add('fidget',[left.blink]);
+  add('crouch',[left.crouch]);add('dead',[left.dead]);add('reach',[left.reach]);add('fidget',[left.blink]);
  }
  // Direction tags reuse the same side-on art. Alias equal frames instead of storing three copies.
  const unique=[],slots=frames.map(frame=>{let slot=unique.findIndex(f=>f.data.equals(frame.data));if(slot<0){slot=unique.length;unique.push(frame)}return slot});

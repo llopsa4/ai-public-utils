@@ -7,6 +7,7 @@ import { ROOMS, START_ENTRY, START_ROOM } from './rooms';
 import { STORY } from './story';
 import strings from './strings.en.json';
 import { DIARY, MAP } from './diary';
+import { makeRevealScene } from './reveal';
 
 /**
  * The intro, The Man With Many Faces: Silas escapes Ironhaven's cells on the night of Day 3 (a
@@ -47,6 +48,7 @@ export const INTRO: Chapter = {
   when: { day: 3, time: 'when.intro.time', place: 'when.intro.place', viewpoint: 'when.intro.viewpoint' },
   hero: { name: 'speaker.silas', portrait: 'silas', sheet: 'silas', mara: false, abilities: ['read'] },
   pin: 'ironhaven',
+  mapName: 'chapter.intro.short',
   diary: DIARY,
   map: MAP,
   objectives,
@@ -56,4 +58,5 @@ export const INTRO: Chapter = {
   strings,
   story: STORY,
   art: () => import('./art').then(m => m.registerChapterArt()),
+  scenes: { reveal: makeRevealScene },
 };

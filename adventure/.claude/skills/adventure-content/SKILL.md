@@ -50,6 +50,6 @@ Check every new or changed chapter against all five. If one is missing, propose 
 
 1. Add or extend the relevant tests. Use `tests/support/story-driver.ts` for headless story integration, with explicit dialogue choices and fight/screen fixtures. Classify new files/tags as described in `adventure/TESTING.md`.
 2. Run `npm test` and the relevant `npm run test:feature -- story` (or other feature suites). These cover logic without browser journeys.
-3. For new/changed browser wiring, run the relevant focused checks, e.g. `npm run test:browser -- story`. Inspect changed visuals through `npm run preview` → `http://127.0.0.1:4173/adventure/?debug`. Run `npm run test:release` for shared runtime/scene/state/command-runner/chapter/build changes and before publishing, rather than after every content edit. See `adventure/AGENTS.md` and `TESTING.md` for the complete selection rules.
+3. Run unit tests only (`npm test`, the matching `test:feature` suites; `npm run test:all` for shared runtime/scene/state/command-runner/chapter/build changes and before publishing). No browser suites unless the user asks. Inspect changed visuals through `npm run preview` → `http://127.0.0.1:4173/adventure/?debug`. See `adventure/AGENTS.md` and `TESTING.md` for the complete selection rules.
 4. Keep regenerated `index.html` + `build/` with source changes when a build was needed. Commit or push only when explicitly requested (see the repository's AGENTS.md).
 5. Add a CHANGELOG entry and update the README if controls or limits changed.

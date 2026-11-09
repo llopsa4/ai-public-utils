@@ -10,14 +10,14 @@ const FLAT = { farY: 268, farScale: 1, nearY: 345, nearScale: 1 };
 const LIT = [{ flag: 'cellLit' }];
 
 // The cell, Ironhaven's prison, at night (Codex's painting): Silas's side is a cage of iron bars
-// across the left of the room, its door at the right end of the cage (x 352-412), drawn in front of
+// across the left of the room, a smaller door below fixed bars at the cage's right end (x 364-412), drawn in front of
 // him (the bars and the door are foreground pieces). Inside: the barred window high up, a small pale
 // chip of clay in the stone wall, the straw cot, the bucket, and the tin plate on the floor. Outside,
 // in the guard's corridor: Silas's confiscated cloak hanging on a nail, Sergeant Harrow's portrait,
 // the table with the candle and a cup (the mask frame on it), and the guard's chair. No stairs.
 const cellHotspots: HotspotDef[] = [
   { id: 'plate', name: 'name.i.plate', polygon: rect(158, 300, 30, 14), verbs: ['look', 'take'], walkTo: pt(170, 318), face: 'down', visibleIf: [{ notFlag: 'tookPlate' }] },
-  { id: 'frame', name: 'name.i.frame', polygon: rect(484, 266, 22, 12), verbs: ['look', 'take'], walkTo: pt(340, 300), face: 'right', visibleIf: [...LIT, { notFlag: 'gotFrame' }] },
+  { id: 'frame', name: 'name.i.frame', polygon: rect(484, 266, 22, 12), verbs: ['look', 'take'], walkTo: pt(340, 300), face: 'right', visibleIf: [...LIT, { notFlag: 'gotFrame' }], outline: { objects: ['frame'] } },
   { id: 'roster', name: 'name.i.roster', polygon: rect(527, 115, 38, 50), verbs: ['look'], visibleIf: LIT },
   { id: 'cloak', name: 'name.i.cloak', polygon: rect(457, 95, 46, 112), verbs: ['look', 'take'], walkTo: pt(340, 300), face: 'right', visibleIf: LIT },
   { id: 'candle', name: 'name.i.candle', polygon: rect(466, 246, 14, 34), verbs: ['look', 'take'] },
@@ -26,7 +26,7 @@ const cellHotspots: HotspotDef[] = [
   { id: 'wall', name: 'name.i.wall', polygon: rect(244, 122, 24, 20), verbs: ['look', 'take', 'use'], walkTo: pt(256, 288), face: 'up', visibleIf: LIT },
   { id: 'cot', name: 'name.i.cot', polygon: rect(25, 235, 140, 57), verbs: ['look', 'use', 'take'], walkTo: pt(95, 300), face: 'up' },
   { id: 'bucket', name: 'name.i.bucket', polygon: rect(297, 255, 34, 38), verbs: ['look', 'use', 'take'], walkTo: pt(290, 306), face: 'right', visibleIf: LIT },
-  { id: 'cellDoor', name: 'name.i.cellDoor', polygon: rect(352, 100, 60, 232), verbs: ['look', 'open', 'go', 'use'], walkTo: pt(340, 300), face: 'right' },
+  { id: 'cellDoor', name: 'name.i.cellDoor', polygon: rect(364, 162, 48, 172), verbs: ['look', 'open', 'go', 'use'], walkTo: pt(340, 300), face: 'right', outline: { objects: ['cellDoor'] } },
 ];
 
 // The guardroom at the top of the stairs: a peg with a clerk's hood (left), the tally clerk's ledger
@@ -53,32 +53,40 @@ export const ROOMS: Record<string, RoomDef> = {
     scale: FLAT,
     surface: 'stone',
     music: 'tension',
-    light: { tint: 0xc8c0d8, farDim: 1 },
+    light: { tint: 0xc4d2e3, farDim: 0.96 },
     look: {
-      grade: { saturation: 0.8, brightness: 0.92, contrast: 1.08, warmth: -0.1 }, vignette: 0.55,
+      grade: { saturation: 0.86, brightness: 0.98, contrast: 1.04, warmth: -0.08 }, vignette: 0.42,
       // A cold ray of moonlight slanting down from the barred window to the cell floor (seen in the dark too).
-      shafts: [{ x: 170, y: 92, angle: -26, length: 250, width: 42, color: 0xb8c8ff, overDark: true, strength: 1.8 }],
+      shafts: [{ x: 170, y: 92, angle: -26, length: 230, width: 32, color: 0xb8c8ff, overDark: true, strength: 1.2 }],
     },
     // Black but for the candle beyond the bars and the thin moonlight, until Silas throws the
     // moonlight across the cell with the tin plate.
-    dark: { if: [{ notFlag: 'cellLit' }], lights: [{ x: 473, y: 254, r: 95 }, { x: 170, y: 92, r: 46 }], heroR: 110 },
-    ambient: { particles: [{ kind: 'dust', x: 20, y: 60, w: 600, h: 220 }], glows: [{ x: 473, y: 252, r: 46, color: 0xffb860 }] },
+    dark: { if: [{ notFlag: 'cellLit' }], alpha: 0.88, lights: [{ x: 473, y: 254, r: 105 }, { x: 170, y: 92, r: 56 }], heroR: 116 },
+    ambient: {
+      particles: [{ kind: 'dust', x: 30, y: 66, w: 185, h: 190 }],
+      glows: [
+        { x: 170, y: 105, r: 70, color: 0x7898c8 },
+        { x: 473, y: 252, r: 60, color: 0xffb860 },
+      ],
+    },
     props: [{ kind: 'flame', x: 473, y: 252, size: 8, color: 0xffc070, depth: 9000 }],
-    // The cage's bars, and its door (gone once it is open), in front of Silas.
+    // Fixed cage bars and the smaller doorway's jambs/upper bars stay in place.
     foreground: [
       { image: 'cell-bars', x: 2, y: 2, depth: 400 },
-      { image: 'cell-door', x: 364, y: 2, depth: 400, visibleIf: [{ notFlag: 'cellOpen' }] },
+      { image: 'cell-door', x: 364, y: 2, depth: 400 },
     ],
     entries: { start: { x: 100, y: 305, face: 'right' }, fromGuardroom: { x: 330, y: 300, face: 'left' } },
     // The tin plate stays wedged in the window bars once it has thrown the moonlight in.
     objects: [
       { id: 'floorPlate', sheet: 'floor-plate', x: 173, y: 312, depth: 50, visibleIf: [{ notFlag: 'tookPlate' }] },
       { id: 'windowPlate', sheet: 'window-plate', x: 170, y: 123, depth: 50, visibleIf: [{ flag: 'cellLit' }] },
+      { id: 'frame', sheet: 'table-frame', x: 495, y: 278, depth: 280, visibleIf: [...LIT, { notFlag: 'gotFrame' }] },
+      { id: 'cellDoor', sheet: 'cell-gate', x: 404, y: 334, depth: 401, flag: 'cellOpen', whenFalse: 'closed', whenTrue: 'open' },
     ],
     hotspots: cellHotspots,
     actors: [
       // Benn, asleep on his chair by the candle until "Sergeant Harrow" wakes him.
-      { id: 'guard', x: 570, y: 326, visibleIf: [{ notFlag: 'guardGone' }], task: { tag: 'sit', if: [{ notFlag: 'guardAwake' }] } },
+      { id: 'guard', x: 570, y: 326, visibleIf: [{ notFlag: 'guardGone' }], task: [{ tag: 'salute', if: [{ flag: 'bennSaluting' }] }, { tag: 'sit', if: [{ notFlag: 'guardAwake' }] }] },
     ],
   },
   guardroom: {
@@ -92,11 +100,16 @@ export const ROOMS: Record<string, RoomDef> = {
     look: { grade: { saturation: 0.9, brightness: 0.95, contrast: 1.06, warmth: 0.15 }, vignette: 0.45 },
     ambient: { glows: [{ x: 330, y: 220, r: 70, color: 0xff9a40 }] },
     entries: { fromCell: { x: 50, y: 300, face: 'right' } },
-    objects: [],
+    // The clerk's hood on its peg and the ledger on its shelf, until Silas takes them (cut from
+    // Codex's painting; the room is painted without them).
+    objects: [
+      { id: 'hood', sheet: 'guardroom-hood', x: 128.5, y: 162, depth: 50, visibleIf: [{ notFlag: 'tookHood' }] },
+      { id: 'ledger', sheet: 'guardroom-ledger', x: 216, y: 213, depth: 50, visibleIf: [{ notFlag: 'tookLedger' }] },
+    ],
     hotspots: guardroomHotspots,
     actors: [
       // Benn, sent up "to warm himself", asleep again on a stool by the stove: Silas must not wake him.
-      { id: 'guard', x: 382, y: 306, visibleIf: [{ flag: 'guardGone' }], task: { tag: 'sit' } },
+      { id: 'guard', x: 382, y: 306, visibleIf: [{ flag: 'guardGone' }], task: { tag: 'sit' }, sheet: [{ if: [{ flag: 'gotKeys' }], pick: 'guard-nokeys' }] },
       { id: 'warden', x: 470, y: 304, visibleIf: [{ notFlag: 'grateOpen' }] },
     ],
   },

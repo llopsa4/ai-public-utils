@@ -1,3 +1,4 @@
+import type PhaserType from 'phaser';
 import type { EncounterDefinition } from '../combat/types';
 import type { Reward } from '../content/kit';
 import type { DialogueTree } from '../engine/dialogue';
@@ -46,6 +47,8 @@ export interface Chapter {
   end?: { title: string; text: string };
   /** The chapter's art, loaded with it in the browser (later chapters; chapter 1's is the game's). */
   art?: () => Promise<void>;
+  /** Extra scenes the chapter plays (the intro's Ashlands reveal), built with the game's Phaser. */
+  scenes?: Record<string, (phaser: typeof PhaserType, stage: { ART_SCALE: number; LOGICAL_W: number; LOGICAL_H: number }) => typeof PhaserType.Scene>;
   rooms: Record<string, RoomDef>;
   /** Story flags saves accept for this chapter. */
   flags: readonly string[];
@@ -88,6 +91,8 @@ export interface Chapter {
   hero?: ChapterHero;
   /** Where the chapter's pin sits on the chapter map (a place in src/content/world.ts). */
   pin: string;
+  /** A short name for the chapter map's played pins (default: the title), e.g. "Intro". */
+  mapName?: string;
   /** The viewpoint character's diary for this chapter, in story order. */
   diary: readonly DiaryEntry[];
   map: ChapterMap;

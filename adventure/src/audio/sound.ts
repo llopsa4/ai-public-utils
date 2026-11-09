@@ -22,20 +22,6 @@ class Sound {
   private musicPlayer: Music | null = null;
   private musicMood: MusicMood = 'none';
 
-  /**
-   * At start-up: starts the sound at once where the browser allows it without a click (a site the
-   * player often plays with sound, or sound allowed in the site's settings). Elsewhere the context
-   * would start suspended, so it is not kept: the first click, tap or key starts it (unlock).
-   */
-  tryAutoplay(): void {
-    const Ctx = globalThis.AudioContext ?? (globalThis as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
-    if (this.ctx || !Ctx) return;
-    const probe = new Ctx();
-    const allowed = probe.state === 'running';
-    void probe.close();
-    if (allowed) this.unlock();
-  }
-
   /** Creates the audio context; call from a user gesture. Safe to call repeatedly. */
   unlock(): void {
     if (this.ctx) { void this.ctx.resume(); return; }
@@ -70,6 +56,11 @@ class Sound {
     if (!this.ctx) return;
     this.master?.gain.setTargetAtTime(this.muted ? 0 : this.volume * 0.8, this.ctx.currentTime, 0.05);
     this.musicBus?.gain.setTargetAtTime(this.muted ? 0 : this.musicVolume * 0.9, this.ctx.currentTime, 0.05);
+  }
+
+  /** The low hit that opens the title theme when the player clicks to begin. */
+  titleHit(): void {
+    this.musicPlayer?.openingHit();
   }
 
   /** The score for the current room; remembered until audio is unlocked. */

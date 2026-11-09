@@ -52,14 +52,16 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 | `wall` | Clay chip | 488, 244, 48×40 | (512, 576) |
 | `cot` | Straw cot | 50, 470, 280×114 | (190, 600) |
 | `bucket` | Bucket | 594, 510, 68×76 | (580, 612) |
-| `cellDoor` | Cell door | 704, 200, 120×464 | (680, 600) |
+| `cellDoor` | Cell door | 728, 324, 96×344 | (680, 600) |
 
 - Object `intro/objects/floor-plate` (60×24, tags idle (1)): foot point (346, 624). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Object `intro/objects/window-plate` (44×28, tags idle (1)): foot point (340, 246). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/table-frame` (44×24, tags idle (1)): foot point (990, 556). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/cell-gate` (320×344, tags closed (1), open (1)): foot point (808, 668). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Walk-behind piece `foreground/cell-bars.png` (724×664, top left at (4, 4)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
 - Walk-behind piece `foreground/cell-door.png` (96×664, top left at (728, 4)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
 - Benn stands at (1140, 652).
-- Flickering light pools at (946, 504): lamps, kiln mouths, hearths in the painting.
+- Flickering light pools at (340, 210), (946, 504): lamps, kiln mouths, hearths in the painting.
 
 ### guardroom: `intro/rooms/guardroom.png`
 
@@ -348,7 +350,7 @@ Tags (the frames each one plays):
 | `nell` | Nell (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `bryn` | Bryn (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `tobi` | Tobi (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
-| `guard` | Guard (story character) | 10 tags (+ fidget) | 1280×1536, 27 frames |
+| `guard` | Guard (story character) | 10 tags (+ fidget) | 1280×1536, 28 frames |
 | `warden` | Warden (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `sigrid` | Sigrid (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `extra-stoker` (ships as WebP) | background person (stoker) | 13 tags | 1280×768, 13 frames |

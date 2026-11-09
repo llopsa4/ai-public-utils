@@ -1,6 +1,6 @@
 # Testing Adventure
 
-Use the smallest checks that exercise the changed behavior. Ordinary edits do not require full browser playthroughs. A publishing request or a shared runtime behavior change does.
+Agents run unit tests only: `npm test` plus the relevant `test:feature` suites, for every change and before publishing. The browser suites (`test:browser`, `test:release`, `e2e`) run only when the user asks for them.
 
 ## Commands
 
@@ -21,15 +21,15 @@ Example local measurements after restructuring (including typechecking): fast **
 
 Start with `npm test`, then add the relevant feature suites:
 
-- **Story, dialogue, objectives, rewards:** `test:feature -- story`. This includes exhaustive chapter reachability and interaction goldens. Add focused story browser checks for new actors, portraits or other scene/UI wiring.
-- **Saves and migrations:** `test:feature -- saves` and `test:browser -- saves` for real persistence/import/reload wiring. Shared serialization/state behavior also needs release verification.
-- **Crowd routines:** `test:feature -- crowd` checks seeded schedules, timing ranges, path geometry, spacing and shutdown behavior. Use `test:browser -- crowd` when changing pose, placement, hit targets or renderer wiring. Complete work cycles and animated departures remain release journeys.
-- **Input:** `test:feature -- input` covers movement, bounds and settings contracts; it does **not** claim to model mouse/touch gesture ordering. Changes to gestures, focus, dragging or keys require `test:browser -- input`.
-- **Art/animation:** `test:feature -- art` covers metadata and expensive pixel/rig/import checks. Use `test:browser -- art` and inspect relevant images/screenshots for appearance, depth and animation. Browser assertions do not replace visual inspection.
-- **Shared scene, command runner, state/effects, chapter transitions, registry or build behavior:** use the relevant suites while iterating, then `test:release` before finishing. Evaluate behavior impact rather than choosing solely by filename.
-- **Before publishing:** `test:release`. This is validation, not authorization to commit or push.
+- **Story, dialogue, objectives, rewards:** `test:feature -- story`. This includes exhaustive chapter reachability and interaction goldens. Check new actors, portraits or other scene/UI wiring with a screenshot.
+- **Saves and migrations:** `test:feature -- saves`.
+- **Crowd routines:** `test:feature -- crowd` checks seeded schedules, timing ranges, path geometry, spacing and shutdown behavior. Complete work cycles and animated departures are covered only by the browser journeys (run on request).
+- **Input:** `test:feature -- input` covers movement, bounds and settings contracts; it does **not** claim to model mouse/touch gesture ordering. Gesture, focus, dragging and key changes are covered by `test:browser -- input`, run on request.
+- **Art/animation:** `test:feature -- art` covers metadata and expensive pixel/rig/import checks. Inspect relevant images/screenshots for appearance, depth and animation.
+- **Shared scene, command runner, state/effects, chapter transitions, registry or build behavior:** `npm run test:all` (every Node test). Evaluate behavior impact rather than choosing solely by filename.
+- **Before publishing:** `npm run test:all`. This is validation, not authorization to commit or push.
 
-For a Tobi-style NPC addition: fast tests, story/saves/art feature checks as applicable, and focused story browser checks. A change to shared runtime support for that NPC requires release verification. For a Hollis-style schedule-only adjustment: fast tests and the crowd Node suite; add the short crowd browser suite if its placement or presentation changes.
+For a Tobi-style NPC addition: fast tests and story/saves/art feature checks as applicable. A change to shared runtime support for that NPC needs `test:all`. For a Hollis-style schedule-only adjustment: fast tests and the crowd Node suite.
 
 ## What the layers prove
 

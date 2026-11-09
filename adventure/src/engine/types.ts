@@ -9,6 +9,8 @@ export type Polygon = Point[];
 
 export type Facing = 'down' | 'up' | 'left' | 'right';
 export type Pose = 'stand' | 'crouch' | 'dead';
+/** An animation a room's person holds while its conditions hold (a list: the first that holds). */
+export interface ActorTask { tag: string; if?: Condition[] }
 
 /** Every named character in the game; each chapter brings its own cast (`Chapter.npcs`). */
 export const NPC_IDS = ['oren', 'nell', 'bryn', 'tobi', 'guard', 'warden', 'sigrid'] as const;
@@ -147,7 +149,7 @@ export interface RoomDef {
    * The room's people. `task` holds an animation tag while its conditions hold (Benn asleep on his
    * chair); once `visibleIf` stops holding, the person leaves (fades out).
    */
-  actors: { id: NpcId; x: number; y: number; body?: number; visibleIf?: Condition[]; task?: { tag: string; if?: Condition[] } }[];
+  actors: { id: NpcId; x: number; y: number; body?: number; visibleIf?: Condition[]; task?: ActorTask | readonly ActorTask[]; sheet?: { if?: Condition[]; pick: string }[] }[];
 }
 
 export interface ActorState {
@@ -243,6 +245,10 @@ export type Command =
   /** `at` places the line for a voice from off-screen. */
   | { type: 'say'; actor: Speaker; text: string; at?: Point }
   | { type: 'pose'; actor: ActorId; pose: Pose }
+  /** Presentation only: holds an animation tag on someone (Benn's salute, Silas's reach), or `null` to stop. */
+  | { type: 'perform'; actor: ActorId; tag: string | null }
+  /** Presentation only: someone else in the room walks straight to a point (Benn to the bars), or is put there (`instant`). */
+  | { type: 'step'; actor: ActorId; to: Point; face?: Facing; instant?: boolean; inFront?: boolean }
   | { type: 'setFlag'; flag: string; value: boolean }
   | { type: 'addItem'; item: string }
   | { type: 'removeItem'; item: string }
@@ -289,4 +295,5 @@ export type Command =
   | { type: 'shop' }
   | { type: 'end' }
   /** The chapter map: the player picks the next chapter to play (ends the current chapter). */
-  | { type: 'chooseChapter' };
+  /** `reveal`: first the Ashlands reveal (after Silas's intro), then the map. */
+  | { type: 'chooseChapter'; reveal?: 'ashlands' };

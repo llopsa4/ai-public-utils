@@ -1,5 +1,6 @@
 import { ITEM_ICONS, type Mood } from '../game/assets';
 import { LANGUAGES, language, onLanguageChange, setLanguage, t, type Language } from '../engine/i18n';
+import { sound } from '../audio/sound';
 import { TEXT_SCALE, onSettingsChange, settings, updateSettings, type Settings } from '../engine/settings';
 import { readAutosave } from '../engine/autosave';
 import type { GameState, Point, Speaker, Verb } from '../engine/types';
@@ -218,6 +219,9 @@ export class Ui {
   showTitle(canContinue: boolean): void {
     $('app').classList.add('on-title');
     $('title').hidden = false;
+    // Automated browsers (the Playwright specs) skip the prompt: they test the menus behind it, and
+    // tests/e2e/title-courtyard.spec.ts checks the prompt itself with webdriver hidden.
+    if (!this.begun && !navigator.webdriver) this.awaitBegin();
     const cont = $<HTMLButtonElement>('title-continue');
     cont.hidden = !canContinue;
     $('title-save').hidden = !canContinue;
@@ -227,6 +231,37 @@ export class Ui {
     heading.focus({ preventScroll: true });
     this.setHover('');
     hideLabels(this);
+  }
+
+  /** Set by the first click on the title after a page load; back from a game, the menu shows at once. */
+  private begun = false;
+
+  /**
+   * After every page load the title waits for "click anywhere to begin": browsers only allow sound
+   * after a click, so that click starts the title theme with a low hit and fades the options in.
+   */
+  private awaitBegin(): void {
+    const title = $('title'), prompt = $('title-begin');
+    const touch = globalThis.matchMedia?.('(pointer: coarse)').matches === true;
+    prompt.textContent = t(touch ? 'ui.beginTap' : 'ui.beginClick');
+    prompt.hidden = false;
+    title.classList.add('awaiting-begin');
+    const kinds = ['pointerdown', 'keydown'] as const;
+    const begin = (e: Event) => {
+      // Modifier keys alone (a screenshot shortcut, say) do not count.
+      if (e instanceof KeyboardEvent && ['Shift', 'Control', 'Alt', 'Meta', 'Tab'].includes(e.key)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      for (const kind of kinds) window.removeEventListener(kind, begin, { capture: true });
+      this.begun = true;
+      sound.unlock();
+      sound.titleHit();
+      title.classList.remove('awaiting-begin');
+      title.classList.add('begun');
+      prompt.hidden = true;
+      ($('title').querySelector('.menu-list button:not([hidden])') as HTMLButtonElement | null)?.focus({ preventScroll: true });
+    };
+    for (const kind of kinds) window.addEventListener(kind, begin, { capture: true });
   }
 
   hideTitle(): void {
@@ -319,8 +354,8 @@ export class Ui {
   }
 
   /** The chapter map: resolves with the chapter picked (ui/chapterMap.ts). */
-  chapterMap(open: readonly Chapter[]): Promise<Chapter> {
-    return showChapterMap(open);
+  chapterMap(open: readonly Chapter[], played: readonly Chapter[] = []): Promise<Chapter> {
+    return showChapterMap(open, played);
   }
 
   /** A chapter picked on the map: its opening over black, then `start` (the game state), then the fade. */
@@ -365,8 +400,8 @@ export class Ui {
 
   // ----------------------------------------------------------- choices ---
   /** Dialogue replies; one built on a reading of the person carries the read mark. */
-  choose(options: (string | { text: string; read?: boolean })[]): Promise<number> {
-    return choose(this, options);
+  choose(options: (string | { text: string; read?: boolean })[], timeoutMs?: number): Promise<number> {
+    return choose(this, options, timeoutMs);
   }
 
   // ------------------------------------------------------ hover, toast ---

@@ -1,6 +1,6 @@
 # room-guardroom
 
-Status: **placeholder** · room · chapter intro · in the game as `art/src/intro/rooms/guardroom.png`
+Status: **final** · room · chapter intro · in the game as `art/src/intro/rooms/guardroom.png`
 
 ## What the game does with it
 
@@ -13,7 +13,7 @@ Everything the player can click, at these places (art pixels), each must be pain
 - **Stairs down** (`downStairs`, x 0–80, y 300–524): look at, go through (an exit).
 - **Stove** (`stove`, x 600–720, y 360–524): look at, use.
 
-Story characters stand at: name.warden (880, 608). Keep the wall behind them uncluttered at head height.
+Story characters stand at: Benn (764, 612); Kell (940, 608). Keep the wall behind them uncluttered at head height.
 
 
 ## Technical

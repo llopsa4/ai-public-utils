@@ -4,6 +4,7 @@ import { CHAPTER_IDS, loadChapter, setChapter } from '../src/chapters';
 import { heroIdentity } from '../src/chapters/hero';
 import { resolveNode } from '../src/engine/dialogue';
 import { newGame } from '../src/engine/state';
+import { parseSave, serializeSave } from '../src/engine/saveFile';
 import { openChapters } from '../src/engine/unlock';
 import type { GameState } from '../src/engine/types';
 import { enterStoryRoom, interactStory, runStoryCommands, type StoryOptions } from './support/story-driver';
@@ -12,9 +13,18 @@ const INTRO = await loadChapter('intro');
 await loadChapter('ch1');
 setChapter('intro');
 
-/** Picks dialogue choices by node: the first listed choice whose next node is offered. */
+test('intro opening progress and an unlocked cell door survive save validation', () => {
+  const s = newGame('intro');
+  enterStoryRoom(s, {});
+  s.flags.cellOpen = true;
+  const restored = parseSave(serializeSave(s));
+  assert.ok(restored.ok, 'the real opening-scene progress marker must be saveable');
+  if (restored.ok) assert.equal(restored.state.flags.cellOpen, true);
+});
+
+/** Picks dialogue choices by node: the first listed choice whose next node is offered (or a timed choice's run-out). */
 const choosing = (prefer: string[]): StoryOptions => ({
-  choose: next => prefer.find(p => next.includes(p)) ?? (() => { throw new Error(`no preferred choice among ${next.join(', ')}`); })(),
+  choose: (next, node) => prefer.find(p => next.includes(p) || node.timed?.next === p) ?? (() => { throw new Error(`no preferred choice among ${next.join(', ')}`); })(),
 });
 const good = choosing(['scolded', 'moved', 'warm', 'palmed', 'tally', 'kitchen', 'clerk']);
 
@@ -135,6 +145,27 @@ test('without the keys, the bent nail picks the cell lock once Benn has gone', (
   assert.ok(s.flags.cellOpen);
 });
 
+test('Benn salutes, Silas sees his chance, and lifting the keys is a reach through the bars', () => {
+  const s = toHarrow();
+  play(s, 'read', 'guard');
+  const r = play(s, 'talk', 'guard');
+  assert.ok(r.spoken.indexOf('dlgI.hero.keysChance') > r.spoken.indexOf('dlgI.guard.warm2'), 'the chance comes as he salutes');
+  assert.ok(r.commands.some(c => c.type === 'perform' && c.actor === 'hero' && c.tag === 'reach'), 'Silas reaches');
+  assert.ok(s.inventory.includes('keys') && s.flags.guardGone && !s.flags.bennSaluting);
+});
+
+test('the chance lasts five seconds: too slow, and Benn leaves with his keys (the nail still opens the door)', () => {
+  const node = INTRO.dialogues.guard.nodes.palm;
+  assert.deepEqual(node.timed, { ms: 5000, next: 'tooSlow' });
+  const s = toHarrow();
+  play(s, 'read', 'guard');
+  const r = play(s, 'talk', 'guard', undefined, choosing(['scolded', 'moved', 'warm', 'tooSlow']));
+  assert.ok(r.spoken.includes('dlgI.guard.tooSlow') && !r.spoken.includes('dlgI.choice.palm'), 'Silas says nothing');
+  assert.ok(s.flags.guardGone && !s.inventory.includes('keys') && !s.flags.bennSaluting);
+  play(s, 'use', 'cellDoor', 'nail');
+  assert.ok(s.flags.cellOpen);
+});
+
 test('Kell catches a clerk who strikes the wrong note three times, and the eye counts it', () => {
   const s = newGame('intro');
   Object.assign(s.flags, { cellLit: true, guardGone: true, cellOpen: true, sawWarden: true, readWarden: true, wearingClerk: true });
@@ -160,14 +191,26 @@ test("every line the intro can say has a string", () => {
   for (const k of said) assert.ok(keys.has(k), `missing string ${k}`);
 });
 
-test('Benn sleeps sitting on his chair until "Harrow" wakes him, and leaves once sent upstairs', async () => {
-  const { conditionsHold } = await import('../src/engine/geometry');
+test('Benn sleeps sitting on his chair until "Harrow" wakes him, salutes, and leaves once sent upstairs', async () => {
+  const { conditionsHold, heldTask } = await import('../src/engine/geometry');
   const benn = INTRO.rooms.cell.actors.find(a => a.id === 'guard')!;
   const s = newGame('intro');
-  assert.equal(benn.task?.tag, 'sit');
-  assert.ok(conditionsHold(s, benn.task?.if) && conditionsHold(s, benn.visibleIf), 'asleep on his chair');
+  assert.equal(heldTask(benn.task, s), 'sit', 'asleep on his chair');
+  assert.ok(conditionsHold(s, benn.visibleIf));
   s.flags.guardAwake = true;
-  assert.ok(!conditionsHold(s, benn.task?.if), 'awake: he stands');
+  assert.equal(heldTask(benn.task, s), null, 'awake: he stands');
+  s.flags.bennSaluting = true;
+  assert.equal(heldTask(benn.task, s), 'salute', 'saluting his "sergeant"');
   s.flags.guardGone = true;
   assert.ok(!conditionsHold(s, benn.visibleIf), 'gone up the stairs');
+});
+
+test('upstairs, Benn wears his key ring only if Silas did not lift it', async () => {
+  const { conditionsHold } = await import('../src/engine/geometry');
+  const benn = INTRO.rooms.guardroom.actors.find(a => a.id === 'guard')!;
+  const s = newGame('intro');
+  const sheet = () => benn.sheet?.find(p => conditionsHold(s, p.if))?.pick ?? 'guard';
+  assert.equal(sheet(), 'guard', 'the nail route: he still has them');
+  s.flags.gotKeys = true;
+  assert.equal(sheet(), 'guard-nokeys', 'lifted: the ring is gone from his belt');
 });

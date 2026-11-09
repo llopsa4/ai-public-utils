@@ -143,19 +143,30 @@ export const RIGS = {
     dir: 'intro/', sits: 'asleep',
     source: 'sources/characters/char-guard/body.png', armLayer: 'sources/characters/char-guard/arm.png', height: 216, walks: false,
     armPivot: [368, 377],
+    // Saluting his "sergeant" in the cell (the key steal): elbow measured on arm.png.
+    salute: { upperArm: -100, forearm: -70, elbow: [325, 600] },
     hipY: 1130, splitX: 485, hips: { near: [420, 1130], far: [560, 1130] }, knees: { near: [405, 1290], far: [575, 1290] },
     eyes: [{ x: 536, y: 150, rx: 9, ry: 4, skinAt: [536, 162] }, { x: 574, y: 146, rx: 4, ry: 3, skinAt: [571, 157] }],
     portrait: [420, 70, 210, 210], moods: ['neutral'],
     face: { mouth: { x: 557, y: 192, rx: 10, ry: 3 }, brows: [{ x0: 520, x1: 560, y0: 128, y1: 135, inner: 'right' }, { x0: 565, x1: 580, y0: 125, y1: 131, inner: 'left' }] },
   },
+  // Kell: Codex's drawings (art/inbox/intro-next-review/HANDOFF.md), measured on the 1024x1536
+  // canvas. Broad and heavy; he never walks (he leaves for the kitchen off-screen). One eye shows
+  // in his three-quarter view; kneeling and lying are drawn.
+  // Benn once Silas has lifted his keys: the same drawings with the key ring painted out
+  // (art/sources/characters/char-guard-nokeys); his portrait stays the guard's.
+  get 'guard-nokeys'() {
+    return { ...this.guard, source: 'sources/characters/char-guard-nokeys/body.png', armLayer: 'sources/characters/char-guard-nokeys/arm.png', noPortrait: true };
+  },
   warden: {
-    dir: 'intro/', variant: { hue: 190, sat: 0.3, light: 0.7, skin: 0.9, headgear: { kind: 'cap', color: [60, 62, 70] } },
-    source: 'kiln:opening/iven.png', height: 230, walks: false,
-    hipY: 1000, splitX: 480, hips: { near: [420, 1000], far: [640, 1000] }, knees: { near: [360, 1240], far: [760, 1250] },
-    fidgetLean: -3, nearIsUpper: true, crouchSquash: 1,
-    eyes: [{ x: 452, y: 129, rx: 15, ry: 8, skinAt: [452, 148] }, { x: 507, y: 123, rx: 14, ry: 8, skinAt: [505, 142] }],
-    portrait: [320, 0, 340, 340], moods: ['neutral'],
-    face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
+    dir: 'intro/',
+    source: 'sources/characters/char-warden/body.png', armLayer: 'sources/characters/char-warden/arm.png', height: 230, walks: false,
+    armPivot: [300, 330],
+    hipY: 900, splitX: 490, hips: { near: [350, 900], far: [620, 900] }, knees: { near: [340, 1180], far: [630, 1180] },
+    fidgetLean: -3,
+    eyes: [{ x: 525, y: 104, rx: 13, ry: 4, skinAt: [525, 120] }],
+    portrait: [385, 15, 240, 240], moods: ['neutral'],
+    face: { mouth: { x: 552, y: 156, rx: 14, ry: 4 }, brows: [{ x0: 500, x1: 560, y0: 80, y1: 93, inner: 'right' }, { x0: 566, x1: 582, y0: 82, y1: 94, inner: 'left' }] },
   },
   // Sigrid: a stand-in until Codex redraws her two masters (art/CODEX-FIXES.md: the far foot floats
   // above the floor line). Her two-sided pack is rigged and ready: then this becomes
@@ -183,6 +194,15 @@ for (const [id, outfit, powered] of [
 
 /** @type {ArtEntry[]} */
 export const MANIFEST = [
+  // The Ashlands reveal after Silas's intro (src/game/reveal.ts): a far view from high above, in four
+  // layers that move apart as the camera pulls back from Ironhaven. Stand-ins by art/reveal.mjs.
+  ...[
+    ['sky', 'The night sky over the Ashlands, seen from very high and far: deep blue above, an ember haze low on the horizon from the kilns, stars, a pale moon upper right. Opaque, the whole frame.'],
+    ['mountains', 'The far mountain ranges along the horizon, cold blue-grey, snow on the highest peaks, fading into haze. Transparent above the mountains.'],
+    ['plains', "The ash plains rolling away below the mountains: grey-brown flats, the Rift's dark jagged crack running through the middle into the distance, and far off on the right the kilns' orange glow and chimney smoke. Transparent above the land."],
+    ['ridge', 'The near ridge in the lower left: a dark snowy cliff, and on its top Ironhaven, the city of iron and snow: walls, towers and a few lit windows, small against the land. Transparent above the ridge. Ironhaven sits about a third from the left and a third from the top (around x 330, y 270 of 1280x720).'],
+  ].map(([layer, subject]) => ({ id: `reveal-${layer}`, kind: 'prop', file: `intro/reveal/reveal-${layer}.webp`, size: { w: 1280, h: 720 }, anchor: 'top-left',
+    chapter: 'intro', status: 'requested', generator: 'Codex (stand-in: reveal.mjs)', subject })),
   { id: 'title-ironhaven-courtyard', kind: 'prop', file: 'title/ironhaven-courtyard.webp', size: { w: 1280, h: 720 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Empty Ironhaven courtyard, half covered in snow; no characters or baked-in artifacts. Distant fire and bare flag bracket.' },
   { id: 'title-gauntlet', kind: 'prop', file: 'title/title-gauntlet.png', width: 160, anchor: 'bottom-centre', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Mara\'s abandoned gauntlet, independent transparent foreground object.' },
   { id: 'title-ironhaven-flag', kind: 'prop', file: 'title/ironhaven-flag.png', size: { w: 192, h: 220 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Six frames of Ironhaven\'s hanging flag, 3 by 2 cells of 64 by 110 pixels.' },
@@ -345,11 +365,12 @@ export const MANIFEST = [
     ['silas-harrow', 'Silas wearing the Harrow mask (only the face and head differ from char-silas).', 220],
     ['silas-clerk', "Silas as the tally clerk: hood up, a ledger held to his chest (only the head and arms differ from char-silas).", 220],
     ['guard', "Benn, the young night guard of Ironhaven's cells.", 216],
+    ['guard-nokeys', "Benn without his key ring (after Silas lifts it).", 216],
     ['warden', "Kell, the guardroom guard of Ironhaven's prison.", 230],
     ['sigrid', 'Captain Sigrid of Ironhaven.', 228],
   ].flatMap(([id, subject, height]) => [
     { id: `char-${id}`, kind: 'character', file: `intro/characters/${id}.png`, sheet: `intro/characters/${id}.json`, anchor: 'bottom-centre', height, rig: id, chapter: 'intro', status: 'placeholder', generator: 'rig.mjs', subject },
-    { id: `portrait-${id}`, kind: 'portrait', file: `intro/portraits/${id}.png`, anchor: 'none', moods: RIGS[id].moods ?? ['neutral', 'worried', 'angry'], chapter: 'intro', status: 'placeholder', generator: 'rig.mjs', subject: `${subject} Head and shoulders.` },
+    ...(RIGS[id].noPortrait ? [] : [{ id: `portrait-${id}`, kind: 'portrait', file: `intro/portraits/${id}.png`, anchor: 'none', moods: RIGS[id].moods ?? ['neutral', 'worried', 'angry'], chapter: 'intro', status: 'placeholder', generator: 'rig.mjs', subject: `${subject} Head and shoulders.` }]),
   ]),
   ...[
     ['plate', 'A dented tin plate, shiny in the dent.'], ['crust', 'A stale crust of bread.'], ['nail', 'A bent iron nail.'],
@@ -365,11 +386,21 @@ export const MANIFEST = [
     file: 'intro/objects/window-plate.png', sheet: 'intro/objects/window-plate.json', chapter: 'intro', generator: 'intro.mjs' },
   { ...object('floor-plate', 'A dented tin plate with a stale crust on it, lying on the cell floor by the cot.', ['idle']),
     file: 'intro/objects/floor-plate.png', sheet: 'intro/objects/floor-plate.json', chapter: 'intro', generator: 'intro.mjs' },
+  // The guardroom's clerk hood on its peg and ledger on its shelf, cut from Codex's painting along their
+  // outlines; the room itself is Codex's empty version (art/inbox/intro-next-review), so they can go.
+  { ...object('guardroom-hood', "The tally clerk's grey hood hanging on a peg in the guardroom.", ['idle']),
+    file: 'intro/objects/guardroom-hood.png', sheet: 'intro/objects/guardroom-hood.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
+  { ...object('guardroom-ledger', 'The red-brown tally ledger lying on the guardroom shelf.', ['idle']),
+    file: 'intro/objects/guardroom-ledger.png', sheet: 'intro/objects/guardroom-ledger.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
+  { ...object('table-frame', "Silas's articulated brass mask frame lying flat on the guard's table, with a clear brass rim and open centre.", ['idle']),
+    file: 'intro/objects/table-frame.png', sheet: 'intro/objects/table-frame.json', chapter: 'intro', status: 'final', generator: 'Codex' },
+  { ...object('cell-gate', 'A smaller dark iron cell gate below fixed upper bars, with closed and visibly swung-open views.', ['closed', 'open']),
+    file: 'intro/objects/cell-gate.png', sheet: 'intro/objects/cell-gate.json', chapter: 'intro', status: 'final', generator: 'Codex' },
   // The cell's bars and door, drawn in front of Silas (Codex's painting, split; art/inbox/cell-layers).
   { id: 'cell-bars', kind: 'foreground', file: 'foreground/cell-bars.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex',
     subject: "The cell's iron cage: its bars and frame, drawn in front of Silas (the room painting's foreground)." },
   { id: 'cell-door', kind: 'foreground', file: 'foreground/cell-door.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex',
-    subject: "The cage's barred door with its lock, drawn in front of Silas until it is opened." },
+    subject: "The smaller cell doorway's fixed upper bars and jambs; the separate cell-gate object opens below them." },
   icon('read', 'Read people: a face in profile with a small gold glint of insight above it.'),
 ];
 
@@ -570,7 +601,7 @@ MANIFEST.push({
 // Extras for Silas: the Read icon (sharpened), the suspicion eye, Nessa's mask frame in detail.
 const read = MANIFEST.find(e => e.id === 'icon-read');
 read.subject = "Read people: a face in profile, looking right, with a small gold glint of insight above the brow (a thought caught). The same style, line weight and colours as the other action-ring icons (art/src/icons/look.png, talk.png...), so it sits in the ring beside them; it is also shown small (about 18 px) before a dialogue reply built on a reading, so it must read at that size.";
-MANIFEST.push({ id: 'ui-suspicion-eye', kind: 'icon', file: 'ui/suspicion-eye.png', size: { w: 192, h: 48 }, anchor: 'none', chapter: 'intro', status: 'requested', generator: 'Codex',
+MANIFEST.push({ id: 'ui-suspicion-eye', kind: 'icon', file: 'ui/suspicion-eye.png', size: { w: 192, h: 48 }, anchor: 'none', chapter: 'intro', status: 'final', generator: 'Codex',
   subject: "The suspicion eye: how close the person Silas is deceiving is to seeing through him, shown beside the satchel. Four states, left to right: calm (the eye wide open, a pale white, dark pupil); narrowing (the lids half down); narrow (a suspicious slit, the white turned warm); seeing through him (a red-rimmed slit, the white turned red). One eye, the same size and position in each state, drawn like an ink illustration on the game's dark wooden bar.",
   spec: ['File: art/inbox/ui-suspicion-eye.png, a 192x48 strip of four 48x48 frames left to right (calm, narrowing, narrow, red), transparent (or flat magenta).'] });
 const frame = MANIFEST.find(e => e.id === 'item-frame');

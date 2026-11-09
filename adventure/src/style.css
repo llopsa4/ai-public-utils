@@ -257,6 +257,15 @@ button.verb:hover, button.verb:focus-visible {
   cursor: pointer;
 }
 
+/* A choice that only waits so long (Benn's salute): a bar under the replies runs down. */
+#choices .choice-timer {
+  height: 4px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #ffb35a, #ff6a2a);
+  transform-origin: left center;
+  animation: choice-timer linear forwards;
+}
+@keyframes choice-timer { from { transform: scaleX(1); } to { transform: scaleX(0); } }
 #choices button:hover, #choices button:focus-visible {
   color: var(--gold);
   background: rgb(255 255 255 / 0.06);
@@ -521,14 +530,11 @@ html.battle-out #bar, html.battle-out #overlay {
 }
 
 /* The suspicion eye (ui/suspicion.ts): calm ink, then narrowing, then red. */
-#suspicion { display: flex; align-items: center; margin-right: 0.6rem; }
+#suspicion {
+  width: 40px; height: 40px; flex: none; margin-right: 0.6rem;
+  background-repeat: no-repeat; background-size: 400% 100%; image-rendering: pixelated;
+}
 #suspicion[hidden] { display: none; }
-#suspicion .eye-white { fill: #f1e2c0; stroke: #2a1a10; stroke-width: 1.5; }
-#suspicion .eye-pupil { fill: #2a1a10; }
-#suspicion .eye-lid { fill: none; stroke: #2a1a10; stroke-width: 2.2; }
-#suspicion[data-level="2"] .eye-white { fill: #f0c8a0; }
-#suspicion[data-level="3"] .eye-white { fill: #e07050; }
-#suspicion[data-level="3"] .eye-pupil { fill: #400a04; }
 
 /* A dialogue reply drawn from reading the person: the read icon before its text. */
 #choices .choice-mark { width: 1.1em; height: 1.1em; margin-right: 0.35em; vertical-align: -0.2em; image-rendering: pixelated; }
@@ -543,3 +549,9 @@ html.battle-out #bar, html.battle-out #overlay {
 #chapter-map .pin-day { font-size: 18px; text-anchor: middle; }
 #chapter-map-list { display: flex; gap: 1rem; }
 #chapter-map-list button { font-size: 1.2em; }
+/* Played chapters: dimmed and ticked, not clickable. */
+#chapter-map .chapter-pin.played { cursor: default; opacity: 0.55; }
+#chapter-map .chapter-pin.played .map-here-pin { fill: #7a6a58; stroke: #3a2e22; }
+#chapter-map .pin-tick { fill: none; stroke: #f4e6c6; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+#chapter-map .pin-earlier { font-size: 20px; fill: #6a3a1a; }
+#chapter-map-list button:disabled { opacity: 0.5; cursor: default; }

@@ -13,6 +13,9 @@ const ART_SCALE = 2;
 export const SHADOW_DEPTH = -4000;
 const SHADOW_ALPHA = 0.5;
 
+/** Added to a character's depth to draw it in front of foreground pieces (depth 400, rooms.ts). */
+const FRONT_DEPTH = 1000;
+
 /** Visible body size per pose in world units at depth scale 1 (hit testing and speech placement). */
 const BODY: Record<Pose, { w: number; h: number }> = {
   stand: { w: 62, h: 116 },
@@ -112,6 +115,13 @@ export class Actor {
     this.refresh();
   }
 
+  /** Puts the character at a point at once (a scene played over again, out of sight). */
+  moveTo(to: Point): void {
+    this.stop();
+    this.sprite.setPosition(to.x, to.y);
+    this.place();
+  }
+
   /** Walks along the waypoints. Resolves true when the end is reached, false if interrupted. */
   async walk(path: Point[]): Promise<boolean> {
     this.stop();
@@ -203,12 +213,15 @@ export class Actor {
     return { x: this.sprite.x, y: this.sprite.y - (BODY[this.pose].h * this.bodyScale + 8) * this.depth };
   }
 
+  /** Draws the character in front of the room's foreground pieces (Benn outside the cell's bars). */
+  inFront = false;
+
   private place(): void {
     const { farY, farScale, nearY, nearScale } = this.depthScale;
     const t = Phaser.Math.Clamp((this.sprite.y - farY) / (nearY - farY), 0, 1);
     this.depth = farScale + (nearScale - farScale) * t;
     this.sprite.setScale(this.depth / ART_SCALE);
-    this.sprite.setDepth(this.sprite.y);
+    this.sprite.setDepth(this.sprite.y + (this.inFront ? FRONT_DEPTH : 0));
     this.placeWalkBlend();
     this.placeShadow();
   }

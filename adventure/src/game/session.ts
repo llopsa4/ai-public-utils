@@ -6,7 +6,8 @@ import { sound } from '../audio/sound';
 import { newGame } from '../engine/state';
 import type { GameState, Point } from '../engine/types';
 import { useCarriedItem, hitTest, targetId } from './room/input';
-import { Ui } from '../ui/ui';
+import Phaser from 'phaser';
+import { ART_SCALE, LOGICAL_H, LOGICAL_W, Ui } from '../ui/ui';
 import type { RoomScene, TitleScene } from './scenes';
 
 const AUTOSAVE_DELAY = 400;
@@ -93,13 +94,23 @@ export class Session {
    * its own thread (its hero's own satchel and kit), keeping the story so far (flags of the chapters
    * played, for the diary) and opening with its title card.
    */
-  async chooseNextChapter(): Promise<void> {
+  /** The Ashlands reveal (src/game/reveal.ts), over the room (faded out); resolves when it ends. */
+  async playReveal(): Promise<void> {
+    const make = (await loadChapter('intro')).scenes?.reveal, rooms = this.scene?.scene;
+    if (!make || !rooms) return;
+    if (!rooms.get('reveal')) rooms.add('reveal', make(Phaser, { ART_SCALE, LOGICAL_W, LOGICAL_H }), false);
+    await new Promise<void>(done => { rooms.launch('reveal', { done }); });
+  }
+
+  /** `calm`: after the reveal, the map keeps the warm music the reveal ended on. */
+  async chooseNextChapter({ calm = false } = {}): Promise<void> {
     const state = this.state;
     const finished = [...new Set([...Object.keys(state.earlier), state.chapter])];
     const chapters = await Promise.all(openChapters(finished).map(id => loadChapter(id, { art: true })));
+    const played = await Promise.all(finished.map(id => loadChapter(id)));
     // The title theme over the map; it fades as the picked chapter's opening begins.
-    sound.music('title');
-    const ch = await this.ui.chapterMap(chapters);
+    sound.music(calm ? 'warm' : 'title');
+    const ch = await this.ui.chapterMap(chapters, played);
     sound.music('none');
     const next = newGame(ch.id);
     next.earlier = { ...state.earlier, [state.chapter]: state.flags };

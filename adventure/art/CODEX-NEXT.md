@@ -77,3 +77,51 @@ Do not change `room-cell`.
 - **`item-frame`:** Nessa's mask frame, 64×64.
 - **The frame on the table:** a small picture of the frame lying on the guard's table, so the
   game can show it there until Silas fishes it out.
+
+## 5. Silas reaching through the bars (`silas-layered/reach.png`)
+
+In the cell, Silas lifts Benn's keys: Benn stands outside the bars saluting, and Silas reaches
+through to clap his shoulder and slip the key ring off his belt. The game shows this now with a
+stand-in: the pack's near arm swung forward, straight and stiff. Draw the real pose.
+
+**What to draw:**
+
+- Silas standing, facing right, in his casual outfit (match `art/sources/characters/silas-layered/master.png`
+  and `idle.png`: same body, clothes, face and proportions, 220 art px tall).
+- The **near arm** reaches forward at about shoulder height, slightly bent, the hand open and turned
+  palm-down as if to clap someone's shoulder. The shoulder leans a little into the reach; the other
+  arm hangs relaxed.
+- The feet stay planted on the floor line (both soles on y ≈ 1498, as in `master.png`).
+- Same canvas and placement as the pack's other pieces: 1024×1536, transparent background.
+
+**Save** as `art/inbox/silas-layered/reach.png`. Do not import it: Claude brings it in, adds the
+Harrow and clerk mask layers for it (`mask-harrow-reach.png`, `mask-clerk-hood-reach.png`, made the
+way you made the stand versions), and swaps it for the stand-in.
+
+**Optional:** `art/inbox/silas-layered/reach-keys.png`, the same pose with the key ring hanging from
+his fingers (the ring is drawn on Benn's belt in `art/sources/characters/char-guard/body.png`: match it).
+
+## 6. The Ashlands from afar (`reveal-sky`, `reveal-mountains`, `reveal-plains`, `reveal-ridge`)
+
+When Silas's intro ends, the camera pulls back from Ironhaven over the whole Ashlands while the
+title "The Rift" and then "Ashlands" appear (the game adds the lettering: none in the pictures).
+The game shows stand-ins drawn in code now; paint the real view.
+
+**The view:** high and far off, at night under a moon. Ironhaven, the city of iron and snow, on its
+cliff in the lower left; the ash plains rolling away below it; the Rift's dark jagged crack running
+through the plains into the distance; the kilns glowing orange far off on the right; mountain
+ranges along the horizon. The mood is vast, cold and quiet, a little ominous. Same painted pixel
+style as the cell and the world map.
+
+**Four separate layers**, each 1280×720, painted to line up when stacked (sky at the back). The game
+moves them apart as the camera pulls back, so every layer but the sky is **transparent above its
+own land**, and each extends fully to the left, right and bottom edges:
+
+1. `reveal-sky`: the sky only, opaque over the whole frame.
+2. `reveal-mountains`: the far ranges along the horizon.
+3. `reveal-plains`: the ash plains, the Rift's crack and the kilns' glow.
+4. `reveal-ridge`: the near ridge and Ironhaven on it. Keep Ironhaven around x 330, y 270 (the
+   camera starts close on it, so give its towers and lit windows some detail).
+
+Each layer's line in `art/CODEX.md` has its description. **Save** as
+`art/inbox/reveal-sky.webp` (and the other three); WebP or PNG are both fine.

@@ -2,12 +2,14 @@ import { conditionsHold } from './geometry';
 import { EQUIPMENT } from '../combat/gear';
 import { equip, giveSpares } from './kit';
 import { applyCommand } from './state';
-import type { ActorId, Condition, GameState, Kit } from './types';
+import type { ActorId, Command, Condition, GameState, Kit } from './types';
 
 export interface DialogueLine { actor: ActorId; text: string }
 /** `read`: the choice draws on something the hero has read in the person (shown with the read mark). */
 export interface DialogueChoice { text: string; next: string | null; if?: Condition[]; read?: boolean }
 export interface DialogueGear { give: readonly string[]; equip?: string }
+/** Commands a node may play before its lines: presentation only (who moves, holds a pose, waits). */
+export type DialoguePresentation = Extract<Command, { type: 'pose' | 'perform' | 'wait' | 'face' | 'step' }>;
 export interface DialogueNode {
   /** Remember this choice only if no flag in its group has been remembered yet. */
   remember?: { flag: string; unless: readonly string[] };
@@ -20,8 +22,12 @@ export interface DialogueNode {
   items?: string[];
   /** Gear granted after the lines; equip applies only when that piece is first received. */
   gear?: DialogueGear;
+  /** Played before the lines (presentation only: Silas reaching through the bars). */
+  run?: DialoguePresentation[];
   /** Shown after the lines; the hero speaks the chosen text, then the dialogue moves on. */
   choices?: DialogueChoice[];
+  /** The choices only wait so long: when `ms` run out, the dialogue goes on to `next`, the hero silent. */
+  timed?: { ms: number; next: string | null };
   /** Used when there are no choices; null or absent ends the conversation. */
   next?: string | null;
 }
@@ -34,7 +40,9 @@ export interface ResolvedNode {
   set: Record<string, boolean>;
   items: string[];
   gear?: DialogueGear;
+  run: DialoguePresentation[];
   choices: DialogueChoice[];
+  timed?: { ms: number; next: string | null };
   next: string | null;
 }
 
@@ -53,7 +61,9 @@ export function resolveNode(tree: DialogueTree, id: string, state: GameState): R
       set: node.set ?? {},
       items: node.items ?? [],
       gear: node.gear,
+      run: node.run ?? [],
       choices: (node.choices ?? []).filter(c => conditionsHold(state, c.if)),
+      timed: node.timed,
       next: node.next ?? null,
     };
   }

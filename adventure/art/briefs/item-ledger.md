@@ -1,6 +1,6 @@
 # item-ledger
 
-Status: **placeholder** · item · chapter intro · in the game as `art/src/intro/items/ledger.png`
+Status: **final** · item · chapter intro · in the game as `art/src/intro/items/ledger.png`
 
 ## What the game does with it
 

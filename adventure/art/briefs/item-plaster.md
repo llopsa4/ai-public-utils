@@ -1,6 +1,6 @@
 # item-plaster
 
-Status: **placeholder** · item · chapter intro · in the game as `art/src/intro/items/plaster.png`
+Status: **final** · item · chapter intro · in the game as `art/src/intro/items/plaster.png`
 
 ## What the game does with it
 

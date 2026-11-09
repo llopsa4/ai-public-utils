@@ -1,12 +1,11 @@
 import Phaser from 'phaser';
 import titleCourtyard from '../../art/src/title/ironhaven-courtyard.webp';
 import titleFlag from '../../art/src/title/ironhaven-flag.png';
-import titleGauntlet from '../../art/src/title/title-gauntlet.png';
-import { conditionsHold } from '../engine/geometry';
+import { conditionsHold, heldTask } from '../engine/geometry';
 import { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
 import { sound } from '../audio/sound';
-import type { ActorId, Command, ObjectDef, Point, RoomDef } from '../engine/types';
+import type { ActorId, Command, GameState, ObjectDef, Point, RoomDef } from '../engine/types';
 import { Actor, SHADOW_DEPTH } from './Actor';
 import { Atmosphere, createAtmosphereTextures } from './atmosphere';
 import { Props, createParticleTextures } from './props';
@@ -77,8 +76,12 @@ export class BootScene extends Phaser.Scene {
 }
 
 // Independent foreground artifacts; later protagonists' objects can be placed without repainting the patio.
-// Mara's gauntlet is off for now (the user will ask for it back): set `shown` to true to restore it.
-const TITLE_ARTIFACTS = [{ key: 'title-gauntlet', image: titleGauntlet, x: 425, y: 313, width: 80, shown: false }].filter(a => a.shown);
+// Mara's gauntlet is off the title for now (the user will ask for it back). It is not even imported,
+// so it does not ship while hidden. To restore it: import titleGauntlet from
+// '../../art/src/title/title-gauntlet.png' and put back
+//   { key: 'title-gauntlet', image: titleGauntlet, x: 425, y: 313, width: 80 }
+// in this list.
+const TITLE_ARTIFACTS: { key: string; image: string; x: number; y: number; width: number }[] = [];
 const TITLE_FLAG_ATLAS = { frames: Array.from({ length: 6 }, (_, index) => ({
   filename: String(index), frame: { x: index % 3 * 64, y: Math.floor(index / 3) * 110, w: 64, h: 110 },
 })) };
@@ -140,6 +143,11 @@ export class TitleScene extends Phaser.Scene {
 
 
 
+/** A room person's sprite sheet: the first of its `sheet` picks whose conditions hold (Benn without his keys), else its own. */
+function actorSheet(a: RoomDef['actors'][number], state: GameState): string {
+  return a.sheet?.find(p => conditionsHold(state, p.if))?.pick ?? NPC_SHEETS[a.id] ?? a.id;
+}
+
 /** One room: background, objects, characters, input and the command/dialogue runner. */
 export class RoomScene extends Phaser.Scene {
   room!: RoomDef;
@@ -193,7 +201,7 @@ export class RoomScene extends Phaser.Scene {
     const state = this.session.state;
     const sheet = heroSheetFor(chapter().story, { state, room, cold: false });
     if (sheet !== 'mara') queueSheet(this, sheet);
-    for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, NPC_SHEETS[a.id] ?? a.id);
+    for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, actorSheet(a, state));
     for (const o of room.objects) queueSheet(this, o.sheet);
     if (!this.textures.exists(room.background)) this.load.image(room.background, ROOM_IMAGES[room.background]);
     const outlines = OUTLINES[room.background];
@@ -256,7 +264,7 @@ export class RoomScene extends Phaser.Scene {
     for (const a of this.room.actors) {
       if (!conditionsHold(state, a.visibleIf)) continue;
       const s = state.npcs[a.id] ?? { pose: 'stand' as const, face: 'down' as const };
-      this.actors.set(a.id, new Actor(this, a.id, NPC_SHEETS[a.id] ?? a.id, a.x, a.y, s.face, s.pose, this.room.scale, a.body));
+      this.actors.set(a.id, new Actor(this, a.id, actorSheet(a, state), a.x, a.y, s.face, s.pose, this.room.scale, a.body));
     }
     this.crowd = chapter().crowds[this.room.id] ? new Crowd({
       scene: this, room: this.room, area: this.area, props: this.props,
@@ -513,7 +521,7 @@ export class RoomScene extends Phaser.Scene {
         this.tweens.add({ targets: actor.sprite, alpha: 0, duration: 700, onComplete: () => actor.sprite.destroy() });
         continue;
       }
-      const task = def.task && conditionsHold(state, def.task.if) ? def.task.tag : null;
+      const task = heldTask(def.task, state);
       if (actor.currentTask !== task) actor.perform(task);
     }
     (this.room.foreground ?? []).forEach((f, i) => this.foreground[i]?.setVisible(conditionsHold(state, f.visibleIf)));

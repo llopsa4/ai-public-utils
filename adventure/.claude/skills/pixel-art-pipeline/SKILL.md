@@ -31,6 +31,6 @@ The world (all content coordinates) is 640×360. Art and the canvas are **2×** 
 ## Review before finishing
 
 1. Make enlarged previews of the new sheets and props in the session scratchpad (pngjs composite) and look at them. Check seams at the hips, outline artifacts, eyes closing on blink frames, clipping at frame edges and halo leftovers.
-2. Run `npm test` and `npm run test:feature -- art`. For changed browser rendering, placement or animation, run `npm run test:browser -- art`, which builds and verifies once. Use full `test:release` for shared runtime/build behavior changes and before publishing; see `adventure/TESTING.md`.
+2. Run `npm test` and `npm run test:feature -- art`. Unit tests only: inspect changed rendering, placement or animation with screenshots instead of browser suites, and use `npm run test:all` for shared runtime/build changes and before publishing; see `adventure/TESTING.md`.
 3. Playtest changed visuals at `http://127.0.0.1:4173/adventure/?debug` (`npm run preview`). Check scale against the furniture, depth sorting, the cold tint and the portraits. Focused checks and visual inspection do not require full story journeys for ordinary art changes.
 4. Update `art/PROVENANCE.md`. Use only Kiln Courier art, original art, or art with a free licence that is recorded there.

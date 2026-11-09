@@ -67,12 +67,15 @@ export function closeRadial(ui: Ui): void {
   close?.();
 }
 
-export function choose(ui: Ui, options: (string | { text: string; read?: boolean })[]): Promise<number> {
+/** Dialogue replies. With `timeoutMs`, a bar runs down under them and `-1` comes back when it ends. */
+export function choose(ui: Ui, options: (string | { text: string; read?: boolean })[], timeoutMs?: number): Promise<number> {
   const box = ui.choices;
   box.replaceChildren();
   box.setAttribute('aria-label', t('ui.choices'));
   return new Promise(resolve => {
+    let timer = 0;
     const finish = (i: number) => {
+      window.clearTimeout(timer);
       window.removeEventListener('keydown', onKey);
       box.hidden = true;
       box.replaceChildren();
@@ -104,6 +107,14 @@ export function choose(ui: Ui, options: (string | { text: string; read?: boolean
       b.addEventListener('click', () => finish(i));
       box.append(b);
     });
+    if (timeoutMs) {
+      const bar = document.createElement('div');
+      bar.className = 'choice-timer';
+      bar.setAttribute('aria-hidden', 'true');
+      bar.style.animationDuration = `${timeoutMs}ms`;
+      box.append(bar);
+      timer = window.setTimeout(() => finish(-1), timeoutMs);
+    }
     window.addEventListener('keydown', onKey);
     box.hidden = false;
     (box.firstElementChild as HTMLButtonElement | null)?.focus({ preventScroll: true });

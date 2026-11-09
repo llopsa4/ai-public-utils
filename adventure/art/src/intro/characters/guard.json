@@ -593,6 +593,28 @@
     "h": 256
    },
    "duration": 1000
+  },
+  {
+   "filename": "27",
+   "frame": {
+    "x": 512,
+    "y": 1280,
+    "w": 256,
+    "h": 256
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 256
+   },
+   "sourceSize": {
+    "w": 256,
+    "h": 256
+   },
+   "duration": 1000
   }
  ],
  "meta": {
@@ -676,6 +698,12 @@
     "name": "sit",
     "from": 26,
     "to": 26,
+    "direction": "forward"
+   },
+   {
+    "name": "salute",
+    "from": 27,
+    "to": 27,
     "direction": "forward"
    }
   ]

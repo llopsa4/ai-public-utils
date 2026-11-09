@@ -150,7 +150,8 @@ const OVERLAP = 26;
  */
 function partsOf(cfg, x, y) {
   if (cfg.nearIsUpper && x < cfg.splitX) return ['upper'];
-  if (cfg.armMask) { if (cfg.armMask[y * cfg.armWidth + x]) return ['arm']; }
+  // Below the elbow (cfg.salute.elbow), the arm layer is the forearm, which can bend on its own.
+  if (cfg.armMask) { if (cfg.armMask[y * cfg.armWidth + x]) return [cfg.salute && y > cfg.salute.elbow[1] ? 'forearm' : 'arm']; }
   else {
     const a = cfg.arm;
     if (a && x >= a.minX && y >= a.minY && y <= a.maxY) return a && x < a.minX + OVERLAP ? ['arm', 'upper'] : ['arm'];
@@ -182,10 +183,11 @@ function renderPose(img, cfg, pose, k) {
   const W = 400, H = 560, ox = 200, oy = 330;
   const hipC = [(cfg.hips.near[0] + cfg.hips.far[0]) / 2, cfg.hipY];
   const layers = {};
-  const ORDER = ['farShin', 'farThigh', 'upper', 'fidget', 'nearShin', 'nearThigh', 'arm'];
+  const ORDER = ['farShin', 'farThigh', 'upper', 'fidget', 'nearShin', 'nearThigh', 'arm', 'forearm'];
   for (const name of ORDER) layers[name] = { rgb: new Float64Array(W * H * 3), a: new Float64Array(W * H) };
   // Parts without their own transform follow the upper body (arm, fidget) or stay put (legs).
-  const final = name => mul(pose.whole ?? identity(), pose[name] ?? ((name === 'arm' || name === 'fidget') ? pose.upper : null) ?? identity());
+  const follows = name => (name === 'forearm' ? pose.arm ?? pose.upper : (name === 'arm' || name === 'fidget') ? pose.upper : null);
+  const final = name => mul(pose.whole ?? identity(), pose[name] ?? follows(name) ?? identity());
   const mats = Object.fromEntries(ORDER.map(n => [n, final(n)]));
   for (let y = 0; y < img.height; y++) {
     for (let x = 0; x < img.width; x++) {
@@ -650,7 +652,14 @@ async function buildCharacter(id) {
   // the shins down (the feet stay on the floor) and, asleep, slumped forward with the eyes shut.
   const sit = cfg.sits ? pose('sit.png') : null;
   if (sit) still(sit); else if (cfg.sits) add(closed, { ...sitLegs(), upper: rotateAbout(cfg.sits === 'asleep' ? 9 : -2, hipC) });
-  const tags = cfg.sits ? [...TAGS, ['sit', 26, 26]] : TAGS;
+  const tags = cfg.sits ? [...TAGS, ['sit', 26, 26]] : [...TAGS];
+  // A salute (cfg.salute): the upper arm raised forward about the shoulder, the forearm bent back at
+  // the elbow so the hand meets the brow. Built from the standing drawing's arm layer.
+  if (cfg.salute) {
+    const { upperArm, forearm, elbow } = cfg.salute, shoulder = rotateAbout(upperArm, cfg.armPivot);
+    tags.push(['salute', frames.length, frames.length]);
+    add(open, { arm: shoulder, forearm: mul(shoulder, rotateAbout(forearm, elbow)) });
+  }
 
   // Palette from all frames, then hard alpha and a 1px dark outline for readability on busy art.
   writeSheet(id, frames, tags, n => (n >= 5 && n <= 22 ? 110 : 1000), 112, dir);

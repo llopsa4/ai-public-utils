@@ -82,18 +82,23 @@ test("New game: Silas's intro, from the dark cell through two disguises to Sigri
   expect((await state(page)).flags.wardenBusy).toBe(true);
   await act(page, 'use', 'grate', 'nail');
 
-  // Out: Sigrid, then black, then the chapter map with Mara's chapter 1 as the only pin.
+  // Out: Sigrid, then the Ashlands reveal (skipped with a key), then the chapter map: the intro
+  // played and ticked, Mara's chapter 1 the only live pin.
   await idle(page);
   await page.evaluate(() => { const { session, interact } = (window as any).adventure; void session.scene.runScript(interact(session.state, 'go', 'grate')); });
+  let sawReveal = false;
   await expect.poll(async () => {
     await page.evaluate(() => (window as any).adventure.session.ui.skip());
     if (await choices.isVisible()) await choices.getByRole('button').first().click();
+    if (await page.locator('#reveal').isVisible()) { sawReveal = true; await page.keyboard.press('Space'); }
     return page.locator('#chapter-map').isVisible();
-  }, { timeout: 60_000, intervals: [150] }).toBe(true);
+  }, { timeout: 90_000, intervals: [150] }).toBe(true);
+  expect(sawReveal).toBe(true);
   await shot(page, '5-chapter-map');
-  await expect(page.locator('#chapter-map .chapter-pin')).toHaveCount(1);
-  await expect(page.locator('#chapter-map-list button')).toHaveCount(1);
-  await page.locator('#chapter-map-list button').click();
+  await expect(page.locator('#chapter-map .chapter-pin.played')).toHaveCount(1);
+  await expect(page.locator('#chapter-map .chapter-pin:not(.played)')).toHaveCount(1);
+  await expect(page.locator('#chapter-map-list button:not(:disabled)')).toHaveCount(1);
+  await page.locator('#chapter-map-list button:not(:disabled)').click();
   await page.evaluate(() => document.getElementById('intro-skip')?.click());
   await expect.poll(() => page.evaluate(() => (window as any).adventure.session.state.chapter), { timeout: 30_000 }).toBe('ch1');
   const mara = await page.evaluate(() => structuredClone((window as any).adventure.session.state));

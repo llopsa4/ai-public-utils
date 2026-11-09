@@ -2,7 +2,7 @@
  * A small generative score, synthesized like the rest of the sound: a slow pad chord per bar and
  * sparse plucked notes from the mood's scale. Moods crossfade on room changes.
  */
-export type MusicMood = 'warm' | 'tension' | 'cold' | 'wind' | 'combat' | 'nervous' | 'title' | 'none';
+export type MusicMood = 'warm' | 'tension' | 'cold' | 'wind' | 'combat' | 'nervous' | 'title' | 'reveal' | 'none';
 
 interface MoodDef {
   /** Semitone offsets from the root for the scale the plucks pick from. */
@@ -35,7 +35,7 @@ interface MoodDef {
   };
 }
 
-const MOODS: Record<Exclude<MusicMood, 'none' | 'title'>, MoodDef> = {
+const MOODS: Record<Exclude<MusicMood, 'none' | 'title' | 'reveal'>, MoodDef> = {
   // Home and hearth: D major pentatonic, gentle movement.
   warm: { scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 4.8, pluck: 0.32, padLevel: 0.05, cutoff: 1400 },
   // The gallery: D minor with a flat sixth, a held low fifth, few notes.
@@ -87,6 +87,21 @@ export const TITLE = {
   theme: [31, 32, 31, 29],
 } as const;
 const TITLE_BAR = (60 / TITLE.bpm) * 4;
+/**
+ * The Ashlands reveal (after Silas's intro): a one-off cue from the title theme's voices. Four bars
+ * build (the ostinato rising, the clock, drums, braams), a hit on the fifth bar's downbeat ("The
+ * Rift" appears), then the minor key resolves into D major and the warm music takes over. Times in
+ * seconds from the start, for the scene to place the title on the music (src/game/reveal.ts).
+ */
+export const REVEAL_TIMING = {
+  bar: TITLE_BAR,
+  hit: TITLE_BAR * 4,
+  subtitle: TITLE_BAR * 4 + 3,
+  fadeOut: TITLE_BAR * 7,
+  /** The warm music takes over; the chapter map follows. */
+  end: TITLE_BAR * 8,
+} as const;
+
 /** Which stage of the arc a bar is in: 1 build, 2 drums, 3 peak, 4 release. */
 export const titleStage = (bar: number): 1 | 2 | 3 | 4 => (Math.floor((bar % TITLE.bars) / 4) + 1) as 1 | 2 | 3 | 4;
 
@@ -123,7 +138,7 @@ export class Music {
     bus.connect(this.out);
     this.bus = bus;
     this.bar = 0;
-    if (mood === 'title') {
+    if (mood === 'title' || mood === 'reveal') {
       // The hall: a reverb send beside the dry signal.
       const hall = ctx.createConvolver();
       hall.buffer = this.hallImpulse();
@@ -131,6 +146,14 @@ export class Music {
       wet.gain.value = 0.35;
       bus.connect(hall).connect(wet).connect(this.out);
       this.extras = [hall, wet];
+      if (mood === 'reveal') {
+        // Played whole at once (it does not loop), with no fade in: it starts from near silence anyway.
+        bus.gain.cancelScheduledValues(ctx.currentTime);
+        bus.gain.setValueAtTime(1, ctx.currentTime);
+        this.revealScore(bus, ctx.currentTime + 0.1);
+        this.timer = window.setTimeout(() => { if (this.mood === 'reveal') this.play('warm'); }, REVEAL_TIMING.end * 1000);
+        return;
+      }
       this.titleBar(bus);
       this.timer = window.setInterval(() => this.titleBar(bus), TITLE_BAR * 1000);
       return;
@@ -143,6 +166,52 @@ export class Music {
 
   stop(): void {
     this.play('none');
+  }
+
+  /** The Ashlands reveal's score, scheduled from `t0` (REVEAL_TIMING). */
+  private revealScore(bus: GainNode, t0: number): void {
+    const root = TITLE.root, step = TITLE_BAR / 16;
+    // The build: four bars of Dm–B♭–F–C, louder and brighter each bar.
+    for (let bar = 0; bar < 4; bar++) {
+      const t = t0 + bar * TITLE_BAR, chord = TITLE.chords[bar], low = chord[0] - 12;
+      for (const n of chord) this.pad(bus, semis(root, n), t, TITLE_BAR, 0.035, 800);
+      const level = 0.045 + bar * 0.012, cutoff = 500 + bar * 330;
+      for (let i = 0; i < 16; i++) this.ostinato(bus, semis(root, i % 4 === 2 ? low + 12 : low), t + i * step, step * 0.92, level * (i % 4 === 0 ? 1 : 0.62), cutoff);
+      if (bar <= 1) for (let i = 0; i < 16; i += 2) this.tick(bus, t + i * step, i % 8 === 0);
+      if (bar >= 1) for (const i of [0, 8]) this.taiko(bus, t + i * step, 0.16 + bar * 0.04);
+      if (bar >= 2) this.braam(bus, semis(root, low), t, TITLE_BAR);
+      if (bar === 3) for (const i of [12, 13, 14, 15]) this.taiko(bus, t + i * step, 0.14 + (i - 12) * 0.04);
+    }
+    // The hit: taiko and a braam on D, with the strings on a high D.
+    const hit = t0 + REVEAL_TIMING.hit;
+    this.taiko(bus, hit, 0.55);
+    this.braam(bus, semis(root, -12), hit, TITLE_BAR * 1.5);
+    this.strings(bus, semis(root, 24), hit, TITLE_BAR * 2, 0.05);
+    // The release: D major at last (warm's own chord), the strings settling on F♯ then A, and one
+    // last soft pulse of the ostinato dying away.
+    for (let bar = 4; bar < 8; bar++) {
+      const t = t0 + bar * TITLE_BAR, fade = 1 - (bar - 4) * 0.22;
+      for (const n of [0, 7, 16]) this.pad(bus, semis(root, n), t, TITLE_BAR, 0.05 * fade, 1300);
+      if (bar === 4) for (let i = 0; i < 16; i++) this.ostinato(bus, semis(root, i % 4 === 2 ? 0 : -12), t + i * step, step * 0.92, 0.03 * (1 - i / 16), 700);
+    }
+    this.strings(bus, semis(root, 28), t0 + TITLE_BAR * 5.5, TITLE_BAR * 1.5, 0.035);
+    this.strings(bus, semis(root, 31), t0 + TITLE_BAR * 6.5, TITLE_BAR * 1.5, 0.03);
+  }
+
+  /** A low hit (taiko and braam on D, through the hall) that opens the title theme on the first click. */
+  openingHit(): void {
+    const ctx = this.ctx, t = ctx.currentTime + 0.03;
+    const bus = ctx.createGain();
+    bus.gain.value = 1;
+    const hall = ctx.createConvolver();
+    hall.buffer = this.hallImpulse();
+    const wet = ctx.createGain();
+    wet.gain.value = 0.45;
+    bus.connect(this.out);
+    bus.connect(hall).connect(wet).connect(this.out);
+    this.taiko(bus, t, 0.5);
+    this.braam(bus, 73.42, t, 2.4);
+    window.setTimeout(() => { bus.disconnect(); hall.disconnect(); wet.disconnect(); }, 9000);
   }
 
   private hall: AudioBuffer | null = null;

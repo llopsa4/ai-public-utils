@@ -1,6 +1,6 @@
 # item-strip
 
-Status: **placeholder** · item · chapter intro · in the game as `art/src/intro/items/strip.png`
+Status: **final** · item · chapter intro · in the game as `art/src/intro/items/strip.png`
 
 ## What the game does with it
 

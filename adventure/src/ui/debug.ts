@@ -131,6 +131,7 @@ export function mountDebugPanel(session: Session): void {
       button('Full health', () => change(st => { st.kit.hp = 60; })),
       button('Gear screen', () => void session.ui.openGear()),
       button('Shop', () => void session.ui.openShop()),
+      button('Play the Ashlands reveal', () => { panel.hidden = true; void session.playReveal().then(() => session.chooseNextChapter({ calm: true })); }),
     ));
 
     panel.append(el('h2', { textContent: 'Fights' }));

@@ -16,6 +16,8 @@ export const ITEM_VERBS: Verb[] = ['look', 'use'];
 
 /** Where Silas stands to speak to the guard through the bars, and to the guardroom's guard. */
 const AT_BARS = walk(350, 300, 'right');
+/** Where "Harrow" calls Benn over: the middle of the cage, by the bars at the front. */
+const AT_FRONT = walk(232, 322, 'right');
 const AT_DESK = walk(430, 306, 'right');
 
 function fallback(verb: Verb, item?: string): Command[] {
@@ -134,7 +136,7 @@ export const RULES: readonly Rule[] = [
   { target: 'guard', verb: 'look', when: NOT('cellLit'), do: [say('line.i.guardLookDark')] },
   { target: 'guard', verb: 'look', do: [say('line.i.guardLook')] },
   // Shouting gets nothing but a snore; the Harrow mask gets a sergeant's welcome.
-  { target: 'guard', verb: 'talk', when: F('wearingHarrow'), do: [AT_BARS, { type: 'checkpoint' }, flag('guardAwake'), { type: 'dialogue', id: 'guard' }] },
+  { target: 'guard', verb: 'talk', when: F('wearingHarrow'), do: [AT_FRONT, { type: 'checkpoint' }, flag('guardAwake'), { type: 'dialogue', id: 'guard' }] },
   { target: 'guard', verb: 'talk', when: NOT('shouted'), do: [AT_BARS, say('line.i.shout1'), say('line.i.snore', 'guard'), say('line.i.shout2'), say('line.i.snore', 'guard'), flag('shouted'), say('line.i.shout3')] },
   { target: 'guard', verb: 'talk', do: [say('line.i.noShout')] },
   { target: 'guard', item: '*', do: [say('line.i.guardItem')] },

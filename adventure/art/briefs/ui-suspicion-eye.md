@@ -1,6 +1,6 @@
 # ui-suspicion-eye
 
-Status: **requested** · icon · chapter intro · in the game as `art/src/ui/suspicion-eye.png`
+Status: **final** · icon · chapter intro · in the game as `art/src/ui/suspicion-eye.png`
 
 ## What the game does with it
 

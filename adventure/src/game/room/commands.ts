@@ -75,6 +75,19 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     applyCommand(state, command);
     return true;
   },
+  step: async (scene: RoomScene, command: Of<'step'>): Promise<boolean> => {
+    const actor = scene.actors.get(command.actor);
+    if (!actor) return true;
+    actor.inFront = command.inFront ?? false;
+    if (command.instant) actor.moveTo(command.to);
+    else await actor.walk([command.to]);
+    if (command.face) actor.setFacing(command.face);
+    return true;
+  },
+  perform: async (scene: RoomScene, command: Of<'perform'>): Promise<boolean> => {
+    scene.actors.get(command.actor)?.perform(command.tag);
+    return true;
+  },
   pose: async (scene: RoomScene, command: Of<'pose'>): Promise<boolean> => {
     const state = scene.session.state;
     scene.actors.get(command.actor)?.setPose(command.pose);
@@ -221,7 +234,18 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     await scene.session.ui.openShop();
     return true;
   },
-  chooseChapter: async (scene: RoomScene): Promise<boolean> => {
+  chooseChapter: async (scene: RoomScene, command: Of<'chooseChapter'>): Promise<boolean> => {
+    if (command.reveal) {
+      // The camera pulls back from the room as it fades, into the far view of the Ashlands.
+      scene.leaving = true;
+      scene.session.ui.closeRadial();
+      scene.cameras.main.zoomTo(scene.cameras.main.zoom * 0.7, 2600, 'Sine.easeIn');
+      scene.cameras.main.fadeOut(2600, 0, 0, 0);
+      await wait(scene, 2680);
+      await scene.session.playReveal();
+      await scene.session.chooseNextChapter({ calm: true });
+      return false;
+    }
     // The chapter ends to black; the chapter map offers what to play next.
     scene.leaving = true;
     scene.session.ui.closeRadial();

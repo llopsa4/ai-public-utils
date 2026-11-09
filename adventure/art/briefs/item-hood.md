@@ -1,6 +1,6 @@
 # item-hood
 
-Status: **placeholder** · item · chapter intro · in the game as `art/src/intro/items/hood.png`
+Status: **final** · item · chapter intro · in the game as `art/src/intro/items/hood.png`
 
 ## What the game does with it
 

@@ -44,6 +44,7 @@ export function visitStoryDialogueNode(state: GameState, id: string, nodeId: str
   const node = resolveNode(tree, nodeId, state);
   const result = trace();
   result.visited.push(node.id);
+  result.commands.push(...node.run);
   for (const line of node.lines) {
     result.commands.push({ type: 'say', ...line });
     result.spoken.push(line.text);
@@ -107,6 +108,8 @@ export function runStoryCommands(state: GameState, commands: readonly Command[],
             if (!options.choose) throw new Error(`Choice fixture required for ${command.id}/${node.id}`);
             const next = options.choose(node.choices.map(c => c.next), node, state);
             const choice = node.choices.find(c => c.next === next);
+            // Letting a timed choice run out is a choice too: on to `timed.next`, the hero silent.
+            if (!choice && node.timed && next === node.timed.next) { nodeId = next; continue; }
             if (!choice) throw new Error(`Invalid choice for ${command.id}/${node.id}: ${next}`);
             result.commands.push({ type: 'say', actor: 'hero', text: choice.text });
             result.spoken.push(choice.text);
@@ -155,7 +158,7 @@ export function runStoryCommands(state: GameState, commands: readonly Command[],
         }
         case 'say': result.spoken.push(command.text); break;
         // Timed waits and rendering commands finish instantly in this model. They have no story effects.
-        case 'wait': case 'shake': case 'fade': case 'moveObject': case 'handle': case 'hatch': break;
+        case 'wait': case 'shake': case 'fade': case 'moveObject': case 'handle': case 'hatch': case 'perform': case 'step': break;
         case 'walk': case 'face': case 'pose': case 'setFlag': case 'addItem': case 'removeItem':
         case 'looked': case 'hurt': case 'heal': case 'giveSpares': case 'learn':
           applyCommand(state, command);

@@ -685,6 +685,28 @@
   {
    "filename": "31",
    "frame": {
+    "x": 512,
+    "y": 512,
+    "w": 256,
+    "h": 256
+   },
+   "duration": 1000,
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 256
+   },
+   "sourceSize": {
+    "w": 256,
+    "h": 256
+   }
+  },
+  {
+   "filename": "32",
+   "frame": {
     "x": 256,
     "y": 0,
     "w": 256,
@@ -777,9 +799,15 @@
     "direction": "forward"
    },
    {
-    "name": "fidget",
+    "name": "reach",
     "from": 31,
     "to": 31,
+    "direction": "forward"
+   },
+   {
+    "name": "fidget",
+    "from": 32,
+    "to": 32,
     "direction": "forward"
    }
   ],

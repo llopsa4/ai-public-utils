@@ -1,6 +1,6 @@
 # item-maskHarrow
 
-Status: **placeholder** · item · chapter intro · in the game as `art/src/intro/items/maskHarrow.png`
+Status: **final** · item · chapter intro · in the game as `art/src/intro/items/maskHarrow.png`
 
 ## What the game does with it
 

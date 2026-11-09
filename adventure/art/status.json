@@ -82,5 +82,9 @@
  "item-keys": "final",
  "item-hood": "final",
  "item-ledger": "final",
- "item-maskClerk": "final"
+ "item-maskClerk": "final",
+ "room-guardroom": "final",
+ "room-prison-door": "final",
+ "icon-read": "final",
+ "ui-suspicion-eye": "final"
 }

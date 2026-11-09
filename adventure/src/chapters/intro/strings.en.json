@@ -1,7 +1,8 @@
 {
   "chapter.intro": "Intro: The Man With Many Faces",
+  "chapter.intro.short": "Intro",
   "introI.title": "The Man With Many Faces",
-  "introI.1": "Three days from now, in Ironhaven, the city of iron and snow.",
+  "introI.1": "Two days from now, in Ironhaven, the city of iron and snow.",
   "introI.2": "A man who has been many people wakes in a cell, with nobody's face but his own.",
   "when.intro.time": "Night",
   "when.intro.place": "Ironhaven's prison",
@@ -181,6 +182,8 @@
   "dlgI.guard.warm2": "Let me salute you proper, sir.",
   "dlgI.choice.palm": "Reach through the bars, clap his shoulder, and lift the key ring.",
   "dlgI.choice.dismiss": "Go on, then.",
+  "dlgI.hero.keysChance": "His keys, swinging at his belt, a hand's width from the bars. And his eyes are on the ceiling...",
+  "dlgI.guard.tooSlow": "Right away, sir! Thank you, sir!",
   "dlgI.guard.palmed": "Thank you, sir! I won't forget it!",
   "dlgI.guard.dismissed": "Yes, sir! Right away, sir!",
   "dlgI.warden.start": "Who's that? Show your face.",

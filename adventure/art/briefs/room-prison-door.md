@@ -1,6 +1,6 @@
 # room-prison-door
 
-Status: **placeholder** · room · chapter intro · in the game as `art/src/intro/rooms/prison-door.png`
+Status: **final** · room · chapter intro · in the game as `art/src/intro/rooms/prison-door.png`
 
 ## What the game does with it
 
@@ -9,7 +9,7 @@ In the game as the room `outerDoor` (intro). Mara (232 px tall) and the others w
 Everything the player can click, at these places (art pixels), each must be painted there and recognisable:
 - **Ironhaven's walls** (`walls`, x 0–1280, y 0–400): look at.
 
-Story characters stand at: name.sigrid (940, 604). Keep the wall behind them uncluttered at head height.
+Story characters stand at: Captain Sigrid (940, 604). Keep the wall behind them uncluttered at head height.
 
 
 ## Technical

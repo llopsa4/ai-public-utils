@@ -54,12 +54,15 @@ export async function runDialogue(scene: RoomScene, id: string): Promise<void> {
   let nodeId: string | null = tree.start;
   while (nodeId) {
     const node = resolveNode(tree, nodeId, state);
+    for (const command of node.run) await exec(scene, command);
     for (const line of node.lines) await say(scene, line.actor, line.text);
     const { inventoryChanged, gearReceived } = applyDialogueEffects(state, node);
-    if (gearReceived) scene.refreshObjects();
+    // Flags can change who holds what pose (Benn saluting) while the conversation goes on.
+    if (gearReceived || Object.keys(node.set).length) scene.refreshObjects();
     if (inventoryChanged || gearReceived) scene.session.ui.renderInventory();
     if (node.choices.length > 0) {
-      const index = await scene.session.ui.choose(node.choices.map(c => ({ text: t(c.text), read: c.read })));
+      const index = await scene.session.ui.choose(node.choices.map(c => ({ text: t(c.text), read: c.read })), node.timed?.ms);
+      if (index < 0 && node.timed) { nodeId = node.timed.next; continue; }
       sound.choose();
       const choice = node.choices[index];
       await say(scene, 'hero', choice.text);

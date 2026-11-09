@@ -1,6 +1,6 @@
 # item-crust
 
-Status: **placeholder** · item · chapter intro · in the game as `art/src/intro/items/crust.png`
+Status: **final** · item · chapter intro · in the game as `art/src/intro/items/crust.png`
 
 ## What the game does with it
 

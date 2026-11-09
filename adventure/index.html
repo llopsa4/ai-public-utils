@@ -6,8 +6,8 @@
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#120d14">
   <title>The Rift: Ashlands</title>
-  <script type="module" crossorigin src="./build/index-BBNk01uA.js"></script>
-  <link rel="stylesheet" crossorigin href="./build/index-CZEWiVPO.css">
+  <script type="module" crossorigin src="./build/index-xOI733HU.js"></script>
+  <link rel="stylesheet" crossorigin href="./build/index-0hgVciv2.css">
 </head>
 <body>
   <main id="app">
@@ -35,10 +35,16 @@
         <p class="end-text" data-i18n="ui.endText"></p>
         <button id="end-new" class="btn primary" type="button" data-i18n="ui.newGame">New game</button>
       </section>
+      <section id="reveal" hidden aria-live="polite">
+        <h1 id="reveal-title">The Rift</h1>
+        <p id="reveal-sub">Ashlands</p>
+        <p id="reveal-skip">Click to skip</p>
+      </section>
       <section id="title" hidden aria-labelledby="title-name">
         <h1 id="title-name" data-i18n="ui.titleName">The Rift: Ashlands</h1>
         <p class="title-sub" data-i18n="ui.titleSub">What keeps us warm</p>
         <div class="title-actions menu-list">
+          <p id="title-begin" hidden>Click anywhere to begin</p>
           <button id="title-continue" type="button" data-i18n="ui.continue" hidden>Continue</button>
           <button id="title-new" type="button" data-i18n="ui.newGame">New game</button>
           <button id="title-import" type="button" data-i18n="ui.import">Load game</button>

@@ -26,6 +26,9 @@ export const DIALOGUES: Record<string, DialogueTree> = {
     start: 'wake',
     nodes: {
       wake: {
+        // Up off his chair, past the door and along the front of the cage, to stand outside it face to
+        // face with his sergeant (and within reach of a hand through the bars).
+        run: [{ type: 'step', actor: 'guard', to: { x: 270, y: 342 }, face: 'left', inFront: true }],
         lines: [
           { actor: 'guard', text: 'dlgI.guard.wake1' },
           { actor: 'guard', text: 'dlgI.guard.wake2' },
@@ -87,6 +90,12 @@ export const DIALOGUES: Record<string, DialogueTree> = {
           { actor: 'guard', text: 'dlgI.guard.warm1' },
           { actor: 'guard', text: 'dlgI.guard.warm2' },
         ],
+        set: { bennSaluting: true },
+        next: 'salute',
+      },
+      // Benn salutes, eyes on the ceiling: the keys are a hand's width from the bars, for a moment.
+      salute: {
+        lines: [{ actor: 'hero', text: 'dlgI.hero.keysChance' }],
         next: 'palm',
       },
       palm: {
@@ -94,16 +103,24 @@ export const DIALOGUES: Record<string, DialogueTree> = {
           { text: 'dlgI.choice.palm', next: 'palmed' },
           { text: 'dlgI.choice.dismiss', next: 'dismissed' },
         ],
+        // The salute does not last: wait too long and he leaves with his keys (the nail still opens the door).
+        timed: { ms: 5000, next: 'tooSlow' },
       },
       palmed: {
+        run: [{ type: 'perform', actor: 'hero', tag: 'reach' }, { type: 'wait', ms: 1100 }, { type: 'perform', actor: 'hero', tag: null }],
         lines: [{ actor: 'guard', text: 'dlgI.guard.palmed' }],
-        set: { gotKeys: true, guardGone: true, harrowCracked: true, wearingHarrow: false },
+        set: { bennSaluting: false, gotKeys: true, guardGone: true, harrowCracked: true, wearingHarrow: false },
         items: ['keys'],
+        next: null,
+      },
+      tooSlow: {
+        lines: [{ actor: 'guard', text: 'dlgI.guard.tooSlow' }],
+        set: { bennSaluting: false, guardGone: true, harrowCracked: true, wearingHarrow: false },
         next: null,
       },
       dismissed: {
         lines: [{ actor: 'guard', text: 'dlgI.guard.dismissed' }],
-        set: { guardGone: true, harrowCracked: true, wearingHarrow: false },
+        set: { bennSaluting: false, guardGone: true, harrowCracked: true, wearingHarrow: false },
         next: null,
       },
     },

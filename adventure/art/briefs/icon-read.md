@@ -1,6 +1,6 @@
 # icon-read
 
-Status: **placeholder** · icon · chapter game · in the game as `art/src/icons/read.png`
+Status: **final** · icon · chapter game · in the game as `art/src/icons/read.png`
 
 ## What the game does with it
 
