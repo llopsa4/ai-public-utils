@@ -66,8 +66,11 @@ const actionIcon = n => actionIcons.has(n.replace(/-[\w-]{8}\.\w+$/, ''));
 // Portraits, equipment and fight pictures are DOM images fetched when shown. Match bytes as well as names:
 // e.g. the notebook sprite and inventory icon share a stem but only the sprite loads at boot.
 const deferredImages = new Set();
-for (const entry of MANIFEST.filter(e => ['portrait', 'item', 'equipment', 'battle-portrait'].includes(e.kind))) {
-  const source = await readFile(resolve(project, 'art/src', entry.file)).catch(() => null);
+// The world map too: drawn only when the notebook's Map tab or the chapter map opens.
+for (const entry of MANIFEST.filter(e => ['portrait', 'item', 'equipment', 'battle-portrait', 'map'].includes(e.kind))) {
+  // The game loads the WebP copy of a picture served as WebP.
+  const served = entry.webp ? entry.file.replace(/\.png$/, '.webp') : entry.file;
+  const source = await readFile(resolve(project, 'art/src', served)).catch(() => null);
   if (!source) continue;
   const stem = entry.file.split('/').pop().replace(/\.\w+$/, '');
   for (const name of built.filter(n => n.startsWith(stem + '-') && /\.(png|webp)$/.test(n))) {

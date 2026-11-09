@@ -5,7 +5,7 @@ Status: **placeholder** · character · chapter intro · in the game as `art/src
 ## What the game does with it
 
 Appears in: cell.
-In the game 214 art pixels tall (107 pixels on the 2-pixel grid; the face is only a couple of dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
+In the game 216 art pixels tall (108 pixels on the 2-pixel grid; the face is only a couple of dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
 
 ## Technical
 

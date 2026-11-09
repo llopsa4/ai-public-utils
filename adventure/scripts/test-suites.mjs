@@ -15,6 +15,7 @@ export const NODE_SUITES = {
   'saves-intro.test.ts': entry(true, 'saves', 'story'),
   'room-flags.test.ts': entry(true, 'story'),
   'strings-chapters.test.ts': entry(true, 'story'),
+  'title-music.test.ts': entry(true, 'runtime'),
   'chapter-one-gear-art.test.ts': entry(false, 'art'),
   'chapter-one-improvements.test.ts': entry(true, 'story', 'saves', 'runtime'),
   'battle-motion.test.ts': entry(true, 'art', 'runtime'),

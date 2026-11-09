@@ -37,7 +37,7 @@ Save it in the pack's left/ folder: art/inbox/mara-light-layered/left/farUpperAr
 - `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
 - `art/sources/characters/mara-casual-layered/` (Mara's pack: the format to match, piece by piece) and `art/LAYERED-RIG.md` (the pack contract)
 - `art/sources/characters/mara-light-layered/` (this outfit facing right: the look to match, piece by piece) and `art/inbox/sigrid-layered/` with its `left/` folder (a two-sided pack: the format)
-- the approved `art/inbox/mara-light-layered/left/master.png`
+- the approved `art/sources/characters/mara-light-layered/left/master.png` and `idle.png` (approved by the user on 2026-11-09: keep the fuller waist and lower torso exactly)
 
 ## Then
 

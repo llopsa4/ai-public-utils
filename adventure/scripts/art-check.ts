@@ -179,7 +179,8 @@ export function checkManifest(): Problem[] {
   const listed = new Set<string>();
   for (const e of MANIFEST) {
     for (const f of [e.file, e.sheet, e.webp ? e.file.replace(/\.png$/, '.webp') : undefined]) if (f) listed.add(f);
-    if (e.status === 'requested') continue;
+    // Requested pictures are not in yet; a character pack's pieces are source drawings (art/sources), not game files.
+    if (e.status === 'requested' || e.kind === 'pack') continue;
     const path = join(ART, e.file);
     if (!existsSync(path)) { problems.push({ file: `art/src/${e.file}`, message: `listed in the manifest (${e.id}) but missing` }); continue; }
     if (e.status === 'final' && e.file.endsWith('.png')) {

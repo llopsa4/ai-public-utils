@@ -1,10 +1,10 @@
 # window-plate
 
-Status: **placeholder** · object · chapter intro · in the game as `art/src/intro/objects/window-plate.png`
+Status: **final** · object · chapter intro · in the game as `art/src/intro/objects/window-plate.png`
 
 ## What the game does with it
 
-Stands in the room `cell` on its foot point (352, 228) (bottom centre of the picture).
+Stands in the room `cell` on its foot point (340, 246) (bottom centre of the picture).
 States: idle: one picture each, identical framing; only what changes between states differs.
 
 ## Technical

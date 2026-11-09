@@ -1,6 +1,6 @@
 # silas-idle-relaxed
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-layered/idle.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-layered/idle.png`
 
 ## What the game does with it
 

@@ -322,8 +322,11 @@ dialog[open] {
 #title h1 {
   font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
   font-weight: 400;
-  font-size: 4.4em;
+  font-size: 5.6em;
+  line-height: 1.05;
   letter-spacing: 0.01em;
+  /* One line: wider than the menu column below it, never wrapping. */
+  white-space: nowrap;
 }
 
 /* Programmatic entry focus announces the heading; menu focus remains visible after Tab. */
@@ -348,7 +351,7 @@ dialog[open] {
 
 @media (max-height: 600px) and (orientation: landscape) {
   #title { gap: 0.25rem; max-width: 76%; font-size: clamp(11px, 3svh, 14px); }
-  #title h1 { font-size: 2.4em; line-height: 1.05; }
+  #title h1 { font-size: 3.1em; line-height: 1.05; }
   #title .title-sub { font-size: 1.1em; margin-bottom: 0.25em; }
   #title .title-note { margin-top: 0.25em; }
   #title:has(#title-continue:not([hidden])) .title-note { display: none; }

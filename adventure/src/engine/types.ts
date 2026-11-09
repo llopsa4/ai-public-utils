@@ -91,6 +91,8 @@ export interface ForegroundDef {
   y: number;
   /** Actors whose feet are above this line are drawn behind it. */
   depth: number;
+  /** Shown only while these hold (a cell door gone once it is open). */
+  visibleIf?: Condition[];
 }
 
 /** Ambient effects: particle fields and flickering light pools. */

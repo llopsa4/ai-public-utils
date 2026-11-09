@@ -25,23 +25,26 @@ export function labelAt(p: Place): { x: number; y: number; anchor: 'start' | 'mi
   }
 }
 
-/** Every place on the map. The map names only those the viewpoint character knows. */
+/**
+ * Every place on the map, on its landmark in Codex's painting (art/src/ui/world-map.png). The map
+ * names only those the viewpoint character knows.
+ */
 export const PLACES: Record<string, Place> = {
   // West of the Rift: the ash plains and the snowy north.
-  cinderfold: { name: 'place.cinderfold', x: 215, y: 455, kind: 'town', label: 'left' },
-  ashways: { name: 'place.ashways', x: 275, y: 500, kind: 'site', label: 'below' },
-  tunnels: { name: 'place.tunnels', x: 330, y: 420, kind: 'site', label: 'below' },
-  temperingHouse: { name: 'place.temperingHouse', x: 440, y: 340, kind: 'site', label: 'above' },
-  ironhaven: { name: 'place.ironhaven', x: 300, y: 120, kind: 'town' },
-  coppersong: { name: 'place.coppersong', x: 455, y: 235, kind: 'town' },
+  cinderfold: { name: 'place.cinderfold', x: 185, y: 407, kind: 'town', label: 'left' },
+  ashways: { name: 'place.ashways', x: 293, y: 470, kind: 'site', label: 'below' },
+  tunnels: { name: 'place.tunnels', x: 318, y: 357, kind: 'site', label: 'below' },
+  temperingHouse: { name: 'place.temperingHouse', x: 425, y: 295, kind: 'site', label: 'above' },
+  ironhaven: { name: 'place.ironhaven', x: 300, y: 125, kind: 'town' },
+  coppersong: { name: 'place.coppersong', x: 440, y: 215, kind: 'town' },
   // The only crossing.
-  spanwick: { name: 'place.spanwick', x: 560, y: 410, kind: 'town', label: 'below' },
+  spanwick: { name: 'place.spanwick', x: 548, y: 368, kind: 'town', label: 'below' },
   // East of the Rift.
-  valley: { name: 'place.valley', x: 660, y: 300, kind: 'site', label: 'above' },
-  alderweir: { name: 'place.alderweir', x: 735, y: 470, kind: 'town', label: 'left' },
-  kofiWoods: { name: 'place.kofiWoods', x: 800, y: 600, kind: 'town', label: 'left' },
-  firstHearth: { name: 'place.firstHearth', x: 880, y: 330, kind: 'town', label: 'below' },
-  garranHut: { name: 'place.garranHut', x: 870, y: 110, kind: 'site', label: 'left' },
+  valley: { name: 'place.valley', x: 660, y: 262, kind: 'site', label: 'above' },
+  alderweir: { name: 'place.alderweir', x: 728, y: 420, kind: 'town', label: 'left' },
+  kofiWoods: { name: 'place.kofiWoods', x: 785, y: 565, kind: 'town', label: 'left' },
+  firstHearth: { name: 'place.firstHearth', x: 880, y: 290, kind: 'town', label: 'below' },
+  garranHut: { name: 'place.garranHut', x: 832, y: 127, kind: 'site', label: 'left' },
 };
 
 /** The land, for the placeholder map (and the layout image Codex paints from). */

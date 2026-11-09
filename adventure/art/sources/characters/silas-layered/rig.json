@@ -153,39 +153,40 @@
   },
   "idle": {
     "file": "idle.png",
-    "sha256": "c613390031966df06f4750a2b85342c0c91baebdaec604dd03c1a6dfb73d8e6e",
-    "sourceHeight": 1404,
+    "sha256": "935dd6f1bb8a24b08a31bb419386a506e4e5adf11e7e66c797ee302fc3b67ef2",
+    "sourceHeight": 1409,
     "baseline": 1498,
-    "anchorX": 520,
+    "anchorX": 495,
     "eyes": [
       {
-        "x": 535,
-        "y": 186,
+        "x": 534,
+        "y": 184,
         "rx": 9,
         "ry": 5,
         "blinkRy": 9,
         "lashTop": -1,
         "lashBottom": 7,
         "skinAt": [
-          535,
-          199
+          534,
+          197
         ]
       },
       {
-        "x": 573,
-        "y": 200,
+        "x": 571,
+        "y": 194,
         "rx": 4,
         "ry": 4,
         "blinkRy": 7,
         "lashTop": -1,
         "lashBottom": 5,
         "skinAt": [
-          571,
-          211
+          569,
+          205
         ]
       }
     ],
-    "ember": null
+    "ember": null,
+    "note": "Relaxed standing pose (Codex, idle-relaxed.png); the earlier raised-hand pose is idle-flourish.png."
   },
   "overlays": {
     "harrow": {

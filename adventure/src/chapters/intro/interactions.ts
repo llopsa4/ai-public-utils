@@ -127,9 +127,9 @@ export const RULES: readonly Rule[] = [
   { target: 'cellDoor', item: 'nail', walk: true, do: [pose('hero', 'crouch'), say('line.i.pick1'), wait(1200), pose('hero', 'stand'), flag('cellOpen'), say('line.i.doorOpen')] },
   { target: 'cellDoor', verb: 'look', do: [say('line.i.cellDoorLook')] },
   { target: 'cellDoor', verb: ['open', 'go', 'use'], do: [say('line.i.cellDoorLocked')] },
-  { target: 'corridorStairs', verb: 'go', when: F('cellOpen'), walk: true, do: [say('line.i.upStairs'), go('guardroom', 'fromCell')] },
-  { target: 'corridorStairs', verb: 'look', do: [say('line.i.stairsLook')] },
-  { target: 'corridorStairs', verb: 'go', do: [say('line.i.barsFirst')] },
+  // His own cloak, confiscated, hung on a nail out of reach.
+  { target: 'cloak', verb: 'look', do: [say('line.i.cloakLook')] },
+  { target: 'cloak', verb: 'take', do: [say('line.i.cloakTake')] },
 
   // ------------------------------------------------------- Benn, the guard ---
   { target: 'guard', verb: 'read', when: F('readGuard'), do: [say('line.i.readGuardAgain')] },

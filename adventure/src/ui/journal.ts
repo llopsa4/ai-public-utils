@@ -7,7 +7,8 @@ import { diary, mapState } from './journalData';
 
 
 /** Codex's painted map (no lettering), once it has been delivered; else the land is drawn here. */
-const paintedFiles = import.meta.glob('../../art/src/ui/world-map.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
+// Codex's painting, served as WebP (like the rooms; the PNG stays the source).
+const paintedFiles = import.meta.glob('../../art/src/ui/world-map.webp', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
 export const PAINTED = Object.values(paintedFiles)[0] as string | undefined;
 
 const SVG = 'http://www.w3.org/2000/svg';

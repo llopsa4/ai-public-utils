@@ -1,29 +1,31 @@
 # room-cell
 
-Status: **placeholder** · room · chapter intro · in the game as `art/src/intro/rooms/cell.png`
+Status: **final** · room · chapter intro · in the game as `art/src/intro/rooms/cell.png`
 
 ## What the game does with it
 
-In the game as the room `cell` (intro). Mara (232 px tall) and the others walk in the floor band: x 48–720, y 536–690.
+In the game as the room `cell` (intro). Mara (232 px tall) and the others walk in the floor band: x 32–692, y 540–660.
 
 Everything the player can click, at these places (art pixels), each must be painted there and recognisable:
-- **Tin plate** (`plate`, x 316–376, y 596–624): look at, take. Only there at some points of the story.
-- **Mask frame** (`frame`, x 968–1016, y 464–488): look at, take. Only there at some points of the story.
-- **Duty roster** (`roster`, x 1080–1156, y 272–368): look at. Only there at some points of the story.
-- **Candle** (`candle`, x 924–956, y 412–460): look at, take.
-- **Guard's table** (`table`, x 872–1056, y 460–548): look at, take.
-- **Barred window** (`window`, x 292–412, y 124–224): look at, use.
-- **Straw cot** (`cot`, x 68–308, y 472–580): look at, use, take.
-- **Weeping wall** (`wall`, x 428–580, y 236–468): look at, take, use. Only there at some points of the story.
-- **Bucket** (`bucket`, x 596–660, y 532–596): look at, use, take. Only there at some points of the story.
-- **Cell door** (`cellDoor`, x 732–800, y 224–684): look at, open, go through, use (an exit).
-- **Stairs up** (`corridorStairs`, x 1180–1280, y 180–524): look at, go through (an exit). Only there at some points of the story.
+- **Tin plate** (`plate`, x 316–376, y 600–628): look at, take. Only there at some points of the story.
+- **Mask frame** (`frame`, x 968–1012, y 532–556): look at, take. Only there at some points of the story.
+- **Harrow's portrait** (`roster`, x 1054–1130, y 230–330): look at. Only there at some points of the story.
+- **Hooded cloak** (`cloak`, x 914–1006, y 190–414): look at, take. Only there at some points of the story.
+- **Candle** (`candle`, x 932–960, y 492–560): look at, take.
+- **Guard's table** (`table`, x 874–1086, y 544–654): look at, take.
+- **Barred window** (`window`, x 280–400, y 124–248): look at, use.
+- **Clay chip** (`wall`, x 488–536, y 244–284): look at, take, use. Only there at some points of the story.
+- **Straw cot** (`cot`, x 50–330, y 470–584): look at, use, take.
+- **Bucket** (`bucket`, x 594–662, y 510–586): look at, use, take. Only there at some points of the story.
+- **Cell door** (`cellDoor`, x 704–824, y 200–664): look at, open, go through, use (an exit).
 
 Drawn separately as objects (leave their spot plain in the painting, they stand there):
 - `floor-plate` standing on (346, 624).
-- `window-plate` standing on (352, 228).
+- `window-plate` standing on (340, 246).
 
-Story characters stand at: name.guard (1132, 600). Keep the wall behind them uncluttered at head height.
+Story characters stand at: name.guard (1140, 652). Keep the wall behind them uncluttered at head height.
+
+Walk-behind pieces are cut from this painting: `cell-bars` (from (4, 4)), `cell-door` (from (728, 4)): paint those things in front of the floor there.
 
 
 ## Technical

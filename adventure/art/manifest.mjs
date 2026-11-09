@@ -135,16 +135,17 @@ export const RIGS = {
       'silas-clerk': { ...pack, overlay: 'clerk', forearmRaise: 1.6, portraitId: 'silas-clerk', moods: ['neutral'] },
     };
   })(),
+  // Benn: Codex's drawings (art/inbox/char-guard/HANDOFF.md). He never walks: his long coat stays
+  // whole above the hem; kneeling, lying and sitting (asleep, without the chair: the cell paints
+  // its own) are drawn.
   guard: {
-    dir: 'intro/', variant: { hue: 200, sat: 0.25, light: 0.85, skin: 1.02, headgear: { kind: 'cap', color: [84, 86, 96] } },
-    // Benn dozes on his chair by the candle (a sitting frame, asleep).
-    sits: 'asleep',
-    source: 'sources/characters/char-oren/body.png', armLayer: 'sources/characters/char-oren/arm.png', height: 214, walks: false,
-    armPivot: [330, 320],
-    hipY: 960, splitX: 464, hips: { near: [400, 960], far: [540, 960] }, knees: { near: [380, 1290], far: [560, 1290] },
-    eyes: [{ x: 563, y: 150, rx: 10, ry: 5, skinAt: [563, 176] }],
-    portrait: [380, 0, 340, 340], moods: ['neutral'],
-    face: { mouth: { x: 583, y: 213, rx: 12, ry: 4 }, brows: [{ x0: 530, x1: 580, y0: 113, y1: 131, inner: 'right' }, { x0: 598, x1: 622, y0: 115, y1: 126, inner: 'left' }] },
+    dir: 'intro/', sits: 'asleep',
+    source: 'sources/characters/char-guard/body.png', armLayer: 'sources/characters/char-guard/arm.png', height: 216, walks: false,
+    armPivot: [368, 377],
+    hipY: 1130, splitX: 485, hips: { near: [420, 1130], far: [560, 1130] }, knees: { near: [405, 1290], far: [575, 1290] },
+    eyes: [{ x: 536, y: 150, rx: 9, ry: 4, skinAt: [536, 162] }, { x: 574, y: 146, rx: 4, ry: 3, skinAt: [571, 157] }],
+    portrait: [380, 20, 260, 260], moods: ['neutral'],
+    face: { mouth: { x: 557, y: 192, rx: 10, ry: 3 }, brows: [{ x0: 520, x1: 560, y0: 128, y1: 135, inner: 'right' }, { x0: 565, x1: 580, y0: 125, y1: 131, inner: 'left' }] },
   },
   warden: {
     dir: 'intro/', variant: { hue: 190, sat: 0.3, light: 0.7, skin: 0.9, headgear: { kind: 'cap', color: [60, 62, 70] } },
@@ -186,7 +187,7 @@ export const MANIFEST = [
   { id: 'menu-flame', kind: 'prop', file: 'ui/menu-flame.gif', anchor: 'centre', chapter: 'game', status: 'final', generator: 'menu-flame.py', subject: 'Six-frame realistic flame for title selection.' },
   { id: 'menu-flame-still', kind: 'prop', file: 'ui/menu-flame-still.png', size: { w: 64, h: 64 }, anchor: 'centre', chapter: 'game', status: 'final', generator: 'menu-flame.py', subject: 'Static flame for reduced-motion title selection.' },
   // The notebook's world map (src/content/world.ts): painted without lettering; the game writes the names and the marker.
-  { id: 'world-map', kind: 'map', file: 'ui/world-map.png', size: { w: 1000, h: 700 }, anchor: 'none', chapter: 'game', status: 'requested', generator: 'Codex',
+  { id: 'world-map', kind: 'map', file: 'ui/world-map.png', webp: true, size: { w: 1000, h: 700 }, anchor: 'none', chapter: 'game', status: 'requested', generator: 'Codex',
     subject: "An invented world map on worn parchment, drawn in ink and soft watercolour pixel art: one continent split north to south by the Rift, a deep jagged chasm crossed by a single bridge (Spanwick) at its middle; west of it the grey ash plains around Cinderfold, low foundry hills, and a snowy north with a walled town (Ironhaven); east of it a river with waterwheels (Alderweir), a forest in the south-east, a large old hearth-works further east (the First Hearth), and mountains in the north-east with a lone hut. A dotted road runs from Cinderfold east over the bridge. Follow the layout image exactly: every place sits where its mark is. No words, letters or labels anywhere (the game writes them)." },
   {"id": "regulator-closeup-housing", "kind": "prop", "file": "props/regulator-closeup-housing.png", "size": {"w": 512, "h": 320}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup housing"},
   {"id": "regulator-closeup-ring", "kind": "prop", "file": "props/regulator-closeup-ring.png", "size": {"w": 160, "h": 160}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup ring"},
@@ -341,7 +342,7 @@ export const MANIFEST = [
     ['silas', 'Silas, the con man.', 220],
     ['silas-harrow', 'Silas wearing the Harrow mask (only the face and head differ from char-silas).', 220],
     ['silas-clerk', "Silas as the tally clerk: hood up, a ledger held to his chest (only the head and arms differ from char-silas).", 220],
-    ['guard', "Benn, the young night guard of Ironhaven's cells.", 214],
+    ['guard', "Benn, the young night guard of Ironhaven's cells.", 216],
     ['warden', "Kell, the guardroom guard of Ironhaven's prison.", 230],
     ['sigrid', 'Captain Sigrid of Ironhaven.', 228],
   ].flatMap(([id, subject, height]) => [
@@ -362,6 +363,11 @@ export const MANIFEST = [
     file: 'intro/objects/window-plate.png', sheet: 'intro/objects/window-plate.json', chapter: 'intro', generator: 'intro.mjs' },
   { ...object('floor-plate', 'A dented tin plate with a stale crust on it, lying on the cell floor by the cot.', ['idle']),
     file: 'intro/objects/floor-plate.png', sheet: 'intro/objects/floor-plate.json', chapter: 'intro', generator: 'intro.mjs' },
+  // The cell's bars and door, drawn in front of Silas (Codex's painting, split; art/inbox/cell-layers).
+  { id: 'cell-bars', kind: 'foreground', file: 'foreground/cell-bars.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex',
+    subject: "The cell's iron cage: its bars and frame, drawn in front of Silas (the room painting's foreground)." },
+  { id: 'cell-door', kind: 'foreground', file: 'foreground/cell-door.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex',
+    subject: "The cage's barred door with its lock, drawn in front of Silas until it is opened." },
   icon('read', 'Read people: a face in profile with a small gold glint of insight above it.'),
 ];
 

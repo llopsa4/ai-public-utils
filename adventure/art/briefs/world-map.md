@@ -1,6 +1,6 @@
 # world-map
 
-Status: **requested** · map · chapter game · in the game as `art/src/ui/world-map.png`
+Status: **final** · map · chapter game · in the game as `art/src/ui/world-map.png`
 
 ## What the game does with it
 

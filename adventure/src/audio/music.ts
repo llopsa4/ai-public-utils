@@ -2,7 +2,7 @@
  * A small generative score, synthesized like the rest of the sound: a slow pad chord per bar and
  * sparse plucked notes from the mood's scale. Moods crossfade on room changes.
  */
-export type MusicMood = 'warm' | 'tension' | 'cold' | 'wind' | 'combat' | 'nervous' | 'none';
+export type MusicMood = 'warm' | 'tension' | 'cold' | 'wind' | 'combat' | 'nervous' | 'title' | 'none';
 
 interface MoodDef {
   /** Semitone offsets from the root for the scale the plucks pick from. */
@@ -35,7 +35,7 @@ interface MoodDef {
   };
 }
 
-const MOODS: Record<Exclude<MusicMood, 'none'>, MoodDef> = {
+const MOODS: Record<Exclude<MusicMood, 'none' | 'title'>, MoodDef> = {
   // Home and hearth: D major pentatonic, gentle movement.
   warm: { scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 4.8, pluck: 0.32, padLevel: 0.05, cutoff: 1400 },
   // The gallery: D minor with a flat sixth, a held low fifth, few notes.
@@ -69,9 +69,35 @@ const MOODS: Record<Exclude<MusicMood, 'none'>, MoodDef> = {
 const semis = (root: number, n: number) => root * 2 ** (n / 12);
 const FADE = 2.2;
 
+/**
+ * The title theme (the title screen and the chapter map): the warm music made dramatic, in the
+ * manner of a Hans Zimmer cue. D minor over warm's own root, Dm–B♭–F–C (each cycle left hanging on
+ * C), 84 bpm, driven by a low sixteenth-note ostinato. An endless 16-bar arc of four stages, one
+ * chord cycle each: (1) the ostinato alone with a ticking clock; (2) taiko-like drums enter; (3) the
+ * peak: low brass swells ("braams") and a slow high-strings theme; (4) a release to the ostinato.
+ * It plays in a synthesized hall (reverb on this piece only).
+ */
+export const TITLE = {
+  bpm: 84,
+  bars: 16,
+  root: 146.83,
+  /** Dm, B♭, F, C as semitones above (or below) the root, one chord per bar. */
+  chords: [[0, 7, 15], [-4, 3, 10], [3, 10, 15], [-2, 5, 14]],
+  /** The high-strings theme, one held note per bar over the chords: A5, B♭5, A5, G5. */
+  theme: [31, 32, 31, 29],
+} as const;
+const TITLE_BAR = (60 / TITLE.bpm) * 4;
+/** Which stage of the arc a bar is in: 1 build, 2 drums, 3 peak, 4 release. */
+export const titleStage = (bar: number): 1 | 2 | 3 | 4 => (Math.floor((bar % TITLE.bars) / 4) + 1) as 1 | 2 | 3 | 4;
+
 export class Music {
   private mood: MusicMood = 'none';
   private bus: GainNode | null = null;
+  /** Nodes hanging off the current bus (the title's reverb), let go with it. */
+  private extras: AudioNode[] = [];
+
+  /** The bus now playing (for rendering a piece offline). */
+  get current(): GainNode | null { return this.bus; }
   private timer = 0;
   private bar = 0;
 
@@ -82,10 +108,11 @@ export class Music {
     this.mood = mood;
     const ctx = this.ctx;
     // Fade the old bus out and let it be collected.
-    const old = this.bus;
+    const old = this.bus, oldExtras = this.extras;
+    this.extras = [];
     if (old) {
       old.gain.setTargetAtTime(0.0001, ctx.currentTime, FADE / 4);
-      window.setTimeout(() => old.disconnect(), FADE * 2000);
+      window.setTimeout(() => { old.disconnect(); for (const n of oldExtras) n.disconnect(); }, FADE * 2000 + 3000);
     }
     window.clearInterval(this.timer);
     this.bus = null;
@@ -95,6 +122,19 @@ export class Music {
     bus.gain.exponentialRampToValueAtTime(1, ctx.currentTime + FADE);
     bus.connect(this.out);
     this.bus = bus;
+    this.bar = 0;
+    if (mood === 'title') {
+      // The hall: a reverb send beside the dry signal.
+      const hall = ctx.createConvolver();
+      hall.buffer = this.hallImpulse();
+      const wet = ctx.createGain();
+      wet.gain.value = 0.35;
+      bus.connect(hall).connect(wet).connect(this.out);
+      this.extras = [hall, wet];
+      this.titleBar(bus);
+      this.timer = window.setInterval(() => this.titleBar(bus), TITLE_BAR * 1000);
+      return;
+    }
     const def = MOODS[mood];
     this.bar = 0;
     this.playBar(def, bus);
@@ -103,6 +143,141 @@ export class Music {
 
   stop(): void {
     this.play('none');
+  }
+
+  private hall: AudioBuffer | null = null;
+  /** A hall's echo, made once: 2.8 s of decaying stereo noise. */
+  private hallImpulse(): AudioBuffer {
+    if (this.hall) return this.hall;
+    const ctx = this.ctx, length = Math.floor(ctx.sampleRate * 2.8);
+    const buf = ctx.createBuffer(2, length, ctx.sampleRate);
+    for (let c = 0; c < 2; c++) {
+      const d = buf.getChannelData(c);
+      for (let i = 0; i < length; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / length) ** 3;
+    }
+    return (this.hall = buf);
+  }
+
+  /** One bar of the title theme, its layers chosen by the stage of the 16-bar arc (at `at`: rendering offline). */
+  titleBar(bus: GainNode, at = this.ctx.currentTime + 0.05): void {
+    if (bus !== this.bus) return;
+    const t = at;
+    const bar = this.bar++, stage = titleStage(bar), inArc = bar % TITLE.bars;
+    const chord = TITLE.chords[bar % 4], root = TITLE.root;
+    const step = TITLE_BAR / 16;
+    // Warm's own pad, darker and quiet: what ties the two pieces together.
+    for (const n of chord) this.pad(bus, semis(root, n), t, TITLE_BAR, 0.04, 900);
+    // The ostinato: low sixteenths on the chord's root (root, root, octave, root), the filter
+    // opening as the arc builds and closing in the release.
+    const low = chord[0] - 12;
+    const cutoff = [520, 800, 1400, 650][stage - 1];
+    const level = [0.05, 0.062, 0.078, 0.046][stage - 1];
+    for (let i = 0; i < 16; i++) {
+      const n = i % 4 === 2 ? low + 12 : low;
+      this.ostinato(bus, semis(root, n), t + i * step, step * 0.92, level * (i % 4 === 0 ? 1 : 0.62), cutoff);
+    }
+    // The clock: only while it builds.
+    if (stage <= 2) for (let i = 0; i < 16; i += 2) this.tick(bus, t + i * step, i % 8 === 0);
+    // Taiko on beats 1 and 3; a roll into the next stage at the end of stages 2 and 3.
+    if (stage === 2 || stage === 3) {
+      for (const i of [0, 8]) this.taiko(bus, t + i * step, 0.22);
+      if (inArc === 7 || inArc === 11) for (const i of [12, 13, 14, 15]) this.taiko(bus, t + i * step, 0.12 + (i - 12) * 0.03);
+    }
+    // The peak: a braam on every chord, and the high-strings theme held over it (fading in the
+    // release's first bar).
+    if (stage === 3) this.braam(bus, semis(root, chord[0] - 12), t, TITLE_BAR);
+    if (stage === 3 || inArc === 12) this.strings(bus, semis(root, TITLE.theme[bar % 4]), t, TITLE_BAR, stage === 3 ? 0.045 : 0.02);
+  }
+
+  /** A low bowed sixteenth: a sawtooth through a resonant lowpass, short and tight. */
+  private ostinato(bus: GainNode, freq: number, t: number, length: number, level: number, cutoff: number): void {
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = freq;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.Q.value = 3;
+    filter.frequency.setValueAtTime(cutoff * 1.5, t);
+    filter.frequency.exponentialRampToValueAtTime(cutoff, t + length);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(level, t + 0.006);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + length);
+    osc.connect(filter).connect(gain).connect(bus);
+    osc.start(t);
+    osc.stop(t + length + 0.05);
+  }
+
+  /** A taiko-like drum: a deep falling sine with a low thump of noise. */
+  private taiko(bus: GainNode, t: number, level: number): void {
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(82, t);
+    osc.frequency.exponentialRampToValueAtTime(34, t + 0.45);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(level, t + 0.006);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.7);
+    osc.connect(gain).connect(bus);
+    osc.start(t);
+    osc.stop(t + 0.75);
+    this.hit(bus, t, 'lowpass', 320, level * 0.5, 0.12);
+  }
+
+  /** A braam: low detuned sawtooths (root and fifth) swelling through an opening lowpass, bent up into the note. */
+  private braam(bus: GainNode, freq: number, t: number, length: number): void {
+    const ctx = this.ctx;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.Q.value = 1.2;
+    filter.frequency.setValueAtTime(180, t);
+    filter.frequency.exponentialRampToValueAtTime(1300, t + length * 0.45);
+    filter.frequency.exponentialRampToValueAtTime(260, t + length * 1.05);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.13, t + length * 0.45);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + length * 1.1);
+    filter.connect(gain).connect(bus);
+    for (const [ratio, detune] of [[1, -9], [1, 9], [1.5, 0], [0.5, 0]] as const) {
+      const osc = ctx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq * ratio * 0.96, t);
+      osc.frequency.exponentialRampToValueAtTime(freq * ratio, t + 0.35);
+      osc.detune.value = detune;
+      osc.connect(filter);
+      osc.start(t);
+      osc.stop(t + length * 1.15);
+    }
+  }
+
+  /** A held high string note: two detuned sawtooths, a slow bow, a gentle vibrato. */
+  private strings(bus: GainNode, freq: number, t: number, length: number, level: number): void {
+    const ctx = this.ctx;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.frequency.value = 2800; filter.Q.value = 0.5;
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(level, t + length * 0.55);
+    gain.gain.setValueAtTime(level, t + length * 0.85);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + length * 1.25);
+    filter.connect(gain).connect(bus);
+    const vibrato = ctx.createOscillator();
+    vibrato.frequency.value = 5;
+    const depth = ctx.createGain();
+    depth.gain.value = 7; // cents
+    vibrato.connect(depth);
+    for (const detune of [-8, 8]) {
+      const osc = ctx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.value = freq;
+      osc.detune.value = detune;
+      depth.connect(osc.detune);
+      osc.connect(filter);
+      osc.start(t);
+      osc.stop(t + length * 1.3);
+    }
+    vibrato.start(t);
+    vibrato.stop(t + length * 1.3);
   }
 
   private playBar(def: MoodDef, bus: GainNode): void {

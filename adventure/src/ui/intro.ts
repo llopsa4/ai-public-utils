@@ -2,6 +2,7 @@
 import { t } from '../engine/i18n';
 import { lineDuration, settings } from '../engine/settings';
 import { $, type Ui } from './ui';
+import { sound } from '../audio/sound';
 import { STORY_START, loadChapter } from '../chapters';
 import { dayLine } from './journalData';
 import type { Chapter } from '../chapters/types';
@@ -14,6 +15,8 @@ import type { Chapter } from '../chapters/types';
 export async function newStory(ui: Ui): Promise<void> {
   if (ui.introActive) return;
   ui.introActive = true;
+  // The title theme fades: the opening lines play in silence.
+  sound.music('none');
   ui.setHover('');
   const first = await loadChapter(STORY_START, { art: true });
   await playIntro(first.intro?.slice(1), first.intro?.[0], dayLine(first));

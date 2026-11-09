@@ -36,6 +36,56 @@ A new painting should put the things on the list where the reference image shows
 
 After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-python-headless` and `numpy`): it cuts the silhouette of every clickable thing painted into the room for the hover highlight (`art/src/outlines/`). Check `art/inbox/preview/outlines-<room>.png`; where a cut misses, trace a rough hint in `art/outlines.json` and run it again. `npm run art:check` warns about any painted hotspot without an outline.
 
+### cell: `intro/rooms/cell.png`
+
+![cell](spec/cell.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `plate` | Tin plate | 316, 600, 60×28 | (340, 636) |
+| `frame` | Mask frame | 968, 532, 44×24 | (680, 600) |
+| `roster` | Harrow's portrait | 1054, 230, 76×100 | — |
+| `cloak` | Hooded cloak | 914, 190, 92×224 | (680, 600) |
+| `candle` | Candle | 932, 492, 28×68 | — |
+| `table` | Guard's table | 874, 544, 212×110 | (680, 600) |
+| `window` | Barred window | 280, 124, 120×124 | (340, 580) |
+| `wall` | Clay chip | 488, 244, 48×40 | (512, 576) |
+| `cot` | Straw cot | 50, 470, 280×114 | (190, 600) |
+| `bucket` | Bucket | 594, 510, 68×76 | (580, 612) |
+| `cellDoor` | Cell door | 704, 200, 120×464 | (680, 600) |
+
+- Object `intro/objects/floor-plate` (60×24, tags idle (1)): foot point (346, 624). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/window-plate` (44×28, tags idle (1)): foot point (340, 246). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Walk-behind piece `foreground/cell-bars.png` (724×664, top left at (4, 4)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
+- Walk-behind piece `foreground/cell-door.png` (96×664, top left at (728, 4)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
+- undefined stands at (1140, 652).
+- Flickering light pools at (946, 504): lamps, kiln mouths, hearths in the painting.
+
+### guardroom: `intro/rooms/guardroom.png`
+
+![guardroom](spec/guardroom.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `hood` | Clerk's hood | 220, 236, 68×124 | (256, 584) |
+| `ledger` | Tally ledger | 392, 392, 80×36 | (432, 584) |
+| `grate` | Iron grate | 1120, 220, 152×304 | (1180, 592) |
+| `downStairs` | Stairs down | 0, 300, 80×224 | (60, 600) |
+| `stove` | Stove | 600, 360, 120×164 | — |
+
+- undefined stands at (880, 608).
+- Flickering light pools at (660, 440): lamps, kiln mouths, hearths in the painting.
+
+### outerDoor: `intro/rooms/prison-door.png`
+
+![outerDoor](spec/prison-door.jpg)
+
+| Clickable | Name | Box (x, y, w×h) | Mara stands at |
+| --- | --- | --- | --- |
+| `walls` | Ironhaven's walls | 0, 0, 1280×400 | — |
+
+- undefined stands at (940, 604).
+
 ### Mara's Tent: `rooms/tent.png`
 
 ![tent](spec/tent.jpg)
@@ -297,6 +347,9 @@ Tags (the frames each one plays):
 | `nell` | Nell (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `bryn` | Bryn (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `tobi` | Tobi (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
+| `guard` | Guard (story character) | 10 tags (+ fidget) | 1280×1536, 27 frames |
+| `warden` | Warden (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
+| `sigrid` | Sigrid (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `extra-stoker` (ships as WebP) | background person (stoker) | 13 tags | 1280×768, 13 frames |
 | `extra-hoist` (ships as WebP) | background person (hoist) | 13 tags | 1280×768, 13 frames |
 | `extra-hauler` (ships as WebP) | background person (hauler) | 13 tags | 1280×768, 13 frames |
@@ -321,13 +374,14 @@ Dialogue portraits in `art/src/portraits/`: head and shoulders, **256×256 per f
 | `portraits/oren.png` | neutral, worried, angry | 1536×256 |
 | `portraits/nell.png` | neutral | 512×256 |
 | `portraits/tobi.png` | neutral, worried | 1024×256 |
+| `portraits/silas.png` | neutral, worried, angry | 1536×256 |
 
 Background people have no portraits. To give one a portrait, add its strip and an entry in `PORTRAIT_MOODS` (`src/content/art.ts`).
 
 ## Satchel items and action icons
 
 - Items: `art/src/items/<id>.png`, **64×64**, transparent background: `gauntlet` (pressure gauntlet), `notebook` (mother's notebook), `regulator` (regulator), `bread` (Nell's bread), `scarf` (Tobi's scarf), `loaf` (a loaf).
-- Action-ring icons: `art/src/icons/<verb>.png`, square, shown at 24×24 (a larger square, such as 48×48, is fine and looks sharper): `look` (Look at), `open` (Open), `close` (Close), `take` (Pick up), `use` (Use), `talk` (Talk to), `go` (Go to), `crouch` (Crouch), `lie` (Lie down), `stand` (Stand up).
+- Action-ring icons: `art/src/icons/<verb>.png`, square, shown at 24×24 (a larger square, such as 48×48, is fine and looks sharper): `look` (Look at), `open` (Open), `close` (Close), `take` (Pick up), `use` (Use), `talk` (Talk to), `go` (Go to), `crouch` (Crouch), `lie` (Lie down), `stand` (Stand up), `read` (Read).
 
 ## Drawn by the game (no files)
 

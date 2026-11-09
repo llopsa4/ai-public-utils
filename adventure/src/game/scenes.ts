@@ -115,7 +115,8 @@ export class TitleScene extends Phaser.Scene {
     this.update();
     this.cameras.main.fadeIn(600, 0, 0, 0);
     sound.ambience('kiln');
-    sound.music('warm');
+    // The title theme (the warm music made dramatic, src/audio/music.ts TITLE).
+    sound.music('title');
     this.session.onTitleShown();
   }
 
@@ -514,6 +515,7 @@ export class RoomScene extends Phaser.Scene {
       const task = def.task && conditionsHold(state, def.task.if) ? def.task.tag : null;
       if (actor.currentTask !== task) actor.perform(task);
     }
+    (this.room.foreground ?? []).forEach((f, i) => this.foreground[i]?.setVisible(conditionsHold(state, f.visibleIf)));
     if (this.hero?.sprite.active) this.hero.setSheet(this.heroSheet());
     applyTint(this);
   }

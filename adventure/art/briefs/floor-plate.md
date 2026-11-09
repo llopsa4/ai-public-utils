@@ -1,6 +1,6 @@
 # floor-plate
 
-Status: **placeholder** · object · chapter intro · in the game as `art/src/intro/objects/floor-plate.png`
+Status: **final** · object · chapter intro · in the game as `art/src/intro/objects/floor-plate.png`
 
 ## What the game does with it
 

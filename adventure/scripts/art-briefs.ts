@@ -156,7 +156,7 @@ function brief(e: ArtEntry): string {
   if (e.kind === 'pack') {
     lines.push('- `art/sources/characters/mara-casual-layered/` (Mara\'s pack: the format to match, piece by piece) and `art/LAYERED-RIG.md` (the pack contract)');
     if (e.twoSided) lines.push(`- \`art/sources/characters/${e.pack}/\` (this outfit facing right: the look to match, piece by piece) and \`art/inbox/sigrid-layered/\` with its \`left/\` folder (a two-sided pack: the format)`);
-    if (e.twoSided && e.phase === 2) lines.push(`- the approved \`art/inbox/${e.pack}/left/master.png\``);
+    if (e.twoSided && e.phase === 2) lines.push(`- the approved \`art/sources/characters/${e.pack}/left/master.png\` and \`idle.png\` (approved by the user on 2026-11-09: keep the fuller waist and lower torso exactly)`);
     else if (e.redo) lines.push(`- \`art/sources/characters/${e.pack}/idle.png\` (the current pose, to redraw relaxed) and \`master.png\``);
     else if (e.phase === 2) lines.push(`- the approved Phase 1 pictures: \`art/inbox/${e.pack}/master.png\` and \`idle.png\``);
     lines.push('', '## Then', '', `Save it as \`art/inbox/${e.pack}/${e.redo ? `${e.piece}-relaxed` : e.piece}.png\`. Do **not** run \`npm run art:import\` for this folder: Claude brings it into \`art/sources/characters/${e.pack}/\`, measures its joints (rig.json) and rigs it. Report which pieces are in.`, '');
@@ -227,7 +227,9 @@ const changes = [
   '',
   ...leftLines(1),
   '',
-  '#### Then: walking, kneeling and lying facing left (after approval)',
+  '#### Then: walking, kneeling and lying facing left (the standing figures are approved)',
+  '',
+  'The user approved the six left-facing standing drawings on 2026-11-09; they are now in `art/sources/characters/<pack>/left/`. Cut and draw everything below from those approved masters, for all three outfits. Keep the fuller waist and lower torso the user asked for (see `art/inbox/mara-left-review/HANDOFF.md`): do not slim the waist in the layers.',
   '',
   ...leftLines(2),
   '',

@@ -43,14 +43,16 @@ The game has been mirroring Mara to face left, which moves his gauntlet from his
 
 Make the left-facing `master.png` and `idle.png` of each outfit, and **stop**: the user approves them before the rest.
 
-- [ ] **mara-light-left-master**: [brief](briefs/mara-light-left-master.md) → `art/inbox/mara-light-layered/left/master.png`
-- [ ] **mara-light-left-idle**: [brief](briefs/mara-light-left-idle.md) → `art/inbox/mara-light-layered/left/idle.png`
-- [ ] **mara-medium-left-master**: [brief](briefs/mara-medium-left-master.md) → `art/inbox/mara-medium-layered/left/master.png`
-- [ ] **mara-medium-left-idle**: [brief](briefs/mara-medium-left-idle.md) → `art/inbox/mara-medium-layered/left/idle.png`
-- [ ] **mara-casual-left-master**: [brief](briefs/mara-casual-left-master.md) → `art/inbox/mara-casual-layered/left/master.png`
-- [ ] **mara-casual-left-idle**: [brief](briefs/mara-casual-left-idle.md) → `art/inbox/mara-casual-layered/left/idle.png`
+- [x] **mara-light-left-master**: [brief](briefs/mara-light-left-master.md) → `art/inbox/mara-light-layered/left/master.png`
+- [x] **mara-light-left-idle**: [brief](briefs/mara-light-left-idle.md) → `art/inbox/mara-light-layered/left/idle.png`
+- [x] **mara-medium-left-master**: [brief](briefs/mara-medium-left-master.md) → `art/inbox/mara-medium-layered/left/master.png`
+- [x] **mara-medium-left-idle**: [brief](briefs/mara-medium-left-idle.md) → `art/inbox/mara-medium-layered/left/idle.png`
+- [x] **mara-casual-left-master**: [brief](briefs/mara-casual-left-master.md) → `art/inbox/mara-casual-layered/left/master.png`
+- [x] **mara-casual-left-idle**: [brief](briefs/mara-casual-left-idle.md) → `art/inbox/mara-casual-layered/left/idle.png`
 
-#### Then: walking, kneeling and lying facing left (after approval)
+#### Then: walking, kneeling and lying facing left (the standing figures are approved)
+
+The user approved the six left-facing standing drawings on 2026-11-09; they are now in `art/sources/characters/<pack>/left/`. Cut and draw everything below from those approved masters, for all three outfits. Keep the fuller waist and lower torso the user asked for (see `art/inbox/mara-left-review/HANDOFF.md`): do not slim the waist in the layers.
 
 - [ ] **mara-light-left-farUpperArm**: [brief](briefs/mara-light-left-farUpperArm.md) → `art/inbox/mara-light-layered/left/farUpperArm.png`
 - [ ] **mara-light-left-farForearm**: [brief](briefs/mara-light-left-farForearm.md) → `art/inbox/mara-light-layered/left/farForearm.png`
@@ -105,7 +107,7 @@ Make the left-facing `master.png` and `idle.png` of each outfit, and **stop**: t
 
 His standing picture (`idle.png`) has a hand raised in the air; redraw it relaxed, the hand down. Save it as `art/inbox/silas-layered/idle-relaxed.png` (do not import): Claude swaps it in.
 
-- [ ] **silas-idle-relaxed**: [brief](briefs/silas-idle-relaxed.md) → `art/inbox/silas-layered/idle-relaxed.png`
+- [x] **silas-idle-relaxed**: [brief](briefs/silas-idle-relaxed.md) → `art/inbox/silas-layered/idle-relaxed.png`
 
 ## Silas, a main character (like Mara)
 
@@ -156,29 +158,29 @@ Captain Sigrid gets the same articulated pack (`art/LAYERED-RIG.md`): one outfit
 
 Make these two, and **stop**: the user looks at them and approves Sigrid's look before Phase 2.
 
-- [ ] **sigrid-master**: [brief](briefs/sigrid-master.md) → `art/inbox/sigrid-layered/master.png`
-- [ ] **sigrid-idle**: [brief](briefs/sigrid-idle.md) → `art/inbox/sigrid-layered/idle.png`
+- [x] **sigrid-master**: [brief](briefs/sigrid-master.md) → `art/inbox/sigrid-layered/master.png`
+- [x] **sigrid-idle**: [brief](briefs/sigrid-idle.md) → `art/inbox/sigrid-layered/idle.png`
 
 ### Phase 2: walking, kneeling and lying (after Phase 1 is approved)
 
 Everything here is cut from the approved master, on its canvas and coordinates.
 
-- [ ] **sigrid-farUpperArm**: [brief](briefs/sigrid-farUpperArm.md) → `art/inbox/sigrid-layered/farUpperArm.png`
-- [ ] **sigrid-farForearm**: [brief](briefs/sigrid-farForearm.md) → `art/inbox/sigrid-layered/farForearm.png`
-- [ ] **sigrid-farThigh**: [brief](briefs/sigrid-farThigh.md) → `art/inbox/sigrid-layered/farThigh.png`
-- [ ] **sigrid-farShin**: [brief](briefs/sigrid-farShin.md) → `art/inbox/sigrid-layered/farShin.png`
-- [ ] **sigrid-farBoot**: [brief](briefs/sigrid-farBoot.md) → `art/inbox/sigrid-layered/farBoot.png`
-- [ ] **sigrid-nearThigh**: [brief](briefs/sigrid-nearThigh.md) → `art/inbox/sigrid-layered/nearThigh.png`
-- [ ] **sigrid-nearShin**: [brief](briefs/sigrid-nearShin.md) → `art/inbox/sigrid-layered/nearShin.png`
-- [ ] **sigrid-nearBoot**: [brief](briefs/sigrid-nearBoot.md) → `art/inbox/sigrid-layered/nearBoot.png`
-- [ ] **sigrid-torso**: [brief](briefs/sigrid-torso.md) → `art/inbox/sigrid-layered/torso.png`
-- [ ] **sigrid-nearUpperArm**: [brief](briefs/sigrid-nearUpperArm.md) → `art/inbox/sigrid-layered/nearUpperArm.png`
-- [ ] **sigrid-nearForearm**: [brief](briefs/sigrid-nearForearm.md) → `art/inbox/sigrid-layered/nearForearm.png`
-- [ ] **sigrid-joints**: [brief](briefs/sigrid-joints.md) → `art/inbox/sigrid-layered/joints.png`
-- [ ] **sigrid-walk-contact**: [brief](briefs/sigrid-walk-contact.md) → `art/inbox/sigrid-layered/walk-contact.png`
-- [ ] **sigrid-walk-passing**: [brief](briefs/sigrid-walk-passing.md) → `art/inbox/sigrid-layered/walk-passing.png`
-- [ ] **sigrid-kneel**: [brief](briefs/sigrid-kneel.md) → `art/inbox/sigrid-layered/kneel.png`
-- [ ] **sigrid-lie**: [brief](briefs/sigrid-lie.md) → `art/inbox/sigrid-layered/lie.png`
+- [x] **sigrid-farUpperArm**: [brief](briefs/sigrid-farUpperArm.md) → `art/inbox/sigrid-layered/farUpperArm.png`
+- [x] **sigrid-farForearm**: [brief](briefs/sigrid-farForearm.md) → `art/inbox/sigrid-layered/farForearm.png`
+- [x] **sigrid-farThigh**: [brief](briefs/sigrid-farThigh.md) → `art/inbox/sigrid-layered/farThigh.png`
+- [x] **sigrid-farShin**: [brief](briefs/sigrid-farShin.md) → `art/inbox/sigrid-layered/farShin.png`
+- [x] **sigrid-farBoot**: [brief](briefs/sigrid-farBoot.md) → `art/inbox/sigrid-layered/farBoot.png`
+- [x] **sigrid-nearThigh**: [brief](briefs/sigrid-nearThigh.md) → `art/inbox/sigrid-layered/nearThigh.png`
+- [x] **sigrid-nearShin**: [brief](briefs/sigrid-nearShin.md) → `art/inbox/sigrid-layered/nearShin.png`
+- [x] **sigrid-nearBoot**: [brief](briefs/sigrid-nearBoot.md) → `art/inbox/sigrid-layered/nearBoot.png`
+- [x] **sigrid-torso**: [brief](briefs/sigrid-torso.md) → `art/inbox/sigrid-layered/torso.png`
+- [x] **sigrid-nearUpperArm**: [brief](briefs/sigrid-nearUpperArm.md) → `art/inbox/sigrid-layered/nearUpperArm.png`
+- [x] **sigrid-nearForearm**: [brief](briefs/sigrid-nearForearm.md) → `art/inbox/sigrid-layered/nearForearm.png`
+- [x] **sigrid-joints**: [brief](briefs/sigrid-joints.md) → `art/inbox/sigrid-layered/joints.png`
+- [x] **sigrid-walk-contact**: [brief](briefs/sigrid-walk-contact.md) → `art/inbox/sigrid-layered/walk-contact.png`
+- [x] **sigrid-walk-passing**: [brief](briefs/sigrid-walk-passing.md) → `art/inbox/sigrid-layered/walk-passing.png`
+- [x] **sigrid-kneel**: [brief](briefs/sigrid-kneel.md) → `art/inbox/sigrid-layered/kneel.png`
+- [x] **sigrid-lie**: [brief](briefs/sigrid-lie.md) → `art/inbox/sigrid-layered/lie.png`
 
 Then the game builds `char-sigrid`, `portrait-sigrid` from the pack: nothing to make for those.
 
@@ -188,10 +190,10 @@ Then the game builds `char-sigrid`, `portrait-sigrid` from the pack: nothing to 
 
 ### room.cell (`cell`)
 
-- [ ] **room-cell**: [brief](briefs/room-cell.md) → `art/inbox/room-cell.png`
-- [ ] **floor-plate**: [brief](briefs/floor-plate.md) → `art/inbox/floor-plate-idle.png`
-- [ ] **window-plate**: [brief](briefs/window-plate.md) → `art/inbox/window-plate-idle.png`
-- [ ] **char-guard**: [brief](briefs/char-guard.md) → `art/inbox/char-guard/body.png, arm.png, kneel.png, lie.png, sit.png`
+- [x] **room-cell**: [brief](briefs/room-cell.md) → `art/inbox/room-cell.png`
+- [x] **floor-plate**: [brief](briefs/floor-plate.md) → `art/inbox/floor-plate-idle.png`
+- [x] **window-plate**: [brief](briefs/window-plate.md) → `art/inbox/window-plate-idle.png`
+- [x] **char-guard**: [brief](briefs/char-guard.md) → `art/inbox/char-guard/body.png, arm.png, kneel.png, lie.png, sit.png`
 
 ### room.guardroom (`guardroom`)
 
@@ -432,7 +434,7 @@ Then the game builds `char-sigrid`, `portrait-sigrid` from the pack: nothing to 
 
 ### One painting (the game writes the names)
 
-- [ ] **world-map**: [brief](briefs/world-map.md) → `art/inbox/world-map.png`
+- [x] **world-map**: [brief](briefs/world-map.md) → `art/inbox/world-map.png`
 
 ## Satchel items and action icons
 

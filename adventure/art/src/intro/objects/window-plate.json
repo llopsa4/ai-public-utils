@@ -20,11 +20,11 @@
     "w": 44,
     "h": 28
    },
-   "duration": 100
+   "duration": 1000
   }
  ],
  "meta": {
-  "app": "adventure art/intro.mjs",
+  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
   "version": "1",
   "image": "window-plate.png",
   "format": "RGBA8888",

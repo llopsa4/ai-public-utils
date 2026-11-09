@@ -2,6 +2,7 @@ import { readAutosave, writeAutosave } from '../engine/autosave';
 import { onSettingsChange, settings } from '../engine/settings';
 import { STORY_START, loadChapter, setChapter } from '../chapters';
 import { openChapters } from '../engine/unlock';
+import { sound } from '../audio/sound';
 import { newGame } from '../engine/state';
 import type { GameState, Point } from '../engine/types';
 import { useCarriedItem, hitTest, targetId } from './room/input';
@@ -96,7 +97,10 @@ export class Session {
     const state = this.state;
     const finished = [...new Set([...Object.keys(state.earlier), state.chapter])];
     const chapters = await Promise.all(openChapters(finished).map(id => loadChapter(id, { art: true })));
+    // The title theme over the map; it fades as the picked chapter's opening begins.
+    sound.music('title');
     const ch = await this.ui.chapterMap(chapters);
+    sound.music('none');
     const next = newGame(ch.id);
     next.earlier = { ...state.earlier, [state.chapter]: state.flags };
     next.reached = [...new Set([...state.reached, ch.id])];

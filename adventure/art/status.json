@@ -63,5 +63,10 @@
  "regulator-closeup-bolt": "final",
  "regulator-closeup-housing": "final",
  "regulator-closeup-ring": "final",
- "regulator-closeup-valve": "final"
+ "regulator-closeup-valve": "final",
+ "floor-plate": "final",
+ "window-plate": "final",
+ "silas-idle-relaxed": "final",
+ "room-cell": "final",
+ "world-map": "final"
 }

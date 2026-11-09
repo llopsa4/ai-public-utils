@@ -47,10 +47,12 @@ function start(): void {
   onSettingsChange(relayout); // text size
   window.addEventListener('orientationchange', relayout);
 
-  // Browsers only allow audio after a user gesture: start it on the first click or key.
+  // Browsers only allow audio after a user gesture (hovering does not count): start it at once where
+  // the browser allows it, else on the first click, tap or key anywhere (in the capture phase, so
+  // nothing the game does with the event can stop it).
+  sound.tryAutoplay();
   const unlockAudio = () => sound.unlock();
-  window.addEventListener('pointerdown', unlockAudio, { once: true });
-  window.addEventListener('keydown', unlockAudio, { once: true });
+  for (const type of ['pointerdown', 'mousedown', 'touchend', 'keydown'] as const) window.addEventListener(type, unlockAudio, { once: true, capture: true });
   const applyVolume = () => sound.setVolume(settings().volume, settings().muted, settings().musicVolume);
   applyVolume();
   onSettingsChange(applyVolume);
