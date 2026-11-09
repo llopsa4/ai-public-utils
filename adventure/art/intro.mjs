@@ -98,6 +98,8 @@ const render = body => sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg
   s += rect(370, 410, 120, 12, 'url(#wood)') + rect(392, 392, 80, 20, '#7a3a2a') + line(400, 402, 464, 402, '#d8c8a0', 2);
   s += rect(600, 360, 120, 164, '#2a2422') + rect(620, 420, 80, 50, '#ff9a40', 'opacity="0.85"') + rect(648, 160, 24, 200, '#2a2422');
   s += ellipse(660, 440, 160, 120, 'url(#warm)', 'opacity="0.5"');
+  // Benn's stool, right of the stove.
+  s += rect(740, 572, 52, 9, 'url(#wood)') + rect(744, 581, 7, 32, '#3a2414') + rect(781, 581, 7, 32, '#3a2414');
   s += rect(800, 470, 160, 16, 'url(#wood)') + rect(812, 486, 12, 60, '#3a2414') + rect(936, 486, 12, 60, '#3a2414');
   s += rect(1120, 220, 152, 304, '#0e121c') + rect(1124, 224, 144, 296, '#2a3450', 'opacity="0.6"');
   for (let x = 1132; x < 1272; x += 20) s += rect(x, 220, 8, 304, '#3a3a42');

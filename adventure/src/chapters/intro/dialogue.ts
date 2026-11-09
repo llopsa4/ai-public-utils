@@ -115,7 +115,7 @@ export const DIALOGUES: Record<string, DialogueTree> = {
     start: 'start',
     nodes: {
       start: {
-        lines: [{ actor: 'warden', text: 'dlgI.warden.start' }],
+        lines: [{ actor: 'warden', text: 'dlgI.warden.start' }, { actor: 'warden', text: 'dlgI.warden.start2' }],
         next: 'hub1',
       },
       hub1: {
@@ -126,7 +126,8 @@ export const DIALOGUES: Record<string, DialogueTree> = {
         ],
       },
       passing: { lines: [{ actor: 'warden', text: 'dlgI.warden.passing' }], next: 'wUp' },
-      orders: { lines: [{ actor: 'warden', text: 'dlgI.warden.orders' }], next: 'wUp' },
+      // Harrow's name wakes Benn's dream, and Benn talks in his sleep.
+      orders: { lines: [{ actor: 'guard', text: 'dlgI.guard.sleepTalk' }, { actor: 'warden', text: 'dlgI.warden.orders' }], next: 'wUp' },
       wAgain: { lines: [{ actor: 'warden', text: 'dlgI.warden.again' }], next: 'hub1' },
       ...raise('wUp', 'w', 'wAgain'),
       tally: {

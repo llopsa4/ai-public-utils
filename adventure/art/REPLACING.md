@@ -58,7 +58,7 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 - Object `intro/objects/window-plate` (44×28, tags idle (1)): foot point (340, 246). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Walk-behind piece `foreground/cell-bars.png` (724×664, top left at (4, 4)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
 - Walk-behind piece `foreground/cell-door.png` (96×664, top left at (728, 4)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
-- undefined stands at (1140, 652).
+- Benn stands at (1140, 652).
 - Flickering light pools at (946, 504): lamps, kiln mouths, hearths in the painting.
 
 ### guardroom: `intro/rooms/guardroom.png`
@@ -73,7 +73,8 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 | `downStairs` | Stairs down | 0, 300, 80×224 | (60, 600) |
 | `stove` | Stove | 600, 360, 120×164 | — |
 
-- undefined stands at (880, 608).
+- Benn stands at (764, 612).
+- Kell stands at (940, 608).
 - Flickering light pools at (660, 440): lamps, kiln mouths, hearths in the painting.
 
 ### outerDoor: `intro/rooms/prison-door.png`
@@ -84,7 +85,7 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 | --- | --- | --- | --- |
 | `walls` | Ironhaven's walls | 0, 0, 1280×400 | — |
 
-- undefined stands at (940, 604).
+- Captain Sigrid stands at (940, 604).
 
 ### Mara's Tent: `rooms/tent.png`
 

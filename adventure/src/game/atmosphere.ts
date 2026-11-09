@@ -130,14 +130,15 @@ export class Atmosphere {
     const scene = this.scene;
     for (const s of this.room.look?.shafts ?? []) {
       const beam = scene.add.image(s.x, s.y, 'fx-beam').setOrigin(0.5, 0).setDisplaySize(s.width, s.length)
-        .setAngle(s.angle).setTint(s.color).setBlendMode(Phaser.BlendModes.ADD).setDepth(8000).setData('base', 1 - this.cold * 0.7);
-      beam.setAlpha(0.22 * beam.getData('base'));
+        .setAngle(s.angle).setTint(s.color).setBlendMode(Phaser.BlendModes.ADD).setDepth(s.overDark ? 8050 : 8000).setData('base', 1 - this.cold * 0.7);
+      const k = s.strength ?? 1;
+      beam.setAlpha(0.22 * k * beam.getData('base'));
       if (!settings().reducedMotion) {
         scene.tweens.addCounter({
           from: 0, to: Math.PI * 2, duration: Phaser.Math.Between(5000, 8000), repeat: -1,
           onUpdate: t => {
             const v = t.getValue() ?? 0;
-            beam.setAlpha((0.2 + 0.06 * Math.sin(v)) * (beam.getData('base') as number));
+            beam.setAlpha((0.2 + 0.06 * Math.sin(v)) * k * (beam.getData('base') as number));
             beam.setAngle(s.angle + Math.sin(v * 0.5) * 1.5);
           },
         });

@@ -6,8 +6,9 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const here = dirname(fileURLToPath(import.meta.url));
-/** The master palette as [r, g, b] triples. */
-export const PALETTE = JSON.parse(readFileSync(join(here, 'style', 'palette.json'), 'utf8')).colours
+/** The master palette as [r, g, b] triples: the warm colours of the tent reference, plus Ironhaven's set. */
+const PALETTE_FILE = JSON.parse(readFileSync(join(here, 'style', 'palette.json'), 'utf8'));
+export const PALETTE = [...PALETTE_FILE.colours, ...(PALETTE_FILE.ironhaven ?? [])]
   .map(hex => [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)));
 export const OUTLINE = [30, 20, 18];
 

@@ -19,8 +19,10 @@ test('the manifest lists every art file once, and every listed file exists', () 
   for (const e of MANIFEST.filter(m => m.rig)) assert.ok(RIGS[e.rig!], `${e.id} has rig settings`);
 });
 
-test('the master palette has 160 colours, and snapping makes any image conform', () => {
-  assert.equal(PALETTE.length, 160);
+test("the master palette has the tent's 160 colours plus Ironhaven's set, and snapping makes any image conform", () => {
+  const file = JSON.parse(readFileSync(new URL('../art/style/palette.json', import.meta.url), 'utf8'));
+  assert.equal(file.colours.length, 160);
+  assert.equal(PALETTE.length, 160 + (file.ironhaven?.length ?? 0));
   const data = new Uint8Array(64 * 4);
   for (let i = 0; i < 64; i++) data.set([i * 4, 255 - i * 3, (i * 37) % 256, i % 2 ? 255 : 40], i * 4);
   assert.ok(paletteConformity(data) < 1);

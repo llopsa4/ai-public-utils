@@ -37,9 +37,14 @@ const seen = new Map(centres.map(c => { const [r, g, b] = c.map(Math.round); ret
 // Darkest to lightest, so the swatch reads as ramps.
 const palette = [...seen.keys()].map(k => [k >> 16, (k >> 8) & 255, k & 255])
   .sort((a, b) => (a[0] * 0.3 + a[1] * 0.59 + a[2] * 0.11) - (b[0] * 0.3 + b[1] * 0.59 + b[2] * 0.11));
+// Ironhaven's set (added by hand, not derived from the tent) is kept when the palette is re-based.
+const kept = (() => {
+  try { const old = JSON.parse(readFileSync(join(style, 'palette.json'), 'utf8')); return { ironhaven: old.ironhaven, ironhavenNote: old.ironhavenNote }; } catch { return {}; }
+})();
 writeFileSync(join(style, 'palette.json'), JSON.stringify({
   note: 'Cinderfold master palette: every image is snapped to these colours on import (art/import.mjs). Derived from the tent reference (tent-reference.png, the style master) by art/derive-palette.mjs.',
   colours: palette.map(([r, g, b]) => `#${[r, g, b].map(v => v.toString(16).padStart(2, '0')).join('')}`),
+  ...kept,
 }, null, 1) + '\n');
 
 // Swatch: 16 per row, 32 px squares.

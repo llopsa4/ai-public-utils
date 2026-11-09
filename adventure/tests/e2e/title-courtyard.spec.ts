@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { open, startNewGame } from './helpers';
 
-for (const phone of [false, true]) test(`Ironhaven title has separate artifacts, an animated flag and fire, and no characters${phone ? ' on phone' : ''}`, {
+for (const phone of [false, true]) test(`Ironhaven title has the empty courtyard, an animated flag and fire, and no characters${phone ? ' on phone' : ''}`, {
   tag: ['@focused', '@art', '@runtime', ...(phone ? ['@phone'] : [])],
 }, async ({ page }, info) => {
   if (phone) await page.setViewportSize({ width: 844, height: 390 });
@@ -12,14 +12,13 @@ for (const phone of [false, true]) test(`Ironhaven title has separate artifacts,
     const children = scene.children.list;
     const flag = children.find((child: any) => child.texture?.key === 'title-flag');
     const fire = children.find((child: any) => child.texture?.key === 'fx-glow');
-    const gauntlet = children.find((child: any) => child.texture?.key === 'title-gauntlet');
     return { textures: children.filter((child: any) => child.texture).map((child: any) => child.texture.key),
-      flagFrame: flag.frame.name, playing: flag.anims.isPlaying, alpha: fire.alpha,
-      gauntlet: { x: gauntlet.x, y: gauntlet.y, visible: gauntlet.visible } };
+      flagFrame: flag.frame.name, playing: flag.anims.isPlaying, alpha: fire.alpha };
   });
   const initial = await state();
   expect(initial.textures).toContain('title-courtyard');
-  expect(initial.textures.filter((key: string) => key === 'title-gauntlet')).toHaveLength(1);
+  // Mara's gauntlet is off the title for now (scenes.ts TITLE_ARTIFACTS, `shown`).
+  expect(initial.textures.filter((key: string) => key === 'title-gauntlet')).toHaveLength(0);
   expect(initial.textures.some((key: string) => /^(mara|hero|extra-|oren|nell|tobi)/.test(key))).toBe(false);
   await expect.poll(async () => (await state()).playing).toBe(true);
   await expect.poll(async () => (await state()).flagFrame).not.toBe(initial.flagFrame);
@@ -33,16 +32,6 @@ for (const phone of [false, true]) test(`Ironhaven title has separate artifacts,
     expect(box.y + box.height).toBeLessThanOrEqual(viewport.height + 1);
   }
   await page.screenshot({ path: info.outputPath('ironhaven-title.png') });
-  // The patio underneath really is empty: this object can be independently removed/repositioned.
-  await page.evaluate(() => {
-    const scene = (window as any).adventure.game.scene.getScene('title');
-    scene.children.list.find((child: any) => child.texture?.key === 'title-gauntlet').setVisible(false);
-  });
-  await page.screenshot({ path: info.outputPath('courtyard-without-gauntlet.png') });
-  await page.evaluate(() => {
-    const scene = (window as any).adventure.game.scene.getScene('title');
-    scene.children.list.find((child: any) => child.texture?.key === 'title-gauntlet').setVisible(true);
-  });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await expect.poll(async () => (await state()).playing).toBe(false);
   await expect.poll(async () => (await state()).alpha).toBe(0.2);

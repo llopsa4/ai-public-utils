@@ -18,3 +18,11 @@ test("no chapter's strings replace the game's or another chapter's", () => {
     }
   }
 });
+
+// Hovering a person shows their name (name.<id>): every person a chapter puts in a room has one.
+test("every person in a chapter's rooms has a name", () => {
+  const names = { ...GAME, ...Object.assign({}, ...CHAPTERS.map(c => c.strings)) };
+  for (const c of CHAPTERS) {
+    for (const room of Object.values(c.rooms)) for (const a of room.actors) assert.ok(names[`name.${a.id}`], `${c.id}/${room.id}: name.${a.id} is missing`);
+  }
+});

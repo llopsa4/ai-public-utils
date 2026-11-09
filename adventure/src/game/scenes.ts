@@ -77,7 +77,8 @@ export class BootScene extends Phaser.Scene {
 }
 
 // Independent foreground artifacts; later protagonists' objects can be placed without repainting the patio.
-const TITLE_ARTIFACTS = [{ key: 'title-gauntlet', image: titleGauntlet, x: 425, y: 313, width: 80 }];
+// Mara's gauntlet is off for now (the user will ask for it back): set `shown` to true to restore it.
+const TITLE_ARTIFACTS = [{ key: 'title-gauntlet', image: titleGauntlet, x: 425, y: 313, width: 80, shown: false }].filter(a => a.shown);
 const TITLE_FLAG_ATLAS = { frames: Array.from({ length: 6 }, (_, index) => ({
   filename: String(index), frame: { x: index % 3 * 64, y: Math.floor(index / 3) * 110, w: 64, h: 110 },
 })) };

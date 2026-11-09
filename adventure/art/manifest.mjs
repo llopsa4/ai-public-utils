@@ -136,15 +136,16 @@ export const RIGS = {
     };
   })(),
   // Benn: Codex's drawings (art/inbox/char-guard/HANDOFF.md). He never walks: his long coat stays
-  // whole above the hem; kneeling, lying and sitting (asleep, without the chair: the cell paints
-  // its own) are drawn.
+  // whole above the hem; kneeling, lying and sitting asleep are drawn. sit.png is his figure from
+  // Codex's sitting picture with the chair (right colours), cut out along the chair-free one's outline
+  // (the cell paints its own chair; the chair-free picture's colours were off: art/CODEX-FIXES.md).
   guard: {
     dir: 'intro/', sits: 'asleep',
     source: 'sources/characters/char-guard/body.png', armLayer: 'sources/characters/char-guard/arm.png', height: 216, walks: false,
     armPivot: [368, 377],
     hipY: 1130, splitX: 485, hips: { near: [420, 1130], far: [560, 1130] }, knees: { near: [405, 1290], far: [575, 1290] },
     eyes: [{ x: 536, y: 150, rx: 9, ry: 4, skinAt: [536, 162] }, { x: 574, y: 146, rx: 4, ry: 3, skinAt: [571, 157] }],
-    portrait: [380, 20, 260, 260], moods: ['neutral'],
+    portrait: [420, 70, 210, 210], moods: ['neutral'],
     face: { mouth: { x: 557, y: 192, rx: 10, ry: 3 }, brows: [{ x0: 520, x1: 560, y0: 128, y1: 135, inner: 'right' }, { x0: 565, x1: 580, y0: 125, y1: 131, inner: 'left' }] },
   },
   warden: {
@@ -156,8 +157,9 @@ export const RIGS = {
     portrait: [320, 0, 340, 340], moods: ['neutral'],
     face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
   },
-  // Sigrid's stand-in until Codex's pack (art/CODEX.md, "Sigrid, a main character"): casual Mara's tall,
-  // fit body (no shield), recoloured officer's blue with pale hair.
+  // Sigrid: a stand-in until Codex redraws her two masters (art/CODEX-FIXES.md: the far foot floats
+  // above the floor line). Her two-sided pack is rigged and ready: then this becomes
+  //   sigrid: { layeredPack: 'sources/characters/sigrid-layered', dir: 'intro/', height: 228, walks: true, portraitId: 'sigrid', moods: ['neutral', 'worried', 'angry'] },
   sigrid: {
     dir: 'intro/', variant: { hue: 205, sat: 0.8, light: 0.62, skin: 1.08, headgear: { kind: 'cap', color: [214, 196, 140] } },
     source: 'sources/characters/char-mara-casual/body.png', armLayer: 'sources/characters/char-mara-casual/arm.png', height: 228, walks: false,

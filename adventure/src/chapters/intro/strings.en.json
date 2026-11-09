@@ -133,7 +133,7 @@
   "line.i.caught.think.guard": "...is how it would go, if I played it like that. No, no, no. Again. Slower. What did he mumble in his sleep?",
   "line.i.caught.warden": "Clerk, my foot. PRISONER LOOSE!",
   "line.i.caught.think.warden": "...and that's the version where I go back to my cell. Rewind. What does Kell want?",
-  "line.i.warden1": "A guardroom, warm from the stove. And a guard who is very, very awake. Rude.",
+  "line.i.warden1": "A guardroom, warm from the stove. Benn's dozing by it already. And another guard who is very, very awake. Rude.",
   "line.i.warden2": "He'll know the real Harrow. Harrow won't survive a second look up here. Sergeant, you're relieved.",
   "line.i.hoodTake": "The clerk's hood. It smells of ink and quiet resignation. My size exactly.",
   "line.i.ledgerLook1": "Columns of numbers: bread, coal, candles, prisoners.",
@@ -188,7 +188,7 @@
   "dlgI.choice.passing": "Evening. Just passing through.",
   "dlgI.choice.orders": "Sergeant's orders. Open the grate.",
   "dlgI.warden.passing": "Nobody passes through here. Not at this hour.",
-  "dlgI.warden.orders": "Harrow didn't say anything to me. And I know all Harrow's errand-boys.",
+  "dlgI.warden.orders": "Harrow? According to that one, Harrow's locked in a cell. And I know all Harrow's errand-boys.",
   "dlgI.warden.again": "Well?",
   "dlgI.warden.tally1": "The quartermaster? At this hour? ...What's he say about me?",
   "dlgI.warden.tally2": "Look, I'll pay him. Tell him I'll pay him.",
@@ -261,5 +261,13 @@
   "line.i.dark.plate.3": "The plate's dent is so shiny. Moon, meet plate. Plate, meet moon. Up at the window, the two of you.",
   "name.i.cloak": "Hooded cloak",
   "line.i.cloakLook": "My cloak, hanging on a nail like a tired crow. They took it off me at the gate. Rude.",
-  "line.i.cloakTake": "Out of reach. We'll be reunited, my darling. Later."
+  "line.i.cloakTake": "Out of reach. We'll be reunited, my darling. Later.",
+  "name.guard": "Benn",
+  "name.warden": "Kell",
+  "name.sigrid": "Captain Sigrid",
+  "line.i.bennDozing": "Benn. Sent up to warm himself, and asleep again on a stool by the stove. Bless him. Let's keep it that way.",
+  "line.i.readBennAsleep": "Warm at last, and dead to the world. He won't stir for footsteps. He might for his sergeant's name.",
+  "line.i.letHimSleep": "Let sleeping guards lie. If he wakes up and sees me out of my cell, I'm done.",
+  "dlgI.warden.start2": "And keep your voice down. Benn's only just dropped off by the stove.",
+  "dlgI.guard.sleepTalk": "...mm... Sergeant Harrow... in the cell, sir... locked himself in..."
 }

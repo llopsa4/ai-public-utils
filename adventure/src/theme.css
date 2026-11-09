@@ -24,10 +24,11 @@
   align-items: center;
   justify-content: center;
   gap: 0.4em;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-size: 0.85em;
+  /* The title menu's face (IM Fell English) as it is drawn there: regular weight, no capitals. */
+  font-family: "IM Fell English", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  font-size: 1.1em;
   color: #f3dfbd;
   background: linear-gradient(#3b2820, #20150f);
   border: 1px solid var(--brass-dark);
@@ -1134,3 +1135,18 @@ dialog[open] {
 }
 @keyframes gear-call { 50% { box-shadow: 0 0 0 3px #ffe8a8, 0 0 36px 12px #ffb040; } }
 @media (prefers-reduced-motion: reduce) { #gear-btn.forced { animation: none; } }
+
+/* The bottom bar's text buttons (Gear, Notebook, Menu) in the title's blackletter. */
+#bar #gear-btn, #bar #notebook-btn, #bar #menu-btn {
+  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-size: 1.3em;
+  letter-spacing: 0.01em;
+}
+
+/* The menus' options in the title's blackletter: the title screen, the pause menu, the notebook's tabs. */
+#title .menu-list button, #menu .menu-list button, .notebook-tabs [role="tab"] {
+  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  letter-spacing: 0.01em;
+}
+#title .menu-list button, #menu .menu-list button { font-size: 1.55em; }
+.notebook-tabs [role="tab"] { font-size: 1.15em; font-style: normal; }

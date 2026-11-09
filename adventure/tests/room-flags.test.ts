@@ -22,5 +22,6 @@ test("a room's flags are its own: the dark cell's, not the guardroom's", () => {
   const intro = CHAPTERS.find(c => c.id === 'intro')!;
   const cell = roomFlags(intro, 'cell'), guardroom = roomFlags(intro, 'guardroom');
   assert.ok(cell.includes('cellLit') && cell.includes('readGuard') && cell.includes('gSus1'));
-  assert.ok(!cell.includes('wardenBusy') && guardroom.includes('wardenBusy') && !guardroom.includes('cellLit'));
+  // (Benn is in both rooms, so his own flags are in both lists; the plate is the cell's alone.)
+  assert.ok(!cell.includes('wardenBusy') && guardroom.includes('wardenBusy') && !guardroom.includes('tookPlate'));
 });

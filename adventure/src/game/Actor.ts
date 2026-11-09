@@ -255,7 +255,9 @@ export class Actor {
 
   /** Walk frames follow the distance covered, so each step matches the ground travelled. */
   private advanceStride(moved: number): void {
-    const anim = this.scene.anims.get(`${this.sheet}:walk_${this.direction()}`);
+    const tag = `walk_${this.direction()}`, own = this.face === 'left' ? this.leftOf(tag) : null;
+    if (own) this.sprite.setFlipX(false);
+    const anim = this.scene.anims.get(`${this.sheet}:${own ?? tag}`);
     if (!anim) return;
     this.strideDistance += moved / Math.max(0.2, this.depth);
     const timing = walkTiming(SHEETS[this.sheet]?.json.meta.walk);
@@ -318,7 +320,15 @@ export class Actor {
     }
   }
 
+  /** A two-sided character's own left-facing frames for a tag (<tag>@left), when it has them. */
+  private leftOf(tag: string): string | null {
+    return this.scene.anims.exists(`${this.sheet}:${tag}@left`) ? `${tag}@left` : null;
+  }
+
   private play(tag: string, flip: boolean): void {
+    // Facing left, a two-sided character shows its own left-facing drawing rather than a mirror.
+    const own = flip ? this.leftOf(tag) : null;
+    if (own) { tag = own; flip = false; }
     this.sprite.setFlipX(flip);
     const key = `${this.sheet}:${tag}`;
     // Distance-driven walking stops the idle animation but leaves its key cached.

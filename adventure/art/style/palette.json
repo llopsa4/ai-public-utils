@@ -161,5 +161,28 @@
   "#f97d10",
   "#e39146",
   "#edac66"
- ]
+ ],
+ "ironhaven": [
+  "#222226",
+  "#313035",
+  "#39373b",
+  "#3c3a3f",
+  "#453f3f",
+  "#3f3f47",
+  "#484448",
+  "#494950",
+  "#4f4b4e",
+  "#584e4c",
+  "#5c5454",
+  "#635958",
+  "#69605f",
+  "#856757",
+  "#776964",
+  "#976951",
+  "#938179",
+  "#b98c71",
+  "#cfab92",
+  "#e5cfba"
+ ],
+ "ironhavenNote": "Added 2026-11-09 for Ironhaven's people and places (Sigrid's slate-navy coat, cool greys, pale skin and fur), which the tent-derived warm palette cannot hold. Kept by art/derive-palette.mjs; art/normalize.mjs snaps to both sets."
 }

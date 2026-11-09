@@ -148,7 +148,8 @@ export function hotspotLabels(scene: RoomScene): { text: string; x: number; y: n
       const xs = h.polygon.map(p => p.x), ys = h.polygon.map(p => p.y);
       return { text: t(h.name), x: (Math.min(...xs) + Math.max(...xs)) / 2, y: (Math.min(...ys) + Math.max(...ys)) / 2 };
     });
-  for (const [id, actor] of scene.actors) labels.push({ text: t(`name.${id}`), ...actor.headPoint() });
+  // The hero's label is who they are playing now (Silas, or a mask's persona), not always Mara.
+  for (const [id, actor] of scene.actors) labels.push({ text: id === 'hero' ? t(heroIdentity(state).name) : t(`name.${id}`), ...actor.headPoint() });
   for (const m of scene.crowd?.visible() ?? []) labels.push({ text: scene.crowd!.name(m), ...m.actor.headPoint() });
   return labels;
 }

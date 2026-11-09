@@ -68,5 +68,19 @@
  "window-plate": "final",
  "silas-idle-relaxed": "final",
  "room-cell": "final",
- "world-map": "final"
+ "world-map": "final",
+ "item-plate": "final",
+ "item-crust": "final",
+ "item-nail": "final",
+ "item-strip": "final",
+ "item-hookLine": "final",
+ "item-frame": "final",
+ "item-plaster": "final",
+ "item-wetPlaster": "final",
+ "item-putty": "final",
+ "item-maskHarrow": "final",
+ "item-keys": "final",
+ "item-hood": "final",
+ "item-ledger": "final",
+ "item-maskClerk": "final"
 }

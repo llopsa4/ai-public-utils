@@ -214,6 +214,36 @@ function disguise(pack,name){
  return {...pack,layers,master:over(pack.master,read(o.stand)),idle:undefined,
   poses:{kneel:over(read('kneel.png'),read(o.kneel)),lie:over(read('lie.png'),read(o.lie))}};
 }
+/** A picture mirrored left to right. */
+function flipPng(png){
+ const out=new PNG({width:png.width,height:png.height});
+ for(let y=0;y<png.height;y++)for(let x=0;x<png.width;x++){const s=(y*png.width+x)*4,d=(y*png.width+png.width-1-x)*4;png.data.copy(out.data,d,s,s+4)}
+ return out;
+}
+/**
+ * A left-facing set (a pack's left/ folder: its own drawings, never a mirror of the right-facing ones)
+ * turned to face right, so the rig's walk maths (knee bends, planted feet) applies unchanged; its
+ * frames are mirrored back afterwards. Its rig.json is measured on the left-facing drawings.
+ */
+function mirrorPack(pack){
+ const mx=x=>pack.cfg.canvas.width-1-x,cfg=structuredClone(pack.cfg);
+ for(const k of Object.keys(cfg.joints))cfg.joints[k]=[mx(cfg.joints[k][0]),cfg.joints[k][1]];
+ const eyes=list=>list.map(e=>({...e,x:mx(e.x),skinAt:[mx(e.skinAt[0]),e.skinAt[1]]}));
+ cfg.eyes=eyes(cfg.eyes);
+ cfg.face={mouth:{...cfg.face.mouth,x:mx(cfg.face.mouth.x)},brows:cfg.face.brows.map(b=>({...b,x0:mx(b.x1),x1:mx(b.x0),inner:b.inner==='left'?'right':'left'}))};
+ if(cfg.walk.soles)cfg.walk.soles=Object.fromEntries(Object.entries(cfg.walk.soles).map(([s,v])=>[s,{heel:[mx(v.heel[0]),v.heel[1]],toe:[mx(v.toe[0]),v.toe[1]]}]));
+ if(cfg.idle)cfg.idle={...cfg.idle,anchorX:mx(cfg.idle.anchorX),eyes:eyes(cfg.idle.eyes)};
+ const read=f=>PNG.sync.read(readFileSync(join(pack.dir,f)));
+ return {...pack,cfg,layers:Object.fromEntries(Object.entries(pack.layers).map(([n,p])=>[n,flipPng(p)])),
+  master:flipPng(pack.master),idle:pack.idle&&flipPng(pack.idle),poses:{kneel:flipPng(read('kneel.png')),lie:flipPng(read('lie.png'))}};
+}
+/** The side-on frames of a pack: standing, blinking, the eight-step walk, kneeling, lying, the idle gesture. */
+async function sideFrames(pack,powered,noBlink){
+ const stand=renderPackFrame(pack,{powered}),blink=noBlink?stand:renderPackFrame(pack,{powered,blink:true});
+ const walk=[];for(let p=0;p<8;p++)walk.push(renderPackFrame(pack,{phase:p,powered}));
+ const still=async file=>stillFrame(pack.poses?.[file.replace('.png','')]??join(pack.dir,file),pack.cfg,powered,file.replace('.png',''));
+ return {stand,blink,walk,crouch:await still('kneel.png'),dead:await still('lie.png')};
+}
 export async function buildLayeredCharacter(id,cfg){
  let pack=loadPack(join(art,cfg.layeredPack));const powered=!!cfg.powered;
  if(cfg.overlay)pack=disguise(pack,cfg.overlay);
@@ -225,6 +255,15 @@ export async function buildLayeredCharacter(id,cfg){
  for(const direction of ['down','side','up']){const from=frames.length;for(let p=0;p<8;p++)frames.push(renderPackFrame(pack,{phase:p,powered}));tags.push(['walk_'+direction,from,frames.length-1])}
  for(const [name,file] of [['crouch','kneel.png'],['dead','lie.png']]){const still=pack.poses?.[file.replace('.png','')]??join(pack.dir,file);tags.push([name,frames.length,frames.length]);frames.push(await stillFrame(still,pack.cfg,powered,file.replace('.png','')))}
  tags.push(['fidget',frames.length,frames.length]);frames.push(blink);
+ // Two-sided characters (a left/ set with its own rig.json): their own left-facing frames, tagged
+ // <tag>@left; the game plays those instead of mirroring the right-facing ones.
+ const leftDir=join(art,cfg.layeredPack,'left');
+ if(!cfg.overlay&&existsSync(join(leftDir,'rig.json'))){
+  const left=await sideFrames(mirrorPack(loadPack(leftDir)),powered,cfg.noBlink);
+  const add=(name,list)=>{tags.push([name+'@left',frames.length,frames.length+list.length-1]);for(const f of list)frames.push(flipPng(f))};
+  add('stand_side',[left.stand]);add('blink_side',[left.blink]);add('walk_side',left.walk);
+  add('crouch',[left.crouch]);add('dead',[left.dead]);add('fidget',[left.blink]);
+ }
  // Direction tags reuse the same side-on art. Alias equal frames instead of storing three copies.
  const unique=[],slots=frames.map(frame=>{let slot=unique.findIndex(f=>f.data.equals(frame.data));if(slot<0){slot=unique.length;unique.push(frame)}return slot});
  const cols=5,rows=Math.ceil(unique.length/cols),sheet=new PNG({width:cols*256,height:rows*256});

@@ -1,0 +1,191 @@
+{
+  "version": 1,
+  "outfit": "officer",
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "height": 228,
+  "baseline": 1501,
+  "sourceHeight": 1476,
+  "overlap": 25,
+  "order": [
+    "farUpperArm",
+    "farForearm",
+    "farThigh",
+    "farShin",
+    "farBoot",
+    "nearThigh",
+    "nearShin",
+    "nearBoot",
+    "torso",
+    "nearUpperArm",
+    "nearForearm"
+  ],
+  "joints": {
+    "nearShoulder": [
+      517,
+      342
+    ],
+    "nearElbow": [
+      493,
+      553
+    ],
+    "farShoulder": [
+      425,
+      342
+    ],
+    "farElbow": [
+      430,
+      558
+    ],
+    "nearHip": [
+      500,
+      790
+    ],
+    "farHip": [
+      458,
+      785
+    ],
+    "nearKnee": [
+      515,
+      1085
+    ],
+    "farKnee": [
+      455,
+      1055
+    ],
+    "nearAnkle": [
+      535,
+      1405
+    ],
+    "farAnkle": [
+      455,
+      1362
+    ]
+  },
+  "eyes": [
+    {
+      "x": 425,
+      "y": 135,
+      "rx": 9,
+      "ry": 4,
+      "skinAt": [
+        425,
+        147
+      ],
+      "blinkRy": 8,
+      "lashTop": -1,
+      "lashBottom": 6
+    }
+  ],
+  "face": {
+    "mouth": {
+      "x": 408,
+      "y": 183,
+      "rx": 10,
+      "ry": 3
+    },
+    "brows": [
+      {
+        "x0": 405,
+        "x1": 440,
+        "y0": 115,
+        "y1": 123,
+        "inner": "left"
+      }
+    ]
+  },
+  "portrait": [
+    340,
+    30,
+    240,
+    240
+  ],
+  "ember": null,
+  "poseEmbers": {},
+  "walk": {
+    "frames": 8,
+    "contactFrames": [
+      0,
+      4
+    ],
+    "hipSwing": 20,
+    "armSwing": 14,
+    "lift": 62,
+    "torsoLeanDegrees": 3,
+    "widthScale": 1.12,
+    "strideSource": 440,
+    "references": {
+      "contact": "walk-contact.png",
+      "passing": "walk-passing.png"
+    },
+    "calibration": "Sigrid's soldier's walk: measured and upright, long strides, the arms swinging little and in rhythm.",
+    "footRollDegrees": 14,
+    "hipSwayDegrees": 1,
+    "torsoSwayDegrees": 0.6,
+    "weightDrop": 6,
+    "transitionMs": 90,
+    "footCentre": -50,
+    "liftEarly": 1,
+    "soles": {
+      "near": {
+        "heel": [
+          579,
+          1501
+        ],
+        "toe": [
+          431,
+          1501
+        ]
+      },
+      "far": {
+        "heel": [
+          490,
+          1455
+        ],
+        "toe": [
+          344,
+          1455
+        ]
+      }
+    }
+  },
+  "idle": {
+    "file": "idle.png",
+    "sha256": "e378a9647f108a800ed9b272600eaa234d6c4028beb691b99f12d7792c6cfeb8",
+    "sourceHeight": 1490,
+    "baseline": 1501,
+    "anchorX": 495,
+    "eyes": [
+      {
+        "x": 415,
+        "y": 127,
+        "rx": 6,
+        "ry": 4,
+        "blinkRy": 7,
+        "lashTop": -1,
+        "lashBottom": 5,
+        "skinAt": [
+          415,
+          139
+        ]
+      },
+      {
+        "x": 457,
+        "y": 127,
+        "rx": 9,
+        "ry": 4,
+        "blinkRy": 8,
+        "lashTop": -1,
+        "lashBottom": 6,
+        "skinAt": [
+          457,
+          139
+        ]
+      }
+    ],
+    "ember": null
+  },
+  "facing": "left"
+}

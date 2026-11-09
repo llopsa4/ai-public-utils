@@ -25,7 +25,7 @@ const NOT = (name: string): Condition[] => [{ notFlag: name }];
 
 /** Where Silas stands to speak to the guard through the bars, and to the guardroom's guard. */
 const AT_BARS = walk(350, 300, 'right');
-const AT_DESK = walk(380, 306, 'right');
+const AT_DESK = walk(430, 306, 'right');
 
 function fallback(verb: Verb, item?: string): Command[] {
   if (item) return [say('line.i.useFails')];
@@ -130,6 +130,12 @@ export const RULES: readonly Rule[] = [
   // His own cloak, confiscated, hung on a nail out of reach.
   { target: 'cloak', verb: 'look', do: [say('line.i.cloakLook')] },
   { target: 'cloak', verb: 'take', do: [say('line.i.cloakTake')] },
+
+  // ---------------------------------------- Benn, asleep again by the guardroom stove ---
+  { target: 'guard', verb: 'look', when: F('guardGone'), do: [say('line.i.bennDozing')] },
+  { target: 'guard', verb: 'read', when: F('guardGone'), do: [say('line.i.snore', 'guard'), say('line.i.readBennAsleep')] },
+  { target: 'guard', verb: 'talk', when: F('guardGone'), do: [say('line.i.letHimSleep')] },
+  { target: 'guard', item: '*', when: F('guardGone'), do: [say('line.i.letHimSleep')] },
 
   // ------------------------------------------------------- Benn, the guard ---
   { target: 'guard', verb: 'read', when: F('readGuard'), do: [say('line.i.readGuardAgain')] },

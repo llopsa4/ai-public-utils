@@ -54,7 +54,11 @@ export const ROOMS: Record<string, RoomDef> = {
     surface: 'stone',
     music: 'tension',
     light: { tint: 0xc8c0d8, farDim: 1 },
-    look: { grade: { saturation: 0.8, brightness: 0.92, contrast: 1.08, warmth: -0.1 }, vignette: 0.55 },
+    look: {
+      grade: { saturation: 0.8, brightness: 0.92, contrast: 1.08, warmth: -0.1 }, vignette: 0.55,
+      // A cold ray of moonlight slanting down from the barred window to the cell floor (seen in the dark too).
+      shafts: [{ x: 170, y: 92, angle: -26, length: 250, width: 42, color: 0xb8c8ff, overDark: true, strength: 1.8 }],
+    },
     // Black but for the candle beyond the bars and the thin moonlight, until Silas throws the
     // moonlight across the cell with the tin plate.
     dark: { if: [{ notFlag: 'cellLit' }], lights: [{ x: 473, y: 254, r: 95 }, { x: 170, y: 92, r: 46 }], heroR: 110 },
@@ -90,7 +94,11 @@ export const ROOMS: Record<string, RoomDef> = {
     entries: { fromCell: { x: 50, y: 300, face: 'right' } },
     objects: [],
     hotspots: guardroomHotspots,
-    actors: [{ id: 'warden', x: 440, y: 304, visibleIf: [{ notFlag: 'grateOpen' }] }],
+    actors: [
+      // Benn, sent up "to warm himself", asleep again on a stool by the stove: Silas must not wake him.
+      { id: 'guard', x: 382, y: 306, visibleIf: [{ flag: 'guardGone' }], task: { tag: 'sit' } },
+      { id: 'warden', x: 470, y: 304, visibleIf: [{ notFlag: 'grateOpen' }] },
+    ],
   },
   outerDoor: {
     id: 'outerDoor',

@@ -179,7 +179,11 @@ export interface RoomLook {
   /** Heat shimmer over hot spots (stops when cold). */
   haze?: { x: number; y: number; w: number; h: number }[];
   /** Drifting light beams from (x, y), angle in degrees from straight down. Dim when cold. */
-  shafts?: { x: number; y: number; angle: number; length: number; width: number; color: number }[];
+  /**
+   * Light shafts; `overDark` keeps one visible above a dark room's darkness (the cell's moonbeam),
+   * `strength` scales its brightness (1 = the usual).
+   */
+  shafts?: { x: number; y: number; angle: number; length: number; width: number; color: number; overDark?: boolean; strength?: number }[];
   /** Darkened edges, 0..1 (default 0.3). */
   vignette?: number;
   /** A wet floor that shows faint reflections of the characters. */
