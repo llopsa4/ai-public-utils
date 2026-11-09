@@ -51,7 +51,7 @@ const size = name => statSync(resolve(project, 'build', name)).size;
 // own budget and count neither in the game's total nor before the title screen.
 const { MANIFEST } = await import('../art/manifest.mjs');
 const artChapter = new Map(MANIFEST.map(e => [e.file.split('/').pop().replace(/\.\w+$/, ''), e.chapter ?? 'game']));
-const chapterOf = n => artChapter.get(n.replace(/-[\w-]{8}\.\w+$/, '')) ?? n.match(/^(ch\d+)-[\w-]{8}\.js$/)?.[1];
+const chapterOf = n => artChapter.get(n.replace(/-[\w-]{8}\.\w+$/, '')) ?? n.match(/^(ch\d+|intro)-[\w-]{8}\.js$/)?.[1];
 const laterChapter = n => { const c = chapterOf(n); return c && c !== 'game' && c !== 'ch1' ? c : null; };
 const perChapter = {};
 for (const n of built) {

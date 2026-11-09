@@ -79,7 +79,7 @@ export function openHistory(ui: Ui): void {
   for (const line of ui.history) {
     const li = document.createElement('li');
     const who = document.createElement('strong');
-    who.textContent = `${t(`speaker.${line.actor}`)}: `;
+    who.textContent = `${line.name ?? t(`speaker.${line.actor}`)}: `;
     who.style.color = SPEECH_COLORS[line.actor];
     li.append(who, line.text);
     list.append(li);

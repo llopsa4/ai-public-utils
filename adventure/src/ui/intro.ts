@@ -4,6 +4,7 @@ import { lineDuration, settings } from '../engine/settings';
 import { $, type Ui } from './ui';
 import { CHAPTERS, FIRST_CHAPTER } from '../chapters';
 import { dayLine } from './journalData';
+import type { Chapter } from '../chapters/types';
 
 /**
  * A new story: the screen fades slowly to black, a few lines of context appear one after
@@ -29,6 +30,21 @@ export async function chapterIntro(ui: Ui, keys: readonly string[], day?: string
   ui.introActive = true;
   ui.setHover('');
   await playIntro(keys.slice(1), keys[0], day);
+  ui.introActive = false;
+  fadeIntroAway();
+}
+
+/**
+ * A chapter picked on the chapter map: its opening over black (its own lines, or chapter 1's
+ * opening), with its day line; then the chapter starts (`start`) and the black fades away.
+ */
+export async function openChapter(ui: Ui, ch: Chapter, start: () => void): Promise<void> {
+  if (ui.introActive) return;
+  ui.introActive = true;
+  ui.setHover('');
+  if (ch.intro?.length) await playIntro(ch.intro.slice(1), ch.intro[0], dayLine(ch));
+  else await playIntro(undefined, undefined, dayLine(ch));
+  start();
   ui.introActive = false;
   fadeIntroAway();
 }

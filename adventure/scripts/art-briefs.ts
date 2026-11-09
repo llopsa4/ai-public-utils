@@ -192,7 +192,7 @@ const batch = (title: string, ids: string[]) => {
 };
 const sections: string[] = [];
 for (const c of CHAPTERS) {
-  sections.push(`## Chapter ${c.id.slice(2)}`, '');
+  sections.push(c.id === 'intro' ? '## The intro (Silas)' : `## Chapter ${c.id.slice(2)}`, '');
   for (const room of Object.values(c.rooms)) {
     const ids = [room.background, ...room.objects.map(o => o.sheet), ...(room.props ?? []).flatMap(p => ('image' in p ? [`prop-${p.image}`] : [])),
       ...room.actors.map(a => `char-${a.id}`), ...(CROWDS[room.id]?.extras.map(x => x.sheet) ?? [])];

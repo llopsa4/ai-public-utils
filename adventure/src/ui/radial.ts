@@ -67,7 +67,7 @@ export function closeRadial(ui: Ui): void {
   close?.();
 }
 
-export function choose(ui: Ui, options: string[]): Promise<number> {
+export function choose(ui: Ui, options: (string | { text: string; read?: boolean })[]): Promise<number> {
   const box = ui.choices;
   box.replaceChildren();
   box.setAttribute('aria-label', t('ui.choices'));
@@ -82,14 +82,25 @@ export function choose(ui: Ui, options: string[]): Promise<number> {
       const n = Number(e.key);
       if (n >= 1 && n <= options.length) { e.preventDefault(); finish(n - 1); }
     };
-    options.forEach((text, i) => {
+    options.forEach((option, i) => {
+      const { text, read } = typeof option === 'string' ? { text: option, read: false } : option;
       const b = document.createElement('button');
       b.type = 'button';
       const n = document.createElement('span');
       n.className = 'choice-n';
       n.textContent = `${i + 1}`;
       n.setAttribute('aria-hidden', 'true');
-      b.append(n, text);
+      b.append(n);
+      // A reply drawn from reading the person: the read mark, and its meaning for screen readers.
+      if (read) {
+        b.classList.add('choice-read');
+        const mark = document.createElement('img');
+        mark.className = 'choice-mark';
+        mark.src = VERB_ICONS.read ?? '';
+        mark.alt = t('ui.choiceRead');
+        b.append(mark);
+      }
+      b.append(text);
       b.addEventListener('click', () => finish(i));
       box.append(b);
     });

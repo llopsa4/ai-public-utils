@@ -11,11 +11,15 @@ addStrings(CH1.strings);
 
 /** Later chapters, each its own download (fetched the first time it is needed). */
 const LOADERS: Record<string, () => Promise<Chapter>> = {
+  intro: () => import('./intro').then(m => m.INTRO),
   ch2: () => import('./ch2').then(m => m.CH2),
 };
 
-/** Every chapter id, in story order (loaded or not). */
-export const CHAPTER_IDS: readonly string[] = [FIRST_CHAPTER, ...Object.keys(LOADERS)];
+/**
+ * Every chapter id, in the order of play (loaded or not): the intro (Silas, a flash-forward to
+ * Day 3), then Mara's chapters. The diary sorts entries by day, whatever the order of play.
+ */
+export const CHAPTER_IDS: readonly string[] = ['intro', FIRST_CHAPTER, ...Object.keys(LOADERS).filter(id => id !== 'intro')];
 
 let active: Chapter = CH1;
 

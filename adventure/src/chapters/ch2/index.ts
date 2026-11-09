@@ -41,6 +41,7 @@ export const CH2: Chapter = {
   spares: SPARES,
   // Day 2: the service tunnels at dawn, Bryn's tempering house that night (Mara's view).
   when: { day: 2, time: 'when.ch2.time', place: 'when.ch2.place', viewpoint: 'when.ch2.viewpoint' },
+  pin: 'tunnels',
   diary: DIARY,
   map: MAP,
   objectives,

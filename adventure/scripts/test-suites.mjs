@@ -11,6 +11,7 @@ export const NODE_SUITES = {
   'art.test.ts': entry(false, 'art'),
   'autosave-hints.test.ts': entry(true, 'story', 'saves', 'runtime'),
   'ch2-tunnels.test.ts': entry(true, 'story'),
+  'intro.test.ts': entry(true, 'story'),
   'chapter-one-gear-art.test.ts': entry(false, 'art'),
   'chapter-one-improvements.test.ts': entry(true, 'story', 'saves', 'runtime'),
   'battle-motion.test.ts': entry(true, 'art', 'runtime'),

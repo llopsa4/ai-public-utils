@@ -9,6 +9,7 @@ import { ambienceFor, musicFor } from '../../engine/story';
 import { ART_SCALE } from '../../ui/ui';
 import type { RoomScene } from '../scenes';
 import { COLD_TINT, multiplyColor, particleConfig } from './shared';
+import { drawDarkness, refreshDarkness } from './darkness';
 
 /**
  * The kiln's cold: on High the camera grade shifts (Atmosphere); on Low the scenery is tinted.
@@ -22,6 +23,7 @@ export function applyTint(scene: RoomScene): void {
   scene.atmosphere.setCold(cold, animate);
   tintScenery(scene);
   refreshAmbient(scene, cold, animate);
+  refreshDarkness(scene);
   sound.ambience(ambienceFor(chapter().story, scene.storyContext()));
   sound.music(musicFor(chapter().story, scene.storyContext()));
 }
@@ -46,6 +48,7 @@ export function tintScenery(scene: RoomScene): void {
  * lanterns (the room's glows), cooled once the kiln is cold (on Low; High grades the whole camera).
  */
 export function updateLighting(scene: RoomScene): void {
+  drawDarkness(scene);
   const light = scene.room?.light;
   if (!light || !scene.atmosphere) return;
   const cold = scene.atmosphere.cold;

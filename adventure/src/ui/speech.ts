@@ -4,6 +4,7 @@ import { t } from '../engine/i18n';
 import { lineDuration, settings } from '../engine/settings';
 import type { Point, Speaker } from '../engine/types';
 import { $, FLAP_MS, FLAP_PER_CHAR, SPEECH_COLORS, type Ui } from './ui';
+import { heroIdentity } from '../chapters/hero';
 
 /**
  * Shows a spoken line in the dialogue panel (portrait, name, text; Mara on the left, others on
@@ -13,9 +14,12 @@ import { $, FLAP_MS, FLAP_PER_CHAR, SPEECH_COLORS, type Ui } from './ui';
 export function say(ui: Ui, actor: Speaker, text: string, _at: Point, mood: Mood = 'neutral'): Promise<void> {
   ui.skipSpeech?.();
   const panel = ui.dialogue;
-  const stopFlap = showPortrait(actor === 'hero' ? 'mara' : actor, mood, text.length);
+  // The hero is whoever the chapter plays (and the persona of a worn mask).
+  const who = actor === 'hero' ? heroIdentity(ui.host.getState()) : null;
+  const stopFlap = showPortrait(who ? who.portrait : actor, mood, text.length);
+  const shown = who ? t(who.name) : t(`speaker.${actor}`);
   const name = $('dialogue-name');
-  name.textContent = t(`speaker.${actor}`);
+  name.textContent = shown;
   name.style.color = SPEECH_COLORS[actor];
   $('dialogue-line').textContent = text;
   panel.style.borderColor = SPEECH_COLORS[actor];
@@ -23,8 +27,8 @@ export function say(ui: Ui, actor: Speaker, text: string, _at: Point, mood: Mood
   const s = settings();
   $('dialogue-more').hidden = s.autoAdvance;
   panel.hidden = false;
-  ui.live.textContent = `${t(`speaker.${actor}`)}: ${text}`;
-  ui.history.push({ actor, text });
+  ui.live.textContent = `${shown}: ${text}`;
+  ui.history.push({ actor, text, name: shown });
   return new Promise(resolve => {
     const done = () => {
       window.clearTimeout(timer);

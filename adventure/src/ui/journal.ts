@@ -8,10 +8,10 @@ import { diary, mapState } from './journalData';
 
 /** Codex's painted map (no lettering), once it has been delivered; else the land is drawn here. */
 const paintedFiles = import.meta.glob('../../art/src/ui/world-map.png', { eager: true, query: '?url', import: 'default' }) as Record<string, string>;
-const PAINTED = Object.values(paintedFiles)[0] as string | undefined;
+export const PAINTED = Object.values(paintedFiles)[0] as string | undefined;
 
 const SVG = 'http://www.w3.org/2000/svg';
-const el = (name: string, attrs: Record<string, string | number> = {}, text?: string): SVGElement => {
+export const el = (name: string, attrs: Record<string, string | number> = {}, text?: string): SVGElement => {
   const e = document.createElementNS(SVG, name);
   for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, String(v));
   if (text !== undefined) e.textContent = text;
@@ -19,7 +19,7 @@ const el = (name: string, attrs: Record<string, string | number> = {}, text?: st
 };
 
 /** The placeholder land: coast, snow, the Rift, the river, hills, mountains, forest, ash, the road. */
-function drawLand(svg: SVGElement): void {
+export function drawLand(svg: SVGElement): void {
   svg.append(
     el('path', { d: LAND.coast, class: 'map-land' }),
     el('path', { d: LAND.snow, class: 'map-snow' }),

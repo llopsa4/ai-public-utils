@@ -11,6 +11,12 @@ export interface Objective { key: string; done: boolean; optional: boolean }
 /** When and through whose eyes a chapter happens: one of STORY.md's five days (string keys). */
 export interface ChapterWhen { day: number; time: string; place: string; viewpoint: string }
 
+/**
+ * Who the player plays in a chapter (Mara unless given): the name key, portrait, default sprite
+ * sheet, whether it is Mara (her gauntlet and armour sheets), and special abilities ('read').
+ */
+export interface ChapterHero { name: string; portrait: string; sheet: string; mara: boolean; abilities: readonly string[] }
+
 /** A diary entry in the viewpoint character's voice, written once all its flags are set. */
 export interface DiaryEntry { key: string; after: readonly string[] }
 
@@ -73,6 +79,10 @@ export interface Chapter {
   spares: readonly string[];
   /** The day, time, place and viewpoint (title card, notebook, diary). */
   when: ChapterWhen;
+  /** Who is played; absent means Mara. */
+  hero?: ChapterHero;
+  /** Where the chapter's pin sits on the chapter map (a place in src/content/world.ts). */
+  pin: string;
   /** The viewpoint character's diary for this chapter, in story order. */
   diary: readonly DiaryEntry[];
   map: ChapterMap;

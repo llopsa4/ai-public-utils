@@ -1,6 +1,7 @@
 import { readAutosave, writeAutosave } from '../engine/autosave';
 import { onSettingsChange, settings } from '../engine/settings';
-import { setChapter } from '../chapters';
+import { loadChapter, setChapter } from '../chapters';
+import { openChapters } from '../engine/unlock';
 import { newGame } from '../engine/state';
 import type { GameState, Point } from '../engine/types';
 import { useCarriedItem, hitTest, targetId } from './room/input';
@@ -84,6 +85,22 @@ export class Session {
     );
     const target = hitTest(scene, at);
     useCarriedItem(scene, item, target ? targetId(target) : null, at);
+  }
+
+  /**
+   * The chapter map: the chapters now open (src/engine/unlock.ts) as pins; the one picked starts as
+   * its own thread (its hero's own satchel and kit), keeping the story so far (flags of the chapters
+   * played, for the diary) and opening with its title card.
+   */
+  async chooseNextChapter(): Promise<void> {
+    const state = this.state;
+    const finished = [...new Set([...Object.keys(state.earlier), state.chapter])];
+    const chapters = await Promise.all(openChapters(finished).map(id => loadChapter(id, { art: true })));
+    const ch = await this.ui.chapterMap(chapters);
+    const next = newGame(ch.id);
+    next.earlier = { ...state.earlier, [state.chapter]: state.flags };
+    next.reached = [...new Set([...state.reached, ch.id])];
+    await this.ui.openChapter(ch, () => { this.slowFadeIn = true; this.replaceState(next); });
   }
 
   /** Starts a different game (new, imported or continued): from the title or in place of the current one. */

@@ -65,4 +65,6 @@ make('go', i => { i.rect(3, 9, 12, 6, gold); i.poly([[14, 4], [22, 12], [14, 20]
 make('crouch', i => { i.ellipse(13, 7, 3, 3, light); i.line(12, 10, 9, 16, light, 3); i.line(9, 16, 15, 17, light, 3); i.line(15, 17, 13, 21, light, 3); i.rect(4, 21, 16, 2, red); });
 make('lie', i => { i.ellipse(19, 15, 3, 3, light); i.line(4, 16, 16, 16, light, 3); i.rect(3, 19, 19, 2, red); });
 make('stand', i => { i.ellipse(12, 4, 3, 3, light); i.line(12, 7, 12, 15, light, 3); i.line(12, 15, 9, 21, light, 3); i.line(12, 15, 15, 21, light, 3); i.line(8, 10, 16, 10, light, 2); });
+// Read (Silas reads people): a face in profile, a gold glint where the thought is.
+make('read', i => { i.ellipse(11, 12, 7, 9, light); i.poly([[17, 11], [21, 14], [17, 15]], light); i.rect(13, 9, 2, 2, ink); i.line(8, 4, 16, 4, '#5a3e2a', 2); i.ellipse(19, 5, 3, 3, gold); i.px(19, 1, gold); i.px(23, 5, gold); });
 console.log(`Action-ring icons written to ${dir}`);

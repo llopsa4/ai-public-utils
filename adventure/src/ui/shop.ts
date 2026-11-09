@@ -5,6 +5,7 @@ import { TONIC } from '../content/kit';
 import { buyTonic } from '../engine/kit';
 import { TONIC_ART } from './icons';
 import { $, type Ui } from './ui';
+import { heroOf } from '../chapters/hero';
 
 /** The merchant's stall: Kiln Tonics for salvage. Resolves when closed. */
 export function openShop(ui: Ui): Promise<void> {
@@ -58,7 +59,7 @@ export function renderShop(ui: Ui, note: string, effect: Effect = ''): void {
     const result = buyTonic(bag);
     if (result === 'bought') sound.pickup();
     ui.host.autosave();
-    renderShop(ui, result === 'bought' ? t('ui.shopBought') : result === 'full' ? t('ui.shopFull', { max: String(TONIC.max) }) : t('ui.shopPoor'), result === 'bought' ? 'bought' : 'refused');
+    renderShop(ui, result === 'bought' ? t('ui.shopBought') : result === 'full' ? t('ui.shopFull', { max: String(TONIC.max), who: t(heroOf().name) }) : t('ui.shopPoor'), result === 'bought' ? 'bought' : 'refused');
     $('shop-buy').focus();
   });
   const row = el('div', 'stall-row');
@@ -69,7 +70,7 @@ export function renderShop(ui: Ui, note: string, effect: Effect = ''): void {
   const status = el('p', 'shop-note');
   status.setAttribute('role', 'status');
   // What just happened, then why another can't be bought (if so).
-  const limit = full ? t('ui.shopFull', { max: String(TONIC.max) }) : poor ? t('ui.shopPoor') : '';
+  const limit = full ? t('ui.shopFull', { max: String(TONIC.max), who: t(heroOf().name) }) : poor ? t('ui.shopPoor') : '';
   status.textContent = [note, limit].filter((x, i, all) => x && all.indexOf(x) === i).join(' ');
   body.replaceChildren(purse, item, row, status);
 }

@@ -133,6 +133,10 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
   },
   dialogue: async (scene: RoomScene, command: Of<'dialogue'>): Promise<boolean> => {
     await runDialogue(scene, command.id);
+    // The chapter may react to how the conversation went (src/engine/story.ts afterDialogue).
+    for (const next of chapter().story.afterDialogue?.(command.id, scene.session.state) ?? []) {
+      if (!(await (COMMANDS[next.type] as Handler<typeof next.type>)(scene, next as never))) return false;
+    }
     return true;
   },
   room: async (scene: RoomScene, command: Of<'room'>): Promise<boolean> => {
@@ -216,6 +220,15 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
   shop: async (scene: RoomScene): Promise<boolean> => {
     await scene.session.ui.openShop();
     return true;
+  },
+  chooseChapter: async (scene: RoomScene): Promise<boolean> => {
+    // The chapter ends to black; the chapter map offers what to play next.
+    scene.leaving = true;
+    scene.session.ui.closeRadial();
+    scene.cameras.main.fadeOut(FADE_MS * 3, 0, 0, 0);
+    await wait(scene, FADE_MS * 3 + 80);
+    await scene.session.chooseNextChapter();
+    return false;
   },
   end: async (scene: RoomScene): Promise<boolean> => {
     // ?debug: later chapters are playable, so the end of a chapter leads into the next one.

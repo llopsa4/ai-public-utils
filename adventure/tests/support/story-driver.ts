@@ -27,7 +27,7 @@ export interface StoryTrace {
   spoken: string[];
   visited: string[];
   ended: boolean;
-  stopped: 'room' | 'chapter' | 'end' | 'interrupted' | null;
+  stopped: 'room' | 'chapter' | 'end' | 'chooseChapter' | 'interrupted' | null;
 }
 const trace = (): StoryTrace => ({ commands: [], spoken: [], visited: [], ended: false, stopped: null });
 
@@ -112,6 +112,9 @@ export function runStoryCommands(state: GameState, commands: readonly Command[],
             result.spoken.push(choice.text);
             nodeId = choice.next;
           }
+          // As the game does: the chapter's reaction to how the conversation went.
+          play(chapterFor(state).story.afterDialogue?.(command.id, state) ?? []);
+          if (result.stopped) return;
           break;
         }
         case 'room':
@@ -124,6 +127,11 @@ export function runStoryCommands(state: GameState, commands: readonly Command[],
           applyCommand(state, command);
           result.stopped = 'chapter';
           play(entry(state));
+          return;
+        case 'chooseChapter':
+          // The chapter is over: the chapter map picks what is played next.
+          result.ended = true;
+          result.stopped = 'chooseChapter';
           return;
         case 'end': {
           const next = CHAPTER_IDS[CHAPTER_IDS.indexOf(state.chapter) + 1];

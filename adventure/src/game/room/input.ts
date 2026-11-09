@@ -11,6 +11,7 @@ import type { RoomScene } from '../scenes';
 import type { Target } from './shared';
 import { runScript } from './runner';
 import { withHandling } from './shared';
+import { heroIdentity } from '../../chapters/hero';
 import { showOutline } from './outline';
 
 // ------------------------------------------------------------------ input ---
@@ -208,6 +209,7 @@ export function targetId(target: Target): string {
 
 export function targetName(scene: RoomScene, target: Target): string {
   if (target.kind === 'extra') return scene.crowd?.name(target.member) ?? '';
+  if (target.kind === 'actor' && target.actor.id === 'hero') return t(heroIdentity(scene.session.state).name);
   return t(target.kind === 'actor' ? `name.${target.actor.id}` : target.hotspot.name);
 }
 

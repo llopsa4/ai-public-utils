@@ -59,7 +59,7 @@ export async function runDialogue(scene: RoomScene, id: string): Promise<void> {
     if (gearReceived) scene.refreshObjects();
     if (inventoryChanged || gearReceived) scene.session.ui.renderInventory();
     if (node.choices.length > 0) {
-      const index = await scene.session.ui.choose(node.choices.map(c => t(c.text)));
+      const index = await scene.session.ui.choose(node.choices.map(c => ({ text: t(c.text), read: c.read })));
       sound.choose();
       const choice = node.choices[index];
       await say(scene, 'hero', choice.text);

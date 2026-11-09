@@ -26,6 +26,9 @@ interface Outcome { state: GameState; ended: boolean; lines: string[]; stopped?:
 // Combat mechanics, losses, rendering and screen dismissal are tested in their own suites.
 const STORY_FIXTURES: StoryOptions = {
   fixtures: { fight: () => 'won', screen: () => 'closed', puzzle:()=> 'completed', farewell:()=> 'leave' },
+  // A conversation started on entering a room (the intro's Sigrid): its first choice. Conversations
+  // started by clicks branch on every choice (talk below).
+  choose: next => next[0],
 };
 
 /** Plays commands on a copy of the state; conversations branch into one outcome per path. */
@@ -60,8 +63,9 @@ function talk(c: Chapter, o: Outcome, id: string): Outcome[] {
     else walk(node.next, s);
   };
   walk(tree.start, o.state);
-  // Paths that end in the same story state are one outcome (sharing the lines heard).
-  return [...ends.values()].map(state => ({ state, ended: false, lines: o.lines }));
+  // Paths that end in the same story state are one outcome (sharing the lines heard); then the
+  // chapter's reaction to how it went (caught, or on to the chapter map).
+  return [...ends.values()].flatMap(state => play(c, state, c.story.afterDialogue?.(id, state) ?? []).map(r => ({ ...r, lines: [...o.lines, ...r.lines] })));
 }
 
 /** Every click the player can make in a state: verbs on visible targets, items on them. */
@@ -76,6 +80,8 @@ function clicks(c: Chapter, s: GameState): { verb: (typeof VERBS)[number]; targe
   for (const item of s.inventory) {
     for (const verb of c.itemVerbs) out.push({ verb, target: `item:${item}` });
     for (const t of ['hero', ...hotspots.map(h => h.id), ...actors.map(a => a.id)]) out.push({ verb: 'use', target: t, item });
+    // One satchel item on another (crafting).
+    for (const other of s.inventory) if (other !== item) out.push({ verb: 'use', target: `item:${other}`, item });
   }
   return out;
 }
@@ -90,6 +96,8 @@ function explore(c: Chapter) {
   const ends = new Set(initial.filter(o => o.ended).map(o => key(o.state)));
   const lines = new Set(initial.flatMap(o => o.lines));
   const optionalFound = new Set<string>();
+  // Rooms the chapter ends in (the intro's outer door) are reached, though no state is kept there.
+  const endRooms = new Set<string>();
   const queue = initial.filter(o => !o.ended).map(o => o.state);
   while (queue.length) {
     const s = queue.shift()!;
@@ -102,7 +110,7 @@ function explore(c: Chapter) {
         for (const l of o.lines) lines.add(l);
         for (const f of optional) if (o.state.flags[f] && !s.flags[f]) optionalFound.add(f);
         for (const f of optional) if (!s.flags[f]) delete o.state.flags[f];
-        if (o.ended) { ends.add(from); continue; }
+        if (o.ended) { ends.add(from); endRooms.add(o.state.room); continue; }
         const k = key(o.state);
         if (k === from) continue;
         to.add(k);
@@ -118,18 +126,18 @@ function explore(c: Chapter) {
       if (!canFinish.has(from) && [...to].some(k => canFinish.has(k))) { canFinish.add(from); grew = true; }
     }
   }
-  return { states, ends, canFinish, lines, optionalFound };
+  return { states, ends, canFinish, lines, optionalFound, endRooms };
 }
 
 for (const c of Object.values(CHAPTERS)) {
   test(`${c.id}: every story state can still reach the end; every room, goal and line exists`, () => {
     setChapter(c.id);
-    const { states, ends, canFinish, lines, optionalFound } = explore(c);
+    const { states, ends, canFinish, lines, optionalFound, endRooms } = explore(c);
     if (c.id === 'ch1') assert.ok(lines.has('line.wrenCalls'), 'room-entry scripts participate in the story graph');
     assert.ok(ends.size > 0, 'the end is reachable');
     const stuck = [...states.keys()].filter(k => !canFinish.has(k));
     assert.deepEqual(stuck.slice(0, 5), [], `${stuck.length} dead-end states`);
-    const visited = new Set([...states.values()].map(s => s.room));
+    const visited = new Set([...[...states.values()].map(s => s.room), ...endRooms]);
     assert.deepEqual(Object.keys(c.rooms).filter(r => !visited.has(r)), [], 'rooms never reached');
     const done = new Set([...states.values()].flatMap(s => c.objectives(s).filter(o => o.done).map(o => o.key)));
     // The last goal is done on the way out (the end), so it may not show in a reachable state.

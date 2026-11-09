@@ -10,10 +10,14 @@ import { initNotebookTabs } from './journal';
 import { bindSettingsForm, openSettings } from './settingsMenu';
 import { forceGear, openGear } from './gear';
 import { openShop } from './shop';
-import { chapterIntro, newStory } from './intro';
+import { chapterIntro, newStory, openChapter } from './intro';
 import { choose, closeRadial, openRadial } from './radial';
 import { bindFullscreen, bindLongPress, hideLabels, revealFor, showLabels } from './labels';
 import { exportSave, importSave } from './saves';
+import { heroOf } from '../chapters/hero';
+import { renderSuspicion } from './suspicion';
+import { showChapterMap } from './chapterMap';
+import type { Chapter } from '../chapters/types';
 import { RoomControls } from './controls';
 import { gearAvailable } from './shortcuts';
 
@@ -77,7 +81,7 @@ export class Ui {
   readonly hover = $('hover');
   readonly dialogue = $('dialogue');
   readonly labels = $('labels');
-  readonly history: { actor: Speaker; text: string }[] = [];
+  readonly history: { actor: Speaker; text: string; name?: string }[] = [];
   /** How many hints were shown per notebook goal (0, 1 or 2), for this play session. */
   readonly hintStage = new Map<string, number>();
   revealTimer = 0;
@@ -314,6 +318,16 @@ export class Ui {
 
 
 
+  /** The chapter map: resolves with the chapter picked (ui/chapterMap.ts). */
+  chapterMap(open: readonly Chapter[]): Promise<Chapter> {
+    return showChapterMap(open);
+  }
+
+  /** A chapter picked on the map: its opening over black, then `start` (the game state), then the fade. */
+  openChapter(ch: Chapter, start: () => void): Promise<void> {
+    return openChapter(this, ch, start);
+  }
+
   /** Says something to screen readers only (focus moves on the canvas). */
   announce(text: string): void {
     this.live.textContent = text;
@@ -347,7 +361,8 @@ export class Ui {
   }
 
   // ----------------------------------------------------------- choices ---
-  choose(options: string[]): Promise<number> {
+  /** Dialogue replies; one built on a reading of the person carries the read mark. */
+  choose(options: (string | { text: string; read?: boolean })[]): Promise<number> {
     return choose(this, options);
   }
 
@@ -427,10 +442,11 @@ export class Ui {
     this.syncScreenButtons();
     const selected = this.host.selectedItem();
     this.inventory.replaceChildren();
+    renderSuspicion(state);
     if (state.inventory.length === 0) {
       const empty = document.createElement('span');
       empty.className = 'empty';
-      empty.textContent = t('ui.inventoryEmpty');
+      empty.textContent = t('ui.inventoryEmpty', { who: t(heroOf().name) });
       this.inventory.append(empty);
     }
     for (const [index, item] of state.inventory.entries()) {

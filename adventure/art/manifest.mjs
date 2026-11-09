@@ -120,6 +120,51 @@ export const RIGS = {
     moods: ['neutral'],
     face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
   },
+  // The intro (Silas's escape). Placeholders until Codex draws them: Silas is casual Mara recoloured
+  // (dark, a red neckcloth), his masks are variants of that (a sergeant's cap for Harrow, a grey hood
+  // for the clerk); the guards are Oren's and Iven's bodies re-dressed in Ironhaven grey, and Sigrid
+  // is Nell's in officer's blue.
+  ...(() => {
+    const casual = { source: 'sources/characters/char-mara-casual/body.png', armLayer: 'sources/characters/char-mara-casual/arm.png', height: 224, walks: true,
+      armPivot: [355, 290], armSwing: 6,
+      hipY: 820, splitX: 505, hips: { near: [450, 820], far: [560, 820] }, knees: { near: [428, 1095], far: [579, 1085] },
+      eyes: [{ x: 528, y: 115, rx: 13, ry: 6, skinAt: [528, 128] }, { x: 562, y: 115, rx: 9, ry: 6, skinAt: [562, 128] }],
+      portrait: [370, 0, 360, 360], moods: ['neutral'],
+      face: { mouth: { x: 549, y: 155, rx: 13, ry: 4 }, brows: [{ x0: 509, x1: 549, y0: 93, y1: 105, inner: 'right' }, { x0: 557, x1: 571, y0: 96, y1: 105, inner: 'left' }] } };
+    return {
+      silas: { ...casual, dir: 'intro/', variant: { hue: 200, sat: 0.35, light: 0.62, skin: 0.95 } },
+      'silas-harrow': { ...casual, dir: 'intro/', variant: { hue: 200, sat: 0.35, light: 0.62, skin: 0.78, headgear: { kind: 'cap', color: [70, 72, 82] } } },
+      'silas-clerk': { ...casual, dir: 'intro/', variant: { hue: 200, sat: 0.2, light: 0.7, skin: 0.95, headgear: { kind: 'hood', color: [92, 92, 96] } } },
+    };
+  })(),
+  guard: {
+    dir: 'intro/', variant: { hue: 200, sat: 0.25, light: 0.85, skin: 1.02, headgear: { kind: 'cap', color: [84, 86, 96] } },
+    source: 'sources/characters/char-oren/body.png', armLayer: 'sources/characters/char-oren/arm.png', height: 214, walks: false,
+    armPivot: [330, 320],
+    hipY: 960, splitX: 464, hips: { near: [400, 960], far: [540, 960] }, knees: { near: [380, 1290], far: [560, 1290] },
+    eyes: [{ x: 563, y: 150, rx: 10, ry: 5, skinAt: [563, 176] }],
+    portrait: [380, 0, 340, 340], moods: ['neutral'],
+    face: { mouth: { x: 583, y: 213, rx: 12, ry: 4 }, brows: [{ x0: 530, x1: 580, y0: 113, y1: 131, inner: 'right' }, { x0: 598, x1: 622, y0: 115, y1: 126, inner: 'left' }] },
+  },
+  warden: {
+    dir: 'intro/', variant: { hue: 190, sat: 0.3, light: 0.7, skin: 0.9, headgear: { kind: 'cap', color: [60, 62, 70] } },
+    source: 'kiln:opening/iven.png', height: 230, walks: false,
+    hipY: 1000, splitX: 480, hips: { near: [420, 1000], far: [640, 1000] }, knees: { near: [360, 1240], far: [760, 1250] },
+    fidgetLean: -3, nearIsUpper: true, crouchSquash: 1,
+    eyes: [{ x: 452, y: 129, rx: 15, ry: 8, skinAt: [452, 148] }, { x: 507, y: 123, rx: 14, ry: 8, skinAt: [505, 142] }],
+    portrait: [320, 0, 340, 340], moods: ['neutral'],
+    face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
+  },
+  sigrid: {
+    dir: 'intro/', variant: { hue: 170, sat: 0.7, light: 0.6, skin: 1.05, headgear: { kind: 'kerchief', color: [214, 196, 140] } },
+    source: 'sources/characters/char-nell/body.png', armLayer: 'sources/characters/char-nell/arm.png', height: 226, walks: false,
+    armPivot: [390, 310],
+    hipY: 1010, splitX: 486, hips: { near: [400, 1010], far: [560, 1010] }, knees: { near: [390, 1320], far: [600, 1320] },
+    fidgetLean: -3,
+    eyes: [{ x: 546, y: 173, rx: 16, ry: 7, skinAt: [546, 190] }, { x: 592, y: 175, rx: 9, ry: 7, skinAt: [594, 192] }],
+    portrait: [380, 20, 320, 320], moods: ['neutral'],
+    face: { mouth: { x: 573, y: 227, rx: 19, ry: 5 }, brows: [{ x0: 520, x1: 565, y0: 146, y1: 158, inner: 'right' }, { x0: 583, x1: 602, y0: 147, y1: 156, inner: 'left' }] },
+  },
 };
 
 // Explicit source packs are opt-in: every other character retains the legacy rig.
@@ -286,6 +331,32 @@ export const MANIFEST = [
 /**
  * Each object's frame in art pixels (2x world units; multiples of the 2-pixel grid), in true
  * proportion to Mara (232 art pixels tall): the importer fits a Codex drawing into this box, standing
+  // ------------------------------------------------ the intro: Silas's escape from Ironhaven's cells ---
+  { ...room('room-cell', 'cell', "A cell in Ironhaven's prison at night, seen side-on: on Silas's side (left two thirds), a straw cot with a ragged blanket (left), a dented tin plate with a crust on the floor beside it, a small barred window high in the wall with a thread of moonlight, a weeping patch of wall where plaster flakes away, a bucket; then the iron bars with their door (centre right, at x 732-812). Beyond the bars, a stone corridor: the guard's table with a stub of candle and a cup (the mask frame lies on it, drawn separately), the duty roster pinned on the wall with a sketch of Sergeant Harrow, the guard's chair, and stone stairs going up at the far right.", 'Cold blue moonlight from the window (left); one warm candle pool on the table beyond the bars (right). The game darkens the room until Silas throws the moonlight across it, so paint it as seen lit.'), file: 'intro/rooms/cell.png', chapter: 'intro', generator: 'intro.mjs' },
+  { ...room('room-guardroom', 'guardroom', "The guardroom at the top of the prison stairs: the stairs going down at the left edge, a peg with a grey clerk's hood, a shelf with a thick red tally ledger, a black iron stove with its door glowing in the middle, the guard's desk (right of centre), and an iron grate at the right edge opening onto the snowy night.", 'Warm orange light from the stove (centre); cold blue night through the grate (right).'), file: 'intro/rooms/guardroom.png', chapter: 'intro', generator: 'intro.mjs' },
+  { ...room('room-prison-door', 'prison-door', "Outside Ironhaven's prison at night: a small heavy door with a lantern (left) in a black stone wall with crenellations, snow on the ground and falling, the city's iron roofs faint in the distance.", 'Cold blue night; the lantern by the door the one warm light.'), file: 'intro/rooms/prison-door.png', chapter: 'intro', generator: 'intro.mjs' },
+  ...[
+    ['silas', 'Silas, the con man.', 224],
+    ['silas-harrow', 'Silas wearing the Harrow mask (only the face and head differ from char-silas).', 224],
+    ['silas-clerk', "Silas as the tally clerk: hood up, a ledger held to his chest (only the head and arms differ from char-silas).", 224],
+    ['guard', "Benn, the young night guard of Ironhaven's cells.", 214],
+    ['warden', "Kell, the guardroom guard of Ironhaven's prison.", 230],
+    ['sigrid', 'Captain Sigrid of Ironhaven.', 226],
+  ].flatMap(([id, subject, height]) => [
+    { id: `char-${id}`, kind: 'character', file: `intro/characters/${id}.png`, sheet: `intro/characters/${id}.json`, anchor: 'bottom-centre', height, rig: id, chapter: 'intro', status: 'placeholder', generator: 'rig.mjs', subject },
+    { id: `portrait-${id}`, kind: 'portrait', file: `intro/portraits/${id}.png`, anchor: 'none', moods: RIGS[id].moods ?? ['neutral', 'worried', 'angry'], chapter: 'intro', status: 'placeholder', generator: 'rig.mjs', subject: `${subject} Head and shoulders.` },
+  ]),
+  ...[
+    ['plate', 'A dented tin plate, shiny in the dent.'], ['crust', 'A stale crust of bread.'], ['nail', 'A bent iron nail.'],
+    ['strip', 'A long strip torn from a grey blanket.'], ['hookLine', 'The bent nail tied to the end of a blanket strip, like a fishing line.'],
+    ['frame', "Nessa's mask frame: a thin articulated brass frame of ribs and tiny hinges, shaped to sit under a face mask."],
+    ['plaster', 'A few grey flakes of damp wall plaster.'], ['wetPlaster', 'A grey lump of plaster gone soft with water.'],
+    ['putty', 'A ball of grey putty: plaster kneaded into bread.'],
+    ['maskHarrow', "The Harrow mask: a crude grey plaster-and-bread face (heavy jaw, pouched eyes, a bristling hair moustache) moulded on the brass frame."],
+    ['keys', 'An iron key ring with three heavy keys.'], ['hood', "A drab grey clerk's hood."], ['ledger', 'A thick red tally ledger.'],
+    ['maskClerk', "The clerk's guise: the grey hood folded over the red ledger."],
+  ].map(([id, subject]) => ({ ...item(id, subject), file: `intro/items/${id}.png`, chapter: 'intro', generator: 'intro.mjs' })),
+  icon('read', 'Read people: a face in profile with a small gold glint of insight above it.'),
  * on its bottom centre (the object's foot point in the room).
  */
 const OBJECT_FRAMES = {
@@ -314,6 +385,8 @@ const WHO = {
 };
 // Mara off duty: everyday clothes, no armour, no gauntlet (requested; rigged once delivered).
 MANIFEST.push({ id: 'char-mara-casual', kind: 'character', file: 'characters/mara-casual.png', sheet: 'characters/mara-casual.json', anchor: 'bottom-centre', height: 232,
+  'char-silas': CAST.silas, 'char-silas-harrow': CAST.silasHarrow, 'char-silas-clerk': CAST.silasClerk,
+  'char-guard': CAST.guardCell, 'char-warden': CAST.guardStairs, 'char-sigrid': CAST.sigrid,
   chapter: 'game', status: 'requested', generator: 'rig.mjs (once delivered: measure RIGS, then npm run rig)', subject: CAST.maraCasual });
 // Ten tiers of every piece of gear: tier 1 is the piece's own picture, tiers 2-10 new pictures beside it.
 for (const [id, base] of Object.entries(GEAR)) {

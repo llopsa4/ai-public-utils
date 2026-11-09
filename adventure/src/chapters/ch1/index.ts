@@ -37,6 +37,7 @@ export const CH1: Chapter = {
   spares: OREN_SPARES,
   // Day 1 of STORY.md's five: the first malfunctions, seen by Mara in Cinderfold.
   when: { day: 1, time: 'when.ch1.time', place: 'when.ch1.place', viewpoint: 'when.ch1.viewpoint' },
+  pin: 'cinderfold',
   diary: DIARY,
   map: MAP,
   objectives,

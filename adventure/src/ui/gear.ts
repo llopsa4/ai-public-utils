@@ -5,6 +5,7 @@ import { ALL_GEAR } from '../content/kit';
 import { LOCKED_SLOTS, maraProfile } from '../content/kit';
 import { equip } from '../engine/kit';
 import { $, type Ui } from './ui';
+import { heroOf } from '../chapters/hero';
 
 const guidedVisits = new WeakMap<Ui, Promise<void>>();
 const gearVisits = new WeakMap<Ui, Promise<void>>();
@@ -80,7 +81,7 @@ async function showGear(ui: Ui): Promise<void> {
     const debug = new URLSearchParams(location.search).has('debug');
     await new Promise<void>(resolve => {
       const unmount = kc.mountArmory($('gear-body'), {
-        popup: true, title: t('ui.gearTitle'), eyebrow: t('ui.gearEyebrow'), locked: debug ? [] : [...LOCKED_SLOTS],
+        popup: true, title: t('ui.gearTitle', { who: t(heroOf().name) }), eyebrow: t('ui.gearEyebrow'), locked: debug ? [] : [...LOCKED_SLOTS],
         // The paper doll shows only the gear and the stats it gives (no purse or bag).
         read: () => {
           const { kit, bag } = ui.host.getState();

@@ -48,6 +48,7 @@
       <p id="loading" data-i18n="ui.loading">Loading…</p>
     </div>
     <nav id="bar">
+      <div id="suspicion" role="status" hidden></div>
       <div id="inventory" role="toolbar" data-i18n-label="ui.inventory"></div>
       <div id="lang" role="group" data-i18n-label="ui.language"></div>
       <button id="mute-btn" class="btn icon-btn" type="button" data-i18n-label="ui.mute" aria-pressed="false"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 9h4l5-4v14l-5-4H4z"/><path class="on" d="M16 9c1.3 1.6 1.3 4.4 0 6M18.5 6.5c2.8 3 2.8 8 0 11" fill="none"/><path class="off" d="M16 9l5 6M21 9l-5 6" fill="none"/></svg></button>
@@ -63,6 +64,11 @@
   <div id="kc-root" hidden></div>
 
   <!-- The opening: a few lines of context over black before a new story starts. -->
+  <section id="chapter-map" hidden aria-labelledby="chapter-map-heading">
+    <h1 id="chapter-map-heading" data-i18n="ui.chapterMapTitle">Where next?</h1>
+    <div id="chapter-map-svg"></div>
+    <div id="chapter-map-list" class="menu-list"></div>
+  </section>
   <section id="intro" hidden aria-live="polite" aria-labelledby="intro-label">
     <h1 id="intro-label" class="visually-hidden" data-i18n="ui.introLabel">Before the story</h1>
     <div id="intro-text"></div>

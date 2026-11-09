@@ -11,7 +11,7 @@ export type Facing = 'down' | 'up' | 'left' | 'right';
 export type Pose = 'stand' | 'crouch' | 'dead';
 
 /** Every named character in the game; each chapter brings its own cast (`Chapter.npcs`). */
-export const NPC_IDS = ['oren', 'nell', 'bryn', 'tobi'] as const;
+export const NPC_IDS = ['oren', 'nell', 'bryn', 'tobi', 'guard', 'warden', 'sigrid'] as const;
 export type NpcId = (typeof NPC_IDS)[number];
 export type ActorId = 'hero' | NpcId;
 /** Background people (the kiln-hall crowd): not saved, not part of the story. */
@@ -19,7 +19,7 @@ export type ExtraId = `extra-${string}`;
 /** Anyone who can speak a line in the dialogue panel. */
 export type Speaker = ActorId | ExtraId;
 
-export const VERBS = ['look', 'open', 'close', 'take', 'use', 'talk', 'go', 'crouch', 'lie', 'stand'] as const;
+export const VERBS = ['look', 'open', 'close', 'take', 'use', 'talk', 'go', 'crouch', 'lie', 'stand', 'read'] as const;
 export type Verb = (typeof VERBS)[number];
 
 /** All entries must hold (logical AND). `atLeast` holds when `count` of its flags are set. */
@@ -108,6 +108,11 @@ export interface RoomDef {
   ambient?: AmbientDef;
   /** A light carried by Mara (his gauntlet's glow in dark rooms): radius and colour, world units. */
   heroLight?: { r: number; color: number };
+  /**
+   * Darkness while `if` holds: the room is near black except pools of light (a candle) and a small
+   * ring around the hero, `heroR` across (world units). It lifts, slowly, once `if` stops holding.
+   */
+  dark?: { if: Condition[]; lights: { x: number; y: number; r: number }[]; heroR: number; alpha?: number };
   /** Outer walkable polygon followed by optional holes (obstacles). */
   walkable: { outer: Polygon; holes: Polygon[] };
   scale: DepthScale;
@@ -272,4 +277,6 @@ export type Command =
   | { type: 'learn'; technique: string }
   /** Opens the merchant's shop and waits for it to close. */
   | { type: 'shop' }
-  | { type: 'end' };
+  | { type: 'end' }
+  /** The chapter map: the player picks the next chapter to play (ends the current chapter). */
+  | { type: 'chooseChapter' };

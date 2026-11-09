@@ -39,6 +39,13 @@ export interface StoryRules {
   flagSounds: Record<string, FlagSound>;
   /** Mara's sprite sheet; without a match, `mara`. */
   heroSheet: StoryPick<string>[];
+  /** The hero's shown name and portrait (a mask's persona); without a match, the chapter hero's. */
+  heroName?: StoryPick<string>[];
+  heroPortrait?: StoryPick<string>[];
+  /** What happens once a conversation ends, given how it went (a guard too suspicious: caught). */
+  afterDialogue?: (id: string, state: GameState) => Command[];
+  /** How suspicious the person being deceived is, 0 to 3 (the eye above the satchel); null hides it. */
+  suspicion?: (state: GameState) => number | null;
   /** Fights are played as the guided lesson while any of these holds. */
   guided: StoryWhen[];
   /** After a fight: the score to play and whether background sound stays quiet (default: the room's). */
@@ -80,6 +87,11 @@ export function heroSheetFor(story: StoryRules, ctx: StoryContext): string {
     return sheet === 'mara-gauntlet' ? 'mara-medium-gauntlet' : 'mara-medium';
   }
   return sheet;
+}
+
+/** The hero's shown name key and portrait: a persona when one matches, else the chapter's hero. */
+export function heroIdentityFor(story: StoryRules, ctx: StoryContext, base: { name: string; portrait: string }): { name: string; portrait: string } {
+  return { name: first(story.heroName ?? [], ctx) ?? base.name, portrait: first(story.heroPortrait ?? [], ctx) ?? base.portrait };
 }
 
 export function guided(story: StoryRules, ctx: StoryContext): boolean {

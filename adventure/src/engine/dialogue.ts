@@ -5,7 +5,8 @@ import { applyCommand } from './state';
 import type { ActorId, Condition, GameState, Kit } from './types';
 
 export interface DialogueLine { actor: ActorId; text: string }
-export interface DialogueChoice { text: string; next: string | null; if?: Condition[] }
+/** `read`: the choice draws on something the hero has read in the person (shown with the read mark). */
+export interface DialogueChoice { text: string; next: string | null; if?: Condition[]; read?: boolean }
 export interface DialogueGear { give: readonly string[]; equip?: string }
 export interface DialogueNode {
   /** Remember this choice only if no flag in its group has been remembered yet. */

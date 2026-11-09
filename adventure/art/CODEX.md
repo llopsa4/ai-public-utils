@@ -35,6 +35,23 @@ Make these first, import them, and **stop**: the user looks at them in the game 
 
 ## 2. Everything else, in batches (after the pilot is approved)
 
+## The intro (Silas)
+
+### room.cell (`cell`)
+
+- [ ] **room-cell**: [brief](briefs/room-cell.md) → `art/inbox/room-cell.png`
+- [x] **char-guard**: [brief](briefs/char-guard.md) → `nothing to make: built from char-oren's drawing`
+
+### room.guardroom (`guardroom`)
+
+- [ ] **room-guardroom**: [brief](briefs/room-guardroom.md) → `art/inbox/room-guardroom.png`
+- [ ] **char-warden**: [brief](briefs/char-warden.md) → `art/inbox/char-warden/body.png, arm.png, kneel.png, lie.png`
+
+### room.outerDoor (`outerDoor`)
+
+- [ ] **room-prison-door**: [brief](briefs/room-prison-door.md) → `art/inbox/room-prison-door.png`
+- [x] **char-sigrid**: [brief](briefs/char-sigrid.md) → `nothing to make: built from char-nell's drawing`
+
 ## Chapter 1
 
 ### Mara's Tent (`tent`)
@@ -272,6 +289,20 @@ Make these first, import them, and **stop**: the user looks at them in the game 
 ### Items
 
 - [x] **item-tonic**: [brief](briefs/item-tonic.md) → `art/inbox/item-tonic.png`
+- [ ] **item-plate**: [brief](briefs/item-plate.md) → `art/inbox/item-plate.png`
+- [ ] **item-crust**: [brief](briefs/item-crust.md) → `art/inbox/item-crust.png`
+- [ ] **item-nail**: [brief](briefs/item-nail.md) → `art/inbox/item-nail.png`
+- [ ] **item-strip**: [brief](briefs/item-strip.md) → `art/inbox/item-strip.png`
+- [ ] **item-hookLine**: [brief](briefs/item-hookLine.md) → `art/inbox/item-hookLine.png`
+- [ ] **item-frame**: [brief](briefs/item-frame.md) → `art/inbox/item-frame.png`
+- [ ] **item-plaster**: [brief](briefs/item-plaster.md) → `art/inbox/item-plaster.png`
+- [ ] **item-wetPlaster**: [brief](briefs/item-wetPlaster.md) → `art/inbox/item-wetPlaster.png`
+- [ ] **item-putty**: [brief](briefs/item-putty.md) → `art/inbox/item-putty.png`
+- [ ] **item-maskHarrow**: [brief](briefs/item-maskHarrow.md) → `art/inbox/item-maskHarrow.png`
+- [ ] **item-keys**: [brief](briefs/item-keys.md) → `art/inbox/item-keys.png`
+- [ ] **item-hood**: [brief](briefs/item-hood.md) → `art/inbox/item-hood.png`
+- [ ] **item-ledger**: [brief](briefs/item-ledger.md) → `art/inbox/item-ledger.png`
+- [ ] **item-maskClerk**: [brief](briefs/item-maskClerk.md) → `art/inbox/item-maskClerk.png`
 
 ### Icons
 
@@ -285,6 +316,7 @@ Make these first, import them, and **stop**: the user looks at them in the game 
 - [x] **icon-crouch**: [brief](briefs/icon-crouch.md) → `art/inbox/icon-crouch.png`
 - [x] **icon-lie**: [brief](briefs/icon-lie.md) → `art/inbox/icon-lie.png`
 - [x] **icon-stand**: [brief](briefs/icon-stand.md) → `art/inbox/icon-stand.png`
+- [ ] **icon-read**: [brief](briefs/icon-read.md) → `art/inbox/icon-read.png`
 
 ## Anything else
 
@@ -300,3 +332,6 @@ Make these first, import them, and **stop**: the user looks at them in the game 
 - [x] **sign-wood**: [brief](briefs/sign-wood.md) → `art/inbox/sign-wood.png`
 - [x] **sign-iron**: [brief](briefs/sign-iron.md) → `art/inbox/sign-iron.png`
 - [x] **sign-shield**: [brief](briefs/sign-shield.md) → `art/inbox/sign-shield.png`
+- [x] **char-silas**: [brief](briefs/char-silas.md) → `nothing to make: built from char-mara-casual's drawing`
+- [x] **char-silas-harrow**: [brief](briefs/char-silas-harrow.md) → `nothing to make: built from char-mara-casual's drawing`
+- [x] **char-silas-clerk**: [brief](briefs/char-silas-clerk.md) → `nothing to make: built from char-mara-casual's drawing`

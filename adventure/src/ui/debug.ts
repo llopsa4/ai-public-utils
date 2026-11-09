@@ -64,7 +64,8 @@ export function mountDebugPanel(session: Session): void {
 
     panel.append(el('h2', { textContent: 'Chapter and room' }));
     const chapterSelect = el<HTMLSelectElement>('select');
-    for (const id of CHAPTER_IDS) chapterSelect.append(el('option', { value: id, textContent: id, selected: id === s.chapter }));
+    const label = (id: string) => (id === 'intro' ? 'Intro: Silas' : id);
+    for (const id of CHAPTER_IDS) chapterSelect.append(el('option', { value: id, textContent: label(id), selected: id === s.chapter }));
     // Jumping to a chapter is the real chapter change (kit, bag and kept items carry over),
     // after fetching the chapter if it isn't loaded yet.
     chapterSelect.onchange = () => {
@@ -72,7 +73,9 @@ export function mountDebugPanel(session: Session): void {
       void loadChapter(id, { art: true }).then(async next => {
         // As in the game: the chapter's opening lines, the first time this save enters it.
         if (next.intro && !session.state.reached.includes(id)) await session.ui.chapterIntro(next.intro, dayLine(next));
-        change(st => applyCommand(st, { type: 'chapter', id }));
+        // Another hero's chapter (Silas's intro) starts their own thread: nothing of Mara's carries over.
+        if (next.hero) session.replaceState(newGame(id));
+        else change(st => applyCommand(st, { type: 'chapter', id }));
       });
     };
     const roomSelect = el<HTMLSelectElement>('select');

@@ -15,6 +15,7 @@ import { chapter } from '../chapters';
 import { crowdMoodFor, heroSheetFor, hushed, onEnter, type StoryContext } from '../engine/story';
 import { FOREGROUND_IMAGES, OUTLINES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import { outlineSheetKey } from './room/outline';
+import { heroOf } from '../chapters/hero';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
 import { DOORWAY_STEP, FACE_VECTOR, FADE_MS, NOTICE_DISTANCE, createSheetAnims, inFlight, particleConfig, queueSheet, whenSheet } from './room/shared';
@@ -243,7 +244,7 @@ export class RoomScene extends Phaser.Scene {
       this.props.step(this.hero.sprite.x, this.hero.sprite.y);
     };
     // Mara's lit-gauntlet sheet: loaded in the background, swapped in when it arrives.
-    if (!this.textures.exists('mara-gauntlet')) this.preloadGauntletSheet();
+    if (heroOf().mara && !this.textures.exists('mara-gauntlet')) this.preloadGauntletSheet();
     // The kiln hall's people are fetched in the background from the first room on.
     for (const e of chapter().extras) this.loadLazySheet(e.sheet);
     for (const [id, actor] of this.actors) if (id !== 'hero') { this.scheduleFidget(actor); this.scheduleGlance(actor); }
@@ -331,7 +332,8 @@ export class RoomScene extends Phaser.Scene {
       // Subscribe even if a previous room already queued this texture.
       this.loadLazySheet(sheet, () => { this.heroLoading = null; this.refreshObjects(); });
     }
-    return this.textures.exists(sheet) ? sheet : 'mara';
+    // Until it has loaded: the chapter hero's own sheet (Mara's for Mara).
+    return this.textures.exists(sheet) ? sheet : this.textures.exists(heroOf().sheet) ? heroOf().sheet : 'mara';
   }
 
   /** In the tent, the lit-gauntlet sheet loads in the background while the player looks around. */

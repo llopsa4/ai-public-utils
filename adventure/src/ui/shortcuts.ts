@@ -1,4 +1,5 @@
 import type { GameState } from '../engine/types';
+import { CHAPTERS } from '../chapters';
 
 export type ScreenPanel = 'gear' | 'notebook' | 'menu';
 export interface ShortcutKey {
@@ -24,6 +25,8 @@ export type ScreenShortcut = { type: 'open' | 'close' | 'guide'; panel: ScreenPa
 
 /** Chapter one's gear screen unlock is a story event, independent of conversation or owned gear. */
 export function gearAvailable(state: Pick<GameState, 'chapter' | 'flags'>): boolean {
+  // The gear is Mara's: another hero's chapter (Silas's intro) has none.
+  if (CHAPTERS[state.chapter]?.hero && !CHAPTERS[state.chapter].hero!.mara) return false;
   return state.chapter !== 'ch1' || state.flags.gearUnlocked === true;
 }
 
