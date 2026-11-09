@@ -1,7 +1,8 @@
 import { ROOMS } from './rooms';
 import { SECRET_FLAGS } from './flags';
 import { applyRules, cycleLook, type Rule } from '../../engine/rules';
-import type { ActorId, Command, Condition, GameState, Point, Verb } from '../../engine/types';
+import type { ActorId, Command, GameState, Point, Verb } from '../../engine/types';
+import { say, flag, pose, wait, go, shake, F, NOT } from '../script';
 
 /** Verbs offered for the characters (hotspot verbs live in rooms.ts). */
 export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
@@ -12,14 +13,6 @@ export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
 /** Inventory items offer these verbs in the action ring. */
 export const ITEM_VERBS: Verb[] = ['look', 'use'];
 
-const say = (text: string, actor: ActorId = 'hero', at?: Point): Command => (at ? { type: 'say', actor, text, at } : { type: 'say', actor, text });
-const flag = (name: string): Command => ({ type: 'setFlag', flag: name, value: true });
-const pose = (actor: ActorId, p: 'stand' | 'crouch' | 'dead'): Command => ({ type: 'pose', actor, pose: p });
-const wait = (ms: number): Command => ({ type: 'wait', ms });
-const go = (room: string, entry: string): Command => ({ type: 'room', room, entry });
-const shake = (ms: number): Command => ({ type: 'shake', ms });
-const F = (name: string): Condition[] => [{ flag: name }];
-const NOT = (name: string): Condition[] => [{ notFlag: name }];
 
 /** Bryn's voice through the door, before it opens. */
 const DOOR_VOICE = { x: 436, y: 150 };

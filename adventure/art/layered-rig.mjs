@@ -248,12 +248,11 @@ export async function buildLayeredCharacter(id,cfg){
  let pack=loadPack(join(art,cfg.layeredPack));const powered=!!cfg.powered;
  if(cfg.overlay)pack=disguise(pack,cfg.overlay);
  if(cfg.forearmRaise)pack={...pack,forearmRaise:cfg.forearmRaise};
- const stand=renderPackFrame(pack,{powered});
- // A mask over the eyes does not blink.
- const blink=cfg.noBlink?stand:renderPackFrame(pack,{powered,blink:true});
+ // A mask over the eyes does not blink (noBlink). The side-on art serves every direction.
+ const side=await sideFrames(pack,powered,cfg.noBlink),{stand,blink}=side;
  const frames=[stand,blink,stand,blink,stand],tags=[['stand_down',0,0],['blink_down',1,1],['stand_side',2,2],['blink_side',3,3],['stand_up',4,4]];
- for(const direction of ['down','side','up']){const from=frames.length;for(let p=0;p<8;p++)frames.push(renderPackFrame(pack,{phase:p,powered}));tags.push(['walk_'+direction,from,frames.length-1])}
- for(const [name,file] of [['crouch','kneel.png'],['dead','lie.png']]){const still=pack.poses?.[file.replace('.png','')]??join(pack.dir,file);tags.push([name,frames.length,frames.length]);frames.push(await stillFrame(still,pack.cfg,powered,file.replace('.png','')))}
+ for(const direction of ['down','side','up']){tags.push(['walk_'+direction,frames.length,frames.length+side.walk.length-1]);frames.push(...side.walk)}
+ for(const name of ['crouch','dead']){tags.push([name,frames.length,frames.length]);frames.push(side[name])}
  tags.push(['fidget',frames.length,frames.length]);frames.push(blink);
  // Two-sided characters (a left/ set with its own rig.json): their own left-facing frames, tagged
  // <tag>@left; the game plays those instead of mirroring the right-facing ones.

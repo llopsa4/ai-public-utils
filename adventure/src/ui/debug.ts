@@ -1,7 +1,8 @@
 // The debug panel (only with ?debug; comma toggles it, ?debug=panel opens it at start): jump to a
 // chapter, room or set of flags; give items, salvage, tonics and gear; start a fight; switch the
 // visual quality and the walk-area overlay. Loaded on demand, so it is not in the normal game.
-import { CHAPTER_IDS, chapter, loadChapter } from '../chapters';
+import { CHAPTERS, CHAPTER_IDS, chapter, loadChapter } from '../chapters';
+import { t } from '../engine/i18n';
 import { dayLine } from './journalData';
 import { ALL_GEAR, TONIC } from '../content/kit';
 import { equip } from '../engine/kit';
@@ -72,7 +73,8 @@ export function mountDebugPanel(session: Session): void {
 
     panel.append(el('h2', { textContent: 'Chapter and room' }));
     const chapterSelect = el<HTMLSelectElement>('select');
-    const label = (id: string) => (id === 'intro' ? 'Intro: Silas' : id);
+    // A loaded chapter shows its title; one not fetched yet, its id.
+    const label = (id: string) => (CHAPTERS[id] ? t(CHAPTERS[id].title) : id);
     for (const id of CHAPTER_IDS) chapterSelect.append(el('option', { value: id, textContent: label(id), selected: id === s.chapter }));
     // Jumping to a chapter is the real chapter change (kit, bag and kept items carry over),
     // after fetching the chapter if it isn't loaded yet.

@@ -2,7 +2,8 @@ import { ROOMS } from './rooms';
 import { ashwaysFinale, concernKey, morningAlarm } from './progression';
 import { SECRET_FLAGS } from './flags';
 import { applyRules, cycleLook, type Rule } from '../../engine/rules';
-import type { ActorId, Command, Condition, GameState, NpcId, Point, Speaker, Verb } from '../../engine/types';
+import type { ActorId, Command, GameState, NpcId, Point, Verb } from '../../engine/types';
+import { say, flag, pose, wait, go, shake, F, NOT } from '../script';
 
 /**
  * What follows the release: the hatch blows, the fight, Oren's spare gear and his send-off.
@@ -52,11 +53,6 @@ export const ITEM_VERBS: Verb[] = ['look', 'use'];
 /** The sweeper by the valve, and the same creature once it has moved to the pipe. */
 const SWEEPER = ['sweeper', 'sweeperAtPipe'];
 
-const say = (text: string, actor: Speaker = 'hero', at?: Point): Command => (at ? { type: 'say', actor, text, at } : { type: 'say', actor, text });
-const flag = (name: string, value = true): Command => ({ type: 'setFlag', flag: name, value });
-const pose = (actor: ActorId, p: 'stand' | 'crouch' | 'dead'): Command => ({ type: 'pose', actor, pose: p });
-const wait = (ms: number): Command => ({ type: 'wait', ms });
-const go = (room: string, entry: string): Command => ({ type: 'room', room, entry });
 
 function toNpc(id: NpcId): Command[] {
   const s = TALK_SPOTS[id]!;
@@ -91,10 +87,7 @@ function fallback(verb: Verb, item?: string): Command[] {
   return [say('line.cannot')];
 }
 
-const F = (name: string): Condition[] => [{ flag: name }];
-const NOT = (name: string): Condition[] => [{ notFlag: name }];
 const addItem = (item: string): Command => ({ type: 'addItem', item });
-const shake = (ms: number): Command => ({ type: 'shake', ms });
 
 /** Nell's loaf goes into the soup (used on the pot or handed to her): her thanks, and her latch. */
 const loafInSoup = (state:GameState): Command[] => [

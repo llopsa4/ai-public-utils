@@ -1,8 +1,7 @@
-// The intro's rooms (placeholders until Codex art is imported; see art/briefs): Ironhaven's cell at
-// night, the guardroom at the top of the stairs, and the snowy yard at the outer door. Painted as SVG
-// scenes like art/ch2.mjs. Coordinates are art pixels (2x the 640x360 world); the layouts match
-// src/chapters/intro/rooms.ts. The cell is painted lit (moonlight); the game darkens it until the
-// tin plate throws the moonlight across it.
+// The intro's placeholder rooms, until Codex's paintings are imported (see art/briefs): the guardroom
+// at the top of the stairs and the snowy yard at the outer door. Painted as SVG scenes like
+// art/ch2.mjs. Coordinates are art pixels (2x the 640x360 world); the layouts match
+// src/chapters/intro/rooms.ts. The cell, its plates and the satchel items are Codex's final art.
 //
 //   node art/intro.mjs   (part of npm run art; then npm run webp)
 import { mkdirSync, writeFileSync } from 'node:fs';
@@ -52,42 +51,6 @@ const stones = (x0, y0, x1, y1, color) => {
 };
 const render = body => sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">${defs}${body}<rect width="${W}" height="${H}" fill="#000" filter="url(#grain)"/></svg>`));
 
-// The cell: Silas's side (left of the bars at x 732-800), the corridor beyond with the guard's
-// table and candle, the duty roster on the wall, and the stairs up at the far right.
-{
-  let s = rect(0, 0, W, 536, 'url(#cellWall)') + stones(0, 0, W, 536, '#14141c');
-  s += rect(0, 524, W, H - 524, 'url(#cellFloor)');
-  for (let n = 0; n < 14; n++) s += ellipse(80 + rnd() * 640, 580 + rnd() * 120, 30 + rnd() * 50, 4 + rnd() * 4, '#6a7090', `opacity="${0.25 + rnd() * 0.25}"`);
-  // The barred window, a thread of moonlight down to the floor.
-  s += rect(292, 124, 120, 100, '#0e1222') + rect(300, 132, 104, 84, '#3a4a78');
-  for (let x = 318; x < 404; x += 22) s += line(x, 128, x, 220, '#1a1a22', 7);
-  s += poly([[300, 216], [404, 216], [470, 600], [250, 600]], 'url(#moon)', 'opacity="0.45"');
-  // The weeping wall: dark streaks and a flaking patch.
-  s += rect(428, 236, 152, 232, '#4a4a52', 'opacity="0.55"');
-  for (let x = 436; x < 576; x += 16) s += line(x, 240 + rnd() * 30, x + rnd() * 6, 460 - rnd() * 60, '#20222c', 4, 'opacity="0.55"');
-  for (let n = 0; n < 14; n++) s += rect(440 + rnd() * 120, 260 + rnd() * 190, 10 + rnd() * 14, 6 + rnd() * 8, '#8a8a90', `opacity="${0.4 + rnd() * 0.3}"`);
-  // The cot (straw and a ragged blanket), the tin plate with its crust, the bucket.
-  s += rect(68, 500, 240, 40, '#5a4630') + rect(76, 474, 224, 32, '#8a7448') + poly([[90, 470], [290, 474], [280, 520], [96, 520]], '#4a4e5e');
-  s += rect(80, 540, 14, 40, '#3a2a1a') + rect(282, 540, 14, 40, '#3a2a1a');
-  s += poly([[600, 534], [656, 534], [650, 596], [606, 596]], '#4a3e36') + ellipse(628, 534, 28, 7, '#2a3040');
-  // The bars and their door.
-  s += rect(712, 160, 16, 520, '#2a2a30');
-  for (let x = 732; x < 812; x += 18) s += rect(x, 220, 8, 470, '#3a3a42');
-  s += rect(728, 218, 88, 12, '#3a3a42') + rect(728, 440, 88, 10, '#3a3a42') + rect(790, 420, 22, 30, '#5a5048');
-  // The corridor beyond: the guard's table, cup, candle and its warm pool, the roster.
-  s += ellipse(940, 440, 200, 160, 'url(#warm)', 'opacity="0.55"');
-  s += rect(872, 460, 184, 18, 'url(#wood)') + rect(884, 478, 12, 70, '#3a2414') + rect(1032, 478, 12, 70, '#3a2414');
-  s += rect(934, 432, 12, 28, '#e8dcc0') + ellipse(940, 424, 5, 10, '#ffd27a') + rect(1000, 444, 18, 18, '#6a5a4a');
-  s += rect(1080, 272, 76, 96, '#d8cca8') + line(1092, 292, 1144, 292, '#5a4a3a', 3) + line(1092, 308, 1140, 308, '#5a4a3a', 3);
-  s += ellipse(1118, 340, 14, 16, '#a89070') + line(1106, 350, 1130, 350, '#3a2a1a', 4);
-  // The stairs up (far right), and the guard's chair (he sits facing the cell, its back to the right).
-  for (let n = 0; n < 7; n++) s += rect(1180 + n * 4, 500 - n * 52, 100, 18, '#2a2630');
-  s += rect(1084, 562, 96, 10, '#6a4428') + rect(1084, 572, 96, 4, '#3a2414');
-  s += rect(1088, 576, 8, 26, '#3a2414') + rect(1168, 576, 8, 26, '#3a2414');
-  s += rect(1170, 440, 10, 124, '#5a3a22') + rect(1166, 440, 18, 8, '#6a4428') + rect(1170, 486, 10, 6, '#3a2414');
-  await save('cell', render(s));
-}
-
 // The guardroom: a peg with the clerk's hood, the ledger on a shelf, the stove, Kell's desk, and the
 // grate out (right edge); stairs back down at the left edge.
 {
@@ -121,43 +84,4 @@ const render = body => sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg
   await save('prison-door', render(s));
 }
 
-// ------------------------------------------------------------------- items ---
-// Satchel icons, 64x64, drawn as small SVGs.
-const itemsDir = join(here, 'src', 'intro', 'items');
-mkdirSync(itemsDir, { recursive: true });
-const ITEMS = {
-  plate: ellipse(32, 34, 26, 16, '#a8acb8') + ellipse(32, 34, 18, 10, '#c8ccd8') + ellipse(42, 30, 6, 3, '#f0f4ff'),
-  crust: `<path d="M10 40 Q14 18 34 18 Q54 20 54 40 Z" fill="#a07840"/>` + rect(10, 38, 44, 8, '#7a5428'),
-  nail: line(14, 50, 40, 20, '#8a8a92', 6) + line(40, 20, 50, 16, '#8a8a92', 6) + rect(10, 48, 10, 6, '#6a6a72'),
-  strip: `<path d="M8 50 Q20 20 32 34 T56 14" stroke="#5a5e70" stroke-width="10" fill="none"/>`,
-  hookLine: `<path d="M8 54 Q20 24 32 36 T48 18" stroke="#5a5e70" stroke-width="8" fill="none"/>` + line(48, 18, 56, 10, '#8a8a92', 5) + line(56, 10, 52, 22, '#8a8a92', 4),
-  frame: ellipse(32, 32, 20, 26, 'none', 'stroke="#c9a15a" stroke-width="4"') + line(14, 32, 50, 32, '#c9a15a', 3) + line(32, 8, 32, 58, '#c9a15a', 3) + ellipse(20, 46, 3, 3, '#e7c046') + ellipse(44, 46, 3, 3, '#e7c046'),
-  plaster: ellipse(22, 40, 10, 6, '#9a9aa2') + ellipse(38, 34, 12, 7, '#8a8a92') + ellipse(30, 48, 9, 5, '#aaaab2'),
-  wetPlaster: ellipse(32, 40, 22, 12, '#6a6a76') + ellipse(26, 36, 8, 3, '#9aa0b8'),
-  putty: `<path d="M12 44 Q14 20 32 18 Q52 20 52 44 Q32 52 12 44 Z" fill="#8a8070"/>` + ellipse(26, 30, 4, 3, '#a89a80'),
-  maskHarrow: `<path d="M12 14 Q32 6 52 14 L50 46 Q32 60 14 46 Z" fill="#8a8680"/>` + ellipse(23, 26, 6, 4, '#2a2420') + ellipse(41, 26, 6, 4, '#2a2420') + `<path d="M18 40 Q32 34 46 40 Q32 46 18 40 Z" fill="#3a2e24"/>` + ellipse(12, 30, 3, 3, '#c9a15a') + ellipse(52, 30, 3, 3, '#c9a15a'),
-  keys: ellipse(24, 22, 12, 12, 'none', 'stroke="#8a8a92" stroke-width="4"') + line(30, 30, 52, 52, '#c9a15a', 5) + rect(44, 46, 6, 10, '#c9a15a') + line(28, 30, 40, 54, '#a0a0aa', 5),
-  hood: `<path d="M12 56 Q10 12 32 8 Q54 12 52 56 Z" fill="#5c5c60"/>` + `<path d="M20 56 Q22 24 32 22 Q42 24 44 56 Z" fill="#1a1a1e"/>`,
-  ledger: rect(12, 12, 40, 44, '#7a3a2a') + rect(16, 14, 34, 40, '#e8dcc0') + line(20, 24, 44, 24, '#5a4a3a', 2) + line(20, 32, 44, 32, '#5a4a3a', 2) + line(20, 40, 40, 40, '#5a4a3a', 2),
-  maskClerk: `<path d="M8 58 Q6 14 26 10 Q44 14 42 58 Z" fill="#5c5c60"/>` + rect(32, 30, 26, 28, '#7a3a2a') + rect(35, 32, 20, 24, '#e8dcc0'),
-};
-for (const [name, body] of Object.entries(ITEMS)) {
-  const file = `intro/items/${name}.png`;
-  if (isFinal(file)) continue;
-  await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">${body}</svg>`)).png({ palette: true, colours: 32 }).toFile(join(itemsDir, `${name}.png`));
-}
-
-// ----------------------------------------------------------------- objects ---
-// The tin plate wedged in the window bars, tilted to throw the moonlight (shown once the cell is lit).
-const objDir = join(here, 'src', 'intro', 'objects');
-mkdirSync(objDir, { recursive: true });
-async function objectSheet(name, w, h, body) {
-  if (isFinal(`intro/objects/${name}.png`)) return;
-  await sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}">${body}</svg>`)).png({ palette: true, colours: 32 }).toFile(join(objDir, `${name}.png`));
-  const frame = { filename: '0', frame: { x: 0, y: 0, w, h }, rotated: false, trimmed: false, spriteSourceSize: { x: 0, y: 0, w, h }, sourceSize: { w, h }, duration: 100 };
-  writeFileSync(join(objDir, `${name}.json`), JSON.stringify({ frames: [frame], meta: { app: 'adventure art/intro.mjs', version: '1', image: `${name}.png`, format: 'RGBA8888', size: { w, h }, scale: '1', frameTags: [{ name: 'idle', from: 0, to: 0, direction: 'forward' }] } }, null, 1) + '\n');
-}
-await objectSheet('window-plate', 44, 28, `<g transform="rotate(-24 22 16)">${ellipse(22, 16, 19, 8, '#8a8e9a')}${ellipse(22, 15, 13, 5, '#c8ccd8')}${ellipse(28, 13, 5, 2, '#f4f8ff')}</g>`);
-// The plate on the floor by the cot, with its crust (until Silas takes it).
-await objectSheet('floor-plate', 60, 24, ellipse(30, 13, 28, 10, '#a8acb8') + ellipse(26, 9, 12, 5, '#7a6040'));
-console.log('Intro rooms, items and objects written to art/src/intro.');
+console.log('Intro placeholder rooms written to art/src/intro/rooms (the guardroom and the outer door).');

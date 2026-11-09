@@ -1,6 +1,7 @@
 import { ROOMS } from './rooms';
 import { applyRules, cycleLook, type Rule } from '../../engine/rules';
-import type { ActorId, Command, Condition, GameState, Point, Speaker, Verb } from '../../engine/types';
+import type { ActorId, Command, Condition, GameState, Verb } from '../../engine/types';
+import { say, flag, add, drop, pose, wait, go, walk, F, NOT } from '../script';
 
 /** Verbs offered for the people (hotspot verbs live in rooms.ts). Silas can read people. */
 export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
@@ -12,16 +13,6 @@ export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
 
 export const ITEM_VERBS: Verb[] = ['look', 'use'];
 
-const say = (text: string, actor: Speaker = 'hero', at?: Point): Command => (at ? { type: 'say', actor, text, at } : { type: 'say', actor, text });
-const flag = (name: string, value = true): Command => ({ type: 'setFlag', flag: name, value });
-const add = (item: string): Command => ({ type: 'addItem', item });
-const drop = (item: string): Command => ({ type: 'removeItem', item });
-const pose = (actor: ActorId, p: 'stand' | 'crouch' | 'dead'): Command => ({ type: 'pose', actor, pose: p });
-const wait = (ms: number): Command => ({ type: 'wait', ms });
-const go = (room: string, entry: string): Command => ({ type: 'room', room, entry });
-const walk = (x: number, y: number, face: 'left' | 'right' | 'up' | 'down'): Command => ({ type: 'walk', to: { x, y }, face });
-const F = (name: string): Condition[] => [{ flag: name }];
-const NOT = (name: string): Condition[] => [{ notFlag: name }];
 
 /** Where Silas stands to speak to the guard through the bars, and to the guardroom's guard. */
 const AT_BARS = walk(350, 300, 'right');

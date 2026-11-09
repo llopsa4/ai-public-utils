@@ -19,7 +19,7 @@ test("New game: Silas's intro, from the dark cell through two disguises to Sigri
   await idle(page);
   // The debug menu still offers it first.
   await page.keyboard.press(',');
-  await expect(page.locator('#debug-panel select').first().locator('option').first()).toHaveText('Intro: Silas');
+  await expect(page.locator('#debug-panel select').first().locator('option').first()).toHaveText('Intro: The Man With Many Faces');
   await page.keyboard.press(',');
   const fresh = await state(page);
   expect(fresh.room).toBe('cell');
