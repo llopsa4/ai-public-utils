@@ -178,6 +178,11 @@ for (const [id, outfit, powered] of [
 
 /** @type {ArtEntry[]} */
 export const MANIFEST = [
+  { id: 'title-ironhaven-courtyard', kind: 'prop', file: 'title/ironhaven-courtyard.webp', size: { w: 1280, h: 720 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Empty Ironhaven courtyard, half covered in snow; no characters or baked-in artifacts. Distant fire and bare flag bracket.' },
+  { id: 'title-gauntlet', kind: 'prop', file: 'title/title-gauntlet.png', width: 160, anchor: 'bottom-centre', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Mara\'s abandoned gauntlet, independent transparent foreground object.' },
+  { id: 'title-ironhaven-flag', kind: 'prop', file: 'title/ironhaven-flag.png', size: { w: 192, h: 220 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Six frames of Ironhaven\'s hanging flag, 3 by 2 cells of 64 by 110 pixels.' },
+  { id: 'menu-flame', kind: 'prop', file: 'ui/menu-flame.gif', anchor: 'centre', chapter: 'game', status: 'final', generator: 'menu-flame.py', subject: 'Six-frame realistic flame for title selection.' },
+  { id: 'menu-flame-still', kind: 'prop', file: 'ui/menu-flame-still.png', size: { w: 64, h: 64 }, anchor: 'centre', chapter: 'game', status: 'final', generator: 'menu-flame.py', subject: 'Static flame for reduced-motion title selection.' },
   // The notebook's world map (src/content/world.ts): painted without lettering; the game writes the names and the marker.
   { id: 'world-map', kind: 'map', file: 'ui/world-map.png', size: { w: 1000, h: 700 }, anchor: 'none', chapter: 'game', status: 'requested', generator: 'Codex',
     subject: "An invented world map on worn parchment, drawn in ink and soft watercolour pixel art: one continent split north to south by the Rift, a deep jagged chasm crossed by a single bridge (Spanwick) at its middle; west of it the grey ash plains around Cinderfold, low foundry hills, and a snowy north with a walled town (Ironhaven); east of it a river with waterwheels (Alderweir), a forest in the south-east, a large old hearth-works further east (the First Hearth), and mountains in the north-east with a lone hut. A dotted road runs from Cinderfold east over the bridge. Follow the layout image exactly: every place sits where its mark is. No words, letters or labels anywhere (the game writes them)." },
@@ -326,11 +331,6 @@ export const MANIFEST = [
     subject: "Bryn's workshop as the sparring backdrop (same place as room-workshop, the floor clear in the lower third)." },
   { id: 'battle-enemy-rig', kind: 'battle-portrait', file: 'kc/ash-sweeper.webp', anchor: 'bottom-centre', width: 768, chapter: 'ch2', status: 'placeholder', generator: 'kc.mjs',
     subject: "Bryn's training rig: a caged brush drum on a sprung frame that swings back at whoever strikes it." },
-];
-
-/**
- * Each object's frame in art pixels (2x world units; multiples of the 2-pixel grid), in true
- * proportion to Mara (232 art pixels tall): the importer fits a Codex drawing into this box, standing
   // ------------------------------------------------ the intro: Silas's escape from Ironhaven's cells ---
   { ...room('room-cell', 'cell', "A cell in Ironhaven's prison at night, seen side-on: on Silas's side (left two thirds), a straw cot with a ragged blanket (left), a dented tin plate with a crust on the floor beside it, a small barred window high in the wall with a thread of moonlight, a weeping patch of wall where plaster flakes away, a bucket; then the iron bars with their door (centre right, at x 732-812). Beyond the bars, a stone corridor: the guard's table with a stub of candle and a cup (the mask frame lies on it, drawn separately), the duty roster pinned on the wall with a sketch of Sergeant Harrow, the guard's chair, and stone stairs going up at the far right.", 'Cold blue moonlight from the window (left); one warm candle pool on the table beyond the bars (right). The game darkens the room until Silas throws the moonlight across it, so paint it as seen lit.'), file: 'intro/rooms/cell.png', chapter: 'intro', generator: 'intro.mjs' },
   { ...room('room-guardroom', 'guardroom', "The guardroom at the top of the prison stairs: the stairs going down at the left edge, a peg with a grey clerk's hood, a shelf with a thick red tally ledger, a black iron stove with its door glowing in the middle, the guard's desk (right of centre), and an iron grate at the right edge opening onto the snowy night.", 'Warm orange light from the stove (centre); cold blue night through the grate (right).'), file: 'intro/rooms/guardroom.png', chapter: 'intro', generator: 'intro.mjs' },
@@ -357,6 +357,11 @@ export const MANIFEST = [
     ['maskClerk', "The clerk's guise: the grey hood folded over the red ledger."],
   ].map(([id, subject]) => ({ ...item(id, subject), file: `intro/items/${id}.png`, chapter: 'intro', generator: 'intro.mjs' })),
   icon('read', 'Read people: a face in profile with a small gold glint of insight above it.'),
+];
+
+/**
+ * Each object's frame in art pixels (2x world units; multiples of the 2-pixel grid), in true
+ * proportion to Mara (232 art pixels tall): the importer fits a Codex drawing into this box, standing
  * on its bottom centre (the object's foot point in the room).
  */
 const OBJECT_FRAMES = {
@@ -380,13 +385,13 @@ for (const e of MANIFEST) if (e.kind === 'object' && OBJECT_FRAMES[e.id]) e.fram
 import { CARDS, CAST, DESCRIPTIONS, GEAR, GEAR_TIERS, LIGHTS } from './descriptions.mjs';
 const WHO = {
   'char-mara': CAST.mara, 'char-mara-gauntlet': `${CAST.mara} ${CAST.maraLit}`, 'char-oren': CAST.oren, 'char-nell': CAST.nell, 'char-bryn': CAST.bryn,
+  'char-silas': CAST.silas, 'char-silas-harrow': CAST.silasHarrow, 'char-silas-clerk': CAST.silasClerk,
+  'char-guard': CAST.guardCell, 'char-warden': CAST.guardStairs, 'char-sigrid': CAST.sigrid,
   'extra-stoker': CAST.hollis, 'extra-tally': CAST.ansel, 'extra-hauler': CAST.dace, 'extra-runner': CAST.pip,
   'extra-hoist': CAST.wren, 'extra-kid': CAST.bea, 'extra-merchant': CAST.corvin,
 };
 // Mara off duty: everyday clothes, no armour, no gauntlet (requested; rigged once delivered).
 MANIFEST.push({ id: 'char-mara-casual', kind: 'character', file: 'characters/mara-casual.png', sheet: 'characters/mara-casual.json', anchor: 'bottom-centre', height: 232,
-  'char-silas': CAST.silas, 'char-silas-harrow': CAST.silasHarrow, 'char-silas-clerk': CAST.silasClerk,
-  'char-guard': CAST.guardCell, 'char-warden': CAST.guardStairs, 'char-sigrid': CAST.sigrid,
   chapter: 'game', status: 'requested', generator: 'rig.mjs (once delivered: measure RIGS, then npm run rig)', subject: CAST.maraCasual });
 // Ten tiers of every piece of gear: tier 1 is the piece's own picture, tiers 2-10 new pictures beside it.
 for (const [id, base] of Object.entries(GEAR)) {

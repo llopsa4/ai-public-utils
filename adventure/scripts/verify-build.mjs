@@ -17,7 +17,7 @@ assert.deepEqual(published.sort(), built.sort(), 'build/ differs from dist/build
 for (const name of built) {
   const a = await readFile(resolve(project, 'dist/build', name));
   assert.ok(a.equals(await readFile(resolve(project, 'build', name))), `stale asset ${name}`);
-  assert.match(name, /\.(js|css|png|webp|woff2?)$/, `unexpected asset type ${name}`);
+  assert.match(name, /\.(js|css|png|webp|gif|woff2?)$/, `unexpected asset type ${name}`);
 }
 // Vite names assets <name>-<8-character hash>.<ext>.
 const has = (name, ext) => built.some(n => new RegExp(`^${name}-[\\w-]{8}\\.${ext}$`).test(n));
@@ -40,8 +40,7 @@ for (const verb of ['look', 'open', 'close', 'take', 'use', 'talk', 'go', 'crouc
 const js = built.filter(n => n.endsWith('.js'));
 for (const name of js) assert.doesNotMatch(await readFile(resolve(project, 'build', name), 'utf8'), /sourceMappingURL=/);
 // Size budget: everything, and what is downloaded before the title screen is usable (code, sheets,
-// portraits, icons, Mara's unlit sheet, plus the two rooms the title loads: the kiln-hall backdrop
-// and the start room). Oren, Nell and the lit gauntlet load with the rooms that need them; the kiln
+// portraits, icons, Mara's unlit sheet, plus the Ironhaven title layers and the start room). Oren, Nell and the lit gauntlet load with the rooms that need them; the kiln
 // hall's background people load in the background once play starts; Kiln Courier's battle screen
 // (React, its art and fonts: the `mount` chunk) loads with the first fight.
 const { statSync } = await import('node:fs');
@@ -60,7 +59,7 @@ for (const n of built) {
 }
 const total = built.filter(n => !laterChapter(n)).reduce((sum, n) => sum + size(n), 0);
 // Room foregrounds and inventory pictures also wait until their room or inventory entry is shown.
-const later = /^(firing-house|gallery|ashways|hall-left|hall-right|hall-crate|tent-stool|mara-casual|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|tobi|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|work-trousers|courier-boots|tonic|gauntlet|regulator|bread|scarf|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
+const later = /^(mara-room|firing-house|gallery|ashways|hall-left|hall-right|hall-crate|tent-stool|mara-casual|mara-gauntlet|mara-medium(?:-gauntlet)?|oren|nell|tobi|scavenger|extra-[a-z]+|mount|card-atlas|hero|pressure-scavenger|regulator-gallery|courier-gauntlet|patched-coat|plain-carrier|light-armor|quick-harness|work-trousers|courier-boots|tonic|gauntlet|regulator|bread|scarf|cinzel-[\w-]+|cormorant-garamond-[\w-]+)-[\w-]{8}\./;
 // Action-ring images are inserted when a player opens the ring, never at the title screen.
 const actionIcons = new Set(MANIFEST.filter(e => e.kind === 'icon').map(e => e.file.split('/').pop().replace(/\.\w+$/, '')));
 const actionIcon = n => actionIcons.has(n.replace(/-[\w-]{8}\.\w+$/, ''));

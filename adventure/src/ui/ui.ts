@@ -221,7 +221,10 @@ export class Ui {
     const cont = $<HTMLButtonElement>('title-continue');
     cont.hidden = !canContinue;
     $('title-save').hidden = !canContinue;
-    (canContinue ? cont : $<HTMLButtonElement>('title-new')).focus({ preventScroll: true });
+    // Announce the title without selecting a menu entry. Tab then reaches the first visible action.
+    const heading = $('title-name');
+    heading.tabIndex = -1;
+    heading.focus({ preventScroll: true });
     this.setHover('');
     hideLabels(this);
   }
@@ -315,9 +318,6 @@ export class Ui {
     return chapterIntro(this, keys, day);
   }
 
-
-
-
   /** The chapter map: resolves with the chapter picked (ui/chapterMap.ts). */
   chapterMap(open: readonly Chapter[]): Promise<Chapter> {
     return showChapterMap(open);
@@ -327,6 +327,9 @@ export class Ui {
   openChapter(ch: Chapter, start: () => void): Promise<void> {
     return openChapter(this, ch, start);
   }
+
+
+
 
   /** Says something to screen readers only (focus moves on the canvas). */
   announce(text: string): void {
@@ -439,10 +442,10 @@ export class Ui {
   // --------------------------------------------------------- inventory ---
   renderInventory(): void {
     const state = this.host.getState();
+    renderSuspicion(state);
     this.syncScreenButtons();
     const selected = this.host.selectedItem();
     this.inventory.replaceChildren();
-    renderSuspicion(state);
     if (state.inventory.length === 0) {
       const empty = document.createElement('span');
       empty.className = 'empty';

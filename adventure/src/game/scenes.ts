@@ -1,4 +1,7 @@
 import Phaser from 'phaser';
+import titleCourtyard from '../../art/src/title/ironhaven-courtyard.webp';
+import titleFlag from '../../art/src/title/ironhaven-flag.png';
+import titleGauntlet from '../../art/src/title/title-gauntlet.png';
 import { conditionsHold } from '../engine/geometry';
 import { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
@@ -12,13 +15,13 @@ import { RoomSign, SIGN_IMAGES } from './sign';
 import { AshwaysSet, queueAshways } from './ashways';
 import type { Mood } from '../engine/crowd';
 import { chapter } from '../chapters';
+import { heroOf } from '../chapters/hero';
 import { crowdMoodFor, heroSheetFor, hushed, onEnter, type StoryContext } from '../engine/story';
 import { FOREGROUND_IMAGES, OUTLINES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import { outlineSheetKey } from './room/outline';
-import { heroOf } from '../chapters/hero';
 import type { Session } from './session';
 import { ART_SCALE, LOGICAL_H, LOGICAL_W } from '../ui/ui';
-import { DOORWAY_STEP, FACE_VECTOR, FADE_MS, NOTICE_DISTANCE, createSheetAnims, inFlight, particleConfig, queueSheet, whenSheet } from './room/shared';
+import { DOORWAY_STEP, FACE_VECTOR, FADE_MS, NOTICE_DISTANCE, createSheetAnims, inFlight, queueSheet, whenSheet } from './room/shared';
 import type { Target } from './room/shared';
 import { activateFocus, clearFocus, cycleFocus, drawHover, hotspotLabels, onPointerDown, onPointerMove, openItemRing } from './room/input';
 import { applyTint, tintScenery, updateLighting } from './room/lighting';
@@ -73,28 +76,63 @@ export class BootScene extends Phaser.Scene {
   }
 }
 
-/** The title screen: the kiln hall in low light, Mara, drifting embers and the DOM title menu. */
+// Independent foreground artifacts; later protagonists' objects can be placed without repainting the patio.
+const TITLE_ARTIFACTS = [{ key: 'title-gauntlet', image: titleGauntlet, x: 425, y: 313, width: 80 }];
+const TITLE_FLAG_ATLAS = { frames: Array.from({ length: 6 }, (_, index) => ({
+  filename: String(index), frame: { x: index % 3 * 64, y: Math.floor(index / 3) * 110, w: 64, h: 110 },
+})) };
+
+/** The empty Ironhaven courtyard, independently placed artifacts, flag and distant fire. */
 export class TitleScene extends Phaser.Scene {
+  private flag!: Phaser.GameObjects.Sprite;
+  private fireGlow!: Phaser.GameObjects.Image;
+  private fireTween!: Phaser.Tweens.Tween;
+  private reduced: boolean | null = null;
   constructor(private readonly session: Session) { super('title'); }
 
-  /** The kiln-hall backdrop, and the room the game will open in so it is ready behind the menu. */
+  /** The courtyard and layers, plus the room play opens in. Other rooms remain lazy. */
   preload(): void {
     const start = chapter().rooms[this.session.state.room].background;
-    for (const key of new Set(['room-mara', start])) if (!this.textures.exists(key)) this.load.image(key, ROOM_IMAGES[key]);
+    if (!this.textures.exists(start)) this.load.image(start, ROOM_IMAGES[start]);
+    if (!this.textures.exists('title-courtyard')) this.load.image('title-courtyard', titleCourtyard);
+    if (!this.textures.exists('title-flag')) this.load.atlas('title-flag', titleFlag, TITLE_FLAG_ATLAS);
+    for (const artifact of TITLE_ARTIFACTS) if (!this.textures.exists(artifact.key)) this.load.image(artifact.key, artifact.image);
   }
 
   create(): void {
     this.cameras.main.setZoom(ART_SCALE).centerOn(LOGICAL_W / 2, LOGICAL_H / 2);
-    this.add.image(0, 0, 'room-mara', '__BASE').setOrigin(0, 0).setScale(1 / ART_SCALE).setTint(0x6a5a58);
-    const mara = new Actor(this, 'hero', 'mara', 470, 352, 'left', 'stand', { farY: 0, farScale: 1.45, nearY: 360, nearScale: 1.45 });
-    mara.sprite.setTint(0xe8c8a8);
-    if (!settings().reducedMotion) {
-      this.add.particles(0, 120, 'fx-dot', particleConfig('embers', LOGICAL_W, 240)).setDepth(1000);
+    this.add.image(0, 0, 'title-courtyard').setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-100);
+    for (const artifact of TITLE_ARTIFACTS) {
+      this.add.image(artifact.x, artifact.y - 1, 'fx-shadow').setDisplaySize(artifact.width, 5).setAlpha(0.35);
+      const object = this.add.image(artifact.x, artifact.y, artifact.key).setOrigin(0.5, 1).setDepth(10);
+      object.setScale(artifact.width / object.width);
     }
+    if (!this.anims.exists('title-flag-wind')) this.anims.create({ key: 'title-flag-wind', frames: Array.from({ length: 6 }, (_, index) => ({ key: 'title-flag', frame: String(index) })), frameRate: 4, repeat: -1 });
+    this.flag = this.add.sprite(505, 74, 'title-flag', '0').setOrigin(0, 0).setScale(1 / ART_SCALE);
+    this.fireGlow = this.add.image(547, 216, 'fx-glow').setDisplaySize(30, 25).setTint(0xf5a14c).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.2);
+    this.fireTween = this.tweens.add({ targets: this.fireGlow, alpha: { from: 0.12, to: 0.28 }, duration: 710, yoyo: true, repeat: -1, ease: 'Sine.easeInOut', paused: true });
+    this.reduced = null;
+    this.update();
     this.cameras.main.fadeIn(600, 0, 0, 0);
     sound.ambience('kiln');
     sound.music('warm');
     this.session.onTitleShown();
+  }
+
+  update(): void {
+    if (!this.flag) return;
+    const reduced = settings().reducedMotion || globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+    if (this.reduced === reduced) return;
+    this.reduced = reduced;
+    if (reduced) {
+      this.flag.anims.stop();
+      this.flag.setFrame('0');
+      this.fireTween.pause();
+      this.fireGlow.setAlpha(0.2);
+    } else {
+      this.flag.play('title-flag-wind');
+      this.fireTween.resume();
+    }
   }
 }
 

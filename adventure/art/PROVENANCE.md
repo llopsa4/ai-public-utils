@@ -51,3 +51,7 @@ Chapter 2's art (placeholders, `art/src/ch2/` and two fight pictures in `art/src
 The interface font is Zilla Slab (Mozilla / Typotheque), SIL Open Font License 1.1, bundled from `@fontsource/zilla-slab` (Latin subset). The fight and gear screens use Cinzel and Cormorant Garamond (SIL Open Font License 1.1, from `@fontsource`), the same families as Kiln Courier.
 
 The fight and gear screens' code is Kiln Courier's (`FFCardGame/client/src`, same repository), imported directly rather than copied; the battle art they show is the WebPs in `art/src/kc` made by `art/kc.mjs` from `FFCardGame/assets`, except the fight backdrop `art/src/kc/regulator-gallery.webp` (also behind the gear screen): a picture of the regulator gallery generated with Google Gemini and supplied by the author, brought in with `npm run art:import` (fitted to 1280×720, snapped to the master palette with dithering) and marked final in `art/status.json`, so `art/kc.mjs` no longer overwrites it. The interface frames, rivets, toggles and icons are drawn in CSS and inline SVG. The room name boards are painted at runtime on a canvas (`src/game/sign.ts`).
+
+## Ironhaven title scene
+
+Original courtyard, banner animation frames and isolated gauntlet created with built-in image generation from the existing tent and Mara references, following the approved story brief. Sources and prompt notes: `art/sources/title/README.md`; reproducible runtime export: `python art/title-courtyard.py`. The clean background contains no foreground gauntlet; the game places each artifact separately.

@@ -270,6 +270,32 @@ dialog[open] {
   transform: translateY(-50%) rotate(45deg) scale(1);
 }
 
+/* The title's flame occupies the old diamond's rotated bounding box. */
+#title .menu-list button::before {
+  left: 0.357em;
+  width: 0.636em;
+  height: 0.636em;
+  background: url('../art/src/ui/menu-flame.gif') center / contain no-repeat;
+  box-shadow: none;
+  transform: translateY(-50%) scale(0.4);
+}
+
+#title .menu-list button:hover::before, #title .menu-list button:focus-visible::before {
+  transform: translateY(-50%) scale(1);
+}
+
+.reduce-motion #title .menu-list button::before {
+  background-image: url('../art/src/ui/menu-flame-still.png');
+  transition: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #title .menu-list button::before {
+    background-image: url('../art/src/ui/menu-flame-still.png');
+    transition: none;
+  }
+}
+
 .menu-sep {
   height: 1px;
   margin: 0.45em 1em;
@@ -286,6 +312,9 @@ dialog[open] {
   letter-spacing: 0.01em;
 }
 
+/* Programmatic entry focus announces the heading; menu focus remains visible after Tab. */
+#title-name:focus { outline: none; }
+
 #title .title-sub {
   font-family: "IM Fell English", Georgia, serif;
   font-style: normal;
@@ -300,6 +329,15 @@ dialog[open] {
   font-family: "IM Fell English", Georgia, serif;
   font-size: 1.45em;
   text-shadow: 0 2px 6px rgb(0 0 0 / 0.9);
+}
+
+@media (max-height: 600px) and (orientation: landscape) {
+  #title { gap: 0.25rem; max-width: 76%; font-size: clamp(11px, 3svh, 14px); }
+  #title h1 { font-size: 2.4em; line-height: 1.05; }
+  #title .title-sub { font-size: 1.1em; margin-bottom: 0.25em; }
+  #title .title-note { margin-top: 0.25em; }
+  #title:has(#title-continue:not([hidden])) .title-note { display: none; }
+  #title .menu-list { width: 15em; }
 }
 
 /* ------------------------------------------------------------ notebook --- */
