@@ -1,4 +1,4 @@
-# Cinderfold style bible
+# The Rift: Ashlands style bible
 
 Every picture in the game follows these rules, so pictures made one at a time (by Codex) sit together in one world. Each brief in `art/briefs/` repeats what it needs; `art/CODEX.md` says in what order to make them. `npm run art:import` enforces the measurable rules: size, the pixel grid, the palette and the outline.
 

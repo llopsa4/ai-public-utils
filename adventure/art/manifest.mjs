@@ -155,15 +155,17 @@ export const RIGS = {
     portrait: [320, 0, 340, 340], moods: ['neutral'],
     face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
   },
+  // Sigrid's stand-in until Codex's pack (art/CODEX.md, "Sigrid, a main character"): casual Mara's tall,
+  // fit body (no shield), recoloured officer's blue with pale hair.
   sigrid: {
-    dir: 'intro/', variant: { hue: 170, sat: 0.7, light: 0.6, skin: 1.05, headgear: { kind: 'kerchief', color: [214, 196, 140] } },
-    source: 'sources/characters/char-nell/body.png', armLayer: 'sources/characters/char-nell/arm.png', height: 226, walks: false,
-    armPivot: [390, 310],
-    hipY: 1010, splitX: 486, hips: { near: [400, 1010], far: [560, 1010] }, knees: { near: [390, 1320], far: [600, 1320] },
+    dir: 'intro/', variant: { hue: 205, sat: 0.8, light: 0.62, skin: 1.08, headgear: { kind: 'cap', color: [214, 196, 140] } },
+    source: 'sources/characters/char-mara-casual/body.png', armLayer: 'sources/characters/char-mara-casual/arm.png', height: 228, walks: false,
+    armPivot: [355, 290],
+    hipY: 820, splitX: 505, hips: { near: [450, 820], far: [560, 820] }, knees: { near: [428, 1095], far: [579, 1085] },
     fidgetLean: -3,
-    eyes: [{ x: 546, y: 173, rx: 16, ry: 7, skinAt: [546, 190] }, { x: 592, y: 175, rx: 9, ry: 7, skinAt: [594, 192] }],
-    portrait: [380, 20, 320, 320], moods: ['neutral'],
-    face: { mouth: { x: 573, y: 227, rx: 19, ry: 5 }, brows: [{ x0: 520, x1: 565, y0: 146, y1: 158, inner: 'right' }, { x0: 583, x1: 602, y0: 147, y1: 156, inner: 'left' }] },
+    eyes: [{ x: 528, y: 115, rx: 13, ry: 6, skinAt: [528, 128] }, { x: 562, y: 115, rx: 9, ry: 6, skinAt: [562, 128] }],
+    portrait: [370, 0, 360, 360], moods: ['neutral'],
+    face: { mouth: { x: 549, y: 155, rx: 13, ry: 4 }, brows: [{ x0: 509, x1: 549, y0: 93, y1: 105, inner: 'right' }, { x0: 557, x1: 571, y0: 96, y1: 105, inner: 'left' }] },
   },
 };
 
@@ -341,7 +343,7 @@ export const MANIFEST = [
     ['silas-clerk', "Silas as the tally clerk: hood up, a ledger held to his chest (only the head and arms differ from char-silas).", 220],
     ['guard', "Benn, the young night guard of Ironhaven's cells.", 214],
     ['warden', "Kell, the guardroom guard of Ironhaven's prison.", 230],
-    ['sigrid', 'Captain Sigrid of Ironhaven.', 226],
+    ['sigrid', 'Captain Sigrid of Ironhaven.', 228],
   ].flatMap(([id, subject, height]) => [
     { id: `char-${id}`, kind: 'character', file: `intro/characters/${id}.png`, sheet: `intro/characters/${id}.json`, anchor: 'bottom-centre', height, rig: id, chapter: 'intro', status: 'placeholder', generator: 'rig.mjs', subject },
     { id: `portrait-${id}`, kind: 'portrait', file: `intro/portraits/${id}.png`, anchor: 'none', moods: RIGS[id].moods ?? ['neutral', 'worried', 'angry'], chapter: 'intro', status: 'placeholder', generator: 'rig.mjs', subject: `${subject} Head and shoulders.` },
@@ -469,6 +471,93 @@ MANIFEST.push(
 );
 // The game's Silas sheets and portraits are built from that pack once it is in.
 for (const e of MANIFEST) if (/^(char|portrait)-silas(-|$)/.test(e.id)) e.builtFrom = SILAS_PACK;
+
+// ------------------------------------------ Sigrid, a main character: her articulated pack ---
+// The same two-phase pack as Silas's (art/LAYERED-RIG.md): Phase 1 the standing figure, approved by
+// the user; Phase 2 the eleven layers, joints, walk references, kneeling and lying. No disguises.
+/** A main character's pack request: Codex saves each piece in art/inbox/<pack>/. */
+function characterPack({ who, pack, chapter, cast, heightPx, sourcePx, pronoun, idle, gait, kneel, lie, notes = [] }) {
+  const P = pronoun === 'she' ? { they: 'she', their: 'her', them: 'her' } : { they: 'he', their: 'his', them: 'him' };
+  const headTop = 1500 - sourcePx;
+  const setup = `On a 1024x1536 transparent canvas (or flat magenta #FF00FF): soles on y 1500, about ${sourcePx} px from head to sole (head top near y ${headTop}), horizontally centred, the same scale as Mara's master.png. In the game ${P.they} stands ${heightPx} art px (Mara is 232).`;
+  const canvas = 'On a 1024x1536 transparent canvas (or flat magenta #FF00FF), exactly the canvas, scale and position of the approved master.png (soles on y 1500).';
+  const piece = (name, phase, subject, spec) => ({
+    id: `${who}-${name}`, kind: 'pack', pack, piece: name, phase, file: `../sources/characters/${pack}/${name}.png`, anchor: 'none',
+    chapter, status: 'requested', generator: 'Codex', subject, spec,
+  });
+  return [
+    piece('master', 1, `${cast} The walk master: standing in profile facing right, in the neutral stance the walk cycle starts from (feet slightly apart, both visible, arms hanging relaxed and a little away from the body so no arm hides the torso or the other arm). Only one eye shows (profile).`,
+      [setup, 'This drawing is the anatomy every later piece is cut from and must recompose exactly: draw clean, separate limbs (nothing overlapping that would be hard to split at the shoulders, elbows, hips, knees and ankles).', ...notes, `Match the format of Mara's: ${MARA_PACK}master.png.`]),
+    piece('idle', 1, `${cast} ${P.their[0].toUpperCase() + P.their.slice(1)} standing picture when still: the same figure, clothes and scale as the master, turned a little more towards us (a slight three-quarter view), both eyes visible. ${idle}`,
+      [setup, `Exactly the same scale and soles line as master.png. This is the picture the game shows whenever ${P.they} stands still, and ${P.their} dialogue portrait is cut from its head (so the face must be clear and well lit).`, `Match the format of Mara's: ${MARA_PACK}idle.png.`]),
+    ...Object.entries(LAYERS).map(([name, what]) => piece(name, 2, `${cast.split(' (')[0].split(',')[0]}'s ${what}, cut from the approved master.png.`,
+      [canvas, 'Exactly where it sits in master.png (same coordinates). Layer order, back to front: farUpperArm, farForearm, farThigh, farShin, farBoot, nearThigh, nearShin, nearBoot, torso, nearUpperArm, nearForearm. Stacked in that order on a neutral background the eleven layers must reproduce master.png pixel for pixel.',
+        'Extend the piece about 25 px past each joint with a rounded end drawn as the hidden part would look (cloth folding round an elbow or knee), lying under the neighbouring layer so the stack still matches master.png exactly, and the joint never shows a gap when it bends.',
+        ...notes, `Match Mara's layers: ${MARA_PACK}${name}.png.`])),
+    piece('joints', 2, 'The joint map: master.png with a small solid dot of a fixed colour at the centre of each joint: near and far shoulder, elbow, hip, knee and ankle.',
+      [canvas, `Use exactly the colours of ${MARA_PACK}joint-colours.json (copy the file beside it). Each dot about 12 px across, exactly on the joint's pivot.`]),
+    piece('walk-contact', 2, `${cast} A walk reference, the contact pose: the front heel just touching the floor, the back toe about to lift, the arms swung opposite the legs. ${gait}`,
+      [canvas, 'Drawn from the approved master (same face, clothes and scale); it guides the rig, it is not shown in the game.', `Match ${MARA_PACK}walk-contact.png.`]),
+    piece('walk-passing', 2, `${cast} A walk reference, the passing pose: one leg straight under the body, the other passing it with the knee bent and the foot lifted. ${gait}`,
+      [canvas, 'Drawn from the approved master; it guides the rig, it is not shown in the game.', `Match ${MARA_PACK}walk-passing.png.`]),
+    piece('kneel', 2, `${cast} ${kneel}`, ['On a 1024x1536 transparent canvas (or flat magenta), the same scale as master.png, knee and foot on y 1500.', `Match ${MARA_PACK}kneel.png.`]),
+    piece('lie', 2, `${cast} ${lie}`, ['On a 1536x1024 landscape transparent canvas (or flat magenta), the same scale as the master, lying on y 990.', `Match ${MARA_PACK}lie.png.`]),
+  ];
+}
+MANIFEST.push(...characterPack({
+  who: 'sigrid', pack: 'sigrid-layered', chapter: 'intro', cast: CAST.sigrid, heightPx: 228, sourcePx: 1435, pronoun: 'she',
+  idle: 'Weight even, back straight, her near hand resting easily on the sword hilt, the other relaxed at her side; a level, assessing look and the faintest composed half-smile, the mouth closed.',
+  gait: "Her walk: a soldier's walk, measured and upright, long confident strides, shoulders square, the arms swinging little and in rhythm; nothing wasted. (Mara walks like a courier on a job; Sigrid walks like the person who gives the job.)",
+  kneel: 'The whole figure down on one knee, facing right, one hand on the sword hilt, looking at something low on the ground (tracks, a fallen thing).',
+  lie: 'The whole figure lying on her back on the floor, head to the right, eyes closed, the sword still in its scabbard at her side.',
+  notes: ["The sword: its scabbard hangs from her belt at the left hip, hilt forward, and belongs to the torso layer: keep it clear of the legs below mid-thigh, so the legs can swing behind and in front of it. Her coat ends at mid-thigh, split at the sides: draw the legs fully separate below it."],
+}));
+for (const e of MANIFEST) if (/^(char|portrait)-sigrid$/.test(e.id)) e.builtFrom = 'sigrid-layered';
+
+// ---------------------------------------- two-sided movement: Mara facing left, like Sigrid ---
+// Sigrid's pack was drawn twice, facing right and facing left (art/inbox/sigrid-layered/left/), so
+// what she wears on one side of her body stays on that side. The game used to mirror the right-facing
+// art to face left, which moves Mara's gauntlet from his right arm to his left, and his scarf end and
+// satchel to the wrong shoulder and hip. Each of Mara's three outfits gets a left-facing set drawn on
+// its own: first the three standing masters and idles (the user approves them), then the pieces.
+const LEFT_FILES = {
+  master: 'The left-facing walk master: standing in profile facing LEFT, in the neutral stance the walk cycle starts from (feet slightly apart, both visible, arms hanging relaxed and a little away from the body). Only one eye shows (profile).',
+  idle: 'The left-facing standing picture when still: turned a little more towards us (a slight three-quarter view facing left), both eyes visible, the same relaxed pose as the right-facing idle.png of this outfit.',
+  ...Object.fromEntries(Object.entries(LAYERS).map(([name, what]) => [name, `${what[0].toUpperCase() + what.slice(1)}, cut from the approved left/master.png. "Near" is now the side nearest the viewer when facing left (Mara's own LEFT side); "far" is his right side.`])),
+  joints: 'The joint map of left/master.png: a small solid dot of a fixed colour at the centre of each joint (near and far shoulder, elbow, hip, knee and ankle), near and far as seen facing left.',
+  'walk-contact': 'A left-facing walk reference, the contact pose (front heel touching, back toe about to lift, arms swung opposite the legs), the same stride as the right-facing walk-contact.png.',
+  'walk-passing': 'A left-facing walk reference, the passing pose (one leg straight under the body, the other passing it with the knee bent), the same stride as the right-facing walk-passing.png.',
+  kneel: 'The whole figure down on one knee, facing LEFT, looking at something low: the left-facing counterpart of kneel.png.',
+  lie: 'The whole figure lying on his back, head to the LEFT, eyes closed: the left-facing counterpart of lie.png.',
+};
+const MARA_OUTFITS = [
+  ['mara-light-layered', 'light armour', "His mother's pressure gauntlet is on his RIGHT forearm and hand, so facing left it is on the FAR side: behind his body, the big ceramic fist partly hidden by his torso and hips, swinging behind him as he walks (in the walk it belongs to the far forearm layer). His near (left) forearm is his own: the ceramic forearm plate over leather, a bare hand. The ochre scarf's long end, thrown over his LEFT shoulder, is now on the NEAR side, hanging down over his near shoulder and back; the satchel on his LEFT hip is on the NEAR side, in front of the near hip (part of the torso layer: keep it above mid-thigh so the near leg can swing under it). The ember cell glass on the back of the gauntlet's hand faces away from us on this side: show it only where it would truly be seen."],
+  ['mara-medium-layered', 'medium armour', "The same rules as the light armour, in the medium (layered ceramic) armour of this pack's master.png: the gauntlet on his RIGHT arm is on the FAR side, behind his body; the scarf end over his LEFT shoulder and the satchel on his LEFT hip are on the NEAR side (the satchel part of the torso layer, above mid-thigh)."],
+  ['mara-casual-layered', 'casual clothes', "No gauntlet, armour or satchel in this outfit; it is nearly symmetric, but draw it facing left all the same (light, hair and folds as seen from his left side). The thin leather cord bracelet is on his RIGHT wrist, so facing left it is on the FAR hand; the scarf hangs loose round his neck."],
+]
+const left = (pack, outfit, sides, name, phase, text) => ({
+  id: `${pack.replace('-layered', '')}-left-${name}`, kind: 'pack', pack, piece: `left/${name}`, phase, file: `../sources/characters/${pack}/left/${name}.png`,
+  anchor: 'none', chapter: 'game', status: 'requested', generator: 'Codex', twoSided: true,
+  subject: `${CAST.mara} In his ${outfit} (exactly the outfit of this pack's right-facing master.png), now drawn FACING LEFT. ${text} ${sides}`,
+  spec: [
+    name === 'lie' ? 'On a 1536x1024 landscape transparent canvas (or flat magenta), the same scale as the right-facing lie.png, lying on y 990, head to the LEFT.'
+      : `On a 1024x1536 transparent canvas (or flat magenta #FF00FF), the same scale, height and soles line (y 1500) as this pack's right-facing master.png${name === 'master' || name === 'idle' ? '' : ', and exactly the canvas and position of the approved left/master.png'}.`,
+    'Draw it FACING LEFT as its own drawing: never a horizontal mirror of the right-facing picture. Whatever he wears on one side of his body stays on that side of his body (the prompt says which side each thing is on).',
+    ...(LAYERS[name] ? ['Stacked in the usual order (farUpperArm, farForearm, farThigh, farShin, farBoot, nearThigh, nearShin, nearBoot, torso, nearUpperArm, nearForearm) the eleven left-facing layers must reproduce left/master.png pixel for pixel; extend each piece about 25 px past its joints under the neighbouring layer, as in the right-facing set.'] : []),
+    `Save it in the pack's left/ folder: art/inbox/${pack}/left/${name}.png. Sigrid's two-sided pack (art/inbox/sigrid-layered/ and its left/ folder) shows the format.`,
+  ],
+});
+for (const [pack, outfit, sides] of MARA_OUTFITS) {
+  for (const [name, text] of Object.entries(LEFT_FILES)) MANIFEST.push(left(pack, outfit, sides, name, name === 'master' || name === 'idle' ? 1 : 2, text));
+}
+
+// Silas's standing picture, redrawn more relaxed (no hand in the air).
+MANIFEST.push({
+  id: 'silas-idle-relaxed', kind: 'pack', pack: 'silas-layered', piece: 'idle', phase: 1, redo: true,
+  file: '../sources/characters/silas-layered/idle-relaxed.png', anchor: 'none', chapter: 'intro', status: 'requested', generator: 'Codex',
+  subject: `${CAST.silas} A redraw of his standing picture (idle.png), more relaxed: the same figure, clothes, scale and soles line, turned a little towards us (a slight three-quarter view facing right), both eyes visible. No hand in the air: both arms down and loose, or one thumb hooked in his waistcoat pocket; his weight easy on one leg, the shoulders loose, the head only slightly cocked, the same sly half-smile with the mouth closed. Still, unhurried, at ease: a man waiting for his moment.`,
+  spec: ['File: art/inbox/silas-layered/idle-relaxed.png.', 'On the 1024x1536 canvas of the current idle.png, the same scale and soles line (y 1498); the game shows it whenever he stands still and cuts his dialogue portrait from its head.', 'Keep the approved design exactly (face, hair, clothes, the brass frame at the jaw); only the pose changes.'],
+});
 
 // Extras for Silas: the Read icon (sharpened), the suspicion eye, Nessa's mask frame in detail.
 const read = MANIFEST.find(e => e.id === 'icon-read');

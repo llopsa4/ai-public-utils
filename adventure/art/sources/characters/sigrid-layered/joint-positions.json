@@ -1,0 +1,64 @@
+{
+  "direction": "right",
+  "canvas": [
+    1024,
+    1536
+  ],
+  "baseline": 1499,
+  "artHeight": 228,
+  "order": [
+    "farUpperArm",
+    "farForearm",
+    "farThigh",
+    "farShin",
+    "farBoot",
+    "nearThigh",
+    "nearShin",
+    "nearBoot",
+    "torso",
+    "nearUpperArm",
+    "nearForearm"
+  ],
+  "joints": {
+    "nearShoulder": [
+      481,
+      342
+    ],
+    "nearElbow": [
+      491,
+      553
+    ],
+    "farShoulder": [
+      565,
+      342
+    ],
+    "farElbow": [
+      576,
+      558
+    ],
+    "nearHip": [
+      490,
+      790
+    ],
+    "farHip": [
+      534,
+      785
+    ],
+    "nearKnee": [
+      470,
+      1083
+    ],
+    "farKnee": [
+      470,
+      1055
+    ],
+    "nearAnkle": [
+      455,
+      1401
+    ],
+    "farAnkle": [
+      467,
+      1362
+    ]
+  }
+}

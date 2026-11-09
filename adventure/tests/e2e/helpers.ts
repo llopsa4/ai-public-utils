@@ -109,14 +109,37 @@ export async function solveRegulator(page: Page): Promise<void> {
   await page.locator('#regulator-release').click();
 }
 
-/** Title screen → New game → skips the opening, and waits for the first room. */
-export async function startNewGame(page: Page, tap = false): Promise<void> {
+/** Title screen → New game → skips the intro's opening, and waits for Silas's cell. */
+export async function startIntro(page: Page, tap = false): Promise<void> {
   const button = page.getByRole('button', { name: 'New game' });
   if (tap) await button.tap(); else await button.click();
   const skip = page.locator('#intro-skip');
-  await expect(skip).toBeVisible();
+  await expect(skip).toBeVisible({ timeout: 30_000 });
   if (tap) await skip.tap(); else await skip.click();
   await idle(page);
+}
+
+/**
+ * The chapter map as the intro's end opens it (session.chooseNextChapter), then Mara's chapter 1
+ * picked on it: its opening (skipped) and his tent. The intro itself is played in intro.spec.ts.
+ */
+export async function openMaraFromMap(page: Page, tap = false, skipOpening = true): Promise<void> {
+  await page.evaluate(() => { void (window as any).adventure.session.chooseNextChapter(); });
+  const pin = page.locator('#chapter-map-list button', { hasText: 'Mara' });
+  await expect(pin).toBeVisible({ timeout: 30_000 });
+  if (tap) await pin.tap(); else await pin.click();
+  if (!skipOpening) return;
+  const skip = page.locator('#intro-skip');
+  await expect(skip).toBeVisible();
+  if (tap) await skip.tap(); else await skip.click();
+  await expect.poll(() => page.evaluate(() => (window as any).adventure.session.state.chapter), { timeout: 30_000 }).toBe('ch1');
+  await idle(page);
+}
+
+/** Title screen → New game → the intro → the chapter map → Mara's chapter 1, in his tent. */
+export async function startNewGame(page: Page, tap = false): Promise<void> {
+  await startIntro(page, tap);
+  await openMaraFromMap(page, tap);
 }
 
 /**

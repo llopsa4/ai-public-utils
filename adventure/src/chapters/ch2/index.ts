@@ -2,7 +2,7 @@ import type { Chapter } from '../types';
 import { ENCOUNTERS, POOLS, REWARDS, SPARES } from './combat';
 import { DIALOGUES } from './dialogue';
 import { FLAGS, ITEMS, KEPT_ITEMS, MET_FLAGS, SECRET_FLAGS, START_ITEMS } from './flags';
-import { ACTOR_VERBS, ITEM_VERBS, interact } from './interactions';
+import { ACTOR_VERBS, ITEM_VERBS, RULES, interact } from './interactions';
 import { OBJECTIVE_KEYS, objectives } from './objectives';
 import { ROOMS, START_ENTRY, START_ROOM } from './rooms';
 import { STORY } from './story';
@@ -29,6 +29,7 @@ export const CH2: Chapter = {
   secretFlags: SECRET_FLAGS,
   metFlags: MET_FLAGS,
   interact,
+  rules: RULES,
   actorVerbs: ACTOR_VERBS,
   itemVerbs: ITEM_VERBS,
   interactionKeys: Object.keys(strings).filter(k => k.startsWith('line2.')),

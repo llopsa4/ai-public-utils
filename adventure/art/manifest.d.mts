@@ -59,6 +59,10 @@ export interface ArtEntry {
   spec?: string[];
   /** A game sheet or portrait built from a character's pack: nothing to make for it alone. */
   builtFrom?: string;
+  /** A pack piece of a character's left-facing set (drawn on its own, never mirrored). */
+  twoSided?: boolean;
+  /** A redraw of a piece already delivered (done only once the importer marks it final). */
+  redo?: boolean;
 }
 
 export declare const MANIFEST: ArtEntry[];

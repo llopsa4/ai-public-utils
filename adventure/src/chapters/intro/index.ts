@@ -1,7 +1,7 @@
 import type { Chapter } from '../types';
 import { DIALOGUES } from './dialogue';
 import { FLAGS, ITEMS, KEPT_ITEMS, MET_FLAGS, SECRET_FLAGS } from './flags';
-import { ACTOR_VERBS, ITEM_VERBS, interact } from './interactions';
+import { ACTOR_VERBS, ITEM_VERBS, RULES, interact } from './interactions';
 import { OBJECTIVE_KEYS, objectives, reflections } from './objectives';
 import { ROOMS, START_ENTRY, START_ROOM } from './rooms';
 import { STORY } from './story';
@@ -23,8 +23,9 @@ export const INTRO: Chapter = {
     sigrid: { pose: 'stand', face: 'left' },
   },
   startItems: [],
-  end: { title: 'intro.title', text: 'end.intro.text' },
-  intro: ['intro.title', 'intro.1', 'intro.2'],
+  end: { title: 'introI.title', text: 'end.intro.text' },
+  // Its own keys: the game's intro.1..4 are Mara's chapter 1 opening.
+  intro: ['introI.title', 'introI.1', 'introI.2'],
   rooms: ROOMS,
   flags: FLAGS,
   items: ITEMS,
@@ -32,6 +33,8 @@ export const INTRO: Chapter = {
   secretFlags: SECRET_FLAGS,
   metFlags: MET_FLAGS,
   interact,
+  rules: RULES,
+  flagRooms: { harrowMade: 'cell', clerkMade: 'guardroom' },
   actorVerbs: ACTOR_VERBS,
   itemVerbs: ITEM_VERBS,
   interactionKeys: Object.keys(strings).filter(k => k.startsWith('line.i.')),

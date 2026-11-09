@@ -3,7 +3,7 @@ import { ENCOUNTERS, LESSON_PROMPTS, OREN_SPARES, REWARDS } from './combat';
 import { CROWDS, EXTRAS } from './crowd';
 import { DIALOGUES } from './dialogue';
 import { FLAGS, ITEMS, KEPT_ITEMS, MET_FLAGS, SECRET_FLAGS } from './flags';
-import { ACTOR_VERBS, INTERACTION_KEYS, ITEM_VERBS, interact } from './interactions';
+import { ACTOR_VERBS, INTERACTION_KEYS, ITEM_VERBS, RULES, interact } from './interactions';
 import { LINE_MOODS } from './moods';
 import { OBJECTIVE_KEYS, objectives } from './objectives';
 import { ROOMS, START_ENTRY, START_ROOM } from './rooms';
@@ -25,6 +25,8 @@ export const CH1: Chapter = {
   secretFlags: SECRET_FLAGS,
   metFlags: MET_FLAGS,
   interact,
+  rules: RULES,
+  flagRooms: { boltLeft: 'gallery', boltRight: 'gallery', pressureBled: 'gallery', ringReleased: 'gallery', galleryQuiet: 'gallery', fought: 'gallery', gearChecked: 'gallery', farewellReminded: 'firingHouse', ashwaysRetry: 'ashways', ashwaysRewarded: 'ashways', ashwaysConfronted: 'ashways', metMerchant: 'ashways' },
   actorVerbs: ACTOR_VERBS,
   itemVerbs: ITEM_VERBS,
   interactionKeys: INTERACTION_KEYS,

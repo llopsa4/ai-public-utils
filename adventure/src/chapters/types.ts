@@ -5,6 +5,7 @@ import type { CrowdDef, ExtraDef } from '../engine/crowd';
 import type { ActorId, ActorState, Command, GameState, NpcId, RoomDef, Verb } from '../engine/types';
 import type { Mood as MusicMood } from '../game/assets';
 import type { StoryRules } from '../engine/story';
+import type { Rule } from '../engine/rules';
 
 export interface Objective { key: string; done: boolean; optional: boolean }
 
@@ -55,6 +56,10 @@ export interface Chapter {
   secretFlags: readonly string[];
   /** Background people Mara has talked to (counted in the notebook). */
   metFlags: readonly string[];
+  /** The chapter's click rules (src/engine/rules.ts), for tools (the debug panel's flags by room). */
+  rules?: readonly Rule[];
+  /** Flags set by game code rather than click rules (a puzzle, a fight, a set piece): their room. */
+  flagRooms?: Readonly<Record<string, string>>;
   /** What a verb, or an item, does to a target: commands for the scene to play. */
   interact(state: GameState, verb: Verb, target: string, item?: string): Command[];
   actorVerbs: Partial<Record<ActorId, Verb[]>>;

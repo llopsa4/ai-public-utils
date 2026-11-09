@@ -76,6 +76,13 @@ test('the debug panel jumps to a room and sets flags and items', { tag: ["@focus
   await idle(page);
   expect(await page.evaluate(() => (window as any).adventure.session.state.room)).toBe('firingHouse');
 
+  // Only the firing house's flags are listed (Oren's are the gallery's), until All flags is ticked.
+  await expect(panel.getByRole('heading', { name: /Flags: this room \(firingHouse\)/ })).toBeVisible();
+  await expect(panel.getByLabel('nellFed', { exact: true })).toBeVisible();
+  await expect(panel.getByLabel('metOren', { exact: true })).toHaveCount(0);
+  await panel.getByLabel(/^All flags/).check();
+  await expect(panel.getByLabel('metOren', { exact: true })).toBeVisible();
+  await panel.getByLabel(/^All flags/).uncheck();
   await panel.getByLabel('alarm', { exact: true }).check();
   await panel.getByLabel('gauntlet', { exact: true }).check();
   await idle(page);

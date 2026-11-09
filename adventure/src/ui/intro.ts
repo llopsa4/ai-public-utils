@@ -2,20 +2,21 @@
 import { t } from '../engine/i18n';
 import { lineDuration, settings } from '../engine/settings';
 import { $, type Ui } from './ui';
-import { CHAPTERS, FIRST_CHAPTER } from '../chapters';
+import { STORY_START, loadChapter } from '../chapters';
 import { dayLine } from './journalData';
 import type { Chapter } from '../chapters/types';
 
 /**
- * A new story: the screen fades slowly to black, a few lines of context appear one after
- * another (click, Enter or Space for the next, Skip or Esc for all), then the game starts and
- * its first room fades in slowly.
+ * A new story: the screen fades slowly to black, the intro's opening lines appear one after
+ * another (click, Enter or Space for the next, Skip or Esc for all), then Silas's cell fades in
+ * slowly. The intro ends on the chapter map, where Mara's chapter 1 (with its own opening) starts.
  */
 export async function newStory(ui: Ui): Promise<void> {
   if (ui.introActive) return;
   ui.introActive = true;
   ui.setHover('');
-  await playIntro(undefined, undefined, dayLine(CHAPTERS[FIRST_CHAPTER]));
+  const first = await loadChapter(STORY_START, { art: true });
+  await playIntro(first.intro?.slice(1), first.intro?.[0], dayLine(first));
   ui.host.startStory();
   ui.introActive = false;
   fadeIntroAway();

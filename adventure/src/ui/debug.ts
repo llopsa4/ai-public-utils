@@ -8,6 +8,7 @@ import { equip } from '../engine/kit';
 import { settings, updateSettings } from '../engine/settings';
 import { applyCommand, newGame } from '../engine/state';
 import type { GameState } from '../engine/types';
+import { roomFlags } from '../engine/roomFlags';
 import type { Session } from '../game/session';
 
 const CSS = `
@@ -36,6 +37,12 @@ export function mountDebugPanel(session: Session): void {
     panel.hidden = !panel.hidden;
     if (!panel.hidden) render();
   });
+  // Keep up with the game while open: another chapter or room, or flags set by playing.
+  let shown = '';
+  const key = () => { const s = session.state; return `${s.chapter}|${s.room}|${Object.keys(s.flags).filter(f => s.flags[f]).sort().join(',')}`; };
+  window.setInterval(() => { if (!panel.hidden && key() !== shown) render(); }, 500);
+  /** The flags list: this room's (default) or the whole chapter's. */
+  let allFlags = false;
 
   /** Plays on from a changed copy of the game (the room restarts). */
   const change = (edit: (s: GameState) => void) => {
@@ -58,6 +65,7 @@ export function mountDebugPanel(session: Session): void {
 
   function render(): void {
     if (panel.hidden) return;
+    shown = key();
     const s = session.state;
     const c = chapter();
     panel.replaceChildren();
@@ -87,9 +95,13 @@ export function mountDebugPanel(session: Session): void {
     });
     panel.append(el('div', { className: 'row' }, chapterSelect, roomSelect, button('New game', () => session.replaceState(newGame(s.chapter)))));
 
-    panel.append(el('h2', { textContent: 'Flags' }));
+    // Flags: those of the room shown (src/engine/roomFlags.ts), or all the chapter's.
+    const here = roomFlags(c, s.room);
+    panel.append(el('h2', { textContent: allFlags ? `Flags: all of ${s.chapter}` : `Flags: this room (${s.room})` }));
+    panel.append(el('div', { className: 'row' }, check(`All flags (${c.flags.length})`, allFlags, on => { allFlags = on; render(); })));
     const flags = el('div', { className: 'row' });
-    for (const f of c.flags) flags.append(check(f, !!s.flags[f], on => change(st => { if (on) st.flags[f] = true; else delete st.flags[f]; })));
+    for (const f of allFlags ? c.flags : here) flags.append(check(f, !!s.flags[f], on => change(st => { if (on) st.flags[f] = true; else delete st.flags[f]; })));
+    if (!allFlags && !here.length) flags.append(el('span', { textContent: 'No story flags in this room.' }));
     panel.append(flags);
 
     panel.append(el('h2', { textContent: 'Mara’s outfit' }));

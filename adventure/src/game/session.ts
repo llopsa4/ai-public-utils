@@ -1,6 +1,6 @@
 import { readAutosave, writeAutosave } from '../engine/autosave';
 import { onSettingsChange, settings } from '../engine/settings';
-import { loadChapter, setChapter } from '../chapters';
+import { STORY_START, loadChapter, setChapter } from '../chapters';
 import { openChapters } from '../engine/unlock';
 import { newGame } from '../engine/state';
 import type { GameState, Point } from '../engine/types';
@@ -48,7 +48,7 @@ export class Session {
       replaceState: state => this.replaceState(state),
       hotspotLabels: () => (this.onTitle ? [] : this.scene?.hotspotLabels() ?? []),
       newGame,
-      startStory: () => { this.slowFadeIn = true; this.replaceState(newGame()); },
+      startStory: () => { this.slowFadeIn = true; this.replaceState(newGame(STORY_START)); },
       autosave: () => this.autosave(),
       refreshHeroAppearance: () => this.scene?.refreshObjects(),
       continueGame: () => this.continueGame(),

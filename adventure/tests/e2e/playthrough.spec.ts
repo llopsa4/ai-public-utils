@@ -1,6 +1,6 @@
 import { gzipSync } from 'node:zlib';
 import { expect, test } from '@playwright/test';
-import { act, fightStep, finishDialogue, fixtureReady, holdCrowd, idle, open, state, startNewGame } from './helpers';
+import { act, fightStep, finishDialogue, fixtureReady, holdCrowd, idle, open, openMaraFromMap, startIntro, state, startNewGame } from './helpers';
 
 test('Tobi is a child by the hearth, talks about his drawings and gives his scarf farewell once', { tag: ["@focused","@story","@art","@saves"] }, async ({ page }, info) => {
   const errors: string[] = [];
@@ -72,16 +72,21 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   console.log(`First load: ${(raw / 1048576).toFixed(2)} MB raw, ${(wire / 1048576).toFixed(2)} MB as served by GitHub Pages`);
   expect(wire, 'first load as served').toBeLessThan(1.5 * 1048576);
 
-  // A real click on the title screen, then a real click on the floor.
-  await page.getByRole('button', { name: 'New game' }).click();
+  // A real click on the title screen: New game opens on the intro (Silas, played in intro.spec.ts);
+  // the chapter map it ends on starts Mara's chapter 1 with its opening.
+  await startIntro(page);
+  await openMaraFromMap(page, false, false);
   // The opening: lines of context over black, one per click, then the first room fades in.
   const intro = page.locator('#intro');
   await expect(intro).toBeVisible();
-  await expect(page.locator('#intro-text p')).toHaveCount(1, { timeout: 10_000 });
-  await expect(page.locator('#intro-text p').first()).toContainText('ash and wind');
+  // The day line heads the first line; then one story line per click.
+  const lines = page.locator('#intro-text p:not(.intro-day)');
+  await expect(page.locator('#intro-text p.intro-day')).toHaveText('Day 1 · Morning · Cinderfold', { timeout: 10_000 });
+  await expect(lines).toHaveCount(1, { timeout: 10_000 });
+  await expect(lines.first()).toContainText('ash and wind');
   for (let n = 2; n <= 4; n++) {
     await intro.click({ position: { x: 40, y: 40 } });
-    await expect(page.locator('#intro-text p')).toHaveCount(n);
+    await expect(lines).toHaveCount(n);
   }
   await expect(page.locator('#intro-more')).toHaveClass(/in/, { timeout: 10_000 });
   await intro.click({ position: { x: 40, y: 40 } });

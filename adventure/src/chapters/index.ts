@@ -15,6 +15,9 @@ const LOADERS: Record<string, () => Promise<Chapter>> = {
   ch2: () => import('./ch2').then(m => m.CH2),
 };
 
+/** Where New game starts: the intro (Silas, Day 3 night), which ends on the chapter map. */
+export const STORY_START = 'intro';
+
 /**
  * Every chapter id, in the order of play (loaded or not): the intro (Silas, a flash-forward to
  * Day 3), then Mara's chapters. The diary sorts entries by day, whatever the order of play.
@@ -62,9 +65,16 @@ export async function loadAllChapters(): Promise<Chapter[]> {
 
 /** Loads the chapter a save is in, before it is read (a save of a later chapter needs it). */
 export async function loadChapterOf(saveText: string | null): Promise<void> {
-  let id: unknown;
-  try { id = saveText ? JSON.parse(saveText)?.state?.chapter : undefined; } catch { return; }
-  if (typeof id === 'string' && Object.hasOwn(LOADERS, id)) await loadChapter(id, { art: true }).catch(() => undefined);
+  let state: { chapter?: unknown; reached?: unknown } | undefined;
+  try { state = saveText ? JSON.parse(saveText)?.state : undefined; } catch { return; }
+  const id = state?.chapter;
+  // Every chapter the save has reached (the intro before Mara's chapter 1) must be known to read it;
+  // only the one being played needs its art.
+  const reached = Array.isArray(state?.reached) ? state.reached.filter((r): r is string => typeof r === 'string' && Object.hasOwn(LOADERS, r) && r !== id) : [];
+  await Promise.all([
+    ...(typeof id === 'string' && Object.hasOwn(LOADERS, id) ? [loadChapter(id, { art: true })] : []),
+    ...reached.map(r => loadChapter(r)),
+  ]).catch(() => undefined);
 }
 
 /** A room of the active chapter. */

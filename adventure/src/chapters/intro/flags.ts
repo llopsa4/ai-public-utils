@@ -5,10 +5,10 @@ export const FLAGS = [
   // what Silas finds and reads
   'tookNail', 'tookStrip', 'gotFrame', 'sawHarrow', 'readGuard', 'tookPlaster', 'harrowMade', 'wearingHarrow',
   // the guard, as Sergeant Harrow
-  'guardAwake', 'gSus1', 'gSus2', 'gSus3', 'caughtGuard', 'gotKeys', 'guardGone', 'harrowCracked', 'cellOpen',
+  'guardAwake', 'gSus1', 'gSus2', 'gSus3', 'gotKeys', 'guardGone', 'harrowCracked', 'cellOpen',
   // the guardroom
   'sawWarden', 'readWarden', 'tookHood', 'tookLedger', 'clerkMade', 'wearingClerk',
-  'wSus1', 'wSus2', 'wSus3', 'caughtWarden', 'wardenBusy', 'grateOpen',
+  'wSus1', 'wSus2', 'wSus3', 'wardenBusy', 'grateOpen',
   // the outer door
   'metSigrid',
 ] as const;
