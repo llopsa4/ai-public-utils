@@ -4,7 +4,7 @@ Status: **final** · object · chapter intro · in the game as `art/src/intro/ob
 
 ## What the game does with it
 
-Stands in the room `cell` on its foot point (808, 668) (bottom centre of the picture); it shows "open" or "closed" as the story moves on.
+Stands in the room `cell` on its foot point (736, 668) (bottom centre of the picture); it shows "open" or "closed" as the story moves on.
 States: closed, open: one picture each, identical framing; only what changes between states differs.
 
 ## Technical

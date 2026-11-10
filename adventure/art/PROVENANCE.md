@@ -55,3 +55,11 @@ The fight and gear screens' code is Kiln Courier's (`FFCardGame/client/src`, sam
 ## Ironhaven title scene
 
 Original courtyard, banner animation frames and isolated gauntlet created with built-in image generation from the existing tent and Mara references, following the approved story brief. Sources and prompt notes: `art/sources/title/README.md`; reproducible runtime export: `python art/title-courtyard.py`. The clean background contains no foreground gauntlet; the game places each artifact separately.
+
+## The intro, November 2026
+
+- **Benn's and Kell's worried and angry faces** (`art/sources/characters/char-guard/faces/`, `char-warden/faces/`): drawn by Codex over the neutral portrait crops (`art/inbox/done/guard-faces/`, with its `prepare.mjs` and `validation.json`).
+- **`intro/objects/outer-lantern.png`**: cut by Claude from Codex's outer-door painting, to hang a second lantern mid-wall.
+- **Placeholders drawn by Claude**, until Codex's paintings (`art/CODEX.md`): `intro/objects/window-stub.png` and `intro/items/wax.png`.
+- **`intro/objects/stairs-light.png`**: a soft light effect by Claude, not palette art.
+- **`intro/objects/cell-gate.png`**: Codex's cell door, with both halves mirrored by Claude so it hinges on the left. The original is kept in `art/inbox/done/cell-door-small/`.

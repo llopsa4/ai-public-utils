@@ -86,7 +86,7 @@ Claude's rigging work. Test commands and results are recorded in `review/checks.
 Reproduce source preparation from repository root:
 
 ```powershell
-python adventure/art/inbox/sigrid-layered/prepare-pack.py
+python adventure/art/inbox/done/sigrid-layered/prepare-pack.py
 ```
 
 Prompt set: `PROMPTS.md`. No further artwork approval gate was inferred after the

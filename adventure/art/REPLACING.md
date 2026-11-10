@@ -45,23 +45,28 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 | `plate` | Tin plate | 316, 600, 60×28 | (340, 636) |
 | `frame` | Mask frame | 968, 532, 44×24 | (680, 600) |
 | `roster` | Harrow's portrait | 1054, 230, 76×100 | — |
-| `cloak` | Hooded cloak | 914, 190, 92×224 | (680, 600) |
+| `cloak` | Hooded cloak | 914, 190, 92×224 | (964, 668) |
 | `candle` | Candle | 932, 492, 28×68 | — |
 | `table` | Guard's table | 874, 544, 212×110 | (680, 600) |
 | `window` | Barred window | 280, 124, 120×124 | (340, 580) |
-| `wall` | Clay chip | 488, 244, 48×40 | (512, 576) |
+| `stub` | Candle stub | 352, 224, 32×32 | (368, 580) |
+| `blanket` | Grey blanket | 96, 472, 208×92 | (190, 600) |
 | `cot` | Straw cot | 50, 470, 280×114 | (190, 600) |
 | `bucket` | Bucket | 594, 510, 68×76 | (580, 612) |
-| `cellDoor` | Cell door | 728, 324, 96×344 | (680, 600) |
+| `cellDoor` | Cell door | 720, 324, 96×344 | (680, 600) |
+| `cellStairs` | Stairs up | 1108, 644, 172×48 | (1228, 672) |
 
 - Object `intro/objects/floor-plate` (60×24, tags idle (1)): foot point (346, 624). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Object `intro/objects/window-plate` (44×28, tags idle (1)): foot point (340, 246). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/stairs-light` (200×52, tags idle (1)): foot point (1180, 694). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/window-stub` (12×16, tags idle (1)): foot point (372, 254). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Object `intro/objects/table-frame` (44×24, tags idle (1)): foot point (990, 556). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Object `intro/objects/cell-gate` (320×344, tags closed (1), open (1)): foot point (808, 668). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/cell-cloak` (82×202, tags idle (1)): foot point (965, 402). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/cell-gate` (320×344, tags closed (1), open (1)): foot point (736, 668). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Walk-behind piece `foreground/cell-bars.png` (724×664, top left at (4, 4)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
 - Walk-behind piece `foreground/cell-door.png` (96×664, top left at (728, 4)): the same pixels as the room painting there, transparent elsewhere. It is drawn in front of anyone standing behind it. Cut it from the new painting.
 - Benn stands at (1140, 652).
-- Flickering light pools at (340, 210), (946, 504): lamps, kiln mouths, hearths in the painting.
+- Flickering light pools at (340, 210), (946, 504), (946, 504), (1252, 676), (1224, 680): lamps, kiln mouths, hearths in the painting.
 
 ### guardroom: `intro/rooms/guardroom.png`
 
@@ -69,15 +74,18 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
-| `hood` | Clerk's hood | 220, 236, 68×124 | (256, 584) |
 | `ledger` | Tally ledger | 392, 392, 80×36 | (432, 584) |
 | `grate` | Iron grate | 1120, 220, 152×304 | (1180, 592) |
 | `downStairs` | Stairs down | 0, 300, 80×224 | (60, 600) |
 | `stove` | Stove | 600, 360, 120×164 | — |
 
+- Object `intro/objects/guardroom-torch` (14×90, tags idle (1)): foot point (82, 104). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/guardroom-torch` (14×90, tags idle (1)): foot point (958, 102). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/guardroom-torch` (14×90, tags idle (1)): foot point (821, 262). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Object `intro/objects/guardroom-ledger` (88×40, tags idle (1)): foot point (432, 426). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
 - Benn stands at (764, 612).
-- Kell stands at (940, 608).
-- Flickering light pools at (660, 440): lamps, kiln mouths, hearths in the painting.
+- Kell stands at (544, 608).
+- Flickering light pools at (660, 440), (82, 24), (958, 22), (821, 182): lamps, kiln mouths, hearths in the painting.
 
 ### outerDoor: `intro/rooms/prison-door.png`
 
@@ -87,7 +95,9 @@ After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-py
 | --- | --- | --- | --- |
 | `walls` | Ironhaven's walls | 0, 0, 1280×400 | — |
 
-- Captain Sigrid stands at (940, 604).
+- Object `intro/objects/outer-lantern` (38×64, tags idle (1)): foot point (660, 262). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
+- Captain Sigrid stands at (760, 604).
+- Flickering light pools at (284, 240), (284, 580), (660, 240), (660, 580): lamps, kiln mouths, hearths in the painting.
 
 ### Mara's Tent: `rooms/tent.png`
 
@@ -350,9 +360,9 @@ Tags (the frames each one plays):
 | `nell` | Nell (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `bryn` | Bryn (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
 | `tobi` | Tobi (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
-| `guard` | Guard (story character) | 10 tags (+ fidget) | 1280×1536, 28 frames |
-| `warden` | Warden (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
-| `sigrid` | Sigrid (story character) | 10 tags (+ fidget) | 1280×1536, 26 frames |
+| `guard` | Guard (story character) | 10 tags (+ fidget) | 1280×768, 28 frames |
+| `warden` | Warden (story character) | 10 tags (+ fidget) | 1280×768, 26 frames |
+| `sigrid` | Sigrid (story character) | 10 tags (+ fidget) | 1280×1280, 47 frames |
 | `extra-stoker` (ships as WebP) | background person (stoker) | 13 tags | 1280×768, 13 frames |
 | `extra-hoist` (ships as WebP) | background person (hoist) | 13 tags | 1280×768, 13 frames |
 | `extra-hauler` (ships as WebP) | background person (hauler) | 13 tags | 1280×768, 13 frames |
@@ -378,6 +388,10 @@ Dialogue portraits in `art/src/portraits/`: head and shoulders, **256×256 per f
 | `portraits/nell.png` | neutral | 512×256 |
 | `portraits/tobi.png` | neutral, worried | 1024×256 |
 | `portraits/silas.png` | neutral, worried, angry | 1536×256 |
+| `portraits/silas-cloak.png` | neutral, worried, angry | 1536×256 |
+| `portraits/guard.png` | neutral, worried, angry | 1536×256 |
+| `portraits/warden.png` | neutral, worried, angry | 1536×256 |
+| `portraits/sigrid.png` | neutral, worried, angry | 1536×256 |
 
 Background people have no portraits. To give one a portrait, add its strip and an entry in `PORTRAIT_MOODS` (`src/content/art.ts`).
 

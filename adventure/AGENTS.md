@@ -7,6 +7,28 @@
 - Both agents read `WORKLOG.md` at the start of a session and update their own sections before stopping (what is built but unchecked, what each is waiting on, recent decisions).
 - Once a delivery from `art/inbox/` is installed, the agent who installed it moves its folder to `art/inbox/done/` (the inbox is git-ignored and local; nothing is deleted).
 
+# Working at the same time (one checkout)
+
+Claude and Codex may work in this folder at the same moment.
+
+- **Lanes:** the Lanes table at the top of `WORKLOG.md` says who owns which paths; the user may
+  reassign it (for example, Codex owns everything). Edit only your own lane.
+- **Outside your lane:** claim the exact file under "Working on" in `WORKLOG.md`, keep the edit
+  small, and release the claim at once. If the owner has a claim on it, or `git diff <file>` shows
+  changes that aren't yours, write the request to the owner's queue instead.
+- **Commits:** commit only your own files, with `git add <paths>`, never `git add -A` or `.`.
+  Check `git diff --cached --stat` before committing.
+- **`build/`:** only the agent the user asked to publish runs `npm run build`. For screenshots and
+  checks, everyone else builds to a scratch folder (`npx vite build --outDir <tmp>`) and serves it
+  with `node scripts/serve.mjs --dir <tmp> --port <n>`. Run whole-tree generators (like
+  `art/webp.mjs`) only on your own files.
+- **Failing tests:** if a test fails in a file you didn't touch, check `git diff` for the other
+  agent's unfinished work, and report it in their queue instead of "fixing" it.
+- **No destructive git** (`reset`, `checkout --`, `stash`, `clean`, branch switches) while the
+  other agent may have uncommitted work.
+- **The other agent's queue:** don't edit its entries, except to delete tasks addressed to you that
+  you have finished.
+
 # Adventure testing
 
 Follow [TESTING.md](TESTING.md) for command definitions and feature selection.

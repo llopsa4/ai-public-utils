@@ -49,3 +49,6 @@ Desktop.ini
 /FFCardGame/local/
 /FFCardGame/dist/
 /FFCardGame/AGENTS.md
+
+# Shared Claude/Codex memory: on this PC only, never committed.
+.agents/

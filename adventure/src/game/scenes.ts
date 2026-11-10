@@ -84,7 +84,7 @@ export class BootScene extends Phaser.Scene {
 //   { key: 'title-gauntlet', image: titleGauntlet, x: 425, y: 313, width: 80 }
 // in this list.
 const TITLE_ARTIFACTS: { key: string; image: string; x: number; y: number; width: number }[] = [];
-// Codex's banner on its jutting bar (art/inbox/title-banner): six 224x240 cells, 3 by 2, the bar and
+// Codex's banner on its jutting bar (art/inbox/done/title-banner): six 224x240 cells, 3 by 2, the bar and
 // its wall plate drawn in every frame (only the cloth moves, billowing to the right).
 const TITLE_FLAG_ATLAS = { frames: Array.from({ length: 6 }, (_, index) => ({
   filename: String(index), frame: { x: index % 3 * 224, y: Math.floor(index / 3) * 240, w: 224, h: 240 },

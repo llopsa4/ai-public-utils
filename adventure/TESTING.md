@@ -2,6 +2,17 @@
 
 Agents run unit tests only: `npm test` plus the relevant `test:feature` suites, for every change and before publishing. The browser suites (`test:browser`, `test:release`, `e2e`) run only when the user asks for them.
 
+## Screenshots while another agent works
+
+`npm run build` (and `test:browser`) rewrites the published `index.html` and `build/`. When another agent may be working in the checkout, build to a scratch folder instead and serve that:
+
+```sh
+npx vite build --outDir <tmp>/adventure
+node scripts/serve.mjs --dir <tmp> --port 4174   # http://127.0.0.1:4174/adventure/?debug=1
+```
+
+Lines wait for a click, so screenshot scripts must call `adventure.session.ui.skip()` until `adventure.session.scene.isBusy()` is false.
+
 ## Commands
 
 - `npm test`: typecheck and fast Node tests. No browser, production build, image generation, or tracked output changes. The target is roughly 30 seconds; printed timings are informational, not a pass/fail threshold.

@@ -5,11 +5,20 @@ Start every session by reading, in order:
 2. `WORKLOG.md`: where things stand.
 3. `CLAUDE-INBOX.md`: your queue.
 
+Codex may be working in this folder at the same time:
+- Before editing, check the Lanes and "Working on" claims in `WORKLOG.md`. Edit only your own lane;
+  outside it, claim the file first.
+- Commit only your own paths, never `git add -A`.
+- Don't run `npm run build` unless publishing. For screenshots, build to a scratch folder:
+  `npx vite build --outDir <job tmp>/scratch/adventure`, then
+  `node scripts/serve.mjs --dir <job tmp>/scratch --port 4174`.
+- The shared memory is `.agents/memory/` at the repo root (git-ignored, this PC only; your memory path links to it). Codex reads and writes it too.
+
 Before stopping, update your sections of `WORKLOG.md`. Write new tasks for Codex in `art/CODEX.md`
 only.
 
 ## Working with the user
-- On big requests, grill first (`/grill-me` rounds), then plan the items easiest first and build
+- On big requests, grill first (`/grill-me`, one question at a time), then plan the items easiest first and build
   them in that order.
 - Unit tests only (`npm test`, `npm run test:feature -- <suites>`). Check visuals with screenshots.
   See `TESTING.md`.
@@ -28,8 +37,7 @@ only.
   - Don't import one from the other (a loading cycle); put shared scripts in their own file
     (`intro/kellSees.ts`).
   - Every story flag needs a room: add it to the chapter's `flagRooms` if no rule names one.
-- **Screenshots:** build (`npm run build`), then use the preview from `node scripts/serve.mjs` at
-  `http://127.0.0.1:4173/adventure/`.
+- **Screenshots:** use a scratch build (above) on `:4174`. `:4173` serves the published `build/`.
   - `window.adventure` only exists with `?debug=1`.
   - Lines wait for a click, so scripts must call `adventure.session.ui.skip()` until
     `session.scene.isBusy()` is false.

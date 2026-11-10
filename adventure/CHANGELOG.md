@@ -2,12 +2,18 @@
 
 ## Unreleased
 
+- New game opens on black with three cards, each fading in and out in the same place: where and when, the day, then the title *The Man With Many Faces*. A click moves on.
+- Every dialogue line now waits for a click (or a key). The "Advance lines automatically" setting is gone.
+- A new click while Silas or Mara is still walking to a target replaces that order at once.
+- In the cell, Harrow's mask is made of candle wax from the window ledge kneaded into bread, not plaster from the wall. The candle's glow shows over Silas, he passes behind the open cell door, and the way to the stairs is a doorway-shaped light on the floor.
+- In the guardroom, Kell keeps watching the right. If Silas steps in front of him or talks to him without the clerk's guise, Kell raises the alarm and Silas is back at the stairs to try again. A second lantern lights the outer door's wall.
+- Benn and Kell have worried and angry faces (painted by Codex), chosen line by line.
+- Fights play over the room they happen in, with the card strip along the bottom: the room slides up so the fighters stand on its floor, and enemies are at their real size next to Mara. The strain meter and card hint sit in the strip, and phones get a slim one-row strip.
+- Snow falls at the outer door, the title banner hangs smaller, chapter 2's opening card shows the tunnel entrance, the notebook map's labels sit on plates, and all lettering except dialogue is in MedievalSharp.
+
 - Opening or refreshing the main menu no longer preselects Continue or New Game; keyboard Tab and pointer hover still show the flame normally.
 
 - The title screen shows Ironhaven's empty, half-snow-covered courtyard, a gently moving flag and distant firelight. Mara's gauntlet is an independent foreground object, ready for future artifacts. Reduced motion keeps the scene still.
-
-- The story is told across five days, from the first malfunctions (Day 1) to the war (Day 5). Each chapter is set on one day: its title card shows it ("Day 1 · Morning · Cinderfold"), and so does the notebook. Chapter 1 is Day 1; the debug-only chapter 2 is Day 2.
-- The notebook has three tabs. Notes holds the goals, hints, secrets and people met. Diary is the story so far, grouped by day, written in the viewpoint character's own voice and growing at each milestone (earlier chapters stay). Map is an invented world map: the places the character knows are named, and a pin shows where they are. Its painting is requested from Codex (`world-map`); until it arrives the game draws the land itself.
 
 - The story is told across five days, from the first malfunctions (Day 1) to the war (Day 5). Each chapter is set on one day: its title card shows it ("Day 1 · Morning · Cinderfold"), and so does the notebook. Chapter 1 is Day 1; the debug-only chapter 2 is Day 2.
 - The notebook has three tabs. Notes holds the goals, hints, secrets and people met. Diary is the story so far, grouped by day, written in the viewpoint character's own voice and growing at each milestone (earlier chapters stay). Map is an invented world map: the places the character knows are named, and a pin shows where they are. Its painting is requested from Codex (`world-map`); until it arrives the game draws the land itself.

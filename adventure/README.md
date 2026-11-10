@@ -6,20 +6,20 @@ A point-and-click adventure built from the first scene of **Kiln Courier**'s sto
 
 Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 
-- **New game** opens with a few lines of context over black (click for the next, or Skip).
+- **New game** opens on black with three cards (where and when, the day, then the title *The Man With Many Faces*); each fades on its own, a click moves on, Skip ends them. Then Silas's escape from Ironhaven's prison (the intro chapter) leads into chapter 1.
 - **Walk:** click or tap the floor.
 - **Act:** click or tap a person or object to open the action ring, then choose an action (Look at, Open, Close, Pick up, Use, Talk to, Go to). Arrow keys move around the ring and Esc closes it.
 - **Satchel:** click an item or press its numbered slot (1–9, then 0) to carry it at the pointer. Click a target or another satchel item to use it, or drag and drop it there. Each attempt puts the cursor back to normal, including a rejected use. Clicking/dropping onto empty floor cancels the item and walks there. Double-click/double-tap an item for its Look / Use menu; inventory clicks wait 300 ms to distinguish these gestures. Enter opens the menu when an item has keyboard focus. Right-click, Esc, clicking the selected item again, or dropping outside the game cancels it.
 - **Poses:** click Mara, Oren or Nell for Crouch, Lie down and Stand up.
 - **Background people:** four workers go about their day in the kiln hall: Hollis kneels at the fire and takes ash to the cart, Wren works the hoist, Dace kneels beside the broken jars sorting pottery for reuse, and Ansel keeps the tally. Pip and Bea play in the firing house, while Tobi stands by the hearth: talk to him about his drawings and hear him offer his scarf when Mara says goodbye. They work or play and chat in speech bubbles; some walk rounds or take breaks. Click one to look at them or talk (they stop, turn to Mara and say a line). When the alarm goes up the kids run to Nell; when the kiln goes cold the workers stare at it and two of them leave, and the kids huddle by the dead hearth.
 - **Room names** hang on a board in every room (an iron shield-plate in the regulator gallery).
-- **Talk:** choose a reply with the mouse or the number keys. Lines appear in the panel at the bottom with the speaker's portrait, which talks and shows a mood (worried, angry) on some lines. Click to skip a line.
+- **Talk:** choose a reply with the mouse or the number keys. Lines appear in the panel at the bottom with the speaker's portrait, which talks and shows a mood (worried, angry) on some lines. Every line waits for a click (or a key) before the next.
 - **Explore:** looking at something again often gets a different line, and four small secrets are hidden around Cinderfold (the notebook counts the ones you've found).
 - **Labels:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
 - **Exits:** double-click a doorway to go straight through.
 - **Keyboard:** hold arrows to walk, including diagonals, and release to stop. Obstacles stop direct movement; exits still need an explicit action. **G** toggles Gear when unlocked, **N** the Notebook, and **M** the Menu; each key closes its own screen, and Escape still works. These shortcuts do not interrupt speech, choices, fights, text entry or other dialogs; G also opens Oren's guided Gear prompt. Tab moves between room targets and bar buttons; Enter acts on the focused target. Arrow keys navigate an open action ring, and number keys choose dialogue replies instead of inventory slots while choices are shown. Opening a screen cancels held movement and pending satchel gestures.
 - **Touch:** press and hold on the scene to label everything. The ⛶ button switches to full screen where the browser allows it.
-- **Menu** (pause): Resume, **History** (everything said so far), **How to play**, saves, **Settings** (text speed, effects and music volume, mute, auto-advance, reduced motion, text size, high contrast) and **Title screen**.
+- **Menu** (pause): Resume, **History** (everything said so far), **How to play**, saves, **Settings** (text speed, effects and music volume, mute, reduced motion, text size, high contrast) and **Title screen**.
 - **Hints:** the notebook's **Hint** button gives a nudge for the current goal, then the plain answer.
 - **Cursor:** the pointer shows the name of what it is over and what a click will do (look, handle, talk, leave).
 
@@ -37,7 +37,7 @@ Progress is **autosaved in this browser** (localStorage, one slot) after each wa
 
 ## Develop
 
-Requires Node 22.12+.
+Requires Node 22.12+. Agents (Claude, Codex): start with `AGENTS.md`, then `WORKLOG.md` (status, who owns which files) and your queue (`CLAUDE-INBOX.md` or `art/CODEX.md`).
 
 ```sh
 npm ci
@@ -96,6 +96,7 @@ Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/
 
 - Kiln Courier's battle screen takes optional settings for a host game: `brand` (the Cinderfold title), `rewards` (what the fight paid, in the victory dialog), `extraControls` (the Kiln Tonic button), and for its guided lesson an `encounter` and reworded `prompts`. The first fight is that lesson taught against chapter 1's Hatch Scavenger (`src/chapters/ch1/combat.ts`).
 - Three Kiln Courier modules are swapped for the adventure's own at build time (`kcOverrides` in `vite.config.ts`): `src/kc/assets.ts` and `src/kc/EquipmentArt.tsx` (the small WebPs from `art/kc.mjs` instead of Kiln Courier's full-size PNGs) and `src/kc/presentation.ts` (the scavenger in the gallery, also during the lesson). The compiler checks they keep the originals' names and types.
+- Fights play over the room they happen in (`src/game/room/fightBridge.ts`): the room stays on screen and slides up so its floor clears the card strip along the bottom; the fighters stand on that floor at their real size next to Mara (`ENEMY_HEIGHT`). On short screens the strip slims to one row of small cards without pictures.
 - Kiln Courier's stylesheet is scoped under `.kc` into `src/kc/kc.css` by `scripts/kc-css.mjs` on every build; Cinderfold's additions are in `src/kc/kc-local.css`.
 - Changing Kiln Courier changes the adventure's fights: after editing FFCardGame, run both projects' checks.
 

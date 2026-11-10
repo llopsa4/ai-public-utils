@@ -46,7 +46,7 @@ Relevant rules: `src/chapters/intro/interactions.ts`; scene placement/state: `sr
 
 **Mask assembly — 800 ms.** On `harrowMade` false→true, show a short strip immediately above the satchel/inventory: existing frame and putty item illustrations (the putty is wax kneaded into bread) combine into the finished mask. No modal window, face-covering panel or new crafting pose. The ingredients and finished item retain their normal inventory semantics. Size the strip for phones, prevent clipping and avoid moving keyboard focus. Use the existing acquisition announcement or an accessible polite status; do not duplicate spoken dialogue.
 
-Leave the existing cloak pickup/dressing fade, sound and costume change intact. Cloak source artwork was delivered separately in `art/inbox/silas-cloak-layered/`; consult its handoff if needed, but this pass does not reopen that pack.
+Leave the existing cloak pickup/dressing fade, sound and costume change intact. Cloak source artwork was delivered separately in `art/inbox/done/silas-cloak-layered/`; consult its handoff if needed, but this pass does not reopen that pack.
 
 ### 3. Tobi's scarf handover
 

@@ -12,7 +12,7 @@ Phase 2 of Silas's articulated pack (art/LAYERED-RIG.md), made from the approved
 - On a 1024x1536 transparent canvas (or flat magenta #FF00FF), the same scale, height and soles line (y 1500) as this pack's right-facing master.png, and exactly the canvas and position of the approved left/master.png.
 - Draw it FACING LEFT as its own drawing: never a horizontal mirror of the right-facing picture. Whatever he wears on one side of his body stays on that side of his body (the prompt says which side each thing is on).
 - Stacked in the usual order (farUpperArm, farForearm, farThigh, farShin, farBoot, nearThigh, nearShin, nearBoot, torso, nearUpperArm, nearForearm) the eleven left-facing layers must reproduce left/master.png pixel for pixel; extend each piece about 25 px past its joints under the neighbouring layer, as in the right-facing set.
-- Save it in the pack's left/ folder: art/inbox/mara-light-layered/left/farBoot.png. Sigrid's two-sided pack (art/inbox/sigrid-layered/ and its left/ folder) shows the format.
+- Save it in the pack's left/ folder: art/inbox/mara-light-layered/left/farBoot.png. Sigrid's two-sided pack (art/inbox/done/sigrid-layered/ and its left/ folder) shows the format.
 
 ## Prompt for Codex
 
@@ -29,14 +29,14 @@ File: art/inbox/mara-light-layered/left/farBoot.png.
 On a 1024x1536 transparent canvas (or flat magenta #FF00FF), the same scale, height and soles line (y 1500) as this pack's right-facing master.png, and exactly the canvas and position of the approved left/master.png.
 Draw it FACING LEFT as its own drawing: never a horizontal mirror of the right-facing picture. Whatever he wears on one side of his body stays on that side of his body (the prompt says which side each thing is on).
 Stacked in the usual order (farUpperArm, farForearm, farThigh, farShin, farBoot, nearThigh, nearShin, nearBoot, torso, nearUpperArm, nearForearm) the eleven left-facing layers must reproduce left/master.png pixel for pixel; extend each piece about 25 px past its joints under the neighbouring layer, as in the right-facing set.
-Save it in the pack's left/ folder: art/inbox/mara-light-layered/left/farBoot.png. Sigrid's two-sided pack (art/inbox/sigrid-layered/ and its left/ folder) shows the format.
+Save it in the pack's left/ folder: art/inbox/mara-light-layered/left/farBoot.png. Sigrid's two-sided pack (art/inbox/done/sigrid-layered/ and its left/ folder) shows the format.
 ```
 
 ## Attach
 
 - `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
 - `art/sources/characters/mara-casual-layered/` (Mara's pack: the format to match, piece by piece) and `art/LAYERED-RIG.md` (the pack contract)
-- `art/sources/characters/mara-light-layered/` (this outfit facing right: the look to match, piece by piece) and `art/inbox/sigrid-layered/` with its `left/` folder (a two-sided pack: the format)
+- `art/sources/characters/mara-light-layered/` (this outfit facing right: the look to match, piece by piece) and `art/inbox/done/sigrid-layered/` with its `left/` folder (a two-sided pack: the format)
 - the approved `art/sources/characters/mara-light-layered/left/master.png` and `idle.png` (approved by the user on 2026-11-09: keep the fuller waist and lower torso exactly)
 
 ## Then

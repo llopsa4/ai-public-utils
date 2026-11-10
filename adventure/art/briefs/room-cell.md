@@ -14,19 +14,21 @@ Everything the player can click, at these places (art pixels), each must be pain
 - **Candle** (`candle`, x 932–960, y 492–560): look at, take.
 - **Guard's table** (`table`, x 874–1086, y 544–654): look at, take.
 - **Barred window** (`window`, x 280–400, y 124–248): look at, use.
-- **Clay chip** (`wall`, x 488–536, y 244–284): look at, take, use. Only there at some points of the story.
+- **Candle stub** (`stub`, x 352–384, y 224–256): look at, take. Only there at some points of the story.
 - **Grey blanket** (`blanket`, x 96–304, y 472–564): look at, take, use.
 - **Straw cot** (`cot`, x 50–330, y 470–584): look at, use, take.
 - **Bucket** (`bucket`, x 594–662, y 510–586): look at, use, take. Only there at some points of the story.
-- **Cell door** (`cellDoor`, x 728–824, y 324–668): look at, open, use. Only there at some points of the story.
-- **Stairs up** (`cellStairs`, x 1180–1280, y 592–696): look at, go through (an exit).
+- **Cell door** (`cellDoor`, x 720–816, y 324–668): look at, open, use. Only there at some points of the story.
+- **Stairs up** (`cellStairs`, x 1108–1280, y 644–692): look at, go through (an exit).
 
 Drawn separately as objects (leave their spot plain in the painting, they stand there):
 - `floor-plate` standing on (346, 624).
 - `window-plate` standing on (340, 246).
+- `stairs-light` standing on (1180, 694).
+- `window-stub` standing on (372, 254).
 - `table-frame` standing on (990, 556).
 - `cell-cloak` standing on (965, 402).
-- `cell-gate` standing on (808, 668).
+- `cell-gate` standing on (736, 668).
 
 Story characters stand at: Benn (1140, 652). Keep the wall behind them uncluttered at head height.
 

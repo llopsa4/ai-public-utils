@@ -141,7 +141,7 @@ export const RIGS = {
   // Benn: Codex's drawings (art/inbox/char-guard/HANDOFF.md). He walks the long-coat way: the coat
   // stays whole above the hem and only the hem, shins and boots step; kneeling, lying and sitting asleep are drawn. sit.png is his figure from
   // Codex's sitting picture with the chair (right colours), cut out along the chair-free one's outline
-  // (the cell paints its own chair; the chair-free picture's colours were off: art/CODEX-FIXES.md).
+  // (the cell paints its own chair; the chair-free picture's colours were off).
   guard: {
     dir: 'intro/', sits: 'asleep',
     source: 'sources/characters/char-guard/body.png', armLayer: 'sources/characters/char-guard/arm.png', height: 216, walks: true,
@@ -150,11 +150,11 @@ export const RIGS = {
     salute: { upperArm: -100, forearm: -70, elbow: [325, 600], capBelow: 45, backEdge: [[372, 300], [334, 900]] },
     hipY: 1130, splitX: 485, hips: { near: [420, 1130], far: [560, 1130] }, knees: { near: [405, 1290], far: [575, 1290] },
     eyes: [{ x: 536, y: 150, rx: 9, ry: 4, skinAt: [536, 162] }, { x: 574, y: 146, rx: 4, ry: 3, skinAt: [571, 157] }],
-    // Worried and angry faces drawn by Codex (art/inbox/guard-faces), on the same crop.
+    // Worried and angry faces drawn by Codex (art/inbox/done/guard-faces), on the same crop.
     portrait: [420, 70, 210, 210], moods: ['neutral', 'worried', 'angry'], drawnFaces: 'sources/characters/char-guard/faces',
     face: { mouth: { x: 557, y: 192, rx: 10, ry: 3 }, brows: [{ x0: 520, x1: 560, y0: 128, y1: 135, inner: 'right' }, { x0: 565, x1: 580, y0: 125, y1: 131, inner: 'left' }] },
   },
-  // Kell: Codex's drawings (art/inbox/intro-next-review/HANDOFF.md), measured on the 1024x1536
+  // Kell: Codex's drawings (art/inbox/done/intro-next-review/HANDOFF.md), measured on the 1024x1536
   // canvas. Broad and heavy; he walks off down the stairs to the kitchen. One eye shows
   // in his three-quarter view; kneeling and lying are drawn.
   // Benn once Silas has lifted his keys: the same drawings with the key ring painted out
@@ -174,7 +174,7 @@ export const RIGS = {
     face: { mouth: { x: 552, y: 156, rx: 14, ry: 4 }, brows: [{ x0: 500, x1: 560, y0: 80, y1: 93, inner: 'right' }, { x0: 566, x1: 582, y0: 82, y1: 94, inner: 'left' }] },
   },
   // Sigrid: Codex's two-sided pack (art/sources/characters/sigrid-layered and its left/ set), with
-  // Codex's foot fix (art/inbox/sigrid-layered/FOOT-FIX-HANDOFF.md): both soles on the floor line.
+  // Codex's foot fix (art/inbox/done/sigrid-layered/FOOT-FIX-HANDOFF.md): both soles on the floor line.
   sigrid: { layeredPack: 'sources/characters/sigrid-layered', dir: 'intro/', height: 228, walks: true, portraitId: 'sigrid', moods: ['neutral', 'worried', 'angry'] },
 };
 
@@ -388,7 +388,7 @@ export const MANIFEST = [
   { ...object('floor-plate', 'A dented tin plate with a stale crust on it, lying on the cell floor by the cot.', ['idle']),
     file: 'intro/objects/floor-plate.png', sheet: 'intro/objects/floor-plate.json', chapter: 'intro', generator: 'intro.mjs' },
   // The guardroom's ledger on its shelf, cut from Codex's painting along its outline; the room itself
-  // is Codex's empty version (art/inbox/intro-next-review), so it can go.
+  // is Codex's empty version (art/inbox/done/intro-next-review), so it can go.
   { ...object('guardroom-ledger', 'The red-brown tally ledger lying on the guardroom shelf.', ['idle']),
     file: 'intro/objects/guardroom-ledger.png', sheet: 'intro/objects/guardroom-ledger.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
   // Silas's hooded cloak on its nail in the cell's corridor, cut from Codex's painting (the wall behind
@@ -408,7 +408,7 @@ export const MANIFEST = [
     file: 'intro/objects/table-frame.png', sheet: 'intro/objects/table-frame.json', chapter: 'intro', status: 'final', generator: 'Codex' },
   { ...object('cell-gate', 'A smaller dark iron cell gate below fixed upper bars, with closed and visibly swung-open views.', ['closed', 'open']),
     file: 'intro/objects/cell-gate.png', sheet: 'intro/objects/cell-gate.json', chapter: 'intro', status: 'final', generator: 'Codex' },
-  // The cell's bars and door, drawn in front of Silas (Codex's painting, split; art/inbox/cell-layers).
+  // The cell's bars and door, drawn in front of Silas (Codex's painting, split; art/inbox/done/cell-layers).
   { id: 'cell-bars', kind: 'foreground', file: 'foreground/cell-bars.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex',
     subject: "The cell's iron cage: its bars and frame, drawn in front of Silas (the room painting's foreground)." },
   { id: 'cell-door', kind: 'foreground', file: 'foreground/cell-door.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex',
@@ -470,7 +470,7 @@ for (const e of MANIFEST) {
 // Like Mara (art/LAYERED-RIG.md): one standing master, then eleven body layers, joints, two walk
 // references, kneeling and lying, all on the master's canvas; plus his two masks as overlay layers.
 // Phase 1 (the standing figure) is approved by the user before Phase 2 is made. Codex saves every
-// piece in art/inbox/silas-layered/; Claude brings the pack into art/sources/characters/silas-layered/
+// piece in art/inbox/done/silas-layered/; Claude brings the pack into art/sources/characters/silas-layered/
 // and writes its rig.json. Until then the char-silas sheets are the recoloured stand-in.
 const SILAS_PACK = 'silas-layered';
 const MARA_PACK = 'art/sources/characters/mara-casual-layered/';
@@ -580,12 +580,12 @@ MANIFEST.push(...characterPack({
     'Also deliver, in the same folder, the clerk guise as mask layers over this pack (like silas-layered/mask-clerk-*): mask-clerk-hood-stand.png, mask-clerk-hood-kneel.png, mask-clerk-hood-lie.png (the hood pulled lower over the brow, the face still visible from the eyes down) and mask-clerk-ledger.png (the ledger held to the chest by the near forearm).'],
 }));
 // Delivered and rigged (2026-11-10); the lower cloak was moved onto the still torso layer so it hangs
-// rather than swinging as boards with the thighs (Codex's swinging cut is in art/inbox/silas-cloak-layered).
+// rather than swinging as boards with the thighs (Codex's swinging cut is in art/inbox/done/silas-cloak-layered).
 for (const e of MANIFEST) if (e.pack === 'silas-cloak-layered') Object.assign(e, { redo: false, status: 'final' });
 for (const e of MANIFEST) if (/^(char|portrait)-silas-cloak(-clerk)?$/.test(e.id)) e.builtFrom = 'silas-cloak-layered';
 
 // ---------------------------------------- two-sided movement: Mara facing left, like Sigrid ---
-// Sigrid's pack was drawn twice, facing right and facing left (art/inbox/sigrid-layered/left/), so
+// Sigrid's pack was drawn twice, facing right and facing left (art/inbox/done/sigrid-layered/left/), so
 // what she wears on one side of her body stays on that side. The game used to mirror the right-facing
 // art to face left, which moves Mara's gauntlet from his right arm to his left, and his scarf end and
 // satchel to the wrong shoulder and hip. Each of Mara's three outfits gets a left-facing set drawn on
@@ -614,7 +614,7 @@ const left = (pack, outfit, sides, name, phase, text) => ({
       : `On a 1024x1536 transparent canvas (or flat magenta #FF00FF), the same scale, height and soles line (y 1500) as this pack's right-facing master.png${name === 'master' || name === 'idle' ? '' : ', and exactly the canvas and position of the approved left/master.png'}.`,
     'Draw it FACING LEFT as its own drawing: never a horizontal mirror of the right-facing picture. Whatever he wears on one side of his body stays on that side of his body (the prompt says which side each thing is on).',
     ...(LAYERS[name] ? ['Stacked in the usual order (farUpperArm, farForearm, farThigh, farShin, farBoot, nearThigh, nearShin, nearBoot, torso, nearUpperArm, nearForearm) the eleven left-facing layers must reproduce left/master.png pixel for pixel; extend each piece about 25 px past its joints under the neighbouring layer, as in the right-facing set.'] : []),
-    `Save it in the pack's left/ folder: art/inbox/${pack}/left/${name}.png. Sigrid's two-sided pack (art/inbox/sigrid-layered/ and its left/ folder) shows the format.`,
+    `Save it in the pack's left/ folder: art/inbox/${pack}/left/${name}.png. Sigrid's two-sided pack (art/inbox/done/sigrid-layered/ and its left/ folder) shows the format.`,
   ],
 });
 for (const [pack, outfit, sides] of MARA_OUTFITS) {

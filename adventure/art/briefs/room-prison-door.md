@@ -9,6 +9,9 @@ In the game as the room `outerDoor` (intro). Mara (232 px tall) and the others w
 Everything the player can click, at these places (art pixels), each must be painted there and recognisable:
 - **Ironhaven's walls** (`walls`, x 0–1280, y 0–400): look at.
 
+Drawn separately as objects (leave their spot plain in the painting, they stand there):
+- `outer-lantern` standing on (660, 262).
+
 Story characters stand at: Captain Sigrid (760, 604). Keep the wall behind them uncluttered at head height.
 
 

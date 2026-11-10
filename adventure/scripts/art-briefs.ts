@@ -155,7 +155,7 @@ function brief(e: ArtEntry): string {
   if (e.kind === 'equipment') lines.push(`- the other tiers of this piece already made (\`art/src/kc/equipment/\`), to keep them consistent`);
   if (e.kind === 'pack') {
     lines.push('- `art/sources/characters/mara-casual-layered/` (Mara\'s pack: the format to match, piece by piece) and `art/LAYERED-RIG.md` (the pack contract)');
-    if (e.twoSided) lines.push(`- \`art/sources/characters/${e.pack}/\` (this outfit facing right: the look to match, piece by piece) and \`art/inbox/sigrid-layered/\` with its \`left/\` folder (a two-sided pack: the format)`);
+    if (e.twoSided) lines.push(`- \`art/sources/characters/${e.pack}/\` (this outfit facing right: the look to match, piece by piece) and \`art/inbox/done/sigrid-layered/\` with its \`left/\` folder (a two-sided pack: the format)`);
     if (e.twoSided && e.phase === 2) lines.push(`- the approved \`art/sources/characters/${e.pack}/left/master.png\` and \`idle.png\` (approved by the user on 2026-11-09: keep the fuller waist and lower torso exactly)`);
     else if (e.redo) lines.push(`- \`art/sources/characters/${e.pack}/idle.png\` (the current pose, to redraw relaxed) and \`master.png\``);
     else if (e.phase === 2) lines.push(`- the approved Phase 1 pictures: \`art/inbox/${e.pack}/master.png\` and \`idle.png\``);
@@ -218,7 +218,7 @@ const changes = [
   '',
   '### Mara facing left (two-sided, like Sigrid)',
   '',
-  'The game has been mirroring Mara to face left, which moves his gauntlet from his right arm to his left (and his scarf end and satchel to the wrong side). Like Sigrid\'s pack (`art/inbox/sigrid-layered/` and its `left/` folder), each of his three outfits (`mara-light-layered`, `mara-medium-layered`, `mara-casual-layered` in `art/sources/characters/`) gets a left-facing set, drawn on its own and never mirrored: the same file names in a `left/` folder. Facing left, what is on his right side (the gauntlet, the cord bracelet) is on the FAR side, and what is on his left (the scarf end, the satchel) is on the NEAR side. Attach each outfit\'s right-facing pack as the look to match. Save in `art/inbox/<pack>/left/` and do not import: Claude brings them in and rigs them.',
+  'The game has been mirroring Mara to face left, which moves his gauntlet from his right arm to his left (and his scarf end and satchel to the wrong side). Like Sigrid\'s pack (`art/inbox/done/sigrid-layered/` and its `left/` folder), each of his three outfits (`mara-light-layered`, `mara-medium-layered`, `mara-casual-layered` in `art/sources/characters/`) gets a left-facing set, drawn on its own and never mirrored: the same file names in a `left/` folder. Facing left, what is on his right side (the gauntlet, the cord bracelet) is on the FAR side, and what is on his left (the scarf end, the satchel) is on the NEAR side. Attach each outfit\'s right-facing pack as the look to match. Save in `art/inbox/<pack>/left/` and do not import: Claude brings them in and rigs them.',
   '',
   '#### First: the three left-facing standing figures, then stop',
   '',

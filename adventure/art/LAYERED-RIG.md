@@ -20,7 +20,7 @@ The usual final-art guard is still respected. These Mara entries are generated s
 
 ## Silas
 
-Silas, the intro's hero, has a pack in the same format: `art/sources/characters/silas-layered/` (Codex's handoff in `art/inbox/silas-layered/`), one outfit, 220 art px tall. Its `rig.json` adds `overlays`: his disguises as layers on the same coordinates, one per pose (`mask-harrow-{stand,kneel,lie}.png`, `mask-clerk-hood-{stand,kneel,lie}.png`, and `mask-clerk-ledger.png` on the near forearm). `RIGS` builds three sheets from it into `art/src/intro/`:
+Silas, the intro's hero, has a pack in the same format: `art/sources/characters/silas-layered/` (Codex's handoff in `art/inbox/done/silas-layered/`), one outfit, 220 art px tall. Its `rig.json` adds `overlays`: his disguises as layers on the same coordinates, one per pose (`mask-harrow-{stand,kneel,lie}.png`, `mask-clerk-hood-{stand,kneel,lie}.png`, and `mask-clerk-ledger.png` on the near forearm). `RIGS` builds three sheets from it into `art/src/intro/`:
 
 - `silas`, standing still in the three-quarter `idle.png`;
 - `silas-harrow` (`overlay: 'harrow'`, no blink: the mask covers his eyes), standing in the walk master's pose because the masks are drawn to it;
@@ -53,3 +53,7 @@ The chapter still chooses casual/dressed and the gauntlet's power state. Equippe
 Run `npm run art:check`, `npm run typecheck` and `npm test`. `tests/layered-rig.test.ts` checks exact source reconstruction, fixed bone lengths, connected pivots, planted-foot stability, joint coverage, safe edges, palette/grid output, visible blinks, legacy timing, outfit selection and powered pose consistency.
 
 The local inbox handoff has full-size layers, joint overlays, drawn references, animated GIFs, frame strips and browser screenshots. Browser review uses the Vite development server, not a publishing build.
+
+## Drawn mood faces
+
+A character's portrait moods (`moods` in the manifest) are usually made in code, by bending the brows and mouth of the neutral face. With `drawnFaces: '<folder>'`, the rig instead pastes `<folder>/<mood>.png` and `<mood>-talk.png` over the portrait crop for every mood except neutral. Each file is exactly the crop's size and transparent outside the head. Benn (`char-guard`) and Kell (`char-warden`) use this. Rebuild with `node art/rig.mjs guard` and `node art/rig.mjs warden`.

@@ -1,9 +1,22 @@
 # Work log: Claude and Codex
 
 Both agents read this first, and update their own sections before stopping. Keep it short (under
-about 80 lines). Queues live elsewhere: Codex's in `art/CODEX.md`, Claude's in `CLAUDE-INBOX.md`.
+about 100 lines). Queues live elsewhere: Codex's in `art/CODEX.md`, Claude's in `CLAUDE-INBOX.md`.
 
 Last updated: 2026-11-10 by Claude.
+
+## Lanes (who edits what; the user may reassign, e.g. "Codex: everything")
+| Paths | Owner now |
+|---|---|
+| `art/**` (inbox, sources, src art, briefs, art scripts; art entries in `art/manifest.mjs`) | Codex |
+| `src/**`, `tests/**`, `scripts/**`, root config and docs | Claude |
+| `build/`, `index.html` (generated) | whoever the user asked to publish |
+| this file | each agent edits only its own sections; anyone edits Working on |
+
+When Codex owns everything, Claude only reviews, plans and writes tasks to `art/CODEX.md`.
+
+## Working on (claims: `agent · path · since · what`; remove when done)
+- (none)
 
 ## Now (built, needs a look)
 - **Chapter 2 fights** (Claude): the enemy sizes (Bryn's rig about shoulder high, the tunnel

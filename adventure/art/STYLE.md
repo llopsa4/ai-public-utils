@@ -50,6 +50,7 @@ Everything is in true proportion to Mara. A chair seat is at his knee, a table a
 ## Colour
 
 - **The master palette:** `art/style/palette.json`, 160 colours, previewed in `art/style/palette.png`. It is derived from the tent reference. Paint with it in mind; the importer snaps every pixel to it.
+- **Soft light effects** (a glow, the doorway light on the cell floor, `intro/objects/stairs-light.png`) can't be palette art. Claude makes them in code or as soft PNGs listed with `status: 'placeholder'` and a note, so the palette check passes. They are not paintings to replace.
 - **Warm range:** ochre, rust, brass, ember orange, clay, warm browns. **Cool range:** soot greys, iron blue-greys, the occasional cold blue in shadow.
 
 ## Light
@@ -106,3 +107,7 @@ Each piece of gear has **ten pictures**. Tier 1 is the piece as it is today; eac
 - photographic detail, lens effects (bloom, depth of field), neon or modern objects
 - text in images, and heavy black outlines on rooms (sprites get a 1-pixel dark outline on import)
 - anything glossy or new-looking: everything here is used and repaired
+
+## Lettering
+
+Painted signs, titles and the title screen use **MedievalSharp** (OFL, bundled from `@fontsource/medievalsharp`). Only dialogue uses a different face (Zilla Slab). Don't paint lettering into art that the game sets in type.
