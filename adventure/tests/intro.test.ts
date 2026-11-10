@@ -40,7 +40,7 @@ function toHarrow(): GameState {
   play(s, 'use', 'window', 'plate');
   assert.ok(s.flags.cellLit, 'the plate throws the moonlight');
   play(s, 'take', 'cot');
-  play(s, 'take', 'cot');
+  play(s, 'take', 'blanket');
   play(s, 'use', 'item:nail', 'strip');
   play(s, 'use', 'table', 'hookLine');
   assert.ok(s.inventory.includes('frame'), 'the frame is fished off the table');
@@ -94,14 +94,14 @@ test('the full escape: Harrow fools Benn, the clerk fools Kell, Sigrid waits, th
   assert.equal(heroIdentity(s).name, 'speaker.silas', 'the cracked mask comes off');
   play(s, 'use', 'cellDoor', 'keys');
   assert.ok(s.flags.cellOpen);
-  play(s, 'go', 'cellDoor');
+  play(s, 'take', 'cloak');
+  assert.ok(s.flags.tookCloak, 'out of the cage, his cloak');
+  play(s, 'go', 'cellStairs');
   assert.equal(s.room, 'guardroom');
   play(s, 'read', 'warden');
   assert.deepEqual(play(s, 'talk', 'warden').spoken, ['line.i.notAsMyself']);
-  play(s, 'take', 'hood');
   play(s, 'take', 'ledger');
-  play(s, 'use', 'item:hood', 'ledger');
-  play(s, 'use', 'hero', 'maskClerk');
+  play(s, 'use', 'hero', 'ledger');
   assert.equal(heroIdentity(s).name, 'speaker.clerk');
   play(s, 'talk', 'warden');
   assert.ok(s.flags.wardenBusy);
@@ -170,7 +170,7 @@ test('Kell catches a clerk who strikes the wrong note three times, and the eye c
   const s = newGame('intro');
   Object.assign(s.flags, { cellLit: true, guardGone: true, cellOpen: true, sawWarden: true, readWarden: true, wearingClerk: true });
   s.room = 'guardroom';
-  s.inventory = ['nail', 'maskClerk'];
+  s.inventory = ['nail', 'ledger'];
   assert.equal(INTRO.story.suspicion?.(s), 0);
   const r = runStoryCommands(s, [{ type: 'dialogue', id: 'warden' }], choosing(['passing', 'orders']));
   assert.ok(r.spoken.includes('line.i.caught.warden'));
@@ -213,4 +213,50 @@ test('upstairs, Benn wears his key ring only if Silas did not lift it', async ()
   assert.equal(sheet(), 'guard', 'the nail route: he still has them');
   s.flags.gotKeys = true;
   assert.equal(sheet(), 'guard-nokeys', 'lifted: the ring is gone from his belt');
+});
+
+test('the way out is the stairs light: not while caged, not without the cloak, then up to the guardroom', async () => {
+  const { conditionsHold } = await import('../src/engine/geometry');
+  const s = newGame('intro');
+  Object.assign(s.flags, { cellLit: true, tookPlate: true });
+  enterStoryRoom(s, good);
+  const stairs = INTRO.rooms.cell.hotspots.find(h => h.id === 'cellStairs')!;
+  assert.deepEqual(stairs.verbs, ['look', 'go']);
+  assert.ok(conditionsHold(s, stairs.visibleIf), 'the light shows from the start');
+  assert.deepEqual(play(s, 'go', 'cellStairs').spoken, ['line.i.stairsCaged']);
+  assert.deepEqual(play(s, 'take', 'cloak').spoken, ['line.i.cloakTake'], 'out of reach while caged');
+  s.flags.cellOpen = true;
+  // Once open, the floor goes on past the bars to the light.
+  const floor = INTRO.rooms.cell.walkableWhen?.find(w => conditionsHold(s, w.if))?.walkable;
+  assert.ok(floor && floor.outer.some(p => p.x > 600), 'the corridor floor is walkable');
+  assert.deepEqual(play(s, 'go', 'cellStairs').spoken, ['line.i.notWithoutCloak']);
+  play(s, 'take', 'cloak');
+  assert.ok(s.flags.tookCloak);
+  play(s, 'go', 'cellStairs');
+  assert.equal(s.room, 'guardroom');
+});
+
+test('the clerk is his own hood pulled low and the ledger: used on Silas, on and off', () => {
+  const s = newGame('intro');
+  Object.assign(s.flags, { cellLit: true, cellOpen: true, tookCloak: true, guardGone: true, sawWarden: true });
+  s.room = 'guardroom';
+  play(s, 'take', 'ledger');
+  play(s, 'use', 'hero', 'ledger');
+  assert.equal(heroIdentity(s).name, 'speaker.clerk');
+  play(s, 'use', 'hero', 'ledger');
+  assert.ok(!s.flags.wearingClerk, 'and off again');
+  assert.ok(!INTRO.rooms.guardroom.hotspots.some(h => h.id === 'hood'), 'no clerk hood on a peg any more');
+});
+
+test('the cot is two things: its frame gives the nail, its blanket the strip, in either order', () => {
+  for (const first of ['blanket', 'cot']) {
+    const s = newGame('intro');
+    Object.assign(s.flags, { cellLit: true, tookPlate: true });
+    enterStoryRoom(s, good);
+    play(s, 'take', first);
+    play(s, 'take', first === 'cot' ? 'blanket' : 'cot');
+    assert.ok(s.inventory.includes('nail') && s.inventory.includes('strip'), `${first} first`);
+    assert.deepEqual(play(s, 'take', 'cot').spoken, ['line.i.cotEmpty']);
+    assert.deepEqual(play(s, 'take', 'blanket').spoken, ['line.i.blanketEnough']);
+  }
 });

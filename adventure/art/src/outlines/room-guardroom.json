@@ -1,0 +1,50 @@
+{
+ "frames": {
+  "grate": {
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 232,
+    "h": 438
+   }
+  },
+  "downStairs": {
+   "frame": {
+    "x": 234,
+    "y": 0,
+    "w": 154,
+    "h": 358
+   }
+  },
+  "stove": {
+   "frame": {
+    "x": 390,
+    "y": 0,
+    "w": 186,
+    "h": 234
+   }
+  }
+ },
+ "meta": {
+  "image": "room-guardroom.png",
+  "size": {
+   "w": 1024,
+   "h": 438
+  },
+  "scale": "1"
+ },
+ "place": {
+  "grate": {
+   "x": 527,
+   "y": 77
+  },
+  "downStairs": {
+   "x": -3,
+   "y": 117
+  },
+  "stove": {
+   "x": 284,
+   "y": 161
+  }
+ }
+}

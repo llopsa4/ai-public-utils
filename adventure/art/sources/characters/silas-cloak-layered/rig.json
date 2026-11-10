@@ -1,0 +1,199 @@
+{
+ "version": 1,
+ "outfit": "cloak",
+ "canvas": {
+  "width": 1024,
+  "height": 1536
+ },
+ "height": 220,
+ "baseline": 1500,
+ "sourceHeight": 1409,
+ "overlap": 25,
+ "order": [
+  "farUpperArm",
+  "farForearm",
+  "farThigh",
+  "farShin",
+  "farBoot",
+  "nearThigh",
+  "nearShin",
+  "nearBoot",
+  "torso",
+  "nearUpperArm",
+  "nearForearm"
+ ],
+ "joints": {
+  "nearShoulder": [
+   422,
+   425
+  ],
+  "nearElbow": [
+   379,
+   611
+  ],
+  "farShoulder": [
+   607,
+   426
+  ],
+  "farElbow": [
+   641,
+   611
+  ],
+  "nearHip": [
+   475,
+   776
+  ],
+  "farHip": [
+   588,
+   776
+  ],
+  "nearKnee": [
+   434,
+   1080
+  ],
+  "farKnee": [
+   612,
+   1080
+  ],
+  "nearAnkle": [
+   414,
+   1380
+  ],
+  "farAnkle": [
+   624,
+   1380
+  ]
+ },
+ "eyes": [
+  {
+   "x": 583,
+   "y": 190,
+   "rx": 7,
+   "ry": 3,
+   "skinAt": [
+    581,
+    203
+   ],
+   "blinkRy": 7,
+   "lashTop": -1,
+   "lashBottom": 6
+  }
+ ],
+ "face": {
+  "mouth": {
+   "x": 592,
+   "y": 238,
+   "rx": 8,
+   "ry": 3
+  },
+  "brows": [
+   {
+    "x0": 563,
+    "x1": 600,
+    "y0": 168,
+    "y1": 184,
+    "inner": "right"
+   }
+  ]
+ },
+ "portrait": [
+  440,
+  80,
+  240,
+  240
+ ],
+ "ember": null,
+ "poseEmbers": {},
+ "walk": {
+  "frames": 8,
+  "contactFrames": [
+   0,
+   4
+  ],
+  "hipSwing": 14,
+  "armSwing": 26,
+  "lift": 60,
+  "torsoLeanDegrees": 2,
+  "widthScale": 1.0,
+  "strideSource": 440,
+  "references": {
+   "contact": "walk-contact.png",
+   "passing": "walk-passing.png"
+  },
+  "calibration": "Silas's springy, theatrical stride: a little more hip and arm swing than Mara's, a higher foot lift and a bounce at each contact, the chin up (less lean). Fixed source bone lengths and planted-foot IK constrain the silhouette. In the cloak: its lower panels ride the thigh layers (Codex, joint-positions.json cloakPanels), so they swing with the stride.",
+  "footRollDegrees": 16,
+  "hipSwayDegrees": 2,
+  "torsoSwayDegrees": 1.5,
+  "weightDrop": 11,
+  "transitionMs": 90,
+  "soles": {
+   "near": {
+    "heel": [
+     362,
+     1500
+    ],
+    "toe": [
+     528,
+     1500
+    ]
+   },
+   "far": {
+    "heel": [
+     648,
+     1499
+    ],
+    "toe": [
+     757,
+     1499
+    ]
+   }
+  },
+  "footCentre": -40,
+  "liftEarly": 1
+ },
+ "idle": {
+  "file": "idle.png",
+  "sha256": "3deb5ae8b73384ce198540b6584be1312164bf26ddead25cbf4deb13ace86819",
+  "sourceHeight": 1409,
+  "baseline": 1500,
+  "anchorX": 530,
+  "eyes": [
+   {
+    "x": 554,
+    "y": 197,
+    "rx": 9,
+    "ry": 4,
+    "blinkRy": 8,
+    "lashTop": -1,
+    "lashBottom": 6,
+    "skinAt": [
+     554,
+     210
+    ]
+   },
+   {
+    "x": 586,
+    "y": 199,
+    "rx": 5,
+    "ry": 4,
+    "blinkRy": 6,
+    "lashTop": -1,
+    "lashBottom": 5,
+    "skinAt": [
+     586,
+     212
+    ]
+   }
+  ],
+  "ember": null,
+  "note": "Relaxed standing pose in the cloak, hood up (Codex, silas-cloak-layered, approved 2026-11-10)."
+ },
+ "overlays": {
+  "clerk": {
+   "stand": "mask-clerk-hood-stand.png",
+   "kneel": "mask-clerk-hood-kneel.png",
+   "lie": "mask-clerk-hood-lie.png",
+   "nearForearm": "mask-clerk-ledger.png"
+  }
+ }
+}

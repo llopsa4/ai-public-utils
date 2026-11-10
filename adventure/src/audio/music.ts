@@ -176,17 +176,28 @@ export class Music {
       const t = t0 + bar * TITLE_BAR, chord = TITLE.chords[bar], low = chord[0] - 12;
       for (const n of chord) this.pad(bus, semis(root, n), t, TITLE_BAR, 0.035, 800);
       const level = 0.045 + bar * 0.012, cutoff = 500 + bar * 330;
-      for (let i = 0; i < 16; i++) this.ostinato(bus, semis(root, i % 4 === 2 ? low + 12 : low), t + i * step, step * 0.92, level * (i % 4 === 0 ? 1 : 0.62), cutoff);
+      // The last sixteenth before the hit is silent: a breath held.
+      const last = bar === 3 ? 15 : 16;
+      for (let i = 0; i < last; i++) this.ostinato(bus, semis(root, i % 4 === 2 ? low + 12 : low), t + i * step, step * 0.92, level * (i % 4 === 0 ? 1 : 0.62), cutoff);
       if (bar <= 1) for (let i = 0; i < 16; i += 2) this.tick(bus, t + i * step, i % 8 === 0);
       if (bar >= 1) for (const i of [0, 8]) this.taiko(bus, t + i * step, 0.16 + bar * 0.04);
       if (bar >= 2) this.braam(bus, semis(root, low), t, TITLE_BAR);
-      if (bar === 3) for (const i of [12, 13, 14, 15]) this.taiko(bus, t + i * step, 0.14 + (i - 12) * 0.04);
+      if (bar === 3) for (const i of [11, 12, 13, 14]) this.taiko(bus, t + i * step, 0.16 + (i - 11) * 0.06);
     }
-    // The hit: taiko and a braam on D, with the strings on a high D.
+    // The riser: two bars of noise sweeping up, and the strings climbing a fifth into the hit.
     const hit = t0 + REVEAL_TIMING.hit;
-    this.taiko(bus, hit, 0.55);
-    this.braam(bus, semis(root, -12), hit, TITLE_BAR * 1.5);
-    this.strings(bus, semis(root, 24), hit, TITLE_BAR * 2, 0.05);
+    this.riser(bus, hit - TITLE_BAR * 2, TITLE_BAR * 2 - step);
+    this.strings(bus, semis(root, 19), hit - TITLE_BAR * 2, TITLE_BAR, 0.025);
+    this.strings(bus, semis(root, 22), hit - TITLE_BAR, TITLE_BAR - step, 0.035);
+    // The hit, as "The Rift" appears: layered low taikos, a braam doubled at the octave and the fifth,
+    // a crash ringing out in the hall, and the strings on a full D chord; about twice the old hit.
+    for (const [dt, level] of [[0, 0.9], [0.012, 0.7], [0.03, 0.55]] as const) this.taiko(bus, hit + dt, level);
+    this.braam(bus, semis(root, -12), hit, TITLE_BAR * 1.8);
+    this.braam(bus, semis(root, -24), hit, TITLE_BAR * 1.8);
+    this.braam(bus, semis(root, -5), hit, TITLE_BAR * 1.5);
+    this.hit(bus, hit, 'highpass', 3500, 0.35, 2.8);
+    this.hit(bus, hit, 'bandpass', 900, 0.3, 1.6);
+    for (const n of [12, 19, 24, 28]) this.strings(bus, semis(root, n), hit, TITLE_BAR * 2, 0.045);
     // The release: D major at last (warm's own chord), the strings settling on F♯ then A, and one
     // last soft pulse of the ostinato dying away.
     for (let bar = 4; bar < 8; bar++) {
@@ -196,6 +207,30 @@ export class Music {
     }
     this.strings(bus, semis(root, 28), t0 + TITLE_BAR * 5.5, TITLE_BAR * 1.5, 0.035);
     this.strings(bus, semis(root, 31), t0 + TITLE_BAR * 6.5, TITLE_BAR * 1.5, 0.03);
+  }
+
+  /** A rising swell: noise through a bandpass sweeping up, growing louder until it stops dead. */
+  private riser(bus: GainNode, t: number, length: number): void {
+    const ctx = this.ctx;
+    if (!this.noiseBuffer) {
+      this.noiseBuffer = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+      const d = this.noiseBuffer.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = this.noiseBuffer;
+    src.loop = true;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'bandpass'; filter.Q.value = 2.5;
+    filter.frequency.setValueAtTime(280, t);
+    filter.frequency.exponentialRampToValueAtTime(5200, t + length);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(0.16, t + length);
+    gain.gain.setValueAtTime(0.0001, t + length + 0.01);
+    src.connect(filter).connect(gain).connect(bus);
+    src.start(t);
+    src.stop(t + length + 0.05);
   }
 
   /** A low hit (taiko and braam on D, through the hall) that opens the title theme on the first click. */

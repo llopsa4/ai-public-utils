@@ -34,7 +34,7 @@ test("New game: Silas's intro, from the dark cell through two disguises to Sigri
   await shot(page, '2-lit');
   // The frame, fished off the guard's table; Harrow's face from the roster.
   await act(page, 'take', 'cot');
-  await act(page, 'take', 'cot');
+  await act(page, 'take', 'blanket');
   await act(page, 'use', 'item:nail', 'strip');
   await act(page, 'use', 'table', 'hookLine');
   await act(page, 'look', 'roster');
@@ -65,15 +65,14 @@ test("New game: Silas's intro, from the dark cell through two disguises to Sigri
   expect(freed.flags.guardGone).toBe(true);
   expect(freed.inventory).toContain('keys');
   await act(page, 'use', 'cellDoor', 'keys');
-  await act(page, 'go', 'cellDoor');
+  await act(page, 'take', 'cloak');
+  await act(page, 'go', 'cellStairs');
   expect((await state(page)).room).toBe('guardroom');
 
   // The guardroom: Kell knows Harrow, so Silas becomes the tally clerk.
   await act(page, 'read', 'warden');
-  await act(page, 'take', 'hood');
   await act(page, 'take', 'ledger');
-  await act(page, 'use', 'item:hood', 'ledger');
-  await act(page, 'use', 'hero', 'maskClerk');
+  await act(page, 'use', 'hero', 'ledger');
   await shot(page, '4-clerk');
   await act(page, 'talk', 'warden', undefined, [
     "Read in them: Tally clerk. Quartermaster wants the night count. Your name's in his book, Kell.",

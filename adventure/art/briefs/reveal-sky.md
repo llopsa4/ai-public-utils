@@ -1,6 +1,6 @@
 # reveal-sky
 
-Status: **requested** · prop · chapter intro · in the game as `art/src/intro/reveal/reveal-sky.webp`
+Status: **final** · prop · chapter intro · in the game as `art/src/intro/reveal/reveal-sky.webp`
 
 ## What the game does with it
 

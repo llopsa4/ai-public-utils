@@ -1,6 +1,6 @@
 # reveal-mountains
 
-Status: **requested** · prop · chapter intro · in the game as `art/src/intro/reveal/reveal-mountains.webp`
+Status: **final** · prop · chapter intro · in the game as `art/src/intro/reveal/reveal-mountains.webp`
 
 ## What the game does with it
 

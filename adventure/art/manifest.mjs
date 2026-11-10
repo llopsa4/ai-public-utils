@@ -133,34 +133,38 @@ export const RIGS = {
       silas: { ...pack, portraitId: 'silas', moods: ['neutral', 'worried', 'angry'] },
       'silas-harrow': { ...pack, overlay: 'harrow', noBlink: true, portraitId: 'silas-harrow', moods: ['neutral'] },
       'silas-clerk': { ...pack, overlay: 'clerk', forearmRaise: 1.6, portraitId: 'silas-clerk', moods: ['neutral'] },
+      // In his own cloak, hood up (Codex's silas-cloak-layered pack): from the cell's corridor on.
+      'silas-cloak': { ...pack, layeredPack: 'sources/characters/silas-cloak-layered', portraitId: 'silas-cloak', moods: ['neutral', 'worried', 'angry'] },
+      'silas-cloak-clerk': { ...pack, layeredPack: 'sources/characters/silas-cloak-layered', overlay: 'clerk', forearmRaise: 1.6, portraitId: 'silas-cloak-clerk', moods: ['neutral'] },
     };
   })(),
-  // Benn: Codex's drawings (art/inbox/char-guard/HANDOFF.md). He never walks: his long coat stays
-  // whole above the hem; kneeling, lying and sitting asleep are drawn. sit.png is his figure from
+  // Benn: Codex's drawings (art/inbox/char-guard/HANDOFF.md). He walks the long-coat way: the coat
+  // stays whole above the hem and only the hem, shins and boots step; kneeling, lying and sitting asleep are drawn. sit.png is his figure from
   // Codex's sitting picture with the chair (right colours), cut out along the chair-free one's outline
   // (the cell paints its own chair; the chair-free picture's colours were off: art/CODEX-FIXES.md).
   guard: {
     dir: 'intro/', sits: 'asleep',
-    source: 'sources/characters/char-guard/body.png', armLayer: 'sources/characters/char-guard/arm.png', height: 216, walks: false,
+    source: 'sources/characters/char-guard/body.png', armLayer: 'sources/characters/char-guard/arm.png', height: 216, walks: true,
     armPivot: [368, 377],
     // Saluting his "sergeant" in the cell (the key steal): elbow measured on arm.png.
-    salute: { upperArm: -100, forearm: -70, elbow: [325, 600] },
+    salute: { upperArm: -100, forearm: -70, elbow: [325, 600], capBelow: 45, backEdge: [[372, 300], [334, 900]] },
     hipY: 1130, splitX: 485, hips: { near: [420, 1130], far: [560, 1130] }, knees: { near: [405, 1290], far: [575, 1290] },
     eyes: [{ x: 536, y: 150, rx: 9, ry: 4, skinAt: [536, 162] }, { x: 574, y: 146, rx: 4, ry: 3, skinAt: [571, 157] }],
     portrait: [420, 70, 210, 210], moods: ['neutral'],
     face: { mouth: { x: 557, y: 192, rx: 10, ry: 3 }, brows: [{ x0: 520, x1: 560, y0: 128, y1: 135, inner: 'right' }, { x0: 565, x1: 580, y0: 125, y1: 131, inner: 'left' }] },
   },
   // Kell: Codex's drawings (art/inbox/intro-next-review/HANDOFF.md), measured on the 1024x1536
-  // canvas. Broad and heavy; he never walks (he leaves for the kitchen off-screen). One eye shows
+  // canvas. Broad and heavy; he walks off down the stairs to the kitchen. One eye shows
   // in his three-quarter view; kneeling and lying are drawn.
   // Benn once Silas has lifted his keys: the same drawings with the key ring painted out
   // (art/sources/characters/char-guard-nokeys); his portrait stays the guard's.
   get 'guard-nokeys'() {
-    return { ...this.guard, source: 'sources/characters/char-guard-nokeys/body.png', armLayer: 'sources/characters/char-guard-nokeys/arm.png', noPortrait: true };
+    // Upstairs he only dozes on his stool: no walk frames (they would double the sheet).
+    return { ...this.guard, source: 'sources/characters/char-guard-nokeys/body.png', armLayer: 'sources/characters/char-guard-nokeys/arm.png', noPortrait: true, walks: false };
   },
   warden: {
     dir: 'intro/',
-    source: 'sources/characters/char-warden/body.png', armLayer: 'sources/characters/char-warden/arm.png', height: 230, walks: false,
+    source: 'sources/characters/char-warden/body.png', armLayer: 'sources/characters/char-warden/arm.png', height: 230, walks: true,
     armPivot: [300, 330],
     hipY: 900, splitX: 490, hips: { near: [350, 900], far: [620, 900] }, knees: { near: [340, 1180], far: [630, 1180] },
     fidgetLean: -3,
@@ -168,19 +172,9 @@ export const RIGS = {
     portrait: [385, 15, 240, 240], moods: ['neutral'],
     face: { mouth: { x: 552, y: 156, rx: 14, ry: 4 }, brows: [{ x0: 500, x1: 560, y0: 80, y1: 93, inner: 'right' }, { x0: 566, x1: 582, y0: 82, y1: 94, inner: 'left' }] },
   },
-  // Sigrid: a stand-in until Codex redraws her two masters (art/CODEX-FIXES.md: the far foot floats
-  // above the floor line). Her two-sided pack is rigged and ready: then this becomes
-  //   sigrid: { layeredPack: 'sources/characters/sigrid-layered', dir: 'intro/', height: 228, walks: true, portraitId: 'sigrid', moods: ['neutral', 'worried', 'angry'] },
-  sigrid: {
-    dir: 'intro/', variant: { hue: 205, sat: 0.8, light: 0.62, skin: 1.08, headgear: { kind: 'cap', color: [214, 196, 140] } },
-    source: 'sources/characters/char-mara-casual/body.png', armLayer: 'sources/characters/char-mara-casual/arm.png', height: 228, walks: false,
-    armPivot: [355, 290],
-    hipY: 820, splitX: 505, hips: { near: [450, 820], far: [560, 820] }, knees: { near: [428, 1095], far: [579, 1085] },
-    fidgetLean: -3,
-    eyes: [{ x: 528, y: 115, rx: 13, ry: 6, skinAt: [528, 128] }, { x: 562, y: 115, rx: 9, ry: 6, skinAt: [562, 128] }],
-    portrait: [370, 0, 360, 360], moods: ['neutral'],
-    face: { mouth: { x: 549, y: 155, rx: 13, ry: 4 }, brows: [{ x0: 509, x1: 549, y0: 93, y1: 105, inner: 'right' }, { x0: 557, x1: 571, y0: 96, y1: 105, inner: 'left' }] },
-  },
+  // Sigrid: Codex's two-sided pack (art/sources/characters/sigrid-layered and its left/ set), with
+  // Codex's foot fix (art/inbox/sigrid-layered/FOOT-FIX-HANDOFF.md): both soles on the floor line.
+  sigrid: { layeredPack: 'sources/characters/sigrid-layered', dir: 'intro/', height: 228, walks: true, portraitId: 'sigrid', moods: ['neutral', 'worried', 'angry'] },
 };
 
 // Explicit source packs are opt-in: every other character retains the legacy rig.
@@ -202,7 +196,7 @@ export const MANIFEST = [
     ['plains', "The ash plains rolling away below the mountains: grey-brown flats, the Rift's dark jagged crack running through the middle into the distance, and far off on the right the kilns' orange glow and chimney smoke. Transparent above the land."],
     ['ridge', 'The near ridge in the lower left: a dark snowy cliff, and on its top Ironhaven, the city of iron and snow: walls, towers and a few lit windows, small against the land. Transparent above the ridge. Ironhaven sits about a third from the left and a third from the top (around x 330, y 270 of 1280x720).'],
   ].map(([layer, subject]) => ({ id: `reveal-${layer}`, kind: 'prop', file: `intro/reveal/reveal-${layer}.webp`, size: { w: 1280, h: 720 }, anchor: 'top-left',
-    chapter: 'intro', status: 'requested', generator: 'Codex (stand-in: reveal.mjs)', subject })),
+    chapter: 'intro', status: 'final', generator: 'Codex', subject })),
   { id: 'title-ironhaven-courtyard', kind: 'prop', file: 'title/ironhaven-courtyard.webp', size: { w: 1280, h: 720 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Empty Ironhaven courtyard, half covered in snow; no characters or baked-in artifacts. Distant fire and bare flag bracket.' },
   { id: 'title-gauntlet', kind: 'prop', file: 'title/title-gauntlet.png', width: 160, anchor: 'bottom-centre', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Mara\'s abandoned gauntlet, independent transparent foreground object.' },
   { id: 'title-ironhaven-flag', kind: 'prop', file: 'title/ironhaven-flag.png', size: { w: 192, h: 220 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Six frames of Ironhaven\'s hanging flag, 3 by 2 cells of 64 by 110 pixels.' },
@@ -364,6 +358,8 @@ export const MANIFEST = [
     ['silas', 'Silas, the con man.', 220],
     ['silas-harrow', 'Silas wearing the Harrow mask (only the face and head differ from char-silas).', 220],
     ['silas-clerk', "Silas as the tally clerk: hood up, a ledger held to his chest (only the head and arms differ from char-silas).", 220],
+    ['silas-cloak', 'Silas in his own hooded cloak, hood up framing his face (Codex, silas-cloak-layered).', 220],
+    ['silas-cloak-clerk', 'Silas in his cloak as the tally clerk: the hood pulled low, the ledger to his chest.', 220],
     ['guard', "Benn, the young night guard of Ironhaven's cells.", 216],
     ['guard-nokeys', "Benn without his key ring (after Silas lifts it).", 216],
     ['warden', "Kell, the guardroom guard of Ironhaven's prison.", 230],
@@ -392,6 +388,12 @@ export const MANIFEST = [
     file: 'intro/objects/guardroom-hood.png', sheet: 'intro/objects/guardroom-hood.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
   { ...object('guardroom-ledger', 'The red-brown tally ledger lying on the guardroom shelf.', ['idle']),
     file: 'intro/objects/guardroom-ledger.png', sheet: 'intro/objects/guardroom-ledger.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
+  // Silas's hooded cloak on its nail in the cell's corridor, cut from Codex's painting (the wall behind
+  // it painted in from the stones beside it) so it goes when he takes it.
+  { ...object('cell-cloak', "Silas's confiscated hooded cloak hanging on a nail on the corridor wall.", ['idle']),
+    file: 'intro/objects/cell-cloak.png', sheet: 'intro/objects/cell-cloak.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
+  { ...object('guardroom-torch', 'A wall torch: a pitch-wrapped head on a wooden haft, for the iron brackets on the guardroom walls (unlit: the game adds the flame).', ['idle']),
+    file: 'intro/objects/guardroom-torch.png', sheet: 'intro/objects/guardroom-torch.json', chapter: 'intro', generator: 'intro.mjs' },
   { ...object('table-frame', "Silas's articulated brass mask frame lying flat on the guard's table, with a clear brass rim and open centre.", ['idle']),
     file: 'intro/objects/table-frame.png', sheet: 'intro/objects/table-frame.json', chapter: 'intro', status: 'final', generator: 'Codex' },
   { ...object('cell-gate', 'A smaller dark iron cell gate below fixed upper bars, with closed and visibly swung-open views.', ['closed', 'open']),
@@ -552,6 +554,25 @@ MANIFEST.push(...characterPack({
   notes: ["The sword: its scabbard hangs from her belt at the left hip, hilt forward, and belongs to the torso layer: keep it clear of the legs below mid-thigh, so the legs can swing behind and in front of it. Her coat ends at mid-thigh, split at the sides: draw the legs fully separate below it."],
 }));
 for (const e of MANIFEST) if (/^(char|portrait)-sigrid$/.test(e.id)) e.builtFrom = 'sigrid-layered';
+
+// Silas in his own hooded cloak (taken from the cell's corridor wall: the intro's last outfit), hood up
+// framing the face, the whole face open. A full pack like his casual one; his clerk guise in it is the
+// hood pulled lower and the ledger to the chest (mask layers, like mask-clerk-*). Until it arrives the
+// game shows his casual pack (rigs silas-cloak and silas-cloak-clerk follow on delivery).
+MANIFEST.push(...characterPack({
+  who: 'silas-cloak', pack: 'silas-cloak-layered', chapter: 'intro', heightPx: 220, sourcePx: 1409, pronoun: 'he',
+  cast: `${CAST.silas} Here in his own travelling cloak: a long, dark, worn wool cloak with a deep hood, the hood UP and framing his face like a cowl, the whole face clearly visible and lit (no shadow over the eyes), the cloak open at the front over his waistcoat and shirt, falling to mid-calf.`,
+  idle: 'Relaxed and theatrical: weight on one leg, one hand drawing the cloak a little round him, the faint amused smile; the hood up, the face open.',
+  gait: "His walk: light and quick, a showman's spring, the cloak swinging behind the stride.",
+  kneel: 'The whole figure down on one knee, facing right, the cloak pooled on the floor, looking at something low on the ground.',
+  lie: 'The whole figure lying on his back, head to the right, eyes closed, the cloak spread under him, the hood fallen back round his head.',
+  notes: ['The cloak belongs to the torso layer down to mid-thigh; below that, draw its lower part as separate back and front panels on the far and near thigh layers, so it swings with the stride and never hides a leg completely.',
+    'Also deliver, in the same folder, the clerk guise as mask layers over this pack (like silas-layered/mask-clerk-*): mask-clerk-hood-stand.png, mask-clerk-hood-kneel.png, mask-clerk-hood-lie.png (the hood pulled lower over the brow, the face still visible from the eyes down) and mask-clerk-ledger.png (the ledger held to the chest by the near forearm).'],
+}));
+// Delivered and rigged (2026-11-10); the lower cloak was moved onto the still torso layer so it hangs
+// rather than swinging as boards with the thighs (Codex's swinging cut is in art/inbox/silas-cloak-layered).
+for (const e of MANIFEST) if (e.pack === 'silas-cloak-layered') Object.assign(e, { redo: false, status: 'final' });
+for (const e of MANIFEST) if (/^(char|portrait)-silas-cloak(-clerk)?$/.test(e.id)) e.builtFrom = 'silas-cloak-layered';
 
 // ---------------------------------------- two-sided movement: Mara facing left, like Sigrid ---
 // Sigrid's pack was drawn twice, facing right and facing left (art/inbox/sigrid-layered/left/), so

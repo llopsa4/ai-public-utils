@@ -7,13 +7,18 @@ Status: **final** · room · chapter intro · in the game as `art/src/intro/room
 In the game as the room `guardroom` (intro). Mara (232 px tall) and the others walk in the floor band: x 0–1280, y 536–690.
 
 Everything the player can click, at these places (art pixels), each must be painted there and recognisable:
-- **Clerk's hood** (`hood`, x 220–288, y 236–360): look at, take. Only there at some points of the story.
 - **Tally ledger** (`ledger`, x 392–472, y 392–428): look at, take, open. Only there at some points of the story.
 - **Iron grate** (`grate`, x 1120–1272, y 220–524): look at, open, go through, use (an exit).
 - **Stairs down** (`downStairs`, x 0–80, y 300–524): look at, go through (an exit).
 - **Stove** (`stove`, x 600–720, y 360–524): look at, use.
 
-Story characters stand at: Benn (764, 612); Kell (940, 608). Keep the wall behind them uncluttered at head height.
+Drawn separately as objects (leave their spot plain in the painting, they stand there):
+- `guardroom-torch` standing on (82, 104).
+- `guardroom-torch` standing on (958, 102).
+- `guardroom-torch` standing on (821, 262).
+- `guardroom-ledger` standing on (432, 426).
+
+Story characters stand at: Benn (764, 612); Kell (544, 608). Keep the wall behind them uncluttered at head height.
 
 
 ## Technical

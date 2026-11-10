@@ -119,6 +119,8 @@ export interface RoomDef {
   dark?: { if: Condition[]; lights: { x: number; y: number; r: number }[]; heroR: number; alpha?: number };
   /** Outer walkable polygon followed by optional holes (obstacles). */
   walkable: { outer: Polygon; holes: Polygon[] };
+  /** Other floors for other states, the first whose conditions hold (the cell once its door is open). */
+  walkableWhen?: { if: Condition[]; walkable: { outer: Polygon; holes: Polygon[] } }[];
   scale: DepthScale;
   /** What the floor sounds like underfoot (default stone). */
   surface?: 'stone' | 'metal' | 'ash';
@@ -149,7 +151,11 @@ export interface RoomDef {
    * The room's people. `task` holds an animation tag while its conditions hold (Benn asleep on his
    * chair); once `visibleIf` stops holding, the person leaves (fades out).
    */
-  actors: { id: NpcId; x: number; y: number; body?: number; visibleIf?: Condition[]; task?: ActorTask | readonly ActorTask[]; sheet?: { if?: Condition[]; pick: string }[] }[];
+  actors: { id: NpcId; x: number; y: number; body?: number; visibleIf?: Condition[]; task?: ActorTask | readonly ActorTask[]; sheet?: { if?: Condition[]; pick: string }[];
+    /** Once `visibleIf` stops holding, walks here (off-screen) before going, instead of fading where they stand. */
+    leaves?: { to: Point };
+    /** Asleep (holding `sit`) while these hold: "z z Z" now and then, with a soft snore (src/game/room/snore.ts). */
+    snores?: Condition[] }[];
 }
 
 export interface ActorState {

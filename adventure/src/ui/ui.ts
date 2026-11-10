@@ -259,7 +259,8 @@ export class Ui {
       title.classList.remove('awaiting-begin');
       title.classList.add('begun');
       prompt.hidden = true;
-      ($('title').querySelector('.menu-list button:not([hidden])') as HTMLButtonElement | null)?.focus({ preventScroll: true });
+      // As showTitle: focus the heading, so no menu entry shows as selected until Tab or a hover.
+      $('title-name').focus({ preventScroll: true });
     };
     for (const kind of kinds) window.addEventListener(kind, begin, { capture: true });
   }

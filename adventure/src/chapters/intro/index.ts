@@ -20,7 +20,7 @@ export const INTRO: Chapter = {
   start: { room: START_ROOM, entry: START_ENTRY },
   npcs: {
     guard: { pose: 'stand', face: 'left' },
-    warden: { pose: 'stand', face: 'left' },
+    warden: { pose: 'stand', face: 'right' },
     sigrid: { pose: 'stand', face: 'left' },
   },
   startItems: [],
@@ -35,7 +35,7 @@ export const INTRO: Chapter = {
   metFlags: MET_FLAGS,
   interact,
   rules: RULES,
-  flagRooms: { harrowMade: 'cell', clerkMade: 'guardroom' },
+  flagRooms: { harrowMade: 'cell', clerkMade: 'guardroom', tookHood: 'guardroom' },
   actorVerbs: ACTOR_VERBS,
   itemVerbs: ITEM_VERBS,
   interactionKeys: Object.keys(strings).filter(k => k.startsWith('line.i.')),

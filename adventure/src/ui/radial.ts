@@ -4,13 +4,23 @@ import { t } from '../engine/i18n';
 import type { Point, Verb } from '../engine/types';
 import { LOGICAL_H, LOGICAL_W, type Ui } from './ui';
 
+/** How soon a second click on an exit counts as a double-click (as the room's own exit clicks). */
+const DOUBLE_CLICK_MS = 400;
+
 export function openRadial(ui: Ui, at: Point, name: string, verbs: Verb[], onPick: (verb: Verb) => void): void {
   closeRadial(ui);
   const ring = ui.radial;
   ring.replaceChildren();
   const backdrop = document.createElement('div');
   backdrop.className = 'radial-backdrop';
-  backdrop.addEventListener('pointerdown', e => { e.preventDefault(); closeRadial(ui); });
+  // A quick second click on an exit (a double-click) takes it: the ring opened on the first click
+  // covers the stage, so that click lands here, not on the room.
+  const opened = performance.now();
+  backdrop.addEventListener('pointerdown', e => {
+    e.preventDefault();
+    closeRadial(ui);
+    if (verbs.includes('go') && performance.now() - opened < DOUBLE_CLICK_MS) onPick('go');
+  });
   backdrop.addEventListener('contextmenu', e => e.preventDefault());
   ring.append(backdrop);
 

@@ -334,9 +334,9 @@ dialog[open] {
 #title-name:focus { outline: none; }
 
 #title .title-sub {
-  font-family: "IM Fell English", Georgia, serif;
+  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
   font-style: normal;
-  font-size: 1.3em;
+  font-size: 1.6em;
 }
 
 #title .menu-list {
@@ -344,9 +344,12 @@ dialog[open] {
 }
 
 /* The Ashlands reveal (src/game/reveal.ts): "The Rift" on the music's hit, then "Ashlands". */
+/* The title sits high, centred in the sky above the far mountains (the panorama's land starts below
+   about 40% of the height). */
 #reveal {
   position: absolute; inset: 0; z-index: 40;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+  padding-top: 6%; box-sizing: border-box;
   pointer-events: none; color: #ffd79a; text-align: center;
 }
 #reveal[hidden] { display: none; }
@@ -355,7 +358,7 @@ body.in-reveal #bar { visibility: hidden; }
   margin: 0; font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif; font-weight: 400;
   font-size: 7em; line-height: 1; white-space: nowrap;
   text-shadow: 0 0 0.4em rgb(255 120 40 / 0.55), 0 4px 18px rgb(0 0 0 / 0.95);
-  opacity: 0; transform: scale(1.06); transition: opacity 1.4s ease-out, transform 6s ease-out;
+  opacity: 0; transform: scale(1.18); transition: opacity 0.35s ease-out, transform 1.2s cubic-bezier(.2,.8,.3,1);
 }
 #reveal-sub {
   margin: 0.2em 0 0; font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
@@ -363,6 +366,15 @@ body.in-reveal #bar { visibility: hidden; }
   opacity: 0; transition: opacity 2.4s ease-in-out;
 }
 #reveal.title-in #reveal-title { opacity: 1; transform: scale(1); }
+/* The hit: a warm flash behind the letters (#reveal::before), fading over about 0.6 s. */
+#reveal::before {
+  content: ""; position: absolute; left: 50%; top: 18%; width: 70%; height: 40%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgb(255 236 200 / 0.85), rgb(255 170 80 / 0.35) 45%, transparent 72%);
+  opacity: 0; pointer-events: none; transition: opacity 0.6s ease-out;
+}
+#reveal.flash::before { opacity: 1; transition: opacity 0.06s ease-in; }
+.reduce-motion #reveal::before { display: none; }
 #reveal.sub-in #reveal-sub { opacity: 1; }
 #reveal.out #reveal-title, #reveal.out #reveal-sub { opacity: 0; transition: opacity 1.6s ease-in; }
 #reveal-skip {
@@ -373,15 +385,17 @@ body.in-reveal #bar { visibility: hidden; }
 
 /* "Click anywhere to begin": after every page load, until the first click starts the music. The
    options and the note wait, then fade in. */
-/* The prompt sits where the options will be (over them, while they wait unseen), so nothing moves. */
-#title .title-actions { position: relative; }
+/* The prompt pulses in the middle of the screen, over the courtyard; the options wait unseen. */
 #title-begin {
   position: absolute;
-  top: 0.4em;
-  left: 0;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
   margin: 0;
   white-space: nowrap;
-  visibility: visible;
+  pointer-events: none;
+  color: #ffd79a;
   font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
   font-size: 1.9em;
   text-shadow: 0 2px 8px rgb(0 0 0 / 0.9);

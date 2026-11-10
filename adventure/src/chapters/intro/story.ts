@@ -16,6 +16,8 @@ const caught = (who: 'guard' | 'warden', p: 'g' | 'w', reset: string[]): Command
   say(`line.i.caught.think.${who}`),
   // Only imagined: Benn is back asleep on his chair (he had come over to the bars).
   ...(who === 'guard' ? [{ type: 'step', actor: 'guard', to: { x: 570, y: 326 }, instant: true } as Command] : []),
+  // Kell turns back to his watch.
+  ...(who === 'warden' ? [{ type: 'face', actor: 'warden', face: 'right' } as Command] : []),
   ...unset(`${p}Sus1`, `${p}Sus2`, `${p}Sus3`, ...reset),
   { type: 'fade', to: 'clear', ms: 700 },
   { type: 'checkpoint' },
@@ -48,9 +50,13 @@ export const STORY: StoryRules = {
     run: () => [{ type: 'wait', ms: 600 }, { type: 'walk', to: { x: 300, y: 304 }, face: 'right' }, { type: 'dialogue', id: 'sigrid' }],
   }],
   flagSounds: { cellOpen: 'latch', grateOpen: 'latch' },
+  // In his own cloak from the cell's corridor on (Codex's silas-cloak pack); the clerk is then his hood
+  // pulled low and the ledger.
   heroSheet: [
     { if: [{ flag: 'wearingHarrow' }], pick: 'silas-harrow' },
+    { if: [{ flag: 'wearingClerk' }, { flag: 'tookCloak' }], pick: 'silas-cloak-clerk' },
     { if: [{ flag: 'wearingClerk' }], pick: 'silas-clerk' },
+    { if: [{ flag: 'tookCloak' }], pick: 'silas-cloak' },
     { pick: 'silas' },
   ],
   heroName: [
@@ -59,18 +65,22 @@ export const STORY: StoryRules = {
   ],
   heroPortrait: [
     { if: [{ flag: 'wearingHarrow' }], pick: 'silas-harrow' },
+    { if: [{ flag: 'wearingClerk' }, { flag: 'tookCloak' }], pick: 'silas-cloak-clerk' },
     { if: [{ flag: 'wearingClerk' }], pick: 'silas-clerk' },
+    { if: [{ flag: 'tookCloak' }], pick: 'silas-cloak' },
   ],
   afterDialogue: (id, s) => {
     if (id === 'guard' && s.flags.gSus3) return caught('guard', 'g', ['guardAwake']);
     if (id === 'warden' && s.flags.wSus3) return caught('warden', 'w', []);
     if (id === 'guard' && s.flags.guardGone) return [say(s.flags.gotKeys ? 'line.i.afterGuardKeys' : 'line.i.afterGuard')];
     if (id === 'warden' && s.flags.wardenBusy) return [say('line.i.afterWarden')];
+    // Not fooled, not caught yet: back to watching the grate.
+    if (id === 'warden') return [{ type: 'face', actor: 'warden', face: 'right' }];
     // "Walk with me": Silas walks off towards the snow, Sigrid turns to go with him, and the camera
     // pulls back into the Ashlands reveal.
     if (id === 'sigrid' && s.flags.metSigrid) return [
       { type: 'walk', to: { x: 610, y: 304 }, face: 'right' },
-      { type: 'face', actor: 'sigrid', face: 'right' },
+      { type: 'step', actor: 'sigrid', to: { x: 560, y: 304 }, face: 'right' },
       { type: 'chooseChapter', reveal: 'ashlands' },
     ];
     return [];

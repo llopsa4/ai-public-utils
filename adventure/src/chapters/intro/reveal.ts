@@ -76,12 +76,14 @@ return class RevealScene extends Phaser.Scene {
     title.textContent = t('ui.revealTitle');
     sub.textContent = t('ui.revealSub');
     hint.textContent = t(touch ? 'ui.revealSkipTap' : 'ui.revealSkip');
-    box.classList.remove('title-in', 'sub-in', 'out');
+    box.classList.remove('title-in', 'sub-in', 'out', 'flash');
     box.hidden = false;
     // The game's bar (satchel, notebook, menu) steps aside for the cinematic.
     document.body.classList.add('in-reveal');
     const at = (s: number, run: () => void) => this.timers.push(window.setTimeout(run, s * 1000));
-    at(REVEAL_TIMING.hit, () => box.classList.add('title-in'));
+    // On the hit: a warm flash behind the letters, and the title lands from slightly larger.
+    at(REVEAL_TIMING.hit, () => box.classList.add('title-in', 'flash'));
+    at(REVEAL_TIMING.hit + 0.7, () => box.classList.remove('flash'));
     at(REVEAL_TIMING.subtitle, () => box.classList.add('sub-in'));
     at(REVEAL_TIMING.fadeOut, () => box.classList.add('out'));
     at(REVEAL_TIMING.end, () => this.finish(false));

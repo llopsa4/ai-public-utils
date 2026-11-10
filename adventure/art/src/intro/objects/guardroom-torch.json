@@ -1,0 +1,45 @@
+{
+ "frames": [
+  {
+   "filename": "0",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 14,
+    "h": 90
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 14,
+    "h": 90
+   },
+   "sourceSize": {
+    "w": 14,
+    "h": 90
+   },
+   "duration": 1000
+  }
+ ],
+ "meta": {
+  "app": "adventure art/intro.mjs",
+  "version": "1",
+  "image": "guardroom-torch.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 14,
+   "h": 90
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "idle",
+    "from": 0,
+    "to": 0,
+    "direction": "forward"
+   }
+  ]
+ }
+}

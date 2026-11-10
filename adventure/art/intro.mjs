@@ -84,4 +84,27 @@ const render = body => sharp(Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg
   await save('prison-door', render(s));
 }
 
+// A wall torch for the guardroom's iron brackets (a placeholder by Claude): a pitch-wrapped head on a
+// wooden haft, 14x90 art px. The game adds the flame and light (rooms.ts).
+{
+  const W2 = 14, H2 = 90, file = 'intro/objects/guardroom-torch.png';
+  const objects = join(here, 'src', 'intro', 'objects');
+  if (isFinal(file)) console.log(`  ${file}: final art, kept.`);
+  else {
+    const body = `<svg xmlns="http://www.w3.org/2000/svg" width="${W2}" height="${H2}">
+      <rect x="4" y="16" width="6" height="74" fill="#5a3a20"/><rect x="4" y="16" width="2" height="74" fill="#7a5230"/>
+      <rect x="4" y="40" width="6" height="2" fill="#3a2414"/><rect x="4" y="66" width="6" height="2" fill="#3a2414"/>
+      <rect x="1" y="2" width="12" height="16" rx="3" fill="#2a1a12"/><rect x="2" y="5" width="10" height="2" fill="#4a3020"/>
+      <rect x="2" y="10" width="10" height="2" fill="#4a3020"/><rect x="2" y="2" width="10" height="2" fill="#c06a2a"/>
+    </svg>`;
+    writeFileSync(join(objects, 'guardroom-torch.png'), await sharp(Buffer.from(body)).png().toBuffer());
+    const frame = { x: 0, y: 0, w: W2, h: H2 };
+    writeFileSync(join(objects, 'guardroom-torch.json'), JSON.stringify({
+      frames: [{ filename: '0', frame, rotated: false, trimmed: false, spriteSourceSize: frame, sourceSize: { w: W2, h: H2 }, duration: 1000 }],
+      meta: { app: 'adventure art/intro.mjs', version: '1', image: 'guardroom-torch.png', format: 'RGBA8888', size: { w: W2, h: H2 }, scale: '1',
+        frameTags: [{ name: 'idle', from: 0, to: 0, direction: 'forward' }] },
+    }, null, 1) + String.fromCharCode(10));
+  }
+}
+
 console.log('Intro placeholder rooms written to art/src/intro/rooms (the guardroom and the outer door).');

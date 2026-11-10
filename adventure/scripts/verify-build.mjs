@@ -50,6 +50,8 @@ const size = name => statSync(resolve(project, 'build', name)).size;
 // own budget and count neither in the game's total nor before the title screen.
 const { MANIFEST } = await import('../art/manifest.mjs');
 const artChapter = new Map(MANIFEST.map(e => [e.file.split('/').pop().replace(/\.\w+$/, ''), e.chapter ?? 'game']));
+// A room's hover-outline sheet (art/src/outlines/<room id>.png) loads with the room: its chapter.
+for (const e of MANIFEST) if (e.kind === 'room' && !artChapter.has(e.id)) artChapter.set(e.id, e.chapter ?? 'game');
 // A chapter's code chunk is named after its folder in src/chapters (ch2-<hash>.js, intro-<hash>.js).
 const chapterFolders = (await readdir(resolve(project, 'src', 'chapters'), { withFileTypes: true })).filter(d => d.isDirectory()).map(d => d.name);
 const chunkChapter = new RegExp(`^(${chapterFolders.join('|')})-[\\w-]{8}\\.js$`);
@@ -84,13 +86,15 @@ for (const entry of MANIFEST.filter(e => ['portrait', 'item', 'equipment', 'batt
 const firstLoad = built.filter(n => !later.test(n) && !actionIcon(n) && !deferredImages.has(n) && !laterChapter(n) && !n.endsWith('.woff')).reduce((sum, n) => sum + size(n), 0);
 const MB = 1024 * 1024;
 // Static count remains conservative about other UI assets; npm run e2e measures real requests.
-// 4.8 MB since chapter 2 (the game had reached 4.6 MB with chapter 1; later chapters are budgeted on their own below).
-const TOTAL_BUDGET = 4.8, FIRST_BUDGET = 1.75;
+// Doubled on 2026-11-10 at the user's request (were 4.8 and 1.75 MB; 4.8 since chapter 2, the game
+// had reached 4.6 MB with chapter 1; later chapters are budgeted on their own below).
+const TOTAL_BUDGET = 9.6, FIRST_BUDGET = 3.5;
 assert.ok(total < TOTAL_BUDGET * MB, `build is ${(total / MB).toFixed(2)} MB (budget ${TOTAL_BUDGET} MB)`);
 assert.ok(firstLoad < FIRST_BUDGET * MB, `first load is ${(firstLoad / MB).toFixed(2)} MB (budget ${FIRST_BUDGET} MB)`);
 // The fight screens' code (the `mount` chunk: React and Kiln Courier's battle and workshop screens).
 const fightCode = built.filter(n => /^mount-[\w-]{8}\.(js|css)$/.test(n)).reduce((sum, n) => sum + size(n), 0);
-const CHAPTER_ART_BUDGET = 2.5, LATER_CHAPTER_BUDGET = 1.5, FIGHT_CODE_BUDGET = 0.4;
+// Doubled with the totals above (were 2.5, 1.5 and 0.4 MB).
+const CHAPTER_ART_BUDGET = 5, LATER_CHAPTER_BUDGET = 3, FIGHT_CODE_BUDGET = 0.8;
 for (const [chapter, bytes] of Object.entries(perChapter)) {
   const budget = chapter === 'game' || chapter === 'ch1' ? CHAPTER_ART_BUDGET : LATER_CHAPTER_BUDGET;
   assert.ok(bytes < budget * MB, `${chapter} is ${(bytes / MB).toFixed(2)} MB (budget ${budget} MB)`);

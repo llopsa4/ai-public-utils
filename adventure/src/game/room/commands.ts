@@ -236,10 +236,9 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
   },
   chooseChapter: async (scene: RoomScene, command: Of<'chooseChapter'>): Promise<boolean> => {
     if (command.reveal) {
-      // The camera pulls back from the room as it fades, into the far view of the Ashlands.
+      // The room fades to black (no zoom), then the far view of the Ashlands.
       scene.leaving = true;
       scene.session.ui.closeRadial();
-      scene.cameras.main.zoomTo(scene.cameras.main.zoom * 0.7, 2600, 'Sine.easeIn');
       scene.cameras.main.fadeOut(2600, 0, 0, 0);
       await wait(scene, 2680);
       await scene.session.playReveal();

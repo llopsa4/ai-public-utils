@@ -1,6 +1,6 @@
 # reveal-ridge
 
-Status: **requested** · prop · chapter intro · in the game as `art/src/intro/reveal/reveal-ridge.webp`
+Status: **final** · prop · chapter intro · in the game as `art/src/intro/reveal/reveal-ridge.webp`
 
 ## What the game does with it
 

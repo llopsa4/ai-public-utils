@@ -86,5 +86,9 @@
  "room-guardroom": "final",
  "room-prison-door": "final",
  "icon-read": "final",
- "ui-suspicion-eye": "final"
+ "ui-suspicion-eye": "final",
+ "reveal-sky": "final",
+ "reveal-mountains": "final",
+ "reveal-plains": "final",
+ "reveal-ridge": "final"
 }

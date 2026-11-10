@@ -25,6 +25,7 @@ import type { Target } from './room/shared';
 import { activateFocus, clearFocus, cycleFocus, drawHover, hotspotLabels, onPointerDown, onPointerMove, openItemRing } from './room/input';
 import { applyTint, tintScenery, updateLighting } from './room/lighting';
 import { runScript } from './room/runner';
+import { updateSnores } from './room/snore';
 import { directionalStep } from './movement';
 
 /** Loads the shared sheets (props and Mara) and builds their animations. */
@@ -218,7 +219,8 @@ export class RoomScene extends Phaser.Scene {
     const state = this.session.state;
     this.room = chapter().rooms[state.room];
     for (const key of Object.keys(SHEETS)) if (this.textures.exists(key)) createSheetAnims(this, key);
-    this.area = new WalkArea(this.room.walkable.outer, this.room.walkable.holes);
+    this.floor = this.walkableNow();
+    this.area = new WalkArea(this.floor.outer, this.floor.holes);
     this.actors = new Map();
     this.objects = new Map();
     this.objectShadows = new Map();
@@ -359,12 +361,18 @@ export class RoomScene extends Phaser.Scene {
     });
   }
 
+  /** The floor the room has now: its first `walkableWhen` that holds, else its `walkable`. */
+  floor!: RoomDef['walkable'];
+  walkableNow(): RoomDef['walkable'] {
+    return this.room.walkableWhen?.find(w => conditionsHold(this.session.state, w.if))?.walkable ?? this.room.walkable;
+  }
+
   /** Walk area (green), holes (red), hotspots (yellow) and approach points, for fitting art. */
   drawDebug(): void {
     const g = this.add.graphics().setDepth(100000);
     const poly = (points: Point[], color: number) => g.lineStyle(1, color, 0.9).strokePoints(points as Phaser.Types.Math.Vector2Like[], true);
-    poly(this.room.walkable.outer, 0x40ff60);
-    for (const h of this.room.walkable.holes) poly(h, 0xff4040);
+    poly(this.floor.outer, 0x40ff60);
+    for (const h of this.floor.holes) poly(h, 0xff4040);
     for (const h of this.room.hotspots) {
       poly(h.polygon, 0xffd040);
       if (h.walkTo) g.fillStyle(0x40c0ff, 1).fillCircle(h.walkTo.x, h.walkTo.y, 2);
@@ -498,6 +506,9 @@ export class RoomScene extends Phaser.Scene {
   }
 
   refreshObjects(): void {
+    // A new floor once the state opens it (the cell door): walking and the crowd use the new area.
+    const floor = this.walkableNow();
+    if (floor !== this.floor) { this.floor = floor; this.area = new WalkArea(floor.outer, floor.holes); }
     const state = this.session.state;
     for (const def of this.room.objects) {
       const sprite = this.objects.get(def.id)!;
@@ -518,7 +529,10 @@ export class RoomScene extends Phaser.Scene {
       if (!actor?.sprite.active) continue;
       if (!conditionsHold(state, def.visibleIf)) {
         this.actors.delete(def.id);
-        this.tweens.add({ targets: actor.sprite, alpha: 0, duration: 700, onComplete: () => actor.sprite.destroy() });
+        const gone = () => this.tweens.add({ targets: actor.sprite, alpha: 0, duration: 700, onComplete: () => actor.sprite.destroy() });
+        // People who leave walk out of the room (Benn up the stairs, Kell down to the kitchen), then go.
+        if (def.leaves) void actor.walk([def.leaves.to]).then(gone);
+        else gone();
         continue;
       }
       const task = heldTask(def.task, state);
@@ -551,6 +565,7 @@ export class RoomScene extends Phaser.Scene {
     if (!this.hero?.sprite.active) return;
     this.updateKeyboardMovement(delta);
     this.props.update(time);
+    updateSnores(this, time);
     this.crowd?.update();
     this.ashways?.update(time);
     drawHover(this, time);

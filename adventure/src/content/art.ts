@@ -12,6 +12,10 @@ export const PORTRAIT_MOODS: Record<string, Mood[]> = {
   tobi: ['neutral', 'worried'],
   // Silas (his pack's portraits; his disguises have one mood).
   silas: ['neutral', 'worried', 'angry'],
+  // Silas in his cloak (Codex's pack): three moods, like his casual portraits.
+  'silas-cloak': ['neutral', 'worried', 'angry'],
+  // Sigrid (Codex's pack): three moods, like Mara's.
+  sigrid: ['neutral', 'worried', 'angry'],
 };
 
 /** Room background texture keys → file names in art/src/rooms (the game loads the .webp copy). */

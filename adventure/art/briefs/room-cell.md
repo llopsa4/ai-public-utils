@@ -17,12 +17,14 @@ Everything the player can click, at these places (art pixels), each must be pain
 - **Clay chip** (`wall`, x 488–536, y 244–284): look at, take, use. Only there at some points of the story.
 - **Straw cot** (`cot`, x 50–330, y 470–584): look at, use, take.
 - **Bucket** (`bucket`, x 594–662, y 510–586): look at, use, take. Only there at some points of the story.
-- **Cell door** (`cellDoor`, x 728–824, y 324–668): look at, open, go through, use (an exit).
+- **Cell door** (`cellDoor`, x 728–824, y 324–668): look at, open, use. Only there at some points of the story.
+- **Stairs up** (`cellStairs`, x 1180–1280, y 592–696): look at, go through (an exit).
 
 Drawn separately as objects (leave their spot plain in the painting, they stand there):
 - `floor-plate` standing on (346, 624).
 - `window-plate` standing on (340, 246).
 - `table-frame` standing on (990, 556).
+- `cell-cloak` standing on (965, 402).
 - `cell-gate` standing on (808, 668).
 
 Story characters stand at: Benn (1140, 652). Keep the wall behind them uncluttered at head height.

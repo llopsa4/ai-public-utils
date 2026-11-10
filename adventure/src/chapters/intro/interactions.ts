@@ -18,7 +18,8 @@ export const ITEM_VERBS: Verb[] = ['look', 'use'];
 const AT_BARS = walk(350, 300, 'right');
 /** Where "Harrow" calls Benn over: the middle of the cage, by the bars at the front. */
 const AT_FRONT = walk(232, 322, 'right');
-const AT_DESK = walk(430, 306, 'right');
+// Silas comes up behind Kell, from the left; Kell turns round to talk.
+const AT_DESK = walk(214, 306, 'right');
 
 function fallback(verb: Verb, item?: string): Command[] {
   if (item) return [say('line.i.useFails')];
@@ -47,9 +48,9 @@ const FISH: Command[] = [
 ];
 
 /** Wearing a mask: on, off, or swapped for the other one (the persona's name, portrait and sprite follow). */
-const wear = (mask: 'maskHarrow' | 'maskClerk'): Rule[] => {
-  const on = mask === 'maskHarrow' ? 'wearingHarrow' : 'wearingClerk';
-  const other = mask === 'maskHarrow' ? 'wearingClerk' : 'wearingHarrow';
+const wear = (mask: 'maskHarrow'): Rule[] => {
+  const on = 'wearingHarrow';
+  const other = 'wearingClerk';
   return [
     ...(mask === 'maskHarrow' ? [{ target: 'hero', item: mask, when: F('harrowCracked'), do: [say('line.i.harrowCracked')] }] : []),
     { target: 'hero', item: mask, when: F(on), do: [flag(on, false), say(`line.i.${mask}Off`)] },
@@ -65,12 +66,13 @@ export const RULES: readonly Rule[] = [
   ...combine('frame', 'putty', [say('line.i.needFace')], NOT('sawHarrow')),
   ...combine('frame', 'putty', [drop('frame'), drop('putty'), add('maskHarrow'), flag('harrowMade'), say('line.i.harrowMade1'), say('line.i.harrowMade2')]),
   ...combine('frame', 'plaster', [say('line.i.plasterDry')]),
-  ...combine('hood', 'ledger', [drop('hood'), drop('ledger'), add('maskClerk'), flag('clerkMade'), say('line.i.clerkMade')]),
-  ...['plate', 'crust', 'nail', 'strip', 'hookLine', 'frame', 'plaster', 'wetPlaster', 'putty', 'maskHarrow', 'keys', 'hood', 'ledger', 'maskClerk'].flatMap(inventoryItem),
+  ...['plate', 'crust', 'nail', 'strip', 'hookLine', 'frame', 'plaster', 'wetPlaster', 'putty', 'maskHarrow', 'keys', 'ledger'].flatMap(inventoryItem),
 
   // ------------------------------------------------------------ Silas ---
   ...wear('maskHarrow'),
-  ...wear('maskClerk'),
+  // The clerk: his own hood pulled low and the ledger held to the chest.
+  { target: 'hero', item: 'ledger', when: F('wearingClerk'), do: [flag('wearingClerk', false), say('line.i.maskClerkOff')] },
+  { target: 'hero', item: 'ledger', do: [flag('wearingHarrow', false), flag('wearingClerk'), flag('clerkMade'), say('line.i.clerkMade')] },
   { target: 'hero', item: '*', do: [say('line.i.heroItem')] },
   { target: 'hero', verb: 'look', when: F('wearingHarrow'), do: [say('line.i.heroLookHarrow')] },
   { target: 'hero', verb: 'look', when: F('wearingClerk'), do: [say('line.i.heroLookClerk')] },
@@ -89,9 +91,12 @@ export const RULES: readonly Rule[] = [
   { target: 'window', verb: 'look', do: [say('line.i.windowLook')] },
   { target: 'window', verb: 'use', do: [say('line.i.windowUse')] },
   { target: 'cot', verb: 'look', do: [say('line.i.cotLook')] },
+  // The frame gives a loose nail; the blanket a strip torn off it (either first).
   { target: 'cot', verb: ['take', 'use'], when: NOT('tookNail'), walk: true, do: [pose('hero', 'crouch'), wait(400), add('nail'), flag('tookNail'), pose('hero', 'stand'), say('line.i.nailTake')] },
-  { target: 'cot', verb: ['take', 'use'], when: NOT('tookStrip'), walk: true, do: [add('strip'), flag('tookStrip'), say('line.i.stripTake')] },
   { target: 'cot', verb: ['take', 'use'], do: [say('line.i.cotEmpty')] },
+  { target: 'blanket', verb: 'look', do: [say('line.i.blanketLook')] },
+  { target: 'blanket', verb: ['take', 'use'], when: NOT('tookStrip'), walk: true, do: [add('strip'), flag('tookStrip'), say('line.i.stripTake')] },
+  { target: 'blanket', verb: ['take', 'use'], do: [say('line.i.blanketEnough')] },
   { target: 'wall', verb: 'look', do: [say('line.i.wallLook')] },
   { target: 'wall', verb: ['take', 'use'], when: F('tookPlaster'), do: [say('line.i.wallEnough')] },
   { target: 'wall', verb: ['take', 'use'], walk: true, do: [add('plaster'), flag('tookPlaster'), say('line.i.plasterTake')] },
@@ -113,7 +118,11 @@ export const RULES: readonly Rule[] = [
   { target: 'roster', verb: 'look', when: F('sawHarrow'), do: [say('line.i.rosterAgain')] },
   { target: 'roster', verb: 'look', do: [say('line.i.roster1'), say('line.i.roster2'), flag('sawHarrow')] },
   // The cell door: Benn's keys (palmed), or the bent nail.
-  { target: 'cellDoor', verb: ['open', 'go', 'use'], when: F('cellOpen'), walk: true, do: [say('line.i.upStairs'), go('guardroom', 'fromCell')] },
+  // The stairs up, at the warm light: through the open door, and not without his cloak.
+  { target: 'cellStairs', verb: 'look', do: [say('line.i.stairsLook')] },
+  { target: 'cellStairs', verb: 'go', when: NOT('cellOpen'), do: [say('line.i.stairsCaged')] },
+  { target: 'cellStairs', verb: 'go', when: NOT('tookCloak'), walk: true, do: [say('line.i.notWithoutCloak')] },
+  { target: 'cellStairs', verb: 'go', walk: true, do: [say('line.i.upStairs'), go('guardroom', 'fromCell')] },
   { target: 'cellDoor', item: 'keys', when: NOT('guardGone'), do: [say('line.i.notWatched')] },
   { target: 'cellDoor', item: 'keys', walk: true, do: [say('line.i.keysTurn'), flag('cellOpen'), wait(400), say('line.i.doorOpen')] },
   { target: 'cellDoor', item: 'nail', when: NOT('guardGone'), do: [say('line.i.notWatched')] },
@@ -122,6 +131,7 @@ export const RULES: readonly Rule[] = [
   { target: 'cellDoor', verb: ['open', 'go', 'use'], do: [say('line.i.cellDoorLocked')] },
   // His own cloak, confiscated, hung on a nail out of reach.
   { target: 'cloak', verb: 'look', do: [say('line.i.cloakLook')] },
+  { target: 'cloak', verb: 'take', when: F('cellOpen'), walk: true, do: [{ type: 'fade', to: 'black', ms: 600, sound: 'dress' }, flag('tookCloak'), wait(300), { type: 'fade', to: 'clear', ms: 600 }, say('line.i.cloakOn')] },
   { target: 'cloak', verb: 'take', do: [say('line.i.cloakTake')] },
 
   // ---------------------------------------- Benn, asleep again by the guardroom stove ---
@@ -142,8 +152,6 @@ export const RULES: readonly Rule[] = [
   { target: 'guard', item: '*', do: [say('line.i.guardItem')] },
 
   // ------------------------------------------------------------ guardroom ---
-  { target: 'hood', verb: 'look', do: [say('line.i.hoodLook')] },
-  { target: 'hood', verb: 'take', walk: true, do: [add('hood'), flag('tookHood'), say('line.i.hoodTake')] },
   { target: 'ledger', verb: ['look', 'open'], do: [say('line.i.ledgerLook1'), say('line.i.ledgerLook2')] },
   { target: 'ledger', verb: 'take', walk: true, do: [add('ledger'), flag('tookLedger'), say('line.i.ledgerTake')] },
   { target: 'stove', verb: 'look', do: [say('line.i.stoveLook')] },
@@ -165,7 +173,7 @@ export const RULES: readonly Rule[] = [
   { target: 'warden', verb: 'talk', when: F('wardenBusy'), do: [say('line.i.wardenLeave')] },
   { target: 'warden', verb: 'talk', when: F('wearingHarrow'), do: [say('line.i.notHarrowHere')] },
   { target: 'warden', verb: 'talk', when: NOT('wearingClerk'), do: [say('line.i.notAsMyself')] },
-  { target: 'warden', verb: 'talk', do: [AT_DESK, { type: 'checkpoint' }, { type: 'dialogue', id: 'warden' }] },
+  { target: 'warden', verb: 'talk', do: [AT_DESK, { type: 'face', actor: 'warden', face: 'left' }, { type: 'checkpoint' }, { type: 'dialogue', id: 'warden' }] },
   { target: 'warden', item: '*', do: [say('line.i.wardenItem')] },
 
   // --------------------------------------------------------------- outside ---
@@ -183,6 +191,7 @@ export const RULES: readonly Rule[] = [
 const IN_THE_DARK: Partial<Record<string, readonly Verb[]>> = {
   window: ['look', 'use'], plate: ['look', 'take'], candle: ['look'], table: ['look'],
   guard: ['look', 'talk'], hero: ['look', 'talk', 'crouch', 'stand'], 'item:plate': ['look'], 'item:crust': ['look'],
+  cellStairs: ['look', 'go'],
 };
 
 function inTheDark(state: GameState, verb: Verb, target: string, item?: string): Command[] | null {

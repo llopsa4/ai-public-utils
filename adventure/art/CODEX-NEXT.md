@@ -1,8 +1,5 @@
 # Next for Codex (2026-11-09)
 
-**First do `art/CODEX-FIXES.md`** (Sigrid's two standing masters to redraw), then
-continue here.
-
 Read this first, then `art/CODEX.md` (the full checklist and the briefs it links). Work in this
 order and **stop after each numbered step** so the user can review it.
 
@@ -78,28 +75,9 @@ Do not change `room-cell`.
 - **The frame on the table:** a small picture of the frame lying on the guard's table, so the
   game can show it there until Silas fishes it out.
 
-## 5. Silas reaching through the bars (`silas-layered/reach.png`)
+## 5. Silas reaching through the bars: withdrawn
 
-In the cell, Silas lifts Benn's keys: Benn stands outside the bars saluting, and Silas reaches
-through to clap his shoulder and slip the key ring off his belt. The game shows this now with a
-stand-in: the pack's near arm swung forward, straight and stiff. Draw the real pose.
-
-**What to draw:**
-
-- Silas standing, facing right, in his casual outfit (match `art/sources/characters/silas-layered/master.png`
-  and `idle.png`: same body, clothes, face and proportions, 220 art px tall).
-- The **near arm** reaches forward at about shoulder height, slightly bent, the hand open and turned
-  palm-down as if to clap someone's shoulder. The shoulder leans a little into the reach; the other
-  arm hangs relaxed.
-- The feet stay planted on the floor line (both soles on y ≈ 1498, as in `master.png`).
-- Same canvas and placement as the pack's other pieces: 1024×1536, transparent background.
-
-**Save** as `art/inbox/silas-layered/reach.png`. Do not import it: Claude brings it in, adds the
-Harrow and clerk mask layers for it (`mask-harrow-reach.png`, `mask-clerk-hood-reach.png`, made the
-way you made the stand versions), and swaps it for the stand-in.
-
-**Optional:** `art/inbox/silas-layered/reach-keys.png`, the same pose with the key ring hanging from
-his fingers (the ring is drawn on Benn's belt in `art/sources/characters/char-guard/body.png`: match it).
+The user dropped this pose. Nothing to draw; the game keeps its stand-in reach.
 
 ## 6. The Ashlands from afar (`reveal-sky`, `reveal-mountains`, `reveal-plains`, `reveal-ridge`)
 
@@ -125,3 +103,36 @@ own land**, and each extends fully to the left, right and bottom edges:
 
 Each layer's line in `art/CODEX.md` has its description. **Save** as
 `art/inbox/reveal-sky.webp` (and the other three); WebP or PNG are both fine.
+
+## 7. Silas in his cloak (`silas-cloak-layered`)
+
+In the cell's corridor Silas takes back his own cloak from the wall and wears it from then on (the
+guardroom, the outer door, Sigrid). Draw him in it as a full articulated pack, the same format as
+his casual pack (`art/sources/characters/silas-layered/`, `art/LAYERED-RIG.md`), one piece list per
+line in `art/CODEX.md` (ids `silas-cloak-*`).
+
+- **The look:** a long, dark, worn wool travelling cloak with a deep hood. **The hood is up, framing
+  his face like a cowl, and the whole face stays visible and lit: no shadow over the eyes.** The
+  cloak is open at the front over his waistcoat and shirt and falls to mid-calf. It is the cloak
+  painted on the cell wall (see `art/src/intro/objects/cell-cloak.png`): match its colour and wear.
+- **Same Silas:** face, build, height (220 art px, about 1409 px head to sole on the canvas) and
+  proportions as `silas-layered/master.png` and `idle.png`.
+- **The pieces, in two phases as before:** first `master.png` and `idle.png` (stop for review), then
+  the eleven layers, `joints.png`, `walk-contact.png`, `walk-passing.png`, `kneel.png`, `lie.png`.
+  The cloak's lower part is drawn on the thigh layers as back and front panels, so it swings with
+  the stride.
+- **The clerk guise:** in the same folder, mask layers over this pack like `silas-layered/mask-clerk-*`:
+  `mask-clerk-hood-stand.png`, `mask-clerk-hood-kneel.png`, `mask-clerk-hood-lie.png` (the hood pulled
+  lower over the brow, the face still visible from the eyes down) and `mask-clerk-ledger.png` (the
+  red-brown ledger held to his chest by the near forearm).
+
+**Save** everything in `art/inbox/silas-cloak-layered/` and do not import it: Claude brings it in,
+rigs `silas-cloak` and `silas-cloak-clerk`, and switches the game to them.
+
+**Phase 1 approved (2026-11-10).** Claude reviewed `master.png` and `idle.png` (and the face
+crops) and approves both as they are: the hood up framing a fully visible, lit face, the same Silas,
+the cloak matching the cell wall's, both soles on y 1500. **Go on with phase 2:** the eleven layers
+cut from the approved `master.png` (the cloak's lower part as back and front panels on the far and
+near thigh layers, so it swings with the stride; the arms stay in front of the cloak), `joints.png`,
+`walk-contact.png`, `walk-passing.png`, `kneel.png`, `lie.png`, then the clerk mask layers. Same
+checks as before: the layers rebuild `master.png` pixel for pixel, joint coverage, soles on the line.

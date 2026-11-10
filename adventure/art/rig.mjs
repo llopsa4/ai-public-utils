@@ -150,8 +150,15 @@ const OVERLAP = 26;
  */
 function partsOf(cfg, x, y) {
   if (cfg.nearIsUpper && x < cfg.splitX) return ['upper'];
-  // Below the elbow (cfg.salute.elbow), the arm layer is the forearm, which can bend on its own.
-  if (cfg.armMask) { if (cfg.armMask[y * cfg.armWidth + x]) return [cfg.salute && y > cfg.salute.elbow[1] ? 'forearm' : 'arm']; }
+  // Below the elbow (cfg.salute.elbow), the arm layer is the forearm, which can bend on its own; above
+  // the shoulder pivot, the sleeve's cap stays with the body (raised, it would swing out behind him
+  // like a third arm).
+  if (cfg.armMask) {
+    if (cfg.armMask[y * cfg.armWidth + x]) {
+      if (cfg.salute && y < cfg.armPivot[1] + (cfg.salute.capBelow ?? 0)) return ['upper'];
+      return [cfg.salute && y > cfg.salute.elbow[1] ? 'forearm' : 'arm'];
+    }
+  }
   else {
     const a = cfg.arm;
     if (a && x >= a.minX && y >= a.minY && y <= a.maxY) return a && x < a.minX + OVERLAP ? ['arm', 'upper'] : ['arm'];
@@ -194,7 +201,12 @@ function renderPose(img, cfg, pose, k) {
       const i = (y * img.width + x) * 4;
       const al = img.data[i + 3] / 255;
       if (al < 0.04) continue;
+      // With the arm raised (pose.trimBack: the salute), the filler painted under the hanging arm
+      // must not show behind the coat: drop body pixels behind its back edge (cfg.salute.backEdge).
+      const behind = pose.trimBack && y > pose.trimBack[0][1] && y < pose.trimBack[1][1]
+        && x < pose.trimBack[0][0] + (pose.trimBack[1][0] - pose.trimBack[0][0]) * (y - pose.trimBack[0][1]) / (pose.trimBack[1][1] - pose.trimBack[0][1]);
       for (const part of partsOf(cfg, x, y)) {
+        if (behind && part === 'upper') continue;
         const m = mats[part];
         const sx = m[0] * x + m[2] * y + m[4], sy = m[1] * x + m[3] * y + m[5];
         const tx = Math.floor((sx - hipC[0]) * k + ox), ty = Math.floor((sy - hipC[1]) * k + oy);
@@ -563,9 +575,12 @@ function writeSheet(id, frames, tags, duration, colours, dir = '') {
   const samples = [];
   for (const f of frames) for (let p = 0; p < FW * FH; p += 3) if (f.alpha[p] >= 0.5) samples.push([f.rgb[p * 3], f.rgb[p * 3 + 1], f.rgb[p * 3 + 2]]);
   const pal = kmeans(samples, colours);
-  const rows = Math.ceil(frames.length / COLS);
+  // Equal frames (the walk repeated for down, side and up; standing reused) are stored once and aliased.
+  const same = (a, b) => Buffer.from(a.alpha.buffer).equals(Buffer.from(b.alpha.buffer)) && Buffer.from(a.rgb.buffer).equals(Buffer.from(b.rgb.buffer));
+  const unique = [], slots = frames.map(f => { let i = unique.findIndex(u => same(u, f)); if (i < 0) { i = unique.length; unique.push(f); } return i; });
+  const rows = Math.ceil(unique.length / COLS);
   const sheet = new PNG({ width: FW * COLS, height: FH * rows });
-  frames.forEach((f, n) => {
+  unique.forEach((f, n) => {
     const fx = (n % COLS) * FW, fy = Math.floor(n / COLS) * FH;
     if (GRID > 1) { writeGridFrame(sheet, f, fx, fy, pal); return; }
     const solid = new Uint8Array(FW * FH);
@@ -597,7 +612,7 @@ function writeSheet(id, frames, tags, duration, colours, dir = '') {
   const json = {
     frames: frames.map((_, n) => ({
       filename: String(n),
-      frame: { x: (n % COLS) * FW, y: Math.floor(n / COLS) * FH, w: FW, h: FH },
+      frame: { x: (slots[n] % COLS) * FW, y: Math.floor(slots[n] / COLS) * FH, w: FW, h: FH },
       rotated: false, trimmed: false,
       spriteSourceSize: { x: 0, y: 0, w: FW, h: FH }, sourceSize: { w: FW, h: FH },
       duration: duration(n),
@@ -658,7 +673,7 @@ async function buildCharacter(id) {
   if (cfg.salute) {
     const { upperArm, forearm, elbow } = cfg.salute, shoulder = rotateAbout(upperArm, cfg.armPivot);
     tags.push(['salute', frames.length, frames.length]);
-    add(open, { arm: shoulder, forearm: mul(shoulder, rotateAbout(forearm, elbow)) });
+    add(open, { arm: shoulder, forearm: mul(shoulder, rotateAbout(forearm, elbow)), trimBack: cfg.salute.backEdge });
   }
 
   // Palette from all frames, then hard alpha and a 1px dark outline for readability on busy art.
