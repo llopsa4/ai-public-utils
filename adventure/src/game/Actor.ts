@@ -50,7 +50,8 @@ export class Actor {
   /** Busy with a gesture (fidget) that should not be interrupted by the idle refresh. */
   private gesturing = false;
   /** Perspective scale for the current y (1 = full size). */
-  private depth = 1;
+  /** The depth scale where the character stands (1 = full size). */
+  depth = 1;
   /** Walking speed relative to Mara's (background people hurry or dawdle). */
   speed = 1;
   /** Hit box width relative to the body (background people are narrower targets). */
@@ -113,6 +114,13 @@ export class Actor {
     this.sprite.anims.stop();
     this.sprite.setTexture(sheet);
     this.refresh();
+  }
+
+  /** Hidden while the fight's own pictures stand in the room (the fight overlay), shadow and all. */
+  setHidden(hidden: boolean): void {
+    this.sprite.setVisible(!hidden);
+    this.shadow?.setVisible(!hidden);
+    this.walkBlend?.setVisible(!hidden);
   }
 
   /** Puts the character at a point at once (a scene played over again, out of sight). */

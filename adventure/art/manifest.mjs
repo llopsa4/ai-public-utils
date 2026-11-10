@@ -150,7 +150,8 @@ export const RIGS = {
     salute: { upperArm: -100, forearm: -70, elbow: [325, 600], capBelow: 45, backEdge: [[372, 300], [334, 900]] },
     hipY: 1130, splitX: 485, hips: { near: [420, 1130], far: [560, 1130] }, knees: { near: [405, 1290], far: [575, 1290] },
     eyes: [{ x: 536, y: 150, rx: 9, ry: 4, skinAt: [536, 162] }, { x: 574, y: 146, rx: 4, ry: 3, skinAt: [571, 157] }],
-    portrait: [420, 70, 210, 210], moods: ['neutral'],
+    // Worried and angry faces drawn by Codex (art/inbox/guard-faces), on the same crop.
+    portrait: [420, 70, 210, 210], moods: ['neutral', 'worried', 'angry'], drawnFaces: 'sources/characters/char-guard/faces',
     face: { mouth: { x: 557, y: 192, rx: 10, ry: 3 }, brows: [{ x0: 520, x1: 560, y0: 128, y1: 135, inner: 'right' }, { x0: 565, x1: 580, y0: 125, y1: 131, inner: 'left' }] },
   },
   // Kell: Codex's drawings (art/inbox/intro-next-review/HANDOFF.md), measured on the 1024x1536
@@ -169,7 +170,7 @@ export const RIGS = {
     hipY: 900, splitX: 490, hips: { near: [350, 900], far: [620, 900] }, knees: { near: [340, 1180], far: [630, 1180] },
     fidgetLean: -3,
     eyes: [{ x: 525, y: 104, rx: 13, ry: 4, skinAt: [525, 120] }],
-    portrait: [385, 15, 240, 240], moods: ['neutral'],
+    portrait: [385, 15, 240, 240], moods: ['neutral', 'worried', 'angry'], drawnFaces: 'sources/characters/char-warden/faces',
     face: { mouth: { x: 552, y: 156, rx: 14, ry: 4 }, brows: [{ x0: 500, x1: 560, y0: 80, y1: 93, inner: 'right' }, { x0: 566, x1: 582, y0: 82, y1: 94, inner: 'left' }] },
   },
   // Sigrid: Codex's two-sided pack (art/sources/characters/sigrid-layered and its left/ set), with
@@ -188,6 +189,10 @@ for (const [id, outfit, powered] of [
 
 /** @type {ArtEntry[]} */
 export const MANIFEST = [
+  // Backdrops behind the chapters' opening cards: crops of each chapter's first room (art/intro-cards.mjs).
+  ...[['intro', 'intro', "Silas's cell window with its moonbeam"], ['ch1', 'ch1', "The kiln hall's three glowing kiln mouths"], ['ch2', 'ch2', 'The tunnel mouth at dusk']].map(([card, chapter, subject]) => ({
+    id: `intro-card-${card}`, kind: 'prop', file: `intro-cards/${card}.webp`, size: { w: 480, h: 270 }, anchor: 'top-left',
+    chapter, status: 'final', generator: 'intro-cards.mjs (crop of the room painting)', subject: `${subject}, cropped from the room painting for the chapter's opening card.` })),
   // The Ashlands reveal after Silas's intro (src/game/reveal.ts): a far view from high above, in four
   // layers that move apart as the camera pulls back from Ironhaven. Stand-ins by art/reveal.mjs.
   ...[
@@ -197,14 +202,14 @@ export const MANIFEST = [
     ['ridge', 'The near ridge in the lower left: a dark snowy cliff, and on its top Ironhaven, the city of iron and snow: walls, towers and a few lit windows, small against the land. Transparent above the ridge. Ironhaven sits about a third from the left and a third from the top (around x 330, y 270 of 1280x720).'],
   ].map(([layer, subject]) => ({ id: `reveal-${layer}`, kind: 'prop', file: `intro/reveal/reveal-${layer}.webp`, size: { w: 1280, h: 720 }, anchor: 'top-left',
     chapter: 'intro', status: 'final', generator: 'Codex', subject })),
-  { id: 'title-ironhaven-courtyard', kind: 'prop', file: 'title/ironhaven-courtyard.webp', size: { w: 1280, h: 720 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Empty Ironhaven courtyard, half covered in snow; no characters or baked-in artifacts. Distant fire and bare flag bracket.' },
+  { id: 'title-ironhaven-courtyard', kind: 'prop', file: 'title/ironhaven-courtyard.webp', size: { w: 1280, h: 720 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'title-courtyard.py, bar painted out by Codex', subject: 'Empty Ironhaven courtyard, half covered in snow; no characters or baked-in artifacts. Distant fire and bare flag bracket.' },
   { id: 'title-gauntlet', kind: 'prop', file: 'title/title-gauntlet.png', width: 160, anchor: 'bottom-centre', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Mara\'s abandoned gauntlet, independent transparent foreground object.' },
-  { id: 'title-ironhaven-flag', kind: 'prop', file: 'title/ironhaven-flag.png', size: { w: 192, h: 220 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'title-courtyard.py', subject: 'Six frames of Ironhaven\'s hanging flag, 3 by 2 cells of 64 by 110 pixels.' },
+  { id: 'title-ironhaven-flag', kind: 'prop', file: 'title/ironhaven-flag.png', size: { w: 672, h: 480 }, anchor: 'top-left', chapter: 'game', status: 'final', generator: 'Codex', subject: "Ironhaven's banner on its iron bar jutting from the wall, in the courtyard's perspective: six wind frames, 3 by 2 cells of 224 by 240 pixels (Codex; only the cloth moves, billowing right)." },
   { id: 'menu-flame', kind: 'prop', file: 'ui/menu-flame.gif', anchor: 'centre', chapter: 'game', status: 'final', generator: 'menu-flame.py', subject: 'Six-frame realistic flame for title selection.' },
   { id: 'menu-flame-still', kind: 'prop', file: 'ui/menu-flame-still.png', size: { w: 64, h: 64 }, anchor: 'centre', chapter: 'game', status: 'final', generator: 'menu-flame.py', subject: 'Static flame for reduced-motion title selection.' },
   // The notebook's world map (src/content/world.ts): painted without lettering; the game writes the names and the marker.
-  { id: 'world-map', kind: 'map', file: 'ui/world-map.png', webp: true, size: { w: 1000, h: 700 }, anchor: 'none', chapter: 'game', status: 'requested', generator: 'Codex',
-    subject: "An invented world map on worn parchment, drawn in ink and soft watercolour pixel art: one continent split north to south by the Rift, a deep jagged chasm crossed by a single bridge (Spanwick) at its middle; west of it the grey ash plains around Cinderfold, low foundry hills, and a snowy north with a walled town (Ironhaven); east of it a river with waterwheels (Alderweir), a forest in the south-east, a large old hearth-works further east (the First Hearth), and mountains in the north-east with a lone hut. A dotted road runs from Cinderfold east over the bridge. Follow the layout image exactly: every place sits where its mark is. No words, letters or labels anywhere (the game writes them)." },
+  { id: 'world-map', kind: 'map', file: 'ui/world-map.png', webp: true, size: { w: 1000, h: 700 }, anchor: 'none', chapter: 'game', status: 'final', generator: 'Codex',
+    subject: "A coloured engraved atlas (Codex, 2026-11-10, chosen over moonlit and grey-engraved versions: warm brown land, Ironhaven on a snowy mountain, a blue river, dark forests, copper roofs; same places), of an invented world map: one continent split north to south by the Rift, a deep jagged chasm crossed by a single bridge (Spanwick) at its middle; west of it the grey ash plains around Cinderfold, low foundry hills, and a snowy north with a walled town (Ironhaven); east of it a river with waterwheels (Alderweir), a forest in the south-east, a large old hearth-works further east (the First Hearth), and mountains in the north-east with a lone hut. A dotted road runs from Cinderfold east over the bridge. Follow the layout image exactly: every place sits where its mark is. No words, letters or labels anywhere (the game writes them)." },
   {"id": "regulator-closeup-housing", "kind": "prop", "file": "props/regulator-closeup-housing.png", "size": {"w": 512, "h": 320}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup housing"},
   {"id": "regulator-closeup-ring", "kind": "prop", "file": "props/regulator-closeup-ring.png", "size": {"w": 160, "h": 160}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup ring"},
   {"id": "regulator-closeup-bolt", "kind": "prop", "file": "props/regulator-closeup-bolt.png", "size": {"w": 48, "h": 48}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup bolt"},
@@ -382,16 +387,21 @@ export const MANIFEST = [
     file: 'intro/objects/window-plate.png', sheet: 'intro/objects/window-plate.json', chapter: 'intro', generator: 'intro.mjs' },
   { ...object('floor-plate', 'A dented tin plate with a stale crust on it, lying on the cell floor by the cot.', ['idle']),
     file: 'intro/objects/floor-plate.png', sheet: 'intro/objects/floor-plate.json', chapter: 'intro', generator: 'intro.mjs' },
-  // The guardroom's clerk hood on its peg and ledger on its shelf, cut from Codex's painting along their
-  // outlines; the room itself is Codex's empty version (art/inbox/intro-next-review), so they can go.
-  { ...object('guardroom-hood', "The tally clerk's grey hood hanging on a peg in the guardroom.", ['idle']),
-    file: 'intro/objects/guardroom-hood.png', sheet: 'intro/objects/guardroom-hood.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
+  // The guardroom's ledger on its shelf, cut from Codex's painting along its outline; the room itself
+  // is Codex's empty version (art/inbox/intro-next-review), so it can go.
   { ...object('guardroom-ledger', 'The red-brown tally ledger lying on the guardroom shelf.', ['idle']),
     file: 'intro/objects/guardroom-ledger.png', sheet: 'intro/objects/guardroom-ledger.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
   // Silas's hooded cloak on its nail in the cell's corridor, cut from Codex's painting (the wall behind
   // it painted in from the stones beside it) so it goes when he takes it.
   { ...object('cell-cloak', "Silas's confiscated hooded cloak hanging on a nail on the corridor wall.", ['idle']),
     file: 'intro/objects/cell-cloak.png', sheet: 'intro/objects/cell-cloak.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
+  { ...object('window-stub', 'A stub of tallow candle standing on the cell window\'s ledge, in the moonlight (placeholder until Codex paints it).', ['idle']),
+    file: 'intro/objects/window-stub.png', sheet: 'intro/objects/window-stub.json', chapter: 'intro', status: 'placeholder', generator: 'Claude (placeholder)' },
+  { id: 'item-wax', kind: 'item', file: 'intro/items/wax.png', size: { w: 64, h: 64 }, anchor: 'none', chapter: 'intro', status: 'placeholder', generator: 'Claude (placeholder)', subject: 'A stub of soft tallow candle, warmed and squashed in the hand.' },
+  { ...object('stairs-light', 'Warm light thrown across the cell corridor floor from the stairwell door off to the right, in the shape of the doorway.', ['idle']),
+    file: 'intro/objects/stairs-light.png', sheet: 'intro/objects/stairs-light.json', chapter: 'intro', status: 'placeholder', generator: 'Claude (a soft light effect, not palette art)' },
+  { ...object('outer-lantern', "The outer door's wall lantern on its bracket (cut from Codex's painting), hung again mid-wall.", ['idle']),
+    file: 'intro/objects/outer-lantern.png', sheet: 'intro/objects/outer-lantern.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
   { ...object('guardroom-torch', 'A wall torch: a pitch-wrapped head on a wooden haft, for the iron brackets on the guardroom walls (unlit: the game adds the flame).', ['idle']),
     file: 'intro/objects/guardroom-torch.png', sheet: 'intro/objects/guardroom-torch.json', chapter: 'intro', generator: 'intro.mjs' },
   { ...object('table-frame', "Silas's articulated brass mask frame lying flat on the guard's table, with a clear brass rim and open centre.", ['idle']),

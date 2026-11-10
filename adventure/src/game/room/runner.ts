@@ -18,11 +18,18 @@ export async function runScript(scene: RoomScene, commands: Command[]): Promise<
   scene.syncHero();
   scene.session.ui.setBusy(true);
   scene.session.ui.setHover('');
+  const token = ++scene.scriptToken;
   try {
+    // The walks before the first real step only bring Silas to the target: a new click may call them off.
+    let leading = true;
     for (const command of commands) {
+      leading &&= command.type === 'walk';
+      scene.approaching = leading;
       if (!(await exec(scene, command))) return;
+      if (token !== scene.scriptToken) return;
     }
   } finally {
+    scene.approaching = false;
     if (scene.sys.isActive() && !scene.leaving) {
       scene.busy = false;
       scene.session.ui.setBusy(false);

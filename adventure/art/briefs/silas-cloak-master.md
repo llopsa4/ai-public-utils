@@ -1,6 +1,6 @@
 # silas-cloak-master
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/master.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/master.png`
 
 ## What the game does with it
 

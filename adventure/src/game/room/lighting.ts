@@ -106,12 +106,12 @@ export function refreshAmbient(scene: RoomScene, cold: boolean, animate = false)
   for (const p of def.particles ?? []) {
     if (cold && p.warm) continue;
     const texture = !bloom ? 'fx-dot' : p.kind === 'embers' ? 'fx-ember' : 'fx-puff';
-    scene.ambient.push(scene.add.particles(p.x, p.y, texture, particleConfig(p.kind, p.w, p.h, bloom)).setDepth(p.kind === 'dust' ? 9000 : -5000));
+    scene.ambient.push(scene.add.particles(p.x, p.y, texture, particleConfig(p.kind, p.w, p.h, bloom)).setDepth(p.kind === 'dust' || p.kind === 'snowNear' ? 9000 : -5000));
   }
   for (const g of def.glows ?? []) {
     if (cold && g.warm) continue;
     const light = scene.add.image(g.x, g.y, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setTint(g.color)
-      .setScale((g.r * 2) / 128).setAlpha(0.35).setDepth(-5000);
+      .setScale((g.r * 2) / 128).setAlpha(0.35).setDepth(g.front ? 8600 : -5000);
     scene.tweens.add({ targets: light, alpha: { from: 0.22, to: 0.42 }, duration: Phaser.Math.Between(180, 420), yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: Phaser.Math.Between(0, 300) });
     scene.ambient.push(light);
     if (bloom) {

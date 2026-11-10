@@ -1,7 +1,7 @@
 import type { StoryRules } from '../../engine/story';
 import type { Command, GameState } from '../../engine/types';
 
-const say = (text: string, actor: 'hero' | 'guard' | 'warden' = 'hero'): Command => ({ type: 'say', actor, text });
+import { say } from '../script';
 const unset = (...flags: string[]): Command[] => flags.map(flag => ({ type: 'setFlag', flag, value: false }));
 const count = (s: GameState, p: 'g' | 'w') => [1, 2, 3].filter(n => s.flags[`${p}Sus${n}`]).length;
 
@@ -21,6 +21,17 @@ const caught = (who: 'guard' | 'warden', p: 'g' | 'w', reset: string[]): Command
   ...unset(`${p}Sus1`, `${p}Sus2`, `${p}Sus3`, ...reset),
   { type: 'fade', to: 'clear', ms: 700 },
   { type: 'checkpoint' },
+];
+
+/**
+ * Who Silas looks like now (his sprite and his portrait, the first that holds): the Harrow mask, the
+ * clerk (in his cloak once he has it), his cloak, else his own clothes.
+ */
+const LOOKS = [
+  { if: [{ flag: 'wearingHarrow' }], pick: 'silas-harrow' },
+  { if: [{ flag: 'wearingClerk' }, { flag: 'tookCloak' }], pick: 'silas-cloak-clerk' },
+  { if: [{ flag: 'wearingClerk' }], pick: 'silas-clerk' },
+  { if: [{ flag: 'tookCloak' }], pick: 'silas-cloak' },
 ];
 
 /**
@@ -47,28 +58,17 @@ export const STORY: StoryRules = {
     run: () => [{ type: 'setFlag', flag: 'sawWarden', value: true }, { type: 'wait', ms: 400 }, say('line.i.warden1'), say('line.i.warden2')],
   }, {
     room: 'outerDoor', if: [{ notFlag: 'metSigrid' }],
-    run: () => [{ type: 'wait', ms: 600 }, { type: 'walk', to: { x: 300, y: 304 }, face: 'right' }, { type: 'dialogue', id: 'sigrid' }],
+    run: () => [{ type: 'wait', ms: 600 }, { type: 'walk', to: { x: 280, y: 304 }, face: 'right' }, { type: 'dialogue', id: 'sigrid' }],
   }],
   flagSounds: { cellOpen: 'latch', grateOpen: 'latch' },
   // In his own cloak from the cell's corridor on (Codex's silas-cloak pack); the clerk is then his hood
   // pulled low and the ledger.
-  heroSheet: [
-    { if: [{ flag: 'wearingHarrow' }], pick: 'silas-harrow' },
-    { if: [{ flag: 'wearingClerk' }, { flag: 'tookCloak' }], pick: 'silas-cloak-clerk' },
-    { if: [{ flag: 'wearingClerk' }], pick: 'silas-clerk' },
-    { if: [{ flag: 'tookCloak' }], pick: 'silas-cloak' },
-    { pick: 'silas' },
-  ],
+  heroSheet: [...LOOKS, { pick: 'silas' }],
   heroName: [
     { if: [{ flag: 'wearingHarrow' }], pick: 'speaker.harrow' },
     { if: [{ flag: 'wearingClerk' }], pick: 'speaker.clerk' },
   ],
-  heroPortrait: [
-    { if: [{ flag: 'wearingHarrow' }], pick: 'silas-harrow' },
-    { if: [{ flag: 'wearingClerk' }, { flag: 'tookCloak' }], pick: 'silas-cloak-clerk' },
-    { if: [{ flag: 'wearingClerk' }], pick: 'silas-clerk' },
-    { if: [{ flag: 'tookCloak' }], pick: 'silas-cloak' },
-  ],
+  heroPortrait: LOOKS,
   afterDialogue: (id, s) => {
     if (id === 'guard' && s.flags.gSus3) return caught('guard', 'g', ['guardAwake']);
     if (id === 'warden' && s.flags.wSus3) return caught('warden', 'w', []);

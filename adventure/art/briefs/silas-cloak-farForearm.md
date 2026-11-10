@@ -1,6 +1,6 @@
 # silas-cloak-farForearm
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farForearm.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farForearm.png`
 
 ## What the game does with it
 

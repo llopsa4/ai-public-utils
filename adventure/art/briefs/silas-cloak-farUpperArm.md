@@ -1,6 +1,6 @@
 # silas-cloak-farUpperArm
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farUpperArm.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farUpperArm.png`
 
 ## What the game does with it
 

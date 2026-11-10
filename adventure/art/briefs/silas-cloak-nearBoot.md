@@ -1,6 +1,6 @@
 # silas-cloak-nearBoot
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/nearBoot.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/nearBoot.png`
 
 ## What the game does with it
 

@@ -13,7 +13,12 @@ import { newTutorial, tutorialTransition, type TutorialState } from '@kc/game/tu
 import type { BattleState, CharacterProfile, EncounterDefinition } from '@kc/game/types';
 import type { BattleController } from '@kc/hooks/useBattle';
 
+/** The room the fight plays over (src/game/room/fightBridge.ts fightStage), in page pixels. */
+export interface FightStage { left: number; top: number; width: number; height: number; heroSize: number; enemySize: number; floor: number }
+
 export interface BattleOptions {
+  /** Over the room: the battle screen is transparent, its fighters placed and sized to the room. */
+  stage?: FightStage;
   onDefeat?: () => void;
   retryProfile?: () => CharacterProfile;
   /** Mara as the rules see him (from the saved kit). */
@@ -94,7 +99,7 @@ function Battle(o: BattleOptions) {
         setLesson(null);
       },
     };
-    return <App key="lesson" controller={controller} lesson={view} onMenu={o.onMenu} onVictory={() => act({ type: 'finish' })} brand="Cinderfold" rewards={o.rewards} victoryView={victory} />;
+    return <App key="lesson" controller={controller} lesson={view} onMenu={o.onMenu} onVictory={() => act({ type: 'finish' })} brand="The Rift: Ashlands" rewards={o.rewards} victoryView={victory} />;
   }
 
   const controller: BattleController = {
@@ -113,11 +118,14 @@ function Battle(o: BattleOptions) {
   const drink = () => { const next = o.drink(free); if (next) { setFree(next); redraw(n => n + 1); } };
   const tonic = ({ busy, lesson, over }: { busy: boolean; lesson: boolean; over: boolean }) => tonics > 0 &&
     <button id="kc-tonic" className="session-secondary kc-tonic" disabled={busy || lesson || free.hero.hp >= free.config.hero.maxHp || over} onClick={drink}>Kiln Tonic · {tonics}<small> +15 HP</small></button>;
-  return <App key="free" controller={controller} onMenu={o.onMenu} onVictory={() => o.onWin(free)} brand="Cinderfold" rewards={o.rewards} extraControls={tonic} victoryView={victory} suppressHints />;
+  return <App key="free" controller={controller} onMenu={o.onMenu} onVictory={() => o.onWin(free)} brand="The Rift: Ashlands" rewards={o.rewards} extraControls={tonic} victoryView={victory} suppressHints />;
 }
 
 /** Shows Kiln Courier's battle screen in `el`. Returns a function that removes it. */
 export function mountBattle(el: HTMLElement, options: BattleOptions): () => void {
+  const s = options.stage;
+  el.classList.toggle('in-room', !!s);
+  if (s) for (const [k, v] of Object.entries({ '--room-left': s.left, '--room-top': s.top, '--room-width': s.width, '--room-height': s.height, '--room-hero': s.heroSize, '--room-enemy': s.enemySize, '--room-floor': s.floor })) el.style.setProperty(k, `${v}px`);
   const root = createRoot(el);
   root.render(<div className="kc kc-screen"><Battle {...options} /></div>);
   return () => root.unmount();

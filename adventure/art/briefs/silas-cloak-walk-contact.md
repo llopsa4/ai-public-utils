@@ -1,6 +1,6 @@
 # silas-cloak-walk-contact
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/walk-contact.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/walk-contact.png`
 
 ## What the game does with it
 

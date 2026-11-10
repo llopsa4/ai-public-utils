@@ -1,3 +1,4 @@
+import { KELL_SEES } from './kellSees';
 import type { HotspotDef, Point, Polygon, RoomDef } from '../../engine/types';
 
 const rect = (x: number, y: number, w: number, h: number): Polygon => [
@@ -24,16 +25,17 @@ const cellHotspots: HotspotDef[] = [
   { id: 'candle', name: 'name.i.candle', polygon: rect(466, 246, 14, 34), verbs: ['look', 'take'] },
   { id: 'table', name: 'name.i.table', polygon: rect(437, 272, 106, 55), verbs: ['look', 'take'], walkTo: pt(340, 300), face: 'right' },
   { id: 'window', name: 'name.i.window', polygon: rect(140, 62, 60, 62), verbs: ['look', 'use'], walkTo: pt(170, 290), face: 'up' },
-  { id: 'wall', name: 'name.i.wall', polygon: rect(244, 122, 24, 20), verbs: ['look', 'take', 'use'], walkTo: pt(256, 288), face: 'up', visibleIf: LIT },
+  // A stub of tallow candle on the window ledge, in the moonlight: softened with the bread, the mask's putty.
+  { id: 'stub', name: 'name.i.stub', polygon: rect(176, 112, 16, 16), verbs: ['look', 'take'], walkTo: pt(184, 290), face: 'up', visibleIf: [...LIT, { notFlag: 'tookWax' }], outline: { objects: ['windowStub'] } },
   // The blanket draped over the cot (the strip) comes before the cot's frame (the nail): over the
   // cloth, the pointer finds the blanket; on the posts and legs, the frame.
   { id: 'blanket', name: 'name.i.blanket', polygon: rect(48, 236, 104, 46), verbs: ['look', 'take', 'use'], walkTo: pt(95, 300), face: 'up' },
   { id: 'cot', name: 'name.i.cot', polygon: rect(25, 235, 140, 57), verbs: ['look', 'use', 'take'], walkTo: pt(95, 300), face: 'up' },
   { id: 'bucket', name: 'name.i.bucket', polygon: rect(297, 255, 34, 38), verbs: ['look', 'use', 'take'], walkTo: pt(290, 306), face: 'right', visibleIf: LIT },
-  { id: 'cellDoor', name: 'name.i.cellDoor', polygon: rect(364, 162, 48, 172), verbs: ['look', 'open', 'use'], walkTo: pt(340, 300), face: 'right', outline: { objects: ['cellDoor'] }, visibleIf: [{ notFlag: 'cellOpen' }] },
+  { id: 'cellDoor', name: 'name.i.cellDoor', polygon: rect(360, 162, 48, 172), verbs: ['look', 'open', 'use'], walkTo: pt(340, 300), face: 'right', outline: { objects: ['cellDoor'] }, visibleIf: [{ notFlag: 'cellOpen' }] },
   // The way out: warm light falling across the floor at the far right, from the stairs up. The exit
   // is on the light (look or go; a double-click walks straight out).
-  { id: 'cellStairs', name: 'name.i.cellStairs', polygon: rect(590, 296, 50, 52), verbs: ['look', 'go'], walkTo: pt(614, 336), face: 'right', outline: { painted: false } },
+  { id: 'cellStairs', name: 'name.i.cellStairs', polygon: [pt(640, 324), pt(640, 344), pt(571, 346), pt(560, 343), pt(554, 334), pt(560, 325), pt(571, 322)], verbs: ['look', 'go'], walkTo: pt(614, 336), face: 'right', outline: { objects: ['stairsLight'] } },
 ];
 
 // The guardroom at the top of the stairs: a peg with a clerk's hood (left), the tally clerk's ledger
@@ -59,7 +61,8 @@ export const ROOMS: Record<string, RoomDef> = {
     walkable: { outer: [pt(16, 270), pt(346, 270), pt(346, 330), pt(16, 330)], holes: [] },
     walkableWhen: [{
       if: [{ flag: 'cellOpen' }],
-      walkable: { outer: [pt(16, 270), pt(346, 270), pt(346, 300), pt(402, 300), pt(402, 328), pt(636, 328), pt(636, 346), pt(372, 346), pt(346, 332), pt(16, 332)], holes: [] },
+      walkable: { outer: [pt(16, 270), pt(346, 270), pt(346, 300), pt(402, 300), pt(402, 328), pt(636, 328), pt(636, 346), pt(372, 346), pt(346, 332), pt(16, 332)],
+        holes: [] },
     }],
     scale: FLAT,
     surface: 'stone',
@@ -70,8 +73,6 @@ export const ROOMS: Record<string, RoomDef> = {
       // A cold ray of moonlight slanting down from the barred window to the cell floor (seen in the dark too).
       shafts: [
         { x: 170, y: 92, angle: -26, length: 230, width: 32, color: 0xb8c8ff, overDark: true, strength: 1.2 },
-        // Warm light from the stairwell off to the right, falling across the floor.
-        { x: 668, y: 236, angle: 58, length: 150, width: 96, color: 0xffb060, overDark: true, strength: 4.4 },
       ],
     },
     // Black but for the candle beyond the bars and the thin moonlight, until Silas throws the
@@ -79,9 +80,13 @@ export const ROOMS: Record<string, RoomDef> = {
     dark: { if: [{ notFlag: 'cellLit' }], alpha: 0.88, lights: [{ x: 473, y: 254, r: 105 }, { x: 170, y: 92, r: 56 }, { x: 628, y: 334, r: 44 }], heroR: 116 },
     ambient: {
       particles: [{ kind: 'dust', x: 30, y: 66, w: 185, h: 190 }],
+      // A drop from the ceiling into the bucket every five seconds.
+      drips: [{ x: 314, top: 6, bottom: 262, every: 5000 }],
       glows: [
         { x: 170, y: 105, r: 70, color: 0x7898c8 },
         { x: 473, y: 252, r: 60, color: 0xffb860 },
+        // The candle's own glow, over Silas when he stands in front of the table.
+        { x: 473, y: 252, r: 22, color: 0xffc070, front: true },
         { x: 626, y: 338, r: 70, color: 0xffa850 }, { x: 612, y: 340, r: 44, color: 0xffc070 },
       ],
     },
@@ -96,9 +101,15 @@ export const ROOMS: Record<string, RoomDef> = {
     objects: [
       { id: 'floorPlate', sheet: 'floor-plate', x: 173, y: 312, depth: 50, visibleIf: [{ notFlag: 'tookPlate' }] },
       { id: 'windowPlate', sheet: 'window-plate', x: 170, y: 123, depth: 50, visibleIf: [{ flag: 'cellLit' }] },
+      // The stairwell door's light on the floor, shaped like the doorway.
+      { id: 'stairsLight', sheet: 'stairs-light', x: 590, y: 347, depth: 45 },
+      { id: 'windowStub', sheet: 'window-stub', x: 186, y: 127, depth: 51, visibleIf: [{ notFlag: 'tookWax' }] },
       { id: 'frame', sheet: 'table-frame', x: 495, y: 278, depth: 280, visibleIf: [...LIT, { notFlag: 'gotFrame' }] },
       { id: 'cloak', sheet: 'cell-cloak', x: 482.5, y: 201, depth: 50, visibleIf: [{ notFlag: 'tookCloak' }] },
-      { id: 'cellDoor', sheet: 'cell-gate', x: 404, y: 334, depth: 401, flag: 'cellOpen', whenFalse: 'closed', whenTrue: 'open' },
+      // Hinged on the doorway's left post (the gate's frames are mirrored from Codex's: hinges left,
+      // lock right), so it swings open to the left, into the cell.
+      // Open or shut, the door is drawn over Silas: walking out, he passes behind it.
+      { id: 'cellDoor', sheet: 'cell-gate', x: 368, y: 334, depth: 401, flag: 'cellOpen', whenFalse: 'closed', whenTrue: 'open' },
     ],
     hotspots: cellHotspots,
     actors: [
@@ -126,6 +137,8 @@ export const ROOMS: Record<string, RoomDef> = {
       { kind: 'flame', x: 410.5, y: 88, size: 14, color: 0xffb060, depth: 9000 },
     ],
     entries: { fromCell: { x: 50, y: 300, face: 'right' } },
+    // In front of Kell (he watches the right) without the clerk's guise, Silas is seen.
+    trips: [{ if: [{ notFlag: 'wearingClerk' }, { notFlag: 'wardenBusy' }], beyondX: 292, run: KELL_SEES }],
     // Torches on the brackets; the ledger on its shelf until Silas takes it (cut from Codex's
     // painting, which is painted without it; the clerk's hood is no longer on its peg).
     objects: [
@@ -140,7 +153,7 @@ export const ROOMS: Record<string, RoomDef> = {
       { id: 'guard', x: 382, y: 306, visibleIf: [{ flag: 'guardGone' }], task: { tag: 'sit' }, snores: [], sheet: [{ if: [{ flag: 'gotKeys' }], pick: 'guard-nokeys' }] },
       // Kell, left of the stove between the fire and the ledger, watching the right (the grate).
       // Off to fetch his supper: down the stairs on the left.
-      { id: 'warden', x: 272, y: 304, visibleIf: [{ notFlag: 'wardenBusy' }], leaves: { to: { x: -40, y: 300 } } },
+      { id: 'warden', x: 272, y: 304, visibleIf: [{ notFlag: 'wardenBusy' }], leaves: { to: { x: -40, y: 300 } }, watches: true },
     ],
   },
   outerDoor: {
@@ -152,11 +165,20 @@ export const ROOMS: Record<string, RoomDef> = {
     music: 'wind',
     light: { tint: 0xd0dcf0, farDim: 1 },
     look: { grade: { saturation: 0.75, brightness: 0.9, contrast: 1.1, warmth: -0.2 }, vignette: 0.5 },
-    ambient: { particles: [{ kind: 'ash', x: 0, y: 0, w: 640, h: 260 }] },
+    // Snow falling over everything, and the door's lantern warming the wall and the snow below it.
+    ambient: {
+      // Steady snowfall: small slow flakes behind the people, a few larger quicker ones in front.
+      particles: [{ kind: 'snow', x: -20, y: -20, w: 680, h: 40 }, { kind: 'snowNear', x: -20, y: -30, w: 680, h: 20 }],
+      glows: [{ x: 142, y: 120, r: 60, color: 0xffb860 }, { x: 142, y: 290, r: 70, color: 0xffa850 },
+        // A second lantern mid-wall, where Silas meets Sigrid.
+        { x: 330, y: 120, r: 60, color: 0xffb860 }, { x: 330, y: 290, r: 70, color: 0xffa850 }],
+    },
+    props: [{ kind: 'flame', x: 142, y: 122, size: 8, color: 0xffc070, depth: 9000 }, { kind: 'flame', x: 330, y: 122, size: 8, color: 0xffc070, depth: 9000 }],
     entries: { fromGuardroom: { x: 90, y: 300, face: 'right' } },
-    objects: [],
+    objects: [{ id: 'lantern2', sheet: 'outer-lantern', x: 330, y: 131, depth: 40 }],
     hotspots: outerHotspots,
-    actors: [{ id: 'sigrid', x: 470, y: 302 }],
+    // Waiting near the door: at talking distance once Silas steps out.
+    actors: [{ id: 'sigrid', x: 380, y: 302 }],
   },
 };
 

@@ -7,6 +7,7 @@ import { MAP_SIZE, PLACES } from '../content/world';
 import { t } from '../engine/i18n';
 import { PAINTED, drawLand, el } from './journal';
 import { mapPins } from './mapPins';
+import { fitPlates, plated } from './mapPlates';
 import { $ } from './ui';
 
 export function showChapterMap(open: readonly Chapter[], played: readonly Chapter[] = []): Promise<Chapter> {
@@ -31,7 +32,7 @@ export function showChapterMap(open: readonly Chapter[], played: readonly Chapte
         pin.append(
           el('path', { d: `M${at.x},${at.y} l-11,-27 a12,12 0 1 1 22,0 z`, class: 'map-here-pin' }),
           el('path', { d: `M${at.x - 6},${at.y - 32} l4,5 l8,-10`, class: 'pin-tick' }),
-          el('text', { x: at.x, y: at.y - 46, class: 'map-here-label' }, label),
+          plated(label, at.x, at.y - 48, 'played'),
         );
         svg.append(pin);
         b.textContent = `${label} · ${t('ui.played')}`;
@@ -43,10 +44,11 @@ export function showChapterMap(open: readonly Chapter[], played: readonly Chapte
       pin.append(
         el('circle', { cx: at.x, cy: at.y, r: 18, class: 'map-here-ring' }),
         el('path', { d: `M${at.x},${at.y} l-11,-27 a12,12 0 1 1 22,0 z`, class: 'map-here-pin' }),
-        el('text', { x: at.x, y: at.y - 40, class: 'map-here-label' }, label),
-        el('text', { x: at.x, y: at.y + 38, class: 'map-name pin-day', 'text-anchor': 'middle' }, day),
+        plated(label, at.x, at.y - 46, 'live'),
+        plated(day, at.x, at.y + 40, 'day'),
       );
-      if (earlier) pin.append(el('text', { x: at.x, y: at.y - 66, class: 'map-name pin-earlier', 'text-anchor': 'middle' }, earlier));
+      // "Two days earlier…" above the chapter's own label, never on top of it.
+      if (earlier) pin.append(plated(earlier, at.x, at.y - 78, 'earlier'));
       pin.addEventListener('click', () => pick(ch));
       svg.append(pin);
       b.textContent = `${label} · ${day}`;
@@ -55,6 +57,8 @@ export function showChapterMap(open: readonly Chapter[], played: readonly Chapte
     }
     mapHost.replaceChildren(svg);
     screen.hidden = false;
+    // Measured once shown (a hidden map measures every text as empty).
+    fitPlates(svg as SVGSVGElement);
     (list.querySelector('button:not(:disabled)') as HTMLButtonElement | null)?.focus({ preventScroll: true });
   });
 }

@@ -1,7 +1,7 @@
 /*
  * Cinderfold's game interface: iron-and-ember panels with brass edges and rivets, a parchment
  * notebook, menu lists instead of form buttons, and drawn toggles, sliders and segmented choices
- * instead of the browser's own controls. Fonts: src/fonts.css (IM Fell English for the game's text, Zilla Slab for dialogue).
+ * instead of the browser's own controls. Fonts: src/fonts.css (MedievalSharp for the game's text, Zilla Slab for dialogue).
  */
 :root {
   --iron: #17100f;
@@ -24,8 +24,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.4em;
-  /* The title menu's face (IM Fell English) as it is drawn there: regular weight, no capitals. */
-  font-family: "IM Fell English", Georgia, serif;
+  /* The title menu's face (MedievalSharp) as it is drawn there: regular weight, no capitals. */
+  font-family: "MedievalSharp", Georgia, serif;
   font-weight: 400;
   letter-spacing: 0.02em;
   font-size: 1.1em;
@@ -218,9 +218,9 @@ dialog[open] {
 }
 
 
-/* Panel headings in the title's blackletter (it is unreadable in capitals: no uppercase or tracking). */
+/* Panel headings in the game's MedievalSharp (no uppercase or tracking). */
 .plaque {
-  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-family: "MedievalSharp", Georgia, serif;
   font-size: 2rem;
   font-weight: 400;
   letter-spacing: 0.01em;
@@ -318,25 +318,52 @@ dialog[open] {
 }
 
 /* --------------------------------------------------------------- title --- */
-/* The title as if lettered by a priest in an old church book (blackletter), the subtitle and menu
-   in an old printed face (IM Fell English); both SIL OFL, bundled from @fontsource. */
+/* The title, the subtitle and the menu in the game's MedievalSharp (storybook medieval letters,
+   SIL OFL, bundled from @fontsource). */
+/* The logotype: "The Rift" big, a thin ember rule, "Ashlands" below, in forged lettering (a gold to
+   ember fill, a dark outline, a warm glow). It flares on the opening hit, then breathes slowly. */
 #title h1 {
-  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  display: flex; flex-direction: column; align-items: flex-start;
+  margin: 0; font-size: 1em;
+  font-family: "MedievalSharp", Georgia, serif;
   font-weight: 400;
-  font-size: 5.6em;
-  line-height: 1.05;
-  letter-spacing: 0.01em;
-  /* One line: wider than the menu column below it, never wrapping. */
+  line-height: 1;
   white-space: nowrap;
 }
+/* Plain and crisp so it reads: a solid warm cream, one firm dark drop shadow, a faint glow. */
+#title .title-top, #title .title-bottom {
+  color: #ffe6b8;
+  text-shadow: 0 3px 0 #2a1206, 0 4px 10px rgb(0 0 0 / 0.85), 0 0 24px rgb(255 150 60 / 0.25);
+}
+/* "Ashlands": spaced small capitals under the rule. */
+#title .title-bottom { font-family: "MedievalSharp", Georgia, serif; font-variant: small-caps; }
+#title .title-top { font-size: 5.6em; letter-spacing: 0.03em; }
+#title .title-bottom { font-size: 2.3em; letter-spacing: 0.32em; margin-left: 0.3em; }
+#title .title-rule {
+  display: block; width: 6.2em; height: 2px; margin: 0.1em 0 0.25em 0.25em; font-size: 2.2em;
+  background: linear-gradient(90deg, transparent, #ff9a40 15%, #ffd27a 50%, #ff9a40 85%, transparent);
+  box-shadow: 0 0 10px rgb(255 140 50 / 0.7);
+}
+#title.begun .title-top { animation: title-flare 1.2s ease-out, title-breathe 6s ease-in-out 1.2s infinite; }
+@keyframes title-flare { 0% { filter: brightness(1.4); } 100% { filter: none; } }
+@keyframes title-breathe { 0%, 100% { filter: none; } 50% { filter: brightness(1.06); } }
+.reduce-motion #title .title-top { animation: none; }
+@media (prefers-reduced-motion: reduce) { #title .title-top { animation: none; } }
+/* A soft shadow behind the left column, so the title and menu stand off the busy arches. */
+#title::before {
+  content: ""; position: absolute; inset: -20vh -40vw -20vh -10vw; z-index: -1; pointer-events: none;
+  background: radial-gradient(ellipse 60% 55% at 30% 45%, rgb(8 5 3 / 0.62), transparent 75%);
+}
+#title { position: relative; isolation: isolate; }
 
 /* Programmatic entry focus announces the heading; menu focus remains visible after Tab. */
 #title-name:focus { outline: none; }
 
 #title .title-sub {
-  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-family: "MedievalSharp", Georgia, serif;
   font-style: normal;
   font-size: 1.6em;
+  margin-top: 0.7em;
 }
 
 #title .menu-list {
@@ -355,14 +382,15 @@ dialog[open] {
 #reveal[hidden] { display: none; }
 body.in-reveal #bar { visibility: hidden; }
 #reveal-title {
-  margin: 0; font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif; font-weight: 400;
-  font-size: 7em; line-height: 1; white-space: nowrap;
-  text-shadow: 0 0 0.4em rgb(255 120 40 / 0.55), 0 4px 18px rgb(0 0 0 / 0.95);
+  margin: 0; font-family: "MedievalSharp", Georgia, serif; font-weight: 400;
+  font-size: 7.6em; line-height: 1; white-space: nowrap; letter-spacing: 0.03em; color: #ffe6b8;
+  text-shadow: 0 4px 0 #2a1206, 0 6px 16px rgb(0 0 0 / 0.9), 0 0 40px rgb(255 150 60 / 0.4);
   opacity: 0; transform: scale(1.18); transition: opacity 0.35s ease-out, transform 1.2s cubic-bezier(.2,.8,.3,1);
 }
 #reveal-sub {
-  margin: 0.2em 0 0; font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
-  font-size: 2.6em; letter-spacing: 0.12em; text-shadow: 0 3px 12px rgb(0 0 0 / 0.95);
+  margin: 0.2em 0 0; font-family: "MedievalSharp", Georgia, serif;
+  font-size: 2.8em; letter-spacing: 0.32em; font-variant: small-caps; color: #ffe6b8;
+  text-shadow: 0 3px 0 #2a1206, 0 4px 12px rgb(0 0 0 / 0.9);
   opacity: 0; transition: opacity 2.4s ease-in-out;
 }
 #reveal.title-in #reveal-title { opacity: 1; transform: scale(1); }
@@ -379,7 +407,7 @@ body.in-reveal #bar { visibility: hidden; }
 #reveal.out #reveal-title, #reveal.out #reveal-sub { opacity: 0; transition: opacity 1.6s ease-in; }
 #reveal-skip {
   position: absolute; right: 1.2em; bottom: 1em; margin: 0;
-  font-family: "IM Fell English", Georgia, serif; font-size: 1em; opacity: 0.55;
+  font-family: "MedievalSharp", Georgia, serif; font-size: 1em; opacity: 0.55;
 }
 @media (max-height: 500px) { #reveal-title { font-size: 4em; } #reveal-sub { font-size: 1.7em; } }
 
@@ -396,7 +424,7 @@ body.in-reveal #bar { visibility: hidden; }
   white-space: nowrap;
   pointer-events: none;
   color: #ffd79a;
-  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-family: "MedievalSharp", Georgia, serif;
   font-size: 1.9em;
   text-shadow: 0 2px 8px rgb(0 0 0 / 0.9);
   animation: begin-pulse 2.4s ease-in-out infinite;
@@ -412,14 +440,14 @@ body.in-reveal #bar { visibility: hidden; }
 
 #title .menu-list button,
 #menu .menu-list button {
-  font-family: "IM Fell English", Georgia, serif;
+  font-family: "MedievalSharp", Georgia, serif;
   font-size: 1.45em;
   text-shadow: 0 2px 6px rgb(0 0 0 / 0.9);
 }
 
 @media (max-height: 600px) and (orientation: landscape) {
   #title { gap: 0.25rem; max-width: 76%; font-size: clamp(11px, 3svh, 14px); }
-  #title h1 { font-size: 3.1em; line-height: 1.05; }
+  #title h1 { font-size: 0.55em; }
   #title .title-sub { font-size: 1.1em; margin-bottom: 0.25em; }
   #title .title-note { margin-top: 0.25em; }
   #title:has(#title-continue:not([hidden])) .title-note { display: none; }
@@ -443,10 +471,10 @@ body.in-reveal #bar { visibility: hidden; }
   transform: rotate(-0.6deg);
 }
 
-/* The notebook's title in the title screen's blackletter, inked on the page. */
+/* The notebook's title in the game's MedievalSharp, inked on the page. */
 .paper h1 {
   margin: 0 0 0.6rem;
-  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-family: "MedievalSharp", Georgia, serif;
   font-size: 2.1rem;
   font-weight: 400;
   line-height: 1.1;
@@ -1039,6 +1067,25 @@ body.in-reveal #bar { visibility: hidden; }
   transition: opacity var(--intro-fade, 1.8s) ease;
 }
 #intro.shown { opacity: 1; }
+/* Silas's opening cards (playCards): one at a time, centred, fading in and out in the same spot. */
+.intro-card { position: absolute; left: 50%; top: 50%; translate: -50% -50%; width: min(820px, 84vw); text-align: center;
+  opacity: 0; transition: opacity 0.9s ease; }
+.intro-card.in { opacity: 1; }
+#intro-text .intro-card p { margin: 0; opacity: 1; transform: none; }
+.intro-card.card-big p { font-size: 2.1em; line-height: 1.35; color: #f0dcb4; }
+.intro-card.card-day p { font-size: 1.5em; letter-spacing: 0.08em; color: #d9b98a; font-style: italic; }
+.intro-card.card-title p:first-child { font-size: 3em; letter-spacing: 0.04em; color: #ffe0a8; text-shadow: 0 0 24px rgb(255 150 60 / 0.3); }
+.intro-card .card-sub { margin-top: 0.8em; font-size: 1.25em; line-height: 1.4; color: #cdb48e; }
+/* The chapter's place, dim and soft behind the opening lines, slowly drawing closer. */
+#intro-backdrop {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -1;
+  filter: blur(3px) brightness(0.32) saturate(0.85);
+  transform: scale(1); transition: transform 14s linear;
+  pointer-events: none;
+}
+#intro.shown #intro-backdrop { transform: scale(1.04); }
+.reduce-motion #intro-backdrop { transition: none; }
+#intro:not([hidden]) { isolation: isolate; overflow: hidden; }
 #intro-text {
   max-width: 38em;
   font-size: max(15px, 2.6vmin);
@@ -1203,16 +1250,16 @@ body.in-reveal #bar { visibility: hidden; }
 @keyframes gear-call { 50% { box-shadow: 0 0 0 3px #ffe8a8, 0 0 36px 12px #ffb040; } }
 @media (prefers-reduced-motion: reduce) { #gear-btn.forced { animation: none; } }
 
-/* The bottom bar's text buttons (Gear, Notebook, Menu) in the title's blackletter. */
+/* The bottom bar's text buttons (Gear, Notebook, Menu) in the game's MedievalSharp. */
 #bar #gear-btn, #bar #notebook-btn, #bar #menu-btn {
-  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-family: "MedievalSharp", Georgia, serif;
   font-size: 1.3em;
   letter-spacing: 0.01em;
 }
 
-/* The menus' options in the title's blackletter: the title screen, the pause menu, the notebook's tabs. */
+/* The menus' options in MedievalSharp: the title screen, the pause menu, the notebook's tabs. */
 #title .menu-list button, #menu .menu-list button, .notebook-tabs [role="tab"] {
-  font-family: "UnifrakturMaguntia", "IM Fell English", Georgia, serif;
+  font-family: "MedievalSharp", Georgia, serif;
   letter-spacing: 0.01em;
 }
 #title .menu-list button, #menu .menu-list button { font-size: 1.55em; }

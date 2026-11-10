@@ -45,9 +45,8 @@ function toHarrow(): GameState {
   play(s, 'use', 'table', 'hookLine');
   assert.ok(s.inventory.includes('frame'), 'the frame is fished off the table');
   play(s, 'look', 'roster');
-  play(s, 'take', 'wall');
-  play(s, 'use', 'bucket', 'plaster');
-  play(s, 'use', 'item:wetPlaster', 'crust');
+  play(s, 'take', 'stub');
+  play(s, 'use', 'item:wax', 'crust');
   play(s, 'use', 'item:frame', 'putty');
   assert.ok(s.inventory.includes('maskHarrow'));
   play(s, 'use', 'hero', 'maskHarrow');
@@ -99,7 +98,8 @@ test('the full escape: Harrow fools Benn, the clerk fools Kell, Sigrid waits, th
   play(s, 'go', 'cellStairs');
   assert.equal(s.room, 'guardroom');
   play(s, 'read', 'warden');
-  assert.deepEqual(play(s, 'talk', 'warden').spoken, ['line.i.notAsMyself']);
+  assert.deepEqual(play(s, 'talk', 'warden').spoken.filter(k => k.startsWith('line.i.kell')), ['line.i.kellSees', 'line.i.kellSeesThink'], 'undisguised, Kell sees through him');
+  assert.equal(s.room, 'guardroom');
   play(s, 'take', 'ledger');
   play(s, 'use', 'hero', 'ledger');
   assert.equal(heroIdentity(s).name, 'speaker.clerk');
@@ -259,4 +259,17 @@ test('the cot is two things: its frame gives the nail, its blanket the strip, in
     assert.deepEqual(play(s, 'take', 'cot').spoken, ['line.i.cotEmpty']);
     assert.deepEqual(play(s, 'take', 'blanket').spoken, ['line.i.blanketEnough']);
   }
+});
+
+test('Kell sees through Silas undisguised: talking to him, or stepping in front of him, sends Silas back to the stairs', async () => {
+  const { conditionsHold } = await import('../src/engine/geometry');
+  const s = newGame('intro');
+  Object.assign(s.flags, { cellLit: true, cellOpen: true, tookCloak: true, guardGone: true, sawWarden: true });
+  s.room = 'guardroom';
+  const talk = play(s, 'talk', 'warden');
+  assert.ok(talk.spoken.includes('line.i.kellSees'), 'face to face, undisguised');
+  const trip = INTRO.rooms.guardroom.trips![0];
+  assert.ok(conditionsHold(s, trip.if), 'walking in front of him trips');
+  s.flags.wearingClerk = true;
+  assert.ok(!conditionsHold(s, trip.if), 'as the clerk he lets Silas by');
 });

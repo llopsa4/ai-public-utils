@@ -1,6 +1,7 @@
 // The notebook's Diary and Map drawn from ./journalData.ts, and its tabs.
 import { chapter } from '../chapters';
 import { LAND, MAP_SIZE, PLACES, labelAt } from '../content/world';
+import { fitPlatesWhenShown, plated } from './mapPlates';
 import { t } from '../engine/i18n';
 import type { GameState } from '../engine/types';
 import { diary, mapState } from './journalData';
@@ -45,13 +46,14 @@ export function renderMap(host: HTMLElement, state: GameState): void {
     const p = PLACES[id];
     svg.append(el('circle', { cx: p.x, cy: p.y, r: p.kind === 'town' ? 7 : 5, class: 'map-place' }));
     const at = labelAt(p);
-    svg.append(el('text', { x: at.x, y: at.y, 'text-anchor': at.anchor, class: 'map-name' }, t(p.name)));
+    svg.append(plated(t(p.name), at.x, at.y, 'name', at.anchor));
   }
   // The marker: a ring and a pin over the current place.
   svg.append(el('circle', { cx: here.x, cy: here.y, r: 16, class: 'map-here-ring' }));
   svg.append(el('path', { d: `M${here.x},${here.y} l-9,-22 a10,10 0 1 1 18,0 z`, class: 'map-here-pin' }));
-  svg.append(el('text', { x: here.x, y: here.y - 36, class: 'map-here-label' }, t('ui.mapHere', { who })));
+  svg.append(plated(t('ui.mapHere', { who }), here.x, here.y - 38, 'live'));
   host.replaceChildren(svg);
+  fitPlatesWhenShown(svg as SVGSVGElement);
 }
 
 /** Writes the diary into the notebook: a heading per day, then each chapter's entries. */

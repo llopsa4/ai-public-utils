@@ -2,6 +2,7 @@ import { ROOMS } from './rooms';
 import { applyRules, cycleLook, type Rule } from '../../engine/rules';
 import type { ActorId, Command, Condition, GameState, Verb } from '../../engine/types';
 import { say, flag, add, drop, pose, wait, go, walk, F, NOT } from '../script';
+import { KELL_SEES } from './kellSees';
 
 /** Verbs offered for the people (hotspot verbs live in rooms.ts). Silas can read people. */
 export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
@@ -47,29 +48,22 @@ const FISH: Command[] = [
   drop('hookLine'), add('nail'), add('frame'), flag('gotFrame'), say('line.i.fish3'),
 ];
 
-/** Wearing a mask: on, off, or swapped for the other one (the persona's name, portrait and sprite follow). */
-const wear = (mask: 'maskHarrow'): Rule[] => {
-  const on = 'wearingHarrow';
-  const other = 'wearingClerk';
-  return [
-    ...(mask === 'maskHarrow' ? [{ target: 'hero', item: mask, when: F('harrowCracked'), do: [say('line.i.harrowCracked')] }] : []),
-    { target: 'hero', item: mask, when: F(on), do: [flag(on, false), say(`line.i.${mask}Off`)] },
-    { target: 'hero', item: mask, do: [flag(other, false), flag(on), say(`line.i.${mask}On`)] },
-  ];
-};
 
 /** Chapter rules, first match wins (src/engine/rules.ts); unmatched clicks get `fallback`. */
 export const RULES: readonly Rule[] = [
   // --------------------------------------------------------- crafting ---
   ...combine('nail', 'strip', [drop('nail'), drop('strip'), add('hookLine'), say('line.i.hookLine')]),
-  ...combine('wetPlaster', 'crust', [drop('wetPlaster'), drop('crust'), add('putty'), say('line.i.putty')]),
+  ...combine('wax', 'crust', [drop('wax'), drop('crust'), add('putty'), say('line.i.putty')]),
   ...combine('frame', 'putty', [say('line.i.needFace')], NOT('sawHarrow')),
   ...combine('frame', 'putty', [drop('frame'), drop('putty'), add('maskHarrow'), flag('harrowMade'), say('line.i.harrowMade1'), say('line.i.harrowMade2')]),
-  ...combine('frame', 'plaster', [say('line.i.plasterDry')]),
-  ...['plate', 'crust', 'nail', 'strip', 'hookLine', 'frame', 'plaster', 'wetPlaster', 'putty', 'maskHarrow', 'keys', 'ledger'].flatMap(inventoryItem),
+  ...combine('frame', 'wax', [say('line.i.waxAlone')]),
+  ...['plate', 'crust', 'nail', 'strip', 'hookLine', 'frame', 'wax', 'putty', 'maskHarrow', 'keys', 'ledger'].flatMap(inventoryItem),
 
   // ------------------------------------------------------------ Silas ---
-  ...wear('maskHarrow'),
+  // The Harrow mask: on or off (his name, portrait and sprite follow), until it cracks.
+  { target: 'hero', item: 'maskHarrow', when: F('harrowCracked'), do: [say('line.i.harrowCracked')] },
+  { target: 'hero', item: 'maskHarrow', when: F('wearingHarrow'), do: [flag('wearingHarrow', false), say('line.i.maskHarrowOff')] },
+  { target: 'hero', item: 'maskHarrow', do: [flag('wearingClerk', false), flag('wearingHarrow'), say('line.i.maskHarrowOn')] },
   // The clerk: his own hood pulled low and the ledger held to the chest.
   { target: 'hero', item: 'ledger', when: F('wearingClerk'), do: [flag('wearingClerk', false), say('line.i.maskClerkOff')] },
   { target: 'hero', item: 'ledger', do: [flag('wearingHarrow', false), flag('wearingClerk'), flag('clerkMade'), say('line.i.clerkMade')] },
@@ -97,10 +91,8 @@ export const RULES: readonly Rule[] = [
   { target: 'blanket', verb: 'look', do: [say('line.i.blanketLook')] },
   { target: 'blanket', verb: ['take', 'use'], when: NOT('tookStrip'), walk: true, do: [add('strip'), flag('tookStrip'), say('line.i.stripTake')] },
   { target: 'blanket', verb: ['take', 'use'], do: [say('line.i.blanketEnough')] },
-  { target: 'wall', verb: 'look', do: [say('line.i.wallLook')] },
-  { target: 'wall', verb: ['take', 'use'], when: F('tookPlaster'), do: [say('line.i.wallEnough')] },
-  { target: 'wall', verb: ['take', 'use'], walk: true, do: [add('plaster'), flag('tookPlaster'), say('line.i.plasterTake')] },
-  { target: 'bucket', item: 'plaster', walk: true, do: [drop('plaster'), add('wetPlaster'), say('line.i.wetPlaster')] },
+  { target: 'stub', verb: 'look', do: [say('line.i.stubLook')] },
+  { target: 'stub', verb: 'take', walk: true, do: [add('wax'), flag('tookWax'), say('line.i.waxTake')] },
   { target: 'bucket', item: 'crust', do: [say('line.i.soggyBread')] },
   { target: 'bucket', verb: 'look', do: [say('line.i.bucketLook')] },
   { target: 'bucket', verb: ['use', 'take'], do: [say('line.i.bucketUse')] },
@@ -166,13 +158,14 @@ export const RULES: readonly Rule[] = [
   { target: 'grate', verb: ['open', 'go', 'use'], do: [say('line.i.grateLocked')] },
 
   // ------------------------------------------------------- Kell, the warden ---
-  { target: 'warden', verb: 'read', when: F('readWarden'), do: [say('line.i.readWardenAgain')] },
-  { target: 'warden', verb: 'read', do: [say('line.i.readWarden1'), say('line.i.readWarden2'), say('line.i.readWarden3'), flag('readWarden')] },
-  { target: 'warden', verb: 'look', when: F('wardenBusy'), do: [say('line.i.wardenLookBusy')] },
-  { target: 'warden', verb: 'look', do: [say('line.i.wardenLook')] },
+  { target: 'warden', verb: 'read', when: F('readWarden'), do: [say('line.i.readWardenAgain'), { type: 'face', actor: 'warden', face: 'right' }] },
+  { target: 'warden', verb: 'read', do: [say('line.i.readWarden1'), say('line.i.readWarden2'), say('line.i.readWarden3'), flag('readWarden'), { type: 'face', actor: 'warden', face: 'right' }] },
+  { target: 'warden', verb: 'look', when: F('wardenBusy'), do: [say('line.i.wardenLookBusy'), { type: 'face', actor: 'warden', face: 'right' }] },
+  { target: 'warden', verb: 'look', do: [say('line.i.wardenLook'), { type: 'face', actor: 'warden', face: 'right' }] },
   { target: 'warden', verb: 'talk', when: F('wardenBusy'), do: [say('line.i.wardenLeave')] },
   { target: 'warden', verb: 'talk', when: F('wearingHarrow'), do: [say('line.i.notHarrowHere')] },
-  { target: 'warden', verb: 'talk', when: NOT('wearingClerk'), do: [say('line.i.notAsMyself')] },
+  // Undisguised, face to face: Kell knows a prisoner when he sees one (only imagined; back to the stairs).
+  { target: 'warden', verb: 'talk', when: NOT('wearingClerk'), do: KELL_SEES },
   { target: 'warden', verb: 'talk', do: [AT_DESK, { type: 'face', actor: 'warden', face: 'left' }, { type: 'checkpoint' }, { type: 'dialogue', id: 'warden' }] },
   { target: 'warden', item: '*', do: [say('line.i.wardenItem')] },
 

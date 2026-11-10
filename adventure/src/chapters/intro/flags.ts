@@ -3,7 +3,7 @@ export const FLAGS = [
   // the cell in the dark, then lit
   'shouted', 'tookPlate', 'cellLit',
   // what Silas finds and reads
-  'tookNail', 'tookStrip', 'gotFrame', 'sawHarrow', 'readGuard', 'tookPlaster', 'harrowMade', 'wearingHarrow',
+  'tookNail', 'tookStrip', 'gotFrame', 'sawHarrow', 'readGuard', 'tookPlaster', 'tookWax', 'harrowMade', 'wearingHarrow',
   // the guard, as Sergeant Harrow
   'guardAwake', 'gSus1', 'gSus2', 'gSus3', 'bennSaluting', 'gotKeys', 'guardGone', 'harrowCracked', 'cellOpen', 'tookCloak',
   // the guardroom
@@ -18,7 +18,7 @@ export const SECRET_FLAGS = [] as const;
 export const MET_FLAGS = [] as const;
 
 export const ITEMS = [
-  'plate', 'crust', 'nail', 'strip', 'hookLine', 'frame', 'plaster', 'wetPlaster', 'putty', 'maskHarrow', 'keys',
+  'plate', 'crust', 'nail', 'strip', 'hookLine', 'frame', 'wax', 'plaster', 'wetPlaster', 'putty', 'maskHarrow', 'keys',
   // (hood, maskClerk: older saves)
   'hood', 'ledger', 'maskClerk',
 ] as const;

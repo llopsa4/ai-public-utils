@@ -15,6 +15,7 @@ Everything the player can click, at these places (art pixels), each must be pain
 - **Guard's table** (`table`, x 874–1086, y 544–654): look at, take.
 - **Barred window** (`window`, x 280–400, y 124–248): look at, use.
 - **Clay chip** (`wall`, x 488–536, y 244–284): look at, take, use. Only there at some points of the story.
+- **Grey blanket** (`blanket`, x 96–304, y 472–564): look at, take, use.
 - **Straw cot** (`cot`, x 50–330, y 470–584): look at, use, take.
 - **Bucket** (`bucket`, x 594–662, y 510–586): look at, use, take. Only there at some points of the story.
 - **Cell door** (`cellDoor`, x 728–824, y 324–668): look at, open, use. Only there at some points of the story.

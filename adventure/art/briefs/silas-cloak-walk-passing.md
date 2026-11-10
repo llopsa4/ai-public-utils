@@ -1,6 +1,6 @@
 # silas-cloak-walk-passing
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/walk-passing.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/walk-passing.png`
 
 ## What the game does with it
 

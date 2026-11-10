@@ -1,6 +1,6 @@
 # silas-cloak-farThigh
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farThigh.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farThigh.png`
 
 ## What the game does with it
 

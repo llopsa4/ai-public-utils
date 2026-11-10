@@ -1,6 +1,6 @@
 # silas-cloak-lie
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/lie.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/lie.png`
 
 ## What the game does with it
 

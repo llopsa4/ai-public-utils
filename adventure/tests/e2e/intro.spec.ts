@@ -38,9 +38,8 @@ test("New game: Silas's intro, from the dark cell through two disguises to Sigri
   await act(page, 'use', 'item:nail', 'strip');
   await act(page, 'use', 'table', 'hookLine');
   await act(page, 'look', 'roster');
-  await act(page, 'take', 'wall');
-  await act(page, 'use', 'bucket', 'plaster');
-  await act(page, 'use', 'item:wetPlaster', 'crust');
+  await act(page, 'take', 'stub');
+  await act(page, 'use', 'item:wax', 'crust');
   await act(page, 'use', 'item:frame', 'putty');
   await act(page, 'use', 'hero', 'maskHarrow');
   expect((await state(page)).flags.wearingHarrow).toBe(true);

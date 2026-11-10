@@ -1,6 +1,6 @@
 # silas-cloak-nearThigh
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/nearThigh.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/nearThigh.png`
 
 ## What the game does with it
 

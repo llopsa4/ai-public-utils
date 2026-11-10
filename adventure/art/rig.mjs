@@ -687,8 +687,23 @@ async function buildCharacter(id) {
   const [px, py, pw, ph] = cfg.portrait;
   const moods = cfg.moods ?? MOODS;
   const P = 256, portrait = new PNG({ width: P * moods.length * 2, height: P });
+  // Drawn faces (cfg.drawnFaces: a folder of <mood>.png and <mood>-talk.png, each the portrait crop):
+  // pasted over the crop instead of bending the brows and mouth in code.
+  const drawn = (mood, talking) => {
+    if (!cfg.drawnFaces || mood === 'neutral') return null;
+    const f = join(here, cfg.drawnFaces, `${mood}${talking ? '-talk' : ''}.png`);
+    return existsSync(f) ? load(f) : null;
+  };
   moods.forEach((mood, mi) => [false, true].forEach((talking, ti) => {
-    const face = withFace(open, cfg.face, mood, talking);
+    let face = withFace(open, cfg.face, mood, talking);
+    const patch = drawn(mood, talking);
+    if (patch) {
+      face = { width: open.width, height: open.height, data: Buffer.from(open.data) };
+      for (let y = 0; y < patch.height; y++) for (let x = 0; x < patch.width; x++) {
+        const s = (y * patch.width + x) * 4, d = ((py + y) * open.width + px + x) * 4;
+        if (patch.data[s + 3] > 0) patch.data.copy(face.data, d, s, s + 4);
+      }
+    }
     const ox = (mi * 2 + ti) * P;
     for (let y = 0; y < P; y++) for (let x = 0; x < P; x++) {
       let r = 0, g = 0, b = 0, a = 0, n = 0;

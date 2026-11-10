@@ -1,6 +1,6 @@
 # silas-cloak-farBoot
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farBoot.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farBoot.png`
 
 ## What the game does with it
 

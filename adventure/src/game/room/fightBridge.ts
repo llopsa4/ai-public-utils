@@ -109,20 +109,25 @@ export async function fight(scene: RoomScene, id: string, pool?: readonly string
   sound.music('combat');
   scene.session.ui.setHover('');
   const kcModule = import('../../kc/mount');
+  // The fight plays over the room itself: a quick flash, the room stays (still animating, no
+  // control), its people step aside for the fight's own pictures, and the card strip rises.
   screenOut(true);
-  const cover = await shatter(scene);
+  scene.cameras.main.flash(settings().reducedMotion ? 0 : 160, 255, 245, 230);
   const kc = await kcModule;
   scene.hatchCreature?.destroy();
   scene.hatchCreature = null;
   const el = document.getElementById('kc-root')!;
   el.hidden = false;
-  scene.scene.pause();
+  scene.inFight = true;
+  scene.input.enabled = false;
+  for (const actor of scene.actors.values()) actor.setHidden(true);
   await new Promise<void>(resolve => {
     const boss=id==='ashwaysBoss';
     const reward = boss&&state.flags.ashwaysRewarded?undefined:chapter().rewards[id];
     const rewards = reward ? [t('battle.rewardSalvage', { n: String(reward.salvage) }),
       ...Object.entries(reward.materials).map(([m, n]) => t('battle.rewardMaterial', { n: String(n), name: t(MATERIALS[m].name) }))] : [];
     const close = kc.mountBattle(el, {
+      stage: fightStage(scene, chapter().encounters[id].id),
       profile: maraProfile(practice || boss&&state.flags.ashwaysRetry ? rested(state.kit) : state.kit), practice, guided: !boss&&guided(chapter().story, scene.storyContext()), encounter: chapter().encounters[id], lessonPrompts: chapter().lessonPrompts, rewards,
       onDefeat:boss?()=>{state.flags.ashwaysRetry=true;scene.session.saveNow();}:undefined,
       retryProfile:boss?()=>{healFully(state.kit);state.flags.ashwaysRetry=true;scene.session.saveNow();return maraProfile(state.kit);}:undefined,
@@ -144,17 +149,66 @@ export async function fight(scene: RoomScene, id: string, pool?: readonly string
         resolve();
       },
     });
-    scene.session.closeBattle = () => { close(); el.hidden = true; screenOut(false); };
+    scene.session.closeBattle = () => { close(); el.hidden = true; screenOut(false); backToRoom(scene); };
   });
-  scene.scene.resume();
-  cover.destroy();
+  backToRoom(scene);
   scene.session.ui.renderInventory();
   // The chapter decides what follows a fight (chapter 1: the nervous score, everything else quiet).
   const after = chapter().story.afterFight;
   sound.hush(after?.hush ?? hushed(chapter().story, scene.storyContext()));
   sound.music(after?.music ?? musicFor(chapter().story, scene.storyContext()));
-  scene.cameras.main.fadeIn(700, 0, 0, 0);
-  await wait(scene, 500);
+  await wait(scene, 300);
+}
+
+/** The room camera's own scroll, kept while a fight slides the view up. */
+let restScrollY: number | null = null;
+
+/** The room takes control again and its people reappear (after a fight, or one abandoned). */
+function backToRoom(scene: RoomScene): void {
+  scene.inFight = false;
+  if (scene.cameras?.main && restScrollY !== null) scene.tweens.add({ targets: scene.cameras.main, scrollY: restScrollY, duration: settings().reducedMotion ? 0 : 320, ease: 'Sine.easeOut' });
+  restScrollY = null;
+  if (scene.input) scene.input.enabled = true;
+  for (const actor of scene.actors.values()) if (actor.sprite.active) actor.setHidden(false);
+}
+
+/** The card strip's height over the room (kc-local.css, #kc-root.in-room), in page px. */
+const CARD_STRIP_TALL = 226, CARD_STRIP_SHORT = 146;
+/** The strip's height now: slimmer on short screens (kc-local.css, max-height 520px). */
+const cardStrip = () => (window.innerHeight <= 520 ? CARD_STRIP_SHORT : CARD_STRIP_TALL);
+
+/** Each enemy's visible height against Mara's, at its real size in the room. */
+const ENEMY_HEIGHT: Record<string, number> = {
+  'hatch-scavenger': 0.45,      // a crab-like maintenance machine, knee to waist high
+  'berserk-ash-sweeper': 1.05,  // the ashways' big sweeper, a bit taller than Mara
+  'training-rig': 0.9,          // Bryn's practice rig, about shoulder high
+  'cinder-rat': 0.22, 'rat-pack': 0.28, 'ash-mites': 0.22, 'pipe-beetle': 0.32, // the tunnels' small creatures
+};
+
+/** Mara's height in the rooms (art px at depth 1; art/manifest.mjs char-mara). */
+const MARA_ROOM_HEIGHT = 232;
+
+/**
+ * Where the fight's pictures stand over the room, in page pixels: the stage's box, Mara's height at
+ * her depth there, and the floor at the fixed spots (Mara a third across, the enemy two thirds).
+ */
+function fightStage(scene: RoomScene, encounter: string): { left: number; top: number; width: number; height: number; heroSize: number; enemySize: number; floor: number } {
+  const box = document.getElementById('stage')!.getBoundingClientRect();
+  const zoom = box.width / LOGICAL_W;
+  // The room view slides up (its top edge out of sight) until its floor clears the card strip.
+  const hidden = cardStrip() - (window.innerHeight - box.bottom) + 6;
+  const lift = Math.max(0, hidden - (box.height - scene.hero.position.y * zoom)) / zoom;
+  const cam = scene.cameras.main;
+  restScrollY = cam.scrollY;
+  if (lift > 0) scene.tweens.add({ targets: cam, scrollY: restScrollY + lift, duration: settings().reducedMotion ? 0 : 320, ease: 'Sine.easeOut' });
+  const floorY = scene.hero.position.y - lift;
+  return {
+    left: box.left, top: box.top, width: box.width, height: box.height,
+    heroSize: (MARA_ROOM_HEIGHT / 2) * scene.hero.depth * zoom * 1.06,
+    enemySize: (MARA_ROOM_HEIGHT / 2) * scene.hero.depth * zoom * (ENEMY_HEIGHT[encounter] ?? 0.5),
+    // On the room's floor, now just above the card strip.
+    floor: box.height - floorY * zoom,
+  };
 }
 
 /**

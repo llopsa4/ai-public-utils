@@ -1,6 +1,6 @@
 # silas-cloak-kneel
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/kneel.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/kneel.png`
 
 ## What the game does with it
 

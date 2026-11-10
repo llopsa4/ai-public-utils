@@ -58,6 +58,13 @@ class Sound {
     this.musicBus?.gain.setTargetAtTime(this.muted ? 0 : this.musicVolume * 0.9, this.ctx.currentTime, 0.05);
   }
 
+  /** A drop of water into a bucket: a quick falling plink and a tiny splash. */
+  drip(): void {
+    this.tone('sine', 1500, 620, 0.09, 0.09);
+    this.tone('sine', 900, 700, 0.03, 0.12, 0.05);
+    this.burst('highpass', 4000, 0.03, 0.002, 0.04);
+  }
+
   /** The low hit that opens the title theme when the player clicks to begin. */
   titleHit(): void {
     this.musicPlayer?.openingHit();

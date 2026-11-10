@@ -1,6 +1,6 @@
 # silas-cloak-idle
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/idle.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/idle.png`
 
 ## What the game does with it
 

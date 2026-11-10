@@ -1,6 +1,6 @@
 # silas-cloak-nearUpperArm
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/nearUpperArm.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/nearUpperArm.png`
 
 ## What the game does with it
 

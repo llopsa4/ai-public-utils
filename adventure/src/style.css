@@ -5,7 +5,7 @@
   --panel-edge: #4a3a4c;
   --text: #f4ead8;
   --gold: #e7c046;
-  font-family: "IM Fell English", Georgia, "Times New Roman", serif;
+  font-family: "MedievalSharp", Georgia, "Times New Roman", serif;
 }
 
 * { box-sizing: border-box; }
@@ -542,7 +542,7 @@ html.battle-out #bar, html.battle-out #overlay {
 /* The chapter map (ui/chapterMap.ts): the Ashlands on parchment, a pin per chapter open to play. */
 #chapter-map { position: fixed; inset: 0; z-index: 60; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0.6rem; padding: 1rem; background: radial-gradient(ellipse at 50% 40%, #2a1d14, #0b0807 75%); }
 #chapter-map[hidden] { display: none; }
-#chapter-map h1 { margin: 0; font-family: "UnifrakturMaguntia", "IM Fell English", serif; font-weight: 400; font-size: 2.6em; color: #ffd79a; text-shadow: 0 0 0.5em rgb(255 120 40 / 0.45); }
+#chapter-map h1 { margin: 0; font-family: "MedievalSharp", serif; font-weight: 400; font-size: 2.6em; color: #ffd79a; text-shadow: 0 0 0.5em rgb(255 120 40 / 0.45); }
 #chapter-map-svg { width: min(56rem, 92vw, calc((100svh - 9rem) * 10 / 7)); padding: 0.6rem; background: radial-gradient(ellipse at 30% 20%, #f4e6c6, #dcc597 70%, #c9ad79); border-radius: 4px; box-shadow: 0 18px 50px rgb(0 0 0 / 0.7); }
 #chapter-map .chapter-pin { cursor: pointer; }
 #chapter-map .chapter-pin:hover .map-here-pin { fill: #e0402a; }
@@ -550,7 +550,16 @@ html.battle-out #bar, html.battle-out #overlay {
 #chapter-map-list { display: flex; gap: 1rem; }
 #chapter-map-list button { font-size: 1.2em; }
 /* Played chapters: dimmed and ticked, not clickable. */
-#chapter-map .chapter-pin.played { cursor: default; opacity: 0.55; }
+/* Labels on dark plates, readable over any part of the painting. */
+.map-plate rect { fill: rgb(24 14 8 / 0.82); stroke: rgb(255 200 120 / 0.35); stroke-width: 1.5; }
+.map-plate text { font: 600 20px Georgia, serif; fill: #ffd79a; }
+.map-plate.live text { font-size: 22px; }
+.map-plate.earlier text { font-style: italic; fill: #f0c890; }
+.map-plate.day text { font: italic 17px Georgia, serif; fill: #e8d2b0; }
+.map-plate.name text { font-size: 18px; fill: #f0dcb4; }
+.map-plate.played text { fill: #bfb2a0; }
+#chapter-map .chapter-pin.played { cursor: default; }
+#chapter-map .chapter-pin.played .map-here-pin, #chapter-map .chapter-pin.played .pin-tick { opacity: 0.6; }
 #chapter-map .chapter-pin.played .map-here-pin { fill: #7a6a58; stroke: #3a2e22; }
 #chapter-map .pin-tick { fill: none; stroke: #f4e6c6; stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
 #chapter-map .pin-earlier { font-size: 20px; fill: #6a3a1a; }

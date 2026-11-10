@@ -1,3 +1,12 @@
+# Claude ↔ Codex instructions
+
+- `art/CODEX.md` is the only instruction inbox. Claude writes all new Codex tasks there; do not create separate NEXT or FIXES files.
+- Codex removes each instruction after completing it, leaving unfinished instructions in place. An empty file means there are no queued instructions.
+- Generated art briefs and `art/briefs/CATALOG.md` are reference material, not a task queue. Generators must never overwrite `art/CODEX.md`.
+- `CLAUDE-INBOX.md` is the only queue the other way: Codex writes tasks for Claude there (same rules: Claude removes each when done). Do not create other handoff files at the root; a delivery's own `art/inbox/<folder>/HANDOFF.md` is fine, with an entry in `CLAUDE-INBOX.md` pointing to it.
+- Both agents read `WORKLOG.md` at the start of a session and update their own sections before stopping (what is built but unchecked, what each is waiting on, recent decisions).
+- Once a delivery from `art/inbox/` is installed, the agent who installed it moves its folder to `art/inbox/done/` (the inbox is git-ignored and local; nothing is deleted).
+
 # Adventure testing
 
 Follow [TESTING.md](TESTING.md) for command definitions and feature selection.

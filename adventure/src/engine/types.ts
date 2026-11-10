@@ -68,6 +68,8 @@ export interface ObjectDef {
   flag?: string;
   whenTrue?: string;
   whenFalse?: string;
+  /** Draw depth while `flag` is true (the open cell door, behind Silas walking round it). */
+  depthWhenTrue?: number;
   /** Looping animation tag for animated objects. */
   anim?: string;
   /** Where the object rests once `flag` is set (so moved things stay moved after loading a save). */
@@ -99,8 +101,11 @@ export interface ForegroundDef {
 
 /** Ambient effects: particle fields and flickering light pools. */
 export interface AmbientDef {
-  particles?: { kind: 'embers' | 'steam' | 'dust' | 'ash'; x: number; y: number; w: number; h: number; warm?: boolean }[];
-  glows?: { x: number; y: number; r: number; color: number; warm?: boolean }[];
+  particles?: { kind: 'embers' | 'steam' | 'dust' | 'ash' | 'snow' | 'snowNear'; x: number; y: number; w: number; h: number; warm?: boolean }[];
+  /** `front`: drawn over the people too (a candle someone stands in front of still glows). */
+  glows?: { x: number; y: number; r: number; color: number; warm?: boolean; front?: boolean }[];
+  /** Water dripping from `top` to `bottom` at `x`, every `every` ms, with a plink (src/game/room/drips.ts). */
+  drips?: { x: number; top: number; bottom: number; every: number }[];
 }
 
 export interface RoomDef {
@@ -119,6 +124,8 @@ export interface RoomDef {
   dark?: { if: Condition[]; lights: { x: number; y: number; r: number }[]; heroR: number; alpha?: number };
   /** Outer walkable polygon followed by optional holes (obstacles). */
   walkable: { outer: Polygon; holes: Polygon[] };
+  /** Places the hero may not walk into while `if` holds: crossing past `beyondX` runs `run` (Kell spotting Silas). */
+  trips?: { if: Condition[]; beyondX: number; run: Command[] }[];
   /** Other floors for other states, the first whose conditions hold (the cell once its door is open). */
   walkableWhen?: { if: Condition[]; walkable: { outer: Polygon; holes: Polygon[] } }[];
   scale: DepthScale;
@@ -154,6 +161,8 @@ export interface RoomDef {
   actors: { id: NpcId; x: number; y: number; body?: number; visibleIf?: Condition[]; task?: ActorTask | readonly ActorTask[]; sheet?: { if?: Condition[]; pick: string }[];
     /** Once `visibleIf` stops holding, walks here (off-screen) before going, instead of fading where they stand. */
     leaves?: { to: Point };
+    /** Keeps watching one way: does not turn to look at Silas or glance about (Kell at his post). */
+    watches?: boolean;
     /** Asleep (holding `sit`) while these hold: "z z Z" now and then, with a soft snore (src/game/room/snore.ts). */
     snores?: Condition[] }[];
 }

@@ -1,6 +1,6 @@
 # silas-cloak-torso
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/torso.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/torso.png`
 
 ## What the game does with it
 

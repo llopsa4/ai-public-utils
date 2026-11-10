@@ -1,6 +1,6 @@
 # silas-cloak-nearShin
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/nearShin.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/nearShin.png`
 
 ## What the game does with it
 

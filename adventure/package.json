@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "art": "node art/pixelate.mjs && node art/tent-reference.mjs && node art/battle.mjs && node art/kc.mjs && node art/combat-poses.mjs && node art/rig.mjs && node art/icons.mjs && node art/hall-crate.mjs && node art/intro.mjs && node art/reveal.mjs && node art/webp.mjs",
+    "art": "node art/pixelate.mjs && node art/tent-reference.mjs && node art/battle.mjs && node art/kc.mjs && node art/combat-poses.mjs && node art/rig.mjs && node art/icons.mjs && node art/hall-crate.mjs && node art/intro.mjs && node art/reveal.mjs && node art/webp.mjs && node art/intro-cards.mjs",
     "webp": "node art/webp.mjs",
     "pixelate": "node art/pixelate.mjs",
     "rig": "node art/rig.mjs",
@@ -30,8 +30,7 @@
     "art:outlines": "python art/outlines.py"
   },
   "dependencies": {
-    "@fontsource/im-fell-english": "5.3.0",
-    "@fontsource/unifrakturmaguntia": "5.3.0",
+    "@fontsource/medievalsharp": "5.3.0",
     "@fontsource/zilla-slab": "5.3.0",
     "phaser": "3.90.0",
     "react": "19.3.1",

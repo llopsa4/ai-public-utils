@@ -1,6 +1,6 @@
 # silas-cloak-farShin
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farShin.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/farShin.png`
 
 ## What the game does with it
 

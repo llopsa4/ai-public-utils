@@ -20,6 +20,14 @@ export function onPointerDown(scene: RoomScene, pointer: Phaser.Input.Pointer): 
   ui.controls.stopMovement();
   ui.controls.cancelPendingClick();
   clearFocus(scene);
+  // A click while Silas is still walking to an earlier target: that order is dropped, this one obeyed.
+  if (scene.busy && scene.approaching && !scene.leaving) {
+    scene.scriptToken++;
+    scene.hero.stop();
+    scene.busy = false;
+    scene.approaching = false;
+    ui.setBusy(false);
+  }
   if (scene.isBusy()) { ui.skip(); return; }
   if (pointer.rightButtonDown()) {
     scene.session.selectItem(null);

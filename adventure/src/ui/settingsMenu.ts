@@ -10,7 +10,7 @@ export function openSettings(): void {
   (form.elements.namedItem('visualQuality') as RadioNodeList).value = s.visualQuality;
   (form.elements.namedItem('volume') as HTMLInputElement).value = String(s.volume);
   (form.elements.namedItem('musicVolume') as HTMLInputElement).value = String(s.musicVolume);
-  for (const k of ['muted', 'autoAdvance', 'reducedMotion', 'highContrast'] as const) (form.elements.namedItem(k) as HTMLInputElement).checked = s[k];
+  for (const k of ['muted', 'reducedMotion', 'highContrast'] as const) (form.elements.namedItem(k) as HTMLInputElement).checked = s[k];
   paintSliders();
   $<HTMLDialogElement>('settings').showModal();
 }
@@ -33,7 +33,7 @@ export function bindSettingsForm(ui: Ui): void {
       volume: Number(el('volume').value),
       musicVolume: Number(el('musicVolume').value),
       muted: el('muted').checked,
-      autoAdvance: el('autoAdvance').checked,
+      autoAdvance: false,
       reducedMotion: el('reducedMotion').checked,
       textSize: (form.elements.namedItem('textSize') as RadioNodeList).value as Settings['textSize'],
       visualQuality: (form.elements.namedItem('visualQuality') as RadioNodeList).value as Settings['visualQuality'],

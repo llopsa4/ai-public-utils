@@ -35,7 +35,7 @@ interface MoodDef {
   };
 }
 
-const MOODS: Record<Exclude<MusicMood, 'none' | 'title' | 'reveal'>, MoodDef> = {
+const MOODS: Record<Exclude<MusicMood, 'none' | 'title' | 'reveal' | 'combat'>, MoodDef> = {
   // Home and hearth: D major pentatonic, gentle movement.
   warm: { scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 4.8, pluck: 0.32, padLevel: 0.05, cutoff: 1400 },
   // The gallery: D minor with a flat sixth, a held low fifth, few notes.
@@ -43,17 +43,8 @@ const MOODS: Record<Exclude<MusicMood, 'none' | 'title' | 'reveal'>, MoodDef> = 
   // After the shutdown: bare fifths, almost silence.
   cold: { scale: [0, 7, 12, 14], chords: [[0, 7], [-5, 7]], root: 130.81, barSeconds: 8, pluck: 0.09, padLevel: 0.035, cutoff: 600 },
   // A fight: the warm theme's own notes (D major pentatonic, the same chords) at a run, with drums.
-  combat: {
-    scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 1.9, pluck: 0, padLevel: 0, cutoff: 1800,
-    groove: {
-      steps: 16, stabLevel: 0.045, hat: 2,
-      motif: [12, 14, 16, 19, 16, 14, 12, 9, 12, 14, 16, 21, 19, 16, 14, 12],
-      kick: [0, 4, 8, 10, 12], snare: [4, 12],
-    },
-  },
-  // After the fight, until the chapter ends: the combat track's motif and drums, a little slower
-  // (about 116 bpm against 126) and thinner, over a ticking clock and a low drone. The fight could
-  // start again at any moment.
+  // After the fight, until the chapter ends: a nervous motif and drums (about 116 bpm), thin, over a
+  // ticking clock and a low drone. The fight could start again at any moment.
   nervous: {
     scale: [0, 2, 4, 7, 9, 12, 14], chords: [[0, 7, 16], [-3, 4, 12], [-7, 0, 9], [-5, 2, 11]], root: 146.83, barSeconds: 2.07, pluck: 0, padLevel: 0, cutoff: 900,
     groove: {
@@ -102,6 +93,47 @@ export const REVEAL_TIMING = {
   end: TITLE_BAR * 8,
 } as const;
 
+/**
+ * The battle theme (fights): an original piece in the manner of a classic JRPG battle theme, built
+ * from the game's own material. D minor over warm's root; section A rides the title theme's
+ * Dm–B♭–F–C, its melody grown from the title's high-strings phrase (A–B♭–A–G); section B climbs
+ * Gm–B♭–C to an A major that throws it back to the top. 152 bpm: driving eighth-note bass with
+ * octave jumps, a sixteenth string ostinato (the title's), snare on two and four, the title's taiko
+ * and braams on section changes, warm's plucks as a quiet counter-line. A two-bar call to arms
+ * opens it once; then the 16 bars loop.
+ */
+export const BATTLE = {
+  bpm: 152,
+  root: 146.83,
+  /** Chords (semitones from D3), one per bar: section A then section B. */
+  chords: [
+    [0, 7, 15], [-4, 3, 10], [3, 10, 15], [-2, 5, 14], [0, 7, 15], [-4, 3, 10], [3, 10, 15], [-2, 5, 14],
+    [5, 10, 14], [5, 10, 14], [-4, 3, 10], [-4, 3, 10], [-2, 5, 14], [-2, 5, 14], [7, 11, 14], [7, 11, 14],
+  ],
+  /** The lead melody per bar: [semitones from D3, start eighth, length in eighths]. */
+  melody: [
+    [[31, 0, 3], [32, 3, 1], [31, 4, 2], [29, 6, 1], [27, 7, 1]],
+    [[27, 0, 3], [26, 3, 1], [24, 4, 4]],
+    [[24, 0, 2], [27, 2, 2], [31, 4, 3], [34, 7, 1]],
+    [[36, 0, 4], [34, 4, 2], [31, 6, 2]],
+    [[31, 0, 3], [32, 3, 1], [31, 4, 2], [29, 6, 1], [27, 7, 1]],
+    [[27, 0, 2], [29, 2, 2], [31, 4, 2], [32, 6, 2]],
+    [[34, 0, 3], [32, 3, 1], [31, 4, 4]],
+    [[29, 0, 4], [31, 4, 4]],
+    [[29, 0, 2], [31, 2, 2], [32, 4, 4]],
+    [[34, 0, 2], [32, 2, 2], [31, 4, 2], [29, 6, 2]],
+    [[32, 0, 4], [34, 4, 4]],
+    [[36, 0, 3], [34, 3, 1], [32, 4, 4]],
+    [[34, 0, 2], [36, 2, 2], [38, 4, 4]],
+    [[36, 0, 8]],
+    [[31, 0, 2], [35, 2, 2], [38, 4, 4]],
+    [[38, 0, 4], [35, 4, 2], [31, 6, 2]],
+  ] as readonly (readonly [number, number, number])[][],
+} as const;
+const BATTLE_BAR = (60 / BATTLE.bpm) * 4;
+/** The opening call to arms (played once), in bars. */
+const BATTLE_INTRO = 2;
+
 /** Which stage of the arc a bar is in: 1 build, 2 drums, 3 peak, 4 release. */
 export const titleStage = (bar: number): 1 | 2 | 3 | 4 => (Math.floor((bar % TITLE.bars) / 4) + 1) as 1 | 2 | 3 | 4;
 
@@ -126,7 +158,8 @@ export class Music {
     const old = this.bus, oldExtras = this.extras;
     this.extras = [];
     if (old) {
-      old.gain.setTargetAtTime(0.0001, ctx.currentTime, FADE / 4);
+      // Into a fight the room's music cuts out at once: the battle theme is the only music.
+      old.gain.setTargetAtTime(0.0001, ctx.currentTime, mood === 'combat' ? 0.04 : FADE / 4);
       window.setTimeout(() => { old.disconnect(); for (const n of oldExtras) n.disconnect(); }, FADE * 2000 + 3000);
     }
     window.clearInterval(this.timer);
@@ -158,6 +191,22 @@ export class Music {
       this.timer = window.setInterval(() => this.titleBar(bus), TITLE_BAR * 1000);
       return;
     }
+    if (mood === 'combat') {
+      // A little room around it (the title's hall, drier), the call to arms, then the loop.
+      const hall = ctx.createConvolver();
+      hall.buffer = this.hallImpulse();
+      const wet = ctx.createGain();
+      wet.gain.value = 0.16;
+      bus.connect(hall).connect(wet).connect(this.out);
+      this.extras = [hall, wet];
+      bus.gain.cancelScheduledValues(ctx.currentTime);
+      bus.gain.setValueAtTime(0.0001, ctx.currentTime);
+      bus.gain.exponentialRampToValueAtTime(1, ctx.currentTime + 0.25);
+      this.bar = -BATTLE_INTRO;
+      this.battleBar(bus);
+      this.timer = window.setInterval(() => this.battleBar(bus), BATTLE_BAR * 1000);
+      return;
+    }
     const def = MOODS[mood];
     this.bar = 0;
     this.playBar(def, bus);
@@ -166,6 +215,86 @@ export class Music {
 
   stop(): void {
     this.play('none');
+  }
+
+  /** One bar of the battle theme (BATTLE): the call to arms first, then the 16-bar loop. */
+  battleBar(bus: GainNode, at = this.ctx.currentTime + 0.05): void {
+    if (bus !== this.bus) return;
+    const t = at, bar = this.bar++, root = BATTLE.root;
+    const eighth = BATTLE_BAR / 8, sixteenth = BATTLE_BAR / 16;
+    if (bar < 0) {
+      // The call to arms: a rising unison run, then a hit with a drum roll into the loop.
+      if (bar === -2) {
+        [0, 2, 3, 5, 7, 8, 10, 12].forEach((n, i) => {
+          this.lead(bus, semis(root, n + 12), t + i * eighth, eighth * 0.9, 0.05);
+          this.ostinato(bus, semis(root, n - 12), t + i * eighth, eighth * 0.9, 0.07, 900);
+        });
+        for (const i of [0, 4]) this.taiko(bus, t + i * eighth, 0.35);
+      } else {
+        this.taiko(bus, t, 0.6);
+        this.braam(bus, semis(root, -12), t, BATTLE_BAR);
+        this.lead(bus, semis(root, 31), t, eighth * 5, 0.06);
+        for (let i = 8; i < 16; i++) this.hit(bus, t + i * sixteenth, 'bandpass', 1900, 0.03 + (i - 8) * 0.008, 0.08);
+      }
+      return;
+    }
+    const n = bar % 16, chord = BATTLE.chords[n], low = chord[0] - 12, sectionB = n >= 8;
+    // The bass: eighths on the root with octave jumps.
+    [0, 0, 12, 0, 0, 12, 0, 12].forEach((o, i) => this.ostinato(bus, semis(root, low - 12 + o), t + i * eighth, eighth * 0.85, 0.075 * (i % 2 ? 0.75 : 1), 1100));
+    // The title's string ostinato, up an octave, quieter: the drive under everything.
+    for (let i = 0; i < 16; i++) this.ostinato(bus, semis(root, chord[i % 3]), t + i * sixteenth, sixteenth * 0.8, 0.022, 1800);
+    // Drums: kick on one and three (and a push in section B), snare on two and four, eighth hats.
+    for (const i of sectionB ? [0, 3, 4, 6] : [0, 4]) this.kick(bus, t + i * eighth);
+    for (const i of [2, 6]) this.hit(bus, t + i * eighth, 'bandpass', 1900, 0.07, 0.12);
+    for (let i = 0; i < 8; i++) this.hit(bus, t + i * eighth, 'highpass', 7000, i % 2 ? 0.016 : 0.026, 0.03);
+    // A snare fill into each section's start.
+    if (n === 7 || n === 15) for (let i = 12; i < 16; i++) this.hit(bus, t + i * sixteenth, 'bandpass', 2100, 0.05 + (i - 12) * 0.012, 0.08);
+    // Section changes: the title's taiko and braam.
+    if (n === 0 || n === 8) { this.taiko(bus, t, 0.45); this.braam(bus, semis(root, low), t, BATTLE_BAR * 1.5); }
+    // Section B: brass stabs on the chord, on the offbeats.
+    if (sectionB) for (const i of [1, 3, 5]) for (const c of chord) this.stab(bus, semis(root, c), t + i * eighth, eighth * 0.8, 0.018);
+    // The melody.
+    for (const [note, start, len] of BATTLE.melody[n]) this.lead(bus, semis(root, note), t + start * eighth, len * eighth * 0.95, 0.055);
+    // Warm's plucks, quietly answering in section A.
+    if (!sectionB) for (const i of [1, 5]) this.pluckNote(bus, semis(root, chord[(i + n) % 3] + 24), t + i * eighth);
+    // The chord underneath, warm's pad, dark.
+    for (const c of chord) this.pad(bus, semis(root, c), t, BATTLE_BAR, 0.03, 900);
+  }
+
+  /** The battle theme's lead: a soaring string section (three detuned saws, doubled an octave below),
+   * bowed in quickly, with vibrato blooming on the longer notes and a slight swell. */
+  private lead(bus: GainNode, freq: number, t: number, length: number, level: number): void {
+    const ctx = this.ctx;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass'; filter.frequency.value = 3000; filter.Q.value = 0.4;
+    const gain = ctx.createGain();
+    const long = length > 0.35;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(level * 0.85, t + 0.04);
+    gain.gain.linearRampToValueAtTime(level * (long ? 1.1 : 0.9), t + Math.max(0.06, length * 0.8));
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + length + 0.18);
+    filter.connect(gain).connect(bus);
+    const vibrato = ctx.createOscillator();
+    vibrato.frequency.value = 5.5;
+    const depth = ctx.createGain();
+    depth.gain.setValueAtTime(0, t);
+    if (long) depth.gain.linearRampToValueAtTime(10, t + Math.min(0.35, length * 0.6));
+    vibrato.connect(depth);
+    const voices: [number, number, number][] = [[freq, -10, 1], [freq, 0, 1], [freq, 10, 1], [freq / 2, -6, 0.55], [freq / 2, 6, 0.55]];
+    for (const [f, detune, mix] of voices) {
+      const osc = ctx.createOscillator();
+      osc.type = 'sawtooth';
+      osc.frequency.value = f;
+      osc.detune.value = detune;
+      depth.connect(osc.detune);
+      const g = ctx.createGain();
+      g.gain.value = mix * 0.45;
+      osc.connect(g).connect(filter);
+      osc.start(t);
+      osc.stop(t + length + 0.22);
+    }
+    vibrato.start(t);
+    vibrato.stop(t + length + 0.22);
   }
 
   /** The Ashlands reveal's score, scheduled from `t0` (REVEAL_TIMING). */
@@ -212,13 +341,8 @@ export class Music {
   /** A rising swell: noise through a bandpass sweeping up, growing louder until it stops dead. */
   private riser(bus: GainNode, t: number, length: number): void {
     const ctx = this.ctx;
-    if (!this.noiseBuffer) {
-      this.noiseBuffer = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
-      const d = this.noiseBuffer.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    }
     const src = ctx.createBufferSource();
-    src.buffer = this.noiseBuffer;
+    src.buffer = this.noise();
     src.loop = true;
     const filter = ctx.createBiquadFilter();
     filter.type = 'bandpass'; filter.Q.value = 2.5;
@@ -453,15 +577,19 @@ export class Music {
   }
 
   private noiseBuffer: AudioBuffer | null = null;
-  private hit(bus: GainNode, t: number, type: BiquadFilterType, freq: number, level: number, decay: number): void {
-    const ctx = this.ctx;
+  /** One second of white noise, made once (hits, the riser). */
+  private noise(): AudioBuffer {
     if (!this.noiseBuffer) {
-      this.noiseBuffer = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+      this.noiseBuffer = this.ctx.createBuffer(1, this.ctx.sampleRate, this.ctx.sampleRate);
       const d = this.noiseBuffer.getChannelData(0);
       for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
     }
+    return this.noiseBuffer;
+  }
+  private hit(bus: GainNode, t: number, type: BiquadFilterType, freq: number, level: number, decay: number): void {
+    const ctx = this.ctx;
     const src = ctx.createBufferSource();
-    src.buffer = this.noiseBuffer;
+    src.buffer = this.noise();
     const filter = ctx.createBiquadFilter();
     filter.type = type; filter.frequency.value = freq; filter.Q.value = 0.9;
     const gain = ctx.createGain();

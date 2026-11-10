@@ -1,6 +1,6 @@
 # silas-cloak-joints
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/joints.png`
+Status: **final** · pack · chapter intro · kept in `art/sources/characters/silas-cloak-layered/joints.png`
 
 ## What the game does with it
 

@@ -79,7 +79,7 @@ export function multiplyColor(color: number, factor: number, other: number): num
  * Ambient particles. `rich` (High quality) uses the textured puff and ember streak, with turning
  * smoke and wobbling embers; otherwise plain dots at a lower rate.
  */
-export function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash', w: number, h: number, rich = false): Phaser.Types.GameObjects.Particles.ParticleEmitterConfig {
+export function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash' | 'snow' | 'snowNear', w: number, h: number, rich = false): Phaser.Types.GameObjects.Particles.ParticleEmitterConfig {
   const area = { x: { min: 0, max: w }, y: { min: 0, max: h } };
   if (rich) {
     switch (kind) {
@@ -95,6 +95,12 @@ export function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash', w: num
       case 'ash':
         return { ...area, lifespan: { min: 6000, max: 9000 }, speedY: { min: 2, max: 7 }, speedX: { min: 4, max: 14 }, scale: { min: 0.05, max: 0.12 },
           alpha: { start: 0.6, end: 0 }, tint: [0xd8d0c8, 0xffb070], frequency: 200, rotate: { start: 0, end: 360 } };
+      case 'snow':
+        return { ...area, lifespan: { min: 10000, max: 14000 }, speedY: { min: 16, max: 28 }, speedX: { min: -6, max: 10 }, accelerationX: { min: -4, max: 4 },
+          scale: { min: 0.08, max: 0.16 }, alpha: { start: 0.95, end: 0.5 }, tint: [0xffffff, 0xe6eeff], frequency: 35 };
+      case 'snowNear':
+        return { ...area, lifespan: { min: 5000, max: 7000 }, speedY: { min: 45, max: 70 }, speedX: { min: -4, max: 16 }, accelerationX: { min: -6, max: 6 },
+          scale: { min: 0.2, max: 0.32 }, alpha: { start: 0.85, end: 0.4 }, tint: 0xffffff, frequency: 420 };
     }
   }
   switch (kind) {
@@ -110,6 +116,12 @@ export function particleConfig(kind: 'embers' | 'steam' | 'dust' | 'ash', w: num
     case 'ash':
       return { ...area, lifespan: { min: 6000, max: 9000 }, speedY: { min: 2, max: 7 }, speedX: { min: 4, max: 12 }, scale: { min: 0.08, max: 0.16 },
         alpha: { start: 0.55, end: 0 }, tint: [0xd8d0c8, 0xffb070], frequency: 260 };
+    case 'snow':
+      return { ...area, lifespan: { min: 10000, max: 14000 }, speedY: { min: 16, max: 28 }, speedX: { min: -6, max: 10 }, scale: { min: 0.12, max: 0.22 },
+        alpha: { start: 0.9, end: 0.45 }, tint: 0xf4f6ff, frequency: 45 };
+    case 'snowNear':
+      return { ...area, lifespan: { min: 5000, max: 7000 }, speedY: { min: 45, max: 70 }, speedX: { min: -4, max: 16 }, scale: { min: 0.26, max: 0.4 },
+        alpha: { start: 0.8, end: 0.35 }, tint: 0xffffff, frequency: 480 };
   }
 }
 

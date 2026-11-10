@@ -33,8 +33,8 @@ test('the notebook shows finished goals plus the current one, never later ones',
 test('settings accept only valid values', () => {
   const d = defaultSettings();
   assert.deepEqual(parseSettings(null, d), d);
-  assert.deepEqual(parseSettings({ textSpeed: 'warp', volume: 9, muted: 'yes', autoAdvance: false }, d),
-    { ...d, volume: 1, autoAdvance: false });
+  assert.deepEqual(parseSettings({ textSpeed: 'warp', volume: 9, muted: 'yes', autoAdvance: true }, d),
+    { ...d, volume: 1, autoAdvance: false }, 'lines always wait for a click');
   assert.equal(parseSettings({ volume: -2 }, d).volume, 0);
   assert.equal(defaultSettings(true).reducedMotion, true);
 });

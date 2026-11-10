@@ -26,6 +26,7 @@ import { activateFocus, clearFocus, cycleFocus, drawHover, hotspotLabels, onPoin
 import { applyTint, tintScenery, updateLighting } from './room/lighting';
 import { runScript } from './room/runner';
 import { updateSnores } from './room/snore';
+import { updateDrips } from './room/drips';
 import { directionalStep } from './movement';
 
 /** Loads the shared sheets (props and Mara) and builds their animations. */
@@ -83,9 +84,15 @@ export class BootScene extends Phaser.Scene {
 //   { key: 'title-gauntlet', image: titleGauntlet, x: 425, y: 313, width: 80 }
 // in this list.
 const TITLE_ARTIFACTS: { key: string; image: string; x: number; y: number; width: number }[] = [];
+// Codex's banner on its jutting bar (art/inbox/title-banner): six 224x240 cells, 3 by 2, the bar and
+// its wall plate drawn in every frame (only the cloth moves, billowing to the right).
 const TITLE_FLAG_ATLAS = { frames: Array.from({ length: 6 }, (_, index) => ({
-  filename: String(index), frame: { x: index % 3 * 64, y: Math.floor(index / 3) * 110, w: 64, h: 110 },
+  filename: String(index), frame: { x: index % 3 * 224, y: Math.floor(index / 3) * 240, w: 224, h: 240 },
 })) };
+/** How big the banner is drawn, against Codex's art (2 art px per world px at 1). */
+const TITLE_FLAG_SCALE = 0.48;
+/** The banner's frame top-left (world): its cloth (87 art px into the frame) centred over the fire (x 547). */
+const TITLE_FLAG_AT = { x: 547 - 43.5 * TITLE_FLAG_SCALE, y: 92 };
 
 /** The empty Ironhaven courtyard, independently placed artifacts, flag and distant fire. */
 export class TitleScene extends Phaser.Scene {
@@ -112,8 +119,9 @@ export class TitleScene extends Phaser.Scene {
       const object = this.add.image(artifact.x, artifact.y, artifact.key).setOrigin(0.5, 1).setDepth(10);
       object.setScale(artifact.width / object.width);
     }
-    if (!this.anims.exists('title-flag-wind')) this.anims.create({ key: 'title-flag-wind', frames: Array.from({ length: 6 }, (_, index) => ({ key: 'title-flag', frame: String(index) })), frameRate: 4, repeat: -1 });
-    this.flag = this.add.sprite(505, 74, 'title-flag', '0').setOrigin(0, 0).setScale(1 / ART_SCALE);
+    // A gust every 5 seconds: the six frames (1.5 s), then the banner hangs still for 3.5 s.
+    if (!this.anims.exists('title-flag-wind')) this.anims.create({ key: 'title-flag-wind', frames: Array.from({ length: 6 }, (_, index) => ({ key: 'title-flag', frame: String(index) })), frameRate: 4, repeat: -1, repeatDelay: 3500 });
+    this.flag = this.add.sprite(TITLE_FLAG_AT.x, TITLE_FLAG_AT.y, 'title-flag', '0').setOrigin(0, 0).setScale(TITLE_FLAG_SCALE / ART_SCALE);
     this.fireGlow = this.add.image(547, 216, 'fx-glow').setDisplaySize(30, 25).setTint(0xf5a14c).setBlendMode(Phaser.BlendModes.ADD).setAlpha(0.2);
     this.fireTween = this.tweens.add({ targets: this.fireGlow, alpha: { from: 0.12, to: 0.28 }, duration: 710, yoyo: true, repeat: -1, ease: 'Sine.easeInOut', paused: true });
     this.reduced = null;
@@ -194,6 +202,11 @@ export class RoomScene extends Phaser.Scene {
   isBusy(): boolean {
     return this.busy || this.leaving;
   }
+
+  /** True while a click's script is only walking Silas to its target (nothing has happened yet). */
+  approaching = false;
+  /** Bumped to call off the script that is approaching, so a new click is obeyed at once. */
+  scriptToken = 0;
 
   /** Loads this room's background and foreground pieces if they are not cached yet. */
   preload(): void {
@@ -485,7 +498,11 @@ export class RoomScene extends Phaser.Scene {
     clearFocus(this);
   }
 
+  /** A fight is on over the room (fightBridge.ts): the room still animates, but takes no control. */
+  inFight = false;
+
   private updateKeyboardMovement(delta: number): void {
+    if (this.inFight) return;
     this.session.ui.controls.reconcile();
     const direction = this.moveDirection;
     if (!direction.x && !direction.y) return;
@@ -516,6 +533,7 @@ export class RoomScene extends Phaser.Scene {
       if (def.flag && !def.anim) {
         const tag = state.flags[def.flag] ? def.whenTrue : def.whenFalse;
         if (tag) sprite.setFrame(tagFrame(def.sheet, tag));
+        if (def.depthWhenTrue !== undefined) sprite.setDepth(state.flags[def.flag] ? def.depthWhenTrue : def.depth ?? def.y);
       }
       if (def.movedTo && !this.tweens.isTweening(sprite)) {
         const p = this.objectPosition(def);
@@ -566,13 +584,18 @@ export class RoomScene extends Phaser.Scene {
     this.updateKeyboardMovement(delta);
     this.props.update(time);
     updateSnores(this, time);
+    updateDrips(this, time);
     this.crowd?.update();
     this.ashways?.update(time);
     drawHover(this, time);
     tintScenery(this);
     if (this.atmosphere.enabled) this.atmosphere.updateReflections(this.allActors().map(a => a.sprite), time);
+    // Trips: walking where someone would see through Silas (Kell, undisguised) runs its script.
+    if (!this.busy && !this.inFight) for (const trip of this.room.trips ?? []) {
+      if (this.hero.sprite.x > trip.beyondX && conditionsHold(this.session.state, trip.if)) { void this.runScript(trip.run); break; }
+    }
     for (const [id, actor] of this.actors) {
-      if (id === 'hero' || this.busy) continue;
+      if (id === 'hero' || this.busy || this.room.actors.find(a => a.id === id)?.watches) continue;
       const d = Math.hypot(actor.sprite.x - this.hero.sprite.x, actor.sprite.y - this.hero.sprite.y);
       if (d < NOTICE_DISTANCE) actor.lookAt(this.hero.sprite.x);
     }
@@ -584,7 +607,8 @@ export class RoomScene extends Phaser.Scene {
     this.time.delayedCall(Phaser.Math.Between(4000, 9000), () => {
       if (!actor.sprite.active) return;
       const d = Math.hypot(actor.sprite.x - this.hero.sprite.x, actor.sprite.y - this.hero.sprite.y);
-      if (!this.busy && d >= NOTICE_DISTANCE) {
+      const watches = this.room.actors.find(a => a.id === actor.id)?.watches;
+      if (!this.busy && !watches && d >= NOTICE_DISTANCE) {
         const people = this.crowd?.visible() ?? [];
         const x = people.length && Math.random() < 0.6
           ? people[Math.floor(Math.random() * people.length)].actor.sprite.x
