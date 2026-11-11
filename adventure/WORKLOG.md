@@ -3,7 +3,7 @@
 Both agents read this first, and update their own sections before stopping. Keep it short (under
 about 100 lines). Queues live elsewhere: Codex's in `art/CODEX.md`, Claude's in `CLAUDE-INBOX.md`.
 
-Last updated: 2026-11-11 by Claude (housekeeping, with the user's OK).
+Last updated: 2026-11-11 by Claude and Codex (housekeeping).
 
 ## Lanes (who edits what; the user may reassign, e.g. "Codex: everything")
 | Paths | Owner now |
@@ -25,8 +25,8 @@ When Codex owns everything, Claude only reviews, plans and writes tasks to `art/
   Sigrid walking off at the intro's end. Codex's cell deliveries are all installed.
 - **Not yet seen** (Claude): the cell in the dark and on Low quality, a reload mid-reach for the wax,
   and the steady moonlight in motion.
-- **Chapter 2 fights** (Claude): the enemy sizes (Bryn's rig about shoulder high, the tunnel
-  creatures small) have not been seen in a screenshot. The user should play one.
+- **Paused by the user:** Mara's left-facing artwork and Chapter 2. Chapter 2 enemy-size review
+  remains for when that work resumes; do not start it during housekeeping.
 - **Soft effect:** `intro/objects/stairs-light.png` is marked placeholder because it is not
   palette art. That is intended.
 
@@ -37,12 +37,18 @@ See `CLAUDE-INBOX.md`.
 Nothing queued.
 
 ## Waiting on the user
-- Play a chapter 2 fight and say whether the enemy sizes look right.
+No immediate input required. Chapter 2 review waits until the user resumes that chapter.
 
 ## Inbox (art/inbox, git-ignored, local only)
-Cleared on 2026-11-11: everything left over went to `art/inbox/done/` (loose files in
-`done/loose-2026-11-11/`). Still at the top: the `mara-*` folders (Mara's left-facing set is on hold)
-and `cell-full-views`. `reference/`, `preview/` and `archive/` are reference material.
+Cleared on 2026-11-11: installed/older deliveries are in `art/inbox/done/` (loose files in
+`done/loose-2026-11-11/`). Paused `mara-*` folders remain at the top. `reference/`, `preview/` and
+`archive/` are retained reference material.
+
+Codex archived superseded full-cell exports in `art/inbox/archive/housekeeping-2026-11-11/`;
+`moves.json` there records all 42 moves and their original locations. Forty loose review logs are
+in `shots/archive/2026-11-11-logs/`, and the old test-results folder is preserved at
+`shots/archive/2026-11-11-test-results/`. No files were deleted; generated `dist/` remains in place.
+Housekeeping checks: 157 fast and 35 art tests passed; runtime code and source artwork unchanged.
 
 ## Recent decisions (newest first)
 - **2026-11-11:**
