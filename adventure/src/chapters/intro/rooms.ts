@@ -117,7 +117,8 @@ export const ROOMS: Record<string, RoomDef> = {
       { id: 'windowPlate', sheet: 'window-plate', x: 170, y: 123, depth: 50, visibleIf: [{ flag: 'cellLit' }] },
       // The stairwell door's light on the floor, shaped like the doorway.
       { id: 'stairsLight', sheet: 'stairs-light', x: 590, y: 347, depth: 45 },
-      { id: 'tableStub', sheet: 'table-stub', x: 444, y: 281, depth: 279, visibleIf: LIT },
+      // Seen in the dark too, in Benn's candle light (its glow shows from the start); usable once lit.
+      { id: 'tableStub', sheet: 'table-stub', x: 444, y: 281, depth: 279 },
       { id: 'floorWax', sheet: 'floor-wax', x: 432, y: 322, depth: 60, visibleIf: [...LIT, { notFlag: 'tookWax' }] },
       { id: 'frame', sheet: 'table-frame', x: 495, y: 278, depth: 280, visibleIf: [...LIT, { notFlag: 'gotFrame' }] },
       // The cage's door (cut from Codex's two overlays): shut, in the plane of the front bars; open, swung

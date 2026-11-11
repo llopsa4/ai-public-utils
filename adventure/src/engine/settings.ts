@@ -7,7 +7,6 @@ export interface Settings {
   musicVolume: number;
   muted: boolean;
   /** When false, each spoken line waits for a click. */
-  autoAdvance: boolean;
   reducedMotion: boolean;
   /** Size of all interface text. */
   textSize: 's' | 'm' | 'l';
@@ -27,7 +26,7 @@ const SPEED_FACTOR: Record<Settings['textSpeed'], number> = { slow: 1.5, normal:
 
 export function defaultSettings(prefersReducedMotion = false, touch = false): Settings {
   return {
-    visualQuality: touch ? 'low' : 'high', textSpeed: 'normal', volume: 0.7, musicVolume: 0.5, muted: false, autoAdvance: false, reducedMotion: prefersReducedMotion, textSize: 'm', highContrast: false };
+    visualQuality: touch ? 'low' : 'high', textSpeed: 'normal', volume: 0.7, musicVolume: 0.5, muted: false, reducedMotion: prefersReducedMotion, textSize: 'm', highContrast: false };
 }
 
 /** Accepts only well-formed values; anything missing or invalid falls back to the default. */
@@ -39,8 +38,6 @@ export function parseSettings(raw: unknown, fallback: Settings): Settings {
     volume: typeof r.volume === 'number' && Number.isFinite(r.volume) ? Math.min(1, Math.max(0, r.volume)) : fallback.volume,
     musicVolume: typeof r.musicVolume === 'number' && Number.isFinite(r.musicVolume) ? Math.min(1, Math.max(0, r.musicVolume)) : fallback.musicVolume,
     muted: typeof r.muted === 'boolean' ? r.muted : fallback.muted,
-    // Every line waits for a click (the user's choice, 2026-11-10): no automatic advance, even from old saves.
-    autoAdvance: false,
     reducedMotion: typeof r.reducedMotion === 'boolean' ? r.reducedMotion : fallback.reducedMotion,
     textSize: SIZES.includes(r.textSize as Settings['textSize']) ? (r.textSize as Settings['textSize']) : fallback.textSize,
     highContrast: typeof r.highContrast === 'boolean' ? r.highContrast : fallback.highContrast,

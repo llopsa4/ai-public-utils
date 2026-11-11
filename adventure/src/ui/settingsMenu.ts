@@ -33,7 +33,6 @@ export function bindSettingsForm(ui: Ui): void {
       volume: Number(el('volume').value),
       musicVolume: Number(el('musicVolume').value),
       muted: el('muted').checked,
-      autoAdvance: false,
       reducedMotion: el('reducedMotion').checked,
       textSize: (form.elements.namedItem('textSize') as RadioNodeList).value as Settings['textSize'],
       visualQuality: (form.elements.namedItem('visualQuality') as RadioNodeList).value as Settings['visualQuality'],

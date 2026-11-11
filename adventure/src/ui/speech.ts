@@ -1,7 +1,7 @@
 // Speech: the dialogue panel, typewriter text, portrait mouth flaps and moods.
 import { PORTRAITS, PORTRAIT_MOODS, type Mood } from '../game/assets';
 import { t } from '../engine/i18n';
-import { lineDuration, settings } from '../engine/settings';
+import { settings } from '../engine/settings';
 import type { Point, Speaker } from '../engine/types';
 import { $, FLAP_MS, FLAP_PER_CHAR, SPEECH_COLORS, type Ui } from './ui';
 import { heroIdentity } from '../chapters/hero';
@@ -24,18 +24,15 @@ export function say(ui: Ui, actor: Speaker, text: string, _at: Point, mood: Mood
   $('dialogue-line').textContent = text;
   panel.style.borderColor = SPEECH_COLORS[actor];
   panel.classList.toggle('right', actor !== 'hero');
-  const s = settings();
   panel.hidden = false;
   ui.live.textContent = `${shown}: ${text}`;
   ui.history.push({ actor, text, name: shown });
   return new Promise(resolve => {
     const done = () => {
-      window.clearTimeout(timer);
       stopFlap();
       if (ui.skipSpeech === done) { ui.skipSpeech = null; panel.hidden = true; }
       resolve();
     };
-    const timer = s.autoAdvance ? window.setTimeout(done, lineDuration(text, s.textSpeed)) : 0;
     ui.skipSpeech = done;
   });
 }

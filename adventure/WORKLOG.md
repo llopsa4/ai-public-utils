@@ -23,8 +23,11 @@ When Codex owns everything, Claude only reviews, plans and writes tasks to `art/
   Mara's black "Two days earlier…" opening, the perspective cell (cage, door, cloak backgrounds,
   guttering stub, floor wax and Silas's reach through the bars), the steady moonlight, and Silas and
   Sigrid walking off at the intro's end. Codex's cell deliveries are all installed.
-- **Not yet seen** (Claude): the cell in the dark and on Low quality, a reload mid-reach for the wax,
-  and the steady moonlight in motion.
+- **Small improvements** (Claude, 2026-11-11, published): the dead auto-advance setting and six
+  unused plaster lines are gone (`name.plaster`/`name.wetPlaster` and their icons stay for old saves);
+  the table stub shows in the dark too. Checked: the cell dark and lit on High and Low, the moonlight
+  holds still, a load mid-reach leaves the wax on the floor. `tests/e2e/cell-visuals.spec.ts` is
+  updated for the perspective cell but **not yet run** (the user stopped the run).
 - **Paused by the user:** Mara's left-facing artwork and Chapter 2. Chapter 2 enemy-size review
   remains for when that work resumes; do not start it during housekeeping.
 - **Soft effect:** `intro/objects/stairs-light.png` is marked placeholder because it is not
@@ -37,7 +40,8 @@ See `CLAUDE-INBOX.md`.
 Nothing queued.
 
 ## Waiting on the user
-No immediate input required. Chapter 2 review waits until the user resumes that chapter.
+- Sigrid's `dlgI.sigrid.frame3` and the diary's `diary.intro.harrow` still say the mask is bread and
+  plaster; it is wax and bread now. New wording is the user's call. Chapter 2 waits until resumed.
 
 ## Inbox (art/inbox, git-ignored, local only)
 Cleared on 2026-11-11: installed/older deliveries are in `art/inbox/done/` (loose files in
