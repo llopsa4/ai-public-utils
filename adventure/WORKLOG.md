@@ -40,8 +40,7 @@ See `CLAUDE-INBOX.md`.
 Nothing queued.
 
 ## Waiting on the user
-- Sigrid's `dlgI.sigrid.frame3` and the diary's `diary.intro.harrow` still say the mask is bread and
-  plaster; it is wax and bread now. New wording is the user's call. Chapter 2 waits until resumed.
+No immediate input required. Chapter 2 waits until the user resumes that chapter.
 
 ## Inbox (art/inbox, git-ignored, local only)
 Cleared on 2026-11-11: installed/older deliveries are in `art/inbox/done/` (loose files in
