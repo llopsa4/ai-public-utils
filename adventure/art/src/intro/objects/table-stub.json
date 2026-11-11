@@ -1,0 +1,45 @@
+{
+  "frames": [
+    {
+      "filename": "0",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 28,
+        "h": 36
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 28,
+        "h": 36
+      },
+      "sourceSize": {
+        "w": 28,
+        "h": 36
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "Codex table-stub-big/prepare.mjs",
+    "version": "1",
+    "image": "table-stub.png",
+    "format": "RGBA8888",
+    "size": {
+      "w": 28,
+      "h": 36
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "idle",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      }
+    ]
+  }
+}

@@ -133,7 +133,7 @@ export class Atmosphere {
         .setAngle(s.angle).setTint(s.color).setBlendMode(Phaser.BlendModes.ADD).setDepth(s.overDark ? 8050 : 8000).setData('base', 1 - this.cold * 0.7);
       const k = s.strength ?? 1;
       beam.setAlpha(0.22 * k * beam.getData('base'));
-      if (!settings().reducedMotion) {
+      if (!settings().reducedMotion && !s.steady) {
         scene.tweens.addCounter({
           from: 0, to: Math.PI * 2, duration: Phaser.Math.Between(5000, 8000), repeat: -1,
           onUpdate: t => {

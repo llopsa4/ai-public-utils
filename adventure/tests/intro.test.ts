@@ -6,6 +6,7 @@ import { resolveNode } from '../src/engine/dialogue';
 import { newGame } from '../src/engine/state';
 import { parseSave, serializeSave } from '../src/engine/saveFile';
 import { openChapters } from '../src/engine/unlock';
+import { conditionsHold } from '../src/engine/geometry';
 import type { GameState } from '../src/engine/types';
 import { enterStoryRoom, interactStory, runStoryCommands, type StoryOptions } from './support/story-driver';
 
@@ -45,7 +46,7 @@ function toHarrow(): GameState {
   play(s, 'use', 'table', 'hookLine');
   assert.ok(s.inventory.includes('frame'), 'the frame is fished off the table');
   play(s, 'look', 'roster');
-  play(s, 'take', 'stub');
+  play(s, 'take', 'floorWax');
   play(s, 'use', 'item:wax', 'crust');
   play(s, 'use', 'item:frame', 'putty');
   assert.ok(s.inventory.includes('maskHarrow'));
@@ -272,4 +273,30 @@ test('Kell sees through Silas undisguised: talking to him, or stepping in front 
   assert.ok(conditionsHold(s, trip.if), 'walking in front of him trips');
   s.flags.wearingClerk = true;
   assert.ok(!conditionsHold(s, trip.if), 'as the clerk he lets Silas by');
+});
+
+test('the spilt tallow by the table: reached through the cage door, or picked up once out', () => {
+  const wax = INTRO.rooms.cell.hotspots.find(h => h.id === 'floorWax')!;
+  const stub = INTRO.rooms.cell.hotspots.find(h => h.id === 'tableStub')!;
+  const caged = newGame('intro');
+  enterStoryRoom(caged, good);
+  assert.ok(!conditionsHold(caged, wax.visibleIf) && !conditionsHold(caged, stub.visibleIf), 'unseen until the cell is lit');
+  caged.flags.cellLit = true;
+  assert.deepEqual(play(caged, 'look', 'tableStub').spoken, ['line.i.tableStubLook']);
+  assert.deepEqual(play(caged, 'take', 'tableStub').spoken, ['line.i.outOfReach'], 'the stub is out of reach while caged');
+  assert.deepEqual(play(caged, 'take', 'floorWax').spoken, ['line.i.waxTake'], 'the drop is in reach through the door');
+  assert.ok(caged.inventory.includes('wax') && caged.flags.tookWax);
+  assert.ok(!conditionsHold(caged, wax.visibleIf), 'gone from the floor');
+  assert.ok(conditionsHold(caged, stub.visibleIf), 'the burnt stub stays on the table');
+
+  const out = newGame('intro');
+  Object.assign(out.flags, { cellLit: true, cellOpen: true });
+  enterStoryRoom(out, good);
+  assert.deepEqual(play(out, 'take', 'tableStub').spoken, ['line.i.tableStubTake']);
+  assert.deepEqual(play(out, 'take', 'floorWax').spoken, ['line.i.waxTake']);
+  assert.ok(out.inventory.includes('wax'));
+});
+
+test('the cell shows the bare wall once Silas takes his cloak back', () => {
+  assert.deepEqual(INTRO.rooms.cell.backgroundWhen, [{ if: [{ flag: 'tookCloak' }], background: 'room-cell-bare' }]);
 });

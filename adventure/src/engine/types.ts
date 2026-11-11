@@ -103,7 +103,8 @@ export interface ForegroundDef {
 export interface AmbientDef {
   particles?: { kind: 'embers' | 'steam' | 'dust' | 'ash' | 'snow' | 'snowNear'; x: number; y: number; w: number; h: number; warm?: boolean }[];
   /** `front`: drawn over the people too (a candle someone stands in front of still glows). */
-  glows?: { x: number; y: number; r: number; color: number; warm?: boolean; front?: boolean }[];
+  /** `steady`: a light that does not flicker (moonlight). */
+  glows?: { x: number; y: number; r: number; color: number; warm?: boolean; front?: boolean; steady?: boolean }[];
   /** Water dripping from `top` to `bottom` at `x`, every `every` ms, with a plink (src/game/room/drips.ts). */
   drips?: { x: number; top: number; bottom: number; every: number }[];
 }
@@ -111,6 +112,10 @@ export interface AmbientDef {
 export interface RoomDef {
   id: string;
   background: string;
+  /** Object sheets a scripted beat draws without a room object of its own (loaded with the room). */
+  sheets?: string[];
+  /** Other paintings for other states, the first whose conditions hold (the cell once the cloak is taken). */
+  backgroundWhen?: { if: Condition[]; background: string }[];
   foreground?: ForegroundDef[];
   /** Light on characters: tint at full brightness and how dark they get at the far line (0..1). */
   light?: { tint: number; farDim: number };
@@ -198,9 +203,9 @@ export interface RoomLook {
   /** Drifting light beams from (x, y), angle in degrees from straight down. Dim when cold. */
   /**
    * Light shafts; `overDark` keeps one visible above a dark room's darkness (the cell's moonbeam),
-   * `strength` scales its brightness (1 = the usual).
+   * `strength` scales its brightness (1 = the usual), `steady` holds it still (no slow breathing or sway).
    */
-  shafts?: { x: number; y: number; angle: number; length: number; width: number; color: number; overDark?: boolean; strength?: number }[];
+  shafts?: { x: number; y: number; angle: number; length: number; width: number; color: number; overDark?: boolean; strength?: number; steady?: boolean }[];
   /** Darkened edges, 0..1 (default 0.3). */
   vignette?: number;
   /** A wet floor that shows faint reflections of the characters. */
@@ -262,8 +267,17 @@ export type Command =
   | { type: 'pose'; actor: ActorId; pose: Pose }
   /** Presentation only: holds an animation tag on someone (Benn's salute, Silas's reach), or `null` to stop. */
   | { type: 'perform'; actor: ActorId; tag: string | null }
-  /** Presentation only: someone else in the room walks straight to a point (Benn to the bars), or is put there (`instant`). */
-  | { type: 'step'; actor: ActorId; to: Point; face?: Facing; instant?: boolean; inFront?: boolean }
+  /**
+   * Presentation only: the hero is drawn for `ms` as still layers of an object sheet instead of his
+   * own sprite (Silas reaching through the bars: the body behind them, the forearm in front). Each
+   * layer is drawn with the frame's pixel `origin` on the hero's feet, at its own depth.
+   */
+  | { type: 'heroLayers'; sheet: string; origin: Point; layers: { frame: string; depth: number }[]; ms: number }
+  /**
+   * Presentation only: someone in the room walks straight to a point (Benn to the bars), or is put
+   * there (`instant`); `together` starts the walk and goes straight on to the next command.
+   */
+  | { type: 'step'; actor: ActorId; to: Point; face?: Facing; instant?: boolean; inFront?: boolean; together?: boolean }
   | { type: 'setFlag'; flag: string; value: boolean }
   | { type: 'addItem'; item: string }
   | { type: 'removeItem'; item: string }

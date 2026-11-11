@@ -1,0 +1,73 @@
+{
+ "frames": [
+  {
+   "filename": "behind",
+   "frame": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 256
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 256
+   },
+   "sourceSize": {
+    "w": 256,
+    "h": 256
+   },
+   "duration": 1000
+  },
+  {
+   "filename": "arm",
+   "frame": {
+    "x": 256,
+    "y": 0,
+    "w": 256,
+    "h": 256
+   },
+   "rotated": false,
+   "trimmed": false,
+   "spriteSourceSize": {
+    "x": 0,
+    "y": 0,
+    "w": 256,
+    "h": 256
+   },
+   "sourceSize": {
+    "w": 256,
+    "h": 256
+   },
+   "duration": 1000
+  }
+ ],
+ "meta": {
+  "app": "adventure",
+  "version": "1",
+  "image": "silas-kneel-reach.png",
+  "format": "RGBA8888",
+  "size": {
+   "w": 512,
+   "h": 256
+  },
+  "scale": "1",
+  "frameTags": [
+   {
+    "name": "behind",
+    "from": 0,
+    "to": 0,
+    "direction": "forward"
+   },
+   {
+    "name": "arm",
+    "from": 1,
+    "to": 1,
+    "direction": "forward"
+   }
+  ]
+ }
+}

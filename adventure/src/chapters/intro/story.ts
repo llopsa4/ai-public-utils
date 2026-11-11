@@ -76,11 +76,12 @@ export const STORY: StoryRules = {
     if (id === 'warden' && s.flags.wardenBusy) return [say('line.i.afterWarden')];
     // Not fooled, not caught yet: back to watching the grate.
     if (id === 'warden') return [{ type: 'face', actor: 'warden', face: 'right' }];
-    // "Walk with me": Silas walks off towards the snow, Sigrid turns to go with him, and the camera
-    // pulls back into the Ashlands reveal.
+    // "Walk with me": Silas walks off towards the snow with Sigrid at his side, both on out of the
+    // picture at the right; then the camera pulls back into the Ashlands reveal.
     if (id === 'sigrid' && s.flags.metSigrid) return [
-      { type: 'walk', to: { x: 610, y: 304 }, face: 'right' },
-      { type: 'step', actor: 'sigrid', to: { x: 560, y: 304 }, face: 'right' },
+      { type: 'step', actor: 'sigrid', to: { x: 700, y: 304 }, face: 'right', together: true },
+      { type: 'step', actor: 'hero', to: { x: 740, y: 304 }, face: 'right' },
+      { type: 'wait', ms: 400 },
       { type: 'chooseChapter', reveal: 'ashlands' },
     ];
     return [];

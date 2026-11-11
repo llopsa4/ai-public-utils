@@ -92,7 +92,7 @@ const TITLE_FLAG_ATLAS = { frames: Array.from({ length: 6 }, (_, index) => ({
 /** How big the banner is drawn, against Codex's art (2 art px per world px at 1). */
 const TITLE_FLAG_SCALE = 0.48;
 /** The banner's frame top-left (world): its cloth (87 art px into the frame) centred over the fire (x 547). */
-const TITLE_FLAG_AT = { x: 547 - 43.5 * TITLE_FLAG_SCALE, y: 92 };
+const TITLE_FLAG_AT = { x: 547 - 43.5 * TITLE_FLAG_SCALE, y: 62 };
 
 /** The empty Ironhaven courtyard, independently placed artifacts, flag and distant fire. */
 export class TitleScene extends Phaser.Scene {
@@ -217,7 +217,10 @@ export class RoomScene extends Phaser.Scene {
     if (sheet !== 'mara') queueSheet(this, sheet);
     for (const a of room.actors) if (conditionsHold(state, a.visibleIf)) queueSheet(this, actorSheet(a, state));
     for (const o of room.objects) queueSheet(this, o.sheet);
-    if (!this.textures.exists(room.background)) this.load.image(room.background, ROOM_IMAGES[room.background]);
+    for (const key of room.sheets ?? []) queueSheet(this, key);
+    for (const bg of [room.background, ...(room.backgroundWhen ?? []).map(w => w.background)]) {
+      if (!this.textures.exists(bg)) this.load.image(bg, ROOM_IMAGES[bg]);
+    }
     const outlines = OUTLINES[room.background];
     if (outlines && !this.textures.exists(outlineSheetKey(room.background))) this.load.atlas(outlineSheetKey(room.background), outlines.png, outlines.json);
     for (const p of room.props ?? []) {
@@ -256,7 +259,7 @@ export class RoomScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.session.ui.controls.cancel());
 
     this.cameras.main.setZoom(ART_SCALE).centerOn(LOGICAL_W / 2, LOGICAL_H / 2);
-    this.background = this.add.image(0, 0, this.room.background, '__BASE').setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-10000);
+    this.background = this.add.image(0, 0, this.backgroundNow(), '__BASE').setOrigin(0, 0).setScale(1 / ART_SCALE).setDepth(-10000);
     this.atmosphere = new Atmosphere(this, this.room, this.isCold());
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => this.atmosphere.destroy());
     this.props = new Props(this, this.room, () => this.session.state, () => this.atmosphere.cold);
@@ -378,6 +381,11 @@ export class RoomScene extends Phaser.Scene {
   floor!: RoomDef['walkable'];
   walkableNow(): RoomDef['walkable'] {
     return this.room.walkableWhen?.find(w => conditionsHold(this.session.state, w.if))?.walkable ?? this.room.walkable;
+  }
+
+  /** The painting the room shows now: its first `backgroundWhen` that holds, else its `background`. */
+  backgroundNow(): string {
+    return this.room.backgroundWhen?.find(w => conditionsHold(this.session.state, w.if))?.background ?? this.room.background;
   }
 
   /** Walk area (green), holes (red), hotspots (yellow) and approach points, for fitting art. */
@@ -526,6 +534,8 @@ export class RoomScene extends Phaser.Scene {
     // A new floor once the state opens it (the cell door): walking and the crowd use the new area.
     const floor = this.walkableNow();
     if (floor !== this.floor) { this.floor = floor; this.area = new WalkArea(floor.outer, floor.holes); }
+    const painting = this.backgroundNow();
+    if (this.background && this.background.texture.key !== painting) this.background.setTexture(painting, '__BASE');
     const state = this.session.state;
     for (const def of this.room.objects) {
       const sprite = this.objects.get(def.id)!;

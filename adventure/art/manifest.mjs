@@ -356,7 +356,8 @@ export const MANIFEST = [
   { id: 'battle-enemy-rig', kind: 'battle-portrait', file: 'kc/ash-sweeper.webp', anchor: 'bottom-centre', width: 768, chapter: 'ch2', status: 'placeholder', generator: 'kc.mjs',
     subject: "Bryn's training rig: a caged brush drum on a sprung frame that swings back at whoever strikes it." },
   // ------------------------------------------------ the intro: Silas's escape from Ironhaven's cells ---
-  { ...room('room-cell', 'cell', "A cell in Ironhaven's prison at night, seen side-on: on Silas's side (left two thirds), a straw cot with a ragged blanket (left), a dented tin plate with a crust on the floor beside it, a small barred window high in the wall with a thread of moonlight, a weeping patch of wall where plaster flakes away, a bucket; then the iron bars with their door (centre right, at x 732-812). Beyond the bars, a stone corridor: the guard's table with a stub of candle and a cup (the mask frame lies on it, drawn separately), the duty roster pinned on the wall with a sketch of Sergeant Harrow, the guard's chair, and stone stairs going up at the far right.", 'Cold blue moonlight from the window (left); one warm candle pool on the table beyond the bars (right). The game darkens the room until Silas throws the moonlight across it, so paint it as seen lit.'), file: 'intro/rooms/cell.png', chapter: 'intro', generator: 'intro.mjs' },
+  { ...room('room-cell', 'cell', "A cell in Ironhaven's prison at night, with Silas's hooded cloak hanging on its nail in the corridor, seen side-on: on Silas's side (left two thirds), a straw cot with a ragged blanket (left), a dented tin plate with a crust on the floor beside it, a small barred window high in the wall with a thread of moonlight, a weeping patch of wall where plaster flakes away, a bucket; then the iron bars with their door (centre right, at x 732-812). Beyond the bars, a stone corridor: the guard's table with a stub of candle and a cup (the mask frame lies on it, drawn separately), the duty roster pinned on the wall with a sketch of Sergeant Harrow, the guard's chair, and stone stairs going up at the far right.", 'Cold blue moonlight from the window (left); one warm candle pool on the table beyond the bars (right). The game darkens the room until Silas throws the moonlight across it, so paint it as seen lit.'), file: 'intro/rooms/cell.png', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/cell-cloak)' },
+  { ...room('room-cell-bare', 'cell-bare', "The same cell painting with the cloak gone from its nail (shown once Silas takes it back); identical everywhere else.", 'As room-cell.'), file: 'intro/rooms/cell-bare.png', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/cell-cloak)' },
   { ...room('room-guardroom', 'guardroom', "The guardroom at the top of the prison stairs: the stairs going down at the left edge, a peg with a grey clerk's hood, a shelf with a thick red tally ledger, a black iron stove with its door glowing in the middle, the guard's desk (right of centre), and an iron grate at the right edge opening onto the snowy night.", 'Warm orange light from the stove (centre); cold blue night through the grate (right).'), file: 'intro/rooms/guardroom.png', chapter: 'intro', generator: 'intro.mjs' },
   { ...room('room-prison-door', 'prison-door', "Outside Ironhaven's prison at night: a small heavy door with a lantern (left) in a black stone wall with crenellations, snow on the ground and falling, the city's iron roofs faint in the distance.", 'Cold blue night; the lantern by the door the one warm light.'), file: 'intro/rooms/prison-door.png', chapter: 'intro', generator: 'intro.mjs' },
   ...[
@@ -393,11 +394,15 @@ export const MANIFEST = [
     file: 'intro/objects/guardroom-ledger.png', sheet: 'intro/objects/guardroom-ledger.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
   // Silas's hooded cloak on its nail in the cell's corridor, cut from Codex's painting (the wall behind
   // it painted in from the stones beside it) so it goes when he takes it.
-  { ...object('cell-cloak', "Silas's confiscated hooded cloak hanging on a nail on the corridor wall.", ['idle']),
-    file: 'intro/objects/cell-cloak.png', sheet: 'intro/objects/cell-cloak.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
-  { ...object('window-stub', 'A stub of tallow candle standing on the cell window\'s ledge, in the moonlight (placeholder until Codex paints it).', ['idle']),
-    file: 'intro/objects/window-stub.png', sheet: 'intro/objects/window-stub.json', chapter: 'intro', status: 'placeholder', generator: 'Claude (placeholder)' },
-  { id: 'item-wax', kind: 'item', file: 'intro/items/wax.png', size: { w: 64, h: 64 }, anchor: 'none', chapter: 'intro', status: 'placeholder', generator: 'Claude (placeholder)', subject: 'A stub of soft tallow candle, warmed and squashed in the hand.' },
+  { ...object('table-stub', "The guard's spare candle burnt down to almost nothing on the left end of his table: a short ivory stub in its own puddle, a dribble run over the edge and a tiny guttering flame (the game adds the glow).", ['idle']),
+    file: 'intro/objects/table-stub.png', sheet: 'intro/objects/table-stub.json', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/table-wax)' },
+  { ...object('floor-wax', "A fat drop of fallen tallow on the floor between the cage and the table, glossy and still soft, the one Silas reaches for through the cage's right side.", ['idle']),
+    file: 'intro/objects/floor-wax.png', sheet: 'intro/objects/floor-wax.json', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/table-wax)' },
+  // Silas on one knee reaching through the cage's right-side bars for the wax (only that pickup): the
+  // body (behind the bars) and the exposed forearm (in front), drawn at frame anchor (128,254).
+  { ...object('silas-kneel-reach', 'Silas kneeling, his near arm through the cage bars and his hand open at the floor: the body layer and the forearm layer.', ['behind', 'arm']),
+    file: 'intro/objects/silas-kneel-reach.png', sheet: 'intro/objects/silas-kneel-reach.json', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/silas-kneel-reach)' },
+  { id: 'item-wax', kind: 'item', file: 'intro/items/wax.png', size: { w: 64, h: 64 }, anchor: 'none', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/candle-stub)', subject: 'A lump of soft tallow, warmed and kneaded in the hand.' },
   { ...object('stairs-light', 'Warm light thrown across the cell corridor floor from the stairwell door off to the right, in the shape of the doorway.', ['idle']),
     file: 'intro/objects/stairs-light.png', sheet: 'intro/objects/stairs-light.json', chapter: 'intro', status: 'placeholder', generator: 'Claude (a soft light effect, not palette art)' },
   { ...object('outer-lantern', "The outer door's wall lantern on its bracket (cut from Codex's painting), hung again mid-wall.", ['idle']),
@@ -406,13 +411,13 @@ export const MANIFEST = [
     file: 'intro/objects/guardroom-torch.png', sheet: 'intro/objects/guardroom-torch.json', chapter: 'intro', generator: 'intro.mjs' },
   { ...object('table-frame', "Silas's articulated brass mask frame lying flat on the guard's table, with a clear brass rim and open centre.", ['idle']),
     file: 'intro/objects/table-frame.png', sheet: 'intro/objects/table-frame.json', chapter: 'intro', status: 'final', generator: 'Codex' },
-  { ...object('cell-gate', 'A smaller dark iron cell gate below fixed upper bars, with closed and visibly swung-open views.', ['closed', 'open']),
-    file: 'intro/objects/cell-gate.png', sheet: 'intro/objects/cell-gate.json', chapter: 'intro', status: 'final', generator: 'Codex' },
-  // The cell's bars and door, drawn in front of Silas (Codex's painting, split; art/inbox/done/cell-layers).
-  { id: 'cell-bars', kind: 'foreground', file: 'foreground/cell-bars.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex',
-    subject: "The cell's iron cage: its bars and frame, drawn in front of Silas (the room painting's foreground)." },
-  { id: 'cell-door', kind: 'foreground', file: 'foreground/cell-door.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex',
-    subject: "The smaller cell doorway's fixed upper bars and jambs; the separate cell-gate object opens below them." },
+  // The cage's door, cut from Codex's closed/open overlays (art/inbox/done/cell-cage-perspective): the
+  // pixels that differ between the two, so cell-cage plus this frame reproduce each overlay exactly.
+  { ...object('cell-gate', "The cage's human-sized iron door in the middle of its front face, closed and swung outward to the left.", ['closed', 'open']),
+    file: 'intro/objects/cell-gate.png', sheet: 'intro/objects/cell-gate.json', chapter: 'intro', status: 'final', generator: 'Codex (split by Claude)' },
+  // The cell's cage, drawn in front of Silas: Codex's overlay without its door (cell-gate).
+  { id: 'cell-cage', kind: 'foreground', file: 'foreground/cell-cage.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex (split by Claude)',
+    subject: "The cell's iron cage in a gentle three-quarter view: thin close bars, a shallow roof above the window and a narrow right side; a doorway in the middle of the front (the door itself is cell-gate)." },
   icon('read', 'Read people: a face in profile with a small gold glint of insight above it.'),
 ];
 

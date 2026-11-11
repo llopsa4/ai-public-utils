@@ -158,7 +158,7 @@ export function runStoryCommands(state: GameState, commands: readonly Command[],
         }
         case 'say': result.spoken.push(command.text); break;
         // Timed waits and rendering commands finish instantly in this model. They have no story effects.
-        case 'wait': case 'shake': case 'fade': case 'moveObject': case 'handle': case 'hatch': case 'perform': case 'step': break;
+        case 'wait': case 'shake': case 'fade': case 'moveObject': case 'handle': case 'hatch': case 'perform': case 'heroLayers': case 'step': break;
         case 'walk': case 'face': case 'pose': case 'setFlag': case 'addItem': case 'removeItem':
         case 'looked': case 'hurt': case 'heal': case 'giveSpares': case 'learn':
           applyCommand(state, command);

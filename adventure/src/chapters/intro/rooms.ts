@@ -21,18 +21,22 @@ const cellHotspots: HotspotDef[] = [
   { id: 'frame', name: 'name.i.frame', polygon: rect(484, 266, 22, 12), verbs: ['look', 'take'], walkTo: pt(340, 300), face: 'right', visibleIf: [...LIT, { notFlag: 'gotFrame' }], outline: { objects: ['frame'] } },
   { id: 'roster', name: 'name.i.roster', polygon: rect(527, 115, 38, 50), verbs: ['look'], visibleIf: LIT },
   // His cloak on its nail beyond the bars: out of reach until the door is open.
-  { id: 'cloak', name: 'name.i.cloak', polygon: rect(457, 95, 46, 112), verbs: ['look', 'take'], walkTo: pt(482, 334), face: 'up', visibleIf: [...LIT, { notFlag: 'tookCloak' }], outline: { objects: ['cloak'] } },
+  { id: 'cloak', name: 'name.i.cloak', polygon: rect(457, 95, 46, 112), verbs: ['look', 'take'], walkTo: pt(482, 338), face: 'up', visibleIf: [...LIT, { notFlag: 'tookCloak' }] },
   { id: 'candle', name: 'name.i.candle', polygon: rect(466, 246, 14, 34), verbs: ['look', 'take'] },
   { id: 'table', name: 'name.i.table', polygon: rect(437, 272, 106, 55), verbs: ['look', 'take'], walkTo: pt(340, 300), face: 'right' },
   { id: 'window', name: 'name.i.window', polygon: rect(140, 62, 60, 62), verbs: ['look', 'use'], walkTo: pt(170, 290), face: 'up' },
-  // A stub of tallow candle on the window ledge, in the moonlight: softened with the bread, the mask's putty.
-  { id: 'stub', name: 'name.i.stub', polygon: rect(176, 112, 16, 16), verbs: ['look', 'take'], walkTo: pt(184, 290), face: 'up', visibleIf: [...LIT, { notFlag: 'tookWax' }], outline: { objects: ['windowStub'] } },
+  // The guard's spare candle burnt down at the table's left end, and the tallow it dripped onto the
+  // corridor floor just past the cage door: softened with the bread, the mask's putty. Before the
+  // table, so the pointer finds them over its painted silhouette.
+  { id: 'floorWax', name: 'name.i.floorWax', polygon: rect(416, 311, 32, 13), verbs: ['look', 'take'], visibleIf: [...LIT, { notFlag: 'tookWax' }], outline: { objects: ['floorWax'] } },
+  { id: 'tableStub', name: 'name.i.stub', polygon: rect(436, 262, 16, 20), verbs: ['look', 'take'], visibleIf: LIT, outline: { objects: ['tableStub'] } },
   // The blanket draped over the cot (the strip) comes before the cot's frame (the nail): over the
   // cloth, the pointer finds the blanket; on the posts and legs, the frame.
   { id: 'blanket', name: 'name.i.blanket', polygon: rect(48, 236, 104, 46), verbs: ['look', 'take', 'use'], walkTo: pt(95, 300), face: 'up' },
   { id: 'cot', name: 'name.i.cot', polygon: rect(25, 235, 140, 57), verbs: ['look', 'use', 'take'], walkTo: pt(95, 300), face: 'up' },
   { id: 'bucket', name: 'name.i.bucket', polygon: rect(297, 255, 34, 38), verbs: ['look', 'use', 'take'], walkTo: pt(290, 306), face: 'right', visibleIf: LIT },
-  { id: 'cellDoor', name: 'name.i.cellDoor', polygon: rect(360, 162, 48, 172), verbs: ['look', 'open', 'use'], walkTo: pt(340, 300), face: 'right', outline: { objects: ['cellDoor'] }, visibleIf: [{ notFlag: 'cellOpen' }] },
+  // The cage's door, in the middle of its front face.
+  { id: 'cellDoor', name: 'name.i.cellDoor', polygon: rect(175, 174, 50, 160), verbs: ['look', 'open', 'use'], walkTo: pt(200, 324), face: 'down', outline: { objects: ['cellDoor'] }, visibleIf: [{ notFlag: 'cellOpen' }] },
   // The way out: warm light falling across the floor at the far right, from the stairs up. The exit
   // is on the light (look or go; a double-click walks straight out).
   { id: 'cellStairs', name: 'name.i.cellStairs', polygon: [pt(640, 324), pt(640, 344), pt(571, 346), pt(560, 343), pt(554, 334), pt(560, 325), pt(571, 322)], verbs: ['look', 'go'], walkTo: pt(614, 336), face: 'right', outline: { objects: ['stairsLight'] } },
@@ -56,14 +60,20 @@ export const ROOMS: Record<string, RoomDef> = {
   cell: {
     id: 'cell',
     background: 'room-cell',
-    // Inside the cage only (behind its bars); once the door is open, out through it and along the
-    // corridor floor in front of the table to the stairs light at the right.
-    walkable: { outer: [pt(16, 270), pt(346, 270), pt(346, 330), pt(16, 330)], holes: [] },
+    // Codex's painting has the cloak on its nail; once Silas takes it back, the bare wall.
+    backgroundWhen: [{ if: [{ flag: 'tookCloak' }], background: 'room-cell-bare' }],
+    // The cage's whole floor (its right side slants back towards the wall); once the door is open, out
+    // through the middle of the front, along the floor in front of the cage, beside its right side to
+    // the spilt tallow, and on in front of the table to the stairs light at the right. The strip just
+    // inside and just outside the front bars stays shut, so nobody walks through them.
+    walkable: { outer: [pt(16, 268), pt(394, 268), pt(372, 328), pt(16, 328)], holes: [] },
     walkableWhen: [{
       if: [{ flag: 'cellOpen' }],
-      walkable: { outer: [pt(16, 270), pt(346, 270), pt(346, 300), pt(402, 300), pt(402, 328), pt(636, 328), pt(636, 346), pt(372, 346), pt(346, 332), pt(16, 332)],
-        holes: [] },
+      walkable: { outer: [pt(16, 268), pt(394, 268), pt(372, 328), pt(224, 328), pt(224, 340), pt(386, 340), pt(410, 300),
+        pt(436, 300), pt(436, 334), pt(636, 334), pt(636, 352), pt(178, 352), pt(178, 328), pt(16, 328)], holes: [] },
     }],
+    // Silas's reach through the bars for the wax (interactions.ts).
+    sheets: ['silas-kneel-reach'],
     scale: FLAT,
     surface: 'stone',
     music: 'tension',
@@ -72,7 +82,7 @@ export const ROOMS: Record<string, RoomDef> = {
       grade: { saturation: 0.86, brightness: 0.98, contrast: 1.04, warmth: -0.08 }, vignette: 0.42,
       // A cold ray of moonlight slanting down from the barred window to the cell floor (seen in the dark too).
       shafts: [
-        { x: 170, y: 92, angle: -26, length: 230, width: 32, color: 0xb8c8ff, overDark: true, strength: 1.2 },
+        { x: 170, y: 92, angle: -26, length: 230, width: 32, color: 0xb8c8ff, overDark: true, strength: 1.2, steady: true },
       ],
     },
     // Black but for the candle beyond the bars and the thin moonlight, until Silas throws the
@@ -83,18 +93,22 @@ export const ROOMS: Record<string, RoomDef> = {
       // A drop from the ceiling into the bucket every five seconds.
       drips: [{ x: 314, top: 6, bottom: 262, every: 5000 }],
       glows: [
-        { x: 170, y: 105, r: 70, color: 0x7898c8 },
+        // Moonlight holds still; only the candles flicker.
+        { x: 170, y: 105, r: 70, color: 0x7898c8, steady: true },
         { x: 473, y: 252, r: 60, color: 0xffb860 },
         // The candle's own glow, over Silas when he stands in front of the table.
         { x: 473, y: 252, r: 22, color: 0xffc070, front: true },
         { x: 626, y: 338, r: 70, color: 0xffa850 }, { x: 612, y: 340, r: 44, color: 0xffc070 },
+        // The guttering stub at the table's left end (its tiny flame is painted).
+        { x: 444, y: 265, r: 16, color: 0xffb860 },
       ],
     },
     props: [{ kind: 'flame', x: 473, y: 252, size: 8, color: 0xffc070, depth: 9000 }],
     // Fixed cage bars and the smaller doorway's jambs/upper bars stay in place.
     foreground: [
-      { image: 'cell-bars', x: 2, y: 2, depth: 400 },
-      { image: 'cell-door', x: 364, y: 2, depth: 400 },
+      // Codex's cage overlay without its door (the cellDoor object): in front of anyone inside it, behind
+      // anyone on the floor in front of its front bars (y 334).
+      { image: 'cell-cage', x: 0, y: 0, depth: 334 },
     ],
     entries: { start: { x: 100, y: 305, face: 'right' }, fromGuardroom: { x: 612, y: 336, face: 'left' } },
     // The tin plate stays wedged in the window bars once it has thrown the moonlight in.
@@ -103,13 +117,12 @@ export const ROOMS: Record<string, RoomDef> = {
       { id: 'windowPlate', sheet: 'window-plate', x: 170, y: 123, depth: 50, visibleIf: [{ flag: 'cellLit' }] },
       // The stairwell door's light on the floor, shaped like the doorway.
       { id: 'stairsLight', sheet: 'stairs-light', x: 590, y: 347, depth: 45 },
-      { id: 'windowStub', sheet: 'window-stub', x: 186, y: 127, depth: 51, visibleIf: [{ notFlag: 'tookWax' }] },
+      { id: 'tableStub', sheet: 'table-stub', x: 444, y: 281, depth: 279, visibleIf: LIT },
+      { id: 'floorWax', sheet: 'floor-wax', x: 432, y: 322, depth: 60, visibleIf: [...LIT, { notFlag: 'tookWax' }] },
       { id: 'frame', sheet: 'table-frame', x: 495, y: 278, depth: 280, visibleIf: [...LIT, { notFlag: 'gotFrame' }] },
-      { id: 'cloak', sheet: 'cell-cloak', x: 482.5, y: 201, depth: 50, visibleIf: [{ notFlag: 'tookCloak' }] },
-      // Hinged on the doorway's left post (the gate's frames are mirrored from Codex's: hinges left,
-      // lock right), so it swings open to the left, into the cell.
-      // Open or shut, the door is drawn over Silas: walking out, he passes behind it.
-      { id: 'cellDoor', sheet: 'cell-gate', x: 368, y: 334, depth: 401, flag: 'cellOpen', whenFalse: 'closed', whenTrue: 'open' },
+      // The cage's door (cut from Codex's two overlays): shut, in the plane of the front bars; open, swung
+      // outward to the left, its foot just in front of the cage, in front of anyone walking out past it.
+      { id: 'cellDoor', sheet: 'cell-gate', x: 183, y: 338, depth: 334, depthWhenTrue: 338, flag: 'cellOpen', whenFalse: 'closed', whenTrue: 'open' },
     ],
     hotspots: cellHotspots,
     actors: [

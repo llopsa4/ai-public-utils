@@ -53,9 +53,9 @@ for(const phone of [false,true])for(const quality of ['high','low'] as const){
     const door=()=>page.evaluate(()=>{
       const scene=(window as any).adventure.session.scene,s=scene.objects.get('cellDoor');
       const target=scene.room.hotspots.find((h:any)=>h.id==='cellDoor');
-      return {frame:s.frame.name,visible:s.visible,fixed:scene.foreground[1].visible,top:Math.min(...target.polygon.map((p:any)=>p.y))};
+      return {frame:s.frame.name,visible:s.visible,fixed:scene.foreground[0].visible,top:Math.min(...target.polygon.map((p:any)=>p.y))};
     });
-    await expect.poll(door).toMatchObject({frame:'closed',visible:true,fixed:true,top:162});
+    await expect.poll(door).toMatchObject({frame:'closed',visible:true,fixed:true,top:174});
     await page.screenshot({path:info.outputPath(`cell-door-${tool}-closed.png`)});
     await act(page,'use','cellDoor',tool);
     await expect.poll(door).toMatchObject({frame:'open',visible:true,fixed:true});

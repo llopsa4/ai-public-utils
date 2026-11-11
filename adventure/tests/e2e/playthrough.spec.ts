@@ -88,7 +88,6 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
     await intro.click({ position: { x: 40, y: 40 } });
     await expect(lines).toHaveCount(n);
   }
-  await expect(page.locator('#intro-more')).toHaveClass(/in/, { timeout: 10_000 });
   await intro.click({ position: { x: 40, y: 40 } });
   await expect(intro).toBeHidden({ timeout: 10_000 });
   await idle(page);

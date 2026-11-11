@@ -17,6 +17,9 @@ export const ITEM_VERBS: Verb[] = ['look', 'use'];
 
 /** Where Silas stands to speak to the guard through the bars, and to the guardroom's guard. */
 const AT_BARS = walk(350, 300, 'right');
+/** Silas's wax-only reach through the cage's right side (art/inbox/done/silas-kneel-reach). */
+const REACH_FOR_WAX: Command = { type: 'heroLayers', sheet: 'silas-kneel-reach', origin: { x: 128, y: 254 },
+  layers: [{ frame: 'behind', depth: 325 }, { frame: 'arm', depth: 335 }], ms: 1100 };
 /** Where "Harrow" calls Benn over: the middle of the cage, by the bars at the front. */
 const AT_FRONT = walk(232, 322, 'right');
 // Silas comes up behind Kell, from the left; Kell turns round to talk.
@@ -91,8 +94,15 @@ export const RULES: readonly Rule[] = [
   { target: 'blanket', verb: 'look', do: [say('line.i.blanketLook')] },
   { target: 'blanket', verb: ['take', 'use'], when: NOT('tookStrip'), walk: true, do: [add('strip'), flag('tookStrip'), say('line.i.stripTake')] },
   { target: 'blanket', verb: ['take', 'use'], do: [say('line.i.blanketEnough')] },
-  { target: 'stub', verb: 'look', do: [say('line.i.stubLook')] },
-  { target: 'stub', verb: 'take', walk: true, do: [add('wax'), flag('tookWax'), say('line.i.waxTake')] },
+  // The guard's spare candle, burnt down on the table; what it dripped lies on the corridor floor.
+  { target: 'tableStub', verb: 'look', do: [say('line.i.tableStubLook')] },
+  { target: 'tableStub', verb: 'take', when: NOT('cellOpen'), do: [say('line.i.outOfReach')] },
+  { target: 'tableStub', verb: 'take', do: [say('line.i.tableStubTake')] },
+  { target: 'floorWax', verb: 'look', do: [say('line.i.floorWaxLook')] },
+  // Out of the cage he just kneels beside it; while caged he kneels by the cage's right side and reaches
+  // through its bars (Codex's pose: the body behind the bars, the forearm in front of them).
+  { target: 'floorWax', verb: 'take', when: F('cellOpen'), do: [walk(414, 328, 'right'), pose('hero', 'crouch'), wait(500), add('wax'), flag('tookWax'), pose('hero', 'stand'), say('line.i.waxTake')] },
+  { target: 'floorWax', verb: 'take', do: [walk(370, 325, 'right'), REACH_FOR_WAX, add('wax'), flag('tookWax'), say('line.i.waxTake')] },
   { target: 'bucket', item: 'crust', do: [say('line.i.soggyBread')] },
   { target: 'bucket', verb: 'look', do: [say('line.i.bucketLook')] },
   { target: 'bucket', verb: ['use', 'take'], do: [say('line.i.bucketUse')] },

@@ -19,6 +19,32 @@ When Codex owns everything, Claude only reviews, plans and writes tasks to `art/
 - (none)
 
 ## Now (built, needs a look)
+- **Cell corrections** (Codex, 2026-11-11): delivered `art/inbox/cell-door-leaf/` (smaller open
+  leaf and continuous roof rods, both overlays) and `table-stub-big/` (upright 28×36 PNG/atlas,
+  anchor world 444,281). Handed to Claude in `CLAUDE-INBOX.md`; not installed by Codex. Floor wax
+  and all Silas poses unchanged. Custom checks and 157 fast / 35 art tests pass; offline previews
+  inspected at full, game and phone sizes. Runtime installation/inspection remains Claude's.
+- **Perspective cage / wax pickup** (Codex, 2026-11-11): delivered `art/inbox/cell-cage-perspective/`,
+  `table-wax/` and `silas-kneel-reach/`; see their handoffs and `CLAUDE-INBOX.md`. Roof rods follow the
+  right-side roof edge; roof encloses window; human-sized central door opens outward on left hinges.
+  Original general kneel unchanged; first floor-reaching image is wax-only, with split arm layers.
+  Custom checks and 157 fast / 35 art tests pass. Offline full/game/phone/contact previews inspected;
+  installation and actual gameplay checks remain Claude's. No runtime files changed by Codex.
+- **New cage overlays** (Codex): `art/inbox/cell-cage-overlays/` contains newly painted transparent
+  1280×720 cage+door states, thicker bars/wider gaps, with identical fixed bars. User clarified that
+  these go OVER the existing furnished room. Supersedes the earlier standalone gate and full-scene
+  exports for cage integration; see `CLAUDE-INBOX.md` and the delivery handoff. Not installed.
+- **Cell art** (Codex): five finished PNGs delivered in `art/inbox/cell-door-open/`,
+  `cell-cloak/` and `candle-stub/`, with metadata, prompts, originals and handoffs. Claude integration
+  is queued in `CLAUDE-INBOX.md`. Pixel/size/palette checks pass; 155 fast and 35 art tests pass.
+  Offline composites inspected at full, game and phone sizes; actual runtime checks remain for Claude.
+  Full 1280×720 closed/open cell exports are in `art/inbox/cell-full-views/`; only door pixels differ.
+- **Title screen** (Claude): the flag is 30 px higher (y 62), and "The Rift" and "Ashlands" are 20% bigger
+  (6.7em and 2.8em, rule scaled to match). Screenshots look fine at desktop and phone widths. Not committed.
+- **No "Click to continue" hints** (Claude): removed from the dialogue box and the intro cards; the
+  intro's first card now ends with "…". Not committed.
+- **Mara's chapter 1 opening** (Claude): pure black, "Two days earlier…" alone first (counted from
+  the intro's day), then her lines over black with no room backdrop. Skip ends both. Not committed.
 - **Chapter 2 fights** (Claude): the enemy sizes (Bryn's rig about shoulder high, the tunnel
   creatures small) have not been seen in a screenshot. The user should play one.
 - **The intro** (Claude), built and covered by unit tests:
@@ -29,8 +55,21 @@ When Codex owns everything, Claude only reviews, plans and writes tasks to `art/
   - Kell catching an undisguised Silas;
   - the doorway light at the stairs;
   - a second lantern at the outer door.
-- **Placeholders** (Claude) in use until Codex's art arrives: `intro/objects/window-stub.png` and
-  `intro/items/wax.png`, both drawn by Claude.
+- **The cell** (Claude, not committed): Codex's perspective cage (split into the fixed `cell-cage`
+  foreground at depth 334 and the `cell-gate` door, open at depth 357), the cell with and without the
+  cloak (`backgroundWhen` on `tookCloak`), the wax icon, the guttering table stub (with a small glow)
+  and the floor drop. The whole cage floor is walkable; once open, out through the front door and
+  round to the stairs. Caged, Silas takes the wax kneeling at the cage's right side with Codex's
+  two-layer reach (`heroLayers` command, `silas-kneel-reach` sheet); once out, a plain kneel. The
+  agreed "still warm" lines are in. 157 fast + 138 story/art tests pass; checked in screenshots
+  (lit, reach, door open, walking out in front of the cage, bare wall).
+- **Cell tweaks** (Claude, 2026-11-11): the floor drop moved closer to the table (world 432,322; the
+  reach's hand no longer touches it, which the user accepted); the moonbeam and the window's glow are
+  steady (`steady` on shafts and glows), the candles still flicker. Not committed.
+- **Intro ending** (Claude, 2026-11-11): after "Walk with me", Sigrid and Silas both walk off the
+  right edge (`step` with `together`) before the fade to the Ashlands. Not committed.
+- **Cell corrections installed** (Claude, 2026-11-11): Codex's smaller open door leaf (door object at
+  183,338), the mended roof rods and the bigger guttering stub (x 444). Checked in screenshots. Not committed.
 - **Soft effect:** `intro/objects/stairs-light.png` is marked placeholder because it is not
   palette art. That is intended.
 
@@ -38,10 +77,7 @@ When Codex owns everything, Claude only reviews, plans and writes tasks to `art/
 See `CLAUDE-INBOX.md`.
 
 ## Waiting on Codex
-See `art/CODEX.md`:
-1. the open cell door, repainted;
-2. the cell painted with and without the cloak;
-3. the candle stub and the wax icon.
+Nothing queued.
 
 ## Waiting on the user
 - Play a chapter 2 fight and say whether the enemy sizes look right.
@@ -61,6 +97,8 @@ their install state was not confirmed:
 `reference/`, `preview/` and `archive/` are reference material, not deliveries.
 
 ## Recent decisions (newest first)
+- **2026-11-11:** the user discarded Codex's whole "Interaction clarity and material effects" brief
+  (regulator, cell puzzles, Tobi's scarf); it is removed from `CLAUDE-INBOX.md`. Don't revive it.
 - **2026-11-10:**
   - Every dialogue line waits for a click (the auto-advance setting is gone).
   - The mask putty is candle wax kneaded into bread; the wall plaster is gone.

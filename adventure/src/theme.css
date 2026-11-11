@@ -337,10 +337,10 @@ dialog[open] {
 }
 /* "Ashlands": spaced small capitals under the rule. */
 #title .title-bottom { font-family: "MedievalSharp", Georgia, serif; font-variant: small-caps; }
-#title .title-top { font-size: 5.6em; letter-spacing: 0.03em; }
-#title .title-bottom { font-size: 2.3em; letter-spacing: 0.32em; margin-left: 0.3em; }
+#title .title-top { font-size: 6.7em; letter-spacing: 0.03em; }
+#title .title-bottom { font-size: 2.8em; letter-spacing: 0.32em; margin-left: 0.3em; }
 #title .title-rule {
-  display: block; width: 6.2em; height: 2px; margin: 0.1em 0 0.25em 0.25em; font-size: 2.2em;
+  display: block; width: 6.2em; height: 2px; margin: 0.1em 0 0.25em 0.25em; font-size: 2.63em;
   background: linear-gradient(90deg, transparent, #ff9a40 15%, #ffd27a 50%, #ff9a40 85%, transparent);
   box-shadow: 0 0 10px rgb(255 140 50 / 0.7);
 }
@@ -1106,17 +1106,6 @@ body.in-reveal #bar { visibility: hidden; }
 #intro-text p.intro-day { font-style: italic; font-size: 0.95em; letter-spacing: 0.08em; color: #d9b98a; margin-bottom: 1.2em; }
 #intro-text p.past { color: #a8957a; }
 #intro-text.out p { opacity: 0; transition-duration: 1.2s; }
-#intro-more {
-  position: absolute;
-  bottom: 7vh;
-  margin: 0;
-  font-size: max(12px, 1.6vmin);
-  color: #8a7860;
-  opacity: 0;
-  transition: opacity 0.8s ease;
-}
-#intro-more.in { opacity: 1; animation: intro-pulse 2.4s ease-in-out infinite 0.8s; }
-@keyframes intro-pulse { 50% { opacity: 0.45; } }
 #intro-skip {
   position: absolute;
   right: 3vw;
@@ -1131,8 +1120,7 @@ body.in-reveal #bar { visibility: hidden; }
   white-space: nowrap;
 }
 @media (prefers-reduced-motion: reduce) {
-  #intro:not([hidden]), #intro-text p, #intro-more { transition-duration: 0.01s; }
-  #intro-more.in { animation: none; }
+  #intro:not([hidden]), #intro-text p { transition-duration: 0.01s; }
 }
 #intro.leaving { pointer-events: none; }
 

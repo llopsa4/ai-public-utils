@@ -80,6 +80,7 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
     if (!actor) return true;
     actor.inFront = command.inFront ?? false;
     if (command.instant) actor.moveTo(command.to);
+    else if (command.together) { void actor.walk([command.to]).then(() => { if (command.face && actor.sprite.active) actor.setFacing(command.face); }); return true; }
     else await actor.walk([command.to]);
     if (command.face) actor.setFacing(command.face);
     return true;
@@ -87,6 +88,26 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
   perform: async (scene: RoomScene, command: Of<'perform'>): Promise<boolean> => {
     scene.actors.get(command.actor)?.perform(command.tag);
     return true;
+  },
+  heroLayers: async (scene: RoomScene, command: Of<'heroLayers'>): Promise<boolean> => {
+    const hero = scene.hero;
+    if (!scene.textures.exists(command.sheet) || !hero?.sprite.active) { await wait(scene, command.ms); return true; }
+    const frame = scene.textures.getFrame(command.sheet, command.layers[0].frame);
+    const images = command.layers.map(l => scene.add.image(hero.sprite.x, hero.sprite.y, command.sheet, l.frame)
+      .setOrigin(command.origin.x / frame.width, command.origin.y / frame.height)
+      .setScale(Math.abs(hero.sprite.scaleX), Math.abs(hero.sprite.scaleY)).setDepth(l.depth));
+    hero.sprite.setVisible(false);
+    // Settles on the timer or when the scene shuts down (a load mid-beat), whichever comes first; a
+    // shutdown stops the script, so nothing after the beat lands in the newly loaded game.
+    const finished = await new Promise<boolean>(resolve => {
+      const done = (completed: boolean) => { scene.events.off(Phaser.Scenes.Events.SHUTDOWN, stop); timer.remove(); resolve(completed); };
+      const stop = () => done(false);
+      const timer = scene.time.delayedCall(command.ms, () => done(true));
+      scene.events.once(Phaser.Scenes.Events.SHUTDOWN, stop);
+    });
+    for (const image of images) image.destroy();
+    if (hero.sprite.active) hero.sprite.setVisible(true);
+    return finished;
   },
   pose: async (scene: RoomScene, command: Of<'pose'>): Promise<boolean> => {
     const state = scene.session.state;

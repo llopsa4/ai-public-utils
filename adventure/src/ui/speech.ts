@@ -25,7 +25,6 @@ export function say(ui: Ui, actor: Speaker, text: string, _at: Point, mood: Mood
   panel.style.borderColor = SPEECH_COLORS[actor];
   panel.classList.toggle('right', actor !== 'hero');
   const s = settings();
-  $('dialogue-more').hidden = s.autoAdvance;
   panel.hidden = false;
   ui.live.textContent = `${shown}: ${text}`;
   ui.history.push({ actor, text, name: shown });

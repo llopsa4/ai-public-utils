@@ -7,6 +7,7 @@ import { STORY_START, loadChapter } from '../chapters';
 import { dayLine } from './journalData';
 import type { Chapter } from '../chapters/types';
 import { INTRO_CARDS } from './introCards';
+import { daysEarlier } from './mapPins';
 
 /**
  * A new story: the screen fades slowly to black, the intro's opening lines appear one after
@@ -52,8 +53,18 @@ export async function openChapter(ui: Ui, ch: Chapter, start: () => void): Promi
   if (ui.introActive) return;
   ui.introActive = true;
   ui.setHover('');
-  if (ch.intro?.length) await playIntro(ch.intro.slice(1), ch.intro[0], dayLine(ch), INTRO_CARDS[ch.id]);
-  else await playIntro(undefined, undefined, dayLine(ch), INTRO_CARDS[ch.id]);
+  // Mara's chapter 1 goes back in time from Silas's escape: "Two days earlier…" alone on black first,
+  // then her lines on black too (no glimpse of the room behind them). Skip ends both.
+  let skipped = false, backdrop: string | undefined = INTRO_CARDS[ch.id];
+  if (ch.id === 'ch1') {
+    const silas = await loadChapter(STORY_START);
+    backdrop = undefined;
+    skipped = await playCards([{ main: daysEarlier(silas.when.day - ch.when.day), cls: 'card-day' }]);
+  }
+  if (!skipped) {
+    if (ch.intro?.length) await playIntro(ch.intro.slice(1), ch.intro[0], dayLine(ch), backdrop);
+    else await playIntro(undefined, undefined, dayLine(ch), backdrop);
+  }
   start();
   ui.introActive = false;
   fadeIntroAway();
@@ -75,10 +86,10 @@ function fadeIntroAway(): void {
 
 /**
  * Cards on black, each fading in, held a few seconds and fading out, in the same place; a click (or
- * Enter or Space) moves on at once, Escape or Skip ends them.
+ * Enter or Space) moves on at once, Escape or Skip ends them (resolving true).
  */
-export function playCards(cards: { main: string; sub?: string; cls: string }[]): Promise<void> {
-  const intro = $('intro'), text = $('intro-text'), more = $('intro-more');
+export function playCards(cards: { main: string; sub?: string; cls: string }[]): Promise<boolean> {
+  const intro = $('intro'), text = $('intro-text');
   const calm = settings().reducedMotion;
   for (const id of fading) window.clearTimeout(id);
   fading = [];
@@ -87,7 +98,6 @@ export function playCards(cards: { main: string; sub?: string; cls: string }[]):
   intro.classList.remove('leaving');
   text.replaceChildren();
   text.classList.remove('out');
-  more.classList.remove('in');
   intro.style.setProperty('--intro-fade', '1.8s');
   intro.hidden = false;
   void intro.offsetWidth;
@@ -95,7 +105,7 @@ export function playCards(cards: { main: string; sub?: string; cls: string }[]):
   return new Promise(resolve => {
     let i = -1, timer = 0, done = false, current: HTMLElement | null = null;
     const wait = (ms: number, then: () => void) => { window.clearTimeout(timer); timer = window.setTimeout(then, calm ? Math.min(ms, 400) : ms); };
-    const finish = () => {
+    const finish = (skipped = false) => {
       if (done) return;
       done = true;
       window.clearTimeout(timer);
@@ -103,7 +113,7 @@ export function playCards(cards: { main: string; sub?: string; cls: string }[]):
       window.removeEventListener('keydown', onKey, true);
       $('intro-skip').removeEventListener('click', onSkip);
       text.classList.add('out');
-      window.setTimeout(resolve, calm ? 0 : 1300);
+      window.setTimeout(() => resolve(skipped), calm ? 0 : 1300);
     };
     const next = () => {
       if (done) return;
@@ -111,7 +121,7 @@ export function playCards(cards: { main: string; sub?: string; cls: string }[]):
       const old = current;
       if (old) { old.classList.remove('in'); window.setTimeout(() => old.remove(), 900); }
       i++;
-      if (i >= cards.length) { wait(old ? 900 : 0, finish); return; }
+      if (i >= cards.length) { wait(old ? 900 : 0, () => finish()); return; }
       const c = cards[i];
       const el = document.createElement('div');
       el.className = `intro-card ${c.cls}`;
@@ -124,9 +134,9 @@ export function playCards(cards: { main: string; sub?: string; cls: string }[]):
       wait((old ? 950 : 0) + 4400, next);
     };
     const onClick = (e: Event) => { if (e.target !== $('intro-skip')) next(); };
-    const onSkip = (e: Event) => { e.stopPropagation(); finish(); };
+    const onSkip = (e: Event) => { e.stopPropagation(); finish(true); };
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') { e.preventDefault(); finish(); }
+      if (e.key === 'Escape') { e.preventDefault(); finish(true); }
       else if ((e.key === 'Enter' || e.key === ' ') && document.activeElement !== $('intro-skip')) { e.preventDefault(); next(); }
     };
     intro.addEventListener('click', onClick);
@@ -142,7 +152,7 @@ export function playCards(cards: { main: string; sub?: string; cls: string }[]):
  * the chapter's day line ("Day 1 · Morning · Cinderfold") with the first line.
  */
 export function playIntro(keys: readonly string[] = ['intro.1', 'intro.2', 'intro.3', 'intro.4'], titleKey?: string, day?: string, backdrop?: string): Promise<void> {
-  const intro = $('intro'), text = $('intro-text'), more = $('intro-more');
+  const intro = $('intro'), text = $('intro-text');
   // A dim, blurred glimpse of where the chapter begins, behind the lines (src/ui/introCards.ts).
   const back = $<HTMLImageElement>('intro-backdrop');
   back.hidden = !backdrop;
@@ -154,7 +164,6 @@ export function playIntro(keys: readonly string[] = ['intro.1', 'intro.2', 'intr
   intro.classList.remove('leaving');
   text.replaceChildren();
   text.classList.remove('out');
-  more.classList.remove('in');
   intro.style.setProperty('--intro-fade', '1.8s');
   intro.hidden = false;
   void intro.offsetWidth; // start the fade from transparent
@@ -169,7 +178,6 @@ export function playIntro(keys: readonly string[] = ['intro.1', 'intro.2', 'intr
       intro.removeEventListener('click', onClick);
       window.removeEventListener('keydown', onKey, true);
       $('intro-skip').removeEventListener('click', onSkip);
-      more.classList.remove('in');
       text.classList.add('out');
       window.setTimeout(resolve, calm ? 0 : 1300);
     };
@@ -192,8 +200,7 @@ export function playIntro(keys: readonly string[] = ['intro.1', 'intro.2', 'intr
       void p.offsetWidth;
       p.classList.add('in');
       // Each line stays for its reading time unless the player moves on; the last one waits.
-      if (shown === lines.length) wait(1500, () => more.classList.add('in'));
-      else wait(Math.max(4200, lineDuration(p.textContent, settings().textSpeed) * 1.2), next);
+      if (shown < lines.length) wait(Math.max(4200, lineDuration(p.textContent, settings().textSpeed) * 1.2), next);
     };
     const onClick = (e: Event) => { if (e.target !== $('intro-skip')) next(); };
     const onSkip = (e: Event) => { e.stopPropagation(); finish(); };

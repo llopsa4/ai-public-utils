@@ -1,6 +1,7 @@
 // The intro's art (placeholders; art/manifest.mjs lists them for Codex): loaded with the chapter,
 // in the browser only, and added to the game's art tables (src/game/assets.ts).
 import cellRoom from '../../../art/src/intro/rooms/cell.webp';
+import cellBareRoom from '../../../art/src/intro/rooms/cell-bare.webp';
 import guardroomRoom from '../../../art/src/intro/rooms/guardroom.webp';
 import doorRoom from '../../../art/src/intro/rooms/prison-door.webp';
 import { registerArt } from '../../game/assets';
@@ -17,7 +18,7 @@ const byName = <T>(files: Record<string, T>): Record<string, T> =>
 export function registerChapterArt(): void {
   const pngs = { ...byName(sheetPngs), ...byName(objectPngs) }, jsons = { ...byName(sheetJsons), ...byName(objectJsons) };
   registerArt({
-    rooms: { 'room-cell': cellRoom, 'room-guardroom': guardroomRoom, 'room-prison-door': doorRoom },
+    rooms: { 'room-cell': cellRoom, 'room-cell-bare': cellBareRoom, 'room-guardroom': guardroomRoom, 'room-prison-door': doorRoom },
     sheets: Object.fromEntries(Object.keys(pngs).map(id => [id, { png: pngs[id], json: jsons[id] }])),
     lazySheets: Object.keys(pngs),
     items: byName(itemPngs),

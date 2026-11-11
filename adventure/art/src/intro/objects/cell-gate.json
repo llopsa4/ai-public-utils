@@ -5,54 +5,54 @@
    "frame": {
     "x": 0,
     "y": 0,
-    "w": 160,
-    "h": 344
+    "w": 176,
+    "h": 324
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 160,
-    "h": 344
+    "w": 176,
+    "h": 324
    },
    "sourceSize": {
-    "w": 160,
-    "h": 344
+    "w": 176,
+    "h": 324
    },
    "duration": 1000
   },
   {
    "filename": "open",
    "frame": {
-    "x": 160,
+    "x": 176,
     "y": 0,
-    "w": 160,
-    "h": 344
+    "w": 176,
+    "h": 324
    },
    "rotated": false,
    "trimmed": false,
    "spriteSourceSize": {
     "x": 0,
     "y": 0,
-    "w": 160,
-    "h": 344
+    "w": 176,
+    "h": 324
    },
    "sourceSize": {
-    "w": 160,
-    "h": 344
+    "w": 176,
+    "h": 324
    },
    "duration": 1000
   }
  ],
  "meta": {
-  "app": "cell-door-small/prepare.mjs",
+  "app": "adventure",
   "version": "1",
   "image": "cell-gate.png",
   "format": "RGBA8888",
   "size": {
-   "w": 320,
-   "h": 344
+   "w": 352,
+   "h": 324
   },
   "scale": "1",
   "frameTags": [

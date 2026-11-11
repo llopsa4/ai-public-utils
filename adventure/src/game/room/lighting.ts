@@ -112,12 +112,12 @@ export function refreshAmbient(scene: RoomScene, cold: boolean, animate = false)
     if (cold && g.warm) continue;
     const light = scene.add.image(g.x, g.y, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setTint(g.color)
       .setScale((g.r * 2) / 128).setAlpha(0.35).setDepth(g.front ? 8600 : -5000);
-    scene.tweens.add({ targets: light, alpha: { from: 0.22, to: 0.42 }, duration: Phaser.Math.Between(180, 420), yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: Phaser.Math.Between(0, 300) });
+    if (!g.steady) scene.tweens.add({ targets: light, alpha: { from: 0.22, to: 0.42 }, duration: Phaser.Math.Between(180, 420), yoyo: true, repeat: -1, ease: 'Sine.easeInOut', delay: Phaser.Math.Between(0, 300) });
     scene.ambient.push(light);
     if (bloom) {
       const halo = scene.add.image(g.x, g.y, 'fx-glow').setBlendMode(Phaser.BlendModes.ADD).setTint(g.color)
         .setScale((g.r * 5) / 128).setAlpha(0.1).setDepth(8500);
-      scene.tweens.add({ targets: halo, alpha: { from: 0.07, to: 0.13 }, duration: Phaser.Math.Between(600, 1100), yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+      if (!g.steady) scene.tweens.add({ targets: halo, alpha: { from: 0.07, to: 0.13 }, duration: Phaser.Math.Between(600, 1100), yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
       scene.ambient.push(halo);
     }
   }
