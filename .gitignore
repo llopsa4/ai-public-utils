@@ -45,6 +45,14 @@ Desktop.ini
 
 # Private Kiln Courier story and development planning (never publish).
 /FFCardGame/STORY.md
+/adventure/STORY.md
+/adventure/private/*
+# Approved prologue-only reference pack; the ensemble story and recovery archive stay local.
+!/adventure/private/kofi1/
+/adventure/private/kofi1/*
+!/adventure/private/kofi1/README.md
+!/adventure/private/kofi1/spec.json
+!/adventure/private/kofi1/reference/
 /FFCardGame/PLAN.md
 /FFCardGame/local/
 /FFCardGame/dist/

@@ -191,5 +191,11 @@
   "ui.number.3": "Three",
   "ui.number.4": "Four",
   "ui.number.5": "Five",
-  "ui.chapterMapLabel": "Map of the Ashlands, with the chapters you can play next."
+  "ui.chapterMapLabel": "Map of the Ashlands, with the chapters you can play next.",
+  "place.tsalohi": "Tsalohi",
+  "place.kofiTrail": "The travelled trail",
+  "place.kofiRiver": "The river",
+  "place.kofiClearing": "The woodland clearing",
+  "place.amaneti": "Amaneti",
+  "place.rift": "The Rift"
 }

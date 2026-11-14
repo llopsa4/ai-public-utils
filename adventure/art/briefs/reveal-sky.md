@@ -1,32 +1,41 @@
 # reveal-sky
 
-Status: **final** · prop · chapter intro · in the game as `art/src/intro/reveal/reveal-sky.webp`
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter intro. -->
+
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `reveal-sky` · prop · **visual** · final
+
+## Description
+
+The night sky over the Ashlands, seen from very high and far: deep blue above, an ember haze low on the horizon from the kilns, stars, a pale moon upper right. Opaque, the whole frame.
 
 ## What the game does with it
 
-A moving part the game draws over the room (it swings or turns it).
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — The night sky over the Ashlands, seen from very high and far: deep blue above, an ember haze low on the horizon from the kilns, stars, a pale moon upper right. Opaque, the whole frame. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/intro/reveal/reveal-sky.webp. Status: final. No new artwork is produced by reference generation.
 
 ## Technical
 
-- File: `art/inbox/reveal-sky.png`, transparent (or flat magenta), anchored at its bottom edge. Reduced to the 2-pixel grid.
+- Canvas: **1280×720 art px**. Top-left anchor; preserve dimensions and registration across states.
+- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
+- Files: `art/inbox/reveal-sky.png`.
 
 ## Prompt for Codex
 
-```text
-Draw for the game The Rift: Ashlands: The night sky over the Ashlands, seen from very high and far: deep blue above, an ember haze low on the horizon from the kilns, stars, a pale moon upper right. Opaque, the whole frame.
-Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
-World: the Ashlands, an industrial-fantasy land: kiln villages of fired clay and cream ceramic plates in the ash country, and Ironhaven, a hard city of iron, stone and snow; brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
-Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
-Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).
-Proportions: true to the cast (art/style/scale.png): Mara is 232 px, a doorway about 328, a table top 104, a chair seat 48.
-Light: evenly lit with soft form shading and no strong cast light (the game lights it to match the room).
-File: art/inbox/reveal-sky.png, transparent (or flat magenta), anchored at its bottom edge. Reduced to the 2-pixel grid.
-```
+The night sky over the Ashlands, seen from very high and far: deep blue above, an ember haze low on the horizon from the kilns, stars, a pale moon upper right. Opaque, the whole frame. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
 
-## Attach
+## Attach / references
 
-- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
+[art/manifest.mjs](../manifest.mjs) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-## Then
-
-`npm run art:import`, look at `art/inbox/preview/reveal-sky.png`, `npm run art:check`.
+Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)

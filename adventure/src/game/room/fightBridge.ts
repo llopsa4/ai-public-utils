@@ -102,6 +102,25 @@ function rested(kit: Kit): Kit {
 }
 
 export async function fight(scene: RoomScene, id: string, pool?: readonly string[], practice = false): Promise<void> {
+  if (chapter().battleMode === 'archery') {
+    const { mountArchery } = await import('../../ui/archery');
+    scene.syncHero();
+    scene.session.saveNow();
+    scene.inFight = true;
+    scene.input.enabled = false;
+    sound.music('combat');
+    const el = document.getElementById('kc-root')!;
+    el.hidden = false;
+    await new Promise<void>(resolve => {
+      const close = mountArchery(el, id === 'kofiBear' ? 'bear' : 'wolves', () => {
+        close(); el.hidden = true; scene.session.closeBattle = null; resolve();
+      }, () => scene.session.ui.openMenu());
+      scene.session.closeBattle = () => { close(); el.hidden = true; backToRoom(scene); };
+    });
+    backToRoom(scene);
+    sound.music(musicFor(chapter().story, scene.storyContext()));
+    return;
+  }
   const state = scene.session.state;
   scene.syncHero();
   scene.session.saveNow();

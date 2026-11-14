@@ -1,7 +1,7 @@
 // The notebook's Diary and Map drawn from ./journalData.ts, and its tabs.
 import { chapter } from '../chapters';
 import { LAND, MAP_SIZE, PLACES, labelAt } from '../content/world';
-import { fitPlatesWhenShown, plated } from './mapPlates';
+import { fitNotebookPlates, plated } from './mapPlates';
 import { t } from '../engine/i18n';
 import type { GameState } from '../engine/types';
 import { diary, mapState } from './journalData';
@@ -53,7 +53,7 @@ export function renderMap(host: HTMLElement, state: GameState): void {
   svg.append(el('path', { d: `M${here.x},${here.y} l-9,-22 a10,10 0 1 1 18,0 z`, class: 'map-here-pin' }));
   svg.append(plated(t('ui.mapHere', { who }), here.x, here.y - 38, 'live'));
   host.replaceChildren(svg);
-  fitPlatesWhenShown(svg as SVGSVGElement);
+  requestAnimationFrame(() => fitNotebookPlates(svg as SVGSVGElement));
 }
 
 /** Writes the diary into the notebook: a heading per day, then each chapter's entries. */
@@ -61,7 +61,7 @@ export function renderDiary(host: HTMLElement, state: GameState): void {
   host.replaceChildren(...diary(state).flatMap(day => {
     const h = document.createElement('h2');
     h.className = 'diary-day';
-    h.textContent = t('ui.dayOf', { day: String(day.day) });
+    h.textContent = day.label ?? t('ui.dayOf', { day: String(day.day) });
     return [h, ...day.chapters.flatMap(c => {
       const sub = document.createElement('h3');
       sub.className = 'diary-chapter';
@@ -74,6 +74,11 @@ export function renderDiary(host: HTMLElement, state: GameState): void {
 /** The notebook's tabs: click or arrow keys switch between Notes, Diary and Map. */
 export function initNotebookTabs(): void {
   const tabs = ['notes', 'diary', 'map'];
+  const refitMap = () => {
+    const svg = document.getElementById('map-panel')?.querySelector<SVGSVGElement>('.world-map');
+    if (svg) fitNotebookPlates(svg);
+  };
+  const scheduleMapFit = () => requestAnimationFrame(refitMap);
   const select = (name: string, focus = false) => {
     for (const n of tabs) {
       const tab = document.getElementById(`tab-${n}`)!, panel = document.getElementById(`${n}-panel`)!;
@@ -85,6 +90,7 @@ export function initNotebookTabs(): void {
     }
     // The map needs room: the page opens wider while it is shown.
     document.getElementById('notebook')?.classList.toggle('wide', name === 'map');
+    if (name === 'map') scheduleMapFit();
   };
   for (const n of tabs) {
     const tab = document.getElementById(`tab-${n}`)!;
@@ -95,4 +101,10 @@ export function initNotebookTabs(): void {
       if (e.key === 'ArrowLeft') { e.preventDefault(); select(tabs[(i + tabs.length - 1) % tabs.length], true); }
     });
   }
+  window.addEventListener('resize', scheduleMapFit);
+  void document.fonts.ready.then(scheduleMapFit);
+  document.fonts.addEventListener('loadingdone', scheduleMapFit);
+  // Also handles reopening the notebook with Map already selected and changes to its width.
+  const map = document.getElementById('world-map');
+  if (map) new ResizeObserver(scheduleMapFit).observe(map);
 }

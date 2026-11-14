@@ -20,6 +20,7 @@ export function onPointerDown(scene: RoomScene, pointer: Phaser.Input.Pointer): 
   ui.controls.stopMovement();
   ui.controls.cancelPendingClick();
   clearFocus(scene);
+  if(scene.isPlayerInputLocked()){ui.skip();return;}
   // A click while Silas is still walking to an earlier target: that order is dropped, this one obeyed.
   if (scene.busy && scene.approaching && !scene.leaving) {
     scene.scriptToken++;
@@ -60,7 +61,7 @@ export function onPointerDown(scene: RoomScene, pointer: Phaser.Input.Pointer): 
 
 /** One item-use path for scene clicks, inventory pairs, keyboard activation and drops. */
 export function useCarriedItem(scene: RoomScene, item: string, target: string | null, at?: Point): void {
-  if (!scene.session.ui.controls.available() || !scene.session.state.inventory.includes(item)) {
+  if (scene.isPlayerInputLocked() || !scene.session.ui.controls.available() || !scene.session.state.inventory.includes(item)) {
     scene.session.ui.controls.cancel(); return;
   }
   scene.session.ui.controls.stopMovement();
@@ -72,11 +73,13 @@ export function useCarriedItem(scene: RoomScene, item: string, target: string | 
 }
 
 export function openTargetRing(scene: RoomScene, target: Target, at: Point): void {
+  if(scene.isPlayerInputLocked())return;
   if (target.kind === 'extra') { openExtraRing(scene, target.member, at); return; }
   const id = targetId(target);
   const verbs: Verb[] = target.kind === 'actor' ? chapter().actorVerbs[target.actor.id as ActorId] ?? [] : target.hotspot.verbs;
   sound.blip();
   scene.session.ui.openRadial(at, targetName(scene, target), verbs, verb => {
+    if(scene.isPlayerInputLocked())return;
     void runScript(scene, withHandling(chapter().interact(scene.session.state, verb, id), verb, id));
   });
 }
@@ -119,7 +122,7 @@ export function focusTargets(scene: RoomScene): { target: Target; box: Phaser.Ge
 
 /** Moves the focus ring. Returns false when it runs past either end (focus then goes to the bar). */
 export function cycleFocus(scene: RoomScene, direction: 1 | -1): boolean {
-  if (scene.isBusy()) return false;
+  if (scene.isBusy() || scene.isPlayerInputLocked()) return false;
   const targets = focusTargets(scene);
   const next = scene.focusIndex === -1 ? (direction === 1 ? 0 : targets.length - 1) : scene.focusIndex + direction;
   if (next < 0 || next >= targets.length) { clearFocus(scene); return false; }
@@ -133,7 +136,7 @@ export function cycleFocus(scene: RoomScene, direction: 1 | -1): boolean {
 }
 
 export function activateFocus(scene: RoomScene): boolean {
-  if (scene.focusIndex === -1 || scene.isBusy()) return false;
+  if (scene.focusIndex === -1 || scene.isBusy() || scene.isPlayerInputLocked()) return false;
   const entry = focusTargets(scene)[scene.focusIndex];
   if (!entry) return false;
   const item = scene.session.selectedItem;
@@ -164,7 +167,7 @@ export function hotspotLabels(scene: RoomScene): { text: string; x: number; y: n
 
 /** Action ring for an inventory item, shown just above the bar. */
 export function openItemRing(scene: RoomScene, item: string, index: number): void {
-  if (scene.isBusy()) return;
+  if (scene.isBusy() || scene.isPlayerInputLocked()) return;
   sound.blip();
   const at = { x: 70 + index * 46, y: 300 };
   scene.session.ui.openRadial(at, t(`name.${item}`), chapter().itemVerbs, verb => {
@@ -176,7 +179,7 @@ export function openItemRing(scene: RoomScene, item: string, index: number): voi
 export function onPointerMove(scene: RoomScene, pointer: Phaser.Input.Pointer): void {
   if (pointer.wasTouch) return;
   const at = { x: pointer.worldX, y: pointer.worldY };
-  const target = scene.isBusy() ? null : hitTest(scene, at);
+  const target = scene.isBusy() || scene.isPlayerInputLocked() ? null : hitTest(scene, at);
   scene.hovered = target;
   const item = scene.session.selectedItem;
   const name = target ? targetName(scene, target) : '';
@@ -231,7 +234,7 @@ export function drawHover(scene: RoomScene, time: number): void {
   const ring = scene.hoverRing;
   if (!ring) return;
   ring.clear();
-  const target = scene.hovered && !scene.isBusy() && !scene.session.ui.ringOpen() ? scene.hovered : null;
+  const target = scene.hovered && !scene.isBusy() && !scene.isPlayerInputLocked() && !scene.session.ui.ringOpen() ? scene.hovered : null;
   if (showOutline(scene, target, time) || !target) return;
   const pulse = 0.55 + 0.2 * Math.sin(time / 260);
   if (target.kind === 'hotspot') {

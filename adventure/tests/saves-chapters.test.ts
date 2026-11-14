@@ -62,7 +62,7 @@ test('saves from every older version load, upgraded to chapter 1', () => {
     // Format 7: no techniques yet, the starting limits.
     assert.deepEqual([s.kit.techniques, s.kit.maxHp, s.kit.maxMp], [[], 60, 10]);
   }
-  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, 6, 7, 8, 9, SAVE_VERSION]);
+  assert.deepEqual(READABLE_VERSIONS, [3, 4, 5, 6, 7, 8, 9, 10, 11, SAVE_VERSION]);
   assert.equal(migrate(2, {}), null);
 });
 
@@ -76,6 +76,21 @@ test('the current version keeps flags per chapter and round-trips', () => {
   const r = parseSave(serializeSave(s));
   assert.ok(r.ok);
   assert.deepEqual(r.state, s);
+});
+
+test('version 10 saves retain the existing chapter progress when Kofi becomes available',()=>{
+  const old=JSON.parse(fixture(10));
+  const result=parseSave(JSON.stringify(old));
+  assert.ok(result.ok);
+  assert.equal(result.state.chapter,'ch1');
+  assert.deepEqual(result.state.flags,old.state.flags.ch1);
+  assert.deepEqual(result.state.inventory,old.state.inventory);
+  assert.deepEqual(result.state.kit,old.state.kit);
+});
+
+test('the version 11 fixture remains readable after adding the bow utility lesson',()=>{
+  const old=JSON.parse(fixture(11));const result=parseSave(JSON.stringify(old));assert.ok(result.ok);
+  if(result.ok){assert.deepEqual(result.state.flags,old.state.flags.ch1);assert.deepEqual(result.state.inventory,old.state.inventory);}
 });
 
 test('version 8 preparation migration preserves old Gear access and never rewinds completed shutdowns', () => {

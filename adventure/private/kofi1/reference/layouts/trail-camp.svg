@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1300" viewBox="0 0 1900 1300" role="group" aria-labelledby="title desc"><title id="title">Trail camp at night — reference layout</title><desc id="desc">1280 by 720 art-pixel frame. Stage controls select illustrative states; numbers link to asset briefs. Green floor, pink actor scale; targets and visual layers are separate.</desc>
+<style>[role=button]:focus rect{stroke:#315b73;stroke-width:3}</style><rect width="1900" height="1300" fill="#f8f1e4"/>
+<text x="34" y="38" font-family="Georgia,serif" font-size="28" fill="#342a20">Trail camp at night</text>
+<text x="34" y="63" font-family="Georgia,serif" font-size="16" fill="#342a20">Generated reference · art pixels · diagrams only; source specification owns all placements</text>
+<g role="button" tabindex="0" aria-label="Show arrival" aria-pressed="true" data-button="arrival" onclick="showStage('arrival')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('arrival')}" ><rect x="34" y="77" width="85" height="27" rx="4" fill="#dfcba8" stroke="#8d775b"/><text x="44" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">arrival</text></g>
+<g role="button" tabindex="0" aria-label="Show stick-down" aria-pressed="false" data-button="stick-down" onclick="showStage('stick-down')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('stick-down')}" ><rect x="126" y="77" width="112" height="27" rx="4" fill="#fff9ee" stroke="#8d775b"/><text x="136" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">stick-down</text></g>
+<g role="button" tabindex="0" aria-label="Show prepared" aria-pressed="false" data-button="prepared" onclick="showStage('prepared')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('prepared')}" ><rect x="245" y="77" width="94" height="27" rx="4" fill="#fff9ee" stroke="#8d775b"/><text x="255" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">prepared</text></g>
+<g role="button" tabindex="0" aria-label="Show aftermath" aria-pressed="false" data-button="aftermath" onclick="showStage('aftermath')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('aftermath')}" ><rect x="346" y="77" width="103" height="27" rx="4" fill="#fff9ee" stroke="#8d775b"/><text x="356" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">aftermath</text></g>
+<g role="button" tabindex="0" aria-label="Show dawn" aria-pressed="false" data-button="dawn" onclick="showStage('dawn')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('dawn')}" ><rect x="456" y="77" width="78" height="27" rx="4" fill="#fff9ee" stroke="#8d775b"/><text x="466" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">dawn</text></g>
+<g role="button" tabindex="0" aria-label="Show all" aria-pressed="false" data-button="all" onclick="showStage('all')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('all')}" ><rect x="541" y="77" width="78" height="27" rx="4" fill="#fff9ee" stroke="#8d775b"/><text x="551" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">all</text></g>
+<g transform="translate(34 110)"><rect width="1280" height="720" fill="#efe4cf" stroke="#6f5b43"/><rect y="536" width="1280" height="154" fill="#d5dfc9"/><rect y="636" width="1280" height="54" fill="#b7c9a6"/>
+<path d="M0 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M80 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M160 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M240 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M320 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M400 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M480 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M560 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M640 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M720 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M800 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M880 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M960 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1040 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1120 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1200 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1280 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M0 0 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 80 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 160 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 240 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 320 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 400 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 480 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 560 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 640 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 720 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 524 H1280 M0 636 H1280 M0 690 H1280" stroke="#77886b" stroke-dasharray="6 6"/>
+<g data-target="cook-fire" data-stages="aftermath arrival dawn prepared" visibility="visible"><rect x="280" y="520" width="140" height="90" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>Communal cook fire: Look, light branch, heat communal pot</title></rect></g>
+<g data-target="camp-dead-bough" data-stages="arrival stick-down prepared aftermath dawn" visibility="visible"><rect x="898" y="254" width="164" height="96" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>Caught dry stick / dead bough: Look, Use wooden blunt arrow</title></rect></g>
+<g data-target="camp-branch" data-stages="stick-down" visibility="hidden"><rect x="497" y="590" width="86" height="20" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>Camp fire-brand branch: Take, Use on fire, Fire brand combat reference</title></rect></g>
+<g data-stages="aftermath arrival dawn prepared" visibility="visible"><a href="../objects/cook-fire.md"><title>Communal cook fire; all camp phases; cook-fire-trail-camp-0</title><rect x="280" y="520" width="140" height="90" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M346 610 h8 M350 606 v8" stroke="#9c571c"/><circle cx="291" cy="532" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="285" y="537" font-family="Georgia,serif" font-size="12" fill="#342a20">1</text></a></g>
+<g data-stages="arrival stick-down prepared aftermath dawn" visibility="visible"><a href="../objects/camp-dead-bough.md"><title>Dead bough catching the fire stick; Above a clear landing patch. The fire stick is a separate removable child; leave clean background beneath both.; camp-dead-bough-trail-camp-0</title><rect x="898" y="254" width="164" height="96" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M976 350 h8 M980 346 v8" stroke="#9c571c"/><circle cx="909" cy="266" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="903" y="271" font-family="Georgia,serif" font-size="12" fill="#342a20">2</text></a></g>
+<g data-stages="stick-down" visibility="hidden"><a href="../objects/camp-branch.md"><title>Camp fire-brand branch; After the wooden blunt arrow dislodges it; hide this ground instance when collected.; camp-branch-trail-camp-0</title><rect x="497" y="590" width="86" height="20" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M536 610 h8 M540 606 v8" stroke="#9c571c"/><circle cx="508" cy="602" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="502" y="607" font-family="Georgia,serif" font-size="12" fill="#342a20">3</text></a></g>
+<g data-stages="arrival" visibility="visible"><a href="../objects/camp-branch.md"><title>Camp fire-brand branch; Before the blunt-arrow shot; hide when the stick moves to its ground instance.; camp-branch-snagged</title><rect x="937" y="306" width="86" height="20" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M976 326 h8 M980 322 v8" stroke="#9c571c"/><circle cx="948" cy="318" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="942" y="323" font-family="Georgia,serif" font-size="12" fill="#342a20">3</text></a></g>
+<g data-stages="aftermath arrival dawn prepared" visibility="visible"><a href="../objects/communal-pot.md"><title>Shared drinking-water pot; camp beside fire; communal-pot-trail-camp-0</title><rect x="284" y="470" width="72" height="60" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M316 530 h8 M320 526 v8" stroke="#9c571c"/><circle cx="295" cy="482" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="289" y="487" font-family="Georgia,serif" font-size="12" fill="#342a20">4</text></a></g>
+<g data-stages="aftermath arrival dawn prepared" visibility="visible"><a href="../objects/light-cord.md"><title>Light arrow cord; communal kit; light-cord-trail-camp-0</title><rect x="60" y="507" width="80" height="48" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M96 555 h8 M100 551 v8" stroke="#9c571c"/><circle cx="71" cy="519" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="65" y="524" font-family="Georgia,serif" font-size="12" fill="#342a20">5</text></a></g>
+<g data-stages="aftermath arrival dawn prepared" visibility="visible"><a href="../objects/trough.md"><title>Salvaged trough and foot stand; camp communal kit, selected survivor variant; trough-trail-camp-0</title><rect x="170" y="470" width="150" height="100" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M241 570 h8 M245 566 v8" stroke="#9c571c"/><circle cx="181" cy="482" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="175" y="487" font-family="Georgia,serif" font-size="12" fill="#342a20">6</text></a></g>
+<g data-stages="aftermath arrival dawn prepared" visibility="visible"><a href="../objects/bedrolls.md"><title>Camp sleeping mats; camp; bedrolls-trail-camp-0</title><rect x="330" y="520" width="180" height="48" fill="#366b85" fill-opacity=".07" stroke="#366b85" stroke-dasharray="5 3"/><path d="M416 568 h8 M420 564 v8" stroke="#366b85"/><circle cx="341" cy="532" r="11" fill="#fff9ee" stroke="#366b85"/><text x="335" y="537" font-family="Georgia,serif" font-size="12" fill="#342a20">7</text></a></g>
+<g data-stages="aftermath arrival dawn prepared" visibility="visible"><a href="../objects/bedrolls.md"><title>Camp sleeping mats; camp; bedrolls-trail-camp-1</title><rect x="580" y="520" width="180" height="48" fill="#366b85" fill-opacity=".07" stroke="#366b85" stroke-dasharray="5 3"/><path d="M666 568 h8 M670 564 v8" stroke="#366b85"/><circle cx="591" cy="532" r="11" fill="#fff9ee" stroke="#366b85"/><text x="585" y="537" font-family="Georgia,serif" font-size="12" fill="#342a20">7</text></a></g>
+<g data-stages="aftermath arrival dawn prepared" visibility="visible"><a href="../objects/chicken-baskets.md"><title>Chicken transport baskets; arrival through dawn; chicken-baskets-trail-camp-0</title><rect x="110" y="532" width="120" height="78" fill="#366b85" fill-opacity=".07" stroke="#366b85" stroke-dasharray="5 3"/><path d="M166 610 h8 M170 606 v8" stroke="#366b85"/><circle cx="121" cy="544" r="11" fill="#fff9ee" stroke="#366b85"/><text x="115" y="549" font-family="Georgia,serif" font-size="12" fill="#342a20">8</text></a></g>
+<g data-stages="aftermath arrival dawn prepared" visibility="visible"><a href="../objects/communal-bundle.md"><title>Communal salvaged bundle; camp; communal-bundle-trail-camp-0</title><rect x="60" y="534" width="120" height="76" fill="#366b85" fill-opacity=".07" stroke="#366b85" stroke-dasharray="5 3"/><path d="M116 610 h8 M120 606 v8" stroke="#366b85"/><circle cx="71" cy="546" r="11" fill="#fff9ee" stroke="#366b85"/><text x="65" y="551" font-family="Georgia,serif" font-size="12" fill="#342a20">9</text></a></g>
+<g data-stages="aftermath arrival dawn prepared" visibility="visible"><a href="../objects/waterskin.md"><title>Shared waterskin; camp; waterskin-trail-camp-0</title><rect x="179" y="510" width="42" height="60" fill="#366b85" fill-opacity=".07" stroke="#366b85" stroke-dasharray="5 3"/><path d="M196 570 h8 M200 566 v8" stroke="#366b85"/><circle cx="190" cy="522" r="11" fill="#fff9ee" stroke="#366b85"/><text x="184" y="527" font-family="Georgia,serif" font-size="12" fill="#342a20">10</text></a></g>
+<rect x="594" y="446" width="52" height="224" rx="22" fill="#bc5a8a" fill-opacity=".15" stroke="#a14878"/>
+<text x="12" y="645" font-family="Georgia,serif" font-size="16" fill="#342a20">Trail back</text>
+<text x="1040" y="645" font-family="Georgia,serif" font-size="16" fill="#342a20">Trail onward</text>
+</g>
+<text x="1350" y="113" font-family="Georgia,serif" font-size="20" fill="#342a20">OBJECT KEY · room and puzzle order</text>
+<text x="1350" y="141" font-family="Georgia,serif" font-size="15" fill="#342a20">T target · V visual-only · F foreground</text>
+<text x="1350" y="170" font-family="Georgia,serif" font-size="18" fill="#342a20">1 T · Communal cook fire</text>
+<text x="1370" y="187" font-family="Georgia,serif" font-size="12" fill="#342a20">aftermath / arrival / dawn / prepared</text>
+<text x="1350" y="212" font-family="Georgia,serif" font-size="18" fill="#342a20">2 T · Dead bough catching the fire stick</text>
+<text x="1370" y="229" font-family="Georgia,serif" font-size="12" fill="#342a20">arrival / stick-down / prepared / aftermath / dawn</text>
+<text x="1350" y="254" font-family="Georgia,serif" font-size="18" fill="#342a20">3 T · Camp fire-brand branch</text>
+<text x="1370" y="271" font-family="Georgia,serif" font-size="12" fill="#342a20">stick-down / arrival</text>
+<text x="1350" y="296" font-family="Georgia,serif" font-size="18" fill="#342a20">4 T · Shared drinking-water pot</text>
+<text x="1370" y="313" font-family="Georgia,serif" font-size="12" fill="#342a20">aftermath / arrival / dawn / prepared</text>
+<text x="1350" y="338" font-family="Georgia,serif" font-size="18" fill="#342a20">5 T · Light arrow cord</text>
+<text x="1370" y="355" font-family="Georgia,serif" font-size="12" fill="#342a20">aftermath / arrival / dawn / prepared</text>
+<text x="1350" y="380" font-family="Georgia,serif" font-size="18" fill="#342a20">6 T · Salvaged trough and foot stand</text>
+<text x="1370" y="397" font-family="Georgia,serif" font-size="12" fill="#342a20">aftermath / arrival / dawn / prepared</text>
+<text x="1350" y="422" font-family="Georgia,serif" font-size="18" fill="#342a20">7 V · Camp sleeping mats</text>
+<text x="1370" y="439" font-family="Georgia,serif" font-size="12" fill="#342a20">aftermath / arrival / dawn / prepared</text>
+<text x="1350" y="464" font-family="Georgia,serif" font-size="18" fill="#342a20">8 V · Chicken transport baskets</text>
+<text x="1370" y="481" font-family="Georgia,serif" font-size="12" fill="#342a20">aftermath / arrival / dawn / prepared</text>
+<text x="1350" y="506" font-family="Georgia,serif" font-size="18" fill="#342a20">9 V · Communal salvaged bundle</text>
+<text x="1370" y="523" font-family="Georgia,serif" font-size="12" fill="#342a20">aftermath / arrival / dawn / prepared</text>
+<text x="1350" y="548" font-family="Georgia,serif" font-size="18" fill="#342a20">10 V · Shared waterskin</text>
+<text x="1370" y="565" font-family="Georgia,serif" font-size="12" fill="#342a20">aftermath / arrival / dawn / prepared</text>
+<text x="34" y="866" font-family="Georgia,serif" font-size="18" fill="#342a20">Kofi: 224 art px / 112 logical units. Background stays fixed; props and stages are independent.</text>
+<text x="34" y="898" font-family="Georgia,serif" font-size="18" fill="#342a20">Click a stage to view one snapshot; All shows alternative footprints, not a simultaneous scene.</text>
+<text x="34" y="940" font-family="Georgia,serif" font-size="17" fill="#342a20">arrival: The quiet bow exchange introduces Deyu’s folding bow, hunting points, reusable wooden blunt arrow</text>
+<text x="34" y="964" font-family="Georgia,serif" font-size="17" fill="#342a20">and cord-carrying arrows. The fire stick starts caught in a separate dead bough; only the chosen human</text>
+<text x="34" y="988" font-family="Georgia,serif" font-size="17" fill="#342a20">survivor is present.</text>
+<text x="34" y="1012" font-family="Georgia,serif" font-size="17" fill="#342a20">stick-down: The blunt arrow has knocked down the loose fire stick and been recovered. The stick lies</text>
+<text x="34" y="1036" font-family="Georgia,serif" font-size="17" fill="#342a20">separately on clean ground until taken; the bare dead bough stays in place.</text>
+<text x="34" y="1060" font-family="Georgia,serif" font-size="17" fill="#342a20">prepared: Branch removed from ground and lit in Kofi’s hand; goats gathered inside the light. Both</text>
+<text x="34" y="1084" font-family="Georgia,serif" font-size="17" fill="#342a20">preparations required for encounter.</text>
+<text x="34" y="1108" font-family="Georgia,serif" font-size="17" fill="#342a20">aftermath: Wolf pack has fled; the last wolf is an actor at the right. Kill occurs out of view, or the actor</text>
+<text x="34" y="1132" font-family="Georgia,serif" font-size="17" fill="#342a20">exits. No trophy or carcass prop.</text>
+<text x="34" y="1156" font-family="Georgia,serif" font-size="17" fill="#342a20">dawn: Same objects and actor identities; runtime lighting changes. Packing hides them only as their carriers</text>
+<text x="34" y="1180" font-family="Georgia,serif" font-size="17" fill="#342a20">leave.</text>
+<script><![CDATA[function showStage(stage){document.querySelectorAll('[data-stages]').forEach(function(g){g.setAttribute('visibility',stage==='all'||g.getAttribute('data-stages').split(' ').indexOf(stage)>=0?'visible':'hidden')});document.querySelectorAll('[data-button]').forEach(function(g){var selected=g.getAttribute('data-button')===stage;g.querySelector('rect').setAttribute('fill',selected?'#dfcba8':'#fff9ee');g.setAttribute('aria-pressed',selected?'true':'false')})}]]></script></svg>

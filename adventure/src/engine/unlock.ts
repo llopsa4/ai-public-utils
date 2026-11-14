@@ -6,6 +6,7 @@
 export const REQUIRES: Record<string, readonly string[]> = {
   ch1: ['intro'],
   ch2: ['ch1'],
+  kofi1: ['intro'],
 };
 
 /** The chapters open to start, in story order, given those already finished. */

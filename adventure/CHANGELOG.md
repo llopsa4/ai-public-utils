@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Replaced the interaction pointer with a leather work glove, the regulator close-up with a matching ceramic assembly, and strain-meter flames with a red-hot gauntlet warning. Descriptions and source images are in `art/sources/ui-polish/`. The regulator fits phone and short landscape screens without scrolling; its separate controls animate the existing release sequence.
+- Silas’s wax pickup now takes priority over the overlapping table and uses the approved reachable candle placement. Obsolete plaster and hood entries are hidden from debug while older saves remain readable. The Sigrid encounter reserves player movement and resumes departure after reload.
+- Chapter-map labels appear on pin hover/focus, with a first-tap preview on touch; removed the duplicate options below the map. The firing-house bell can be inspected and rung. Enemy-intent dialogs retain a visible Keep playing button in lessons and free play; overload warning feedback clears with its animation.
+
+- Kofi now displays a simple tensed-bow placeholder before each utility shot and combat shot. Aimed shot keeps the pose while prepared; cancellation and release restore the resting sprite. The new left/right pose uses circles, rectangles and lines only; no final character art or rig was installed.
+
+- At the trail camp, Ahyeli and Kofi explain Deyu’s folding bow, its catch, hunting points, a reusable wooden blunt arrow and light-cord arrows. Knock down the campfire stick with the blunt arrow, then use the cord-carrying arrow for the later tree-platform rig. Utility shots require the bow unfolded; inventory Use folds/unfolds it. Save version 12 preserves older preparations and supplies the existing quiver’s blunt arrow without rewinding progress.
+
+- Added Kofi's six-room prologue, **A Place to Stay**, as a chapter-map choice after Silas and a debug chapter jump. Includes the explicit human rescue, both water routes, construction, offerings and shared leadership, three settlement agreements, wolf/bear aftermath choices and voluntary robot retrieval. Only simple geometric test placeholders were generated; existing Kofi artwork and rigs remain untouched.
+- Kofi has a separate six-card archery encounter with finite arrows, recoverable ammunition, cancellable aimed shots, telegraphed attacks and retry. Historical diary entries display **Four years ago** and remain available when another viewpoint is selected. Save version 11 reads previous saves and accepts the new chapter's progress.
+
 - New game opens on black with three cards, each fading in and out in the same place: where and when, the day, then the title *The Man With Many Faces*. A click moves on.
 - Every dialogue line now waits for a click (or a key). The "Advance lines automatically" setting is gone.
 - A new click while Silas or Mara is still walking to a target replaces that order at once.

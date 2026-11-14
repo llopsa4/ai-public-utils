@@ -30,6 +30,12 @@ export function labelAt(p: Place): { x: number; y: number; anchor: 'start' | 'mi
  * names only those the viewpoint character knows.
  */
 export const PLACES: Record<string, Place> = {
+  tsalohi: { name:'place.tsalohi',x:594,y:565,kind:'town',label:'left' },
+  rift: { name:'place.rift',x:566,y:500,kind:'site',label:'left' },
+  kofiTrail: { name:'place.kofiTrail',x:680,y:586,kind:'site',label:'below' },
+  kofiRiver: { name:'place.kofiRiver',x:770,y:600,kind:'site',label:'below' },
+  kofiClearing: { name:'place.kofiClearing',x:810,y:550,kind:'site',label:'right' },
+  amaneti: { name:'place.amaneti',x:785,y:565,kind:'town',label:'left' },
   // West of the Rift: the ash plains and the snowy north.
   cinderfold: { name: 'place.cinderfold', x: 185, y: 407, kind: 'town', label: 'left' },
   ashways: { name: 'place.ashways', x: 293, y: 470, kind: 'site', label: 'below' },

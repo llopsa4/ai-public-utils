@@ -1,32 +1,41 @@
 # item-hood
 
-Status: **final** · item · chapter intro · in the game as `art/src/intro/items/hood.png`
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter intro. -->
+
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `item-hood` · item · **visual** · final
+
+## Description
+
+A drab grey clerk's hood.
 
 ## What the game does with it
 
-A satchel item: shown in the inventory bar and on the cursor while it is being used.
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — A drab grey clerk's hood. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/intro/items/hood.png. Status: final. No new artwork is produced by reference generation.
 
 ## Technical
 
-- File: `art/inbox/item-hood.png`, 64×64, transparent (or flat magenta), the thing filling the tile.
+- Canvas: **64×64 art px**. Image tile anchor; preserve dimensions and registration across states.
+- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
+- Files: `art/inbox/item-hood.png`.
 
 ## Prompt for Codex
 
-```text
-Draw for the game The Rift: Ashlands: A drab grey clerk's hood.
-Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
-World: the Ashlands, an industrial-fantasy land: kiln villages of fired clay and cream ceramic plates in the ash country, and Ironhaven, a hard city of iron, stone and snow; brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
-Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
-Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).
-Proportions: true to the cast (art/style/scale.png): Mara is 232 px, a doorway about 328, a table top 104, a chair seat 48.
-Light: evenly lit with soft form shading and no strong cast light (the game lights it to match the room).
-File: art/inbox/item-hood.png, 64×64, transparent (or flat magenta), the thing filling the tile.
-```
+A drab grey clerk's hood. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
 
-## Attach
+## Attach / references
 
-- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
+[art/manifest.mjs](../manifest.mjs) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-## Then
-
-`npm run art:import`, look at `art/inbox/preview/item-hood.png`, `npm run art:check`.
+Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)

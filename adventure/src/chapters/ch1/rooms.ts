@@ -48,12 +48,13 @@ const maraRoomHotspots: HotspotDef[] = [
 ];
 
 // The firing house: the way back to the kiln hall (left edge), the shoe rack high on the left wall,
-// the hearth with Nell's soup pot, the chalked wall, the iron sign high up, Nell's pantry door in
+// the hearth with Nell's soup pot, the chalked wall, the brass bell high up, Nell's pantry door in
 // the back wall, the stairs climbing to the regulator gallery, and the kiln gate (right edge) out to
 // the ashways.
 const firingHouseHotspots: HotspotDef[] = [
   { id: 'chalk', name: 'name.chalk', polygon: rect(160, 145, 32, 24), verbs: ['look'], walkTo: pt(190, 280), face: 'up', secret: true },
-  { id: 'sign', name: 'name.sign', polygon: rect(226, 44, 34, 38), verbs: ['look'], secret: true },
+  // Preserve the saved/outline identity; this is a bell in the approved painting, not a shop sign.
+  { id: 'sign', name: 'name.sign', polygon: rect(226, 44, 34, 38), verbs: ['look', 'use'], secret: true },
   { id: 'pantryDoor', name: 'name.pantryDoor', polygon: rect(304, 110, 60, 152), verbs: ['look', 'open', 'use'], walkTo: pt(334, 280), face: 'up' },
   { id: 'soup', name: 'name.soup', polygon: rect(82, 176, 44, 26), verbs: ['look', 'take', 'use'], walkTo: pt(110, 280), face: 'up' },
   { id: 'shoes', name: 'name.shoes', polygon: rect(34, 30, 120, 110), verbs: ['look', 'take'] },
@@ -213,6 +214,7 @@ export const ROOMS: Record<string, RoomDef> = {
       { id: 'tobi', x: 155, y: 300, body: 0.6 },
     ],
     props: [{ kind: 'bubbles', x: 104, y: 180, w: 22, h: 4, color: 0xf0d090, warm: true }],
+    interactionSounds: { sign: 'bell' },
     sign: { x: 480, y: 50, drop: 12, w: 112, h: 22, style: 'wood' },
   },
   gallery: {

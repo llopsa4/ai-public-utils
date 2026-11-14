@@ -16,6 +16,11 @@ export interface BattleAnimation extends Feedback {
   durationMs: number;
 }
 
+/** Release feedback ends with its animation; a completed action cannot leave the gauge burning. */
+export function overloadVisible(animation: Pick<BattleAnimation,'overload'|'phase'> | null): boolean {
+  return !!animation?.overload && animation.phase !== 'approach';
+}
+
 export function useBattle(setup: BattleSetup = PROTOTYPE_SETUP, controller?: BattleController) {
   const [initial] = useState(() => structuredClone(setup));
   const [localState, setState] = useState<BattleState>(() => controller?.state ?? createBattle(initial.profile, initial.encounter, initial.seed));
@@ -30,7 +35,7 @@ export function useBattle(setup: BattleSetup = PROTOTYPE_SETUP, controller?: Bat
   const actionId = useRef(0);
   const [busy, setBusy] = useState(false);
   const [animation, setAnimation] = useState<BattleAnimation | null>(null);
-  const [overloadFeedback, setOverloadFeedback] = useState(false);
+  const overloadFeedback = overloadVisible(animation);
   const [announcement, setAnnouncement] = useState('');
 
   useEffect(() => () => { timers.current.forEach(clearTimeout); }, []);
@@ -49,7 +54,6 @@ export function useBattle(setup: BattleSetup = PROTOTYPE_SETUP, controller?: Bat
     setBusy(true);
     setAnimation(active);
     setDisplayState(offensive ? previous : null);
-    setOverloadFeedback(offensive ? false : feedback.overload);
     const announceContact = () => {
       setAnnouncement(`${next.log.at(-1)} ${card ? '' : `Turn ${next.turn}. `}Health ${next.hero.hp}. MP ${next.mp}. Energy ${next.energy}. Strain ${next.strain}.`);
     };
@@ -58,7 +62,6 @@ export function useBattle(setup: BattleSetup = PROTOTYPE_SETUP, controller?: Bat
       timers.current.push(setTimeout(() => {
         setDisplayState(null);
         setAnimation({ ...active, phase: 'contact' });
-        setOverloadFeedback(feedback.overload);
         announceContact();
       }, APPROACH_MS));
       timers.current.push(setTimeout(() => setAnimation({ ...active, phase: 'return' }), APPROACH_MS + CONTACT_MS));
@@ -102,7 +105,6 @@ export function useBattle(setup: BattleSetup = PROTOTYPE_SETUP, controller?: Bat
     if (!controller) setState(fresh);
     setDisplayState(null);
     setAnimation(null);
-    setOverloadFeedback(false);
     setAnnouncement(`A fresh battle begins. ${fresh.hero.hp} health. ${fresh.mp} MP. ${fresh.energy} energy. ${fresh.hand.length} cards.`);
     return true;
   }

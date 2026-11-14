@@ -12,8 +12,8 @@ const LIT = [{ flag: 'cellLit' }];
 
 // The cell, Ironhaven's prison, at night (Codex's painting): Silas's side is a cage of iron bars
 // across the left of the room, a smaller door below fixed bars at the cage's right end (x 364-412), drawn in front of
-// him (the bars and the door are foreground pieces). Inside: the barred window high up, a small pale
-// chip of clay in the stone wall, the straw cot, the bucket, and the tin plate on the floor. Outside,
+// him (the bars and the door are foreground pieces). Inside: the barred window high up,
+// the straw cot, the bucket, and the tin plate on the floor. Outside,
 // in the guard's corridor: Silas's confiscated cloak hanging on a nail, Sergeant Harrow's portrait,
 // the table with the candle and a cup (the mask frame on it), and the guard's chair. No stairs.
 const cellHotspots: HotspotDef[] = [
@@ -23,13 +23,13 @@ const cellHotspots: HotspotDef[] = [
   // His cloak on its nail beyond the bars: out of reach until the door is open.
   { id: 'cloak', name: 'name.i.cloak', polygon: rect(457, 95, 46, 112), verbs: ['look', 'take'], walkTo: pt(482, 338), face: 'up', visibleIf: [...LIT, { notFlag: 'tookCloak' }] },
   { id: 'candle', name: 'name.i.candle', polygon: rect(466, 246, 14, 34), verbs: ['look', 'take'] },
-  { id: 'table', name: 'name.i.table', polygon: rect(437, 272, 106, 55), verbs: ['look', 'take'], walkTo: pt(340, 300), face: 'right' },
   { id: 'window', name: 'name.i.window', polygon: rect(140, 62, 60, 62), verbs: ['look', 'use'], walkTo: pt(170, 290), face: 'up' },
   // The guard's spare candle burnt down at the table's left end, and the tallow it dripped onto the
   // corridor floor just past the cage door: softened with the bread, the mask's putty. Before the
   // table, so the pointer finds them over its painted silhouette.
-  { id: 'floorWax', name: 'name.i.floorWax', polygon: rect(416, 311, 32, 13), verbs: ['look', 'take'], visibleIf: [...LIT, { notFlag: 'tookWax' }], outline: { objects: ['floorWax'] } },
-  { id: 'tableStub', name: 'name.i.stub', polygon: rect(436, 262, 16, 20), verbs: ['look', 'take'], visibleIf: LIT, outline: { objects: ['tableStub'] } },
+  { id: 'floorWax', name: 'name.i.floorWax', polygon: rect(390, 310, 24, 14), verbs: ['look', 'take'], visibleIf: [...LIT, { notFlag: 'tookWax' }], outline: { objects: ['floorWax'] } },
+  { id: 'tableStub', name: 'name.i.stub', polygon: rect(440, 262, 16, 20), verbs: ['look', 'take'], visibleIf: LIT, outline: { objects: ['tableStub'] } },
+  { id: 'table', name: 'name.i.table', polygon: rect(437, 272, 106, 55), verbs: ['look', 'take'], walkTo: pt(340, 300), face: 'right' },
   // The blanket draped over the cot (the strip) comes before the cot's frame (the nail): over the
   // cloth, the pointer finds the blanket; on the posts and legs, the frame.
   { id: 'blanket', name: 'name.i.blanket', polygon: rect(48, 236, 104, 46), verbs: ['look', 'take', 'use'], walkTo: pt(95, 300), face: 'up' },
@@ -42,7 +42,7 @@ const cellHotspots: HotspotDef[] = [
   { id: 'cellStairs', name: 'name.i.cellStairs', polygon: [pt(640, 324), pt(640, 344), pt(571, 346), pt(560, 343), pt(554, 334), pt(560, 325), pt(571, 322)], verbs: ['look', 'go'], walkTo: pt(614, 336), face: 'right', outline: { objects: ['stairsLight'] } },
 ];
 
-// The guardroom at the top of the stairs: a peg with a clerk's hood (left), the tally clerk's ledger
+// The guardroom at the top of the stairs: the tally clerk's ledger
 // on a shelf, the wide-awake guard at his desk, and the grate out (right edge).
 const guardroomHotspots: HotspotDef[] = [
   { id: 'ledger', name: 'name.i.ledger', polygon: rect(196, 196, 40, 18), verbs: ['look', 'take', 'open'], walkTo: pt(216, 292), face: 'up', visibleIf: [{ notFlag: 'tookLedger' }] },
@@ -100,7 +100,7 @@ export const ROOMS: Record<string, RoomDef> = {
         { x: 473, y: 252, r: 22, color: 0xffc070, front: true },
         { x: 626, y: 338, r: 70, color: 0xffa850 }, { x: 612, y: 340, r: 44, color: 0xffc070 },
         // The guttering stub at the table's left end (its tiny flame is painted).
-        { x: 444, y: 265, r: 16, color: 0xffb860 },
+        { x: 448, y: 265, r: 16, color: 0xffb860 },
       ],
     },
     props: [{ kind: 'flame', x: 473, y: 252, size: 8, color: 0xffc070, depth: 9000 }],
@@ -118,8 +118,8 @@ export const ROOMS: Record<string, RoomDef> = {
       // The stairwell door's light on the floor, shaped like the doorway.
       { id: 'stairsLight', sheet: 'stairs-light', x: 590, y: 347, depth: 45 },
       // Seen in the dark too, in Benn's candle light (its glow shows from the start); usable once lit.
-      { id: 'tableStub', sheet: 'table-stub', x: 444, y: 281, depth: 279 },
-      { id: 'floorWax', sheet: 'floor-wax', x: 432, y: 322, depth: 60, visibleIf: [...LIT, { notFlag: 'tookWax' }] },
+      { id: 'tableStub', sheet: 'table-stub', x: 448, y: 281, depth: 279 },
+      { id: 'floorWax', sheet: 'floor-wax', x: 402, y: 320, depth: 60, visibleIf: [...LIT, { notFlag: 'tookWax' }] },
       { id: 'frame', sheet: 'table-frame', x: 495, y: 278, depth: 280, visibleIf: [...LIT, { notFlag: 'gotFrame' }] },
       // The cage's door (cut from Codex's two overlays): shut, in the plane of the front bars; open, swung
       // outward to the left, its foot just in front of the cage, in front of anyone walking out past it.

@@ -1,0 +1,61 @@
+{
+  "canvas": [
+    1024,
+    1536
+  ],
+  "order": [
+    "farUpperArm",
+    "farForearm",
+    "farThigh",
+    "farShin",
+    "farBoot",
+    "nearThigh",
+    "nearShin",
+    "nearBoot",
+    "torso",
+    "nearUpperArm",
+    "nearForearm"
+  ],
+  "joints": {
+    "nearShoulder": [
+      395,
+      438
+    ],
+    "nearElbow": [
+      359,
+      570
+    ],
+    "farShoulder": [
+      550,
+      430
+    ],
+    "farElbow": [
+      604,
+      655
+    ],
+    "nearHip": [
+      435,
+      805
+    ],
+    "farHip": [
+      545,
+      805
+    ],
+    "nearKnee": [
+      400,
+      1050
+    ],
+    "farKnee": [
+      545,
+      1050
+    ],
+    "nearAnkle": [
+      335,
+      1355
+    ],
+    "farAnkle": [
+      565,
+      1345
+    ]
+  }
+}

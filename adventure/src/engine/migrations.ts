@@ -6,11 +6,26 @@ import { newBag, newKit } from './kit';
  * Add a step here whenever the format changes, and a fixture save of the old version in
  * tests/fixtures/saves/.
  */
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 12;
 
 type Raw = Record<string, unknown>;
 
 const STEPS: Record<number, (s: Raw) => void> = {
+  // 11 → 12: the folding-bow lesson and reusable wooden blunt arrow. Keep completed work.
+  11: s => {
+    const kofi=(s.flags as Record<string, Raw> | undefined)?.kofi1;
+    if (!kofi || typeof kofi!=='object' || Array.isArray(kofi)) return;
+    if (kofi.wolvesWon || kofi.campDone) { kofi.bowExplained=true; kofi.bowUnfolded=true; }
+    if (kofi.brandLit || kofi.wolvesWon || kofi.campDone) kofi.branchLoose=true;
+    if (s.chapter!=='kofi1' || !Array.isArray(s.inventory)) return;
+    if (s.inventory.includes('kofiBow')) {
+      kofi.bowUnfolded=true;
+      if (!s.inventory.includes('kofiBluntArrow')) s.inventory.push('kofiBluntArrow');
+    }
+    if (s.inventory.includes('kofiBranch') || s.inventory.includes('kofiBrand')) kofi.branchLoose=true;
+  },
+  // 10 → 11: add the independently saved Kofi prologue; old chapters need no state conversion.
+  10: () => {},
   9: s => {
     const f = (s.flags as Record<string, Raw> | undefined)?.ch1;
     if (!f) return;

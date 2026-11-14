@@ -36,6 +36,13 @@ node art/rig.mjs silas-clerk
 
 ## Pack contract
 
+Kofi has uninstalled village/travel source packs at `art/sources/characters/kofi-{village,travel}-layered/`.
+They use the same eleven registered pieces and renderer, including independent forearm/hand layers.
+Travel gear is composed into its parent pieces: folded bow on `nearThigh`, quiver behind `torso`.
+`art/kofi-layered.mjs` rebuilds only those source packs and local previews. They currently support
+neutral and articulated side walking through `loadPack`/`renderPackFrame`; the complete sheet
+assembler still needs the unfinished kneel/lie source artwork. See `art/inbox/kofi-layered/HANDOFF.md`.
+
 `rig.json` version 1 supplies the canvas, height, baseline, layer stacking order, near/far shoulders, elbows, hips, knees and ankles. Eyes include centres, regions, skin samples and grid-aware eyelid dimensions; face data includes mouth/brow regions and the portrait crop. Ember regions identify glass only, including its locations in the complete kneeling/lying drawings.
 
 The layer order is far upper arm, far forearm, far thigh, far shin, far boot, near thigh, near shin, near boot, torso, near upper arm, near forearm. Every PNG retains walking-master coordinates. Opaque neutral compositing must reproduce every walking-master RGBA pixel exactly; pack loading rejects a mismatch. Concealed artwork and rounded joint extensions are in the source layers rather than generated during playback. When stopped, the renderer uses the original approved standing bitmap, with its own baseline, eye regions and ember position, pixelated to the same 232px height. `rig.json` records the original idle bitmap's SHA-256.

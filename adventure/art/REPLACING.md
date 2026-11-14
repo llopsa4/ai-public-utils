@@ -11,7 +11,7 @@ All new art follows the style bible, [art/STYLE.md](STYLE.md) (palette, scale, l
 1. `npm run art:briefs` writes a Codex brief per image in `art/briefs/` (start with [the pilot pack](briefs/PILOT.md)).
 2. Give the brief and its attachments to Codex; put what it delivers in `art/inbox/` under the name the brief gives.
 3. `npm run art:import` fits it to size, snaps it to the master palette, outlines sprites, re-cuts walk-behind pieces from rooms, writes the WebP copies and a before/after preview (`art/inbox/preview/`), and marks it final (`art/status.json`).
-4. `npm run art:check`, then look at it in the game (`npm run dev`), then `npm run check` and `npm run e2e`.
+4. `npm run art:check`, then look at it in the game (`npm run dev`), then `npm test` and the relevant `npm run test:feature` suites (browser checks only when the user asks; see AGENTS.md).
 
 Final art is safe: the generator scripts (`npm run art`) only make placeholders and skip anything final. Characters come as layers and need their joints measured once in the manifest (`RIGS`) before `npm run rig`.
 

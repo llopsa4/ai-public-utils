@@ -8,6 +8,7 @@ export const FLAGS = [
   'hasGauntlet', 'hasNotebook', 'dressed',
   // the morning's errands in everyday clothes: Wren's hoist, Nell's bread
   'wrenAsked', 'hoistHelped', 'breadAsked', 'nellFed',
+  'machineRefusalSeen',
   // firing house
   'latchFixed', 'alarm', 'metNell', 'gotBread', 'gotScarf',
   // regulator gallery

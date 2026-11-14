@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { DepthScale, Facing, Point, Pose, Speaker } from '../engine/types';
 import { SHEETS } from './assets';
 import { walkFrameAt, walkTiming } from './walk';
+import { actorGeometry, type ActorGeometry } from './actorGeometry';
 
 const WALK_SPEED = 110; // logical pixels per second at scale 1
 const BLINK_MIN = 1500;
@@ -15,13 +16,6 @@ const SHADOW_ALPHA = 0.5;
 
 /** Added to a character's depth to draw it in front of foreground pieces (depth 400, rooms.ts). */
 const FRONT_DEPTH = 1000;
-
-/** Visible body size per pose in world units at depth scale 1 (hit testing and speech placement). */
-const BODY: Record<Pose, { w: number; h: number }> = {
-  stand: { w: 62, h: 116 },
-  crouch: { w: 70, h: 96 },
-  dead: { w: 116, h: 64 },
-};
 
 /**
  * A character on screen: pose/facing state machine, path walking and the idle blink.
@@ -70,6 +64,7 @@ export class Actor {
     private readonly depthScale: DepthScale,
     /** Body size relative to an adult (children are smaller), for hit boxes and speech placement. */
     private readonly bodyScale = 1,
+    private readonly geometry?: ActorGeometry,
   ) {
     this.sheet = sheet;
     this.sprite = scene.add.sprite(x, y, sheet).setOrigin(0.5, 1);
@@ -81,7 +76,7 @@ export class Actor {
     this.pose = pose;
     this.place();
     this.refresh();
-    this.scheduleBlink();
+    if (!geometry) this.scheduleBlink();
     this.sprite.once(Phaser.GameObjects.Events.DESTROY, () => { this.clearWalkBlend(); this.blinkTimer?.remove(); this.shadow?.destroy(); });
   }
 
@@ -210,15 +205,15 @@ export class Actor {
 
   /** Screen-space hit box around the visible body for the current pose. */
   hitBox(): Phaser.Geom.Rectangle {
-    const body = BODY[this.pose];
-    const s = this.depth * this.bodyScale;
+    const body = actorGeometry(this.pose, this.bodyScale, this.geometry);
+    const s = this.depth;
     const w = body.w * s * this.hitWidth;
     return new Phaser.Geom.Rectangle(this.sprite.x - w / 2, this.sprite.y - body.h * s, w, body.h * s);
   }
 
   /** Point just above the head, for speech text. */
   headPoint(): Point {
-    return { x: this.sprite.x, y: this.sprite.y - (BODY[this.pose].h * this.bodyScale + 8) * this.depth };
+    return { x: this.sprite.x, y: this.sprite.y - (actorGeometry(this.pose, this.bodyScale, this.geometry).h + 8) * this.depth };
   }
 
   /** Draws the character in front of the room's foreground pieces (Benn outside the cell's bars). */
@@ -264,9 +259,9 @@ export class Actor {
   /** The shadow follows the feet and the pose: a wide pool when lying down, a small one standing. */
   private placeShadow(): void {
     if (!this.shadow) return;
-    const body = BODY[this.pose];
-    const w = (this.pose === 'dead' ? body.w * 1.05 : body.w * 0.82) * this.depth * this.bodyScale;
-    const h = (this.pose === 'dead' ? 16 : 11) * this.depth * this.bodyScale;
+    const body = actorGeometry(this.pose, this.bodyScale, this.geometry);
+    const w = (this.pose === 'dead' ? body.w * 1.05 : body.w * 0.82) * this.depth;
+    const h = body.shadowH * this.depth;
     this.shadow.setPosition(this.sprite.x, this.sprite.y - h * 0.15).setDisplaySize(w, h);
   }
 

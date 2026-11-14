@@ -186,6 +186,12 @@ class Sound {
   blip(): void { this.tone('sine', 660, 720, 0.05, 0.06); }
   choose(): void { this.tone('triangle', 880, 640, 0.06, 0.12); }
   pickup(): void { this.tone('triangle', 520, 1040, 0.07, 0.18); this.tone('sine', 1040, 1300, 0.03, 0.2, 0.08); }
+  /** A small brass household bell: a clear strike and a short, inharmonic metal decay. */
+  bell(): void {
+    this.tone('sine', 880, 875, 0.12, 0.9);
+    this.tone('sine', 1452, 1445, 0.065, 0.65);
+    this.tone('sine', 2314, 2300, 0.035, 0.4);
+  }
   latch(): void { this.burst('highpass', 3200, 0.25, 0.001, 0.025); this.burst('highpass', 2600, 0.2, 0.001, 0.03, 1, 0.12); this.tone('triangle', 1250, 1150, 0.06, 0.25, 0.12); }
   /** Getting dressed: cloth rustling, then two buckles. */
   dress(): void {

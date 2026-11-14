@@ -7,6 +7,11 @@ A point-and-click adventure built from the first scene of **Kiln Courier**'s sto
 Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 
 - **New game** opens on black with three cards (where and when, the day, then the title *The Man With Many Faces*); each fades on its own, a click moves on, Skip ends them. Then Silas's escape from Ironhaven's prison (the intro chapter) leads into chapter 1.
+- **Kofi prologue (local implementation):** after Silas, the chapter map also offers **A Place to Stay**. For direct testing, run `npm run dev`, open `/adventure/?debug=panel` and select `kofi1` / **A Place to Stay** in the chapter dropdown. Six rooms, both survivor routes, construction, the rite, three agreements and the hut ending are playable. All Kofi visuals are labelled geometric placeholders; the approved character rigs remain uninstalled. Nothing is published by editing or running the development preview.
+- **Kofi’s folding bow:** a camp exchange explains Deyu’s handmade bow and everyday arrow jobs. Use the carried bow to fold/unfold it. With it unfolded, use the wooden blunt arrow to dislodge the campfire stick; later combine a normal arrow and light cord to rig the clearing’s high fork. Both utility arrows are recovered. A geometric tensed-bow pose appears before shooting and stays held during Aimed shot. No finished art was added.
+- **Kofi combat:** choose Shot, Aimed shot, Step back, Fire brand, Huska! or Gather arrows. Aimed shot takes a setup turn and another selection to release; a different card cancels it before spending an arrow. Enemy attacks are announced. Retry preserves the chapter's earlier choices. Kill/release decisions happen after combat, with no loot advantage.
+- **Chapter map:** hover or focus a red pin for its location and chapter; activate it to travel. On touch, tap once to preview and again to choose.
+- **Regulator:** loosen both outer bolts, bleed pressure, then turn the retaining ring. Phone and short landscape layouts provide separate labelled controls without scrolling.
 - **Walk:** click or tap the floor.
 - **Act:** click or tap a person or object to open the action ring, then choose an action (Look at, Open, Close, Pick up, Use, Talk to, Go to). Arrow keys move around the ring and Esc closes it.
 - **Satchel:** click an item or press its numbered slot (1–9, then 0) to carry it at the pointer. Click a target or another satchel item to use it, or drag and drop it there. Each attempt puts the cursor back to normal, including a rejected use. Clicking/dropping onto empty floor cancels the item and walks there. Double-click/double-tap an item for its Look / Use menu; inventory clicks wait 300 ms to distinguish these gestures. Enter opens the menu when an item has keyboard focus. Right-click, Esc, clicking the selected item again, or dropping outside the game cancels it.
@@ -114,6 +119,9 @@ Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/
 | `tests/` | `node:test` suites run with tsx |
 
 ## Art pipeline
+
+For reference organisation, authoritative sources and chapter-scoped regeneration, read
+[art/REFERENCES.md](art/REFERENCES.md). Generated reference files are not edited directly.
 
 Claude writes new art tasks in [art/CODEX.md](art/CODEX.md); Codex delivers artwork and a local handoff in `art/inbox/<delivery>/`. [CLAUDE-INBOX.md](CLAUDE-INBOX.md) holds integration tasks for Claude. Completed instructions are removed from the queues, and installed deliveries move to `art/inbox/done/`. These local art archives are git-ignored.
 

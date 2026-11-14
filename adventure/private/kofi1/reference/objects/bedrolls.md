@@ -1,0 +1,42 @@
+# Camp sleeping mats
+
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --private-spec private/kofi1/spec.json. -->
+
+Authoring reference; may contain chapter spoilers. Runtime implementation is separate.
+
+ID: `bedrolls` · object · **visual**
+
+## Description
+
+Rolled-out woven mats, patched hides, no sleeping figures.
+
+## What the game does with it
+
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+- [Trail camp at night](../rooms/trail-camp.md): anchor (420,568) art px / (210,284) logical; world; camp.
+- [Trail camp at night](../rooms/trail-camp.md): anchor (670,568) art px / (335,284) logical; world; camp.
+
+## States, visibility and transitions
+
+- **laid** — Two separately instantiated mats. When: Camp occupied; hide as each is rolled/packed at transition..
+
+Same drawable reused for two mats; people and blankets covering bodies require separate excluded actor art.
+
+## Technical
+
+- Canvas: **180×48 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
+- Files: `kofi1-bedrolls-laid.png`.
+
+## Prompt for Codex
+
+Rolled-out woven mats, patched hides, no sleeping figures. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
+
+## Attach / references
+
+[STORY.md · kofi1-scene-03](../../../../STORY.md#kofi1-scene-03) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Chapter index](../INDEX.md)
+
+Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)

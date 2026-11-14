@@ -34,6 +34,7 @@ const KC = fileURLToPath(new URL('../FFCardGame/client/src', import.meta.url));
 const KC_OVERRIDES: Record<string, string> = {
   'hooks/useBattle.ts': fileURLToPath(new URL('./src/kc/useBattle.ts', import.meta.url)),
   'components/Battlefield.tsx': fileURLToPath(new URL('./src/kc/Battlefield.tsx', import.meta.url)),
+  'components/GameDialog.tsx': fileURLToPath(new URL('./src/kc/GameDialog.tsx', import.meta.url)),
   'assets.ts': fileURLToPath(new URL('./src/kc/assets.ts', import.meta.url)),
   'presentation.ts': fileURLToPath(new URL('./src/kc/presentation.ts', import.meta.url)),
   'components/EquipmentArt.tsx': fileURLToPath(new URL('./src/kc/EquipmentArt.tsx', import.meta.url)),

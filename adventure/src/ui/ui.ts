@@ -187,6 +187,7 @@ export class Ui {
     this.stage.style.width = `${LOGICAL_W * this.zoom}px`;
     this.stage.style.height = `${LOGICAL_H * this.zoom}px`;
     this.overlay.style.fontSize = `${Math.round(Math.max(13, 7.5 * this.zoom) * TEXT_SCALE[settings().textSize])}px`;
+    if (!this.labels.hidden) showLabels(this);
     return this.zoom;
   }
 

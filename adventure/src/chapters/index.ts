@@ -13,6 +13,7 @@ addStrings(CH1.strings);
 const LOADERS: Record<string, () => Promise<Chapter>> = {
   intro: () => import('./intro').then(m => m.INTRO),
   ch2: () => import('./ch2').then(m => m.CH2),
+  kofi1: () => import('./kofi1').then(m => m.KOFI1),
 };
 
 /** Where New game starts: the intro (Silas, Day 3 night), which ends on the chapter map. */

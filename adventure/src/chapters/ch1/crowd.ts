@@ -20,6 +20,11 @@ const HALL: CrowdDef = {
     // Hollis spends most of his time clearing the fire, then tips the ash into the cart.
     st('stokerFire', 360, 300, 'up', 'work', [15000, 25000]),
     st('ashCart', 552, 310, 'up', 'reach', [3000, 5000]),
+    st('collectAsh', 420, 306, 'left', 'work', [11000, 16000]),
+    st('emptyAsh', 568, 282, 'right', 'reach', [3000, 4500]),
+    st('collectorPark', 490, 286, 'left', 'park', [10000, 15000]),
+    st('sortShards', 556, 338, 'right', 'work', [10000, 16000]),
+    st('sorterPark', 590, 270, 'left', 'park', [10000, 15000]),
     // Dace sorts reusable pieces from the broken pots in the front-right corner.
     st('brokenPottery', 580, 330, 'right', 'work', [15000, 25000]),
     st('clayPile', 190, 320, 'left', 'work', [2500, 4500]),
@@ -41,6 +46,26 @@ const HALL: CrowdDef = {
   },
   wander: { x: 130, y: 300, w: 400, h: 40 },
   extras: [
+    {
+      id: 'extra-ash-collector', sheet: 'extra-ash-collector', body: 1, speed: 0.38, color: '#d9b26a',
+      machine: { w: 64, h: 32, shadowH: 6, motion: 'tracks' },
+      routines: {
+        warm: { stations: ['collectAsh', 'emptyAsh'] },
+        alarm: { stations: ['collectorPark'] },
+        cold: { stations: ['collectorPark'] },
+      },
+      talk: { warm: 3, alarm: 2, cold: 2 }, chat: { warm: 2, alarm: 1, cold: 1 },
+    },
+    {
+      id: 'extra-shard-sorter', sheet: 'extra-shard-sorter', body: 1, speed: 0.32, color: '#cfbda0',
+      machine: { w: 56, h: 28, shadowH: 6, motion: 'legs' },
+      routines: {
+        warm: { stations: ['sortShards'] },
+        alarm: { stations: ['sorterPark'] },
+        cold: { stations: ['sorterPark'] },
+      },
+      talk: { warm: 3, alarm: 2, cold: 2 }, chat: { warm: 2, alarm: 1, cold: 1 },
+    },
     {
       id: 'extra-stoker', sheet: 'extra-stoker', met: 'metHollis', body: 0.95, speed: 0.9, color: '#e8a878', carry: 'shovel', carryDrawn: true,
       routines: {

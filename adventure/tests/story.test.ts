@@ -15,7 +15,9 @@ test('chapter 1 story rules match the scene\'s old choices in every room and sta
   for (const { state } of goldenStates()) {
     for (const room of Object.values(rooms)) {
       const cold = room.coldIf ? conditionsHold(state, room.coldIf) : false;
-      const ctx: StoryContext = { state: { ...state, room: room.id }, room, cold };
+      // The new optional refusal has its own integration coverage; retain this legacy oracle
+      // for music, wardrobe, errands and the regulator send-off after that scene was seen.
+      const ctx: StoryContext = { state: { ...state, flags: { ...state.flags, machineRefusalSeen: true }, room: room.id }, room, cold };
       const f = state.flags;
       assert.equal(musicFor(story, ctx), f.fought ? 'nervous' : cold ? 'cold' : room.music ?? 'warm');
       assert.equal(ambienceFor(story, ctx), room.id === 'ashways' ? 'wind' : cold ? 'cold' : 'kiln');
@@ -24,7 +26,7 @@ test('chapter 1 story rules match the scene\'s old choices in every room and sta
       assert.equal(hushed(story, ctx), !!f.fought);
       assert.equal(guided(story, ctx), !f.fought);
       assert.equal(heroSheetFor(story, ctx), f.hasGauntlet ? 'mara-gauntlet' : f.dressed ? 'mara' : 'mara-casual');
-      const wren = room.id === 'maraRoom' && !f.wrenAsked && !f.hasGauntlet;
+      const wren = room.id === 'maraRoom' && !f.wrenAsked && !f.hasGauntlet && !f.kilnCold;
       assert.deepEqual(onEnter(story, ctx), room.id === 'gallery' && f.kilnCold ? afterRelease(f) : wren ? wrenCalls() : []);
     }
   }

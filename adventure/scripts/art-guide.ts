@@ -111,7 +111,7 @@ p();
 p('1. `npm run art:briefs` writes a Codex brief per image in `art/briefs/` (start with [the pilot pack](briefs/PILOT.md)).');
 p('2. Give the brief and its attachments to Codex; put what it delivers in `art/inbox/` under the name the brief gives.');
 p('3. `npm run art:import` fits it to size, snaps it to the master palette, outlines sprites, re-cuts walk-behind pieces from rooms, writes the WebP copies and a before/after preview (`art/inbox/preview/`), and marks it final (`art/status.json`).');
-p('4. `npm run art:check`, then look at it in the game (`npm run dev`), then `npm run check` and `npm run e2e`.');
+p('4. `npm run art:check`, then look at it in the game (`npm run dev`), then `npm test` and the relevant `npm run test:feature` suites (browser checks only when the user asks; see AGENTS.md).');
 p();
 p('Final art is safe: the generator scripts (`npm run art`) only make placeholders and skip anything final. Characters come as layers and need their joints measured once in the manifest (`RIGS`) before `npm run rig`.');
 p();
@@ -136,7 +136,8 @@ p('A new painting should put the things on the list where the reference image sh
 p();
 p('After a new painting, run `npm run art:outlines` (needs Python 3 with `opencv-python-headless` and `numpy`): it cuts the silhouette of every clickable thing painted into the room for the hover highlight (`art/src/outlines/`). Check `art/inbox/preview/outlines-<room>.png`; where a cut misses, trace a rough hint in `art/outlines.json` and run it again. `npm run art:check` warns about any painted hotspot without an outline.');
 p();
-for (const room of CHAPTER_LIST.flatMap(c => Object.values(c.rooms))) {
+// Intro references use the shared chapter adapter, including Silas's actual scale and atlas frames.
+for (const room of CHAPTER_LIST.filter(c => c.id !== 'intro').flatMap(c => Object.values(c.rooms))) {
   const file = roomFile(room.background);
   await referenceImage(room, file);
   p(`### ${en[`room.${room.id}`] ?? room.id}: \`${file}.png\``);
@@ -216,4 +217,6 @@ p();
 writeFileSync(join(ART, '..', 'REPLACING.md'), md.join('\n'));
 // The notebook's world map: the layout Codex paints from (the game pins places at the same spots).
 await writeWorldMapSpec();
+const { runRuntimeReferences } = await import('./art-reference-runtime');
+await runRuntimeReferences('intro');
 console.log('Wrote art/REPLACING.md, art/spec/*.jpg and art/spec/world-map.png.');

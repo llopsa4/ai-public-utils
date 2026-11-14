@@ -4,6 +4,7 @@ Start every session by reading, in order:
 1. `AGENTS.md`: the rules shared with Codex (pushing, testing, the queues).
 2. `WORKLOG.md`: where things stand.
 3. `CLAUDE-INBOX.md`: your queue.
+4. For story work, `STORY.md`: the ensemble story (private and git-ignored; never commit or publish it).
 
 Codex may be working in this folder at the same time:
 - Before editing, check the Lanes and "Working on" claims in `WORKLOG.md`. Edit only your own lane;

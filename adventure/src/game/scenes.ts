@@ -15,7 +15,7 @@ import { AshwaysSet, queueAshways } from './ashways';
 import type { Mood } from '../engine/crowd';
 import { chapter } from '../chapters';
 import { heroOf } from '../chapters/hero';
-import { crowdMoodFor, heroSheetFor, hushed, onEnter, type StoryContext } from '../engine/story';
+import { crowdMoodFor, heroSheetFor, hushed, onEnter, playerInputLocked, type StoryContext } from '../engine/story';
 import { FOREGROUND_IMAGES, OUTLINES, PROP_IMAGES, LAZY_SHEETS, NPC_SHEETS, ROOM_IMAGES, SHEETS, tagFrame } from './assets';
 import { outlineSheetKey } from './room/outline';
 import type { Session } from './session';
@@ -201,6 +201,11 @@ export class RoomScene extends Phaser.Scene {
 
   isBusy(): boolean {
     return this.busy || this.leaving;
+  }
+
+  /** Player controls can be reserved without preventing the encounter's scripts from starting. */
+  isPlayerInputLocked():boolean{
+    return !!this.room&&playerInputLocked(chapter().story,this.storyContext());
   }
 
   /** True while a click's script is only walking Silas to its target (nothing has happened yet). */
@@ -471,6 +476,7 @@ export class RoomScene extends Phaser.Scene {
   // --------------------------------------------------------------- movement ---
   /** Free walking from a click; a new click interrupts it. */
   async walkTo(target: Point): Promise<void> {
+    if(this.isBusy()||this.isPlayerInputLocked())return;
     this.session.ui.controls.stopMovement();
     const state = this.session.state;
     if (this.hero.pose !== 'stand') { this.hero.setPose('stand'); state.hero.pose = 'stand'; }
@@ -501,7 +507,7 @@ export class RoomScene extends Phaser.Scene {
       this.keyboardMoved = false;
       return;
     }
-    if (!this.session.ui.controls.available() || !this.hero?.sprite.active) return;
+    if (this.isPlayerInputLocked() || !this.session.ui.controls.available() || !this.hero?.sprite.active) return;
     this.moveDirection = direction;
     clearFocus(this);
   }
@@ -514,7 +520,7 @@ export class RoomScene extends Phaser.Scene {
     this.session.ui.controls.reconcile();
     const direction = this.moveDirection;
     if (!direction.x && !direction.y) return;
-    if (!this.session.ui.controls.available()) { this.setMoveDirection({ x: 0, y: 0 }); return; }
+    if (this.isPlayerInputLocked() || !this.session.ui.controls.available()) { this.setMoveDirection({ x: 0, y: 0 }); return; }
     const from = this.hero.position;
     const next = directionalStep(this.area, from, direction,
       110 * this.hero.speed * this.hero.perspective * Math.min(delta, 100) / 1000);

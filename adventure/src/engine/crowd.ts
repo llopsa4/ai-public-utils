@@ -1,7 +1,7 @@
 import type { ExtraId, Facing, Point } from './types';
 
 /** What a background person does at a station (each maps to a sheet tag and an effect). */
-export type Task = 'stand' | 'work' | 'carry' | 'reach' | 'sit' | 'sweep' | 'tap';
+export type Task = 'stand' | 'work' | 'carry' | 'reach' | 'sit' | 'sweep' | 'tap' | 'park';
 
 /** A place in the room where someone does something for a while. */
 export interface Station {
@@ -131,6 +131,8 @@ export interface ExtraDef {
   sheet: ExtraId;
   /** Size relative to an adult, for hit boxes and the speech point. */
   body: number;
+  /** Low machine silhouette in world units, with its own locomotion sounds and no eye blinking. */
+  machine?: { w: number; h: number; shadowH: number; motion: 'tracks' | 'legs' };
   /** Walking speed relative to Mara. */
   speed: number;
   /** Routines per mood; without an `alarm` or `errand` routine the warm one carries on. */
@@ -179,6 +181,7 @@ export function lineKind(def: ExtraDef, kind: 'talk' | 'chat', mood: Mood): { ke
 }
 
 export function lookKey(def: ExtraDef, mood: Mood): string {
-  const m = mood === 'alarm' && !def.routines.alarm ? 'warm' : mood;
+  // Errands change stations, not appearances; like speech they retain the ordinary description.
+  const m = mood === 'errand' || (mood === 'alarm' && !def.routines.alarm) ? 'warm' : mood;
   return `line.${def.id}.look${SUFFIX[m]}`;
 }

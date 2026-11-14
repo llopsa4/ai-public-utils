@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './kc.css';
 import './kc-local.css';
+import './strain-art.css';
 import { App, type LessonView } from '@kc/App';
 import { Armory, type ArmoryProps } from './Armory';
 import { Victory, type Loot } from './Victory';

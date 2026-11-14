@@ -1252,3 +1252,28 @@ body.in-reveal #bar { visibility: hidden; }
 }
 #title .menu-list button, #menu .menu-list button { font-size: 1.55em; }
 .notebook-tabs [role="tab"] { font-size: 1.15em; font-style: normal; }
+
+/* Action rings use the same iron and brass as the surrounding controls. */
+button.verb { background: var(--iron); border-color: var(--brass-dark); }
+button.verb:hover, button.verb:focus-visible {
+  background: var(--iron-2); border-color: var(--brass);
+  box-shadow: 0 0 9px var(--ember-soft);
+}
+button.verb:focus-visible { outline: 2px solid var(--parchment); outline-offset: 3px; }
+.high-contrast button.verb { background: #000; border-color: #fff; }
+.high-contrast button.verb:hover, .high-contrast button.verb:focus-visible {
+  border-color: #ffd84a; outline-color: #ffd84a;
+}
+
+#labels { pointer-events: none; }
+#labels .label {
+  transform: none; box-sizing: border-box; white-space: normal; overflow-wrap: anywhere;
+  text-align: center; background: rgb(24 16 12 / .94); border-color: var(--brass);
+  color: var(--parchment); box-shadow: 0 1px 5px #0008;
+}
+.label-connectors { position: absolute; inset: 0; overflow: hidden; }
+.label-connectors line { stroke: var(--brass); stroke-opacity: .65; stroke-width: 1; }
+.high-contrast .label-connectors line { stroke: #fff; stroke-opacity: 1; }
+#map-panel .map-plate rect { fill: rgb(16 12 10 / .94); stroke: rgb(255 200 120 / .55); }
+.high-contrast #map-panel .map-plate rect { fill: #000; stroke: #fff; }
+.high-contrast #map-panel .map-plate text { fill: #fff; }

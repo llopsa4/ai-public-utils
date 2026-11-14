@@ -55,7 +55,7 @@ export interface Member {
   follow: Point | null;
 }
 
-const TASK_TAG: Record<Task, string | null> = { stand: null, work: 'work', carry: 'carry', reach: 'reach', sit: 'sit', sweep: 'carry', tap: 'carry' };
+const TASK_TAG: Record<Task, string | null> = { stand: null, work: 'work', carry: 'carry', reach: 'reach', sit: 'sit', sweep: 'carry', tap: 'carry', park: 'park' };
 /** Where a held thing sits, in world units at full size from the feet, for the art facing right. */
 const HOLD: Record<Carry, { x: number; y: number; angle: number; origin: [number, number] }> = {
   shovel: { x: 10, y: 52, angle: 32, origin: [0.5, 0.2] },
@@ -162,9 +162,9 @@ export class Crowd {
     // Start at work at a station of the routine, or somewhere on the floor if it's taken.
     const station = this.free(schedule.current) ? schedule.current : null;
     const at = station ?? this.host.area.clamp({ x: wander.x + Math.random() * wander.w, y: wander.y + Math.random() * wander.h });
-    const actor = new Actor(scene, def.id, def.sheet, at.x, at.y, 'down', 'stand', this.host.room.scale, def.body);
+    const actor = new Actor(scene, def.id, def.sheet, at.x, at.y, 'down', 'stand', this.host.room.scale, def.body, def.machine);
     actor.speed = def.speed;
-    actor.hitWidth = 0.75;
+    actor.hitWidth = def.machine ? 1 : 0.75;
     actor.sprite.setAlpha(0);
     scene.tweens.add({ targets: actor.sprite, alpha: 1, duration: 500 });
     const member: Member = {
@@ -175,7 +175,11 @@ export class Crowd {
     actor.onStep = () => {
       const d = Math.hypot(actor.sprite.x - this.host.hero().sprite.x, actor.sprite.y - this.host.hero().sprite.y);
       const level = 0.45 - d / 900;
-      if (level > 0.02) sound.step(this.host.room.surface ?? 'stone', level);
+      if (level > 0.02) {
+        if (def.machine?.motion === 'tracks') sound.scrape(level * 0.2);
+        else if (def.machine) sound.clink(level * 0.2);
+        else sound.step(this.host.room.surface ?? 'stone', level);
+      }
     };
     this.members.push(member);
     if (station) this.arrive(member, station);
@@ -380,6 +384,13 @@ export class Crowd {
       return Math.max(0, 1 - Math.hypot(m.actor.sprite.x - h.x, m.actor.sprite.y - h.y) / 420);
     };
     const every = (ms: number, fn: () => void) => { m.effect = scene.time.addEvent({ delay: ms, loop: true, callback: () => { if (!m.away) fn(); } }); };
+    if (m.def.machine) {
+      if (station.task === 'work' || station.task === 'reach') every(1800, () => {
+        if (m.def.machine?.motion === 'tracks') sound.scrape(level() * 0.3);
+        else sound.clink(level() * 0.25);
+      });
+      return;
+    }
     switch (station.task) {
       case 'work':
         if (m.def.carry === 'shovel') {
@@ -425,6 +436,7 @@ export class Crowd {
     if (m.task) this.leaveStation(m);
     m.target = null;
     m.actor.lookAt(this.host.hero().sprite.x);
+    if (m.def.machine && this.cold) m.actor.perform('park');
   }
 
   release(m: Member): void {

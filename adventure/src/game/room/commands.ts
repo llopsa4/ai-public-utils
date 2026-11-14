@@ -129,6 +129,8 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
   },
   handle: async (scene: RoomScene, command: Of<'handle'>): Promise<boolean> => {
     scene.props.swing(command.target);
+    const cue=scene.room.interactionSounds?.[command.target];
+    if(cue)sound[cue]();
     return true;
   },
   wait: async (scene: RoomScene, command: Of<'wait'>): Promise<boolean> => {

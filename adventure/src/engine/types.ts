@@ -144,6 +144,8 @@ export interface RoomDef {
   look?: RoomLook;
   /** Animated set pieces: gauge needle, bubbles, swinging hoist, lantern flames. */
   props?: PropDef[];
+  /** One sound at the handle beat of an interaction; absent for quiet props. Not saved. */
+  interactionSounds?: Readonly<Record<string, 'bell'>>;
   /**
    * The hatch the gallery's fight comes out of: the round opening's centre and radius, where Mara
    * steps back to, and where the creature lands on the floor.

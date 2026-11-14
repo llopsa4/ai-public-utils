@@ -1,0 +1,9 @@
+.archery-test{position:fixed;inset:8% 4%;z-index:10000;overflow:auto;background:#242b29;color:#f4ead0;border:3px solid #bfa177;padding:18px;text-align:center;font-family:inherit}
+.archery-test h2{margin:0 0 12px}.archery-figures{font-size:24px;padding:16px;border-bottom:2px solid #74836d}
+.archery-figures{display:flex;align-items:center;justify-content:center;gap:28px}
+.archery-kofi{display:inline-flex;justify-content:center;align-items:end;width:112px;height:112px;flex:0 0 112px;image-rendering:pixelated}
+.archery-kofi img{width:40px;height:112px;image-rendering:pixelated}
+.archery-kofi.bow-drawn{background-size:224px 112px;background-position:left top;background-repeat:no-repeat}
+.archery-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:14px 0}.archery-test button{background:#e0d2ac;color:#242b29;padding:12px;min-height:48px;border:2px solid #948568;cursor:pointer;font:inherit}
+.archery-cards button{width:155px}.archery-cards small{display:block;margin-top:8px;font-size:13px}.archery-test button:disabled{opacity:.45;cursor:default}.archery-test button:focus-visible{outline:3px solid #ffc26b;outline-offset:2px}
+@media(max-height:540px){.archery-test{inset:1%;padding:8px}.archery-figures{padding:4px}.archery-test p{margin:5px}.archery-cards{margin:6px}.archery-test button{padding:6px}}

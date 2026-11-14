@@ -7,6 +7,58 @@
   background: #100d09;
 }
 .kc.kc-screen { min-height: 100%; }
+
+/* Modal actions stay inside the viewport, including short landscape and larger text. */
+.kc #modal[open] {
+  display: grid;
+  grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+  gap: 0;
+  box-sizing: border-box;
+  max-width: calc(100dvw - 16px);
+  max-height: calc(100dvh - 16px);
+  overflow: hidden;
+  padding: clamp(10px, 2.5vmin, 25px);
+}
+.kc #modal .modal-top { grid-row: 1; gap: 8px; min-width: 0; }
+.kc #modal h2 { grid-row: 2; overflow-wrap: anywhere; }
+.kc #modal .lesson-modal-prompt { grid-row: 3; margin: 4px 0 8px; }
+.kc #modal-body { grid-row: 4; min-height: 0; overflow: auto; overscroll-behavior: contain; }
+.kc #modal-actions { grid-row: 5; flex-shrink: 0; flex-wrap: wrap; gap: 8px; margin-top: 12px; padding-top: 4px; }
+.kc #modal-actions button { min-height: 44px; min-width: 100px; white-space: normal; line-height: 1.2; }
+.kc #modal-actions .modal-primary { color: #171007; background: linear-gradient(#ecd4a7, #bd9556); text-shadow: none; }
+@media (max-height: 420px) {
+  .kc #modal[open] { padding: 8px 12px; }
+  .kc #modal h2 { font-size: 20px; margin: 4px 0; }
+  .kc #modal-actions { margin-top: 6px; }
+}
+
+/* Root supplies a transparent gauntlet-warning asset through --strain-warning-image. */
+.kc .strain-panel { --strain-warning-size: 72px; --strain-warning-top: -8px; --strain-warning-left: 3px; }
+.kc .strain-panel .strain-fire { display: none; }
+.kc .strain-panel:is(.hot, .critical, .overloaded) .strain-gauntlet { visibility: hidden; }
+.kc .strain-panel:is(.hot, .critical, .overloaded)::before {
+  width: var(--strain-warning-size); height: var(--strain-warning-size);
+  left: var(--strain-warning-left); right: auto; top: var(--strain-warning-top);
+  border-radius: 0; box-shadow: none; z-index: 2;
+  background: var(--strain-warning-image) center / contain no-repeat;
+  filter: brightness(.85) saturate(.8) drop-shadow(0 0 5px #a13724);
+  pointer-events: none;
+}
+.kc .strain-panel.critical::before {
+  filter: brightness(1.2) saturate(1.2) drop-shadow(0 0 9px #ec3525);
+  animation: adventure-strain-warning 850ms ease-in-out infinite alternate;
+}
+.kc .strain-panel.overloaded::before {
+  animation: adventure-strain-release 700ms ease-out both;
+  filter: brightness(1.45) saturate(1.2) drop-shadow(0 0 12px #ff3820);
+}
+@keyframes adventure-strain-warning { from { opacity: .8; } to { opacity: 1; } }
+@keyframes adventure-strain-release { from { opacity: 1; scale: 1.06; } to { opacity: .65; scale: 1; } }
+@media (max-height: 520px) {
+  .kc .strain-panel { --strain-warning-size: 32px; --strain-warning-top: -2px; --strain-warning-left: 0px; }
+}
+.reduce-motion .kc .strain-panel:is(.critical, .overloaded)::before { animation: none; }
+@media (prefers-reduced-motion: reduce) { .kc .strain-panel:is(.critical, .overloaded)::before { animation: none; } }
 /* Adventure's three-pose attack: 200 ms approach, 500 ms contact, 200 ms return.
    This continuous animation retains its node/key when the displayed battle updates at contact. */
 .kc .battlefield[data-phase] .hero-art { max-width: none; }

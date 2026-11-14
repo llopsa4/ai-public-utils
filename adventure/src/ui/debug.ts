@@ -10,6 +10,7 @@ import { settings, updateSettings } from '../engine/settings';
 import { applyCommand, newGame } from '../engine/state';
 import type { GameState } from '../engine/types';
 import { roomFlags } from '../engine/roomFlags';
+import { debugFlags, debugItems } from '../engine/debugContent';
 import type { Session } from '../game/session';
 
 const CSS = `
@@ -98,11 +99,12 @@ export function mountDebugPanel(session: Session): void {
     panel.append(el('div', { className: 'row' }, chapterSelect, roomSelect, button('New game', () => session.replaceState(newGame(s.chapter)))));
 
     // Flags: those of the room shown (src/engine/roomFlags.ts), or all the chapter's.
-    const here = roomFlags(c, s.room);
+    const here = debugFlags(c,roomFlags(c, s.room));
+    const activeFlags = debugFlags(c);
     panel.append(el('h2', { textContent: allFlags ? `Flags: all of ${s.chapter}` : `Flags: this room (${s.room})` }));
-    panel.append(el('div', { className: 'row' }, check(`All flags (${c.flags.length})`, allFlags, on => { allFlags = on; render(); })));
+    panel.append(el('div', { className: 'row' }, check(`All flags (${activeFlags.length})`, allFlags, on => { allFlags = on; render(); })));
     const flags = el('div', { className: 'row' });
-    for (const f of allFlags ? c.flags : here) flags.append(check(f, !!s.flags[f], on => change(st => { if (on) st.flags[f] = true; else delete st.flags[f]; })));
+    for (const f of allFlags ? activeFlags : here) flags.append(check(f, !!s.flags[f], on => change(st => { if (on) st.flags[f] = true; else delete st.flags[f]; })));
     if (!allFlags && !here.length) flags.append(el('span', { textContent: 'No story flags in this room.' }));
     panel.append(flags);
 
@@ -118,7 +120,7 @@ export function mountDebugPanel(session: Session): void {
 
     panel.append(el('h2', { textContent: 'Items' }));
     const items = el('div', { className: 'row' });
-    for (const i of c.items) items.append(check(i, s.inventory.includes(i), on => change(st => {
+    for (const i of debugItems(c)) items.append(check(i, s.inventory.includes(i), on => change(st => {
       st.inventory = on ? [...st.inventory, i] : st.inventory.filter(x => x !== i);
     })));
     panel.append(items);

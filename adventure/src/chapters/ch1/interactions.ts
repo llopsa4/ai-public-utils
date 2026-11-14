@@ -3,7 +3,7 @@ import { ashwaysFinale, concernKey, morningAlarm } from './progression';
 import { SECRET_FLAGS } from './flags';
 import { applyRules, cycleLook, type Rule } from '../../engine/rules';
 import type { ActorId, Command, GameState, NpcId, Point, Verb } from '../../engine/types';
-import { say, flag, pose, wait, go, shake, F, NOT } from '../script';
+import { say, flag, pose, wait, go, shake, walk, F, NOT } from '../script';
 
 /**
  * What follows the release: the hatch blows, the fight, Oren's spare gear and his send-off.
@@ -124,6 +124,7 @@ function npcRules(id: NpcId): Rule[] {
 
 /** Chapter 1's click rules, first match wins (src/engine/rules.ts); unmatched clicks get `fallback`. */
 export const RULES: readonly Rule[] = [
+  { target: 'sign', verb: 'use', do: ({state}) => [walk(243,280,'up'),say(state.flags.kilnCold?'line.bellRingCold':'line.bellRing'),say(state.flags.kilnCold?'line.nellBellCold':'line.nellBell','nell')] },
   // ------------------------------------------------------------ secrets ---
   ...Object.entries(SECRETS).flatMap(([target, s]): Rule[] => [
     { target, verb: 'look', when: F(s.flag), do: [say(s.again)] },
@@ -320,6 +321,7 @@ const NPC_KEYS = ['Item', 'Look', 'LookCold', 'LookDown', 'Crouch', 'Lie', 'Stan
 
 /** Every string key that interactions can emit (used by the translation completeness test). */
 export const INTERACTION_KEYS = [
+  'line.bellRing', 'line.bellRingCold', 'line.nellBell', 'line.nellBellCold',
   'line.cellLeaveBroken','line.sweeperDisabled',
   'line.nellLatchAlready','line.nellLatchBeforeFood','line.maraLatchBeforeFood',
   'line.cellEcho','line.corvinSalvage', 'line.maraCorvin', 'line.corvinHelp', 'line.maraCorvinCheck', 'line.corvinAdmits',

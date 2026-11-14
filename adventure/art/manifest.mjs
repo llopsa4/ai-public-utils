@@ -8,6 +8,7 @@
 // Paths are relative to art/src. Sizes are in art pixels (2x the 640x360 world).
 
 /** @typedef {import('./manifest.d.mts').ArtEntry} ArtEntry */
+import kofiTestArt from './kofi-placeholder-manifest.json' with { type: 'json' };
 
 const room = (id, file, subject, light, extra = {}) => ({
   id, kind: 'room', file: `rooms/${file}.png`, webp: true, size: { w: 1280, h: 720 }, anchor: 'top-left',
@@ -189,6 +190,19 @@ for (const [id, outfit, powered] of [
 
 /** @type {ArtEntry[]} */
 export const MANIFEST = [
+  {id:'cursor-work-glove',kind:'icon',file:'ui/cursor-work-glove.png',size:{w:32,h:32},anchor:'none',chapter:'game',status:'final',generator:'Codex ImageGen',subject:'Worn ochre leather pointing work glove; transparent 32px interaction cursor with fingertip hotspot. Source description: art/sources/ui-polish/BRIEF.md.', spec: ["32×32 transparent PNG; click hotspot (3,2). Interaction cursor. See art/sources/ui-polish/BRIEF.md."]},
+  {id:'strain-warning',kind:'icon',file:'ui/strain-warning.png',size:{w:128,h:128},anchor:'none',chapter:'game',status:'final',generator:'Codex ImageGen',subject:'Cream ceramic and brass pressure gauntlet with contained red-hot seams and vents, about to rupture; isolated transparent HUD warning, no surrounding flames. Source description: art/sources/ui-polish/BRIEF.md.', spec: ["128×128 transparent PNG. Strain-meter hot/critical/overloaded gauntlet. See art/sources/ui-polish/BRIEF.md."]},
+  ...kofiTestArt,
+  { id: 'kofi-standing-rig-source', kind: 'pack', file: 'kofi1/characters/kofi-standing-rig/body.png',
+    chapter: 'kofi1', status: 'requested', anchor: 'bottom-centre', generator: 'art/kofi-standing-rig/build.mjs',
+    subject: 'Separate new rig from original standing designs, with fresh profile/underpainting/arms/gear, seventeen registered layers and independent distance-driven renderer. Review only; never replace existing rigs automatically.' },
+  ...['village', 'travel'].map(outfit => ({ id: `kofi-${outfit}-walk-source`, kind: 'pack', file: `kofi1/characters/kofi-${outfit}/walk-side.png`,
+    chapter: 'kofi1', status: 'requested', anchor: 'bottom-centre', generator: 'Codex ImageGen',
+    subject: `Kofi ${outfit} right-facing walk derived from the eleven-piece articulated source pack in art/sources/characters/kofi-${outfit}-layered; supersedes the flat generated strip, not yet installed.` })),
+  { id: 'kofi-travel-source', kind: 'pack', file: 'kofi1/characters/kofi-travel/body.png', chapter: 'kofi1', status: 'requested', anchor: 'bottom-centre', generator: 'Codex ImageGen',
+    subject: 'Kofi travelling: same close-cropped main-character village design, rough wooden folding bow strapped folded along the outside of his leg and a flat quiver tight on his back. Source design before sprite preparation.' },
+  { id: 'kofi-village-source', kind: 'pack', file: 'kofi1/characters/kofi/body.png', chapter: 'kofi1', status: 'requested', anchor: 'bottom-centre', generator: 'Codex ImageGen',
+    subject: 'Kofi, fit Black man about 27, very short close-cropped hair, minimal practical hide and woven-cloth woodland work clothing with restrained animal fur, goat-bell charm; no hood or medieval archer tunic. Base village design; travel and animation sheets pending.' },
   // Backdrops behind the chapters' opening cards: crops of each chapter's first room (art/intro-cards.mjs).
   ...[['intro', 'intro', "Silas's cell window with its moonbeam"], ['ch1', 'ch1', "The kiln hall's three glowing kiln mouths"], ['ch2', 'ch2', 'The tunnel mouth at dusk']].map(([card, chapter, subject]) => ({
     id: `intro-card-${card}`, kind: 'prop', file: `intro-cards/${card}.webp`, size: { w: 480, h: 270 }, anchor: 'top-left',
@@ -210,7 +224,7 @@ export const MANIFEST = [
   // The notebook's world map (src/content/world.ts): painted without lettering; the game writes the names and the marker.
   { id: 'world-map', kind: 'map', file: 'ui/world-map.png', webp: true, size: { w: 1000, h: 700 }, anchor: 'none', chapter: 'game', status: 'final', generator: 'Codex',
     subject: "A coloured engraved atlas (Codex, 2026-11-10, chosen over moonlit and grey-engraved versions: warm brown land, Ironhaven on a snowy mountain, a blue river, dark forests, copper roofs; same places), of an invented world map: one continent split north to south by the Rift, a deep jagged chasm crossed by a single bridge (Spanwick) at its middle; west of it the grey ash plains around Cinderfold, low foundry hills, and a snowy north with a walled town (Ironhaven); east of it a river with waterwheels (Alderweir), a forest in the south-east, a large old hearth-works further east (the First Hearth), and mountains in the north-east with a lone hut. A dotted road runs from Cinderfold east over the bridge. Follow the layout image exactly: every place sits where its mark is. No words, letters or labels anywhere (the game writes them)." },
-  {"id": "regulator-closeup-housing", "kind": "prop", "file": "props/regulator-closeup-housing.png", "size": {"w": 512, "h": 320}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup housing"},
+  {"id": "regulator-closeup-housing", "kind": "prop", "file": "props/regulator-closeup-housing.png", "size": {"w": 512, "h": 320}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "Front-facing cracked cream-ceramic regulator housing with aged brass and soot-dark mounting, 512×320. Separate bolt sockets at (162,138)/(350,138), vent (351,231), dial (256,43), and ring (256,186). See art/sources/ui-polish/BRIEF.md for animation and installation registration.", spec: ["512×320 opaque PNG, anchor none: a dialog board. Movable parts stay separate; see art/sources/ui-polish/BRIEF.md for sockets, animation and registration."]},
   {"id": "regulator-closeup-ring", "kind": "prop", "file": "props/regulator-closeup-ring.png", "size": {"w": 160, "h": 160}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup ring"},
   {"id": "regulator-closeup-bolt", "kind": "prop", "file": "props/regulator-closeup-bolt.png", "size": {"w": 48, "h": 48}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup bolt"},
   {"id": "regulator-closeup-valve", "kind": "prop", "file": "props/regulator-closeup-valve.png", "size": {"w": 80, "h": 80}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup valve"},
@@ -257,6 +271,12 @@ export const MANIFEST = [
     subject: 'Tobi, a young boy with tousled dark curls, patched teal tunic, brown trousers and a chalk stub. He draws by the firing-house hearth and offers Mara his orange scarf.' },
   { id: 'portrait-tobi', kind: 'portrait', file: 'portraits/tobi.png', anchor: 'none', moods: ['neutral', 'worried'], chapter: 'ch1', status: 'placeholder', generator: 'rig.mjs', subject: "Tobi's head and shoulders." },
   extra('extra-stoker', 'Hollis, the stoker: an older, broad worker with a cap and a shovel.', 218, 'oren'),
+  ...['ash-collector', 'shard-sorter'].map(id => ({
+    id: `extra-${id}`, kind: 'extra', file: `characters/extra-${id}.png`, sheet: `characters/extra-${id}.json`,
+    webp: true, frame: { w: 256, h: 256 }, anchor: 'bottom-centre', chapter: 'ch1', status: 'final',
+    generator: 'cinderfold-machines.mjs', tags: ['stand_side', 'stand_up', 'stand_down', 'walk_side', 'walk_up', 'walk_down', 'work', 'reach', 'park'],
+    subject: id === 'ash-collector' ? 'A knee-high tracked ash collector helping Hollis, with scoop and tipping hopper.' : 'A low six-legged ceramic shard sorter helping Dace, with two pincer tools.',
+  })),
   extra('extra-tally', 'Ansel, the old tally-keeper: hooded, with a slate and chalk.', 206, 'oren'),
   extra('extra-hauler', 'Dace, the clay hauler: strong, kerchief, carries clay sacks.', 224, 'mara'),
   extra('extra-runner', 'Pip, a child errand-runner: cap, quick and scruffy.', 150, 'mara'),
@@ -356,9 +376,9 @@ export const MANIFEST = [
   { id: 'battle-enemy-rig', kind: 'battle-portrait', file: 'kc/ash-sweeper.webp', anchor: 'bottom-centre', width: 768, chapter: 'ch2', status: 'placeholder', generator: 'kc.mjs',
     subject: "Bryn's training rig: a caged brush drum on a sprung frame that swings back at whoever strikes it." },
   // ------------------------------------------------ the intro: Silas's escape from Ironhaven's cells ---
-  { ...room('room-cell', 'cell', "A cell in Ironhaven's prison at night, with Silas's hooded cloak hanging on its nail in the corridor, seen side-on: on Silas's side (left two thirds), a straw cot with a ragged blanket (left), a dented tin plate with a crust on the floor beside it, a small barred window high in the wall with a thread of moonlight, a weeping patch of wall where plaster flakes away, a bucket; then the iron bars with their door (centre right, at x 732-812). Beyond the bars, a stone corridor: the guard's table with a stub of candle and a cup (the mask frame lies on it, drawn separately), the duty roster pinned on the wall with a sketch of Sergeant Harrow, the guard's chair, and stone stairs going up at the far right.", 'Cold blue moonlight from the window (left); one warm candle pool on the table beyond the bars (right). The game darkens the room until Silas throws the moonlight across it, so paint it as seen lit.'), file: 'intro/rooms/cell.png', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/cell-cloak)' },
+  { ...room('room-cell', 'cell', "Ironhaven’s prison cell at night in its approved gentle three-quarter cage view: a cot and ragged blanket, high barred window, bucket and plate inside the cage; the small gate opens in the front bars, with the cage’s right side receding toward the back wall. Beyond it stand the guard’s table, candle, cup and Harrow portrait; Silas’s hooded cloak hangs on its nail. The table stub, fallen floor tallow, mask frame, plate placements, cage and gate are separate layers. The stairwell itself is offscreen to the right; only its doorway light lies on the floor. Preserve the approved painting and cage perspective.", 'Cold blue moonlight from the window (left); one warm candle pool on the table beyond the bars (right). The game darkens the room until Silas throws the moonlight across it, so paint it as seen lit.'), file: 'intro/rooms/cell.png', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/cell-cloak)' },
   { ...room('room-cell-bare', 'cell-bare', "The same cell painting with the cloak gone from its nail (shown once Silas takes it back); identical everywhere else.", 'As room-cell.'), file: 'intro/rooms/cell-bare.png', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/cell-cloak)' },
-  { ...room('room-guardroom', 'guardroom', "The guardroom at the top of the prison stairs: the stairs going down at the left edge, a peg with a grey clerk's hood, a shelf with a thick red tally ledger, a black iron stove with its door glowing in the middle, the guard's desk (right of centre), and an iron grate at the right edge opening onto the snowy night.", 'Warm orange light from the stove (centre); cold blue night through the grate (right).'), file: 'intro/rooms/guardroom.png', chapter: 'intro', generator: 'intro.mjs' },
+  { ...room('room-guardroom', 'guardroom', "The guardroom above the prison cells: the return stairway at the left edge, an empty shelf for the separately drawn red tally ledger, a black iron stove in the middle, Kell’s desk left of the stove, and the iron grate at the right edge opening onto the snowy night. The clerk’s hood is not on a peg. Three wall torches and their runtime flames light the room; the ledger disappears when collected.", 'Warm orange light from the stove (centre); cold blue night through the grate (right).'), file: 'intro/rooms/guardroom.png', chapter: 'intro', generator: 'intro.mjs' },
   { ...room('room-prison-door', 'prison-door', "Outside Ironhaven's prison at night: a small heavy door with a lantern (left) in a black stone wall with crenellations, snow on the ground and falling, the city's iron roofs faint in the distance.", 'Cold blue night; the lantern by the door the one warm light.'), file: 'intro/rooms/prison-door.png', chapter: 'intro', generator: 'intro.mjs' },
   ...[
     ['silas', 'Silas, the con man.', 220],
@@ -379,8 +399,8 @@ export const MANIFEST = [
     ['strip', 'A long strip torn from a grey blanket.'], ['hookLine', 'The bent nail tied to the end of a blanket strip, like a fishing line.'],
     ['frame', "Nessa's mask frame: a thin articulated brass frame of ribs and tiny hinges, shaped to sit under a face mask."],
     ['plaster', 'A few grey flakes of damp wall plaster.'], ['wetPlaster', 'A grey lump of plaster gone soft with water.'],
-    ['putty', 'A ball of grey putty: plaster kneaded into bread.'],
-    ['maskHarrow', "The Harrow mask: a crude grey plaster-and-bread face (heavy jaw, pouched eyes, a bristling hair moustache) moulded on the brass frame."],
+    ['putty', 'Soft mask putty made from fallen candle wax kneaded into bread.'],
+    ['maskHarrow', "The Harrow mask: a crude wax-and-bread face (heavy jaw, pouched eyes, a bristling hair moustache) moulded on the brass frame."],
     ['keys', 'An iron key ring with three heavy keys.'], ['hood', "A drab grey clerk's hood."], ['ledger', 'A thick red tally ledger.'],
     ['maskClerk', "The clerk's guise: the grey hood folded over the red ledger."],
   ].map(([id, subject]) => ({ ...item(id, subject), file: `intro/items/${id}.png`, chapter: 'intro', generator: 'intro.mjs' })),
@@ -447,7 +467,7 @@ for (const e of MANIFEST) if (e.kind === 'object' && OBJECT_FRAMES[e.id]) e.fram
 import { CARDS, CAST, DESCRIPTIONS, GEAR, GEAR_TIERS, LIGHTS } from './descriptions.mjs';
 const WHO = {
   'char-mara': CAST.mara, 'char-mara-gauntlet': `${CAST.mara} ${CAST.maraLit}`, 'char-oren': CAST.oren, 'char-nell': CAST.nell, 'char-bryn': CAST.bryn,
-  'char-silas': CAST.silas, 'char-silas-harrow': CAST.silasHarrow, 'char-silas-clerk': CAST.silasClerk,
+  'char-silas': CAST.silas, 'char-silas-harrow': CAST.silasHarrow.replace('grey plaster-and-bread', 'wax-and-bread'), 'char-silas-clerk': CAST.silasClerk,
   'char-guard': CAST.guardCell, 'char-warden': CAST.guardStairs, 'char-sigrid': CAST.sigrid,
   'extra-stoker': CAST.hollis, 'extra-tally': CAST.ansel, 'extra-hauler': CAST.dace, 'extra-runner': CAST.pip,
   'extra-hoist': CAST.wren, 'extra-kid': CAST.bea, 'extra-merchant': CAST.corvin,
@@ -517,7 +537,7 @@ MANIFEST.push(
     ['On a 1536x1024 landscape transparent canvas (or flat magenta), the same scale as the master, lying on y 990.', `Match ${MARA_PACK}lie.png.`]),
   // The masks: overlay layers the game stacks over his head and arms in every pose.
   ...[['stand', 'master.png'], ['kneel', 'kneel.png'], ['lie', 'lie.png']].flatMap(([pose, over]) => [
-    piece(`mask-harrow-${pose}`, 2, `${CAST.silasHarrow} Only the mask itself, on its own layer: the grey plaster-and-bread face with Harrow's heavy jaw, pouched eyes and broom moustache of Silas's hair, the brass frame's rivets at the temples; nothing else of Silas.`,
+    piece(`mask-harrow-${pose}`, 2, `${CAST.silasHarrow} Only the mask itself, on its own layer: the wax-and-bread face with Harrow's heavy jaw, pouched eyes and broom moustache of Silas's hair, the brass frame's rivets at the temples; nothing else of Silas.`,
       [pose === 'lie' ? 'On the 1536x1024 canvas of lie.png, exactly over his face there.' : `On the 1024x1536 canvas of ${over}, exactly over his face there.`, 'Transparent everywhere else: the game draws it on top of Silas in this pose.']),
     piece(`mask-clerk-hood-${pose}`, 2, `${CAST.silasClerk} Only the drab grey clerk's hood, on its own layer, pulled up over his head and forward over his brow.`,
       [pose === 'lie' ? 'On the 1536x1024 canvas of lie.png, exactly over his head there.' : `On the 1024x1536 canvas of ${over}, exactly over his head there.`, 'Transparent everywhere else: the game draws it on top of Silas in this pose.']),

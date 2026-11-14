@@ -1,6 +1,6 @@
 # Claude ↔ Codex instructions
 
-- `art/CODEX.md` is the only instruction inbox. Claude writes all new Codex tasks there; do not create separate NEXT or FIXES files.
+- `art/CODEX.md` is the only instruction inbox. Ownership follows the active switch in `WORKLOG.md`; Codex currently handles the whole project. Do not create separate NEXT or FIXES files.
 - Codex removes each instruction after completing it, leaving unfinished instructions in place. An empty file means there are no queued instructions.
 - Generated art briefs and `art/briefs/CATALOG.md` are reference material, not a task queue. Generators must never overwrite `art/CODEX.md`.
 - `CLAUDE-INBOX.md` is the only queue the other way: Codex writes tasks for Claude there (same rules: Claude removes each when done). Do not create other handoff files at the root; a delivery's own `art/inbox/<folder>/HANDOFF.md` is fine, with an entry in `CLAUDE-INBOX.md` pointing to it.
@@ -8,6 +8,10 @@
 - Once a delivery from `art/inbox/` is installed, the agent who installed it moves its folder to `art/inbox/done/` (the inbox is git-ignored and local; nothing is deleted).
 
 # Working at the same time (one checkout)
+
+For chapter reference work, read this file, `WORKLOG.md`, the reference pointers in `art/CODEX.md`,
+then the chapter index before following individual room, puzzle-target and object briefs.
+See `art/REFERENCES.md` for authoritative sources and scoped regeneration commands.
 
 Claude and Codex may work in this folder at the same moment.
 

@@ -1,0 +1,70 @@
+{
+  "frames": [
+    {
+      "filename": "frame0",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 136,
+        "h": 64
+      },
+      "duration": 250,
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 136,
+        "h": 64
+      },
+      "sourceSize": {
+        "w": 136,
+        "h": 64
+      }
+    },
+    {
+      "filename": "frame1",
+      "frame": {
+        "x": 136,
+        "y": 0,
+        "w": 136,
+        "h": 64
+      },
+      "duration": 250,
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 136,
+        "h": 64
+      },
+      "sourceSize": {
+        "w": 136,
+        "h": 64
+      }
+    }
+  ],
+  "meta": {
+    "image": "prop-river-groundHomes.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "idle",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "done",
+        "from": 1,
+        "to": 1,
+        "direction": "forward"
+      }
+    ]
+  }
+}

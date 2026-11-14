@@ -50,11 +50,11 @@ test('Dace kneels at the broken pottery without hauling, wandering or taking bre
   assert.equal(dace.carryBetween, undefined, 'no remaining clay delivery bookkeeping');
 });
 
-test('crowds are in the kiln hall (four workers), the firing house (two kids) and the ashways (the peddler)', () => {
+test('crowds are in the kiln hall (four people and two machines), the firing house (two kids) and the ashways (the peddler)', () => {
   assert.deepEqual(Object.keys(CROWDS).sort(), ['ashways', 'firingHouse', 'maraRoom']);
   assert.equal(CROWDS.ashways.extras.length, 1);
   assert.ok(CROWDS.ashways.extras[0].shop);
-  assert.equal(CROWDS.maraRoom.extras.length, 4);
+  assert.equal(CROWDS.maraRoom.extras.length, 6);
   assert.equal(CROWDS.firingHouse.extras.length, 2);
   assert.equal(new Set(EXTRAS.map(e => e.id)).size, EXTRAS.length, 'nobody is in two rooms');
 });
@@ -96,8 +96,9 @@ test('every crowd line exists', () => {
   for (const key of crowdKeys()) assert.ok(TABLES.en[key], `missing string: ${key}`);
 });
 
-test('half the kiln hall leaves for good when the kiln goes cold; the kids stay', () => {
-  assert.equal(HALL.extras.filter(e => e.leavesWhenCold).length, HALL.extras.length / 2);
+test('two human workers leave when the kiln goes cold; the machines and kids stay', () => {
+  assert.equal(HALL.extras.filter(e => e.leavesWhenCold).length, 2);
+  assert.ok(HALL.extras.filter(e => e.machine).every(e => !e.leavesWhenCold));
   assert.ok(CROWDS.firingHouse.extras.every(e => !e.leavesWhenCold));
 });
 
@@ -109,7 +110,7 @@ test('during the alarm the kids go to Nell; the kiln hall carries on as usual', 
       assert.ok(Math.hypot(s.x - nell.x, s.y - nell.y) < 40, `${kid.id} stays close to Nell`);
     }
   }
-  for (const worker of HALL.extras) assert.equal(routineFor(worker, 'alarm'), worker.routines.warm);
+  for (const worker of HALL.extras.filter(e => !e.machine)) assert.equal(routineFor(worker, 'alarm'), worker.routines.warm);
 });
 
 test('every background sheet has the tags the crowd plays', () => {

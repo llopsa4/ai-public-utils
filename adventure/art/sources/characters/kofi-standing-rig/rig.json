@@ -1,0 +1,113 @@
+{
+  "version": "kofi-standing-v1",
+  "canvas": [
+    1024,
+    1536
+  ],
+  "sourceHeight": 1420,
+  "ground": 1481,
+  "anchor": 482,
+  "stride": 280,
+  "lift": 36,
+  "joints": {
+    "nearShoulder": [
+      390,
+      400
+    ],
+    "nearElbow": [
+      370,
+      550
+    ],
+    "farShoulder": [
+      550,
+      405
+    ],
+    "farElbow": [
+      570,
+      565
+    ],
+    "nearHip": [
+      430,
+      820
+    ],
+    "farHip": [
+      535,
+      820
+    ],
+    "nearKnee": [
+      410,
+      1085
+    ],
+    "farKnee": [
+      535,
+      1070
+    ],
+    "nearAnkle": [
+      395,
+      1370
+    ],
+    "farAnkle": [
+      530,
+      1350
+    ]
+  },
+  "soles": {
+    "near": {
+      "heel": [
+        348,
+        1478
+      ],
+      "mid": [
+        439,
+        1481
+      ],
+      "toe": [
+        550,
+        1480
+      ]
+    },
+    "far": {
+      "heel": [
+        490,
+        1445
+      ],
+      "mid": [
+        592,
+        1450
+      ],
+      "toe": [
+        696,
+        1440
+      ]
+    }
+  },
+  "idleAnchors": {
+    "village": 495,
+    "travel": 495
+  },
+  "idleBaselines": {
+    "village": 1494,
+    "travel": 1494
+  },
+  "order": [
+    "quiver",
+    "farUpperArm",
+    "farForearm",
+    "wrapBack",
+    "farThigh",
+    "farShin",
+    "farFoot",
+    "nearThigh",
+    "nearShin",
+    "nearFoot",
+    "torso",
+    "wrapFront",
+    "belt",
+    "bow",
+    "nearUpperArm",
+    "fur",
+    "nearForearm"
+  ],
+  "provenance": "New source artwork and independent renderer. Original standing designs only. No existing rig dependency.",
+  "facing": "right only; opposite-facing asymmetry requires separately drawn sources"
+}

@@ -26,6 +26,7 @@
     "check": "node scripts/tests.mjs check",
     "e2e": "node scripts/tests.mjs e2e",
     "art:briefs": "tsx scripts/art-briefs.ts",
+    "art:kofi-placeholders": "tsx scripts/kofi-placeholders.ts",
     "art:import": "node art/import.mjs",
     "art:outlines": "python art/outlines.py"
   },

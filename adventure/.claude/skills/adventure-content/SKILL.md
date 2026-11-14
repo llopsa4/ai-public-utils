@@ -43,7 +43,7 @@ Check every new or changed chapter against all five. If one is missing, propose 
 - **Walkable areas** are an outer polygon plus obstacle `holes` under furniture and standing characters. Every `walkTo` and every entry must be inside the walkable area. The pathfinding test checks this.
 - **Depth:** sprites sort by their foot y. Set `depth` only for things that sit *inside* another object.
 - **Coordinates** are logical 640×360 pixels with the origin at the top left. Objects and actors are anchored at the bottom centre.
-- **Story:** follow Kiln Courier's `STORY.md` guardrails: needs and feelings without formula speech, no villains, everyday warmth and humour. Mara is he/him. Publish only what the user has cleared (currently scene 1 and its two mysteries). Keep lines short: speech wraps at 60% of the screen width.
+- **Story:** follow the guardrails in `STORY.md` (this folder; private and git-ignored, never commit or publish it): needs and feelings without formula speech, no villains, everyday warmth and humour. Mara is he/him. Publish only what the user has cleared (currently scene 1 and its two mysteries). Keep lines short: speech wraps at 60% of the screen width.
 - **No backend:** no fetch to servers. Progress persists in one localStorage autosave slot and through save export/import. A new flag or item changes the save format: bump `SAVE_VERSION` in `saveFile.ts` and keep older versions loading where possible.
 
 ## Finish every change with

@@ -1,0 +1,102 @@
+{
+  "frames": [
+    {
+      "filename": "frame0",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 80,
+        "h": 224
+      },
+      "duration": 250,
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 80,
+        "h": 224
+      },
+      "sourceSize": {
+        "w": 80,
+        "h": 224
+      }
+    }
+  ],
+  "meta": {
+    "image": "kofi-test-hero.png",
+    "size": {
+      "w": 80,
+      "h": 224
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "stand_side",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "stand_up",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "stand_down",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "walk_side",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "walk_up",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "walk_down",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "blink_side",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "blink_up",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "blink_down",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "crouch",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "dead",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      }
+    ]
+  }
+}

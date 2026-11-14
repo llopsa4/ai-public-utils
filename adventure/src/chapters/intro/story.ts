@@ -5,6 +5,14 @@ import { say } from '../script';
 const unset = (...flags: string[]): Command[] => flags.map(flag => ({ type: 'setFlag', flag, value: false }));
 const count = (s: GameState, p: 'g' | 'w') => [1, 2, 3].filter(n => s.flags[`${p}Sus${n}`]).length;
 
+/** The same scripted exit is used after speaking and when resuming a completed conversation. */
+const SIGRID_DEPARTURE:Command[]=[
+  { type: 'step', actor: 'sigrid', to: { x: 700, y: 304 }, face: 'right', together: true },
+  { type: 'step', actor: 'hero', to: { x: 740, y: 304 }, face: 'right' },
+  { type: 'wait', ms: 400 },
+  { type: 'chooseChapter', reveal: 'ashlands' },
+];
+
 /**
  * Caught: the deception falls apart. Silas has only played it through in his head (that is how it
  * would go), so the confrontation starts again from its checkpoint, the suspicion forgotten.
@@ -43,6 +51,7 @@ export const STORY: StoryRules = {
   ambience: [{ room: 'outerDoor', pick: 'wind' }],
   defaultAmbience: 'kiln',
   hush: [{ room: 'cell' }],
+  playerInputLock: [{room:'outerDoor'}],
   crowdMood: [],
   crowdReactsTo: [],
   onEnter: [{
@@ -56,6 +65,9 @@ export const STORY: StoryRules = {
   }, {
     room: 'guardroom', if: [{ notFlag: 'sawWarden' }],
     run: () => [{ type: 'setFlag', flag: 'sawWarden', value: true }, { type: 'wait', ms: 400 }, say('line.i.warden1'), say('line.i.warden2')],
+  }, {
+    room: 'outerDoor', if: [{ flag: 'metSigrid' }],
+    run: () => [...SIGRID_DEPARTURE],
   }, {
     room: 'outerDoor', if: [{ notFlag: 'metSigrid' }],
     run: () => [{ type: 'wait', ms: 600 }, { type: 'walk', to: { x: 280, y: 304 }, face: 'right' }, { type: 'dialogue', id: 'sigrid' }],
@@ -78,12 +90,7 @@ export const STORY: StoryRules = {
     if (id === 'warden') return [{ type: 'face', actor: 'warden', face: 'right' }];
     // "Walk with me": Silas walks off towards the snow with Sigrid at his side, both on out of the
     // picture at the right; then the camera pulls back into the Ashlands reveal.
-    if (id === 'sigrid' && s.flags.metSigrid) return [
-      { type: 'step', actor: 'sigrid', to: { x: 700, y: 304 }, face: 'right', together: true },
-      { type: 'step', actor: 'hero', to: { x: 740, y: 304 }, face: 'right' },
-      { type: 'wait', ms: 400 },
-      { type: 'chooseChapter', reveal: 'ashlands' },
-    ];
+    if (id === 'sigrid' && s.flags.metSigrid) return [...SIGRID_DEPARTURE];
     return [];
   },
   // The eye shows while someone is being deceived face to face.

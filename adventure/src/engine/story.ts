@@ -42,6 +42,8 @@ export interface StoryRules {
   /** The hero's shown name and portrait (a mask's persona); without a match, the chapter hero's. */
   heroName?: StoryPick<string>[];
   heroPortrait?: StoryPick<string>[];
+  /** Reserve player movement/actions for a story encounter; scripted commands still run. */
+  playerInputLock?: StoryWhen[];
   /** What happens once a conversation ends, given how it went (a guard too suspicious: caught). */
   afterDialogue?: (id: string, state: GameState) => Command[];
   /** How suspicious the person being deceived is, 0 to 3 (the eye above the satchel); null hides it. */
@@ -96,6 +98,10 @@ export function heroIdentityFor(story: StoryRules, ctx: StoryContext, base: { na
 
 export function guided(story: StoryRules, ctx: StoryContext): boolean {
   return story.guided.some(w => holds(w, ctx));
+}
+
+export function playerInputLocked(story:StoryRules,ctx:StoryContext):boolean{
+  return story.playerInputLock?.some(when=>holds(when,ctx))??false;
 }
 
 /** The commands to run on entering the room (the first matching rule's), else none. */

@@ -1,0 +1,21 @@
+{
+  "image": "walk-village.png",
+  "frameSize": [
+    256,
+    256
+  ],
+  "anchor": [
+    128,
+    251
+  ],
+  "tags": {
+    "walk_right": [
+      0,
+      15
+    ]
+  },
+  "sourceDistancePerFrame": 17.5,
+  "renderedDistancePerFrame": 2.8098591549295775,
+  "previewMsPerFrame": 50,
+  "note": "Advance by distance travelled, not preview time. No left-facing mirror or runtime installation."
+}

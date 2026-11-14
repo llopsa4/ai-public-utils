@@ -1,0 +1,161 @@
+{
+  "version": 1,
+  "outfit": "casual",
+  "canvas": {
+    "width": 1024,
+    "height": 1536
+  },
+  "height": 232,
+  "baseline": 1493,
+  "sourceHeight": 1442,
+  "overlap": 25,
+  "order": [
+    "farUpperArm",
+    "farForearm",
+    "farThigh",
+    "farShin",
+    "farBoot",
+    "nearThigh",
+    "nearShin",
+    "nearBoot",
+    "torso",
+    "nearUpperArm",
+    "nearForearm"
+  ],
+  "joints": {
+    "nearShoulder": [
+      395,
+      438
+    ],
+    "nearElbow": [
+      359,
+      570
+    ],
+    "farShoulder": [
+      550,
+      430
+    ],
+    "farElbow": [
+      604,
+      655
+    ],
+    "nearHip": [
+      435,
+      805
+    ],
+    "farHip": [
+      545,
+      805
+    ],
+    "nearKnee": [
+      400,
+      1050
+    ],
+    "farKnee": [
+      545,
+      1050
+    ],
+    "nearAnkle": [
+      335,
+      1355
+    ],
+    "farAnkle": [
+      565,
+      1345
+    ]
+  },
+  "eyes": [
+    {
+      "x": 558,
+      "y": 138,
+      "rx": 8,
+      "ry": 3,
+      "skinAt": [
+        553,
+        149
+      ],
+      "blinkRy": 7,
+      "lashTop": -1,
+      "lashBottom": 5
+    }
+  ],
+  "face": {
+    "mouth": {
+      "x": 581,
+      "y": 194,
+      "rx": 9,
+      "ry": 3
+    },
+    "brows": [
+      {
+        "x0": 535,
+        "x1": 568,
+        "y0": 117,
+        "y1": 128,
+        "inner": "right"
+      }
+    ]
+  },
+  "portrait": [
+    360,
+    45,
+    300,
+    300
+  ],
+  "ember": null,
+  "walk": {
+    "frames": 8,
+    "contactFrames": [
+      0,
+      4
+    ],
+    "hipSwing": 16,
+    "armSwing": 18,
+    "lift": 45,
+    "strideSource": 320,
+    "torsoLeanDegrees": 2,
+    "widthScale": 1,
+    "footRollDegrees": 12,
+    "hipSwayDegrees": 1,
+    "torsoSwayDegrees": 0.7,
+    "weightDrop": 4,
+    "transitionMs": 90,
+    "footCentre": -40,
+    "liftEarly": 0.5,
+    "soles": {
+      "near": {
+        "heel": [
+          280,
+          1492
+        ],
+        "toe": [
+          476,
+          1492
+        ]
+      },
+      "far": {
+        "heel": [
+          529,
+          1475
+        ],
+        "toe": [
+          748,
+          1475
+        ]
+      }
+    },
+    "calibration": "Kofi: grounded practical gait, restrained arm swing, low foot clearance; source anatomy and joint lengths remain fixed. Both forearms include the complete hands and pivot at the elbow."
+  },
+  "attachments": {
+    "bow": {
+      "file": "bow.png",
+      "parent": "nearThigh",
+      "note": "Rigid; follows thigh rotation, never bent at the knee."
+    },
+    "quiver": {
+      "file": "quiver.png",
+      "parent": "torso",
+      "note": "Rigid against back; no independent pendulum swing."
+    }
+  }
+}

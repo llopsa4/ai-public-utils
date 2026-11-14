@@ -1,39 +1,45 @@
 # silas-mask-clerk-ledger
 
-Status: **requested** · pack · chapter intro · kept in `art/sources/characters/silas-layered/mask-clerk-ledger.png`
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter intro. -->
+
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `silas-mask-clerk-ledger` · pack · **visual** · requested
+
+## Description
+
+The tally clerk's thick red ledger, held in Silas's near hand against his chest.
 
 ## What the game does with it
 
-Phase 2 of Silas's articulated pack (art/LAYERED-RIG.md), made from the approved Phase 1 master: the game rigs his walk, kneeling and lying from these pieces (as for Mara), and draws his masks over him in every pose.
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — The tally clerk's thick red ledger, held in Silas's near hand against his chest. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/../sources/characters/silas-layered/mask-clerk-ledger.png. Status: requested. No new artwork is produced by reference generation.
+
+On the 1024x1536 canvas of nearForearm.png, in the hand of that layer, so it moves with the forearm as he walks.
+
+Transparent everywhere else.
 
 ## Technical
 
-- File: `art/inbox/silas-layered/mask-clerk-ledger.png`.
-- On the 1024x1536 canvas of nearForearm.png, in the hand of that layer, so it moves with the forearm as he walks.
-- Transparent everywhere else.
+- Canvas: **1024×1536 art px**. Image tile anchor; preserve dimensions and registration across states.
+- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
+- Files: `art/inbox/silas-mask-clerk-ledger.png`.
 
 ## Prompt for Codex
 
-```text
-Draw for the game The Rift: Ashlands: The tally clerk's thick red ledger, held in Silas's near hand against his chest.
-Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
-World: the Ashlands, an industrial-fantasy land: kiln villages of fired clay and cream ceramic plates in the ash country, and Ironhaven, a hard city of iron, stone and snow; brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
-Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
-Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).
-Proportions: true to the cast (art/style/scale.png): Mara is 232 px, a doorway about 328, a table top 104, a chair seat 48.
-Light: evenly lit with soft form shading and no strong cast light (the game lights it to match the room).
-Facing right (the game mirrors it to face left). Same look as Mara's pack: the same line, shading, pixel density and palette.
-File: art/inbox/silas-layered/mask-clerk-ledger.png.
-On the 1024x1536 canvas of nearForearm.png, in the hand of that layer, so it moves with the forearm as he walks.
-Transparent everywhere else.
-```
+The tally clerk's thick red ledger, held in Silas's near hand against his chest. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
 
-## Attach
+## Attach / references
 
-- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
-- `art/sources/characters/mara-casual-layered/` (Mara's pack: the format to match, piece by piece) and `art/LAYERED-RIG.md` (the pack contract)
-- the approved Phase 1 pictures: `art/inbox/silas-layered/master.png` and `idle.png`
+[art/manifest.mjs](../manifest.mjs) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-## Then
-
-Save it as `art/inbox/silas-layered/mask-clerk-ledger.png`. Do **not** run `npm run art:import` for this folder: Claude brings it into `art/sources/characters/silas-layered/`, measures its joints (rig.json) and rigs it. Report which pieces are in.
+Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)

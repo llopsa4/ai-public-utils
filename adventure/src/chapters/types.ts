@@ -47,12 +47,17 @@ export interface Chapter {
   end?: { title: string; text: string };
   /** The chapter's art, loaded with it in the browser (later chapters; chapter 1's is the game's). */
   art?: () => Promise<void>;
+  /** Optional viewpoint-specific battle rules; absent uses Mara's gauntlet deck. */
+  battleMode?: 'archery';
   /** Extra scenes the chapter plays (the intro's Ashlands reveal), built with the game's Phaser. */
   scenes?: Record<string, (phaser: typeof PhaserType, stage: { ART_SCALE: number; LOGICAL_W: number; LOGICAL_H: number }) => typeof PhaserType.Scene>;
   rooms: Record<string, RoomDef>;
   /** Story flags saves accept for this chapter. */
   flags: readonly string[];
   items: readonly string[];
+  /** Save compatibility only; hidden from the active debug authoring controls. */
+  legacyItems?: readonly string[];
+  legacyFlags?: readonly string[];
   /** Items Mara takes into the next chapter. */
   keptItems: readonly string[];
   /** Optional finds counted in the notebook. */
@@ -87,6 +92,8 @@ export interface Chapter {
   spares: readonly string[];
   /** The day, time, place and viewpoint (title card, notebook, diary). */
   when: ChapterWhen;
+  /** A historical prologue's date instead of a numbered story day. */
+  dateLabel?: string;
   /** Who is played; absent means Mara. */
   hero?: ChapterHero;
   /** Where the chapter's pin sits on the chapter map (a place in src/content/world.ts). */

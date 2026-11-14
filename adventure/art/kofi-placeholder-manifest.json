@@ -1,0 +1,3715 @@
+[
+  {
+    "id": "kofi-room-tsalohi",
+    "kind": "room",
+    "file": "kofi1-test/room-tsalohi.png",
+    "size": {
+      "w": 1280,
+      "h": 720
+    },
+    "anchor": "top-left",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: room-tsalohi. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "kofi-room-camp",
+    "kind": "room",
+    "file": "kofi1-test/room-camp.png",
+    "size": {
+      "w": 1280,
+      "h": 720
+    },
+    "anchor": "top-left",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: room-camp. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "kofi-room-river",
+    "kind": "room",
+    "file": "kofi1-test/room-river.png",
+    "size": {
+      "w": 1280,
+      "h": 720
+    },
+    "anchor": "top-left",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: room-river. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "kofi-room-clearing",
+    "kind": "room",
+    "file": "kofi1-test/room-clearing.png",
+    "size": {
+      "w": 1280,
+      "h": 720
+    },
+    "anchor": "top-left",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: room-clearing. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "kofi-room-forest",
+    "kind": "room",
+    "file": "kofi1-test/room-forest.png",
+    "size": {
+      "w": 1280,
+      "h": 720
+    },
+    "anchor": "top-left",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: room-forest. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "kofi-room-hut",
+    "kind": "room",
+    "file": "kofi1-test/room-hut.png",
+    "size": {
+      "w": 1280,
+      "h": 720
+    },
+    "anchor": "top-left",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: room-hut. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "kofi-test-hero",
+    "kind": "character",
+    "file": "kofi1-test/kofi-test-hero.png",
+    "size": {
+      "w": 80,
+      "h": 224
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: kofi-test-hero. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/kofi-test-hero.json",
+    "height": 224,
+    "tags": [
+      "stand_side",
+      "stand_up",
+      "stand_down",
+      "walk_side",
+      "walk_up",
+      "walk_down",
+      "blink_side",
+      "blink_up",
+      "blink_down",
+      "crouch",
+      "dead"
+    ]
+  },
+  {
+    "id": "kofi-test-travel",
+    "kind": "character",
+    "file": "kofi1-test/kofi-test-travel.png",
+    "size": {
+      "w": 80,
+      "h": 224
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: kofi-test-travel. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/kofi-test-travel.json",
+    "height": 224,
+    "tags": [
+      "stand_side",
+      "stand_up",
+      "stand_down",
+      "walk_side",
+      "walk_up",
+      "walk_down",
+      "blink_side",
+      "blink_up",
+      "blink_down",
+      "crouch",
+      "dead"
+    ]
+  },
+  {
+    "id": "kofi-test-bow-drawn",
+    "kind": "character",
+    "file": "kofi1-test/kofi-test-bow-drawn.png",
+    "size": {
+      "w": 448,
+      "h": 224
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: kofi-test-bow-drawn. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/kofi-test-bow-drawn.json",
+    "frame": {
+      "w": 224,
+      "h": 224
+    },
+    "height": 224,
+    "tags": [
+      "draw_right",
+      "draw_left"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-oweli",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-oweli.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-oweli. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-oweli.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-saluna",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-saluna.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-saluna. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-saluna.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-tohani",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-tohani.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-tohani. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-tohani.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-ahyeli",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-ahyeli.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-ahyeli. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-ahyeli.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-enali",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-enali.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-enali. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-enali.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-deyu",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-deyu.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-deyu. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-deyu.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-huska",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-huska.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-huska. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-huska.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-gate",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-gate.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-gate. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-gate.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-bell",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-bell.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-bell. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-bell.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-cloth",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-cloth.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-cloth. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-cloth.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-pot",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-pot.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-pot. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-pot.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-trestle",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-trestle.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-trestle. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-trestle.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-coop",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-coop.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-coop. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-coop.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-scoop",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-scoop.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-scoop. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-scoop.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-hook",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-hook.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-hook. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-hook.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-inland",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-inland.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-inland. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-inland.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-enaliRescue",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-enaliRescue.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-enaliRescue. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-enaliRescue.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-tsalohi-deyuRescue",
+    "kind": "object",
+    "file": "kofi1-test/prop-tsalohi-deyuRescue.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-tsalohi-deyuRescue. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-tsalohi-deyuRescue.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-oweli",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-oweli.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-oweli. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-oweli.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-saluna",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-saluna.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-saluna. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-saluna.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-tohani",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-tohani.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-tohani. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-tohani.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-ahyeli",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-ahyeli.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-ahyeli. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-ahyeli.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-enali",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-enali.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-enali. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-enali.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-deyu",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-deyu.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-deyu. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-deyu.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-huska",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-huska.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-huska. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-huska.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-deadBough",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-deadBough.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-deadBough. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-deadBough.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-branch",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-branch.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-branch. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-branch.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-herd",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-herd.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-herd. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-herd.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-fire",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-fire.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-fire. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-fire.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-camp-trail",
+    "kind": "object",
+    "file": "kofi1-test/prop-camp-trail.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-camp-trail. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-camp-trail.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-oweli",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-oweli.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-oweli. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-oweli.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-saluna",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-saluna.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-saluna. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-saluna.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-tohani",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-tohani.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-tohani. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-tohani.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-ahyeli",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-ahyeli.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-ahyeli. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-ahyeli.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-enali",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-enali.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-enali. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-enali.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-deyu",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-deyu.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-deyu. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-deyu.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-huska",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-huska.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-huska. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-huska.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-mud",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-mud.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-mud. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-mud.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-seep",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-seep.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-seep. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-seep.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-trough",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-trough.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-trough. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-trough.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-bundle",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-bundle.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-bundle. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-bundle.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-tracks",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-tracks.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-tracks. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-tracks.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-leaves",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-leaves.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-leaves. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-leaves.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-twig",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-twig.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-twig. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-twig.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-shore",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-shore.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-shore. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-shore.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-screen",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-screen.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-screen. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-screen.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-pot",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-pot.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-pot. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-pot.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-fire",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-fire.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-fire. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-fire.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-sheath",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-sheath.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-sheath. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-sheath.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-search",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-search.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-search. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-search.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-axe",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-axe.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-axe. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-axe.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-mature",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-mature.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-mature. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-mature.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-young",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-young.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-young. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-young.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-clay",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-clay.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-clay. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-clay.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-sledge",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-sledge.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-sledge. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-sledge.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-browse",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-browse.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-browse. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-browse.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-bowl",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-bowl.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-bowl. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-bowl.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-lead",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-lead.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-lead. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-lead.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-frame",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-frame.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-frame. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-frame.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-mix",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-mix.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-mix. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-mix.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-washing",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-washing.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-washing. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-washing.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-cord",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-cord.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-cord. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-cord.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-rack",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-rack.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-rack. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-rack.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-toClearing",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-toClearing.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-toClearing. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-toClearing.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-riteStone",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-riteStone.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-riteStone. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-riteStone.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-riverOffering",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-riverOffering.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-riverOffering. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-riverOffering.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-treeOffering",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-treeOffering.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-treeOffering. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-treeOffering.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-animalOffering",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-animalOffering.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-animalOffering. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-animalOffering.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-homeOffering",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-homeOffering.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-homeOffering. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-homeOffering.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-circle",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-circle.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-circle. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-circle.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-garden",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-garden.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-garden. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-garden.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-gap",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-gap.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-gap. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-gap.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-gardenPlan",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-gardenPlan.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-gardenPlan. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-gardenPlan.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-watchPlan",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-watchPlan.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-watchPlan. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-watchPlan.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-hutPlan",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-hutPlan.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-hutPlan. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-hutPlan.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-lateVolunteer",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-lateVolunteer.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-lateVolunteer. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-lateVolunteer.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-waterVolunteer",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-waterVolunteer.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-waterVolunteer. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-waterVolunteer.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-breakfastVolunteer",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-breakfastVolunteer.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-breakfastVolunteer. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-breakfastVolunteer.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-doors",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-doors.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-doors. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-doors.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-fork",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-fork.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-fork. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-fork.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-bark",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-bark.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-bark. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-bark.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-board",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-board.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-board. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-board.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-rig",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-rig.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-rig. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-rig.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-cradle",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-cradle.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-cradle. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-cradle.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-platform",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-platform.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-platform. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-platform.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-ladder",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-ladder.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-ladder. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-ladder.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-practice",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-practice.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-practice. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-practice.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-refuge",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-refuge.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-refuge. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-refuge.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-toRiver",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-toRiver.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-toRiver. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-toRiver.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-toForest",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-toForest.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-toForest. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-toForest.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-forest-huska",
+    "kind": "object",
+    "file": "kofi1-test/prop-forest-huska.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-forest-huska. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-forest-huska.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-forest-tracks",
+    "kind": "object",
+    "file": "kofi1-test/prop-forest-tracks.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-forest-tracks. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-forest-tracks.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-forest-brush",
+    "kind": "object",
+    "file": "kofi1-test/prop-forest-brush.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-forest-brush. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-forest-brush.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-forest-log",
+    "kind": "object",
+    "file": "kofi1-test/prop-forest-log.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-forest-log. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-forest-log.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-forest-limb",
+    "kind": "object",
+    "file": "kofi1-test/prop-forest-limb.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-forest-limb. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-forest-limb.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-forest-vine",
+    "kind": "object",
+    "file": "kofi1-test/prop-forest-vine.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-forest-vine. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-forest-vine.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-forest-return",
+    "kind": "object",
+    "file": "kofi1-test/prop-forest-return.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-forest-return. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-forest-return.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-beam",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-beam.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-beam. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-beam.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-sill",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-sill.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-sill. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-sill.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-pole",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-pole.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-pole. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-pole.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-wedge",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-wedge.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-wedge. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-wedge.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-nets",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-nets.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-nets. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-nets.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-drawcord",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-drawcord.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-drawcord. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-drawcord.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-stool",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-stool.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-stool. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-stool.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-gap",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-gap.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-gap. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-gap.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-bedroll",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-bedroll.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-bedroll. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-bedroll.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-arrow",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-arrow.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-arrow. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-arrow.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-shelf",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-shelf.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-shelf. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-shelf.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-hearth",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-hearth.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-hearth. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-hearth.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-rack",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-rack.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-rack. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-rack.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-waterPoint",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-waterPoint.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-waterPoint. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-waterPoint.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-groundHomes",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-groundHomes.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-groundHomes. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-groundHomes.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-gardens",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-gardens.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-gardens. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-gardens.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-river-riteCircle",
+    "kind": "object",
+    "file": "kofi1-test/prop-river-riteCircle.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-river-riteCircle. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-river-riteCircle.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-firstPlatform",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-firstPlatform.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-firstPlatform. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-firstPlatform.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-familyHut",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-familyHut.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-familyHut. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-familyHut.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-sharedRefuge",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-sharedRefuge.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-sharedRefuge. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-sharedRefuge.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-clearing-watchShelter",
+    "kind": "object",
+    "file": "kofi1-test/prop-clearing-watchShelter.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-clearing-watchShelter. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-clearing-watchShelter.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-supportedWedge",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-supportedWedge.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-supportedWedge. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-supportedWedge.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-returnedPole",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-returnedPole.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-returnedPole. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-returnedPole.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "kofi-prop-hut-littleMachine",
+    "kind": "object",
+    "file": "kofi1-test/prop-hut-littleMachine.png",
+    "size": {
+      "w": 272,
+      "h": 64
+    },
+    "anchor": "bottom-centre",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: prop-hut-littleMachine. Simple shapes and labels; replace after logic testing.",
+    "sheet": "kofi1-test/prop-hut-littleMachine.json",
+    "frame": {
+      "w": 136,
+      "h": 64
+    },
+    "tags": [
+      "idle",
+      "done"
+    ]
+  },
+  {
+    "id": "item-kofiBell",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiBell.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiBell. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiPin",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiPin.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiPin. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiCloth",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiCloth.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiCloth. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiHotPot",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiHotPot.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiHotPot. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiGrain",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiGrain.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiGrain. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiBow",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiBow.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiBow. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiArrows",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiArrows.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiArrows. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiBluntArrow",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiBluntArrow.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiBluntArrow. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiBranch",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiBranch.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiBranch. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiBrand",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiBrand.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiBrand. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiPot",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiPot.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiPot. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiTrough",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiTrough.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiTrough. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiStrips",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiStrips.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiStrips. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiStone",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiStone.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiStone. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiScreen",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiScreen.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiScreen. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiTwig",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiTwig.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiTwig. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiSheath",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiSheath.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiSheath. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiAxe",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiAxe.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiAxe. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiReeds",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiReeds.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiReeds. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiClay",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiClay.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiClay. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiBrowse",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiBrowse.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiBrowse. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiWashPot",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiWashPot.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiWashPot. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiDaub",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiDaub.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiDaub. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiCord",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiCord.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiCord. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiLineArrow",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiLineArrow.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiLineArrow. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiBark",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiBark.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiBark. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiRope",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiRope.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiRope. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiRiteStone",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiRiteStone.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiRiteStone. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiRiteBranch",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiRiteBranch.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiRiteBranch. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiFeather",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiFeather.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiFeather. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiPanel",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiPanel.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiPanel. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiHingeCord",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiHingeCord.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiHingeCord. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiLatch",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiLatch.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiLatch. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiBraces",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiBraces.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiBraces. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiHandRope",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiHandRope.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiHandRope. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiKnife",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiKnife.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiKnife. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiCarrier",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiCarrier.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiCarrier. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiPole",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiPole.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiPole. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiWedge",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiWedge.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiWedge. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "item-kofiArrow",
+    "kind": "item",
+    "file": "kofi1-test/item-kofiArrow.png",
+    "size": {
+      "w": 64,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: item-kofiArrow. Simple shapes and labels; replace after logic testing."
+  },
+  {
+    "id": "kofi-portrait-hero",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-hero.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-hero. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-oweli",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-oweli.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-oweli. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-saluna",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-saluna.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-saluna. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-tohani",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-tohani.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-tohani. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-ahyeli",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-ahyeli.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-ahyeli. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-enali",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-enali.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-enali. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-deyu",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-deyu.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-deyu. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-huska",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-huska.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-huska. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-survivor",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-survivor.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-survivor. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-lateVolunteer",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-lateVolunteer.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-lateVolunteer. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-waterVolunteer",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-waterVolunteer.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-waterVolunteer. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  },
+  {
+    "id": "kofi-portrait-breakfastVolunteer",
+    "kind": "portrait",
+    "file": "kofi1-test/portrait-breakfastVolunteer.png",
+    "size": {
+      "w": 128,
+      "h": 64
+    },
+    "anchor": "none",
+    "chapter": "kofi1",
+    "status": "placeholder",
+    "generator": "../scripts/kofi-placeholders.ts",
+    "subject": "FUNCTIONAL PLACEHOLDER ONLY: portrait-breakfastVolunteer. Simple shapes and labels; replace after logic testing.",
+    "moods": [
+      "neutral"
+    ]
+  }
+]

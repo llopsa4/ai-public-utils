@@ -1,0 +1,27 @@
+# Inventory icon: Enali’s hot pot
+
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --private-spec private/kofi1/spec.json. -->
+
+Authoring reference; may contain chapter spoilers. Runtime implementation is separate.
+
+## What the game does with it
+
+[World object, source scenes and disappearance rules](../objects/tsalohi-pot.md). The icon replaces the room instance while carried.
+
+## Description
+
+Soot-dark clay pot with lid and bare loop handle.
+
+## Technical
+
+64×64, transparent, same silhouette/material identity, no text or border. Draw only these carried forms:
+
+- **kofi1-item-tsalohi-pot**: lidded: the single carried form File: `kofi1-item-tsalohi-pot.png`.
+
+## Prompt for Codex
+
+Draw the named carried forms at icon scale, following the linked world brief. No installed-state, hidden-state or extra prop images. Production waits for a separate request.
+
+## Attach / references
+
+[STORY.md · kofi1-scene-01](../../../../STORY.md#kofi1-scene-01) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Index](../INDEX.md)

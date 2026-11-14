@@ -1,4 +1,5 @@
 /** Small drawn cursors that say what a click will do (pointer devices only). */
+import workGlove from '../../art/src/ui/cursor-work-glove.png';
 export type CursorKind = 'look' | 'hand' | 'talk' | 'exit';
 
 const svg = (body: string) =>
@@ -19,6 +20,7 @@ const SHAPES: Record<CursorKind, { body: string; x: number; y: number; fallback:
 
 export function cursorFor(kind: CursorKind | null): string {
   if (!kind) return '';
+  if(kind==='hand')return `url("${workGlove}") 3 2, pointer`;
   const s = SHAPES[kind];
   return `${svg(s.body)} ${s.x} ${s.y}, ${s.fallback}`;
 }

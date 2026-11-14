@@ -8,7 +8,7 @@ import type { GameState } from '../engine/types';
 
 /** "Day 1 · Morning · Cinderfold": the chapter's place in the story's five days. */
 export function dayLine(ch: Chapter): string {
-  return t('ui.dayLine', { day: String(ch.when.day), time: t(ch.when.time), place: t(ch.when.place) });
+  return ch.dateLabel ? `${t(ch.dateLabel)} · ${t(ch.when.time)} · ${t(ch.when.place)}` : t('ui.dayLine', { day: String(ch.when.day), time: t(ch.when.time), place: t(ch.when.place) });
 }
 
 /** The chapters played so far, oldest first, each with the flags it ended (or stands) with. */
@@ -16,14 +16,14 @@ function playedChapters(state: GameState): { ch: Chapter; flags: Record<string, 
   const out: { ch: Chapter; flags: Record<string, boolean>; current: boolean }[] = [];
   for (const id of CHAPTER_IDS) {
     const ch = CHAPTERS[id];
-    if (id === state.chapter) { out.push({ ch: ch ?? chapter(), flags: state.flags, current: true }); break; }
+    if (id === state.chapter) { out.push({ ch: ch ?? chapter(), flags: state.flags, current: true }); continue; }
     const flags = state.earlier?.[id];
     if (ch && flags) out.push({ ch, flags, current: false });
   }
   return out;
 }
 
-export interface DiaryDay { day: number; chapters: { heading: string; entries: string[] }[] }
+export interface DiaryDay { day: number; label?: string; chapters: { heading: string; entries: string[] }[] }
 
 /** The story so far: each played chapter's diary entries whose flags are set, grouped by day. */
 export function diary(state: GameState): DiaryDay[] {
@@ -32,7 +32,7 @@ export function diary(state: GameState): DiaryDay[] {
     const entries = ch.diary.filter(e => e.after.every(f => flags[f])).map(e => t(e.key));
     if (!entries.length) continue;
     let day = days.find(d => d.day === ch.when.day);
-    if (!day) days.push(day = { day: ch.when.day, chapters: [] });
+    if (!day) days.push(day = { day: ch.when.day, ...(ch.dateLabel?{label:t(ch.dateLabel)}:{}), chapters: [] });
     day.chapters.push({ heading: t('ui.diaryChapter', { time: t(ch.when.time), place: t(ch.when.place), who: t(ch.when.viewpoint) }), entries });
   }
   return days.sort((a, b) => a.day - b.day);

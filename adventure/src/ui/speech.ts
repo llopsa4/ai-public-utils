@@ -20,9 +20,9 @@ export function say(ui: Ui, actor: Speaker, text: string, _at: Point, mood: Mood
   const shown = who ? t(who.name) : t(`speaker.${actor}`);
   const name = $('dialogue-name');
   name.textContent = shown;
-  name.style.color = SPEECH_COLORS[actor];
+  name.style.color = SPEECH_COLORS[actor] ?? '#c8d9ba';
   $('dialogue-line').textContent = text;
-  panel.style.borderColor = SPEECH_COLORS[actor];
+  panel.style.borderColor = SPEECH_COLORS[actor] ?? '#c8d9ba';
   panel.classList.toggle('right', actor !== 'hero');
   panel.hidden = false;
   ui.live.textContent = `${shown}: ${text}`;

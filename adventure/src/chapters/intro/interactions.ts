@@ -101,7 +101,7 @@ export const RULES: readonly Rule[] = [
   { target: 'floorWax', verb: 'look', do: [say('line.i.floorWaxLook')] },
   // Out of the cage he just kneels beside it; while caged he kneels by the cage's right side and reaches
   // through its bars (Codex's pose: the body behind the bars, the forearm in front of them).
-  { target: 'floorWax', verb: 'take', when: F('cellOpen'), do: [walk(414, 328, 'right'), pose('hero', 'crouch'), wait(500), add('wax'), flag('tookWax'), pose('hero', 'stand'), say('line.i.waxTake')] },
+  { target: 'floorWax', verb: 'take', when: F('cellOpen'), do: [walk(414, 328, 'left'), pose('hero', 'crouch'), wait(500), add('wax'), flag('tookWax'), pose('hero', 'stand'), say('line.i.waxTake')] },
   { target: 'floorWax', verb: 'take', do: [walk(370, 325, 'right'), REACH_FOR_WAX, add('wax'), flag('tookWax'), say('line.i.waxTake')] },
   { target: 'bucket', item: 'crust', do: [say('line.i.soggyBread')] },
   { target: 'bucket', verb: 'look', do: [say('line.i.bucketLook')] },

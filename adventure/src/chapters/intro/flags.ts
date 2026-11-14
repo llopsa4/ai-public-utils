@@ -16,6 +16,9 @@ export const FLAGS = [
 
 export const SECRET_FLAGS = [] as const;
 export const MET_FLAGS = [] as const;
+/** Accepted by old saves, no longer obtainable or used by the current puzzles. */
+export const LEGACY_ITEMS = ['plaster','wetPlaster','hood','maskClerk'] as const;
+export const LEGACY_FLAGS = ['tookPlaster','tookHood'] as const;
 
 export const ITEMS = [
   'plate', 'crust', 'nail', 'strip', 'hookLine', 'frame', 'wax', 'plaster', 'wetPlaster', 'putty', 'maskHarrow', 'keys',

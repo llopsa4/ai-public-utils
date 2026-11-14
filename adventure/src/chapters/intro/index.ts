@@ -1,6 +1,6 @@
 import type { Chapter } from '../types';
 import { DIALOGUES } from './dialogue';
-import { FLAGS, ITEMS, KEPT_ITEMS, MET_FLAGS, SECRET_FLAGS } from './flags';
+import { FLAGS, ITEMS, KEPT_ITEMS, LEGACY_ITEMS, LEGACY_FLAGS, MET_FLAGS, SECRET_FLAGS } from './flags';
 import { ACTOR_VERBS, ITEM_VERBS, RULES, interact } from './interactions';
 import { OBJECTIVE_KEYS, objectives, reflections } from './objectives';
 import { ROOMS, START_ENTRY, START_ROOM } from './rooms';
@@ -30,6 +30,8 @@ export const INTRO: Chapter = {
   rooms: ROOMS,
   flags: FLAGS,
   items: ITEMS,
+  legacyItems: LEGACY_ITEMS,
+  legacyFlags: LEGACY_FLAGS,
   keptItems: KEPT_ITEMS,
   secretFlags: SECRET_FLAGS,
   metFlags: MET_FLAGS,

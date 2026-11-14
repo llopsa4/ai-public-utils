@@ -1,0 +1,70 @@
+{
+  "frames": [
+    {
+      "filename": "frame0",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 224,
+        "h": 224
+      },
+      "duration": 250,
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 224,
+        "h": 224
+      },
+      "sourceSize": {
+        "w": 224,
+        "h": 224
+      }
+    },
+    {
+      "filename": "frame1",
+      "frame": {
+        "x": 224,
+        "y": 0,
+        "w": 224,
+        "h": 224
+      },
+      "duration": 250,
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 224,
+        "h": 224
+      },
+      "sourceSize": {
+        "w": 224,
+        "h": 224
+      }
+    }
+  ],
+  "meta": {
+    "image": "kofi-test-bow-drawn.png",
+    "size": {
+      "w": 448,
+      "h": 224
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "draw_right",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "draw_left",
+        "from": 1,
+        "to": 1,
+        "direction": "forward"
+      }
+    ]
+  }
+}

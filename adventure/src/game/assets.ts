@@ -12,6 +12,10 @@ import nellPng from '../../art/src/characters/nell.png';
 import tobiJson from '../../art/src/characters/tobi.json';
 import tobiPng from '../../art/src/characters/tobi.png';
 import extraStokerJson from '../../art/src/characters/extra-stoker.json';
+import ashCollectorJson from '../../art/src/characters/extra-ash-collector.json';
+import ashCollectorPng from '../../art/src/characters/extra-ash-collector.webp';
+import shardSorterJson from '../../art/src/characters/extra-shard-sorter.json';
+import shardSorterPng from '../../art/src/characters/extra-shard-sorter.webp';
 import extraStokerPng from '../../art/src/characters/extra-stoker.webp';
 import extraTallyJson from '../../art/src/characters/extra-tally.json';
 import extraTallyPng from '../../art/src/characters/extra-tally.webp';
@@ -76,6 +80,8 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   tent: { png: tentPng, json: tentJson },
   // Background people (kiln hall, firing house) (placeholder art; WebP copies of the PNGs, art/webp.mjs).
   'extra-stoker': { png: extraStokerPng, json: extraStokerJson },
+  'extra-ash-collector': { png: ashCollectorPng, json: ashCollectorJson },
+  'extra-shard-sorter': { png: shardSorterPng, json: shardSorterJson },
   'extra-tally': { png: extraTallyPng, json: extraTallyJson },
   'extra-hauler': { png: extraHaulerPng, json: extraHaulerJson },
   'extra-runner': { png: extraRunnerPng, json: extraRunnerJson },

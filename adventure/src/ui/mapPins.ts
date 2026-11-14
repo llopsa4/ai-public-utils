@@ -32,10 +32,10 @@ export function mapPins(open: readonly Chapter[], played: readonly Chapter[]): M
   return [
     ...played.map(ch => ({
       ch, played: true, day: '', earlier: '',
-      label: `${who(ch)} · ${t('ui.dayOf', { day: String(ch.when.day) })} · ${t(ch.mapName ?? ch.title)}`,
+      label: `${who(ch)} · ${ch.dateLabel?t(ch.dateLabel):t('ui.dayOf', { day: String(ch.when.day) })} · ${t(ch.mapName ?? ch.title)}`,
     })),
     ...open.map(ch => ({
-      ch, played: false, day: dayLine(ch), earlier: daysEarlier(latest - ch.when.day),
+      ch, played: false, day: dayLine(ch), earlier: ch.dateLabel?'':daysEarlier(latest - ch.when.day),
       label: `${who(ch)} · ${t(ch.title)}`,
     })),
   ];

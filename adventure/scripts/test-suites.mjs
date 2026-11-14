@@ -6,6 +6,20 @@ const entry = (fast, ...features) => ({ fast, features });
 
 // Every Node test is discovered independently. This catalog selects subsets, never the full suite.
 export const NODE_SUITES = {
+  'regulator-layout.test.ts': entry(true, 'input', 'story'),
+  'silas-polish.test.ts': entry(true, 'story', 'input', 'saves', 'runtime'),
+  'effects-ui-fixes.test.ts': entry(true, 'story', 'input', 'art', 'runtime'),
+  'chapter-map-interaction.test.ts': entry(true, 'input', 'story'),
+  'kofi-prologue.test.ts': entry(true, 'story', 'saves', 'runtime'),
+  'art-reference.test.ts': entry(true, 'art'),
+  'art-reference-runtime.test.ts': entry(true, 'art'),
+  'kofi-layered.test.ts': entry(false, 'art'),
+  'kofi-standing-rig.test.ts': entry(false, 'art'),
+  'machine-workers.test.ts': entry(true, 'crowd', 'input', 'story', 'art'),
+  'machine-worker-art.test.ts': entry(false, 'art'),
+  'map-visibility.test.ts': entry(true, 'input', 'story'),
+  'map-plates.test.ts': entry(true, 'input', 'story'),
+  'label-layout.test.ts': entry(true, 'input'),
   'art-contracts.test.ts': entry(true, 'art', 'runtime'),
   'art-pipeline.test.ts': entry(false, 'art'),
   'art.test.ts': entry(false, 'art'),

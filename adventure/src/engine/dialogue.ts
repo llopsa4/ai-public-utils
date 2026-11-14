@@ -2,9 +2,9 @@ import { conditionsHold } from './geometry';
 import { EQUIPMENT } from '../combat/gear';
 import { equip, giveSpares } from './kit';
 import { applyCommand } from './state';
-import type { ActorId, Command, Condition, GameState, Kit } from './types';
+import type { Command, Condition, GameState, Kit, Speaker } from './types';
 
-export interface DialogueLine { actor: ActorId; text: string }
+export interface DialogueLine { actor: Speaker; text: string }
 /** `read`: the choice draws on something the hero has read in the person (shown with the read mark). */
 export interface DialogueChoice { text: string; next: string | null; if?: Condition[]; read?: boolean }
 export interface DialogueGear { give: readonly string[]; equip?: string }
