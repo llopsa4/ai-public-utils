@@ -9,7 +9,11 @@ The base gear-screen pictures for Heavy Gauntlet, Balanced Gauntlet and Insulate
 
 Tobi's original character source (`sources/characters/char-tobi/body.png`) was generated with OpenAI ImageGen on 2026-11-05, using Pip's existing source only as a style reference. His curly hair, teal tunic and chalk identify him separately from Pip and Bea. The source alpha is hardened for the game pipeline; `node art/rig.mjs tobi` builds his 140-pixel character sheet and neutral/worried talking portraits. No third-party character image is used for Tobi.
 
-All runtime art in `art/src` is derived from **Kiln Courier**'s illustrations in the same repository (`FFCardGame/assets`, already published there). Only the derived files are committed here. The scripts that regenerate them read the originals from `../FFCardGame/assets`.
+Runtime art in `art/src` combines **Kiln Courier** derivatives, original generated artwork and procedural placeholders. The Kiln Courier derivatives below use illustrations in the same repository (`FFCardGame/assets`, already published there); their generators read `../FFCardGame/assets`. Original sources, prompts and source-pack metadata may also be tracked. The historical derivative table does not describe every current replacement.
+
+## UI polish, 2026-11-14
+
+The work-glove interaction cursor (`ui/cursor-work-glove.png`), ceramic regulator housing (`props/regulator-closeup-housing.png`) and red-hot gauntlet warning (`ui/strain-warning.png`) were generated with Codex ImageGen from the approved descriptions and existing style references. Generated originals, final-size review images and reproducible preparation are in `art/sources/ui-polish/` (`cursor-generated.png`, `regulator-generated.png`, `strain-generated.png`, `install.mjs`). `BRIEF.md` records the source descriptions and installed 512×320 regulator registration; its measured installed positions supersede the proposed positions. Existing ring, bolt, valve and cartridge artwork remains separate; animation, labels and heat feedback are runtime effects. This entry records an already-installed delivery and does not approve new production.
 
 | Output | Source (FFCardGame/assets) | Script | Processing |
 | --- | --- | --- | --- |

@@ -26,18 +26,13 @@ Existing file: art/src/intro/portraits/sigrid.png. Status: placeholder. No new a
 
 Derived from sigrid-layered; do not draw this derived sheet separately.
 
-## Technical
+## Asset contract
 
 - Canvas: **1536×256 art px**. Image tile anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `art/inbox/portrait-sigrid.png`.
 
-## Prompt for Codex
-
-Captain Sigrid of Ironhaven. Head and shoulders: cut by the game from the character's drawing. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
-
-## Attach / references
+## Sources
 
 [art/manifest.mjs](../manifest.mjs) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

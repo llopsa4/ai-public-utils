@@ -28,18 +28,13 @@ On a 1024x1536 transparent canvas (or flat magenta #FF00FF), exactly the canvas,
 
 Use exactly the colours of art/sources/characters/mara-casual-layered/joint-colours.json (copy the file beside it). Each dot about 12 px across, exactly on the joint's pivot.
 
-## Technical
+## Asset contract
 
 - Canvas: **1024×1536 art px**. Image tile anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `art/inbox/sigrid-joints.png`.
 
-## Prompt for Codex
-
-The joint map: master.png with a small solid dot of a fixed colour at the centre of each joint: near and far shoulder, elbow, hip, knee and ankle. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
-
-## Attach / references
+## Sources
 
 [art/manifest.mjs](../manifest.mjs) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

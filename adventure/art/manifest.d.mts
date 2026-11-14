@@ -55,6 +55,8 @@ export interface ArtEntry {
   pack?: string;
   piece?: string;
   phase?: 1 | 2;
+  /** Art-relative source reference only: not a deliverable pack piece or installed runtime asset. */
+  sourceReference?: string;
   /** Technical requirements written for this picture (replace the kind's own). */
   spec?: string[];
   /** A game sheet or portrait built from a character's pack: nothing to make for it alone. */

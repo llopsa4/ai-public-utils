@@ -28,18 +28,13 @@ Look; Apply reeds; Apply daub
 
 Identical 220x280 frame in every state. Extra months-later huts use finished instances only, not extra player building tasks. Doors separately specified. Blank ground behind entire structure.
 
-## Technical
+## Asset contract
 
 - Canvas: **220×280 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `kofi1-ground-hut-frame.png`, `kofi1-ground-hut-reed.png`, `kofi1-ground-hut-daubed.png`, `kofi1-ground-hut-finished.png`.
 
-## Prompt for Codex
-
-Round reed-frame shelter represented front-on with a plain doorway, ochre clay finish. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-05](../../../../STORY.md#kofi1-scene-05) · [STORY.md · kofi1-scene-07](../../../../STORY.md#kofi1-scene-07) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

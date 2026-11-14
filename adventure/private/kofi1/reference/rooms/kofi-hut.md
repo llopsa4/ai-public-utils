@@ -68,29 +68,23 @@ Plain reed-and-clay back wall, roof interior and level floor. Keep clean patches
 
 ## Walking space, exits and staging
 
-Coordinates are art pixels; divide by two for logical units. Default floor band y=536–690. Accessible action feet: (300,650) bedroll, (650,650) hearth, (880,650) beam/net, (1080,650) stool. Layer net in front of trapped actor; remove masking only at reveal. Beam occupies rear upper space and never blocks the walking lane. Robot and Kofi are staging references, not assets commissioned here.
+Accessible action feet: (300,650) bedroll, (650,650) hearth, (880,650) beam/net, (1080,650) stool. Layer net in front of trapped actor; remove masking only at reveal. Beam occupies rear upper space and never blocks the walking lane. Robot and Kofi are staging references, not assets commissioned here.
 
 Robot eyes behind the net are a masked actor reference, never painted in net or room. After freeing, the actor may move under stool at (1070,600), into the dry gap reach zone (720,620), then beside bedroll (400,600). Front stool legs occlude only the hiding actor. Kofi’s invitation/withdrawal does not transform the robot into a prop. Huska stays outside; no dog silhouette is painted into doorway.
 
 - **Amaneti bank** at (40,660): Left doorway; closing scene stays here until arrow shelved and robot settled.
 
-- Kofi: feet (400,670); reference only.
-- Robot hiding reference: feet (1070,600); reference only.
-- Robot retrieval reference: feet (720,620); reference only.
-- Robot bedroll reference: feet (400,600); reference only.
+- Kofi: feet (400,670) art px; reference only.
+- Robot hiding reference: feet (1070,600) art px; reference only.
+- Robot retrieval reference: feet (720,620) art px; reference only.
+- Robot bedroll reference: feet (400,600) art px; reference only.
 
-## Technical
+## Asset contract
 
-1280×720 room frame, 2-pixel world grid, existing palette. [Annotated layout](../layouts/kofi-hut.svg). No labels, actors or removable props baked into background. Preserve approved exceptions recorded in the room description.
+1280×720 room frame. [Annotated layout](../layouts/kofi-hut.svg). Preserve the scoped exceptions in this room's description.
 
-## Prompt for Codex
-
-A small round ground hut represented as a flat, intimate interior, with no forced side-wall perspective. Woven reed walls and clay daub show repairs. A doorway at the left holds the travel rack. The bedroll lies left of centre; a cold hearth and low arrow shelf occupy the middle; drying nets, a shifted beam and its stone sill occupy the right. A stool gives the freed creature a hiding place. Steady moonlight makes objects readable without revealing the body trapped in the nets.
-
-Paint only this fixed setting: Plain reed-and-clay back wall, roof interior and level floor. Keep clean patches beneath rack, tools, shelf, arrows, hearth, gap, net, beam, sill, stool and bedroll. No eyes or creature silhouette in background or net painting. Follow the linked layout, existing style and references. Lighting/text are runtime effects. No art production is authorised by generating this brief.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-09](../../../../STORY.md#kofi1-scene-09) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

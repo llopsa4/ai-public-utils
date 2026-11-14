@@ -1,5 +1,11 @@
 # hall-crate
 
-Status: **final** · foreground · chapter ch1 · in the game as `art/src/foreground/hall-crate.png`
+Status: **final** · foreground · chapter ch1
 
-Cut by the importer from the room painting: no separate picture.
+[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+
+## Description
+
+A wooden crate on the kiln hall floor that Ansel sits on (cut from Codex's ashways crate).
+
+Foreground cut from its room painting.

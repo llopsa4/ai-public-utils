@@ -27,18 +27,13 @@ Visual layer only; no additional interaction is introduced.
 
 Same portable basket identities move with Ahyeli; original coop is not carried. Feather is separate and no chicken count is baked into lids.
 
-## Technical
+## Asset contract
 
 - Canvas: **120×78 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `kofi1-chicken-baskets-closed.png`, `kofi1-chicken-baskets-open.png`.
 
-## Prompt for Codex
-
-Two snug woven carrying baskets with closable wicker lids, no animals painted in. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-02](../../../../STORY.md#kofi1-scene-02) · [STORY.md · kofi1-scene-03](../../../../STORY.md#kofi1-scene-03) · [STORY.md · kofi1-scene-06](../../../../STORY.md#kofi1-scene-06) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

@@ -4,24 +4,14 @@
 
 Authoring reference; may contain chapter spoilers. Runtime implementation is separate.
 
-## What the game does with it
+## Use
 
-[World object, source scenes and disappearance rules](../objects/wash-pot.md). The icon replaces the room instance while carried.
+[World description, source scenes and disappearance rules](../objects/wash-pot.md). The icon replaces the room instance while carried.
 
-## Description
+## Asset contract
 
-Broad ochre water pot with open top and loop handles, visually distinct from lidded drinking pot.
-
-## Technical
-
-64×64, transparent, same silhouette/material identity, no text or border. Draw only these carried forms:
+64×64 transparent tile. Carried forms:
 
 - **kofi1-item-wash-pot**: empty: the single carried form File: `kofi1-item-wash-pot.png`.
 
-## Prompt for Codex
-
-Draw the named carried forms at icon scale, following the linked world brief. No installed-state, hidden-state or extra prop images. Production waits for a separate request.
-
-## Attach / references
-
-[STORY.md · kofi1-scene-05](../../../../STORY.md#kofi1-scene-05) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Index](../INDEX.md)
+[art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md) · [Chapter index](../INDEX.md)

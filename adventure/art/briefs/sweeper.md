@@ -1,35 +1,23 @@
 # sweeper
 
-Status: **final** · object · chapter ch1 · in the game as `art/src/objects/sweeper.png`
+Status: **final** · object · chapter ch1
 
-## What the game does with it
+[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+
+## Description
+
+The ash sweeper, a squat old maintenance machine (chest-high to Mara): an iron body on short legs, two round brush drums at the front, a funnel chimney, one round glass eye. idle: standing, brushes still; scurry: leaning forward, brushes spinning (motion lines as pixels).
+
+## Use and placement
 
 Stands in the room `ashways` on its foot point (1070, 596) (bottom centre of the picture).
 States: idle, scurry: one picture each, identical framing; only what changes between states differs.
 
-## Technical
+## Asset contract
 
-- Files: `art/inbox/sweeper-idle.png`, `art/inbox/sweeper-scurry.png`: transparent (or on flat magenta #FF00FF), the thing standing on the bottom edge.
-- Fitted into a 260×140 art-pixel frame (true proportion to Mara at 232), reduced to the 2-pixel grid, outlined.
-
-## Prompt for Codex
-
-```text
-Draw for the game The Rift: Ashlands: The ash sweeper, a squat old maintenance machine (chest-high to Mara): an iron body on short legs, two round brush drums at the front, a funnel chimney, one round glass eye. idle: standing, brushes still; scurry: leaning forward, brushes spinning (motion lines as pixels).
-Style: detailed pixel art matching tent-reference.png (attached): hand-placed pixels, clean readable shapes, crisp edges (no blur or anti-aliased haze), worn lived-in materials (patched canvas, scuffed wood with iron corner plates, brass, glazed clay, soot and ash). It is reduced to a 2-pixel grid on import (a room becomes 640×360 pixels), so use clear shapes and flat colour areas.
-World: the Ashlands, an industrial-fantasy land: kiln villages of fired clay and cream ceramic plates in the ash country, and Ironhaven, a hard city of iron, stone and snow; brass, soot, ochre cloth, ember light. Everything used and repaired, nothing shiny or new, no modern objects.
-Colour: keep to the attached master palette (art/style/palette.png, 160 colours: ochre, rust, brass, ember orange, clay, warm browns; soot greys and iron blue-greys). Every pixel is snapped to it on import.
-Never: text or letters in the picture, people in rooms, perspective, lens effects, neon, painted glow pools, light shafts, haze or particles (the game adds light and effects).
-Proportions: true to the cast (art/style/scale.png): Mara is 232 px, a doorway about 328, a table top 104, a chair seat 48.
-Light: evenly lit with soft form shading and no strong cast light (the game lights it to match the room).
-Files: art/inbox/sweeper-idle.png, art/inbox/sweeper-scurry.png: transparent (or on flat magenta #FF00FF), the thing standing on the bottom edge.
-Fitted into a 260×140 art-pixel frame (true proportion to Mara at 232), reduced to the 2-pixel grid, outlined.
-```
-
-## Attach
-
-- `tent-reference.png` (the look to match), `art/STYLE.md`, `art/style/palette.png`, `art/style/scale.png`
-
-## Then
-
-`npm run art:import`, look at `art/inbox/preview/sweeper.png`, `npm run art:check`.
+- Runtime path: `art/src/objects/sweeper.png` (final).
+- Anchor: `bottom-centre`.
+- Canvas/frame: **260×140 art px**.
+- State tags: `idle`, `scurry`.
+- Atlas metadata: `art/src/objects/sweeper.json`.
+- Import names: `sweeper-idle.png`, `sweeper-scurry.png`.

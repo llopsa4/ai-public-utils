@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import type { ArtEntry } from '../art/manifest.mjs';
-import { runtimeDimensions, runtimeReference } from '../scripts/art-reference-runtime';
+import { runtimeDimensions, runtimeReference, renderRuntimeReferences } from '../scripts/art-reference-runtime';
 
 test('Silas references use current targets, cage registration and Silas scale', async () => {
   const spec = await runtimeReference('intro');
@@ -47,4 +48,15 @@ test('reference dimensions keep the atlas source canvas rather than its trimmed 
 
 test('unknown implemented chapter requests fail instead of generating an unrelated chapter', async () => {
   await assert.rejects(runtimeReference('does-not-exist'), /Unknown implemented chapter/);
+});
+
+test('scoped navigation refresh preserves catalog entries and links the chapter reading order', async () => {
+  const root = fileURLToPath(new URL('..', import.meta.url));
+  const catalog = join(root, 'art/briefs/CATALOG.md');
+  const original = '# Catalog\n\n[Art procedure](../PIPELINE.md)\n\n- **existing-entry**: [brief](room-tent.md)\n';
+  const { files } = await renderRuntimeReferences('intro', root, new Map([[catalog, original]]), true);
+  const content = files.get(catalog) as string;
+  assert.match(content, /\[Art procedure\]\(\.\.\/PIPELINE.md\)/);
+  assert.match(content, /\[the room and puzzle index\]\(INDEX-intro.md\)/);
+  assert.ok(content.includes('- **existing-entry**: [brief](room-tent.md)'));
 });

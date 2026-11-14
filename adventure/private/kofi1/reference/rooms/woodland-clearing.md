@@ -80,30 +80,24 @@ Distant woodland, river glimpse, rooted earth and the noninteractive trunk struc
 
 ## Walking space, exits and staging
 
-Coordinates are art pixels; divide by two for logical units. Default floor band y=536–690. Main walk lane y=636..690 remains clear. Target branch and elevated platform are reached by a staged action from (820,650), never by scaling actors smaller. Ladder practice uses existing character references; no new pose artwork is commissioned by this pack. The ground below the arrow landing point (1000,620) stays empty of actors during the shot.
+Main walk lane y=636..690 remains clear. Target branch and elevated platform are reached by a staged action from (820,650), never by scaling actors smaller. Ladder practice uses existing character references; no new pose artwork is commissioned by this pack. The ground below the arrow landing point (1000,620) stays empty of actors during the shot.
 
 Most visits begin with Kofi alone. Saluna arrives briefly on first entry then returns to bank. For beam lift only, Saluna and Tohani move up from the bank and use the marked helper feet. For practice only, Ahyeli, Tali, Kanu and Saluna come up together, using the family ladder rather than refuge ladder. Their names identify staging, not new pose/design requests. Common-stage cup overlay in the sheet illustrates Deyu’s memorial placement; Enali’s alternate cup destination is specified in the cup brief.
 
 - **Riverbank** at (40,660): Left edge; always returns to bank.
 - **Deep forest** at (1240,660): Right edge; denied until disputes complete and travel kit collected.
 
-- Kofi: feet (530,670); reference only.
-- Saluna / helper: feet (660,650); reference only.
-- Tohani / helper: feet (970,650); reference only.
-- Ahyeli / practice: feet (800,650); reference only.
+- Kofi: feet (530,670) art px; reference only.
+- Saluna / helper: feet (660,650) art px; reference only.
+- Tohani / helper: feet (970,650) art px; reference only.
+- Ahyeli / practice: feet (800,650) art px; reference only.
 
-## Technical
+## Asset contract
 
-1280×720 room frame, 2-pixel world grid, existing palette. [Annotated layout](../layouts/woodland-clearing.svg). No labels, actors or removable props baked into background. Preserve approved exceptions recorded in the room description.
+1280×720 room frame. [Annotated layout](../layouts/woodland-clearing.svg). Preserve the scoped exceptions in this room's description.
 
-## Prompt for Codex
-
-A sunny pocket above the riverbank. The bank path reaches the lower-left edge; the river is a silver glimpse between distant trunks. A naturally fallen tree and loose bark lie to the left, a work board sits left of centre, and a very tall living tree rises right of centre. Its broad roots frame a clear beam-lift area and a visible fork high above hand reach. To the right, a trail disappears into deeper forest. Later, two tree huts occupy the same tall tree and a small roofed watch post sits by the forest boundary.
-
-Paint only this fixed setting: Distant woodland, river glimpse, rooted earth and the noninteractive trunk structure. Leave clean background behind bark, beams, branch target, platform areas, ladders, huts, watch post and the foreground canopy cut. Follow the linked layout, existing style and references. Lighting/text are runtime effects. No art production is authorised by generating this brief.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-clearing-description](../../../../STORY.md#kofi1-clearing-description) · [STORY.md · kofi1-scene-05](../../../../STORY.md#kofi1-scene-05) · [STORY.md · kofi1-scene-06](../../../../STORY.md#kofi1-scene-06) · [STORY.md · kofi1-scene-07](../../../../STORY.md#kofi1-scene-07) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

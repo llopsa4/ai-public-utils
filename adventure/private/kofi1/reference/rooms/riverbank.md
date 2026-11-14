@@ -134,29 +134,23 @@ Distant river channel, far bank, noninteractive shade trees, bare dry ground and
 
 ## Walking space, exits and staging
 
-Coordinates are art pixels; divide by two for logical units. Default floor band y=536–690. Keep shore approach (100,650), seep approach (400,650), clay/sledge approach (680,650) and hut/rack approach (1050,650) clear. Water locations are on a rear side-on bank shelf, not inaccessible perspective paths. Foreground reeds mask only a small shore edge, not actors or target labels. Shared spots in this sheet belong to different periods and are labelled in the legend.
+Keep shore approach (100,650), seep approach (400,650), clay/sledge approach (680,650) and hut/rack approach (1050,650) clear. Water locations are on a rear side-on bank shelf, not inaccessible perspective paths. Foreground reeds mask only a small shore edge, not actors or target labels. Shared spots in this sheet belong to different periods and are labelled in the legend.
 
 Oweli at (760,620), Tohani at (950,620), Tali/Kanu near Ahyeli at (1140..1190,610); goats use the hut/sledge zone only during haul, otherwise remain rear of front corridor. Exactly one survivor occupies the water-talk location. At the rite, Kofi and Oweli address the circle from front-side action points while other people stand in rear groups. Months later supporting volunteers occupy the rack discussion zone; no roster actor is placed at the clearing board simultaneously.
 
 - **Woodland clearing** at (1240,660): Right edge; opens after drinking water is established. Bidirectional thereafter.
 
-- Kofi: feet (720,670); reference only.
-- Water survivor: feet (430,620); reference only.
-- Saluna: feet (660,620); reference only.
-- Ahyeli / rack: feet (1110,620); reference only.
+- Kofi: feet (720,670) art px; reference only.
+- Water survivor: feet (430,620) art px; reference only.
+- Saluna: feet (660,620) art px; reference only.
+- Ahyeli / rack: feet (1110,620) art px; reference only.
 
-## Technical
+## Asset contract
 
-1280×720 room frame, 2-pixel world grid, existing palette. [Annotated layout](../layouts/riverbank.svg). No labels, actors or removable props baked into background. Preserve approved exceptions recorded in the room description.
+1280×720 room frame. [Annotated layout](../layouts/riverbank.svg). Preserve the scoped exceptions in this room's description.
 
-## Prompt for Codex
-
-A broad bank seen as a readable stage: water and reeds at the left rear, a small upper seep over stone farther inland, an ochre clay face near the middle, and dry building ground to the right. The washing point is downstream from the collection point. Small shade trees border the top of frame; the very tall tree and tree huts belong to the woodland clearing, not here. Keep a long, level walking lane along the front. Houses and gardens grow behind that lane, leaving all water stations accessible.
-
-Paint only this fixed setting: Distant river channel, far bank, noninteractive shade trees, bare dry ground and plain stone backing for the seep. Interactive water surfaces, reeds, clay cut, footprints, leaves and all settlement objects are separate overlays. Follow the linked layout, existing style and references. Lighting/text are runtime effects. No art production is authorised by generating this brief.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-04](../../../../STORY.md#kofi1-scene-04) · [STORY.md · kofi1-scene-05](../../../../STORY.md#kofi1-scene-05) · [STORY.md · kofi1-scene-06](../../../../STORY.md#kofi1-scene-06) · [STORY.md · kofi1-scene-07](../../../../STORY.md#kofi1-scene-07) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

@@ -50,7 +50,7 @@ None.
 
 ## Walking space, exits and staging
 
-Coordinates are art pixels; divide by two for logical units. Default floor band y=536–690. Keep (940..1200,630..690) clear for encounter staging. Sleeping people and herd are excluded actor briefs, never bedding composites. Moonlight is steady; fire flicker and light pools belong to runtime effects. The carried trough is visible beside the communal kit; its selected-survivor form is not a camp puzzle.
+Keep (940..1200,630..690) clear for encounter staging. Sleeping people and herd are excluded actor briefs, never bedding composites. Moonlight is steady; fire flicker and light pools belong to runtime effects. The carried trough is visible beside the communal kit; its selected-survivor form is not a camp puzzle.
 
 Ahyeli and sleeping children occupy the rear mat zone (600..730,568), Oweli at (500,620). Place exactly one survivor at (440,620). Herd starts near (1090,620), gathers to (810..910,620); Huska moves between these zones. Wolves approach through x=1030..1200 and leave through the right cover; the last wolf is an actor, not a new object image. Both aftermath choices leave the same kit visible.
 
@@ -59,23 +59,17 @@ The dead bough is at (980,350) art px over an empty landing patch, away from sle
 - **Trail back** at (40,660): Left edge: no departure before camp complete.
 - **Trail onward** at (1240,660): Right edge: scripted transition after wolf aftermath.
 
-- Kofi: feet (620,670); reference only.
-- Tohani: feet (870,620); reference only.
-- Survivor: feet (440,620); reference only.
-- Huska / herd: feet (1060,640); reference only.
+- Kofi: feet (620,670) art px; reference only.
+- Tohani: feet (870,620) art px; reference only.
+- Survivor: feet (440,620) art px; reference only.
+- Huska / herd: feet (1060,640) art px; reference only.
 
-## Technical
+## Asset contract
 
-1280×720 room frame, 2-pixel world grid, existing palette. [Annotated layout](../layouts/trail-camp.svg). No labels, actors or removable props baked into background. Preserve approved exceptions recorded in the room description.
+1280×720 room frame. [Annotated layout](../layouts/trail-camp.svg). Preserve the scoped exceptions in this room's description.
 
-## Prompt for Codex
-
-A low clearing enclosed by close, dark trunks. The trail enters at the left and continues right, but neither edge suggests an extra explorable area tonight. The fire is left of centre, possessions and chicken baskets shelter farther left, and the herd waits at the right-hand edge before Huska gathers it inward. Leave the right third comparatively empty for the wolf encounter and the later last-wolf decision. A few bedrolls tuck against the back line; none crosses the main walking lane.
-
-Paint only this fixed setting: Trunks, distant dark foliage, level earth and fixed stones outside interaction areas. No fire, loose branch, bedding, baskets, bundles, carried vessels, animals or people painted into the room. Leave clean backing beneath the separate dead bough and removable caught fire stick; never bake either into the trees. Follow the linked layout, existing style and references. Lighting/text are runtime effects. No art production is authorised by generating this brief.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-03](../../../../STORY.md#kofi1-scene-03) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

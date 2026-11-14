@@ -36,7 +36,7 @@ None.
 
 ## Walking space, exits and staging
 
-Coordinates are art pixels; divide by two for logical units. Default floor band y=536–690. Primary background: room-prison-door. Existing painting: art/src/intro/rooms/prison-door.png.
+Primary background: room-prison-door. Existing painting: art/src/intro/rooms/prison-door.png.
 
 Actor target sigrid: look, read; visibility Always. Actor scale and placement are listed separately; no new actor artwork is requested.
 
@@ -44,21 +44,15 @@ Sprite dimensions are read from each existing atlas sourceSize, preserving trans
 
 
 
-- Silas: fromGuardroom: feet (180,600); reference only.
-- Captain Sigrid: feet (760,604); reference only.
+- Silas: fromGuardroom: feet (180,600) art px; reference only.
+- Captain Sigrid: feet (760,604) art px; reference only.
 
-## Technical
+## Asset contract
 
-1280×720 room frame, 2-pixel world grid, existing palette. [Annotated layout](../spec/outerDoor.svg). No labels, actors or removable props baked into background. Preserve approved exceptions recorded in the room description.
+1280×720 room frame. [Annotated layout](../spec/outerDoor.svg). Preserve the scoped exceptions in this room's description.
 
-## Prompt for Codex
-
-Outside Ironhaven's prison at night: a small heavy door with a lantern (left) in a black stone wall with crenellations, snow on the ground and falling, the city's iron roofs faint in the distance.
-
-Paint only this fixed setting: Outside Ironhaven's prison at night: a small heavy door with a lantern (left) in a black stone wall with crenellations, snow on the ground and falling, the city's iron roofs faint in the distance. Follow the linked layout, existing style and references. Lighting/text are runtime effects. No art production is authorised by generating this brief.
-
-## Attach / references
+## Sources
 
 [src/chapters/intro/rooms.ts · L173](../../src/chapters/intro/rooms.ts#L173) · [Chapter index](INDEX-intro.md)
 
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

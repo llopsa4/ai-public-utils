@@ -42,31 +42,24 @@ Progress is **autosaved in this browser** (localStorage, one slot) after each wa
 
 ## Develop
 
-Requires Node 22.12+. Agents (Claude, Codex): start with `AGENTS.md`, then `WORKLOG.md` (status, who owns which files) and your queue (`CLAUDE-INBOX.md` or `art/CODEX.md`).
+To request scenes, story revisions, puzzles, gameplay changes or art, use the
+[Adventure request templates](PROMPTING.md).
+
+Requires Node 22.12+. Install and start the development preview from this directory:
 
 ```sh
 npm ci
-npm run dev        # http://127.0.0.1:5173 with live reload
-npm test           # fast typecheck + logic/integration tests; no browser or build
-npm run test:feature -- crowd       # selected Node contracts (story, saves, crowd, input, art, runtime)
-npm run test:browser -- story       # build once, then short browser checks for this feature
-npm run test:release                # all Node tests, one verified build, all browser checks and journeys
-npm run e2e        # build once, then every browser check (including complete journeys)
-npm run build      # typecheck → Vite build → publish to index.html + build/ → verify
-npm run preview    # serves the repo root like GitHub Pages: http://127.0.0.1:4173/adventure/
+npm run dev
 ```
 
-See [TESTING.md](TESTING.md) for feature selection, test classification, headless-driver limits and release rules. Ordinary edits use fast/feature checks; publishing and shared runtime changes require release verification. `npm run test:inventory -- --list` audits and lists every suite without launching a browser or building the site.
-
-GitHub Pages serves the `main` branch as-is, so **commit the generated `index.html` and `build/`** together with the source changes. `dist/` and `node_modules/` are ignored.
+Use [DEVELOPMENT.md](DEVELOPMENT.md) for authoring and runtime gotchas,
+[WORKFLOW.md](WORKFLOW.md) for collaboration and publishing permissions, and
+[TESTING.md](TESTING.md) for test, build and scratch-preview commands. GitHub Pages serves
+tracked `index.html` and `build/`; `dist/` and `node_modules/` are ignored.
 
 Add `?debug` to the URL to draw the walk areas (green), obstacles (red), hotspots (yellow), approach points (blue) and entries (pink), and to expose `window.adventure = { game, session, sound, chapters, newGame, interact }` (the e2e tests use it). In debug mode the comma key (`,`) opens the **debug panel** (`?debug=panel` opens it at start): jump to a chapter or room, switch flags and items, add salvage, tonics or all gear, open the gear screen or shop, start a fight, and switch the visual quality or the walk-area overlay. In debug mode the gear screen also shows every equipable piece in the game, gauntlet slot unlocked; equipping one adds it to Mara's gear.
 
 The debug panel's **Medium armour** checkbox dresses Mara and equips Layered Armor directly; turning it off selects light armour. Gauntlet power stays controlled separately by `hasGauntlet`. These selections use the existing equipment and dressing save data.
-
-`node scripts/probe.mjs --room gallery --flags kilnCold --items regulator [--quality low]` screenshots the built game in any room at any point of the story (`--all`: every room, warm and cold, both qualities) into `shots/`. `tests/story-graph.test.ts` explores every story state each chapter can reach (930 for chapter 1) and checks that the end stays reachable from all of them, and that every room, goal, secret and spoken line exists.
-
-Production builds bundle a reduced Phaser (`src/phaser-custom.cjs`: no physics, tilemaps, text or Phaser sound) built from Phaser's own sources; `vite.config.ts` sets Phaser's compile-time flags. The dev server uses the full prebuilt Phaser. If new code needs a Phaser module that is not in the custom entry, add it there; `npm run e2e` catches what's missing.
 
 ## Chapter 1: regulator and departure
 
@@ -100,10 +93,8 @@ Without `?debug` nothing changes: chapter 1 ends with its end card, and chapter 
 Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/client/src` in this repository, imported directly (as `@kc/...`, set in `tsconfig.json` and `vite.config.ts`), not copied. They load only when the first fight or the gear screen opens (`src/kc/mount.tsx`, the bridge, with `Armory.tsx`, the equip-only workshop).
 
 - Kiln Courier's battle screen takes optional settings for a host game: `brand` (the Cinderfold title), `rewards` (what the fight paid, in the victory dialog), `extraControls` (the Kiln Tonic button), and for its guided lesson an `encounter` and reworded `prompts`. The first fight is that lesson taught against chapter 1's Hatch Scavenger (`src/chapters/ch1/combat.ts`).
-- Three Kiln Courier modules are swapped for the adventure's own at build time (`kcOverrides` in `vite.config.ts`): `src/kc/assets.ts` and `src/kc/EquipmentArt.tsx` (the small WebPs from `art/kc.mjs` instead of Kiln Courier's full-size PNGs) and `src/kc/presentation.ts` (the scavenger in the gallery, also during the lesson). The compiler checks they keep the originals' names and types.
 - Fights play over the room they happen in (`src/game/room/fightBridge.ts`): the room stays on screen and slides up so its floor clears the card strip along the bottom; the fighters stand on that floor at their real size next to Mara (`ENEMY_HEIGHT`). On short screens the strip slims to one row of small cards without pictures.
-- Kiln Courier's stylesheet is scoped under `.kc` into `src/kc/kc.css` by `scripts/kc-css.mjs` on every build; Cinderfold's additions are in `src/kc/kc-local.css`.
-- Changing Kiln Courier changes the adventure's fights: after editing FFCardGame, run both projects' checks.
+- Integration gotchas and shared battle validation are described in [DEVELOPMENT.md](DEVELOPMENT.md#runtime-and-integration-gotchas).
 
 ## Layout
 
@@ -118,35 +109,18 @@ Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/
 | `art/` | Art scripts and their output in `art/src/` (see [PROVENANCE](art/PROVENANCE.md)) |
 | `tests/` | `node:test` suites run with tsx |
 
-## Art pipeline
+## Art
 
-For reference organisation, authoritative sources and chapter-scoped regeneration, read
-[art/REFERENCES.md](art/REFERENCES.md). Generated reference files are not edited directly.
-
-Claude writes new art tasks in [art/CODEX.md](art/CODEX.md); Codex delivers artwork and a local handoff in `art/inbox/<delivery>/`. [CLAUDE-INBOX.md](CLAUDE-INBOX.md) holds integration tasks for Claude. Completed instructions are removed from the queues, and installed deliveries move to `art/inbox/done/`. These local art archives are git-ignored.
-
-The manifest (`art/manifest.mjs`), descriptions (`art/descriptions.mjs`) and [style bible](art/STYLE.md) describe the assets. `npm run art:briefs` writes reference briefs and `art/briefs/CATALOG.md`; it never overwrites the task inbox. `npm run art:guide` writes room layouts in `art/spec/`. Use the relevant importer for the delivery: `npm run art:import` fits artwork, applies the grid and master palette, re-cuts walk-behind pieces, writes WebP copies and previews, and marks final art so placeholder generators preserve it. Avoid whole-tree generators while another agent is working; see [AGENTS.md](AGENTS.md).
-
-The world is 640×360 logical units. The art and the canvas are 2× that (1280×720), and the stage scales to fit the window. Some older assets derive from Kiln Courier's illustrations; Mara's tent is the style reference ([provenance](art/PROVENANCE.md)). The generators below preserve assets marked final. Run only the generator needed for the change:
-
-- `npm run pixelate`: rooms, the ash sweeper, item icons and objects (crop, mask, area-average downscale, palette reduction).
-- `node art/tent.mjs`: Mara's tent, painted from scratch as an SVG scene and rendered with sharp (also the stool walk-behind piece).
-- `npm run rig`: animated characters and dialogue portraits. Legs are split at the hip and knee for a six-frame step; NPCs get a `fidget` frame. Each Kiln illustration is a single three-quarter pose, so `art/rig.mjs` cuts it into parts (upper body, near leg, far leg) and poses them per frame. That gives a walk sway, a crouch (legs folded), lying down (the figure rotated, eyes closed) and a blink (eyelids painted over). There are no back or side views, so every direction reuses the three-quarter pose, mirrored for left. Joints, eyes and portrait crops are set per character at the top of the script.
-- `npm run rig` also builds the **background people** (`EXTRAS` in `art/rig.mjs`, `node art/rig.mjs extras` for just those). They are placeholder variants of the three bodies: clothes recoloured, pale armour turned to leather, skin tone and height changed, and a cap, hood or kerchief painted on. Each has 13 frames: stand, blink, a six-frame walk, work (two frames, crouched), carry, reach and sit. Replace any `characters/extra-<id>.png/.json` pair with real art using the same tags.
-- `art/icons.mjs`: the drawn 24×24 action-ring icons.
-- `npm run webp` (`art/webp.mjs`, sharp): WebP copies of the rooms, foreground cut-outs and background people's sheets, which are what the game loads.
-- Outputs are palette-indexed PNGs (`art/png.mjs`), plus the WebP rooms. Rooms, Oren, Nell and the lit gauntlet load the first time they are needed, and the background people load in the background once play starts; `scripts/verify-build.mjs` enforces a size budget (9.6 MB total, 3.5 MB counted before the title screen; per chapter 5 MB, 3 MB for later chapters), and `npm run e2e` measures the real first load (under 1 MB as GitHub Pages serves it).
-- Background people live in `CROWDS` in `src/chapters/ch1/crowd.ts`, by room id: stations, exits, routines per mood (warm, alarm, cold), held things and line counts; the routine logic is `src/engine/crowd.ts` (pure, unit-tested) and the on-screen behaviour is `src/game/Crowd.ts`. Stations must stay clear of the spots Mara walks to (a test checks this).
-- A room's `sign` (hook point, rope length, board size, `wood` or `iron`) hangs its name (`room.<id>` in `en.json`); the board is painted in code in `src/game/sign.ts`.
-- Rooms can declare `foreground` cut-outs (drawn in front of characters standing behind them), `light` (character tint and depth dimming) and `ambient` (particles and flickering glows) in `src/chapters/ch1/rooms.ts`.
-
-Character sheets follow the Aseprite/LibreSprite JSON-array format with the tags `stand_down`, `blink_down`, `stand_side`, `blink_side`, `stand_up`, `walk_down`, `walk_side`, `walk_up` (six frames each, plants on frames 0 and 3), `crouch`, `dead` and optionally `fidget`. Frames are 256×256, anchored bottom-centre at the feet, and side frames face right. Hand-made sheets with the same tags can replace any of them.
+[The shared art pipeline](art/PIPELINE.md) covers delivery and approved integration.
+[The reference map](art/REFERENCES.md) identifies visual authorities and generation commands;
+[STYLE.md](art/STYLE.md) defines the look, [LAYERED-RIG.md](art/LAYERED-RIG.md) the articulated
+contracts, and [PROVENANCE.md](art/PROVENANCE.md) the asset origins.
 
 ## Current limits
 
-- Chapter 1 is one scene: five rooms, two neighbours, four workers and two kids in the background, Tobi by the firing-house hearth, and one machine. The background people are placeholder art (recoloured copies of Mara, Oren and Nell, with Nell's shield turned to wood; Bea carries hers as a toy shield), and their held things are drawn in code. Tobi has his own character art and portrait; talk to him about his chalk drawings and hear him offer his scarf during the farewell with Nell.
-- Rig animation is stiff compared with drawn animation, and the characters always show their three-quarter view.
+- Current implementation, unfinished reviews and remaining placeholders are recorded in [WORKLOG.md](WORKLOG.md); asset origins are recorded in the provenance document.
+- Rig animation quality varies by source pack; see the recorded rig contracts and unverified cases in WORKLOG.md.
 - Nell uses Iven's illustration from Kiln Courier, shield included. In this game the shield is her old counter shutter.
 - Sound is synthesized, so it is simple rather than recorded. No cloud sync. English only.
 - Tested in desktop Chrome and with Playwright's phone emulation (Pixel 7), not yet on a real phone. Safari is untested.
-- The portrait moods are painted brow warps on a single illustration, so they are subtle; Nell has none because her illustration smiles.
+- Portrait techniques and available moods vary by character; source-pack and drawn-face contracts are described in [LAYERED-RIG.md](art/LAYERED-RIG.md).

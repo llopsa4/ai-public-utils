@@ -1,5 +1,11 @@
 # room-tent
 
-Status: **final** · room · chapter ch1 · in the game as `art/src/rooms/tent.png`
+Status: **final** · room · chapter ch1
 
-The tent is the reference picture itself (`tent-reference.png`): nothing to make.
+[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+
+## Description
+
+Mara's tent from inside (the reference picture, already in the game).
+
+Uses the approved tent reference.

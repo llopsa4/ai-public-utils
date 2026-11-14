@@ -26,18 +26,13 @@ Go hunting auto-take; Use on vine
 
 Ordinary shared tool collected at rack, not a specialised arrowhead or new weapon card.
 
-## Technical
+## Asset contract
 
 - Canvas: **24×84 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `kofi1-utility-knife-sheathed.png`, `kofi1-utility-knife-bare.png`.
 
-## Prompt for Codex
-
-Small plain iron blade in worn hide sleeve, practical and unornamented. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-08](../../../../STORY.md#kofi1-scene-08) · [STORY.md · kofi1-scene-09](../../../../STORY.md#kofi1-scene-09) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

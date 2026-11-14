@@ -2,7 +2,7 @@
 
 Agents run unit tests only: `npm test` plus the relevant `test:feature` suites, for every change and before publishing. The browser suites (`test:browser`, `test:release`, `e2e`) run only when the user asks for them.
 
-## Screenshots while another agent works
+## Scratch production previews
 
 `npm run build` (and `test:browser`) rewrites the published `index.html` and `build/`. When another agent may be working in the checkout, build to a scratch folder instead and serve that:
 
@@ -11,7 +11,7 @@ npx vite build --outDir <tmp>/adventure
 node scripts/serve.mjs --dir <tmp> --port 4174   # http://127.0.0.1:4174/adventure/?debug=1
 ```
 
-Lines wait for a click, so screenshot scripts must call `adventure.session.ui.skip()` until `adventure.session.scene.isBusy()` is false.
+Debug commands and script-driving gotchas are in [DEVELOPMENT.md](DEVELOPMENT.md#runtime-and-integration-gotchas).
 
 ## Commands
 
@@ -24,7 +24,7 @@ Lines wait for a click, so screenshot scripts must call `adventure.session.ui.sk
 
 Add `--list` to any test selection to see its files or browser cases without executing tests, typechecking or building: `npm run test:browser -- crowd --list`. Unknown features and unclassified tests fail instead of silently selecting nothing.
 
-Existing commands remain available: `npm run check` runs all Node tests plus a verified build; `npm run e2e` builds once and runs every browser check; `npm run build` typechecks and builds without tests. Prefer `test:release` to `check` followed by `e2e`, which would build twice across separate invocations.
+Existing commands remain available: `npm run check` runs all Node tests plus a verified build; `npm run e2e` builds once and runs every browser check; `npm run build` typechecks and builds without tests. When the user explicitly requests full browser release validation, `test:release` avoids building twice across separate commands.
 
 Example local measurements after restructuring (including typechecking): fast **100 tests in 4.6 seconds**, crowd Node checks **25 tests in 3.5 seconds**, and story/save Node checks **58 tests in 7.5 seconds**. A combined story/input/crowd browser selection ran **15 checks with one build in 134 seconds**, excluding all seven long journeys. Machine load affects these numbers. The fast-run validation also confirmed that tracked changes and the published page were unchanged.
 
@@ -37,7 +37,7 @@ Start with `npm test`, then add the relevant feature suites:
 - **Crowd routines:** `test:feature -- crowd` checks seeded schedules, timing ranges, path geometry, spacing and shutdown behavior. Complete work cycles and animated departures are covered only by the browser journeys (run on request).
 - **Input:** `test:feature -- input` covers movement, bounds and settings contracts; it does **not** claim to model mouse/touch gesture ordering. Gesture, focus, dragging and key changes are covered by `test:browser -- input`, run on request.
 - **Art/animation:** `test:feature -- art` covers metadata and expensive pixel/rig/import checks. Inspect relevant images/screenshots for appearance, depth and animation.
-- **Shared scene, command runner, state/effects, chapter transitions, registry or build behavior:** `npm run test:all` (every Node test). Evaluate behavior impact rather than choosing solely by filename.
+- **Shared scene, command runner, state/effects, chapter transitions, registry, build or shared tooling behavior:** `npm run test:all` (every Node test). Evaluate behavior impact rather than choosing solely by filename.
 - **Before publishing:** `npm run test:all`. This is validation, not authorization to commit or push.
 
 For a Tobi-style NPC addition: fast tests and story/saves/art feature checks as applicable. A change to shared runtime support for that NPC needs `test:all`. For a Hollis-style schedule-only adjustment: fast tests and the crowd Node suite.
@@ -46,7 +46,7 @@ For a Tobi-style NPC addition: fast tests and story/saves/art feature checks as 
 
 The fast tests cover rules, known story paths, inventory, rewards, saves, movement, crowd schedules, objectives, strings and cheap art contracts. Expensive tests live in separate files so excluded tests cannot still load image packs at import time.
 
-`tests/support/story-driver.ts` executes logical commands without Phaser, DOM, images or real timers. The driver uses production dialogue state effects, but expected rewards and outcomes are independently asserted. Room/chapter/end commands terminate their original scripts; entry scripts run on arrival. Dialogue choices, fights and blocking screens require explicit fixtures. Unknown commands throw.
+`tests/support/story-driver.ts` executes logical commands without Phaser, DOM, images or real timers. The driver uses production dialogue state effects, but expected rewards and outcomes are independently asserted. Room/chapter/end commands terminate their original scripts; entry scripts run on arrival. Dialogue choices, fights and blocking screens require explicit fixtures. Unknown commands throw. Missing blocking outcomes must also fail; never fake a win or remove assertions to make a check pass.
 
 The story graph is a reachability model assuming successful fights and dismissed screens. It enumerates dialogue branches; it does not prove combat mechanics, exact rendering, gesture behavior or every equipment state. Dedicated tests cover those contracts.
 

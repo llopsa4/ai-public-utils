@@ -24,18 +24,13 @@ look; take
 
 Existing file: art/src/intro/objects/floor-plate.png. Status: final. No new artwork is produced by reference generation.
 
-## Technical
+## Asset contract
 
 - Canvas: **60×24 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `art/inbox/floor-plate-idle.png`.
 
-## Prompt for Codex
+## Sources
 
-A dented tin plate with a stale crust on it, lying on the cell floor by the cot. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
+[art/manifest.mjs · L413](../manifest.mjs#L413) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-## Attach / references
-
-[art/manifest.mjs · L409](../manifest.mjs#L409) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
-
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

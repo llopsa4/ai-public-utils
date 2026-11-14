@@ -26,18 +26,13 @@ Visual layer only; no additional interaction is introduced.
 
 Existing file: art/src/intro/objects/guardroom-torch.png. Status: placeholder. No new artwork is produced by reference generation.
 
-## Technical
+## Asset contract
 
 - Canvas: **14×90 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `art/inbox/guardroom-torch-idle.png`.
 
-## Prompt for Codex
+## Sources
 
-A wall torch: a pitch-wrapped head on a wooden haft, for the iron brackets on the guardroom walls (unlit: the game adds the flame). Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
+[art/manifest.mjs · L434](../manifest.mjs#L434) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-## Attach / references
-
-[art/manifest.mjs · L430](../manifest.mjs#L430) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
-
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

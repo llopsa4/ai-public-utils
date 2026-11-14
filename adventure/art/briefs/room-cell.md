@@ -58,7 +58,7 @@ Ironhaven’s prison cell at night in its approved gentle three-quarter cage vie
 
 ## Walking space, exits and staging
 
-Coordinates are art pixels; divide by two for logical units. Default floor band y=536–690. Primary background: room-cell. Existing painting: art/src/intro/rooms/cell.png.
+Primary background: room-cell. Existing painting: art/src/intro/rooms/cell.png.
 
 Actor target guard: look, talk, read; visibility [{"notFlag":"guardGone"}]. Actor scale and placement are listed separately; no new actor artwork is requested.
 
@@ -70,22 +70,16 @@ Sprite dimensions are read from each existing atlas sourceSize, preserving trans
 
 - **Stairs up** at (1228,672): Target cellStairs; Always.
 
-- Silas: start: feet (200,610); reference only.
-- Silas: fromGuardroom: feet (1224,672); reference only.
-- Benn: feet (1140,652); reference only.
+- Silas: start: feet (200,610) art px; reference only.
+- Silas: fromGuardroom: feet (1224,672) art px; reference only.
+- Benn: feet (1140,652) art px; reference only.
 
-## Technical
+## Asset contract
 
-1280×720 room frame, 2-pixel world grid, existing palette. [Annotated layout](../spec/cell.svg). No labels, actors or removable props baked into background. Preserve approved exceptions recorded in the room description.
+1280×720 room frame. [Annotated layout](../spec/cell.svg). Preserve the scoped exceptions in this room's description.
 
-## Prompt for Codex
-
-Ironhaven’s prison cell at night in its approved gentle three-quarter cage view: a cot and ragged blanket, high barred window, bucket and plate inside the cage; the small gate opens in the front bars, with the cage’s right side receding toward the back wall. Beyond it stand the guard’s table, candle, cup and Harrow portrait; Silas’s hooded cloak hangs on its nail. The table stub, fallen floor tallow, mask frame, plate placements, cage and gate are separate layers. The stairwell itself is offscreen to the right; only its doorway light lies on the floor. Preserve the approved painting and cage perspective.
-
-Paint only this fixed setting: Ironhaven’s prison cell at night in its approved gentle three-quarter cage view: a cot and ragged blanket, high barred window, bucket and plate inside the cage; the small gate opens in the front bars, with the cage’s right side receding toward the back wall. Beyond it stand the guard’s table, candle, cup and Harrow portrait; Silas’s hooded cloak hangs on its nail. The table stub, fallen floor tallow, mask frame, plate placements, cage and gate are separate layers. The stairwell itself is offscreen to the right; only its doorway light lies on the floor. Preserve the approved painting and cage perspective. Follow the linked layout, existing style and references. Lighting/text are runtime effects. No art production is authorised by generating this brief.
-
-## Attach / references
+## Sources
 
 [src/chapters/intro/rooms.ts · L60](../../src/chapters/intro/rooms.ts#L60) · [Chapter index](INDEX-intro.md)
 
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

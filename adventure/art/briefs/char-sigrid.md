@@ -26,18 +26,13 @@ Existing file: art/src/intro/characters/sigrid.png. Status: placeholder. No new 
 
 Derived from sigrid-layered; do not draw this derived sheet separately.
 
-## Technical
+## Asset contract
 
 - Canvas: **256×256 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `art/inbox/char-sigrid.png`.
 
-## Prompt for Codex
+## Sources
 
-Captain Sigrid of Ironhaven (she/her), about 35, a main character: tall (nearly Mara's height) and fit, an athletic soldier's build like Mara's but a woman's: strong shoulders and arms, a lean waist, powerful legs, upright and balanced like a fencer. Long, loose, untied brunette hair; a healed diagonal scar on her right cheek only (seen when she faces right, hidden when she faces left); grey watchful eyes, a composed, assessing face. A dark-blue winter officer's coat with brass buttons and a short snowy fur collar, with chipped, repaired ivory ceramic protection worked into it (shoulder, chest and ribs, forearms). Her artifact is Nessa's mechanically extendable sword: while she walks or stands only its compact hilt shows, clipped to her belt at the rear hip, with no blade and no scabbard (leather grip, ceramic pommel, a folded brass heat-sink guard, a ceramic chamber with a copper coil, an activation button, a flush emitter collar); at the press of the button physical blade sections extend and lock together, with ceramic channels and copper joints (a mechanical blade, never an energy blade). No shield, no other weapon. Dark breeches, tall black boots. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
+[art/manifest.mjs · L475](../manifest.mjs#L475) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-## Attach / references
-
-[art/manifest.mjs · L471](../manifest.mjs#L471) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
-
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

@@ -1,6 +1,6 @@
-# Pilot pack
+# Pilot references
 
-A small style test before the full set. Make these, bring them in with `npm run art:import`, and stop: the user looks at them in the game before the rest is made.
+[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
 
 - [room-mara](room-mara.md)
 - [rack](rack.md)

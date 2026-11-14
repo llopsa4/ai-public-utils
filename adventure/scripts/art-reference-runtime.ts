@@ -152,21 +152,20 @@ function addNavigation(files: Map<string, string | Uint8Array>, root: string, id
   const block = `${marker}\n## Chapter reading order: ${title}\n\nStart with [the room and puzzle index](INDEX-${id}.md). It separates interactive targets, changing sprites and foreground cuts, and links directly to implemented sources.\n<!-- /chapter-reference:${id} -->`;
   for (const name of ['INDEX.md', 'CATALOG.md']) {
     const path = join(root, 'art/briefs', name);
-    const original = readFileSync(path, 'utf8');
+    const staged = files.get(path);
+    const original = typeof staged === 'string' ? staged : readFileSync(path, 'utf8');
     const pattern = new RegExp(`<!-- chapter-reference:${id} -->[\\s\\S]*?<!-- /chapter-reference:${id} -->`);
     let content = original.includes(marker) ? original.replace(pattern, block) : original.replace(/\n/, `\n\n${block}\n`);
-    content = content.replace('Claude measures the joints and rigs them', 'Codex measures the joints and rigs them')
-      .replace('- Change any file name, or anything outside `art/inbox/` (no game code, no manifest, no rooms).', '- During an art-only delivery, use its specified filenames and scope. Project ownership and permitted work are defined in WORKLOG.md.')
-      .replace('- Put people in room paintings, text in any picture, or perspective in a room.', '- Put people in room paintings or text in game images. Preserve approved per-room perspective exceptions; otherwise follow the style bible.');
     files.set(path, content);
   }
 }
 
-export async function runRuntimeReferences(chapterId: string, check = false, root = ROOT) {
+/** Render everything, including JPEG layouts and navigation, without writing outputs. */
+export async function renderRuntimeReferences(chapterId: string, root = ROOT, staged = new Map<string, string | Uint8Array>(), markdownOnly = false) {
   const spec = await runtimeReference(chapterId, root);
-  const files = renderReference(spec, { outputDir: join(root, 'art/briefs'), rootDir: root });
+  const files = renderReference(spec, { outputDir: join(root, 'art/briefs'), rootDir: root, markdownOnly });
   // Existing brief filenames remain stable for every manifest entry, including conditional room backgrounds.
-  for (const room of spec.rooms) {
+  if (!markdownOnly) for (const room of spec.rooms) {
     const svgPath = join(root, 'art/spec', `${room.id}.svg`);
     const svg = files.get(svgPath);
     if (typeof svg !== 'string') throw new Error(`Shared renderer did not emit ${posix(relative(root, svgPath))}`);
@@ -175,7 +174,17 @@ export async function runRuntimeReferences(chapterId: string, check = false, roo
     const jpeg = await sharp(Buffer.from(svg)).extract({ left: 34, top: 110, width: 1280, height: 720 }).jpeg({ quality: 85 }).toBuffer();
     files.set(join(root, 'art/spec', `${basename}.jpg`), jpeg);
   }
+  for (const name of ['INDEX.md', 'CATALOG.md']) {
+    const file = join(root, 'art/briefs', name);
+    const content = staged.get(file);
+    if (content !== undefined) files.set(file, content);
+  }
   addNavigation(files, root, chapterId, spec.title);
+  return { spec, files };
+}
+
+export async function runRuntimeReferences(chapterId: string, check = false, root = ROOT, markdownOnly = false) {
+  const { spec, files } = await renderRuntimeReferences(chapterId, root, undefined, markdownOnly);
   writeReferences(files, { check });
   console.log(`${check ? 'Checked' : 'Generated'} ${chapterId} references: ${spec.rooms.length} rooms, ${spec.assets.length} assets; gameplay and artwork unchanged.`);
   return files;

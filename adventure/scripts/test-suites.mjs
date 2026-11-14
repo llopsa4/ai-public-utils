@@ -12,6 +12,8 @@ export const NODE_SUITES = {
   'chapter-map-interaction.test.ts': entry(true, 'input', 'story'),
   'kofi-prologue.test.ts': entry(true, 'story', 'saves', 'runtime'),
   'art-reference.test.ts': entry(true, 'art'),
+  'art-briefs.test.ts': entry(false, 'art'),
+  'markdown-docs.test.ts': entry(false, 'art'),
   'art-reference-runtime.test.ts': entry(true, 'art'),
   'kofi-layered.test.ts': entry(false, 'art'),
   'kofi-standing-rig.test.ts': entry(false, 'art'),

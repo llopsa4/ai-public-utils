@@ -70,29 +70,23 @@ None.
 
 ## Walking space, exits and staging
 
-Coordinates are art pixels; divide by two for logical units. Default floor band y=536–690. Reserve approach feet (160,650) for the pen, (430,650) for the pot, (690,650) for Deyu and (1040,650) for the coop. During rescue, the ordinary floor route is suspended; central footing and reachable ledge edges are staging references, not permission to walk across the chasm.
+Reserve approach feet (160,650) for the pen, (430,650) for the pot, (690,650) for Deyu and (1040,650) for the coop. During rescue, the ordinary floor route is suspended; central footing and reachable ledge edges are staging references, not permission to walk across the chasm.
 
 Evening: Oweli at (940,620), Saluna at (850,620), Ahyeli at (1110,620), Tali and Kanu in the adjacent (1070..1150,610) zone, Huska at (1180,620); goats within pen x=70..230, chickens by coop x=1000..1100. These are independently rendered actors. Rescue: Enali’s pinned actor occupies the left ledge under trestle, Deyu hangs from the right rail; Oweli and families are already inland. Huska waits behind Kofi on the stable central footing. Only the explicit rescue changes which human actor exits alive.
 
 - **Inland trail** at (1200,660): Right edge. Initially blocked by dialogue; after rescue it is the scripted escape. No left-edge Rift exit.
 
-- Kofi: feet (640,670); reference only.
-- Deyu / trestle talk: feet (730,620); reference only.
-- Enali / pot talk: feet (480,620); reference only.
-- Tohani: feet (190,620); reference only.
+- Kofi: feet (640,670) art px; reference only.
+- Deyu / trestle talk: feet (730,620) art px; reference only.
+- Enali / pot talk: feet (480,620) art px; reference only.
+- Tohani: feet (190,620) art px; reference only.
 
-## Technical
+## Asset contract
 
-1280×720 room frame, 2-pixel world grid, existing palette. [Annotated layout](../layouts/tsalohi.svg). No labels, actors or removable props baked into background. Preserve approved exceptions recorded in the room description.
+1280×720 room frame. [Annotated layout](../layouts/tsalohi.svg). Preserve the scoped exceptions in this room's description.
 
-## Prompt for Codex
-
-A compact timber-and-stone square on the eastern brink of the Rift. Worn stone foundations, patched pale plaster and ochre woven awnings frame a shared cooking place. The far chasm reads behind the square, not as a path the player can enter. A repaired pen occupies the left, communal work occupies the middle, and the chicken coop and inland gate sit to the right. Keep the gate silhouette clear against trees inland. Dusk is warm but evenly painted; the disaster uses separate ground, building and ledge layers over the same background.
-
-Paint only this fixed setting: Distant Rift cliffs, sky, inland treeline and remote stone outcrops only. Leave the entire near square, building strip, work areas and ground plain behind removable layers. No gate, fire, coop, trestle, bell, tools, people, animals or collapse cracks in the background. Follow the linked layout, existing style and references. Lighting/text are runtime effects. No art production is authorised by generating this brief.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-01](../../../../STORY.md#kofi1-scene-01) · [STORY.md · kofi1-scene-02](../../../../STORY.md#kofi1-scene-02) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

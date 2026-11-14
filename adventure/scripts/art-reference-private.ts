@@ -21,11 +21,11 @@ export function privateReferenceLocation(specPath: string, root = ROOT): { sourc
   return {source,output};
 }
 
-export async function runPrivateReferences(specPath: string, check = false, root = ROOT) {
+export async function runPrivateReferences(specPath: string, check = false, root = ROOT, markdownOnly = false) {
   const location = privateReferenceLocation(specPath,root);
   const spec = JSON.parse(readFileSync(location.source,'utf8')) as ReferenceSpec;
   if (spec.private !== true) throw new Error('Private authoring input must declare private: true');
-  const files = renderReference(spec,{outputDir:location.output,rootDir:root});
+  const files = renderReference(spec,{outputDir:location.output,rootDir:root,markdownOnly});
   writeReferences(files,{check});
   console.log(`${check?'Checked':'Generated'} private references: ${spec.rooms.length} rooms, ${spec.assets.length} assets. Public catalogs and gameplay unchanged.`);
   return files;

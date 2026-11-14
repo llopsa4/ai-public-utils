@@ -1,6 +1,6 @@
 # The Rift: Ashlands style bible
 
-Every picture in the game follows these rules, so pictures made one at a time (by Codex) sit together in one world. Each brief in `art/briefs/` repeats what it needs; `art/CODEX.md` says in what order to make them. `npm run art:import` enforces the measurable rules: size, the pixel grid, the palette and the outline.
+Visual conventions shared by every asset. Assignments and delivery steps are in [PIPELINE.md](PIPELINE.md); per-asset briefs record measured contracts and explicit exceptions.
 
 ## The master reference
 
@@ -39,7 +39,7 @@ Everything is in true proportion to Mara. A chair seat is at his knee, a table a
 - **Mara detail exception:** his layered standing, walking, kneeling and lying frames use a 1-art-pixel grid to retain more of the approved source drawings. His outlined standing height remains 232 art pixels / 116 world pixels; the source scale, anchors, two-art-pixel outline and walk stride are unchanged. Other world artwork keeps the 2-pixel grid below.
 
 - **Everything drawn in the world** (rooms, people, objects, props, creatures and fight pictures) is pixel art on a **2-pixel grid**: a 1280×720 room is a 640×360 picture shown 2×, and Mara is 116 of its pixels tall, enough for faces, blinking and talking to show.
-- **Codex may draw at any size:**
+- **Source drawings may use these sizes:**
   - rooms at 16:9, 1280×720 or larger
   - characters on 1024×1536
   - objects at any size in their proportions
@@ -50,7 +50,7 @@ Everything is in true proportion to Mara. A chair seat is at his knee, a table a
 ## Colour
 
 - **The master palette:** `art/style/palette.json`, 160 colours, previewed in `art/style/palette.png`. It is derived from the tent reference. Paint with it in mind; the importer snaps every pixel to it.
-- **Soft light effects** (a glow, the doorway light on the cell floor, `intro/objects/stairs-light.png`) can't be palette art. Claude makes them in code or as soft PNGs listed with `status: 'placeholder'` and a note, so the palette check passes. They are not paintings to replace.
+- **Soft light effects** (a glow, the doorway light on the cell floor, `intro/objects/stairs-light.png`) can't be palette art. They are made in code or as soft PNGs listed with `status: 'placeholder'` and a note, so the palette check passes. They are not paintings to replace.
 - **Warm range:** ochre, rust, brass, ember orange, clay, warm browns. **Cool range:** soot greys, iron blue-greys, the occasional cold blue in shadow.
 
 ## Light
@@ -59,9 +59,9 @@ Everything is in true proportion to Mara. A chair seat is at his knee, a table a
 - **People and objects are evenly lit** with soft form shading and no strong cast light; the game lights them to match each room.
 - **The tent reference** has its light painted in: it is the exception (it came first).
 
-## Formats and delivery
+## Formats
 
-Save every picture in **`art/inbox/`** with the exact name its brief gives, then run `npm run art:import`.
+File formats below describe the legacy/default assets. Follow the measured brief for exceptions; use [PIPELINE.md](PIPELINE.md) for delivery and installation.
 
 | Kind | File | Background | Size |
 | --- | --- | --- | --- |
@@ -78,7 +78,11 @@ Save every picture in **`art/inbox/`** with the exact name its brief gives, then
 - **Transparency:** if you cannot make a transparent PNG, use a **flat pure magenta (#FF00FF)** background; the importer removes it. Never use magenta in the subject itself.
 - **No text** in any picture (signs, plates and labels are blank or the game draws them), and no people in rooms.
 
-## Characters
+## Character source appearance
+
+The following describes the legacy/default source drawing. Layered rigs and separately drawn
+directions follow [LAYERED-RIG.md](LAYERED-RIG.md) and their own source metadata.
+
 
 The game animates a character from **one drawing** (a cut-out rig: legs bend at hips and knees, the working arm turns, the eyes blink, the mouth moves), so every frame matches. Draw a character as:
 - **One full-body figure** facing right in a slight three-quarter turn, upright, arms relaxed, feet apart and both clearly visible.
@@ -92,7 +96,7 @@ The game animates a character from **one drawing** (a cut-out rig: legs bend at 
   - `lie.png`: lying on the back, head to the right, eyes closed (resting or knocked down). On a 1536×1024 landscape canvas, the same scale as `body.png` (the figure as long as he is tall), lying on y ≈ 990.
 - **Keep the feet fully inside the canvas** in every pose.
 
-After import, the joints and face points are measured once (`art/manifest.mjs`, `RIGS`), then `npm run rig` builds the sheets. Dialogue portraits are cut from the same drawing.
+Joint measurement and runtime export follow the source-pack contract linked above; integration follows PIPELINE.md.
 
 **The cast** is in `art/descriptions.mjs` (`CAST`) and in each character's brief. Every person must read as clearly different from the others: build, height, age, skin, hair, clothes and colours, and one signature thing each.
 

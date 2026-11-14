@@ -24,18 +24,13 @@ Visual layer only; no additional interaction is introduced.
 
 New enclosure built in Amaneti, not the Tsalohi pen restored. Draw the opening at world x=983..1087 to register with garden-panel at anchor (1035,610). Browse, goats, gate panel, hinge cord and latch pin are separate. Fence does not cross the front walking corridor.
 
-## Technical
+## Asset contract
 
 - Canvas: **260×110 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `kofi1-amaneti-pen-standing.png`.
 
-## Prompt for Codex
-
-New rough timber-and-reed fence with a clear watering-path opening; rails repaired from available wood, no animals painted in. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-07](../../../../STORY.md#kofi1-scene-07) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

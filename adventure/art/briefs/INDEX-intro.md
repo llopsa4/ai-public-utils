@@ -141,10 +141,4 @@ Regenerate: `npm run art:briefs -- --chapter intro`. Check freshness by adding `
 - [silas-walk-passing](silas-walk-passing.md)
 - [ui-suspicion-eye](ui-suspicion-eye.md)
 
-## Rules and validation
-
-- Generated from implemented chapter definitions and the art manifest. Edit those sources, not the reference outputs.
-- Viewpoint: Silas, 220 art pixels tall. Room coordinates and dimensions are art pixels; divide by two for logical game units.
-- Interactive targets, drawn sprites and foreground cuts are separate lists. A drawing may support more than one target; a target may be painted into existing approved art.
-- Reference diagrams show conditional placements together and label their source flags; they are not a claim that every pickup is visible at the same gameplay moment.
-- Preserve approved artwork, including the prison cage perspective. Descriptive corrections do not authorise redraws, imports or gameplay changes.
+[Chapter drawing rules](RULES-intro.md). Shared workflow, style and validation: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

@@ -1,10 +1,8 @@
-# Drawing rules
+# Chapter drawing rules
 
 <!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --private-spec private/kofi1/spec.json. -->
 
 Authoring reference; may contain chapter spoilers. Runtime implementation is separate.
-
-Coordinates: 1280×720 art px = 640×360 logical units. Respect each asset’s anchor; foreground cuts may be top-left. A picked-up object hides its room instance; an installed object hides its inventory copy. State frames retain registration. Semantic-only changes reuse the same drawing.
 
 - Story and puzzle intent live in the linked STORY.md scenes; this specification owns visual facts, target classification, source references, placements, stages and attachments. Generated references are never edited directly.
 
@@ -34,4 +32,6 @@ Coordinates: 1280×720 art px = 640×360 logical units. Respect each asset’s a
 
 - Deyu made Kofi’s original folding bow. Basic hunting arrows, a plain wooden blunt arrow and a light-cord arrow exist in the prologue; later engineered forked/weighted/cutting heads belong to Nessa’s rebuild. Camp blunt shot and clearing cord shot preserve arrow identity and require an unfolded bow.
 
-Authoritative sources: private spec.json for visual facts; linked STORY.md scenes for narrative and dialogue. Generated files are not edited directly.
+Shared [visual conventions](../../../art/STYLE.md) and [art procedure](../../../art/PIPELINE.md).
+
+Authoritative sources: spec.json for visual facts; linked story scenes for narrative.

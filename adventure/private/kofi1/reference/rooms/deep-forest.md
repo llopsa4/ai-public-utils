@@ -48,28 +48,22 @@ None.
 
 ## Walking space, exits and staging
 
-Coordinates are art pixels; divide by two for logical units. Default floor band y=536–690. Return lane x=80..600 at y=636..690; bear staging x=820..1180. Move the side limb to y=610 so it no longer overlaps the return lane. Foreground foliage must leave tracks, vine and both fighters readable.
+Return lane x=80..600 at y=636..690; bear staging x=820..1180. Move the side limb to y=610 so it no longer overlaps the return lane. Foreground foliage must leave tracks, vine and both fighters readable.
 
 Huska waits near (580,650) before recall and returns to Kofi’s side before bear attacks. Bear enters from x=1030..1180 and stays real-sized against Kofi, without a new combat image in this pack. Final kill is behind the log; release leaves through right-hand cover. No actor corpse, carried carcass or blood overlay is requested.
 
 - **Clearing / Amaneti** at (40,660): Left edge, available before encounter; after outcome it is the route home.
 
-- Kofi: feet (390,670); reference only.
-- Huska: feet (580,650); reference only.
-- Bear staging only: feet (1030,650); reference only.
+- Kofi: feet (390,670) art px; reference only.
+- Huska: feet (580,650) art px; reference only.
+- Bear staging only: feet (1030,650) art px; reference only.
 
-## Technical
+## Asset contract
 
-1280×720 room frame, 2-pixel world grid, existing palette. [Annotated layout](../layouts/deep-forest.svg). No labels, actors or removable props baked into background. Preserve approved exceptions recorded in the room description.
+1280×720 room frame. [Annotated layout](../layouts/deep-forest.svg). Preserve the scoped exceptions in this room's description.
 
-## Prompt for Codex
-
-Older, closer trees narrow the view. The path returns left toward Amaneti, passes the near face of a fallen log, and bends toward dense cover at the right. Fresh tracks and torn brush warn of a large animal before it appears. A dead side limb tied down by a rotten vine blocks room to back away. Clearing that limb exposes an open strip in front of the log, while the log itself remains. Leave the right half open enough to read the bear silhouette and charge without hiding Kofi.
-
-Paint only this fixed setting: Old trunks, unbroken undergrowth away from targets and fixed ground. Do not bake in tracks, torn brush, fallen log, blocking limb, vine, animals or arrows. Follow the linked layout, existing style and references. Lighting/text are runtime effects. No art production is authorised by generating this brief.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-08](../../../../STORY.md#kofi1-scene-08) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

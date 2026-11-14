@@ -26,18 +26,13 @@ Look; Use pole; set wedge
 
 State canvases identical; fixed far contact (local 350,120), moving near contact (local 150,140 to 150,110). Do not include pole, wedge, net, robot or Kofi. Wedge remains installed at ending despite general tool-return wording. Near underside is (800,450) while pinning and (800,420) while lifted; wedge apex reaches the latter from the sill cap at y=450.
 
-## Technical
+## Asset contract
 
 - Canvas: **420×150 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `kofi1-shifted-beam-pinning.png`, `kofi1-shifted-beam-raised.png`, `kofi1-shifted-beam-supported.png`.
 
-## Prompt for Codex
-
-Rough straight timber resting with one end on stone sill, pressure visible over net edge. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-09](../../../../STORY.md#kofi1-scene-09) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

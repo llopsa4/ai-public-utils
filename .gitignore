@@ -58,5 +58,15 @@ Desktop.ini
 /FFCardGame/dist/
 /FFCardGame/AGENTS.md
 
-# Shared Claude/Codex memory: on this PC only, never committed.
+# Assistant state stays local; only the two shared-procedure skill entrypoints are versioned.
 .agents/
+!/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/adventure-content/
+/.agents/skills/adventure-content/*
+!/.agents/skills/adventure-content/SKILL.md
+!/.agents/skills/pixel-art-pipeline/
+/.agents/skills/pixel-art-pipeline/*
+!/.agents/skills/pixel-art-pipeline/SKILL.md

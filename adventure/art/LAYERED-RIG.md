@@ -1,6 +1,6 @@
 # Mara's articulated source packs
 
-Mara uses the optional eleven-piece renderer in `art/layered-rig.mjs`. Other characters retain the renderer and six-frame cadence in `art/rig.mjs`.
+Mara uses the eleven-piece renderer in `art/layered-rig.mjs`. Other characters opt into their own source-pack contracts below or retain the legacy renderer in `art/rig.mjs`.
 
 ## Sources and rebuilding
 
@@ -57,9 +57,9 @@ The chapter still chooses casual/dressed and the gauntlet's power state. Equippe
 
 ## Verification
 
-Run `npm run art:check`, `npm run typecheck` and `npm test`. `tests/layered-rig.test.ts` checks exact source reconstruction, fixed bone lengths, connected pivots, planted-foot stability, joint coverage, safe edges, palette/grid output, visible blinks, legacy timing, outfit selection and powered pose consistency.
+Validation commands and preview policy are in [TESTING.md](../TESTING.md). `tests/layered-rig.test.ts` checks exact source reconstruction, fixed bone lengths, connected pivots, planted-foot stability, joint coverage, safe edges, palette/grid output, visible blinks, legacy timing, outfit selection and powered pose consistency.
 
-The local inbox handoff has full-size layers, joint overlays, drawn references, animated GIFs, frame strips and browser screenshots. Browser review uses the Vite development server, not a publishing build.
+The local inbox handoff has full-size layers, joint overlays, drawn references, animated GIFs, frame strips and browser screenshots. Use the shared scratch-preview procedure for current production compatibility.
 
 ## Drawn mood faces
 

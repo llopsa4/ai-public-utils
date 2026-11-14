@@ -39,7 +39,7 @@ None.
 
 ## Walking space, exits and staging
 
-Coordinates are art pixels; divide by two for logical units. Default floor band y=536–690. Primary background: room-guardroom. Existing painting: art/src/intro/rooms/guardroom.png.
+Primary background: room-guardroom. Existing painting: art/src/intro/rooms/guardroom.png.
 
 Actor target guard: look, talk, read; visibility [{"flag":"guardGone"}]. Actor scale and placement are listed separately; no new actor artwork is requested.
 
@@ -50,22 +50,16 @@ Sprite dimensions are read from each existing atlas sourceSize, preserving trans
 - **Iron grate** at (1180,592): Target grate; Always.
 - **Stairs down** at (60,600): Target downStairs; Always.
 
-- Silas: fromCell: feet (100,600); reference only.
-- Benn: feet (764,612); reference only.
-- Kell: feet (544,608); reference only.
+- Silas: fromCell: feet (100,600) art px; reference only.
+- Benn: feet (764,612) art px; reference only.
+- Kell: feet (544,608) art px; reference only.
 
-## Technical
+## Asset contract
 
-1280×720 room frame, 2-pixel world grid, existing palette. [Annotated layout](../spec/guardroom.svg). No labels, actors or removable props baked into background. Preserve approved exceptions recorded in the room description.
+1280×720 room frame. [Annotated layout](../spec/guardroom.svg). Preserve the scoped exceptions in this room's description.
 
-## Prompt for Codex
-
-The guardroom above the prison cells: the return stairway at the left edge, an empty shelf for the separately drawn red tally ledger, a black iron stove in the middle, Kell’s desk left of the stove, and the iron grate at the right edge opening onto the snowy night. The clerk’s hood is not on a peg. Three wall torches and their runtime flames light the room; the ledger disappears when collected.
-
-Paint only this fixed setting: The guardroom above the prison cells: the return stairway at the left edge, an empty shelf for the separately drawn red tally ledger, a black iron stove in the middle, Kell’s desk left of the stove, and the iron grate at the right edge opening onto the snowy night. The clerk’s hood is not on a peg. Three wall torches and their runtime flames light the room; the ledger disappears when collected. Follow the linked layout, existing style and references. Lighting/text are runtime effects. No art production is authorised by generating this brief.
-
-## Attach / references
+## Sources
 
 [src/chapters/intro/rooms.ts · L134](../../src/chapters/intro/rooms.ts#L134) · [Chapter index](INDEX-intro.md)
 
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

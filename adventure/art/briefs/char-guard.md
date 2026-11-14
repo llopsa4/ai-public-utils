@@ -24,18 +24,13 @@ Inventory, character or shared reference; no freestanding room instance.
 
 Existing file: art/src/intro/characters/guard.png. Status: placeholder. No new artwork is produced by reference generation.
 
-## Technical
+## Asset contract
 
 - Canvas: **256×256 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `art/inbox/char-guard.png`.
 
-## Prompt for Codex
+## Sources
 
-Benn, the night guard of Ironhaven's cells (he/him), about 19: medium height, gangly. Pale skin red at the nose and ears from the cold, mousy hair under an iron-grey wool cap, a too-big grey wool greatcoat with Ironhaven's iron-and-snowflake badge, a key ring at his belt, fingerless gloves. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
+[art/manifest.mjs · L475](../manifest.mjs#L475) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-## Attach / references
-
-[art/manifest.mjs · L471](../manifest.mjs#L471) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
-
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

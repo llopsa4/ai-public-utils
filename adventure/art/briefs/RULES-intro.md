@@ -1,10 +1,8 @@
-# Drawing rules
+# Chapter drawing rules
 
 <!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter intro. -->
 
 Reference for the implemented chapter; existing artwork is preserved.
-
-Coordinates: 1280×720 art px = 640×360 logical units. Respect each asset’s anchor; foreground cuts may be top-left. A picked-up object hides its room instance; an installed object hides its inventory copy. State frames retain registration. Semantic-only changes reuse the same drawing.
 
 - Generated from implemented chapter definitions and the art manifest. Edit those sources, not the reference outputs.
 
@@ -16,4 +14,6 @@ Coordinates: 1280×720 art px = 640×360 logical units. Respect each asset’s a
 
 - Preserve approved artwork, including the prison cage perspective. Descriptive corrections do not authorise redraws, imports or gameplay changes.
 
-Authoritative sources: implemented chapter definitions, manifest and existing sprite metadata. Generated files are not edited directly.
+Shared [visual conventions](../STYLE.md) and [art procedure](../PIPELINE.md).
+
+Authoritative sources: implemented chapter definitions, manifest and sprite metadata.

@@ -194,14 +194,18 @@ export const MANIFEST = [
   {id:'strain-warning',kind:'icon',file:'ui/strain-warning.png',size:{w:128,h:128},anchor:'none',chapter:'game',status:'final',generator:'Codex ImageGen',subject:'Cream ceramic and brass pressure gauntlet with contained red-hot seams and vents, about to rupture; isolated transparent HUD warning, no surrounding flames. Source description: art/sources/ui-polish/BRIEF.md.', spec: ["128×128 transparent PNG. Strain-meter hot/critical/overloaded gauntlet. See art/sources/ui-polish/BRIEF.md."]},
   ...kofiTestArt,
   { id: 'kofi-standing-rig-source', kind: 'pack', file: 'kofi1/characters/kofi-standing-rig/body.png',
+    sourceReference: 'sources/characters/kofi-standing-rig/',
     chapter: 'kofi1', status: 'requested', anchor: 'bottom-centre', generator: 'art/kofi-standing-rig/build.mjs',
     subject: 'Separate new rig from original standing designs, with fresh profile/underpainting/arms/gear, seventeen registered layers and independent distance-driven renderer. Review only; never replace existing rigs automatically.' },
   ...['village', 'travel'].map(outfit => ({ id: `kofi-${outfit}-walk-source`, kind: 'pack', file: `kofi1/characters/kofi-${outfit}/walk-side.png`,
+    sourceReference: `sources/characters/kofi-${outfit}-layered/`,
     chapter: 'kofi1', status: 'requested', anchor: 'bottom-centre', generator: 'Codex ImageGen',
     subject: `Kofi ${outfit} right-facing walk derived from the eleven-piece articulated source pack in art/sources/characters/kofi-${outfit}-layered; supersedes the flat generated strip, not yet installed.` })),
   { id: 'kofi-travel-source', kind: 'pack', file: 'kofi1/characters/kofi-travel/body.png', chapter: 'kofi1', status: 'requested', anchor: 'bottom-centre', generator: 'Codex ImageGen',
+    sourceReference: 'sources/characters/kofi-travel-layered/master.png',
     subject: 'Kofi travelling: same close-cropped main-character village design, rough wooden folding bow strapped folded along the outside of his leg and a flat quiver tight on his back. Source design before sprite preparation.' },
   { id: 'kofi-village-source', kind: 'pack', file: 'kofi1/characters/kofi/body.png', chapter: 'kofi1', status: 'requested', anchor: 'bottom-centre', generator: 'Codex ImageGen',
+    sourceReference: 'sources/characters/kofi-village-layered/master.png',
     subject: 'Kofi, fit Black man about 27, very short close-cropped hair, minimal practical hide and woven-cloth woodland work clothing with restrained animal fur, goat-bell charm; no hood or medieval archer tunic. Base village design; travel and animation sheets pending.' },
   // Backdrops behind the chapters' opening cards: crops of each chapter's first room (art/intro-cards.mjs).
   ...[['intro', 'intro', "Silas's cell window with its moonbeam"], ['ch1', 'ch1', "The kiln hall's three glowing kiln mouths"], ['ch2', 'ch2', 'The tunnel mouth at dusk']].map(([card, chapter, subject]) => ({

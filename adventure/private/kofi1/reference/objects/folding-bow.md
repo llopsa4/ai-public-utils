@@ -32,18 +32,13 @@ Inventory Use toggles folded/unfolded functionality. Both the blunt-arrow camp s
 
 Runtime now uses kofi-test-bow-drawn, a separate geometric placeholder with aligned left/right 224x224 frames, a bent limb, pulled-back string and nocked arrow. It is shown before utility shots and in combat, held while Aimed shot is prepared, then cleared on release or cancellation. This does not authorise final character art or change the folded rack-sprite canvas.
 
-## Technical
+## Asset contract
 
 - Canvas: **38×150 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `kofi1-folding-bow-folded.png`.
 
-## Prompt for Codex
-
-Deyu’s handmade gift to Kofi: rough shaped wood, leather hinges, a plain catch and lashing; no brass fittings or machine spring. The limbs fold alongside the grip for carrying along Kofi’s leg. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
-
-## Attach / references
+## Sources
 
 [STORY.md · kofi1-scene-01](../../../../STORY.md#kofi1-scene-01) · [STORY.md · kofi1-scene-03](../../../../STORY.md#kofi1-scene-03) · [STORY.md · kofi1-scene-08](../../../../STORY.md#kofi1-scene-08) · [STORY.md · kofi1-scene-09](../../../../STORY.md#kofi1-scene-09) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Chapter index](../INDEX.md)
 
-Style attachments: [art/STYLE.md](../../../../art/STYLE.md) · [art/style/palette.png](../../../../art/style/palette.png) · [art/style/scale.png](../../../../art/style/scale.png) · [tent-reference.png](../../../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md)

@@ -25,18 +25,13 @@ Inventory, character or shared reference; no freestanding room instance.
 
 Existing file: art/src/intro/objects/silas-kneel-reach.png. Status: final. No new artwork is produced by reference generation.
 
-## Technical
+## Asset contract
 
 - Canvas: **256×256 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `art/inbox/silas-kneel-reach-behind.png`, `art/inbox/silas-kneel-reach-arm.png`.
 
-## Prompt for Codex
+## Sources
 
-Silas kneeling, his near arm through the cage bars and his hand open at the floor: the body layer and the forearm layer. Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
+[art/manifest.mjs · L427](../manifest.mjs#L427) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-## Attach / references
-
-[art/manifest.mjs · L423](../manifest.mjs#L423) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
-
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

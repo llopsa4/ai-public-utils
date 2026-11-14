@@ -4,25 +4,15 @@
 
 Authoring reference; may contain chapter spoilers. Runtime implementation is separate.
 
-## What the game does with it
+## Use
 
-[World object, source scenes and disappearance rules](../objects/communal-pot.md). The icon replaces the room instance while carried.
+[World description, source scenes and disappearance rules](../objects/communal-pot.md). The icon replaces the room instance while carried.
 
-## Description
+## Asset contract
 
-Lidded soot-dark clay cooking vessel, a braided handle sleeve distinguishes it from Enali’s lost pot.
-
-## Technical
-
-64×64, transparent, same silhouette/material identity, no text or border. Draw only these carried forms:
+64×64 transparent tile. Carried forms:
 
 - **kofi1-item-communal-pot-empty**: before filling File: `kofi1-item-communal-pot-empty.png`.
 - **kofi1-item-communal-pot-filled**: after checked filling File: `kofi1-item-communal-pot-filled.png`.
 
-## Prompt for Codex
-
-Draw the named carried forms at icon scale, following the linked world brief. No installed-state, hidden-state or extra prop images. Production waits for a separate request.
-
-## Attach / references
-
-[STORY.md · kofi1-scene-03](../../../../STORY.md#kofi1-scene-03) · [STORY.md · kofi1-scene-04](../../../../STORY.md#kofi1-scene-04) · [private/kofi1/spec.json](../../spec.json) · [art/STYLE.md](../../../../art/STYLE.md) · [Index](../INDEX.md)
+[art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md) · [Chapter index](../INDEX.md)

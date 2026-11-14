@@ -32,18 +32,13 @@ The sword: its scabbard hangs from her belt at the left hip, hilt forward, and b
 
 Match the format of Mara's: art/sources/characters/mara-casual-layered/master.png.
 
-## Technical
+## Asset contract
 
 - Canvas: **1024×1536 art px**. Image tile anchor; preserve dimensions and registration across states.
-- Existing palette and world pixel grid; inventory icons use 64×64 transparent tiles.
 - Files: `art/inbox/sigrid-master.png`.
 
-## Prompt for Codex
-
-Captain Sigrid of Ironhaven (she/her), about 35, a main character: tall (nearly Mara's height) and fit, an athletic soldier's build like Mara's but a woman's: strong shoulders and arms, a lean waist, powerful legs, upright and balanced like a fencer. Long, loose, untied brunette hair; a healed diagonal scar on her right cheek only (seen when she faces right, hidden when she faces left); grey watchful eyes, a composed, assessing face. A dark-blue winter officer's coat with brass buttons and a short snowy fur collar, with chipped, repaired ivory ceramic protection worked into it (shoulder, chest and ribs, forearms). Her artifact is Nessa's mechanically extendable sword: while she walks or stands only its compact hilt shows, clipped to her belt at the rear hip, with no blade and no scabbard (leather grip, ceramic pommel, a folded brass heat-sink guard, a ceramic chamber with a copper coil, an activation button, a flush emitter collar); at the press of the button physical blade sections extend and lock together, with ceramic channels and copper joints (a mechanical blade, never an energy blade). No shield, no other weapon. Dark breeches, tall black boots. The walk master: standing in profile facing right, in the neutral stance the walk cycle starts from (feet slightly apart, both visible, arms hanging relaxed and a little away from the body so no arm hides the torso or the other arm). Only one eye shows (profile). Match the exact frame, state descriptions and attachment registration above. Follow the existing style reference. Preserve separate props and actors; no lettering, baked light pools or background in transparent object assets. This reference does not request new art.
-
-## Attach / references
+## Sources
 
 [art/manifest.mjs](../manifest.mjs) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
-Style attachments: [art/STYLE.md](../STYLE.md) · [art/style/palette.png](../style/palette.png) · [art/style/scale.png](../style/scale.png) · [tent-reference.png](../../tent-reference.png)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)
