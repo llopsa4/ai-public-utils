@@ -13,7 +13,8 @@ import { forceGear, openGear } from './gear';
 import { openShop } from './shop';
 import { chapterIntro, newStory, openChapter } from './intro';
 import { choose, closeRadial, openRadial } from './radial';
-import { bindFullscreen, bindLongPress, hideLabels, revealFor, showLabels } from './labels';
+import { bindFullscreen, hideLabels, revealFor, showLabels } from './labels';
+import { chatterDuration, placeChatter } from './ambientChatter';
 import { exportSave, importSave } from './saves';
 import { heroOf } from '../chapters/hero';
 import { renderSuspicion } from './suspicion';
@@ -97,6 +98,7 @@ export class Ui {
   skipSpeech: (() => void) | null = null;
   toastTimer = 0;
   closeRadialHandler: (() => void) | null = null;
+  private chatterStarted = 0;
   /** A lazy gear-screen import is in progress; this is transient UI state, never saved. */
   gearPending = false;
 
@@ -121,7 +123,6 @@ export class Ui {
     });
     $('reveal-btn').addEventListener('click', () => revealFor(this, 3000));
     bindFullscreen();
-    bindLongPress(this);
     const mute = $('mute-btn');
     const showMute = (s: Settings) => mute.setAttribute('aria-pressed', String(s.muted));
     mute.addEventListener('click', () => updateSettings({ muted: !settings().muted }));
@@ -243,8 +244,7 @@ export class Ui {
    */
   private awaitBegin(): void {
     const title = $('title'), prompt = $('title-begin');
-    const touch = globalThis.matchMedia?.('(pointer: coarse)').matches === true;
-    prompt.textContent = t(touch ? 'ui.beginTap' : 'ui.beginClick');
+    prompt.textContent = t('ui.beginClick');
     prompt.hidden = false;
     title.classList.add('awaiting-begin');
     const kinds = ['pointerdown', 'keydown'] as const;
@@ -373,9 +373,6 @@ export class Ui {
     this.live.textContent = text;
   }
 
-  // ------------------------------------------------------------ mobile ---
-
-
   // ------------------------------------------------------- hotspot labels ---
 
 
@@ -421,17 +418,25 @@ export class Ui {
   }
 
   /**
-   * A background person's speech bubble above a world point (chatter: not spoken to Mara, not in
+   * A complete ambient phrase above its speaker (not spoken to Mara, not in
    * the history, hidden from screen readers). Empty text hides it.
    */
   chatter(text: string, at?: Point): void {
     const el = $('chatter');
-    if (!text || !at) { el.hidden = true; return; }
-    if (el.textContent !== text) el.textContent = text;
-    const p = this.toScreen(at);
+    if (!text || !at || this.host.isBusy() || this.anyDialogOpen() || this.introActive) { el.hidden = true; return; }
+    const now = performance.now();
+    if (el.hidden || el.textContent !== text) {
+      el.textContent = text;
+      this.chatterStarted = now;
+    }
+    el.style.maxWidth = `${Math.max(1, Math.min(340, this.stage.clientWidth - 8))}px`;
+    el.hidden = false;
+    const calm = settings().reducedMotion || globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches === true;
+    const p = placeChatter(this.toScreen(at), { width: el.offsetWidth, height: el.offsetHeight },
+      { width: this.stage.clientWidth, height: this.stage.clientHeight }, (now - this.chatterStarted) / chatterDuration(text), calm);
     el.style.left = `${p.x}px`;
     el.style.top = `${p.y}px`;
-    el.hidden = false;
+    el.style.opacity = String(p.opacity);
   }
 
   toast(text: string, ms = 3500): void {

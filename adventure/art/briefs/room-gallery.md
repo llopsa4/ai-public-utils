@@ -14,7 +14,7 @@ In the game as the room `gallery` (ch1). Walkable region: x 0–1280, y 536–69
 
 Everything the player can click, at these places (art pixels), each must be painted there and recognisable:
 - **scratched railing** (`railNames`, x 720–812, y 412–512): look at. A secret: a small, easy-to-miss detail, not highlighted.
-- **pressure gauge** (`gauge`, x 424–512, y 32–120): look at, use.
+- **pressure gauge** (`gauge`, x 432–520, y 42–130): look at, use.
 - **regulator** (`regulator`, x 320–640, y 128–508): look at, use, take, open.
 - **Oren's logbook** (`logbook`, x 116–264, y 416–524): look at, take.
 - **lantern** (`lantern`, x 28–96, y 280–400): look at, take.
@@ -22,7 +22,7 @@ Everything the player can click, at these places (art pixels), each must be pain
 
 Drawn separately as objects (leave their spot plain in the painting, they stand there):
 - `socket` standing on (480, 460).
-- The prop `prop-gauge-face` is drawn by the game at (468, 76); paint only what holds it.
+- The prop `prop-gauge-face` is drawn by the game at (476, 86); paint only what holds it.
 
 Story characters stand at: Oren (960, 592). Keep the wall behind them uncluttered at head height.
 

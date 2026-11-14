@@ -6,6 +6,8 @@ const entry = (fast, ...features) => ({ fast, features });
 
 // Every Node test is discovered independently. This catalog selects subsets, never the full suite.
 export const NODE_SUITES = {
+  'ambient-chatter.test.ts': entry(true, 'crowd', 'input', 'art'),
+  'debug-regulator.test.ts': entry(true, 'story', 'input', 'runtime'),
   'regulator-layout.test.ts': entry(true, 'input', 'story'),
   'silas-polish.test.ts': entry(true, 'story', 'input', 'saves', 'runtime'),
   'effects-ui-fixes.test.ts': entry(true, 'story', 'input', 'art', 'runtime'),
@@ -120,8 +122,8 @@ export function auditBrowserSuites(report, files) {
     const tiers = c.tags.filter(t => t === '@focused' || t === '@journey');
     if (tiers.length !== 1) errors.push(`${label}: choose exactly one of @focused or @journey`);
     if (!FEATURES.some(f => c.tags.includes(`@${f}`))) errors.push(`${label}: missing feature tag`);
-    for (const tag of c.tags) if (!['@focused', '@journey', '@phone', ...FEATURES.map(f => `@${f}`)].includes(tag)) errors.push(`${label}: unknown tag ${tag}`);
-    if (c.project !== (c.tags.includes('@phone') ? 'phone' : 'desktop')) errors.push(`${label}: wrong device project`);
+    for (const tag of c.tags) if (!['@focused', '@journey', ...FEATURES.map(f => `@${f}`)].includes(tag)) errors.push(`${label}: unknown tag ${tag}`);
+    if (c.project !== 'desktop') errors.push(`${label}: unsupported browser project; Adventure targets desktop`);
     if (c.expectedStatus === 'skipped') errors.push(`${label}: explicitly skipped coverage`);
   }
   if (errors.length) throw new Error(errors.join('\n'));

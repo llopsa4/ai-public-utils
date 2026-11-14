@@ -1,5 +1,16 @@
 # Art provenance
 
+## Regulator close-up reuse, 2026-11-14
+
+The puzzle now reuses `props/gauge-face.png` for its painted dial, with a separate animated
+needle and safe-band overlay. Its solid removable brass centre (`props/regulator-closeup-center.png`)
+reuses the installed frame of `objects/socket.png`: crop (40,36,80,80), original centre (80,76),
+hard circular mask radius36 on the existing 2px grid. Retained source RGBA pixels are unchanged;
+no new image generation, recolouring or room repaint was used. Reproduce only this derivative
+with `node art/sources/regulator-closeup/prepare-center.mjs`. The 80px source canvas is displayed
+at 128px in the 512×320 close-up, registered to (256,186), beneath the independent retaining ring.
+The source atlas, room appearance and inventory icon remain unchanged.
+
 The Chapter 1 regulator close-up housing, locking ring, outer bolt and bleed-valve wheel, Ashways pressure-cell states and disabled sweeper were generated with built-in OpenAI ImageGen on 2026-11-06. The Gallery painting supplied the ceramic/brass material reference; the existing Ash Sweeper image supplied machine identity. Each was imported through the palette/grid pipeline, preserving separate interactive layers. Briefs record the prompts and `art/inbox/done/chapter1-improvements/` holds the raw generation record and local review artifacts. The gauge needle and mechanical feedback are runtime graphics.
 
 
@@ -12,6 +23,14 @@ Tobi's original character source (`sources/characters/char-tobi/body.png`) was g
 Runtime art in `art/src` combines **Kiln Courier** derivatives, original generated artwork and procedural placeholders. The Kiln Courier derivatives below use illustrations in the same repository (`FFCardGame/assets`, already published there); their generators read `../FFCardGame/assets`. Original sources, prompts and source-pack metadata may also be tracked. The historical derivative table does not describe every current replacement.
 
 ## UI polish, 2026-11-14
+
+The user approved interaction cursor revision r1 on 2026-11-14. Its open leather glove replaces
+the earlier pointing glove at `ui/cursor-work-glove.png`; `ui/cursor-exit-door.png` replaces the
+procedural SVG exit cursor. Both are Codex ImageGen originals using `tent-reference.png` for
+style, reduced proportionally with nearest-neighbour sampling, hardened alpha and palette snapping
+to 32×32 PNGs. Click hotspots are (14,2) and (22,17). Exact prompts, unchanged originals,
+processing, approval and review evidence are retained in `art/inbox/done/interaction-cursors-r1/`.
+Eye, speech and carried-item cursors retain their existing behavior.
 
 The work-glove interaction cursor (`ui/cursor-work-glove.png`), ceramic regulator housing (`props/regulator-closeup-housing.png`) and red-hot gauntlet warning (`ui/strain-warning.png`) were generated with Codex ImageGen from the approved descriptions and existing style references. Generated originals, final-size review images and reproducible preparation are in `art/sources/ui-polish/` (`cursor-generated.png`, `regulator-generated.png`, `strain-generated.png`, `install.mjs`). `BRIEF.md` records the source descriptions and installed 512×320 regulator registration; its measured installed positions supersede the proposed positions. Existing ring, bolt, valve and cartridge artwork remains separate; animation, labels and heat feedback are runtime effects. This entry records an already-installed delivery and does not approve new production.
 

@@ -4,14 +4,25 @@ Updated 2026-11-14. Shared procedure: [WORKFLOW.md](WORKFLOW.md).
 Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
 
 ## Checkout
-- Current branch `dual-ownership`, HEAD `9024162`; committed Kofi/UI updates remain local. Last inspected remote
+- Current branch `dual-ownership`, HEAD `f148707` (checked for the ownership-mode update). Last inspected remote
   and Pages deployment: `c14fdd4`. No commit, push or published rebuild requested in this task.
-- Dirty: workflow repairs and Markdown consolidation, shared guides/entrypoints, reference
-  generators/tests and generated Markdown. Runtime, installed/source artwork and other apps
-  are unchanged by the consolidation.
+- Local changes: ownership docs, gauge room/CSS/test fixes, debug helper/panel/tests/catalog,
+  README, cursor runtime/metadata/PNGs/provenance, generated reference Markdown and this log.
+  Pre-existing `art/PIPELINE.md` edits are preserved. Delivery originals and shared memory
+  are ignored; published output is unchanged.
 
 ## Working on
-- None. The user-assigned Adventure request kit is complete; normal roles apply.
+- Regulator artwork, outlined floating ambient phrases and desktop-only Adventure support.
+  Claims split across regulator UI/art/tests, desktop UI/map, test configuration/docs and
+  root ambient UI/CSS. Preserve the separate worker-bounce task below and its claims.
+- Removing the kneeling human workers' bounce. Claims: human-extra atlas work tags,
+  their generator definition and focused crowd contract test. Existing artwork stays unchanged.
+- Preparing standing-based dialogue portraits for user review only. Claims:
+  `art/inbox/dialogue-portraits/r1/`, portrait queue entry and this status update.
+  Kofi/Chapter 2 receive briefs only; no portraits or runtime assets will be installed.
+- Active mode: **Codex only**, selected
+  by the user on 2026-11-14 until they change it; Codex owns all Adventure development.
+  Existing task pauses and approval requirements remain in force.
 
 ## Local documentation cleanup
 - Shared workflow, content/runtime guidance and art procedure now live in ordinary repository
@@ -26,8 +37,25 @@ Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
 - Adventure request templates now live in `PROMPTING.md`, linked from README. The generic root
   version was replaced. No story, gameplay or artwork was changed; 221 fast tests passed,
   and template links, code fences and whitespace were checked.
+- Restored the explicit scene-layering contract in `art/PIPELINE.md#scene-construction` after
+  the user identified wording weakened by consolidation. No artwork was regenerated or installed.
 
 ## Verification
+
+- Gauge/debug task: 228 fast and 273 all-Node tests passed. After final error-path hardening,
+  typecheck and all 10 focused gauge/debug tests passed, including valid save round-trip.
+  Full public Markdown reference freshness passed (554 files); only the gallery brief regenerated.
+- Scratch production preview: both gauges visually checked at 1280×900, 390×844 and 915×412;
+  high/safe dial alignment, reduced motion, title/intro debug jumps, partial cancellation/fresh
+  replay, and release into the hatch fight passed with no page errors. No browser suites run.
+  Evidence: local temp `adventure-regulator-visual/`.
+- Cursor integration: user approved r1 on 2026-11-14. 229 fast / 124 art-input feature tests,
+  typecheck and art checks passed; scratch production built. Manual browser checks verified
+  approved image hashes, hotspots, object/exit clicks, eye/speech and carried-item behavior,
+  with no page errors. Delivery/evidence: `art/inbox/done/interaction-cursors-r1/`.
+- Ownership-mode update: reviewed the scoped documentation diff and ran `git diff --check`;
+  no runtime tests or published rebuild were needed or run. Current local changes are
+  `WORKFLOW.md` and this log, plus ignored shared memory.
 - Prior workflow repair: 221 fast / 79 art-feature / 263 all-Node tests passed (before this cleanup).
 - Cleanup: typecheck, 221 fast / 82 art-feature / 266 all-Node tests passed; 23 targeted
   generator tests also passed. Art checks passed with only the existing verb-icon notices.
@@ -53,6 +81,9 @@ Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
 - UI polish: work-glove cursor, ceramic regulator and heat warning, viewport/touch fitting,
   bell actions, battle popup footer, wax/table placement and resumable Sigrid departure.
   Descriptions and registration: `art/sources/ui-polish/BRIEF.md`.
+- Gallery gauge/socket/hotspot alignment and close-up needle pivot corrected. Debug panel
+  Puzzles → Regulator puzzle opens a fresh, prepared gallery replay in the active save.
+- Approved open-glove and doorway/arrow cursors replace the pointing glove and SVG exit.
 - Machine workers/routines, remarks, action rings, map fitting and scene labels are implemented.
   Font studies remain separate; game fonts are unchanged. See README for player behavior.
 
@@ -68,6 +99,6 @@ Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
   light is an intentional placeholder. Existing oversized verb-icon notices are informational.
 
 ## Next action
-- Claude resumes assigned development/integration; Codex receives assigned art or reviews.
+- Codex handles the user's next assignment; cursor integration is complete locally.
 - Verify fresh Codex Desktop recovery in the next chat; preserve existing pauses. Changes remain
   uncommitted and unpublished on `dual-ownership`.

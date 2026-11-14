@@ -6,8 +6,9 @@ import housing from '../../art/src/props/regulator-closeup-housing.png';
 import ring from '../../art/src/props/regulator-closeup-ring.png';
 import bolt from '../../art/src/props/regulator-closeup-bolt.png';
 import valve from '../../art/src/props/regulator-closeup-valve.png';
-import cartridge from '../../art/src/items/regulator.png';
-import { fitRegulatorBoard, compactRegulatorControls } from './regulatorLayout';
+import cartridge from '../../art/src/props/regulator-closeup-center.png';
+import gaugeFace from '../../art/src/props/gauge-face.png';
+import { fitRegulatorBoard } from './regulatorLayout';
 import './regulator.css';
 
 export function openRegulator(scene: RoomScene): Promise<boolean> {
@@ -19,9 +20,9 @@ export function openRegulator(scene: RoomScene): Promise<boolean> {
   dialog.innerHTML = `<header><h2 id="regulator-title">${t('puzzle.title')}</h2><button type="button" id="regulator-close">${t('puzzle.close')}</button></header>
     <div class="regulator-workspace"><div class="regulator-artbox"><div class="regulator-board"><img class="housing" alt="" src="${housing}">
     <img class="regulator-cartridge" alt="" src="${cartridge}">
-    <div class="pressure-dial" role="img"><span class="safe-band"></span><i class="pressure-needle"></i></div>
+    <div class="pressure-dial" role="img"><img class="pressure-face" alt="" src="${gaugeFace}"><span class="safe-band"></span><i class="pressure-needle"></i></div>
     ${(['left','right','vent','ring'] as const).map(action => `<button type="button" class="mechanism ${action}" data-action="${action}" aria-label="${t('puzzle.'+action)}"><img alt="" src="${action==='ring'?ring:action==='vent'?valve:bolt}"></button>`).join('')}<span class="regulator-steam" aria-hidden="true"></span></div></div>
-    <div class="regulator-controls" aria-label="${t('puzzle.title')}">${(['left','right','vent','ring'] as const).map(action=>`<button type="button" data-action="${action}">${t('puzzle.'+action)}</button>`).join('')}</div></div>
+    </div>
     <p id="regulator-feedback" role="status" aria-live="polite"></p>
     <footer><button type="button" id="regulator-procedure">${t('puzzle.procedure')}</button><button type="button" id="regulator-hint">${t('puzzle.hint')}</button><button type="button" id="regulator-release" hidden>${t('puzzle.remove')}</button></footer>`;
   document.body.append(dialog);
@@ -30,12 +31,8 @@ export function openRegulator(scene: RoomScene): Promise<boolean> {
   const feedback = dialog.querySelector<HTMLElement>('#regulator-feedback')!;
   const board=dialog.querySelector<HTMLElement>('.regulator-board')!;
   const artbox=dialog.querySelector<HTMLElement>('.regulator-artbox')!;
-  const controls=dialog.querySelector<HTMLElement>('.regulator-controls')!;
   const layout=()=>{
     if(!dialog.isConnected)return;
-    const compact=compactRegulatorControls(dialog.clientWidth,window.innerHeight);
-    dialog.dataset.compact=String(compact);controls.hidden=!compact;
-    for(const button of board.querySelectorAll<HTMLButtonElement>('[data-action]')){button.tabIndex=compact?-1:0;button.setAttribute('aria-hidden',String(compact));}
     const fitted=fitRegulatorBoard(artbox.clientWidth,artbox.clientHeight);board.style.width=`${fitted.width}px`;board.style.height=`${fitted.height}px`;
   };
   const refresh = () => {
@@ -78,6 +75,6 @@ export function openRegulator(scene: RoomScene): Promise<boolean> {
     scene.events.once('shutdown',shutdown);
     dialog.addEventListener('close',()=>scene.events.off('shutdown',shutdown),{once:true});
     dialog.showModal();layout();requestAnimationFrame(()=>{layout();requestAnimationFrame(()=>dialog.classList.remove('initial'));});
-    (dialog.dataset.compact==='true'?controls:board).querySelector<HTMLButtonElement>('[data-action="left"]')!.focus();
+    board.querySelector<HTMLButtonElement>('[data-action="left"]')!.focus();
   });
 }

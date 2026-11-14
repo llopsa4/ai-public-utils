@@ -71,7 +71,7 @@ const firingHouseHotspots: HotspotDef[] = [
 // scratched into it, and the stairs down to the firing house (right edge).
 const galleryHotspots: HotspotDef[] = [
   { id: 'railNames', name: 'name.railNames', polygon: rect(360, 206, 46, 50), verbs: ['look'], walkTo: pt(384, 282), face: 'up', secret: true },
-  { id: 'gauge', name: 'name.gauge', polygon: rect(212, 16, 44, 44), verbs: ['look', 'use'] },
+  { id: 'gauge', name: 'name.gauge', polygon: rect(216, 21, 44, 44), verbs: ['look', 'use'] },
   { id: 'regulator', name: 'name.regulator', polygon: rect(160, 64, 160, 190), verbs: ['look', 'use', 'take', 'open'], walkTo: pt(240, 282), face: 'up' },
   { id: 'logbook', name: 'name.logbook', polygon: rect(58, 208, 74, 54), verbs: ['look', 'take'] },
   { id: 'lantern', name: 'name.lantern', polygon: rect(14, 140, 34, 60), verbs: ['look', 'take'] },
@@ -247,7 +247,8 @@ export const ROOMS: Record<string, RoomDef> = {
     actors: [{ id: 'oren', x: 480, y: 296 }],
     props: [
       // Running: shivering near the red. Cold: at rest, near the dial's zero.
-      { kind: 'gauge', image: 'gauge-face', x: 234, y: 38, length: 12, angle: 36, rest: -128 },
+      // Socket centre measured at (476,86) in the 1280x720 painting; world coordinates are half-size.
+      { kind: 'gauge', image: 'gauge-face', x: 238, y: 43, length: 12, angle: 36, rest: -128 },
       { kind: 'flame', x: 31, y: 166, size: 12, color: 0xffc060, depth: 9000 },
     ],
     sign: { x: 520, y: 60, drop: 10, w: 74, h: 50, style: 'iron' },

@@ -72,10 +72,9 @@ return class RevealScene extends Phaser.Scene {
 
     // The title over the picture, timed to the music.
     const box = $('reveal'), title = $('reveal-title'), sub = $('reveal-sub'), hint = $('reveal-skip');
-    const touch = globalThis.matchMedia?.('(pointer: coarse)').matches === true;
     title.textContent = t('ui.revealTitle');
     sub.textContent = t('ui.revealSub');
-    hint.textContent = t(touch ? 'ui.revealSkipTap' : 'ui.revealSkip');
+    hint.textContent = t('ui.revealSkip');
     box.classList.remove('title-in', 'sub-in', 'out', 'flash');
     box.hidden = false;
     // The game's bar (satchel, notebook, menu) steps aside for the cinematic.

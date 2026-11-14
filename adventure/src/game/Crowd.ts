@@ -7,6 +7,7 @@ import type { WalkArea } from '../engine/pathfinding';
 import { settings } from '../engine/settings';
 import type { Point, RoomDef } from '../engine/types';
 import { Actor } from './Actor';
+import { chatterDuration } from '../ui/ambientChatter';
 import type { Props } from './props';
 
 /** How the scene lends the crowd what it needs (kept narrow so the crowd can't change game state). */
@@ -63,7 +64,6 @@ const HOLD: Record<Carry, { x: number; y: number; angle: number; origin: [number
   slate: { x: 9, y: 60, angle: -6, origin: [0.5, 0.5] },
   sack: { x: -6, y: 100, angle: -8, origin: [0.5, 0.6] },
 };
-const BUBBLE_MS = 2600;
 const CHATTER_MIN = 8000;
 const CHATTER_MAX = 20000;
 /** How close Mara may stand before someone walking into him waits. */
@@ -561,7 +561,7 @@ export class Crowd {
   }
 
   private say(m: Member, text: string): void {
-    this.bubble = { owner: m, text, until: this.host.scene.time.now + BUBBLE_MS };
+    this.bubble = { owner: m, text, until: this.host.scene.time.now + chatterDuration(text) };
     this.host.bubble(text, m.actor.headPoint());
   }
 

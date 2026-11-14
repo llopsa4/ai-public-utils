@@ -106,23 +106,23 @@ test('a lethal punch finishes its contact hold and return before the victory scr
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
-test('phone combat keeps the punch inside the viewport and reduced motion retains the pose sequence', { tag: ['@focused', '@phone', '@art', '@runtime'] }, async ({ page }, info) => {
-  await page.setViewportSize({ width: 844, height: 390 });
+test('desktop combat keeps the punch inside the viewport and reduced motion retains the pose sequence', { tag: ['@focused', '@art', '@runtime'] }, async ({ page }, info) => {
+  await page.setViewportSize({ width: 1280, height: 720 });
   const errors: string[] = [];
   await battle(page, errors);
   await play(page, 'Knuckle Drive');
   await page.clock.runFor(250);
   await expect(page.locator('#hero-art')).toHaveAttribute('data-pose', 'punch');
   await contactMotion(page, 250);
-  // Phone combat is intentionally scrollable; inspect the whole sprite on its battlefield.
+  // Inspect the entire sprite after its approach and contact poses.
   await page.locator('#hero-art').scrollIntoViewIfNeeded();
-  await page.screenshot({ path: info.outputPath('phone-punch.png'), animations: 'allow' });
+  await page.screenshot({ path: info.outputPath('desktop-punch.png'), animations: 'allow' });
   const box = (await page.locator('#hero-art').boundingBox())!;
   const arena = (await field(page).boundingBox())!;
   expect(box.x).toBeGreaterThanOrEqual(0);
-  expect(box.x + box.width).toBeLessThanOrEqual(845);
+  expect(box.x + box.width).toBeLessThanOrEqual(1281);
   expect(box.y).toBeGreaterThanOrEqual(0);
-  expect(box.y + box.height).toBeLessThanOrEqual(391);
+  expect(box.y + box.height).toBeLessThanOrEqual(721);
   expect(box.x).toBeGreaterThanOrEqual(arena.x);
   expect(box.x + box.width).toBeLessThanOrEqual(arena.x + arena.width);
   expect(box.y).toBeGreaterThanOrEqual(arena.y);
@@ -135,7 +135,7 @@ test('phone combat keeps the punch inside the viewport and reduced motion retain
   await expect(page.locator('#hero-art')).toHaveAttribute('data-pose', 'punch');
   expect(await page.locator('#kc-root .hero-motion').evaluate(el => getComputedStyle(el).animationName)).toBe('none');
   await page.locator('#hero-art').scrollIntoViewIfNeeded();
-  await page.screenshot({ path: info.outputPath('phone-reduced-motion-punch.png'), animations: 'allow' });
+  await page.screenshot({ path: info.outputPath('desktop-reduced-motion-punch.png'), animations: 'allow' });
   await page.clock.runFor(650);
   await expect(page.locator('#hero-art')).toHaveAttribute('data-pose', 'lower');
   await expect(page.locator('#end-turn')).toBeEnabled();

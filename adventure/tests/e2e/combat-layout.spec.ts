@@ -56,18 +56,14 @@ async function compact(page: Page): Promise<void> {
   }
 }
 
-test('combat scales health panels and cards on landscape screens without resetting the battle', { tag: ['@focused', '@art', '@runtime'] }, async ({ page }, info) => {
+test('combat fits resized desktop windows without resetting the battle', { tag: ['@focused', '@art', '@runtime'] }, async ({ page }, info) => {
   const errors: string[] = [];
   await battle(page, errors);
-  const desktopPanel = (await page.locator('#kc-root .hero-status').boundingBox())!;
-  const desktopCard = (await page.locator('#hand button.card').first().boundingBox())!;
   const before = await page.locator('#hand button.card').evaluateAll(cards => cards.map(card => card.getAttribute('data-card-id')));
   const hp = await page.locator('#enemy-hp').textContent();
-  for (const viewport of [{ width: 844, height: 390 }, { width: 915, height: 412 }, { width: 667, height: 375 }, { width: 1024, height: 768 }]) {
+  for (const viewport of [{ width: 1280, height: 720 }, { width: 1024, height: 768 }, { width: 1920, height: 1080 }]) {
     await page.setViewportSize(viewport);
     await compact(page);
-    expect((await page.locator('#kc-root .hero-status').boundingBox())!.width).toBeLessThan(desktopPanel.width);
-    expect((await page.locator('#hand button.card').first().boundingBox())!.height).toBeLessThan(desktopCard.height);
     expect(await page.locator('#hand button.card').evaluateAll(cards => cards.map(card => card.getAttribute('data-card-id')))).toEqual(before);
     await expect(page.locator('#enemy-hp')).toHaveText(hp!);
     await page.screenshot({ path: info.outputPath(`combat-${viewport.width}x${viewport.height}.png`) });
@@ -75,9 +71,9 @@ test('combat scales health panels and cards on landscape screens without resetti
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
-test('a large phone hand stays in one horizontal strip and touch attacks remain usable after resize', { tag: ['@focused', '@phone', '@input', '@art', '@runtime'] }, async ({ page }, info) => {
+test('a large desktop hand stays in one horizontal strip and mouse attacks remain usable after resize', { tag: ['@focused', '@input', '@art', '@runtime'] }, async ({ page }, info) => {
   const errors: string[] = [];
-  await page.setViewportSize({ width: 844, height: 390 });
+  await page.setViewportSize({ width: 1280, height: 720 });
   await battle(page, errors, 12);
   await compact(page);
   const strip = await page.locator('#hand').evaluate(hand => ({
@@ -87,11 +83,11 @@ test('a large phone hand stays in one horizontal strip and touch attacks remain 
   expect(strip).toEqual({ scrollable: true, rows: 1 });
   const attack = page.locator('#hand button.card.attack:not(:disabled)').first();
   await attack.scrollIntoViewIfNeeded();
-  await attack.tap();
+  await attack.click();
   await expect.poll(() => page.locator('#enemy-health-fill').evaluate(fill => Number(fill.parentElement!.getAttribute('aria-valuenow')))).toBeLessThan(100);
   await expect(page.locator('#kc-root .battlefield')).toHaveAttribute('data-phase', 'idle');
   await expect(page.locator('#hand button.card')).toHaveCount(11);
-  await page.setViewportSize({ width: 915, height: 412 });
+  await page.setViewportSize({ width: 1024, height: 768 });
   await compact(page);
   const last = page.locator('#hand button.card').last();
   await last.scrollIntoViewIfNeeded();
@@ -102,23 +98,23 @@ test('a large phone hand stays in one horizontal strip and touch attacks remain 
     return card.contains(document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2));
   });
   expect(hittable, 'the last card is reachable without an overlay').toBe(true);
-  await page.screenshot({ path: info.outputPath('phone-horizontal-hand.png') });
+  await page.screenshot({ path: info.outputPath('desktop-horizontal-hand.png') });
   expect(errors, errors.join('\n')).toEqual([]);
 });
 
-test('the compact guided fight keeps its prompt, intent and dialog controls tappable', { tag: ['@focused', '@phone', '@input', '@art', '@runtime'] }, async ({ page }, info) => {
+test('the desktop guided fight keeps its prompt, intent and dialog controls usable', { tag: ['@focused', '@input', '@art', '@runtime'] }, async ({ page }, info) => {
   const errors: string[] = [];
-  await page.setViewportSize({ width: 667, height: 375 });
+  await page.setViewportSize({ width: 1280, height: 720 });
   await battle(page, errors, 5, true);
   await compact(page);
   await fits(page, page.locator('#kc-root .lesson-banner'));
   const intent = page.locator('#intent');
   await fits(page, intent);
   await expect(intent).toHaveClass(/lesson-target/);
-  await intent.tap();
+  await intent.click();
   const dialog = page.locator('#kc-root dialog[open]');
   await expect(dialog).toBeVisible();
-  // Measure the final tap target after the dialog's short entrance scale completes.
+  // Measure the final click target after the dialog's short entrance scale completes.
   await dialog.evaluate(async element => { await Promise.all(element.getAnimations().map(animation => animation.finished)); });
   await fits(page, dialog);
   const close = dialog.locator('#close-modal');
@@ -126,12 +122,12 @@ test('the compact guided fight keeps its prompt, intent and dialog controls tapp
   const closeBox = (await close.boundingBox())!;
   expect(closeBox.width).toBeGreaterThanOrEqual(44);
   expect(closeBox.height).toBeGreaterThanOrEqual(44);
-  await page.screenshot({ path: info.outputPath('phone-guided-intent.png') });
-  await close.tap();
+  await page.screenshot({ path: info.outputPath('desktop-guided-intent.png') });
+  await close.click();
   await expect(dialog).toHaveCount(0);
   const target = page.locator('#hand button.card.lesson-target');
   await fits(page, target);
-  await target.tap();
+  await target.click();
   await expect.poll(() => page.locator('#enemy-health-fill').evaluate(fill => Number(fill.parentElement!.getAttribute('aria-valuenow')))).toBeLessThan(30);
   expect(errors, errors.join('\n')).toEqual([]);
 });

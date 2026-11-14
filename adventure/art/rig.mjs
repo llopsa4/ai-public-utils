@@ -421,7 +421,8 @@ const EXTRAS = {
 };
 const EXTRA_TAGS = [
   ['stand_down', 0, 0], ['stand_side', 0, 0], ['stand_up', 0, 0], ['blink_down', 1, 1], ['blink_side', 1, 1],
-  ['walk_down', 2, 7], ['walk_side', 2, 7], ['walk_up', 2, 7], ['crouch', 8, 8], ['work', 8, 9], ['carry', 10, 10], ['reach', 11, 11], ['sit', 12, 12],
+  // Work holds the planted kneeling pose; frame 9 stays unused to preserve frame numbering.
+  ['walk_down', 2, 7], ['walk_side', 2, 7], ['walk_up', 2, 7], ['crouch', 8, 8], ['work', 8, 8], ['carry', 10, 10], ['reach', 11, 11], ['sit', 12, 12],
 ];
 
 const rgbToHsl = (r, g, b) => {

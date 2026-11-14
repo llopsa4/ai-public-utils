@@ -2,15 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { mapPinSelection, mapTooltipPosition } from '../src/ui/chapterMapInteraction';
 
-test('touch previews a chapter before selecting it; hover or keyboard focus cannot count as its first tap',()=>{
- const first=mapPinSelection(null,'kofi1',false,'touch');
- assert.deepEqual(first,{preview:'kofi1',activate:false});
- assert.deepEqual(mapPinSelection(first.preview,'kofi1',false,'touch'),{preview:'kofi1',activate:true});
- assert.deepEqual(mapPinSelection(first.preview,'ch1',false,'touch'),{preview:'ch1',activate:false});
- assert.equal(mapPinSelection(null,'ch1',false,'keyboard').activate,true);
- assert.equal(mapPinSelection(null,'ch1',false,'pointer').activate,true);
- assert.equal(mapPinSelection('intro','intro',true,'touch').activate,false);
- assert.equal(mapPinSelection(null,'intro',true,'keyboard').activate,false);
+test('desktop chapter activation selects an unplayed chapter immediately and keeps played chapters disabled',()=>{
+ assert.deepEqual(mapPinSelection(false),{activate:true});
+ assert.deepEqual(mapPinSelection(true),{activate:false});
 });
 
 test('map tooltip stays completely inside its frame and flips below high pins',()=>{

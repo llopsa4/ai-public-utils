@@ -123,6 +123,17 @@ test('every background sheet has the tags the crowd plays', () => {
   }
 });
 
+test('human background workers hold their stationary kneeling frame while working', () => {
+  for (const e of EXTRAS.filter(e => !e.machine)) {
+    const json = JSON.parse(readFileSync(new URL(`../art/src/characters/${e.sheet}.json`, import.meta.url), 'utf8'));
+    const work = json.meta.frameTags.find((t: { name: string }) => t.name === 'work');
+    const crouch = json.meta.frameTags.find((t: { name: string }) => t.name === 'crouch');
+    assert.ok(work && crouch, `${e.sheet} supplies work and crouch poses`);
+    assert.equal(work.from, crouch.from, `${e.sheet} works in its existing kneeling pose`);
+    assert.equal(work.to, work.from, `${e.sheet} holds still instead of bouncing`);
+  }
+});
+
 test('a schedule loops through its stations, wanders now and then, and leaves and comes back', () => {
   const routine: Routine = { stations: ['mouthA', 'mouthB', 'clayPile'], detour: 0.3, leave: { exit: 'curtain', chance: 0.1, away: [1000, 2000] } };
   const schedule = new Schedule(routine, HALL.stations, HALL.exits, HALL.wander, seeded(7));

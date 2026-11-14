@@ -7,9 +7,17 @@ Use the [development guide](DEVELOPMENT.md), [art pipeline](art/PIPELINE.md) and
 
 ## Ownership and assignments
 
-- Claude leads gameplay, runtime, tests, tooling, configuration, documentation, asset installation,
+- **Active mode: Codex only**, selected by the user on 2026-11-14 until they change it.
+  Codex owns all Adventure development: gameplay, runtime, tests, tooling, configuration,
+  documentation, art production, asset installation, registration, central provenance and
+  in-game verification. No Claude handoff is required in this mode. Existing task pauses,
+  review-only restrictions and art approval requirements remain in force; changing mode
+  does not approve pending artwork or resume paused work.
+- The user can select **Codex only** or **Codex + Claude**. Record their selection here
+  and in the work log. The following role split applies only in Codex + Claude mode.
+- In Codex + Claude mode, Claude leads gameplay, runtime, tests, tooling, configuration, documentation, asset installation,
   registration, central provenance and in-game verification.
-- Codex produces assigned, validated art deliveries and performs reviews when the user assigns
+- In Codex + Claude mode, Codex produces assigned, validated art deliveries and performs reviews when the user assigns
   them. Reviews are read-only unless fixes are separately assigned.
 - The user may assign an exception, including implementation by Codex. Record its exact scope
   under Working on in the work log; it does not change standing ownership.

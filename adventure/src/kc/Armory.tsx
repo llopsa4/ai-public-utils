@@ -83,7 +83,7 @@ const STAT_ROWS: ['power' | 'defense' | 'speed' | 'cards' | 'hp' | 'mp', string]
 /**
  * The gear pop-up as a paper doll: Mara's figure with his three slots on the body, a stash of square
  * cells with what he owns but isn't wearing, a tooltip card for the selected piece, and his stats.
- * Click selects, double-click equips, and a piece can be dragged onto its slot (touch: tap, then Equip).
+ * Click selects, double-click equips, and a piece can be dragged onto its slot.
  */
 function PaperDoll({ profile, owned, locked, onEquip, tonics = 0 }: ArmoryProps) {
   const loadout = profile.equipment ?? STARTING_EQUIPMENT;

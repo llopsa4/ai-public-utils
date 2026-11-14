@@ -12,6 +12,7 @@ import type { GameState } from '../engine/types';
 import { roomFlags } from '../engine/roomFlags';
 import { debugFlags, debugItems } from '../engine/debugContent';
 import type { Session } from '../game/session';
+import { openDebugRegulator } from './debugRegulator';
 
 const CSS = `
 #debug-panel { position: fixed; top: 8px; right: 8px; z-index: 9999; width: 300px; max-height: calc(100vh - 16px); overflow: auto;
@@ -97,6 +98,15 @@ export function mountDebugPanel(session: Session): void {
       Object.assign(st, { room: room.id, hero: { ...st.hero, x: entry.x, y: entry.y, face: entry.face, pose: 'stand' } });
     });
     panel.append(el('div', { className: 'row' }, chapterSelect, roomSelect, button('New game', () => session.replaceState(newGame(s.chapter)))));
+
+    panel.append(el('h2', { textContent: 'Puzzles' }));
+    panel.append(button('Regulator puzzle', () => {
+      if (session.ui.anyDialogOpen() || (!session.onTitle && session.scene?.isBusy())) return;
+      panel.hidden = true;
+      void openDebugRegulator(session).then(opened => {
+        if (!opened) session.ui.toast('Regulator puzzle is unavailable while the scene is changing.');
+      }).catch(() => session.ui.toast('Could not open the regulator puzzle.'));
+    }));
 
     // Flags: those of the room shown (src/engine/roomFlags.ts), or all the chapter's.
     const here = debugFlags(c,roomFlags(c, s.room));

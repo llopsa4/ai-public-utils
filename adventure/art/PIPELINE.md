@@ -15,6 +15,22 @@ reference-generation commands. This procedure covers artwork; a generated brief 
 - Record actual originals, prompts, references, licensing and processing. The central
   [provenance record](PROVENANCE.md) identifies historical sources; it is not a production recipe.
 
+## Scene construction
+
+- Create the fixed scenery as an opaque background. Every depicted object the player can
+  interact with must be a separate image with transparency, composited over that background;
+  do not paint a duplicate of it into the background.
+- Keep complete, clean scenery behind every overlay so removing or moving an object reveals
+  the correct background. Non-interactive decoration may remain in the background if it never
+  changes; changing scenery must also be separate.
+- Characters and foreground occluders are separate layers. Their draw order must allow the
+  intended overlaps and depth. State variants retain the same canvas and anchor registration.
+- Clickable targets are geometry, distinct from the artwork. One object's image can support
+  several actions; it does not need a separate image per verb or an empty image when hidden.
+
+Apply this contract when creating or replacing scene artwork. It does not authorise regenerating
+existing art or resuming paused production.
+
 ## Produce a delivery
 
 1. Check available image-generation tools before promising generated work. If unavailable,

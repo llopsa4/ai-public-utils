@@ -186,7 +186,7 @@ export class RoomScene extends Phaser.Scene {
   /** Keyboard play: index into focusTargets(), -1 = nothing focused. */
   focusIndex = -1;
   focusRing: Phaser.GameObjects.Graphics | null = null;
-  /** Soft outline on whatever the pointer is over (not on touch screens). */
+  /** Soft outline on whatever the pointer is over. */
   hoverRing: Phaser.GameObjects.Graphics | null = null;
   /** The hover outline pictures in use (room/outline.ts), reused frame to frame. */
   hoverOutlines: Phaser.GameObjects.Image[] = [];

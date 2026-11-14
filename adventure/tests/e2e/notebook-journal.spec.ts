@@ -10,7 +10,7 @@ test('the title card shows the day, and the notebook has Notes, a Diary and a Ma
   await page.evaluate(() => document.getElementById('intro-skip')!.click());
   await idle(page);
   // Mara's chapter 1, picked on the chapter map, has its own title card.
-  await openMaraFromMap(page, false, false);
+  await openMaraFromMap(page, false);
   await expect(page.locator('#intro-text p.intro-day')).toHaveText('Day 1 · Morning · Cinderfold', { timeout: 10_000 });
   await page.evaluate(() => document.getElementById('intro-skip')!.click());
   await expect(page.locator('#intro')).toBeHidden({ timeout: 10_000 });

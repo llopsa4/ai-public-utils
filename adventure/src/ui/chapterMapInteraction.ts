@@ -1,6 +1,6 @@
-/** Touch preview is separate from hover/focus: synthetic focus cannot start a chapter. */
-export function mapPinSelection(touchPreview:string|null,id:string,played:boolean,input:'touch'|'pointer'|'keyboard'):{preview:string;activate:boolean}{
- return {preview:id,activate:!played&&(input!=='touch'||touchPreview===id)};
+/** Click and keyboard activation both select an unplayed chapter immediately. */
+export function mapPinSelection(played:boolean):{activate:boolean}{
+ return {activate:!played};
 }
 interface Size {width:number;height:number}
 interface Anchor extends Size {x:number;y:number}

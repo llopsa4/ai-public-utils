@@ -1,10 +1,9 @@
 import { expect, test } from '@playwright/test';
 import { open, startNewGame } from './helpers';
 
-for (const phone of [false, true]) test(`Ironhaven title has the empty courtyard, an animated flag and fire, and no characters${phone ? ' on phone' : ''}`, {
-  tag: ['@focused', '@art', '@runtime', ...(phone ? ['@phone'] : [])],
+test('Ironhaven title has the empty courtyard, an animated flag and fire, and no characters', {
+  tag: ['@focused', '@art', '@runtime'],
 }, async ({ page }, info) => {
-  if (phone) await page.setViewportSize({ width: 844, height: 390 });
   const errors: string[] = [];
   await open(page, errors).catch(error => { throw new Error(`${errors.join('\n')}\n${error}`); });
   const state = () => page.evaluate(() => {
@@ -38,7 +37,7 @@ for (const phone of [false, true]) test(`Ironhaven title has the empty courtyard
   expect(String((await state()).flagFrame)).toBe('0');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await expect.poll(async () => (await state()).playing).toBe(true);
-  await startNewGame(page, phone);
+  await startNewGame(page);
   await expect(page.locator('#title')).toBeHidden();
   await expect(page.locator('#intro')).toBeHidden();
   await page.evaluate(() => (window as any).adventure.session.toTitle());

@@ -24,9 +24,9 @@ const QUALITIES: Settings['visualQuality'][] = ['high', 'low'];
 export const TEXT_SCALE: Record<Settings['textSize'], number> = { s: 0.85, m: 1, l: 1.3 };
 const SPEED_FACTOR: Record<Settings['textSpeed'], number> = { slow: 1.5, normal: 1, fast: 0.65 };
 
-export function defaultSettings(prefersReducedMotion = false, touch = false): Settings {
+export function defaultSettings(prefersReducedMotion = false): Settings {
   return {
-    visualQuality: touch ? 'low' : 'high', textSpeed: 'normal', volume: 0.7, musicVolume: 0.5, muted: false, reducedMotion: prefersReducedMotion, textSize: 'm', highContrast: false };
+    visualQuality: 'high', textSpeed: 'normal', volume: 0.7, musicVolume: 0.5, muted: false, reducedMotion: prefersReducedMotion, textSize: 'm', highContrast: false };
 }
 
 /** Accepts only well-formed values; anything missing or invalid falls back to the default. */
@@ -55,11 +55,9 @@ const listeners = new Set<(s: Settings) => void>();
 
 export function loadSettings(): Settings {
   const reduce = globalThis.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-  // Phones and tablets start on Low quality (shaders drain batteries and drop frames there).
-  const touch = globalThis.matchMedia?.('(pointer: coarse)').matches ?? false;
   let raw: unknown = null;
   try { raw = JSON.parse(globalThis.localStorage?.getItem(STORAGE_KEY) ?? 'null'); } catch { /* blocked or corrupt: defaults */ }
-  current = parseSettings(raw, defaultSettings(reduce, touch));
+  current = parseSettings(raw, defaultSettings(reduce));
   return current;
 }
 

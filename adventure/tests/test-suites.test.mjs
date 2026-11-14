@@ -26,24 +26,24 @@ test('new or stale Node test classifications fail instead of silently losing cov
   assert.throws(() => auditNodeSuites(['logic.test.ts'], catalog), /no test file/);
 });
 
-test('browser inventory catches missing chapter files, untagged cases and wrong devices', () => {
+test('browser inventory catches missing chapter files, untagged cases and unsupported projects', () => {
   const valid = report(spec('playthrough.spec.ts', ['@focused', '@story']), spec('debug-chapter2.spec.ts', ['@journey', '@runtime']));
   assert.equal(auditBrowserSuites(valid, ['playthrough.spec.ts', 'debug-chapter2.spec.ts']).length, 2);
   assert.throws(() => auditBrowserSuites(report(valid.suites[0].suites[0].specs[0]), ['playthrough.spec.ts', 'debug-chapter2.spec.ts']), /omitted from discovery/);
   assert.throws(() => auditBrowserSuites(report(spec('x.spec.ts', [])), ['x.spec.ts']), /choose exactly one/);
-  assert.throws(() => auditBrowserSuites(report(spec('x.spec.ts', ['@focused', '@phone', '@input'])), ['x.spec.ts']), /wrong device/);
+  assert.throws(() => auditBrowserSuites(report(spec('x.spec.ts', ['@focused', '@input'], 'unsupported')), ['x.spec.ts']), /unsupported browser project/);
   assert.throws(() => auditBrowserSuites(report(spec('x.spec.ts', ['@focused', '@input', '@typo'])), ['x.spec.ts']), /unknown tag/);
 });
 
 test('focused browser selection never includes long journeys from the same file', () => {
-  const cases = auditBrowserSuites(report(spec('mixed.spec.ts', ['@focused', '@story']), spec('mixed.spec.ts', ['@journey', '@story']), spec('mobile.spec.ts', ['@focused', '@input', '@phone'], 'phone')), ['mixed.spec.ts', 'mobile.spec.ts']);
+  const cases = auditBrowserSuites(report(spec('mixed.spec.ts', ['@focused', '@story']), spec('mixed.spec.ts', ['@journey', '@story']), spec('input.spec.ts', ['@focused', '@input'])), ['mixed.spec.ts', 'input.spec.ts']);
   assert.equal(selectBrowserCases(cases, ['story']).length, 1);
-  assert.equal(selectBrowserCases(cases, ['input'])[0].project, 'phone');
+  assert.equal(selectBrowserCases(cases, ['input'])[0].project, 'desktop');
   assert.throws(() => selectBrowserCases(cases, ['saves']), /No focused browser/);
 });
 
 test('browser inventory normalizes JSON reporter tags without changing CLI tag matching', () => {
-  const cases = auditBrowserSuites(report(spec('mobile.spec.ts', ['focused', 'input', 'phone'], 'phone')), ['mobile.spec.ts']);
+  const cases = auditBrowserSuites(report(spec('input.spec.ts', ['focused', 'input'])), ['input.spec.ts']);
   assert.equal(selectBrowserCases(cases, ['input']).length, 1);
 });
 

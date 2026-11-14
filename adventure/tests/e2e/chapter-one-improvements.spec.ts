@@ -117,9 +117,9 @@ test('boss victory pays once, leaves Corvin injured and continues into chapter t
   expect(errors).toEqual([]);
 });
 
-test('landscape phone regulator controls fit, remain touch sized and respect reduced motion',
-  {tag:['@focused','@phone','@input','@art','@story']},async({page},info)=>{
-  await page.setViewportSize({width:915,height:412});const errors=await prepare(page);
+test('desktop regulator controls fit, remain keyboard accessible and respect reduced motion',
+  {tag:['@focused','@input','@art','@story']},async({page},info)=>{
+  await page.setViewportSize({width:1280,height:720});const errors=await prepare(page);
   await page.emulateMedia({reducedMotion:'reduce'});
   await page.evaluate(()=>{localStorage.setItem('cinderfold.settings',JSON.stringify({...JSON.parse(localStorage.getItem('cinderfold.settings')??'{}'),reducedMotion:true}));(window as any).adventure.session.saveNow();});
   await page.reload();await page.getByRole('button',{name:'Continue',exact:true}).click();await idle(page);
@@ -127,12 +127,12 @@ test('landscape phone regulator controls fit, remain touch sized and respect red
   await expect(page.locator('#regulator-puzzle')).toHaveClass(/calm/);
   for(const button of await page.locator('#regulator-puzzle [data-action]').all()){
     const box=(await button.boundingBox())!;expect(box.width).toBeGreaterThanOrEqual(44);expect(box.height).toBeGreaterThanOrEqual(44);
-    expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(915);
+    expect(box.x).toBeGreaterThanOrEqual(0);expect(box.x+box.width).toBeLessThanOrEqual(1280);
   }
-  await page.locator('#regulator-puzzle [data-action="left"]').tap();
-  await page.locator('#regulator-puzzle [data-action="right"]').tap();
-  await page.locator('#regulator-puzzle [data-action="vent"]').tap();
-  await page.screenshot({path:info.outputPath('regulator-phone.png')});
-  await page.locator('#regulator-close').tap();await idle(page);
+  await page.locator('#regulator-puzzle [data-action="left"]').click();
+  await page.locator('#regulator-puzzle [data-action="right"]').click();
+  await page.locator('#regulator-puzzle [data-action="vent"]').click();
+  await page.screenshot({path:info.outputPath('regulator-desktop-reduced-motion.png')});
+  await page.locator('#regulator-close').click();await idle(page);
   expect(errors).toEqual([]);
 });

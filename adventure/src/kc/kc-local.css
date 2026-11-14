@@ -272,7 +272,7 @@
 }
 .kc .kc-victory.kc-calm, .kc .kc-victory.kc-calm * { animation: none !important; }
 .kc .kc-victory.kc-calm .kc-victory-embers { display: none; }
-/* Short screens (a phone held sideways): the same screen, tighter. */
+/* Short computer windows: keep victory controls within the available height. */
 @media (max-height: 640px) {
   .kc .kc-victory { place-items: safe center; padding: 8px; }
   .kc .kc-victory-card { padding: 12px 18px 14px; }
@@ -547,10 +547,8 @@
   .kc-armory-popup .preview .preview-name { font-size: 20px; }
 }
 
-/* Short landscape screens get a compact battle, rather than the tall phone card grid.
-   Size decoration with the viewport; keep readable card copy and 44px action targets. */
-@media (max-height: 700px) and (min-width: 560px) and (orientation: landscape),
-       (max-width: 1100px) and (min-width: 560px) and (orientation: landscape) {
+/* Compact computer windows keep the battle and cards readable after resizing. */
+@media (max-height: 700px), (max-width: 1100px) {
   .kc .combat-screen {
     --screen-height: 100svh;
     --hand-height: clamp(150px, 40svh, 210px);
@@ -632,7 +630,7 @@
     flex-wrap: nowrap; justify-content: flex-start; align-items: end;
     min-height: 0; gap: var(--hand-gap); overflow-x: auto; overflow-y: hidden;
     padding: 10px 5px 4px; margin: 0;
-    scroll-padding-inline: 5px; overscroll-behavior-x: contain; touch-action: pan-x;
+    scroll-padding-inline: 5px; overscroll-behavior-x: contain;
   }
   .kc .hand::before, .kc .hand::after { display: none; }
   .kc .card {
@@ -795,25 +793,3 @@
 }
 .kc .lesson-banner p { font-size: 19px; line-height: 1.3; }
 .kc .lesson-banner strong { font-size: 13px; }
-
-/* Short screens (phones held sideways): a slimmer strip, the cards without their pictures. */
-@media (max-height: 520px) {
-  #kc-root.in-room .combat-deck { padding-top: 30px; padding-bottom: 14px; }
-  #kc-root.in-room .combat-deck { display: grid; grid-template-columns: 70px minmax(0, 1fr) 110px; gap: 8px; padding-left: 10px; padding-right: 10px; }
-  #kc-root.in-room .hand-area { grid-column: 2; grid-row: 1; }
-  #kc-root.in-room .hand { flex-wrap: nowrap; gap: 6px; }
-  #kc-root.in-room .card { flex: 0 0 calc((100% - 24px) / 5); min-width: 0; max-width: 130px; height: 92px; min-height: 0; padding-bottom: 4px; }
-  #kc-root.in-room .card-cost { width: 20px; height: 20px; font-size: 13px; top: 3px; left: 3px; }
-  #kc-root.in-room .card-art { display: none; }
-  #kc-root.in-room .card-name { font-size: 12px; min-height: 0; padding: 4px 1px 2px 18px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  #kc-root.in-room .card-description, #kc-root.in-room .card-strain { font-size: 11px; }
-  #kc-root.in-room .energy-orb { width: 54px; height: 54px; }
-  #kc-root.in-room .energy-orb strong { font-size: 22px; }
-  #kc-root.in-room .pile-button { transform: scale(.7); }
-  #kc-root.in-room .end-turn { min-height: 36px; padding: 6px; font-size: 13px; }
-  #kc-root.in-room .resources-row { bottom: 112px; scale: .55; }
-  #kc-root.in-room .card-art-tile, #kc-root.in-room .card-art { display: none; }
-  #kc-root.in-room .status-panel { transform: scale(.5); top: 26px; }
-  #kc-root.in-room .effect-preview { font-size: 10px; }
-  .kc .lesson-banner { top: 32%; padding: 8px 14px; } .kc .lesson-banner p { font-size: 14px; }
-}

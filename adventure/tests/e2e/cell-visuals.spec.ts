@@ -1,14 +1,13 @@
 import {expect,test} from '@playwright/test';
 import {act,idle} from './helpers';
 
-for(const phone of [false,true])for(const quality of ['high','low'] as const){
-  test(`cell lighting, wax reach and the perspective cage's door on ${phone?'phone':'desktop'} (${quality})`,{
-    tag:['@focused','@art','@story',...(phone?['@phone']:[])],
+for(const quality of ['high','low'] as const){
+  test(`cell lighting, wax reach and the perspective cage's door on desktop (${quality})`,{
+    tag:['@focused','@art','@story'],
   },async({page},info)=>{
     const errors:string[]=[];
     page.on('pageerror',e=>errors.push(e.message));
     page.on('response',r=>{if(r.status()>=400)errors.push(`${r.status()} ${r.url()}`);});
-    if(phone)await page.setViewportSize({width:915,height:412});
     await page.addInitScript(q=>{
       if(!sessionStorage.getItem('cell-visual-fixture')){localStorage.clear();sessionStorage.setItem('cell-visual-fixture','1');}
       localStorage.setItem('cinderfold.settings',JSON.stringify({visualQuality:q,muted:true,textSpeed:'fast',reducedMotion:q==='low'}));

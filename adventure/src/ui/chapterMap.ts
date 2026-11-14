@@ -1,4 +1,4 @@
-// Chapter pins are the controls. Details appear on hover/focus or the first touch tap.
+// Chapter pins are the controls. Details appear on hover/focus; click or keyboard selects.
 import type { Chapter } from '../chapters/types';
 import { MAP_SIZE, PLACES } from '../content/world';
 import { t } from '../engine/i18n';
@@ -16,7 +16,7 @@ export function showChapterMap(open: readonly Chapter[], played: readonly Chapte
   const tooltip=document.createElement('div');tooltip.id='chapter-map-tooltip';tooltip.className='chapter-map-tooltip';tooltip.hidden=true;tooltip.setAttribute('role','tooltip');
   if(PAINTED)svg.append(el('image',{href:PAINTED,x:0,y:0,width:MAP_SIZE.w,height:MAP_SIZE.h,'aria-hidden':'true'}));
   else drawLand(svg);
-  let current:{pin:SVGGElement;data:MapPin}|null=null,touchPreview:string|null=null,finished=false;
+  let current:{pin:SVGGElement;data:MapPin}|null=null,finished=false;
   const nodes:SVGGElement[]=[];
   const hide=()=>{tooltip.hidden=true;current?.pin.removeAttribute('aria-describedby');current=null;};
   const position=()=>{
@@ -37,9 +37,9 @@ export function showChapterMap(open: readonly Chapter[], played: readonly Chapte
    tooltip.replaceChildren(...lines);tooltip.hidden=false;pin.setAttribute('aria-describedby',tooltip.id);position();
   };
   const dismiss=(event:PointerEvent)=>{
-   if(!(event.target instanceof Element&&event.target.closest('.chapter-pin'))){touchPreview=null;hide();}
+   if(!(event.target instanceof Element&&event.target.closest('.chapter-pin')))hide();
   };
-  const escape=(event:KeyboardEvent)=>{if(event.key==='Escape'){touchPreview=null;hide();}};
+  const escape=(event:KeyboardEvent)=>{if(event.key==='Escape')hide();};
   const resize=()=>{
    const heading=screen.querySelector('h1')!.getBoundingClientRect(),style=getComputedStyle(screen);
    const available=screen.clientHeight-heading.height-parseFloat(style.paddingTop)-parseFloat(style.paddingBottom)-parseFloat(style.rowGap||'0');
@@ -62,16 +62,12 @@ export function showChapterMap(open: readonly Chapter[], played: readonly Chapte
    if(!done)pin.append(el('circle',{cx:at.x,cy:at.y,r:18,class:'map-here-ring','aria-hidden':'true'}));
    pin.append(el('path',{d:`M${at.x},${at.y} l-11,-27 a12,12 0 1 1 22,0 z`,class:'map-here-pin','aria-hidden':'true'}));
    if(done)pin.append(el('path',{d:`M${at.x-6},${at.y-32} l4,5 l8,-10`,class:'pin-tick','aria-hidden':'true'}));
-   let pointerType='mouse';
-   pin.addEventListener('pointerdown',e=>{pointerType=e.pointerType;});
-   pin.addEventListener('pointerenter',e=>{if(e.pointerType!=='touch'){touchPreview=null;show(pin,data);}});
-   pin.addEventListener('pointerleave',e=>{if(e.pointerType!=='touch'&&document.activeElement!==pin&&current?.pin===pin)hide();});
+   pin.addEventListener('pointerenter',()=>show(pin,data));
+   pin.addEventListener('pointerleave',()=>{if(document.activeElement!==pin&&current?.pin===pin)hide();});
    pin.addEventListener('focus',()=>show(pin,data));
-   pin.addEventListener('blur',()=>{if(current?.pin===pin&&touchPreview!==ch.id)hide();});
-   pin.addEventListener('click',e=>{
-    const input=e.detail===0?'keyboard':pointerType==='touch'?'touch':'pointer';
-    const action=mapPinSelection(touchPreview,ch.id,done,input);
-    touchPreview=input==='touch'?action.preview:null;
+   pin.addEventListener('blur',()=>{if(current?.pin===pin)hide();});
+   pin.addEventListener('click',()=>{
+    const action=mapPinSelection(done);
     if(action.activate)pick(ch);else show(pin,data);
    });
    pin.addEventListener('keydown',e=>{

@@ -4,26 +4,28 @@ A point-and-click adventure built from the first scene of **Kiln Courier**'s sto
 
 ## Play
 
+Adventure targets desktop computer browsers with mouse, trackpad and keyboard. Phone and tablet support is outside the game's scope. Window resizing, browser zoom, fullscreen and reduced motion remain supported.
+
 Live: <https://llopsa4.github.io/ai-public-utils/adventure/>
 
 - **New game** opens on black with three cards (where and when, the day, then the title *The Man With Many Faces*); each fades on its own, a click moves on, Skip ends them. Then Silas's escape from Ironhaven's prison (the intro chapter) leads into chapter 1.
 - **Kofi prologue (local implementation):** after Silas, the chapter map also offers **A Place to Stay**. For direct testing, run `npm run dev`, open `/adventure/?debug=panel` and select `kofi1` / **A Place to Stay** in the chapter dropdown. Six rooms, both survivor routes, construction, the rite, three agreements and the hut ending are playable. All Kofi visuals are labelled geometric placeholders; the approved character rigs remain uninstalled. Nothing is published by editing or running the development preview.
 - **Kofi’s folding bow:** a camp exchange explains Deyu’s handmade bow and everyday arrow jobs. Use the carried bow to fold/unfold it. With it unfolded, use the wooden blunt arrow to dislodge the campfire stick; later combine a normal arrow and light cord to rig the clearing’s high fork. Both utility arrows are recovered. A geometric tensed-bow pose appears before shooting and stays held during Aimed shot. No finished art was added.
 - **Kofi combat:** choose Shot, Aimed shot, Step back, Fire brand, Huska! or Gather arrows. Aimed shot takes a setup turn and another selection to release; a different card cancels it before spending an arrow. Enemy attacks are announced. Retry preserves the chapter's earlier choices. Kill/release decisions happen after combat, with no loot advantage.
-- **Chapter map:** hover or focus a red pin for its location and chapter; activate it to travel. On touch, tap once to preview and again to choose.
-- **Regulator:** loosen both outer bolts, bleed pressure, then turn the retaining ring. Phone and short landscape layouts provide separate labelled controls without scrolling.
-- **Walk:** click or tap the floor.
-- **Act:** click or tap a person or object to open the action ring, then choose an action (Look at, Open, Close, Pick up, Use, Talk to, Go to). Arrow keys move around the ring and Esc closes it.
-- **Satchel:** click an item or press its numbered slot (1–9, then 0) to carry it at the pointer. Click a target or another satchel item to use it, or drag and drop it there. Each attempt puts the cursor back to normal, including a rejected use. Clicking/dropping onto empty floor cancels the item and walks there. Double-click/double-tap an item for its Look / Use menu; inventory clicks wait 300 ms to distinguish these gestures. Enter opens the menu when an item has keyboard focus. Right-click, Esc, clicking the selected item again, or dropping outside the game cancels it.
+- **Chapter map:** hover or focus a red pin for its location and chapter; activate it to travel. Click or press Enter to select an available chapter.
+- **Regulator:** loosen both outer bolts, bleed pressure, then turn the retaining ring. The close-up uses the same painted gauge and solid brass center as the gallery, with separate aligned interactive parts.
+- **Walk:** click the floor.
+- **Act:** click a person or object to open the action ring, then choose an action (Look at, Open, Close, Pick up, Use, Talk to, Go to). Arrow keys move around the ring and Esc closes it.
+- **Satchel:** click an item or press its numbered slot (1–9, then 0) to carry it at the pointer. Click a target or another satchel item to use it, or drag and drop it there. Each attempt puts the cursor back to normal, including a rejected use. Clicking/dropping onto empty floor cancels the item and walks there. Double-click an item for its Look / Use menu; inventory clicks wait 300 ms to distinguish these gestures. Enter opens the menu when an item has keyboard focus. Right-click, Esc, clicking the selected item again, or dropping outside the game cancels it.
 - **Poses:** click Mara, Oren or Nell for Crouch, Lie down and Stand up.
-- **Background people:** four workers go about their day in the kiln hall: Hollis kneels at the fire and takes ash to the cart, Wren works the hoist, Dace kneels beside the broken jars sorting pottery for reuse, and Ansel keeps the tally. Pip and Bea play in the firing house, while Tobi stands by the hearth: talk to him about his drawings and hear him offer his scarf when Mara says goodbye. They work or play and chat in speech bubbles; some walk rounds or take breaks. Click one to look at them or talk (they stop, turn to Mara and say a line). When the alarm goes up the kids run to Nell; when the kiln goes cold the workers stare at it and two of them leave, and the kids huddle by the dead hearth.
+- **Background people:** four workers go about their day in the kiln hall: Hollis kneels at the fire and takes ash to the cart, Wren works the hoist, Dace kneels beside the broken jars sorting pottery for reuse, and Ansel keeps the tally. Pip and Bea play in the firing house, while Tobi stands by the hearth: talk to him about his drawings and hear him offer his scarf when Mara says goodbye. They work or play and their ambient remarks float above their heads in outlined warm text; some walk rounds or take breaks. Click one to look at them or talk (they stop, turn to Mara and say a line). When the alarm goes up the kids run to Nell; when the kiln goes cold the workers stare at it and two of them leave, and the kids huddle by the dead hearth.
 - **Room names** hang on a board in every room (an iron shield-plate in the regulator gallery).
 - **Talk:** choose a reply with the mouse or the number keys. Lines appear in the panel at the bottom with the speaker's portrait, which talks and shows a mood (worried, angry) on some lines. Every line waits for a click (or a key) before the next.
 - **Explore:** looking at something again often gets a different line, and four small secrets are hidden around Cinderfold (the notebook counts the ones you've found).
 - **Labels:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
 - **Exits:** double-click a doorway to go straight through.
 - **Keyboard:** hold arrows to walk, including diagonals, and release to stop. Obstacles stop direct movement; exits still need an explicit action. **G** toggles Gear when unlocked, **N** the Notebook, and **M** the Menu; each key closes its own screen, and Escape still works. These shortcuts do not interrupt speech, choices, fights, text entry or other dialogs; G also opens Oren's guided Gear prompt. Tab moves between room targets and bar buttons; Enter acts on the focused target. Arrow keys navigate an open action ring, and number keys choose dialogue replies instead of inventory slots while choices are shown. Opening a screen cancels held movement and pending satchel gestures.
-- **Touch:** press and hold on the scene to label everything. The ⛶ button switches to full screen where the browser allows it.
+- **Fullscreen:** the fullscreen button switches to full screen where the browser allows it.
 - **Menu** (pause): Resume, **History** (everything said so far), **How to play**, saves, **Settings** (text speed, effects and music volume, mute, reduced motion, text size, high contrast) and **Title screen**.
 - **Hints:** the notebook's **Hint** button gives a nudge for the current goal, then the plain answer.
 - **Cursor:** the pointer shows the name of what it is over and what a click will do (look, handle, talk, leave).
@@ -32,7 +34,7 @@ The chapter covers the morning errands in Mara's tent, the kiln hall and firing 
 
 After Mara learns the shutdown procedure, speak to Oren again before releasing the regulator. Oren gives and equips his medium armour, then asks Mara to check its fit in Gear (press G or the highlighted button). The gift and guided visit happen once; later outfit choices remain yours. After the fight Oren still gives his spare light coat and harness, without another forced Gear visit. Older saves retain their equipment and progress; saves already past shutdown continue without being rewound.
 
-Combat uses the approved lower guard at rest, the raised guard during a 200 ms approach, and an extended punch held for 500 ms at contact before a 200 ms return. Damage appears at contact; input stays locked until the return finishes. Reduced motion keeps the poses and timing without travel or shake. On smaller landscape screens, health panels, cards and decoration become compact so the battle and controls fit together. Extra cards scroll horizontally; action buttons retain a 44-pixel minimum tap target.
+Combat uses the approved lower guard at rest, the raised guard during a 200 ms approach, and an extended punch held for 500 ms at contact before a 200 ms return. Damage appears at contact; input stays locked until the return finishes. Reduced motion keeps the poses and timing without travel or shake. Combat adapts to resized desktop windows. Extra cards scroll horizontally; action buttons remain readable and keyboard accessible.
 
 Text is **English only** for now. Languages can be added back by dropping a `strings/<code>.json` beside `en.json` and listing it in `src/engine/i18n.ts`. The switcher reappears once there are two.
 
@@ -61,9 +63,11 @@ Add `?debug` to the URL to draw the walk areas (green), obstacles (red), hotspot
 
 The debug panel's **Medium armour** checkbox dresses Mara and equips Layered Armor directly; turning it off selects light armour. Gauntlet power stays controlled separately by `hasGauntlet`. These selections use the existing equipment and dressing save data.
 
+Under **Puzzles**, **Regulator puzzle** jumps straight to the gallery and opens a fresh two-screw puzzle, preparing the required equipment and story state. It resets regulator progress and its shutdown aftermath in the active game, so subsequent play can overwrite autosave. Close any blocking screen or finish the current action before using it.
+
 ## Chapter 1: regulator and departure
 
-The regulator now opens a mechanical close-up after Mara has learned the procedure and Oren has prepared him. Loosen both outer bolts, open the bleed valve until the gauge settles into the marked safe band, then turn the ring a quarter-turn and lift out the regulator. Wrong actions give feedback without damage or resetting progress. The close-up includes the notebook procedure and two-stage hints; Escape returns to the room, retaining progress. Keyboard focus and touch controls are supported.
+The regulator now opens a mechanical close-up after Mara has learned the procedure and Oren has prepared him. Loosen both outer bolts, open the bleed valve until the gauge settles into the marked safe band, then turn the ring a quarter-turn and lift out the regulator. Wrong actions give feedback without damage or resetting progress. The close-up includes the notebook procedure and two-stage hints; Escape returns to the room, retaining progress. The mechanisms support mouse and keyboard focus.
 
 Oren remembers Mara's first voiced concern and echoes it after the Gallery fight; Mara also records a reflection in his notebook. A brief quiet moment follows the fight. At the kiln gate, a one-time reminder offers an optional goodbye. Either Nell or Tobi can initiate the family's shared farewell, giving bread and scarf only once.
 
@@ -104,7 +108,7 @@ Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/
 | `src/chapters/` | One folder per chapter behind the `Chapter` interface (`types.ts`, registry in `index.ts`). `ch1/`: rooms, click rules (`interactions.ts`), story rules (`story.ts`), dialogue trees, crowds, the fight, objectives, flags and `strings.en.json` |
 | `src/content/` | What every chapter shares: Mara's kit (`kit.ts`), the interface strings (`strings/en.json`), art lists |
 | `src/game/` | Phaser scenes (`scenes.ts`; the room's input, lighting, script runner, command handlers and fight bridge in `room/`), the `Actor` (pose/walk/blink/task poses), the background people (`Crowd`), room name boards (`sign.ts`), asset list, session |
-| `src/ui/` | DOM interface over the canvas: `ui.ts` (layout, title, menu, satchel, toasts) with one module per screen: `speech`, `radial` (action ring, choices), `labels` (touch), `notebook` (goals, history), `settingsMenu`, `gear`, `shop`, `intro`, `saves` |
+| `src/ui/` | DOM interface over the canvas: `ui.ts` (layout, title, menu, satchel, toasts) with one module per screen: `speech`, `radial` (action ring, choices), `labels` (hotspot labels and fullscreen), `notebook` (goals, history), `settingsMenu`, `gear`, `shop`, `intro`, `saves` |
 | `src/audio/` | Web Audio synthesizer for ambience, effects, footsteps per floor surface, and a generative score per room mood (no sound files) |
 | `art/` | Art scripts and their output in `art/src/` (see [PROVENANCE](art/PROVENANCE.md)) |
 | `tests/` | `node:test` suites run with tsx |
@@ -122,5 +126,5 @@ contracts, and [PROVENANCE.md](art/PROVENANCE.md) the asset origins.
 - Rig animation quality varies by source pack; see the recorded rig contracts and unverified cases in WORKLOG.md.
 - Nell uses Iven's illustration from Kiln Courier, shield included. In this game the shield is her old counter shutter.
 - Sound is synthesized, so it is simple rather than recorded. No cloud sync. English only.
-- Tested in desktop Chrome and with Playwright's phone emulation (Pixel 7), not yet on a real phone. Safari is untested.
+- Desktop Chromium is the automated browser target. Other desktop browsers, including Safari, are not yet verified; phone and tablet support is not maintained.
 - Portrait techniques and available moods vary by character; source-pack and drawn-face contracts are described in [LAYERED-RIG.md](art/LAYERED-RIG.md).

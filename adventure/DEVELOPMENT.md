@@ -4,6 +4,11 @@ See the [README layout](README.md#layout) for architecture and source ownership,
 [shared workflow](WORKFLOW.md) for assignments, and [TESTING.md](TESTING.md) for validation
 and scratch previews. Paths below are relative to `adventure/`.
 
+Adventure targets desktop computer browsers with mouse, trackpad and keyboard. Phone/tablet
+layouts, touch-only controls and mobile device testing are outside the game's scope. Preserve
+desktop window resizing, browser zoom, keyboard access, fullscreen and reduced motion. Shared
+FFCardGame source retains its own device support; make Adventure-specific changes locally.
+
 ## Authoring chapter content
 
 - Use the chapter's `rooms.ts`, `interactions.ts`, `dialogue.ts`, `flags.ts`, `strings.en.json`

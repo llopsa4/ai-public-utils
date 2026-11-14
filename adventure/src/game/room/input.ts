@@ -177,7 +177,6 @@ export function openItemRing(scene: RoomScene, item: string, index: number): voi
 }
 
 export function onPointerMove(scene: RoomScene, pointer: Phaser.Input.Pointer): void {
-  if (pointer.wasTouch) return;
   const at = { x: pointer.worldX, y: pointer.worldY };
   const target = scene.isBusy() || scene.isPlayerInputLocked() ? null : hitTest(scene, at);
   scene.hovered = target;

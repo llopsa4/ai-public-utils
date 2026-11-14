@@ -36,7 +36,6 @@ function start(): void {
     roundPixels: true,
     banner: false,
     scale: { mode: Phaser.Scale.NONE, zoom: session.ui.layout() / ART_SCALE },
-    input: { activePointers: 2 },
     scene: [BootScene, title, room],
   });
 
@@ -45,13 +44,12 @@ function start(): void {
   }
   window.addEventListener('resize', relayout);
   onSettingsChange(relayout); // text size
-  window.addEventListener('orientationchange', relayout);
 
   // Browsers only allow audio after a user gesture (hovering does not count): the title's "click
-  // anywhere to begin" is that gesture; any first click, tap or key also starts it (in the capture
+  // anywhere to begin" is that gesture; any first click or key also starts it (in the capture
   // phase, so nothing the game does with the event can stop it).
   const unlockAudio = () => sound.unlock();
-  for (const type of ['pointerdown', 'mousedown', 'touchend', 'keydown'] as const) window.addEventListener(type, unlockAudio, { once: true, capture: true });
+  for (const type of ['pointerdown', 'mousedown', 'keydown'] as const) window.addEventListener(type, unlockAudio, { once: true, capture: true });
   const applyVolume = () => sound.setVolume(settings().volume, settings().muted, settings().musicVolume);
   applyVolume();
   onSettingsChange(applyVolume);

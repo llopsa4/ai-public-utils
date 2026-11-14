@@ -2,6 +2,9 @@
 
 Agents run unit tests only: `npm test` plus the relevant `test:feature` suites, for every change and before publishing. The browser suites (`test:browser`, `test:release`, `e2e`) run only when the user asks for them.
 
+Adventure supports desktop computer browsers only. Verify mouse/trackpad and keyboard input,
+window resizing, browser zoom and reduced motion. There are no phone/tablet test targets.
+
 ## Scratch production previews
 
 `npm run build` (and `test:browser`) rewrites the published `index.html` and `build/`. When another agent may be working in the checkout, build to a scratch folder instead and serve that:
@@ -19,7 +22,7 @@ Debug commands and script-driving gotchas are in [DEVELOPMENT.md](DEVELOPMENT.md
 - `npm run test:feature -- story saves`: typecheck and the union of selected Node suites, without duplicates. Supported features: `story`, `saves`, `crowd`, `input`, `art`, `runtime`. A feature suite includes its exhaustive checks, so it can be slower than the default.
 - `npm run test:browser -- story`: one fresh production build and the selected **focused** browser checks. This does not run full journeys. It updates the local published `index.html` and `build/` files, just like `npm run build`.
 - `npm run test:all`: typecheck and every Node test, including bitmap rendering/import, interaction goldens and exhaustive story exploration.
-- `npm run test:release`: validate the entire inventory, typecheck once, run every Node test, build and verify once, then run every desktop/phone browser check and full journey against that artifact.
+- `npm run test:release`: validate the entire inventory, typecheck once, run every Node test, build and verify once, then run every desktop browser check and full journey against that artifact.
 - `npm run test:inventory`: audit and summarize Node and browser classification without launching a browser or building the site.
 
 Add `--list` to any test selection to see its files or browser cases without executing tests, typechecking or building: `npm run test:browser -- crowd --list`. Unknown features and unclassified tests fail instead of silently selecting nothing.
@@ -35,7 +38,7 @@ Start with `npm test`, then add the relevant feature suites:
 - **Story, dialogue, objectives, rewards:** `test:feature -- story`. This includes exhaustive chapter reachability and interaction goldens. Check new actors, portraits or other scene/UI wiring with a screenshot.
 - **Saves and migrations:** `test:feature -- saves`.
 - **Crowd routines:** `test:feature -- crowd` checks seeded schedules, timing ranges, path geometry, spacing and shutdown behavior. Complete work cycles and animated departures are covered only by the browser journeys (run on request).
-- **Input:** `test:feature -- input` covers movement, bounds and settings contracts; it does **not** claim to model mouse/touch gesture ordering. Gesture, focus, dragging and key changes are covered by `test:browser -- input`, run on request.
+- **Input:** `test:feature -- input` covers movement, bounds and settings contracts; it does **not** claim to model pointer gesture ordering. Clicks, focus, dragging and key changes are covered by `test:browser -- input`, run on request.
 - **Art/animation:** `test:feature -- art` covers metadata and expensive pixel/rig/import checks. Inspect relevant images/screenshots for appearance, depth and animation.
 - **Shared scene, command runner, state/effects, chapter transitions, registry, build or shared tooling behavior:** `npm run test:all` (every Node test). Evaluate behavior impact rather than choosing solely by filename.
 - **Before publishing:** `npm run test:all`. This is validation, not authorization to commit or push.
@@ -56,7 +59,7 @@ Focused Playwright tests cover the actual browser/Phaser connections: draw the a
 
 Node tests are discovered recursively under `tests/` using `.test.ts`, `.test.mjs` and the corresponding JS/TS module extensions. Register each file in `scripts/test-suites.mjs`, choosing whether it is fast and assigning one or more features. The all-tests command discovers files independently of this catalog; the audit rejects missing or stale classifications. Helpers live under `tests/support/` without a test suffix.
 
-Every Playwright test needs exactly one tier tag, `@focused` or `@journey`, and at least one feature tag, for example `{ tag: ['@focused', '@story', '@saves'] }`. Add `@phone` for phone cases. Classification is per test, since short and long checks can share a spec file. Desktop and phone projects discover all specs and divide them by the phone tag; no filename allowlist excludes a chapter. Inventory auditing checks omitted files, tag spelling, device assignment and explicitly skipped coverage.
+Every Playwright test needs exactly one tier tag, `@focused` or `@journey`, and at least one feature tag, for example `{ tag: ['@focused', '@story', '@saves'] }`. Classification is per test, since short and long checks can share a spec file. The desktop project discovers every spec; no filename allowlist excludes a chapter. Inventory auditing rejects unsupported projects and tags, omitted files and explicitly skipped coverage.
 
 Keep scenes deterministic for isolated input tests: load the relevant state, hold unrelated moving actors, and choose a verified empty floor point for floor gestures. Poll the condition being tested instead of sleeping through an unrelated routine. Keep real timing waits only when timing itself is the subject.
 

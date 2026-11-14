@@ -75,7 +75,7 @@ test('the whole scene plays in the browser, from the title screen into chapter 2
   // A real click on the title screen: New game opens on the intro (Silas, played in intro.spec.ts);
   // the chapter map it ends on starts Mara's chapter 1 with its opening.
   await startIntro(page);
-  await openMaraFromMap(page, false, false);
+  await openMaraFromMap(page, false);
   // The opening: lines of context over black, one per click, then the first room fades in.
   const intro = page.locator('#intro');
   await expect(intro).toBeVisible();

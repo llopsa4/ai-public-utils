@@ -13,6 +13,7 @@ Generated from the manifest. [Grouped catalog](CATALOG.md) · [Pilot references]
 | Asset | Kind | Chapter | Status |
 | --- | --- | --- | --- |
 | [cursor-work-glove](cursor-work-glove.md) | icon | game | final |
+| [cursor-exit-door](cursor-exit-door.md) | icon | game | final |
 | [strain-warning](strain-warning.md) | icon | game | final |
 | [kofi-room-tsalohi](kofi-room-tsalohi.md) | room | kofi1 | placeholder |
 | [kofi-room-camp](kofi-room-camp.md) | room | kofi1 | placeholder |
@@ -216,6 +217,7 @@ Generated from the manifest. [Grouped catalog](CATALOG.md) · [Pilot references]
 | [world-map](world-map.md) | map | game | final |
 | [regulator-closeup-housing](regulator-closeup-housing.md) | prop | ch1 | final |
 | [regulator-closeup-ring](regulator-closeup-ring.md) | prop | ch1 | final |
+| [regulator-closeup-center](regulator-closeup-center.md) | prop | ch1 | final |
 | [regulator-closeup-bolt](regulator-closeup-bolt.md) | prop | ch1 | final |
 | [regulator-closeup-valve](regulator-closeup-valve.md) | prop | ch1 | final |
 | [ashways-pressure-cell](ashways-pressure-cell.md) | prop | ch1 | final |

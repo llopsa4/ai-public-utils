@@ -96,14 +96,14 @@ Outline extraction and inspection follow [the art procedure](PIPELINE.md#tool-se
 | Clickable | Name | Box (x, y, w×h) | Mara stands at |
 | --- | --- | --- | --- |
 | `railNames` (secret) | scratched railing | 720, 412, 92×100 | (768, 564) |
-| `gauge` | pressure gauge | 424, 32, 88×88 | — |
+| `gauge` | pressure gauge | 432, 42, 88×88 | — |
 | `regulator` | regulator | 320, 128, 320×380 | (480, 564) |
 | `logbook` | Oren's logbook | 116, 416, 148×108 | — |
 | `lantern` | lantern | 28, 280, 68×120 | — |
 | `galleryStairs` | way to the firing house | 1172, 208, 108×320 | (1224, 584) |
 
 - Object `objects/socket` (320×160, tags installed (1), removed (1)): foot point (480, 460). Drawn on top of the room, so the painting should leave that spot free (or show what is behind it).
-- Animated prop `props/gauge-face.png` (gauge) at (468, 76): a needle-less dial (the game draws the needle), centred there.
+- Animated prop `props/gauge-face.png` (gauge) at (476, 86): a needle-less dial (the game draws the needle), centred there.
 - Oren stands at (960, 592).
 - The name board hangs from (1040, 120) (about 148×120); it is painted by the game, so leave a quiet patch of wall there.
 - Heat shimmer (High quality) over: 400, 0, 160×120: hot spots in the painting (fires, lamps, pipes).

@@ -52,9 +52,9 @@ test('room looks are valid: hazes and shafts on screen, reflections on walkable 
   }
 });
 
-test('visual quality defaults to Low on touch screens and only accepts known values', () => {
-  assert.equal(defaultSettings(false, true).visualQuality, 'low');
-  assert.equal(defaultSettings(false, false).visualQuality, 'high');
+test('visual quality defaults to High on computers and preserves a stored Low preference', () => {
+  assert.equal(defaultSettings(false).visualQuality, 'high');
+  assert.equal(defaultSettings(true).visualQuality, 'high');
   assert.equal(parseSettings({ visualQuality: 'ultra' }, defaultSettings()).visualQuality, 'high');
   assert.equal(parseSettings({ visualQuality: 'low' }, defaultSettings()).visualQuality, 'low');
 });

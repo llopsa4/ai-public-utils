@@ -9,7 +9,7 @@ const GPU = process.platform === 'win32' ? ['--use-angle=d3d11', '--enable-gpu',
 
 export default defineConfig({
   testDir: 'tests/e2e',
-  // All specs are discovered. Test-level tags select feature/tier and the phone project.
+  // Adventure targets computer browsers; all specs run in the desktop project.
   testMatch: '**/*.spec.{ts,tsx,js,mjs,cts,mts,cjs}',
   timeout: 180_000,
   fullyParallel: false,
@@ -26,7 +26,6 @@ export default defineConfig({
     reuseExistingServer: false,
   },
   projects: [
-    { name: 'desktop', grepInvert: /@phone/, use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 }, launchOptions: { args: GPU } } },
-    { name: 'phone', grep: /@phone/, use: { ...devices['Pixel 7'], launchOptions: { args: GPU } } },
+    { name: 'desktop', use: { ...devices['Desktop Chrome'], viewport: { width: 1280, height: 800 }, launchOptions: { args: GPU } } },
   ],
 });

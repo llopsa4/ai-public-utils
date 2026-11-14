@@ -11,6 +11,7 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 ## game
 
 - **cursor-work-glove**: [brief](cursor-work-glove.md) · icon · final.
+- **cursor-exit-door**: [brief](cursor-exit-door.md) · icon · final.
 - **strain-warning**: [brief](strain-warning.md) · icon · final.
 - **title-ironhaven-courtyard**: [brief](title-ironhaven-courtyard.md) · prop · final.
 - **title-gauntlet**: [brief](title-gauntlet.md) · prop · final.
@@ -495,6 +496,7 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **intro-card-ch1**: [brief](intro-card-ch1.md) · prop · final.
 - **regulator-closeup-housing**: [brief](regulator-closeup-housing.md) · prop · final.
 - **regulator-closeup-ring**: [brief](regulator-closeup-ring.md) · prop · final.
+- **regulator-closeup-center**: [brief](regulator-closeup-center.md) · prop · final.
 - **regulator-closeup-bolt**: [brief](regulator-closeup-bolt.md) · prop · final.
 - **regulator-closeup-valve**: [brief](regulator-closeup-valve.md) · prop · final.
 - **ashways-pressure-cell**: [brief](ashways-pressure-cell.md) · prop · final.

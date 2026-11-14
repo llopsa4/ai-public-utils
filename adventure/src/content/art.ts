@@ -5,6 +5,12 @@
 
 /** Portrait moods in strip order; each mood has a closed-mouth and an open-mouth frame (art/rig.mjs). */
 export type Mood = 'neutral' | 'worried' | 'angry';
+
+/** Approved 32px pointer cursors; hotspots are on the fingertip and exit-arrow tip. */
+export const CURSOR_ART = {
+  hand: { file: 'ui/cursor-work-glove.png', hotspot: [14, 2] },
+  exit: { file: 'ui/cursor-exit-door.png', hotspot: [22, 17] },
+} as const;
 export const PORTRAIT_MOODS: Record<string, Mood[]> = {
   mara: ['neutral', 'worried', 'angry'],
   oren: ['neutral', 'worried', 'angry'],
