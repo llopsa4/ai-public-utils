@@ -7,8 +7,8 @@
 // frame, splatted at the target resolution, palette-reduced and laid out as an Aseprite JSON-array
 // sheet. Blinks paint the eyelids shut; lying down rotates the eyes-closed figure.
 // Sources are read from ../FFCardGame/assets; only outputs are committed (see art/PROVENANCE.md).
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PNG } from 'pngjs';
 import { encodeIndexed } from './png.mjs';
@@ -632,7 +632,25 @@ async function buildCharacter(id) {
   // Later chapters' characters live in their chapter's folder (art/src/<chapter>/characters, portraits).
   const dir = cfg.dir ?? '';
   if (isFinal(`${dir}characters/${id}.png`)) { console.log(`  ${id}: final art, kept.`); return; }
-  if (cfg.layeredPack) return buildLayeredCharacter(id, cfg);
+  if (cfg.layeredPack) {
+    const portraitId = id === 'mara-gauntlet' ? 'mara' : cfg.portraitId;
+    if (!portraitId || !isFinal(`${dir}portraits/${portraitId}.png`)) return buildLayeredCharacter(id, cfg);
+    // Keep the shared source renderer unchanged. Stage a layered rebuild and install
+    // only its character sheet/atlas, leaving the independently approved portrait alone.
+    const inbox = join(here, 'inbox');
+    mkdirSync(inbox, { recursive: true });
+    const staging = mkdtempSync(join(inbox, '.rig-export-'));
+    try {
+      const result = await buildLayeredCharacter(id, { ...cfg, dir: relative(out, staging).replaceAll('\\', '/') + '/', portraitId: undefined });
+      const target = join(out, dir, 'characters');
+      mkdirSync(target, { recursive: true });
+      for (const ext of ['png', 'json']) copyFileSync(join(staging, 'characters', `${id}.${ext}`), join(target, `${id}.${ext}`));
+      return result;
+    } finally {
+      if (dirname(resolve(staging)) !== resolve(inbox) || !basename(staging).startsWith('.rig-export-')) throw new Error('Unexpected rig staging path');
+      rmSync(staging, { recursive: true, force: true });
+    }
+  }
   // A placeholder can be a recoloured, re-dressed copy of another body (like the background people).
   const raw = cfg.variant ? variantImage(loadSource(cfg), cfg, cfg.variant) : loadSource(cfg);
   const open = cfg.unpowered ? dimGlow(raw, cfg.unpowered) : raw;
@@ -685,6 +703,9 @@ async function buildCharacter(id) {
   // Mara has one portrait set (gauntlet lit), written by the 'mara-gauntlet' variant as mara.png.
   if (cfg.unpowered || cfg.noPortrait) return;
   const portraitId = id.replace(/-gauntlet$/, '');
+  // Approved portrait exports have their own standing crops and lip measurements.
+  // Rebuilding a character sheet must not replace them with legacy generated faces.
+  if (isFinal(`${dir}portraits/${portraitId}.png`)) return;
   const [px, py, pw, ph] = cfg.portrait;
   const moods = cfg.moods ?? MOODS;
   const P = 256, portrait = new PNG({ width: P * moods.length * 2, height: P });

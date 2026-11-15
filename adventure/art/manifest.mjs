@@ -9,6 +9,7 @@
 
 /** @typedef {import('./manifest.d.mts').ArtEntry} ArtEntry */
 import kofiTestArt from './kofi-placeholder-manifest.json' with { type: 'json' };
+import approvedPortraits from './sources/dialogue-portraits/approved-r2.json' with { type: 'json' };
 
 const room = (id, file, subject, light, extra = {}) => ({
   id, kind: 'room', file: `rooms/${file}.png`, webp: true, size: { w: 1280, h: 720 }, anchor: 'top-left',
@@ -127,7 +128,7 @@ export const RIGS = {
   // is Nell's in officer's blue.
   // Silas: Codex's articulated pack (art/sources/characters/silas-layered, art/LAYERED-RIG.md). His
   // disguises are the same rig with the mask drawn over him (rig.json overlays); the clerk carries the
-  // ledger against his chest. Portraits are cut from the walk master.
+  // ledger against his chest. Dialogue uses independently approved standing portraits.
   ...(() => {
     const pack = { layeredPack: 'sources/characters/silas-layered', dir: 'intro/', height: 220, walks: true };
     return {
@@ -190,7 +191,8 @@ for (const [id, outfit, powered] of [
 
 /** @type {ArtEntry[]} */
 export const MANIFEST = [
-  {id:'cursor-work-glove',kind:'icon',file:'ui/cursor-work-glove.png',size:{w:32,h:32},anchor:'none',chapter:'game',status:'final',generator:'Codex ImageGen',subject:'Open reaching ochre leather work glove, five readable digits; user-approved interaction cursor r1. Delivery: art/inbox/done/interaction-cursors-r1/HANDOFF.md.', spec: ["32×32 transparent PNG; click hotspot (14,2) on the fingertip. User-approved r1 replaces the pointing glove."]},
+  {id:'cursor-work-glove',kind:'icon',file:'ui/cursor-work-glove.png',size:{w:32,h:32},anchor:'none',chapter:'game',status:'final',generator:'Codex ImageGen',subject:'Bare palm-down pointing hand with a proportionate index finger, facing upper-left; user-approved r3. Legacy glove filename retained. Delivery: art/inbox/done/interaction-cursors-r3/HANDOFF.md.', spec: ["32×32 transparent PNG; fingertip hotspot (2,1). Used for scene interaction, satchel and carried items."]},
+  {id:'cursor-default-arrow',kind:'icon',file:'ui/cursor-default-arrow.png',size:{w:32,h:32},anchor:'none',chapter:'game',status:'final',generator:'Codex ImageGen',subject:'Familiar upper-left arrow in worn brass, soot-dark iron and cream ceramic; user-approved r2 arrow retained unchanged in r3. Delivery: art/inbox/done/interaction-cursors-r3/HANDOFF.md.', spec: ["32×32 transparent PNG; arrow-tip hotspot (4,1). Default empty-scene and non-interactive background pointer."]},
   {id:'cursor-exit-door',kind:'icon',file:'ui/cursor-exit-door.png',size:{w:32,h:32},anchor:'none',chapter:'game',status:'final',generator:'Codex ImageGen',subject:'Worn wooden doorway with a clear rightward ivory arrow; user-approved exit cursor r1. Delivery: art/inbox/done/interaction-cursors-r1/HANDOFF.md.', spec: ["32×32 transparent PNG; click hotspot (22,17) on the arrow tip. Indicates leaving a room."]},
   {id:'strain-warning',kind:'icon',file:'ui/strain-warning.png',size:{w:128,h:128},anchor:'none',chapter:'game',status:'final',generator:'Codex ImageGen',subject:'Cream ceramic and brass pressure gauntlet with contained red-hot seams and vents, about to rupture; isolated transparent HUD warning, no surrounding flames. Source description: art/sources/ui-polish/BRIEF.md.', spec: ["128×128 transparent PNG. Strain-meter hot/critical/overloaded gauntlet. See art/sources/ui-polish/BRIEF.md."]},
   ...kofiTestArt,
@@ -668,6 +670,27 @@ MANIFEST.push({ id: 'ui-suspicion-eye', kind: 'icon', file: 'ui/suspicion-eye.pn
   spec: ['File: art/inbox/ui-suspicion-eye.png, a 192x48 strip of four 48x48 frames left to right (calm, narrowing, narrow, red), transparent (or flat magenta).'] });
 const frame = MANIFEST.find(e => e.id === 'item-frame');
 frame.subject = "Nessa's mask frame, the artifact that lets Silas be anyone: a thin articulated frame of polished brass ribs shaped like the outline of a face (brow band, cheek ribs, a hinged jaw piece), tiny riveted hinges at the temples and jaw, a few fine adjusting screws, a worn leather strap at the back. Fine craftsmanship, a little theatrical; it should look precious next to everything else in a prison satchel.";
+
+// Approved standing-based portraits are final exports, independent of the walking rigs.
+// Register missing crowd/machine portraits and replace the old portrait-only contracts.
+for (const portrait of approvedPortraits.portraits) {
+  const id = `portrait-${portrait.id}`;
+  let entry = MANIFEST.find(e => e.id === id);
+  if (!entry) { entry = { id, kind: 'portrait', file: portrait.file, anchor: 'none' }; MANIFEST.push(entry); }
+  Object.assign(entry, {
+    file: portrait.file, chapter: portrait.chapter, moods: portrait.moods,
+    size: { w: portrait.moods.length * 512, h: 256 }, status: 'final',
+    generator: 'approved standing portrait export (dialogue-portraits r2)',
+    subject: `${portrait.name}'s approved standing-based dialogue portrait.`,
+    spec: [
+      '256×256 transparent frames; each mood has a closed-mouth frame followed by a speaking frame. Keep the same crop and silhouette throughout.',
+      `Standing source: ${portrait.source}.`,
+      'User-approved revision r2, 2026-11-15. Preserve the installed final PNG; walking-rig rebuilds must not replace it.',
+      'Installed with nearest master-palette normalization only; approved frame geometry, alpha and speaking registration are unchanged.',
+      'Exact approved hashes, crop coordinates and speaking-lip registration: art/sources/dialogue-portraits/approved-r2.json.',
+    ],
+  });
+}
 
 // Statuses set by the importer (art/status.json: { "<id>": "final" }) override the defaults above.
 import { existsSync, readFileSync } from 'node:fs';

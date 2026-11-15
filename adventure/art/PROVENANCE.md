@@ -1,5 +1,38 @@
 # Art provenance
 
+## Standing-based dialogue portraits, approved 2026-11-15
+
+The user approved portrait revision r2 with “you can install the portraits”. Sixteen
+transparent PNG strips were installed: Mara, Silas's five identities,
+Sigrid, Hollis, Ansel, Dace, Pip, Wren, Corvin, Bea, the ash collector and the shard
+sorter. Oren, Nell, Tobi, Benn and Kell retain their standing-source portraits. Kofi
+and Chapter 2 remain brief-only; no paused character art or rig was installed.
+
+Four corrections use approved layered `idle.png` standing drawings; the seven human
+workers use their upright `body.png` sources. Machine portraits reuse the original
+stationary anchor drawings in `sources/cinderfold-machines/`, without invented faces.
+Three Silas disguise designs were generated with built-in ImageGen using paired
+standing-pose and existing-disguise references. Their originals, reference cards,
+exact prompts and permanent relative paths are retained in
+`sources/dialogue-portraits/`. No new image generation occurred during installation.
+
+The original procedural mood exporter was retained. Eleven corrected speaking
+identities use measured lip seams on the 256px final crop, with small sloped openings
+and restrained lip/teeth articulation. `sources/dialogue-portraits/approved-r2.json`
+records sources, source hashes, crops, mouth registration, moods and exact approved
+source and installed PNG hashes. Installation applies the required nearest game-palette
+normalization while preserving every frame's dimensions and alpha; no new outline,
+rescale or motion changes were introduced. Approved original strips are retained unchanged
+in `sources/dialogue-portraits/approved/`. The legacy and layered branches of `rig.mjs`
+protect final portraits independently of character-sheet status. Layered rebuilds stage
+their output and copy only character PNG/JSON, leaving the shared renderer byte-identical
+and the approved portrait untouched.
+
+Full source-derived preparation, review, the twelve mouth regression checks, approval
+and installation verification are retained locally at
+`art/inbox/done/dialogue-portraits-r2/`. The original source attribution elsewhere in
+this document is unchanged; these are derivatives of those approved sources.
+
 ## Regulator close-up reuse, 2026-11-14
 
 The puzzle now reuses `props/gauge-face.png` for its painted dial, with a separate animated
@@ -23,6 +56,16 @@ Tobi's original character source (`sources/characters/char-tobi/body.png`) was g
 Runtime art in `art/src` combines **Kiln Courier** derivatives, original generated artwork and procedural placeholders. The Kiln Courier derivatives below use illustrations in the same repository (`FFCardGame/assets`, already published there); their generators read `../FFCardGame/assets`. Original sources, prompts and source-pack metadata may also be tracked. The historical derivative table does not describe every current replacement.
 
 ## UI polish, 2026-11-14
+
+On 2026-11-15 the user approved cursor revision r3 with “Perfect, install”. The bare
+palm-down pointing hand replaces the earlier glove at the retained legacy path
+`ui/cursor-work-glove.png`, hotspot (2,1). The default refinery arrow
+`ui/cursor-default-arrow.png`, hotspot (4,1), is unchanged from the approved r2 arrow.
+The hand's index proportions were corrected through built-in ImageGen editing of the
+r2 source; source images, exact prompts, technical reduction, checks and approval are
+preserved in `art/inbox/done/interaction-cursors-r3/`. Both are transparent 32px images
+normalized to the game palette. Satchel hover and carried items use the same hand;
+look, talk and doorway cursors retain their existing artwork.
 
 The user approved interaction cursor revision r1 on 2026-11-14. Its open leather glove replaces
 the earlier pointing glove at `ui/cursor-work-glove.png`; `ui/cursor-exit-door.png` replaces the

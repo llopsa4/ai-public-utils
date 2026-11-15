@@ -11,6 +11,7 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 ## game
 
 - **cursor-work-glove**: [brief](cursor-work-glove.md) · icon · final.
+- **cursor-default-arrow**: [brief](cursor-default-arrow.md) · icon · final.
 - **cursor-exit-door**: [brief](cursor-exit-door.md) · icon · final.
 - **strain-warning**: [brief](strain-warning.md) · icon · final.
 - **title-ironhaven-courtyard**: [brief](title-ironhaven-courtyard.md) · prop · final.
@@ -21,7 +22,7 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **world-map**: [brief](world-map.md) · map · final.
 - **char-mara**: [brief](char-mara.md) · character · placeholder.
 - **char-mara-gauntlet**: [brief](char-mara-gauntlet.md) · character · placeholder.
-- **portrait-mara**: [brief](portrait-mara.md) · portrait · placeholder.
+- **portrait-mara**: [brief](portrait-mara.md) · portrait · final.
 - **char-mara-medium**: [brief](char-mara-medium.md) · character · placeholder.
 - **char-mara-medium-gauntlet**: [brief](char-mara-medium-gauntlet.md) · character · placeholder.
 - **item-tonic**: [brief](item-tonic.md) · item · final.
@@ -384,22 +385,22 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **room-guardroom**: [brief](room-guardroom.md) · room · final.
 - **room-prison-door**: [brief](room-prison-door.md) · room · final.
 - **char-silas**: [brief](char-silas.md) · character · placeholder.
-- **portrait-silas**: [brief](portrait-silas.md) · portrait · placeholder.
+- **portrait-silas**: [brief](portrait-silas.md) · portrait · final.
 - **char-silas-harrow**: [brief](char-silas-harrow.md) · character · placeholder.
-- **portrait-silas-harrow**: [brief](portrait-silas-harrow.md) · portrait · placeholder.
+- **portrait-silas-harrow**: [brief](portrait-silas-harrow.md) · portrait · final.
 - **char-silas-clerk**: [brief](char-silas-clerk.md) · character · placeholder.
-- **portrait-silas-clerk**: [brief](portrait-silas-clerk.md) · portrait · placeholder.
+- **portrait-silas-clerk**: [brief](portrait-silas-clerk.md) · portrait · final.
 - **char-silas-cloak**: [brief](char-silas-cloak.md) · character · placeholder.
-- **portrait-silas-cloak**: [brief](portrait-silas-cloak.md) · portrait · placeholder.
+- **portrait-silas-cloak**: [brief](portrait-silas-cloak.md) · portrait · final.
 - **char-silas-cloak-clerk**: [brief](char-silas-cloak-clerk.md) · character · placeholder.
-- **portrait-silas-cloak-clerk**: [brief](portrait-silas-cloak-clerk.md) · portrait · placeholder.
+- **portrait-silas-cloak-clerk**: [brief](portrait-silas-cloak-clerk.md) · portrait · final.
 - **char-guard**: [brief](char-guard.md) · character · placeholder.
 - **portrait-guard**: [brief](portrait-guard.md) · portrait · placeholder.
 - **char-guard-nokeys**: [brief](char-guard-nokeys.md) · character · placeholder.
 - **char-warden**: [brief](char-warden.md) · character · placeholder.
 - **portrait-warden**: [brief](portrait-warden.md) · portrait · placeholder.
 - **char-sigrid**: [brief](char-sigrid.md) · character · placeholder.
-- **portrait-sigrid**: [brief](portrait-sigrid.md) · portrait · placeholder.
+- **portrait-sigrid**: [brief](portrait-sigrid.md) · portrait · final.
 - **item-plate**: [brief](item-plate.md) · item · final.
 - **item-crust**: [brief](item-crust.md) · item · final.
 - **item-nail**: [brief](item-nail.md) · item · final.
@@ -543,6 +544,15 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **battle-scavenger**: [brief](battle-scavenger.md) · battle · final.
 - **battle-enemy-scavenger**: [brief](battle-enemy-scavenger.md) · battle-portrait · final.
 - **battle-backdrop-gallery**: [brief](battle-backdrop-gallery.md) · battle-backdrop · final.
+- **portrait-extra-stoker**: [brief](portrait-extra-stoker.md) · portrait · final.
+- **portrait-extra-tally**: [brief](portrait-extra-tally.md) · portrait · final.
+- **portrait-extra-hauler**: [brief](portrait-extra-hauler.md) · portrait · final.
+- **portrait-extra-runner**: [brief](portrait-extra-runner.md) · portrait · final.
+- **portrait-extra-hoist**: [brief](portrait-extra-hoist.md) · portrait · final.
+- **portrait-extra-merchant**: [brief](portrait-extra-merchant.md) · portrait · final.
+- **portrait-extra-kid**: [brief](portrait-extra-kid.md) · portrait · final.
+- **portrait-extra-ash-collector**: [brief](portrait-extra-ash-collector.md) · portrait · final.
+- **portrait-extra-shard-sorter**: [brief](portrait-extra-shard-sorter.md) · portrait · final.
 
 ## ch2
 

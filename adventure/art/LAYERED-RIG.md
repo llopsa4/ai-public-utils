@@ -26,7 +26,10 @@ Silas, the intro's hero, has a pack in the same format: `art/sources/characters/
 - `silas-harrow` (`overlay: 'harrow'`, no blink: the mask covers his eyes), standing in the walk master's pose because the masks are drawn to it;
 - `silas-clerk` (`overlay: 'clerk'`, `forearmRaise`: the near forearm held up so the ledger rests on his chest).
 
-Each has its portrait strip (`portraitId`, `moods`). `hooded-idle.png` (a cape costume) is a standing drawing only, not rigged.
+Each has its portrait strip (`portraitId`, `moods`). The user-approved standing-based r2
+exports are final and protected independently from character sheets; see
+`sources/dialogue-portraits/README.md`. Rebuilding these rigs does not overwrite their
+portrait strips. `hooded-idle.png` (a cape costume) is a standing drawing only, not rigged.
 
 ```powershell
 node art/rig.mjs silas

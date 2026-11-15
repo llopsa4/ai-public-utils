@@ -12,11 +12,34 @@ import { heroSheetFor } from '../src/engine/story';
 import { MANIFEST, RIGS } from '../art/manifest.mjs';
 import { NPC_IDS } from '../src/engine/types';
 import { PORTRAIT_MOODS } from '../src/content/art';
+import { createHash } from 'node:crypto';
+import { EXTRAS } from '../src/chapters/ch1/crowd';
+import { isFinal } from '../art/guard.mjs';
 
 // JSON-only fixtures: no PNG decoding, layer compositing, or chapter preloading in this file.
 const configs = ['casual', 'light', 'medium'].map(id =>
   JSON.parse(readFileSync(new URL(`../art/sources/characters/mara-${id}-layered/rig.json`, import.meta.url), 'utf8')) as LayeredConfig);
 const distance = (a: number[], b: number[]) => Math.hypot(a[0] - b[0], a[1] - b[1]);
+
+test('approved standing portraits cover speaking workers and preserve the reviewed frames', () => {
+  const delivery = JSON.parse(readFileSync(new URL('../art/sources/dialogue-portraits/approved-r2.json', import.meta.url), 'utf8'));
+  assert.equal(delivery.portraits.length, 16);
+  const ids = new Set(delivery.portraits.map((p: { id: string }) => p.id));
+  for (const extra of EXTRAS) assert.ok(ids.has(extra.id), `${extra.id} has a dialogue portrait`);
+  for (const portrait of delivery.portraits) {
+    const entry = MANIFEST.find(e => e.id === `portrait-${portrait.id}`)!;
+    assert.ok(entry, `${portrait.id} is registered`);
+    assert.equal(entry.file, portrait.file);
+    assert.equal(entry.status, 'final');
+    assert.ok(isFinal(portrait.file), `${portrait.id} is protected from generators`);
+    assert.deepEqual(PORTRAIT_MOODS[portrait.id], portrait.moods);
+    const bytes = readFileSync(new URL(`../art/src/${portrait.file}`, import.meta.url));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), portrait.sha256, `${portrait.id} matches the installed palette-normalized r2 export`);
+    const approved = readFileSync(new URL(`../${portrait.approvedFile}`, import.meta.url));
+    assert.equal(createHash('sha256').update(approved).digest('hex'), portrait.approvedSha256, `${portrait.id} retains the reviewed source`);
+    assert.deepEqual([bytes.readUInt32BE(16), bytes.readUInt32BE(20)], [portrait.moods.length * 512, 256]);
+  }
+});
 
 test('art metadata registers unique files and every named character rig and portrait', () => {
   assert.equal(new Set(MANIFEST.map(entry => entry.id)).size, MANIFEST.length, 'manifest IDs are unique');

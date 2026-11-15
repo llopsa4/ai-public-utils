@@ -6,7 +6,7 @@ Status: **final** · icon · chapter game
 
 ## Description
 
-Open reaching ochre leather work glove, five readable digits; user-approved interaction cursor r1. Delivery: art/inbox/done/interaction-cursors-r1/HANDOFF.md.
+Bare palm-down pointing hand with a proportionate index finger, facing upper-left; user-approved r3. Legacy glove filename retained. Delivery: art/inbox/done/interaction-cursors-r3/HANDOFF.md.
 
 ## Use and placement
 
@@ -17,4 +17,4 @@ Browser interaction cursor.
 - Runtime path: `art/src/ui/cursor-work-glove.png` (final).
 - Anchor: `none`.
 - Canvas/frame: **32×32 art px**.
-- 32×32 transparent PNG; click hotspot (14,2) on the fingertip. User-approved r1 replaces the pointing glove.
+- 32×32 transparent PNG; fingertip hotspot (2,1). Used for scene interaction, satchel and carried items.

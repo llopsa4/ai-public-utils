@@ -3,6 +3,10 @@ import type { DepthScale, Facing, Point, Pose, Speaker } from '../engine/types';
 import { SHEETS } from './assets';
 import { walkFrameAt, walkTiming } from './walk';
 import { actorGeometry, type ActorGeometry } from './actorGeometry';
+import { ambientAnchorWorld, opaqueHeadAnchor } from './ambientAnchor';
+
+/** Each painted frame is measured once; movement and animation only transform that cached point. */
+const ambientHeads = new WeakMap<Phaser.Textures.Frame, Point | null>();
 
 const WALK_SPEED = 110; // logical pixels per second at scale 1
 const BLINK_MIN = 1500;
@@ -214,6 +218,28 @@ export class Actor {
   /** Point just above the head, for speech text. */
   headPoint(): Point {
     return { x: this.sprite.x, y: this.sprite.y - (actorGeometry(this.pose, this.bodyScale, this.geometry).h + 8) * this.depth };
+  }
+
+  /** Ambient text sits at the currently painted head, including low work/kneeling frames. */
+  ambientHeadPoint(): Point {
+    const frame=this.sprite.frame;
+    if(!ambientHeads.has(frame)){
+      let point:Point|null=null;
+      try{
+        const canvas=document.createElement('canvas');
+        canvas.width=frame.cutWidth;canvas.height=frame.cutHeight;
+        const ctx=canvas.getContext('2d',{willReadFrequently:true});
+        if(ctx&&!frame.rotated){
+          ctx.drawImage(frame.source.image as CanvasImageSource,frame.cutX,frame.cutY,
+            frame.cutWidth,frame.cutHeight,0,0,frame.cutWidth,frame.cutHeight);
+          point=opaqueHeadAnchor(ctx.getImageData(0,0,canvas.width,canvas.height).data,canvas.width,canvas.height);
+        }
+      }catch{/* Keep text usable if a browser cannot read the source texture. */}
+      ambientHeads.set(frame,point);
+    }
+    const point=ambientHeads.get(frame);
+    if(!point)return {x:this.sprite.x,y:this.sprite.y-actorGeometry(this.pose,this.bodyScale,this.geometry).h*this.depth};
+    return ambientAnchorWorld(point,{width:frame.realWidth,height:frame.realHeight,trimX:frame.x,trimY:frame.y},this.sprite);
   }
 
   /** Draws the character in front of the room's foreground pieces (Benn outside the cell's bars). */

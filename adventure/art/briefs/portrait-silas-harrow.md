@@ -4,11 +4,11 @@
 
 Reference for the implemented chapter; existing artwork is preserved.
 
-ID: `portrait-silas-harrow` · portrait · **visual** · placeholder
+ID: `portrait-silas-harrow` · portrait · **visual** · final
 
 ## Description
 
-Silas wearing the Harrow mask (only the face and head differ from char-silas). Head and shoulders: cut by the game from the character's drawing.
+Silas — Harrow mask's approved standing-based dialogue portrait.
 
 ## What the game does with it
 
@@ -20,11 +20,21 @@ Inventory, character or shared reference; no freestanding room instance.
 
 ## States, visibility and transitions
 
-- **idle** — Silas wearing the Harrow mask (only the face and head differ from char-silas). Head and shoulders: cut by the game from the character's drawing. When: Existing idle frame; placement flag conditions above determine when it is used..
+- **idle** — Silas — Harrow mask's approved standing-based dialogue portrait. When: Existing idle frame; placement flag conditions above determine when it is used..
 
-Existing file: art/src/intro/portraits/silas-harrow.png. Status: placeholder. No new artwork is produced by reference generation.
+Existing file: art/src/intro/portraits/silas-harrow.png. Status: final. No new artwork is produced by reference generation.
 
 Derived from silas-layered; do not draw this derived sheet separately.
+
+256×256 transparent frames; each mood has a closed-mouth frame followed by a speaking frame. Keep the same crop and silhouette throughout.
+
+Standing source: adventure\art\sources\dialogue-portraits\silas-harrow-generated.png.
+
+User-approved revision r2, 2026-11-15. Preserve the installed final PNG; walking-rig rebuilds must not replace it.
+
+Installed with nearest master-palette normalization only; approved frame geometry, alpha and speaking registration are unchanged.
+
+Exact approved hashes, crop coordinates and speaking-lip registration: art/sources/dialogue-portraits/approved-r2.json.
 
 ## Asset contract
 

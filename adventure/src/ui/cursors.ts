@@ -1,8 +1,10 @@
 /** Small drawn cursors that say what a click will do (pointer devices only). */
-import workGlove from '../../art/src/ui/cursor-work-glove.png';
+import bareHand from '../../art/src/ui/cursor-work-glove.png';
 import exitDoor from '../../art/src/ui/cursor-exit-door.png';
+import defaultArrow from '../../art/src/ui/cursor-default-arrow.png';
 import { CURSOR_ART } from '../content/art';
-export type CursorKind = 'look' | 'hand' | 'talk' | 'exit';
+import type { CursorKind } from './cursorPolicy';
+export type { CursorKind, TargetCursorKind } from './cursorPolicy';
 
 const svg = (body: string) =>
   `url("data:image/svg+xml,${encodeURIComponent(
@@ -17,11 +19,18 @@ const SHAPES: Record<'look' | 'talk', { body: string; x: number; y: number; fall
 };
 
 export function cursorFor(kind: CursorKind | null): string {
-  if (!kind) return '';
-  if (kind === 'hand' || kind === 'exit') {
+  kind ??= 'default';
+  if (kind === 'hand' || kind === 'exit' || kind === 'default') {
     const [x, y] = CURSOR_ART[kind].hotspot;
-    return `url("${kind === 'hand' ? workGlove : exitDoor}") ${x} ${y}, pointer`;
+    const asset = kind === 'hand' ? bareHand : kind === 'exit' ? exitDoor : defaultArrow;
+    return `url("${asset}") ${x} ${y}, ${kind === 'default' ? 'default' : 'pointer'}`;
   }
   const s = SHAPES[kind];
   return `${svg(s.body)} ${s.x} ${s.y}, ${s.fallback}`;
+}
+
+/** Shared variables let the satchel and carried-item state use the same approved pointer assets. */
+export function bindCursorStyles(root: HTMLElement = document.documentElement): void {
+  root.style.setProperty('--interaction-cursor', cursorFor('hand'));
+  root.style.setProperty('--game-pointer', cursorFor('default'));
 }

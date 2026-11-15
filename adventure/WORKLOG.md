@@ -1,10 +1,11 @@
 # Adventure current status
 
-Updated 2026-11-14. Shared procedure: [WORKFLOW.md](WORKFLOW.md).
+Updated 2026-11-15. Shared procedure: [WORKFLOW.md](WORKFLOW.md).
 Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
 
 ## Checkout
-- Current branch `dual-ownership`, HEAD `f148707` (checked for the ownership-mode update). Last inspected remote
+- Current branch `dual-ownership`, HEAD `c304176` (a concurrent WIP commit appeared during verification;
+  this task did not create it). Last inspected remote
   and Pages deployment: `c14fdd4`. No commit, push or published rebuild requested in this task.
 - Local changes: ownership docs, gauge room/CSS/test fixes, debug helper/panel/tests/catalog,
   README, cursor runtime/metadata/PNGs/provenance, generated reference Markdown and this log.
@@ -12,14 +13,24 @@ Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
   are ignored; published output is unchanged.
 
 ## Working on
-- Regulator artwork, outlined floating ambient phrases and desktop-only Adventure support.
-  Claims split across regulator UI/art/tests, desktop UI/map, test configuration/docs and
-  root ambient UI/CSS. Preserve the separate worker-bounce task below and its claims.
+- Cell cage redraw r2 transparency correction delivered: `art/inbox/cell-cage-redraw/r2/review.html`.
+  Neutral/warm matte fringes removed; approved roof rows 0–173 byte-identical to r1.
+  Candidate and failing-baseline regression checks passed, plus 239 fast / 90 art tests.
+  Temporary game previews cover dark/lit, closed/open and three desktop sizes; zero page/asset
+  errors. Installed cage/gate/room unchanged. R1 preserved as superseded evidence.
+  User review pending; no active claims, build, commit or push.
+- Stationary pose-aware ambient text and satchel/carry cursor policy are complete;
+  approved r3 hand and default arrow are installed and verified. No active claims for
+  this task. Delivery/evidence: `art/inbox/done/interaction-cursors-r3/`.
+- Earlier roof-only repair r1 is preserved at `art/inbox/cell-roof-bars/r1/`, uninstalled;
+  superseded by the user's complete-cage redraw request.
+- Regulator artwork, floating ambient phrases and desktop-only support are complete and
+  verified. This task has no active file claims; preserve the other assignments below.
 - Removing the kneeling human workers' bounce. Claims: human-extra atlas work tags,
   their generator definition and focused crowd contract test. Existing artwork stays unchanged.
-- Preparing standing-based dialogue portraits for user review only. Claims:
-  `art/inbox/dialogue-portraits/r1/`, portrait queue entry and this status update.
-  Kofi/Chapter 2 receive briefs only; no portraits or runtime assets will be installed.
+- User-approved portrait r2 installed: sixteen final standing-based portrait identities with
+  corrected speaking frames, mood metadata and independent rebuild protection. No active claims.
+  Delivery/evidence: `art/inbox/done/dialogue-portraits-r2/`; thirteen paused-work briefs remain.
 - Active mode: **Codex only**, selected
   by the user on 2026-11-14 until they change it; Codex owns all Adventure development.
   Existing task pauses and approval requirements remain in force.
@@ -42,6 +53,28 @@ Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
 
 ## Verification
 
+- Portrait installation: typecheck, 239 fast / 90 art / 286 all-Node tests passed. Scratch
+  production dialogue verified all 16 identities / 48 frames, mood reset, mirroring and
+  Silas disguises with exact installed hashes and zero page/asset errors. Palette-only
+  normalization preserves frame geometry/alpha; source rigs/shared renderer are unchanged.
+
+- Cursor r3 installation: user approval “Perfect, install” on 2026-11-15. 238 fast /
+  132 art-input tests passed with typecheck; art checks,557-file Markdown freshness and
+  scratch build passed. Vite and scratch checks verified image hashes/hotspots for hand,
+  arrow, exit, look, talk, satchel and carried states; item image/cancel/native text inputs
+  passed with no asset/page errors. No browser suites or published rebuild ran.
+- Cursor-r2/ambient task: 238 fast / 283 all-Node tests passed with typecheck. Scratch
+  production built to temp. Manual Vite and scratch checks: stationary text ~4px above
+  working/standing stoker, kneeling hoist worker and ash collector; satchel/carry hand,
+  separate item image and right-click cancellation passed. Zero asset/page errors.
+  Evidence: temp `adventure-cursor-r2-visual/`. No browser suites or tracked build ran.
+- Desktop/art/chatter task: 234 fast / 279 all-Node tests passed, including typecheck.
+  Art checks and 556-file Markdown catalog/guide freshness passed; existing verb-icon notices only.
+  Inventory lists 49 desktop browser cases; no browser suites ran.
+- Manual Vite (5173) and scratch production (4177) checks passed at 1280×720, 1920×1080
+  and 1024×768: painted gauge, opaque center through unlock, keyboard screw, cancel/replay,
+  lift-out/reward/hatch fight, floating ambient text, reduced motion, normal scripted dialogue
+  and Space labels. Zero asset/page errors. Evidence: temp `adventure-desktop-visual/`.
 - Gauge/debug task: 228 fast and 273 all-Node tests passed. After final error-path hardening,
   typecheck and all 10 focused gauge/debug tests passed, including valid save round-trip.
   Full public Markdown reference freshness passed (554 files); only the gallery brief regenerated.
@@ -78,12 +111,17 @@ Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
   construction/rite/agreements/robot ending, cancellable archery and save v12.
   182 geometric placeholder PNGs; approved character rigs remain uninstalled. The temporary
   runtime grid does not replace the approved prologue art composition.
-- UI polish: work-glove cursor, ceramic regulator and heat warning, viewport/touch fitting,
+- UI polish: custom cursors, ceramic regulator and heat warning, desktop viewport fitting,
   bell actions, battle popup footer, wax/table placement and resumable Sigrid departure.
   Descriptions and registration: `art/sources/ui-polish/BRIEF.md`.
 - Gallery gauge/socket/hotspot alignment and close-up needle pivot corrected. Debug panel
   Puzzles → Regulator puzzle opens a fresh, prepared gallery replay in the active save.
-- Approved open-glove and doorway/arrow cursors replace the pointing glove and SVG exit.
+- Approved r3 bare pointing hand is used for objects, satchel and carried items; the refinery
+  arrow is the default pointer. The earlier approved doorway/arrow exit is unchanged.
+- Regulator uses the existing painted gauge and source-pixel brass cap, with separate controls.
+  Ambient phrases use stationary outlined text four screen pixels above the current painted
+  head/task silhouette and fade; scripted speech anchors and snores are unchanged.
+  Adventure is desktop-only; dedicated phone/tablet controls/layouts/test targets are removed.
 - Machine workers/routines, remarks, action rings, map fitting and scene labels are implemented.
   Font studies remain separate; game fonts are unchanged. See README for player behavior.
 
@@ -99,6 +137,6 @@ Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
   light is an intentional placeholder. Existing oversized verb-icon notices are informational.
 
 ## Next action
-- Codex handles the user's next assignment; cursor integration is complete locally.
+- Codex handles the user's next assignment; desktop/art/chatter work is complete locally.
 - Verify fresh Codex Desktop recovery in the next chat; preserve existing pauses. Changes remain
-  uncommitted and unpublished on `dual-ownership`.
+  unpublished on `dual-ownership`; this task made no commit or push.

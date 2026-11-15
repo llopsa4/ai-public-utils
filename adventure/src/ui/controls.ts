@@ -1,6 +1,7 @@
 import { ITEM_ICONS } from '../game/assets';
 import type { Ui } from './ui';
 import { gearAvailable, screenShortcut, type ScreenShortcut } from './shortcuts';
+import { bindCursorStyles } from './cursors';
 
 const CLICK_MS = 300, DRAG_PX = 8;
 const arrows = new Set(['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown']);
@@ -15,6 +16,7 @@ export class RoomControls {
   private readonly ghost = document.createElement('img');
 
   constructor(private readonly ui: Ui) {
+    bindCursorStyles();
     this.ghost.id = 'carried-item';
     this.ghost.alt = '';
     this.ghost.setAttribute('aria-hidden', 'true');

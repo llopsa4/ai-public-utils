@@ -514,7 +514,7 @@ export class Crowd {
     if (this.bubble) {
       const { owner, text, until } = this.bubble;
       if (this.host.busy() || owner.away || owner.gone || !owner.actor.sprite.active || this.host.scene.time.now > until) this.clearBubble();
-      else this.host.bubble(text, owner.actor.headPoint());
+      else this.host.bubble(text, owner.actor.ambientHeadPoint());
     }
   }
 
@@ -562,7 +562,7 @@ export class Crowd {
 
   private say(m: Member, text: string): void {
     this.bubble = { owner: m, text, until: this.host.scene.time.now + chatterDuration(text) };
-    this.host.bubble(text, m.actor.headPoint());
+    this.host.bubble(text, m.actor.ambientHeadPoint());
   }
 
   private clearBubble(): void {

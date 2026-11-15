@@ -1,7 +1,9 @@
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { basename, dirname, join, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 import { PNG } from 'pngjs';
 import sharp from 'sharp';
@@ -31,8 +33,57 @@ test("the master palette has the tent's 160 colours plus Ironhaven's set, and sn
 });
 
 test('generators keep their hands off final art', () => {
-  // Nothing is final yet: every placeholder may be regenerated.
+  // Final images are protected independently of any associated character sheet.
   for (const e of MANIFEST) assert.equal(isFinal(e.file), e.status === 'final');
+});
+
+test('installed portrait normalization preserves every approved frame and alpha edge', () => {
+  const delivery = JSON.parse(readFileSync(new URL('../art/sources/dialogue-portraits/approved-r2.json', import.meta.url), 'utf8'));
+  for (const portrait of delivery.portraits) {
+    const source = PNG.sync.read(readFileSync(new URL(`../${portrait.approvedFile}`, import.meta.url)));
+    const installed = PNG.sync.read(readFileSync(new URL(`../art/src/${portrait.file}`, import.meta.url)));
+    assert.deepEqual([installed.width, installed.height], [source.width, source.height], portrait.id);
+    assert.equal(paletteConformity(installed.data), 1, `${portrait.id} uses the game palette`);
+    for (let p = 3; p < source.data.length; p += 4) assert.equal(installed.data[p], source.data[p], `${portrait.id}: approved frame geometry/alpha`);
+    // Exact nearest-palette mapping: no reframe, outline, new anatomy or motion changes.
+    snapToPalette(source.data, source.width);
+    assert.deepEqual(installed.data, source.data, `${portrait.id}: palette normalization only`);
+  }
+});
+
+test('legacy and layered character rebuilds preserve independently approved portrait files', t => {
+  const game = fileURLToPath(new URL('..', import.meta.url));
+  const scratch = mkdtempSync(join(tmpdir(), 'portrait-guards-'));
+  t.after(() => {
+    assert.equal(dirname(resolve(scratch)), resolve(tmpdir()));
+    assert.ok(basename(scratch).startsWith('portrait-guards-'));
+    rmSync(scratch, { recursive: true, force: true });
+  });
+  const art = join(scratch, 'art');
+  mkdirSync(art);
+  writeFileSync(join(scratch, 'package.json'), '{"type":"module"}');
+  for (const file of readdirSync(join(game, 'art'))) {
+    if (/\.(mjs|json)$/.test(file)) copyFileSync(join(game, 'art', file), join(art, file));
+  }
+  // Source packs and dependencies are read-only inputs; every generated file goes to scratch.
+  for (const [source, target] of [[join(game, 'node_modules'), join(scratch, 'node_modules')],
+    [join(game, 'art', 'sources'), join(art, 'sources')], [join(game, 'art', 'style'), join(art, 'style')]]) {
+    symlinkSync(source, target, process.platform === 'win32' ? 'junction' : 'dir');
+  }
+  const status = JSON.parse(readFileSync(join(art, 'status.json'), 'utf8'));
+  status['portrait-oren'] = status['portrait-silas'] = 'final';
+  status['char-oren'] = status['char-silas'] = 'placeholder';
+  writeFileSync(join(art, 'status.json'), JSON.stringify(status));
+  for (const [id, folder] of [['oren', ''], ['silas', 'intro/']]) {
+    const portrait = join(art, 'src', folder, 'portraits', `${id}.png`);
+    mkdirSync(dirname(portrait), { recursive: true });
+    const approved = Buffer.from(`approved-${id}-portrait`);
+    writeFileSync(portrait, approved);
+    const run = spawnSync(process.execPath, [join(art, 'rig.mjs'), id], { cwd: scratch, encoding: 'utf8', timeout: 120_000 });
+    assert.equal(run.status, 0, run.stderr || run.stdout);
+    assert.ok(existsSync(join(art, 'src', folder, 'characters', `${id}.png`)), `${id} character actually rebuilt`);
+    assert.deepEqual(readFileSync(portrait), approved, `${id} final portrait survived`);
+  }
 });
 
 test('importing a Codex image: fitted to size, snapped to the palette, outlined, marked final, previewed', async () => {

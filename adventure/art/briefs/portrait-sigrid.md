@@ -4,11 +4,11 @@
 
 Reference for the implemented chapter; existing artwork is preserved.
 
-ID: `portrait-sigrid` · portrait · **visual** · placeholder
+ID: `portrait-sigrid` · portrait · **visual** · final
 
 ## Description
 
-Captain Sigrid of Ironhaven. Head and shoulders: cut by the game from the character's drawing.
+Sigrid's approved standing-based dialogue portrait.
 
 ## What the game does with it
 
@@ -20,11 +20,21 @@ Inventory, character or shared reference; no freestanding room instance.
 
 ## States, visibility and transitions
 
-- **idle** — Captain Sigrid of Ironhaven. Head and shoulders: cut by the game from the character's drawing. When: Existing idle frame; placement flag conditions above determine when it is used..
+- **idle** — Sigrid's approved standing-based dialogue portrait. When: Existing idle frame; placement flag conditions above determine when it is used..
 
-Existing file: art/src/intro/portraits/sigrid.png. Status: placeholder. No new artwork is produced by reference generation.
+Existing file: art/src/intro/portraits/sigrid.png. Status: final. No new artwork is produced by reference generation.
 
 Derived from sigrid-layered; do not draw this derived sheet separately.
+
+256×256 transparent frames; each mood has a closed-mouth frame followed by a speaking frame. Keep the same crop and silhouette throughout.
+
+Standing source: art/sources/characters/sigrid-layered/idle.png.
+
+User-approved revision r2, 2026-11-15. Preserve the installed final PNG; walking-rig rebuilds must not replace it.
+
+Installed with nearest master-palette normalization only; approved frame geometry, alpha and speaking registration are unchanged.
+
+Exact approved hashes, crop coordinates and speaking-lip registration: art/sources/dialogue-portraits/approved-r2.json.
 
 ## Asset contract
 

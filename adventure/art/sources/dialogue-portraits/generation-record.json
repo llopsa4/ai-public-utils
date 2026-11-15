@@ -1,0 +1,32 @@
+[
+  {
+    "id": "silas-harrow",
+    "tool": "image_gen.imagegen",
+    "prompt": "Create ONE dialogue portrait candidate for the pixel-art adventure The Rift: Ashlands. The reference is a two-panel reference card: LEFT is the authoritative standing pose/face angle and identity, RIGHT is the existing walking-profile disguise for costume/mask details only. Harrow false-face disguise. Preserve the oversized aged pale rough ceramic/flesh-coloured mask, heavy black moustache, prominent long nose, hollow eye sockets and visible edge of mask. It is a worn mask on Silas, not a different body. Silas's dark hair, ear and clothes remain. Use the LEFT person's STANDING three-quarter angle with BOTH eye positions visible where the disguise allows, never the right side-profile. One head-and-shoulders portrait, neutral closed mouth, upright, clearly drawn detailed pixel art exactly matching the source palette and worn materials. Keep hair/headwear fully within canvas and shoulders ending naturally at bottom; evenly lit. Genuine transparent background, no grey rectangle, scenery, text, labels, frame, extra figures or contact sheet. This is a new portrait candidate based on approved references, do not reinterpret identity or modernise. Square composition with 8% transparent top/side margin. Produce just the portrait.",
+    "referenced_image_paths": [
+      "art/sources/dialogue-portraits/references/silas-harrow.png"
+    ],
+    "transparent_background": true,
+    "preserved_original": "art/sources/dialogue-portraits/silas-harrow-generated.png"
+  },
+  {
+    "id": "silas-clerk",
+    "tool": "image_gen.imagegen",
+    "prompt": "Create ONE dialogue portrait candidate for the pixel-art adventure The Rift: Ashlands. The reference is a two-panel reference card: LEFT is the authoritative standing pose/face angle and identity, RIGHT is the existing walking-profile disguise for costume/mask details only. Clerk disguise. Add the exact patched grey-brown clerk hood and high worn collar from the right panel to the standing Silas on the left. Keep his face, jaw brass mechanism, dark hair, visible two eyes, neck scarf and clothing identity. Use the LEFT person's STANDING three-quarter angle with BOTH eye positions visible where the disguise allows, never the right side-profile. One head-and-shoulders portrait, neutral closed mouth, upright, clearly drawn detailed pixel art exactly matching the source palette and worn materials. Keep hair/headwear fully within canvas and shoulders ending naturally at bottom; evenly lit. Genuine transparent background, no grey rectangle, scenery, text, labels, frame, extra figures or contact sheet. This is a new portrait candidate based on approved references, do not reinterpret identity or modernise. Square composition with 8% transparent top/side margin. Produce just the portrait.",
+    "referenced_image_paths": [
+      "art/sources/dialogue-portraits/references/silas-clerk.png"
+    ],
+    "transparent_background": true,
+    "preserved_original": "art/sources/dialogue-portraits/silas-clerk-generated.png"
+  },
+  {
+    "id": "silas-cloak-clerk",
+    "tool": "image_gen.imagegen",
+    "prompt": "Create ONE dialogue portrait candidate for the pixel-art adventure The Rift: Ashlands. The reference is a two-panel reference card: LEFT is the authoritative standing pose/face angle and identity, RIGHT is the existing walking-profile disguise for costume/mask details only. Cloaked clerk disguise. Preserve Silas in his worn brown cloak and brass jaw mechanism from the left panel, but adapt the clerk's hood/cowl from the right panel to the left panel's standing angle. Both face and hood must have standing three-quarter orientation. Use the LEFT person's STANDING three-quarter angle with BOTH eye positions visible where the disguise allows, never the right side-profile. One head-and-shoulders portrait, neutral closed mouth, upright, clearly drawn detailed pixel art exactly matching the source palette and worn materials. Keep hair/headwear fully within canvas and shoulders ending naturally at bottom; evenly lit. Genuine transparent background, no grey rectangle, scenery, text, labels, frame, extra figures or contact sheet. This is a new portrait candidate based on approved references, do not reinterpret identity or modernise. Square composition with 8% transparent top/side margin. Produce just the portrait.",
+    "referenced_image_paths": [
+      "art/sources/dialogue-portraits/references/silas-cloak-clerk.png"
+    ],
+    "transparent_background": true,
+    "preserved_original": "art/sources/dialogue-portraits/silas-cloak-clerk-generated.png"
+  }
+]

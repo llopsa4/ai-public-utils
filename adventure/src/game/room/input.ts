@@ -6,7 +6,8 @@ import { sound } from '../../audio/sound';
 import type { ActorId, Command, Point, Verb } from '../../engine/types';
 import { type Member } from '../Crowd';
 import { chapter } from '../../chapters';
-import { cursorFor, type CursorKind } from '../../ui/cursors';
+import { cursorFor, type TargetCursorKind } from '../../ui/cursors';
+import { sceneCursorKind } from '../../ui/cursorPolicy';
 import type { RoomScene } from '../scenes';
 import type { Target } from './shared';
 import { runScript } from './runner';
@@ -188,12 +189,12 @@ export function onPointerMove(scene: RoomScene, pointer: Phaser.Input.Pointer): 
   } else {
     scene.session.ui.setHover(name, at);
   }
-  // While an item is carried, the stage shows the item's icon as the cursor instead.
-  scene.input.setDefaultCursor(item ? '' : cursorFor(target ? cursorKind(target) : null));
+  // The carried item's icon stays beside the hand; it does not replace the pointer itself.
+  scene.input.setDefaultCursor(cursorFor(sceneCursorKind(target ? cursorKind(target) : null, !!item)));
 }
 
 /** What a click on the target will most likely do: talk, leave, handle or look. */
-export function cursorKind(target: Target): CursorKind {
+export function cursorKind(target: Target): TargetCursorKind {
   if (target.kind === 'extra') return 'talk';
   if (target.kind === 'actor') return target.actor.id === 'hero' ? 'look' : 'talk';
   const verbs = target.hotspot.verbs;

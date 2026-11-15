@@ -679,6 +679,18 @@ Dialogue portraits in `art/src/portraits/`: head and shoulders, **256×256 per f
 | `portraits/guard.png` | neutral, worried, angry | 1536×256 |
 | `portraits/warden.png` | neutral, worried, angry | 1536×256 |
 | `portraits/sigrid.png` | neutral, worried, angry | 1536×256 |
+| `portraits/silas-harrow.png` | neutral | 512×256 |
+| `portraits/silas-clerk.png` | neutral | 512×256 |
+| `portraits/silas-cloak-clerk.png` | neutral | 512×256 |
+| `portraits/extra-stoker.png` | neutral | 512×256 |
+| `portraits/extra-tally.png` | neutral | 512×256 |
+| `portraits/extra-hauler.png` | neutral | 512×256 |
+| `portraits/extra-runner.png` | neutral | 512×256 |
+| `portraits/extra-hoist.png` | neutral | 512×256 |
+| `portraits/extra-merchant.png` | neutral | 512×256 |
+| `portraits/extra-kid.png` | neutral | 512×256 |
+| `portraits/extra-ash-collector.png` | neutral | 512×256 |
+| `portraits/extra-shard-sorter.png` | neutral | 512×256 |
 
 Background people have no portraits. To give one a portrait, add its strip and an entry in `PORTRAIT_MOODS` (`src/content/art.ts`).
 

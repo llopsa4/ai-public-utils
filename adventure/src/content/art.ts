@@ -8,7 +8,8 @@ export type Mood = 'neutral' | 'worried' | 'angry';
 
 /** Approved 32px pointer cursors; hotspots are on the fingertip and exit-arrow tip. */
 export const CURSOR_ART = {
-  hand: { file: 'ui/cursor-work-glove.png', hotspot: [14, 2] },
+  hand: { file: 'ui/cursor-work-glove.png', hotspot: [2, 1] },
+  default: { file: 'ui/cursor-default-arrow.png', hotspot: [4, 1] },
   exit: { file: 'ui/cursor-exit-door.png', hotspot: [22, 17] },
 } as const;
 export const PORTRAIT_MOODS: Record<string, Mood[]> = {
@@ -25,6 +26,19 @@ export const PORTRAIT_MOODS: Record<string, Mood[]> = {
   warden: ['neutral', 'worried', 'angry'],
   // Sigrid (Codex's pack): three moods, like Mara's.
   sigrid: ['neutral', 'worried', 'angry'],
+  // Approved standing-based dialogue portraits; newly covered speakers use one mood.
+  'silas-harrow': ['neutral'],
+  'silas-clerk': ['neutral'],
+  'silas-cloak-clerk': ['neutral'],
+  'extra-stoker': ['neutral'],
+  'extra-tally': ['neutral'],
+  'extra-hauler': ['neutral'],
+  'extra-runner': ['neutral'],
+  'extra-hoist': ['neutral'],
+  'extra-merchant': ['neutral'],
+  'extra-kid': ['neutral'],
+  'extra-ash-collector': ['neutral'],
+  'extra-shard-sorter': ['neutral'],
 };
 
 /** Room background texture keys → file names in art/src/rooms (the game loads the .webp copy). */

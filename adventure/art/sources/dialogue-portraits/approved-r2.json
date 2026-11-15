@@ -1,0 +1,651 @@
+{
+  "revision": "dialogue-portraits/r2",
+  "approval": {
+    "authority": "user",
+    "date": "2026-11-15",
+    "instruction": "you can install the portraits"
+  },
+  "portraits": [
+    {
+      "id": "mara",
+      "name": "Mara",
+      "file": "portraits/mara.png",
+      "chapter": "game",
+      "moods": [
+        "neutral",
+        "worried",
+        "angry"
+      ],
+      "sha256": "2e0741a2458308d35467dfbc315ec0b4524ccde09bcd41748d189bb6b29d1e53",
+      "source": "art/sources/characters/mara-light-layered/idle.png",
+      "sourceSha256": "be9134112a56091f4434a526ed625e4d3e8b173639083cf21a95a8b2bad564f7",
+      "crop": [
+        370,
+        0,
+        360,
+        360
+      ],
+      "face": {
+        "mouth": {
+          "x": 552,
+          "y": 152,
+          "rx": 12,
+          "ry": 4
+        },
+        "brows": [
+          {
+            "x0": 509,
+            "x1": 549,
+            "y0": 93,
+            "y1": 110,
+            "inner": "right"
+          },
+          {
+            "x0": 557,
+            "x1": 578,
+            "y0": 96,
+            "y1": 113,
+            "inner": "left"
+          }
+        ]
+      },
+      "speaking": null,
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/mara.png",
+      "approvedSha256": "520b8a5c174fcd85768085335bfc083f49a1432f2d3c1e2b283bd6b9b078bbc1",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "silas",
+      "name": "Silas",
+      "file": "intro/portraits/silas.png",
+      "chapter": "intro",
+      "moods": [
+        "neutral",
+        "worried",
+        "angry"
+      ],
+      "sha256": "0cd2bb223b928e79eeb3657b46af7a691f0e3523172a699be290ff3090e1491b",
+      "source": "art/sources/characters/silas-layered/idle.png",
+      "sourceSha256": "935dd6f1bb8a24b08a31bb419386a506e4e5adf11e7e66c797ee302fc3b67ef2",
+      "crop": [
+        350,
+        50,
+        350,
+        350
+      ],
+      "face": {
+        "mouth": {
+          "x": 552,
+          "y": 240,
+          "rx": 12,
+          "ry": 4
+        },
+        "brows": [
+          {
+            "x0": 510,
+            "x1": 547,
+            "y0": 153,
+            "y1": 178,
+            "inner": "right"
+          },
+          {
+            "x0": 558,
+            "x1": 582,
+            "y0": 167,
+            "y1": 187,
+            "inner": "left"
+          }
+        ]
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 145,
+        "y": 137,
+        "rx": 9,
+        "ry": 3.5,
+        "slope": 0.25
+      },
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/silas.png",
+      "approvedSha256": "7ddaadb78b6819f21b982676e1c35289d3101da262f57dc7e19d2bc6f8d914af",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "silas-cloak",
+      "name": "Silas — cloak",
+      "file": "intro/portraits/silas-cloak.png",
+      "chapter": "intro",
+      "moods": [
+        "neutral",
+        "worried",
+        "angry"
+      ],
+      "sha256": "0934412703c6082887352b69db7d05760379192444c705ba6ec5f90b7c934879",
+      "source": "art/sources/characters/silas-cloak-layered/idle.png",
+      "sourceSha256": "3deb5ae8b73384ce198540b6584be1312164bf26ddead25cbf4deb13ace86819",
+      "crop": [
+        350,
+        50,
+        370,
+        370
+      ],
+      "face": {
+        "mouth": {
+          "x": 576,
+          "y": 250,
+          "rx": 12,
+          "ry": 4
+        },
+        "brows": [
+          {
+            "x0": 531,
+            "x1": 565,
+            "y0": 166,
+            "y1": 188,
+            "inner": "right"
+          },
+          {
+            "x0": 575,
+            "x1": 599,
+            "y0": 174,
+            "y1": 193,
+            "inner": "left"
+          }
+        ]
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 152,
+        "y": 137,
+        "rx": 9,
+        "ry": 3.5,
+        "slope": 0.18
+      },
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/silas-cloak.png",
+      "approvedSha256": "8ddb1cfc14521cd25d156cdc6e9ee7eb384e57d369aca47d490d2cfb176d4075",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "sigrid",
+      "name": "Sigrid",
+      "file": "intro/portraits/sigrid.png",
+      "chapter": "intro",
+      "moods": [
+        "neutral",
+        "worried",
+        "angry"
+      ],
+      "sha256": "5376b7ca8cbc75b5b9d40f9ff39d0a05f83945c3bce7d5334d146514a816b71c",
+      "source": "art/sources/characters/sigrid-layered/idle.png",
+      "sourceSha256": "27bff79c8b83a65d6770c8e401ab1a3ff6a43ef4152416a73e9be9bbe4b46665",
+      "crop": [
+        350,
+        0,
+        370,
+        370
+      ],
+      "face": {
+        "mouth": {
+          "x": 550,
+          "y": 185,
+          "rx": 13,
+          "ry": 4
+        },
+        "brows": [
+          {
+            "x0": 500,
+            "x1": 536,
+            "y0": 104,
+            "y1": 122,
+            "inner": "right"
+          },
+          {
+            "x0": 550,
+            "x1": 578,
+            "y0": 105,
+            "y1": 123,
+            "inner": "left"
+          }
+        ]
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 133,
+        "y": 125,
+        "rx": 10,
+        "ry": 3.5,
+        "slope": 0
+      },
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/sigrid.png",
+      "approvedSha256": "2c6eec02bd7b7a092636f21b0740f26e5f1293917a3964ddd28a079fe5f034c6",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "extra-stoker",
+      "name": "Hollis",
+      "file": "portraits/extra-stoker.png",
+      "chapter": "ch1",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "820ec69e62ecf54cfd2f0462e1488b5c3d75764fbae22f0b1446ee01759c948c",
+      "source": "art/sources/characters/extra-stoker/body.png",
+      "sourceSha256": "c41c15e98a392ae1af993f243aba6c51c43bdc53043a043fabd34631302ee09d",
+      "crop": [
+        230,
+        0,
+        470,
+        470
+      ],
+      "face": {
+        "mouth": {
+          "x": 535,
+          "y": 210,
+          "rx": 12,
+          "ry": 4
+        },
+        "brows": []
+      },
+      "speaking": null,
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/extra-stoker.png",
+      "approvedSha256": "ee9b4d7e8c1db55585dfc761413a8a61be4a7cfa9b245c2261cbb17c2aa7e80b",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "extra-tally",
+      "name": "Ansel",
+      "file": "portraits/extra-tally.png",
+      "chapter": "ch1",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "8e4a3de042787523a741ad013d95edc1d03c6737599508bd060af48f4517916c",
+      "source": "art/sources/characters/extra-tally/body.png",
+      "sourceSha256": "f5a64412af31d39aff32eef05859472554c9809e5f31c29db1c9ac85ba1ececb",
+      "crop": [
+        400,
+        0,
+        320,
+        320
+      ],
+      "face": {
+        "mouth": {
+          "x": 608,
+          "y": 215,
+          "rx": 12,
+          "ry": 4
+        },
+        "brows": []
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 164,
+        "y": 169,
+        "rx": 10,
+        "ry": 3.5,
+        "slope": 0
+      },
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/extra-tally.png",
+      "approvedSha256": "978f81dd1f431133bf69679465ec23a0c7a563892dd759524472cc4b6b83683e",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "extra-hauler",
+      "name": "Dace",
+      "file": "portraits/extra-hauler.png",
+      "chapter": "ch1",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "ccd2039b48edff4b9a4f9414a709633c8673a56e9600926aa2a672c573f5e8ac",
+      "source": "art/sources/characters/extra-hauler/body.png",
+      "sourceSha256": "62ee68136cd9c0c9381ddb30b714107172154fb288ffb4f6375bdcd4dbf2dc20",
+      "crop": [
+        390,
+        0,
+        370,
+        370
+      ],
+      "face": {
+        "mouth": {
+          "x": 580,
+          "y": 167,
+          "rx": 12,
+          "ry": 4
+        },
+        "brows": []
+      },
+      "speaking": null,
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/extra-hauler.png",
+      "approvedSha256": "96742f99842ff66711c025c700008de60ad5232760f9798032b1fe5f47d0ce2f",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "extra-runner",
+      "name": "Pip",
+      "file": "portraits/extra-runner.png",
+      "chapter": "ch1",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "7e390dcfe774e869383ba69fe02a83603568a3eea794b065f56abae6a3620d7b",
+      "source": "art/sources/characters/extra-runner/body.png",
+      "sourceSha256": "4a95ab1d6d23d884c17623a7e7c43883da27fc4c3a3a6587919e78bca15b724f",
+      "crop": [
+        285,
+        480,
+        470,
+        470
+      ],
+      "face": {
+        "mouth": {
+          "x": 554,
+          "y": 742,
+          "rx": 13,
+          "ry": 4
+        },
+        "brows": []
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 145,
+        "y": 138,
+        "rx": 9,
+        "ry": 3.5,
+        "slope": -0.08
+      },
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/extra-runner.png",
+      "approvedSha256": "d2a1d5c0598593d5f18f6a5a26d92a3fc6a42d8901e42d80045facf6d6425bb0",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "extra-hoist",
+      "name": "Wren",
+      "file": "portraits/extra-hoist.png",
+      "chapter": "ch1",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "1218e374bedacf3961676b308e694bead90fccd7919f23c70c522479abf5125f",
+      "source": "art/sources/characters/extra-hoist/body.png",
+      "sourceSha256": "3d6bf7290b46d5d22dbc0f38beec903e3bf061038bb6e159cfd6cb0362f036e5",
+      "crop": [
+        295,
+        0,
+        460,
+        460
+      ],
+      "face": {
+        "mouth": {
+          "x": 571,
+          "y": 198,
+          "rx": 12,
+          "ry": 4
+        },
+        "brows": []
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 148,
+        "y": 108,
+        "rx": 9,
+        "ry": 3.5,
+        "slope": -0.12
+      },
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/extra-hoist.png",
+      "approvedSha256": "0d2bc89bc0ff32de144b06c1a5d83768f1b844adabed2f3b7330d1728be139d3",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "extra-merchant",
+      "name": "Corvin",
+      "file": "portraits/extra-merchant.png",
+      "chapter": "ch1",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "72a1c66ccdd504ad4808d5c92165f7461ea7d84007c2da2415e565fc4cab8c82",
+      "source": "art/sources/characters/extra-merchant/body.png",
+      "sourceSha256": "859d166ca7a40f109a225d18545e1c6e69dc32e406ebeaa76fa7a1a4c29422df",
+      "crop": [
+        420,
+        0,
+        370,
+        370
+      ],
+      "face": {
+        "mouth": {
+          "x": 630,
+          "y": 194,
+          "rx": 12,
+          "ry": 4
+        },
+        "brows": []
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 145,
+        "y": 136,
+        "rx": 9,
+        "ry": 3.5,
+        "slope": 0
+      },
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/extra-merchant.png",
+      "approvedSha256": "6c4b4d30e05c62c72fdfab064a1730426f455416f4149f12348c0fe9b93a2224",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "extra-kid",
+      "name": "Bea",
+      "file": "portraits/extra-kid.png",
+      "chapter": "ch1",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "0f948c722037b688179d30227bc527c0233dd9ee48f2b4267668bb1b522d858a",
+      "source": "art/sources/characters/extra-kid/body.png",
+      "sourceSha256": "361c286575ba7e5db1ff8c0b14f910ef3cfbf3b6eb1da1c9a9db4eb652a2f35a",
+      "crop": [
+        260,
+        500,
+        500,
+        500
+      ],
+      "face": {
+        "mouth": {
+          "x": 552,
+          "y": 785,
+          "rx": 13,
+          "ry": 4
+        },
+        "brows": []
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 148,
+        "y": 140,
+        "rx": 9,
+        "ry": 3.5,
+        "slope": -0.05
+      },
+      "method": "standing-source-export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/extra-kid.png",
+      "approvedSha256": "8945c136e2a2851295deb162f6796b330fe0931021a9a9b2ffb3c5f64c62ef5c",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "extra-ash-collector",
+      "name": "Ash collector",
+      "file": "portraits/extra-ash-collector.png",
+      "chapter": "ch1",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "cb56d32667fd007f12111192399abbc252fc3cb3b3e01896ee49609611cb9745",
+      "source": "art/sources/cinderfold-machines/ash-anchor-raw.png",
+      "sourceSha256": "6277b9025d8197a5c84c31ff13701aff3826b65c1f57c152c24e2d94896c9711",
+      "crop": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "face": null,
+      "speaking": null,
+      "method": "stationary-anchor-export; duplicated static frames",
+      "approvedFile": "art/sources/dialogue-portraits/approved/extra-ash-collector.png",
+      "approvedSha256": "021ccac36f7d648b71db77bfa561f5501e749f37a8cc5b9c4cb6aa48695fa402",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "extra-shard-sorter",
+      "name": "Shard sorter",
+      "file": "portraits/extra-shard-sorter.png",
+      "chapter": "ch1",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "2d398887d718046c693d6b33d219fbf80d5469c0ba3e67b7d6ce499304c5a145",
+      "source": "art/sources/cinderfold-machines/sorter-anchor-raw.png",
+      "sourceSha256": "81b92cbd181a59e7d05f4f02377e1f6a321b66c0e54303f8c5edb208cd973fd5",
+      "crop": [
+        0,
+        0,
+        256,
+        256
+      ],
+      "face": null,
+      "speaking": null,
+      "method": "stationary-anchor-export; duplicated static frames",
+      "approvedFile": "art/sources/dialogue-portraits/approved/extra-shard-sorter.png",
+      "approvedSha256": "b6605e52f653f8cb328192a3d7104f0cac559248b5ce782266668b4c18b456e4",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "silas-harrow",
+      "name": "Silas — Harrow mask",
+      "file": "intro/portraits/silas-harrow.png",
+      "chapter": "intro",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "017c71e650ea4ed65571c83e6b6f1451532b73806ade1030e47ed2aafe777d0f",
+      "source": "adventure\\art\\sources\\dialogue-portraits\\silas-harrow-generated.png",
+      "sourceSha256": "e75c7ce2dee7bc52c48a6aad99d50c0e5161c262bfb3b943ca5691336d472c07",
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "face": {
+        "mouth": {
+          "x": 771,
+          "y": 633,
+          "rx": 38,
+          "ry": 9
+        },
+        "brows": []
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 154,
+        "y": 126,
+        "rx": 9,
+        "ry": 3.5,
+        "slope": 0.12
+      },
+      "method": "ImageGen standing-disguise candidate; procedural mouth export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/silas-harrow.png",
+      "approvedSha256": "eefaa224c60ad212d28469aa011fba7ddd8f44f7e3073110b7297c721db6cff7",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "silas-clerk",
+      "name": "Silas — clerk",
+      "file": "intro/portraits/silas-clerk.png",
+      "chapter": "intro",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "56c7e122e26cef331eac2384bf4db6bbc4cae45139dc4af480c68cb3764bb3a6",
+      "source": "adventure\\art\\sources\\dialogue-portraits\\silas-clerk-generated.png",
+      "sourceSha256": "7ceda33557a5e95610574aec7cdcd4264937f3d1b8e5a39a735b3f5d921b3873",
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "face": {
+        "mouth": {
+          "x": 737,
+          "y": 549,
+          "rx": 38,
+          "ry": 9
+        },
+        "brows": []
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 148,
+        "y": 112,
+        "rx": 9,
+        "ry": 3.5,
+        "slope": 0.1
+      },
+      "method": "ImageGen standing-disguise candidate; procedural mouth export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/silas-clerk.png",
+      "approvedSha256": "8722853eaa43e3a51f4ccca83d3ae73bb411e0c46a9c6730daa25f0ab7332003",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    },
+    {
+      "id": "silas-cloak-clerk",
+      "name": "Silas — cloaked clerk",
+      "file": "intro/portraits/silas-cloak-clerk.png",
+      "chapter": "intro",
+      "moods": [
+        "neutral"
+      ],
+      "sha256": "07dbfe86b4cf72c021bbd8369334c50f0a86d97845700d5e76ae016c7ecde3ed",
+      "source": "adventure\\art\\sources\\dialogue-portraits\\silas-cloak-clerk-generated.png",
+      "sourceSha256": "3766a330d6a120eb2c4043ced74a1d3f1679d04efad382a5839ecc0570ccfce1",
+      "crop": [
+        0,
+        0,
+        1254,
+        1254
+      ],
+      "face": {
+        "mouth": {
+          "x": 740,
+          "y": 602,
+          "rx": 38,
+          "ry": 9
+        },
+        "brows": []
+      },
+      "speaking": {
+        "space": "256px output crop",
+        "x": 147,
+        "y": 120,
+        "rx": 9,
+        "ry": 3.5,
+        "slope": 0.18
+      },
+      "method": "ImageGen standing-disguise candidate; procedural mouth export",
+      "approvedFile": "art/sources/dialogue-portraits/approved/silas-cloak-clerk.png",
+      "approvedSha256": "4b3ca06b59cee2c3a5f6dabb01f7045d7959c5873353fc0614187748be8d0097",
+      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ const entry = (fast, ...features) => ({ fast, features });
 
 // Every Node test is discovered independently. This catalog selects subsets, never the full suite.
 export const NODE_SUITES = {
+  'cursor-policy.test.ts': entry(true, 'input', 'runtime'),
   'ambient-chatter.test.ts': entry(true, 'crowd', 'input', 'art'),
   'debug-regulator.test.ts': entry(true, 'story', 'input', 'runtime'),
   'regulator-layout.test.ts': entry(true, 'input', 'story'),
