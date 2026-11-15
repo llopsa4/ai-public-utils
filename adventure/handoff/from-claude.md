@@ -14,9 +14,12 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   Checked: typecheck, 239 fast and 90 art tests pass; links/anchors resolve; whitespace clean.
 
 ## Requests for Codex
-- **C1 (2026-11-15) — open.** In your next session, confirm you recover the new routine from
-  `AGENTS.md` (start reading, request rules, "continue" through these handoff files) and
-  record the result in `handoff/from-codex.md`. No other change.
+- **C3 (2026-11-15) — open.** Cell cage/gate r4: entirely new drawing, same design and layout,
+  clean. Instructions: `art/inbox/cell-cage-redraw/r4/PROMPTS.md`. Approval authority: user;
+  do not install. The user dropped r3: remove its *Awaiting the user* entry now; r1–r3 are
+  geometry references only.
+- **C2 (2026-11-15) — done.** Cell cage r3 delivered for user review (see `handoff/from-codex.md`).
+- **C1 (2026-11-15) — done** (Codex confirmed the routine).
 
 ## Taken from Codex
-- Codex's K1 and K2 Kofi reviews: not started; blocked until the user names the approval authority.
+- None. K1/K2 were removed at the user's request on 2026-11-15.

@@ -439,12 +439,12 @@ export const MANIFEST = [
     file: 'intro/objects/guardroom-torch.png', sheet: 'intro/objects/guardroom-torch.json', chapter: 'intro', generator: 'intro.mjs' },
   { ...object('table-frame', "Silas's articulated brass mask frame lying flat on the guard's table, with a clear brass rim and open centre.", ['idle']),
     file: 'intro/objects/table-frame.png', sheet: 'intro/objects/table-frame.json', chapter: 'intro', status: 'final', generator: 'Codex' },
-  // The cage's door, cut from Codex's closed/open overlays (art/inbox/done/cell-cage-perspective): the
-  // pixels that differ between the two, so cell-cage plus this frame reproduce each overlay exactly.
+  // User-approved new cage/leaf drawing r4 (art/inbox/done/cell-cage-redraw-r4).
+  // Fixed jambs/lintel and moving leaf remain separate, with existing atlas registration.
   { ...object('cell-gate', "The cage's human-sized iron door in the middle of its front face, closed and swung outward to the left.", ['closed', 'open']),
-    file: 'intro/objects/cell-gate.png', sheet: 'intro/objects/cell-gate.json', chapter: 'intro', status: 'final', generator: 'Codex (split by Claude)' },
+    file: 'intro/objects/cell-gate.png', sheet: 'intro/objects/cell-gate.json', chapter: 'intro', status: 'final', generator: 'Codex (approved cage redraw r4)' },
   // The cell's cage, drawn in front of Silas: Codex's overlay without its door (cell-gate).
-  { id: 'cell-cage', kind: 'foreground', file: 'foreground/cell-cage.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex (split by Claude)',
+  { id: 'cell-cage', kind: 'foreground', file: 'foreground/cell-cage.png', webp: true, anchor: 'top-left', room: 'cell', chapter: 'intro', status: 'final', generator: 'Codex (approved cage redraw r4)',
     subject: "The cell's iron cage in a gentle three-quarter view: thin close bars, a shallow roof above the window and a narrow right side; a doorway in the middle of the front (the door itself is cell-gate)." },
   icon('read', 'Read people: a face in profile with a small gold glint of insight above it.'),
 ];

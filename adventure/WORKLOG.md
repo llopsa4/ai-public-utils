@@ -5,20 +5,22 @@ Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Co
 Older verification history is in Git history of this file and in CHANGELOG.md.
 
 ## Checkout
-- Branch `dual-ownership`, HEAD `da85ac3`. Last inspected remote and Pages deployment:
+- Branch `dual-ownership`, HEAD `eee676d`. Last inspected remote and Pages deployment:
   `c14fdd4`. Earlier work is committed; published output is unchanged.
-- Claude's 2026-11-15 workflow audit is committed in `da85ac3` (not pushed); no local changes.
+- Claude's workflow audit and request-template changes are committed locally (not pushed).
+  Local changes: `WORKLOG.md`, both handoffs, cage/gate art, manifest and provenance;
+  r4 delivery archived in ignored `art/inbox/done/cell-cage-redraw-r4/`.
 
 ## Working on
 - **Active mode: Codex + Claude**, selected by the user on 2026-11-15. Split, handoff files
   and model guidance: [WORKFLOW.md](WORKFLOW.md). Pauses and approvals unchanged.
-- Current tasks, claims and deliveries awaiting the user are in the two handoff files
-  (cell cage r2 review; unconfirmed kneeling-worker bounce work).
-- R1 and the earlier roof-only `art/inbox/cell-roof-bars/r1/` are superseded cell-cage evidence.
+- Current tasks, claims and deliveries awaiting the user are in the two handoff files.
 - Local Ashlands Story Board in ignored `private/story-board/` (desktop shortcut
   `Ashlands Story Board.lnk`). User edits in `data/board.json`: preserve them; never reseed.
 
 ## Recently completed (installed, verified)
+- Cell cage/gate r4 (user approval 2026-11-15): new clean drawing, existing registration.
+  Evidence: `art/inbox/done/cell-cage-redraw-r4/`. C3 complete; r1–r3 remain uninstalled references.
 - Portrait r2: sixteen standing-based identities with speaking frames and mood metadata.
   Evidence: `art/inbox/done/dialogue-portraits-r2/`; thirteen paused-work briefs remain.
 - Cursor r3 (user approval 2026-11-15): pointing hand for objects/satchel/carried items,
@@ -43,11 +45,16 @@ Older verification history is in Git history of this file and in CHANGELOG.md.
   Font studies remain separate; game fonts unchanged. See README for player behavior.
 
 ## Latest verification
+- Kneeling-worker status confirmed: generator and installed human atlas tags hold frame 8;
+  typecheck and 38 crowd tests pass, including the stationary work contract. No code/art edits
+  or fresh browser playback during this status check.
+- Cell cage r4 installation: approved bytes exact; typecheck, 239 fast / 90 art tests and art
+  checker pass. Four direct installed-asset scratch captures at 1280×720 inspected, zero
+  page/HTTP errors. Evidence: `art/inbox/done/cell-cage-redraw-r4/HANDOFF.md`.
+  Published output unchanged; no commit or push.
 - Workflow audit (2026-11-15): see `handoff/from-claude.md`.
 - Story board (HEAD `36b31bc`): five server persistence tests and standalone browser checks
   passed; game typecheck and 239 fast tests passed. No browser suites or build.
-- Cell cage r2: candidate and failing-baseline regression checks, 239 fast / 90 art tests;
-  temporary previews dark/lit, closed/open, three desktop sizes, zero page/asset errors.
 - Portrait installation: typecheck, 239 fast / 90 art / 286 all-Node tests; scratch
   production dialogue verified all 16 identities / 48 frames with zero page/asset errors.
 - Cursor r3: 238 fast / 132 art-input tests, art checks, 557-file Markdown freshness and
@@ -57,15 +64,10 @@ Older verification history is in Git history of this file and in CHANGELOG.md.
   file readers failed with "registered Core launch requires an installed app").
 
 ## Pending and paused
-- Kofi's 45–60-minute target needs a timed human playthrough.
-- Finished Kofi art and rig installation on hold; source alternatives are review-only.
-  Two Kofi review requests (K1, K2 in `handoff/from-codex.md`) lack an approval authority.
-- Mara's left-facing artwork and Chapter 2 paused until the user resumes them.
 - The discarded 2026-11-11 interaction-effects brief remains rejected; the 2026-11-14 UI
   polish is a distinct implemented delivery.
 - Cell-visual browser changes were previously stopped before a full run. Soft stairs light
   is an intentional placeholder. Oversized verb-icon notices are informational.
 
 ## Next action
-- User reviews cell cage r2 and names the approval authority for Kofi reviews K1/K2.
-- Codex request C1: confirm the new routine is recovered in a fresh Codex session.
+- No open Codex request; C3 is installed and complete. See per-agent handoffs.
