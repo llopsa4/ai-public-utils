@@ -7,29 +7,45 @@ Use the [development guide](DEVELOPMENT.md), [art pipeline](art/PIPELINE.md) and
 
 ## Ownership and assignments
 
-- **Active mode: Codex only**, selected by the user on 2026-11-14 until they change it.
-  Codex owns all Adventure development: gameplay, runtime, tests, tooling, configuration,
-  documentation, art production, asset installation, registration, central provenance and
-  in-game verification. No Claude handoff is required in this mode. Existing task pauses,
-  review-only restrictions and art approval requirements remain in force; changing mode
-  does not approve pending artwork or resume paused work.
-- The user can select **Codex only** or **Codex + Claude**. Record their selection here
-  and in the work log. The following role split applies only in Codex + Claude mode.
-- In Codex + Claude mode, Claude leads gameplay, runtime, tests, tooling, configuration, documentation, asset installation,
-  registration, central provenance and in-game verification.
-- In Codex + Claude mode, Codex produces assigned, validated art deliveries and performs reviews when the user assigns
-  them. Reviews are read-only unless fixes are separately assigned.
-- The user may assign an exception, including implementation by Codex. Record its exact scope
-  under Working on in the work log; it does not change standing ownership.
+- **Active mode: Codex + Claude**, selected by the user on 2026-11-15 until they change it.
+  Existing task pauses, review-only restrictions and art approval requirements remain in force;
+  changing mode does not approve pending artwork or resume paused work.
+- The user can select **Codex only** (Codex owns everything below) or **Codex + Claude**.
+  Record their selection here and in the work log.
+- Claude's quota is the scarcer one, so in Codex + Claude mode the split saves Claude for the
+  work where it is clearly better:
+  - **Claude:** story, scene and puzzle design; dialogue; the image-generation prompt for each art
+    assignment ([generation prompts](art/PIPELINE.md#generation-prompts)); gameplay and runtime
+    code that is new or tricky; reviews and documentation of procedures.
+  - **Codex:** image generation from Claude's prompt, delivery preparation and validation, and,
+    after the user's approval, installation, registration, central provenance and in-game art
+    verification; routine wiring of an approved design, long test runs and user-assigned
+    reviews. Reviews are read-only unless fixes are separately assigned. If a prompt cannot
+    be followed, Codex reports why in the delivery instead of improvising a composition.
+- The user may assign an exception. Record its exact scope under Working on in your handoff
+  file; it does not change standing ownership.
 - Rebuilding tracked published output requires an explicit publishing request. Commits require
   an explicit request too; the parent instructions govern pushes.
 
-## Queues and approval
+## Handoff files
 
-[Codex's inbox](art/CODEX.md) and [Claude's inbox](CLAUDE-INBOX.md) contain tasks only.
-The sender adds tasks; the recipient removes completed tasks and preserves unfinished ones.
-An empty task list means nothing is queued. Generated references are not assignments and do not
-resume paused work. Use no competing NEXT, FIXES or root HANDOFF documents.
+Each agent writes only its own file and reads the other's, so concurrent sessions never edit
+the same file: [handoff/from-claude.md](handoff/from-claude.md) and
+[handoff/from-codex.md](handoff/from-codex.md). Each has four sections:
+
+- **Working on:** current task and exact claimed files; release claims when done.
+- **Awaiting the user:** deliveries or changes that need approval or a decision.
+- **Requests for <other agent>:** numbered items (`C1`, `K1`…) with date, paths, expected output,
+  approval authority and status (`open`, `blocked`, `done`). Add a request only for work the
+  user already asked for in that request; never to approve art or resume paused work.
+- **Taken from <other agent>:** request IDs you have started, finished or found blocked.
+  The requester marks its item `done` once the other file reports it finished.
+
+When the user says **"continue"**, read the other agent's file, take the first open request
+addressed to you, then report. Generated references are not assignments and do not resume
+paused work. Use no competing NEXT, FIXES or root HANDOFF documents.
+
+## Approval
 
 Each art assignment specifies an ID, authoritative brief/revision, allowed paths, output files,
 measured dimensions/anchors/states, required validation and **Approval authority: user | Claude**.
@@ -40,9 +56,10 @@ and installation steps.
 
 ## Shared-checkout coordination
 
-- Check [Working on](WORKLOG.md#working-on), existing diffs and the assignment before editing.
-  Claim exact shared files for exceptions, avoid another agent's edits, then release the claim.
-  Send conflicts to the owner's inbox rather than changing their work.
+- One shared checkout. Check both handoff files' *Working on* claims, existing diffs and the
+  assignment before editing. Claim exact shared files in your own file, avoid another agent's
+  edits, then release the claim. Report conflicts as a request in your own file rather than
+  changing their work. Use a separate worktree only when the user asks for one.
 - A handed-off delivery revision is immutable while integration is underway; make changes in a
   new revision folder. Pause edits to the revision being installed.
 - Whole-tree generators need exclusive access to all affected outputs. Prefer scoped commands
@@ -55,7 +72,9 @@ and installation steps.
 
 ## Session handoff
 
-[WORKLOG.md](WORKLOG.md) records current state, not another set of rules. Keep it under about
+[WORKLOG.md](WORKLOG.md) records slow-changing project state, not another set of rules or
+per-session activity (that belongs in your handoff file). Both agents may edit it, briefly and
+only at the end of a session; re-read it immediately before editing. Keep it under about
 100 lines and replace superseded statements. Before stopping, record:
 
 - Branch/HEAD; committed or dirty state and affected paths.

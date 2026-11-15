@@ -18,7 +18,7 @@ Order implementation plans easiest first. Refer to the user with they/them prono
 ## Adventure routing
 
 Before Adventure work from either launch directory, follow [adventure/AGENTS.md](adventure/AGENTS.md).
-It routes both tools to ordinary repository guides, current status and task queues. Tool-specific
+It routes both tools to ordinary repository guides, current status and handoff files. Tool-specific
 skill files contain discovery metadata and a link only; they own no project procedure.
 
 ## Shared memory (Claude and Codex)

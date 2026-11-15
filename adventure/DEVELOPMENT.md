@@ -6,8 +6,13 @@ and scratch previews. Paths below are relative to `adventure/`.
 
 Adventure targets desktop computer browsers with mouse, trackpad and keyboard. Phone/tablet
 layouts, touch-only controls and mobile device testing are outside the game's scope. Preserve
-desktop window resizing, browser zoom, keyboard access, fullscreen and reduced motion. Shared
-FFCardGame source retains its own device support; make Adventure-specific changes locally.
+desktop window resizing, browser zoom, keyboard access, fullscreen and reduced motion.
+
+FFCardGame is a subgame in Adventure's service. When shared code, rules or styles conflict,
+resolve them in Adventure's favor, changing shared FFCardGame source when that is the cleaner
+fix. FFCardGame remains a standalone published game: keep it working and run its relevant
+checks; its own device support stays. Its versioning and release rules apply only when the
+user asks for a push.
 
 ## Authoring chapter content
 

@@ -9,7 +9,7 @@ Kofi's functional prologue now lives in `src/chapters/kofi1/`. Its room position
 temporary labelled test layouts, generated with `npm run art:kofi-placeholders`; they are not
 the planned art composition. The tracked `private/kofi1/spec.json` and its references remain the
 finished-art planning authority. The test grid does not replace that composition; production and
-installation status are recorded in WORKLOG.md and the task inboxes.
+installation status are recorded in WORKLOG.md and the handoff files.
 
 - Implemented chapters: chapter definitions for targets, conditions and positions; the art manifest
   for appearance and delivery metadata; existing atlas `sourceSize` or image dimensions for frames.
@@ -50,7 +50,7 @@ Full public generation validates deliverable pack/piece metadata and renders eve
 intro layouts) before writing. `sourceReference` entries document existing sources; their legacy
 IDs/paths/statuses are retained, but they are not delivery requests or installation records.
 Validation/rendering errors leave existing files unchanged; filesystem write failures are not
-transactional. Neither task queue is generated.
+transactional. Handoff files are never generated.
 
 Source-only Kofi references: [standing rig](briefs/kofi-standing-rig-source.md),
 [village design](briefs/kofi-village-source.md), [travel design](briefs/kofi-travel-source.md),
@@ -97,7 +97,7 @@ Validation and preview policy: [TESTING.md](../TESTING.md).
 
 ## Deferred Kofi source and delivery notes
 
-Reference only; current task status is in the work log and inboxes. The approved prologue spec
+Reference only; current task status is in the work log and handoff files. The approved prologue spec
 owns visual composition. These retained delivery notes do not resume production or installation.
 
 ### Sources and outstanding artwork
@@ -134,4 +134,4 @@ owns visual composition. These retained delivery notes do not resume production 
 - **Fight art** (Kiln Courier screen): the wolf pack and the bear as enemies; card art for Shot,
   Aimed shot, Step back, Fire brand, Huska!, Gather arrows.
 
-Current production/installation status is recorded in the work log and task queue.
+Current production/installation status is recorded in the work log and handoff files.

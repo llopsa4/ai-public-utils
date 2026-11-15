@@ -4,6 +4,10 @@ Describe the player experience; you do not need to name code files. Use one temp
 and delete fields you do not care about. The assistant should infer implementation details from
 the existing game and [shared guides](DEVELOPMENT.md), not ask you to design the code.
 
+Both agents apply these rules automatically through
+[AGENTS.md](AGENTS.md#handling-requests). A one-line request such as "DESIGN a puzzle for the
+cold firing house" is enough; templates help when you want to fix more details.
+
 Examples below are hypothetical requests, not changes to the approved story or permission to
 resume paused work. Story decisions follow [WORKFLOW.md](WORKFLOW.md); artwork follows
 [PIPELINE.md](art/PIPELINE.md).
@@ -115,8 +119,12 @@ one brief note if a dependency needs my decision. [Text proposal only / implemen
 
 ## 6. Artwork for a specific game use
 
+Artwork works best in two steps: ask **Claude** to write the generation prompt, then ask
+**Codex** to produce the candidate from it ([generation prompts](art/PIPELINE.md#generation-prompts)).
+
 ```text
-DESIGN A BRIEF / PRODUCE ONE CANDIDATE for [named room, character, object or state].
+[To Claude] WRITE THE GENERATION PROMPT / [To Codex] PRODUCE ONE CANDIDATE from
+art/inbox/<assignment>/<revision>/PROMPTS.md for [named room, character, object or state].
 Used in: [scene and exact role: background, removable prop, inventory icon, pose, etc.].
 Desired change: [...]. Preserve: [approved identity, composition or source pixels].
 References: [approved design or existing game asset].
@@ -163,7 +171,12 @@ Recommend one; do not write full dialogue or implement it yet.
   selected design, current state and next action; do not paste the entire previous conversation.
 - Use one implementing agent by default. Avoid additional AI review/startup sessions unless useful
   for the specific task. Keep logs and routine verification summaries short without skipping checks.
-- End with: "Stop when this request is satisfied; list optional follow-ups instead of doing them."
+- You no longer need to add "Stop when this request is satisfied"; it is a standing rule.
+- Use the right agent: Claude for design, writing, tricky code and art prompts; Codex for image
+  generation, art delivery/installation, routine wiring and long test runs. Agents leave
+  requests for each other in `handoff/`; tell the other one just "continue".
+- Use `/model opusplan` in Claude: Opus plans, Sonnet implements. Each plan ends with an
+  "Implement with:" line; switch to Opus manually only when it says so.
 
 The prompts intentionally link to shared game procedures rather than repeat their rules. They
 request no publishing, commits or pushes unless those actions are explicitly added.

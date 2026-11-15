@@ -93,7 +93,7 @@ test('a late intro-rendering failure does not write already-rendered catalog bri
 
 test('full isolated generation is deterministic, references are non-deliverable, and checks never rewrite', async t => {
   const dir = scratch(t);
-  const queues = ['art/CODEX.md', 'CLAUDE-INBOX.md'].map(file => [join(root, file), readFileSync(join(root, file))] as const);
+  const queues = ['handoff/from-claude.md', 'handoff/from-codex.md', 'WORKLOG.md'].map(file => [join(root, file), readFileSync(join(root, file))] as const);
   const first = await generateFullBriefs({ outputDir: dir });
   assert.ok(first.size > MANIFEST.length);
   assert.ok(existsSync(join(dir, 'briefs/INDEX-intro.md')));

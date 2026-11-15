@@ -31,6 +31,24 @@ reference-generation commands. This procedure covers artwork; a generated brief 
 Apply this contract when creating or replacing scene artwork. It does not authorise regenerating
 existing art or resuming paused production.
 
+## Generation prompts
+
+The writer named by [WORKFLOW.md](../WORKFLOW.md) puts the prompt in the assignment's
+`art/inbox/<assignment>/<revision>/PROMPTS.md` before generation; the generator records any
+deviation there. The cell-cage redraw (`art/inbox/cell-cage-redraw/r2/PROMPTS.md`) is the
+working example. A prompt states, in this order:
+
+1. **Use case and novelty:** new asset, matching state of an existing asset, or precise edit.
+2. **Canvas:** exact size, transparency, and padding that must stay empty.
+3. **Geometry:** key corners, edges and anchors in canvas coordinates; what continues off-canvas.
+4. **Each reference image and its only role** (geometry, style, identity); never copy pixels.
+5. **Material and style:** stroke widths, spacing, palette notes from [STYLE.md](STYLE.md).
+6. **Exclusions:** room, floor, shadows, people, props, matte, text, checkerboard, panels.
+7. **Priority:** which property wins on conflict (usually geometry and continuity over detail).
+
+For a matching state (open/closed, lit/dark), say that it is the identical design and describe
+the projected silhouette with coordinates. One asset per prompt; no comparison sheets.
+
 ## Produce a delivery
 
 1. Check available image-generation tools before promising generated work. If unavailable,
@@ -48,13 +66,13 @@ existing art or resuming paused production.
    Runtime `art:check` does not validate an uninstalled candidate; distinguish that evidence.
 5. Put the assignment/revision, exact files, input references, measured contract, reproducible
    processing, provenance, checks actually run and limitations in the revision's `HANDOFF.md`.
-   Mark ready for review and add its exact path to the integration queue. Changed candidates get
+   Mark it ready for review in your handoff file with its exact path. Changed candidates get
    a new revision rather than overwriting the handed-off revision.
 
 ## Integrate an approved revision
 
 1. Verify the approval and scope under WORKFLOW.md before importing. Preserve existing pauses
-   and review-only candidates recorded in the work log and queues.
+   and review-only candidates recorded in the work log and handoff files.
 2. Import only intended files. `art/import.mjs` normalizes assets; rig generation and `art/webp.mjs`
    may affect shared outputs. Coordinate scope before running them. Use the smaller appropriate
    WebP encoding, following the existing encoder.
@@ -66,7 +84,7 @@ existing art or resuming paused production.
    Node checks, then inspect scale, depth, portraits and motion through its scratch-preview
    procedure. Record unverified behavior rather than substituting an old published preview.
 5. After installation and verification, move the installed revision under `art/inbox/done/` and
-   finish its queue task. Preserve uninstalled alternatives and original evidence.
+   mark the request done in your handoff file. Preserve uninstalled alternatives and original evidence.
 
 ## Tool selection
 

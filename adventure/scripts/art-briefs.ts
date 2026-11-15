@@ -207,7 +207,7 @@ export async function runArtBriefs(args = process.argv.slice(2)) {
     await runRuntimeReferences(chapterId, check, ROOT, markdownOnly);
   } else {
     const files = await generateFullBriefs({ outputDir, check, markdownOnly });
-    console.log(`${check ? 'Checked' : 'Generated'} full art catalog: ${files.size} files. Task queues untouched.`);
+    console.log(`${check ? 'Checked' : 'Generated'} full art catalog: ${files.size} files. Handoff files untouched.`);
   }
 }
 
