@@ -27,14 +27,26 @@ use a template. Do not re-read that file for each request; these are its standin
   assume the smallest stage that answers it (an idea → DESIGN; "what's wrong" → REVIEW) and say
   which one you assumed. Never move to a later stage (script, code, finished art) uninvited.
 - **DESIGN:** one recommended option (two only for puzzle ideas), short outline, required vs
-  optional content, art needs listed but not produced. **WRITE:** text only, established voices,
-  short player-facing lines. **BUILD/CHANGE:** only the requested behavior, existing art or
-  placeholders as allowed, required tests, save compatibility. **REVIEW:** up to three problems
-  with player effect and proposed fix; checked vs assumed; no fixes.
+  optional content, art needs listed but not produced. A scene gives entry state, key player
+  actions, meaningful interactions, exit state and link to the next scene.
+- **WRITE:** established voices, short player-facing lines; show the revised text only, plus one
+  note if a dependency needs a decision.
+- **Story CHANGE:** check connected scenes; flag contradictions and puzzle dependencies before a
+  broad rewrite; summarize consequences for dialogue, clues, objectives and later references.
+- **BUILD/behavior CHANGE:** only the requested behavior, existing art or placeholders as
+  allowed, required tests, save compatibility, no unrelated polish; report what still needs
+  visual verification.
+- **REVIEW:** inspect only the named material and its dependencies; up to three problems with
+  player effect and proposed fix (or say none found); checked vs assumed; no fixes.
+- **Art prompt:** write `PROMPTS.md` per [generation prompts](art/PIPELINE.md#generation-prompts),
+  flag missing contract data, keep removable objects separate, never install; add a Codex request.
 - **Missing fields.** Fill them from the existing game and guides. Ask only one blocking question
   when the answer would change the result; otherwise state the assumption and proceed.
-- **Puzzles:** exact solution, visible clues, wrong attempts and recovery, nudge + plain hint,
-  no dead ends across action orders and revisits.
+- **Puzzle ideas:** premise, exact solution and how it follows from what the player observes,
+  visible clues, wrong attempts and recovery, nudge + plain hint, no dead ends across action
+  orders and revisits; recommend one. **Expanding** the chosen one: starting state, numbered
+  steps, item/state changes, clue placement, wrong-action responses, recoverability, any
+  alternative solution and unresolved choices; no code or art.
 - **Right agent.** If the task belongs to the other agent under [WORKFLOW.md](WORKFLOW.md), say
   so in one line and, if the user agrees, write it as a request in your handoff file.
 - **Plans** end with one line, `Implement with: Sonnet` or `Implement with: Opus — <reason>`
