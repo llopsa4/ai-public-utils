@@ -7,7 +7,7 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 - Nothing active. No file claims.
 
 ## Awaiting the user
-- Workflow audit (2026-11-15), uncommitted documentation changes: root and FFCardGame
+- Nothing. Workflow audit (2026-11-15) committed in `da85ac3`, not pushed: root and FFCardGame
   `CLAUDE.md`, `AGENTS.md`, `PROMPTING.md`, `WORKFLOW.md`, `DEVELOPMENT.md`, `art/PIPELINE.md`,
   `art/REFERENCES.md`, handoff files, skill descriptions, `WORKLOG.md` and the briefs test.
   `CLAUDE-INBOX.md` and `art/CODEX.md` removed (old delivery records still mention them).

@@ -5,10 +5,9 @@ Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Co
 Older verification history is in Git history of this file and in CHANGELOG.md.
 
 ## Checkout
-- Branch `dual-ownership`, HEAD `3b72744`. Last inspected remote and Pages deployment:
+- Branch `dual-ownership`, HEAD `da85ac3`. Last inspected remote and Pages deployment:
   `c14fdd4`. Earlier work is committed; published output is unchanged.
-- Local, uncommitted: Claude's 2026-11-15 workflow audit (documentation, the briefs test's
-  protected-file list, and the move from task queues to `handoff/`); see `handoff/from-claude.md`.
+- Claude's 2026-11-15 workflow audit is committed in `da85ac3` (not pushed); no local changes.
 
 ## Working on
 - **Active mode: Codex + Claude**, selected by the user on 2026-11-15. Split, handoff files
