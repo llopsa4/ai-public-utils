@@ -13,6 +13,11 @@ Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
   are ignored; published output is unchanged.
 
 ## Working on
+- Local Ashlands Story Board completed in ignored `private/story-board/`, with the
+  desktop shortcut `Ashlands Story Board.lnk`. Separate from game runtime and STORY.md;
+  zoom/pan, day playback and versioned file autosave with recovery are available.
+  User edits are already present in `data/board.json`: preserve them; never reseed.
+  No active claims or published rebuild; the private app and data remain local only.
 - Cell cage redraw r2 transparency correction delivered: `art/inbox/cell-cage-redraw/r2/review.html`.
   Neutral/warm matte fringes removed; approved roof rows 0–173 byte-identical to r1.
   Candidate and failing-baseline regression checks passed, plus 239 fast / 90 art tests.
@@ -52,6 +57,13 @@ Tasks: [Claude](CLAUDE-INBOX.md) and [Codex](art/CODEX.md).
   the user identified wording weakened by consolidation. No artwork was regenerated or installed.
 
 ## Verification
+
+- Local story-board task on `dual-ownership`, HEAD `36b31bc`: five server persistence,
+  conflict/failure/recovery/access tests passed; standalone browser checks passed for
+  autosave/reload, zoomed dragging, undo, pan/fit, routes, next-morning pause, stale tabs,
+  retry and corrupt-save recovery. Light/dark desktop layouts inspected; no page errors.
+  Desktop shortcut starts the hidden localhost server and opens the browser. Game
+  typecheck and all 239 fast tests passed. No game browser suites or build ran.
 
 - Portrait installation: typecheck, 239 fast / 90 art / 286 all-Node tests passed. Scratch
   production dialogue verified all 16 identities / 48 frames, mood reset, mirroring and
