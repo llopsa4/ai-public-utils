@@ -12,6 +12,15 @@ import { WalkArea } from '../src/engine/pathfinding';
 
 const HALL = CROWDS.maraRoom;
 
+test('cold firing-house children stand near Nell without an unsupported sitting pose', () => {
+  const nell = ROOMS.firingHouse.actors.find(actor => actor.id === 'nell')!;
+  for (const id of ['coldA', 'coldB']) {
+    const station = CROWDS.firingHouse.stations[id];
+    assert.equal(station.task, 'stand', `${id}: there is no seat under the cold gathering`);
+    assert.ok(Math.abs(station.x - nell.x) <= 70, `${id}: stay beside Nell after the regulator fails`);
+  }
+});
+
 test('Hollis works at the fire and empties ash at the cart without wandering', () => {
   const hollis = HALL.extras.find(e => e.id === 'extra-stoker')!;
   const schedule = new Schedule(hollis.routines.warm, HALL.stations, HALL.exits, HALL.wander, seeded(7));

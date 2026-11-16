@@ -11,7 +11,7 @@ Mara, the courier (he/him), about 22: the tallest of the cast but lean and long-
 ## Use and placement
 
 Mara is the player's character: he walks every room, crouches, lies down, talks (the rig animates this one drawing).
-In the game 232 art pixels tall (116 pixels on the 2-pixel grid; the face is only a couple of dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
+In the game 232 art pixels tall (116 world pixels; people are built on a 1-art-pixel grid with the master palette, so the face is only a few dozen art pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
 
 ## Asset contract
 

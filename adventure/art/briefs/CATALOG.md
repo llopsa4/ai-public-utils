@@ -399,7 +399,7 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **char-guard-nokeys**: [brief](char-guard-nokeys.md) · character · placeholder.
 - **char-warden**: [brief](char-warden.md) · character · placeholder.
 - **portrait-warden**: [brief](portrait-warden.md) · portrait · placeholder.
-- **char-sigrid**: [brief](char-sigrid.md) · character · placeholder.
+- **char-sigrid**: [brief](char-sigrid.md) · character · final.
 - **portrait-sigrid**: [brief](portrait-sigrid.md) · portrait · final.
 - **item-plate**: [brief](item-plate.md) · item · final.
 - **item-crust**: [brief](item-crust.md) · item · final.
@@ -544,6 +544,7 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **battle-scavenger**: [brief](battle-scavenger.md) · battle · final.
 - **battle-enemy-scavenger**: [brief](battle-enemy-scavenger.md) · battle-portrait · final.
 - **battle-backdrop-gallery**: [brief](battle-backdrop-gallery.md) · battle-backdrop · final.
+- **battle-enemy-ash-sweeper**: [brief](battle-enemy-ash-sweeper.md) · battle-portrait · final.
 - **portrait-extra-stoker**: [brief](portrait-extra-stoker.md) · portrait · final.
 - **portrait-extra-tally**: [brief](portrait-extra-tally.md) · portrait · final.
 - **portrait-extra-hauler**: [brief](portrait-extra-hauler.md) · portrait · final.
@@ -578,7 +579,7 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **room-road**: [brief](room-road.md) · room · placeholder.
 - **room-workshop**: [brief](room-workshop.md) · room · placeholder.
 - **room-backroom**: [brief](room-backroom.md) · room · placeholder.
-- **char-bryn**: [brief](char-bryn.md) · character · placeholder.
-- **portrait-bryn**: [brief](portrait-bryn.md) · portrait · placeholder.
+- **char-bryn**: [brief](char-bryn.md) · character · final.
+- **portrait-bryn**: [brief](portrait-bryn.md) · portrait · final.
 - **battle-backdrop-workshop**: [brief](battle-backdrop-workshop.md) · battle-backdrop · placeholder.
-- **battle-enemy-rig**: [brief](battle-enemy-rig.md) · battle-portrait · placeholder.
+- **battle-enemy-rig**: [brief](battle-enemy-rig.md) · battle-portrait · final.

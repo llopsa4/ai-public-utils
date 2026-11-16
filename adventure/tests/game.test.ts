@@ -178,7 +178,7 @@ test('the whole scene plays from Mara\'s tent to the ashways', () => {
   assert.ok(s.flags.valveVented);
   assert.ok(vent.commands.some(c => c.type === 'moveObject' && c.id === 'sweeper'));
   const exit = run(s, 'go', 'passage');
-  assert.equal(exit.commands.at(-1)?.type, 'end');
+  assert.equal(exit.commands.at(-1)?.type, 'chooseChapter', 'chapter 1 ends on the chapter map');
 });
 
 test('every path through the argument reaches Mara\'s own decision', () => {

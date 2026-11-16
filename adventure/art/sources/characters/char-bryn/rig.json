@@ -1,0 +1,93 @@
+{
+  "dir": "ch2/",
+  "source": "sources/characters/char-bryn/body.png",
+  "armLayer": "sources/characters/char-bryn/arm.png",
+  "detail": {
+    "grid": 1,
+    "palette": "master"
+  },
+  "height": 224,
+  "walks": false,
+  "armPivot": [
+    391,
+    366
+  ],
+  "hipY": 1135,
+  "splitX": 510,
+  "hips": {
+    "near": [
+      375,
+      1135
+    ],
+    "far": [
+      625,
+      1135
+    ]
+  },
+  "knees": {
+    "near": [
+      360,
+      1300
+    ],
+    "far": [
+      635,
+      1300
+    ]
+  },
+  "fidgetLean": -3,
+  "eyes": [
+    {
+      "x": 548,
+      "y": 143,
+      "rx": 11,
+      "ry": 5,
+      "skinAt": [
+        549,
+        160
+      ]
+    },
+    {
+      "x": 589,
+      "y": 141,
+      "rx": 5,
+      "ry": 4,
+      "skinAt": [
+        588,
+        155
+      ]
+    }
+  ],
+  "portrait": [
+    342,
+    15,
+    350,
+    350
+  ],
+  "moods": [
+    "neutral"
+  ],
+  "face": {
+    "mouth": {
+      "x": 572,
+      "y": 193,
+      "rx": 15,
+      "ry": 4
+    },
+    "brows": [
+      {
+        "x0": 523,
+        "x1": 564,
+        "y0": 117,
+        "y1": 128,
+        "inner": "right"
+      },
+      {
+        "x0": 579,
+        "x1": 600,
+        "y0": 117,
+        "y1": 126,
+        "inner": "left"
+      }
+    ]
+  }
+}

@@ -139,7 +139,7 @@ export async function fight(scene: RoomScene, id: string, pool?: readonly string
   el.hidden = false;
   scene.inFight = true;
   scene.input.enabled = false;
-  for (const actor of scene.actors.values()) actor.setHidden(true);
+  hideRoomForFight(scene, id, true);
   await new Promise<void>(resolve => {
     const boss=id==='ashwaysBoss';
     const reward = boss&&state.flags.ashwaysRewarded?undefined:chapter().rewards[id];
@@ -188,7 +188,23 @@ function backToRoom(scene: RoomScene): void {
   if (scene.cameras?.main && restScrollY !== null) scene.tweens.add({ targets: scene.cameras.main, scrollY: restScrollY, duration: settings().reducedMotion ? 0 : 320, ease: 'Sine.easeOut' });
   restScrollY = null;
   if (scene.input) scene.input.enabled = true;
-  for (const actor of scene.actors.values()) if (actor.sprite.active) actor.setHidden(false);
+  hideRoomForFight(scene, null, false);
+}
+
+/** Room objects the fight's own picture stands in for, by fight id. */
+const FIGHT_REPLACES: Record<string, readonly string[]> = { ashwaysBoss: ['sweeper'] };
+
+/**
+ * Only the fight's own pictures stand in the room: every person (Mara, the story's actors and the
+ * background crowd, with what they carry) and the room machine the enemy's picture replaces go out of
+ * sight until the fight ends.
+ */
+function hideRoomForFight(scene: RoomScene, fightId: string | null, hidden: boolean): void {
+  for (const actor of scene.actors.values()) if (actor.sprite.active) actor.setHidden(hidden);
+  scene.crowd?.setFightHidden(hidden);
+  scene.fightHidden = new Set(hidden && fightId ? FIGHT_REPLACES[fightId] ?? [] : []);
+  // A room left behind (a fight abandoned by going to the title) has nothing left to refresh.
+  if (scene.hero?.sprite.active) scene.refreshObjects();
 }
 
 /** The card strip's height over the room (kc-local.css, #kc-root.in-room), in page px. */
@@ -199,7 +215,7 @@ const cardStrip = () => (window.innerHeight <= 520 ? CARD_STRIP_SHORT : CARD_STR
 /** Each enemy's visible height against Mara's, at its real size in the room. */
 const ENEMY_HEIGHT: Record<string, number> = {
   'hatch-scavenger': 0.45,      // a crab-like maintenance machine, knee to waist high
-  'berserk-ash-sweeper': 1.05,  // the ashways' big sweeper, a bit taller than Mara
+  'berserk-ash-sweeper': 0.6,   // the ashways' sweeper as in the room (art/src/objects/sweeper.png: 140 art px against Mara's 232)
   'training-rig': 0.9,          // Bryn's practice rig, about shoulder high
   'cinder-rat': 0.22, 'rat-pack': 0.28, 'ash-mites': 0.22, 'pipe-beetle': 0.32, // the tunnels' small creatures
 };

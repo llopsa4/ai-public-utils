@@ -21,8 +21,9 @@ const tentHotspots: HotspotDef[] = [
   { id: 'jar', name: 'name.jar', polygon: rect(104, 168, 26, 30), verbs: ['look', 'take'], walkTo: pt(118, 278), face: 'up' },
   // The crate under the bench: his work clothes, armour and the gauntlet (before the workbench, which surrounds it).
   { id: 'chest', name: 'name.chest', polygon: rect(36, 218, 32, 26), verbs: ['look', 'open', 'use'], walkTo: pt(52, 278), face: 'up' },
-  { id: 'workbench', name: 'name.workbench', polygon: rect(14, 124, 178, 128), verbs: ['look', 'use'], walkTo: pt(110, 278), face: 'up' },
+  // The stool before the workbench it overlaps, so its seat is clickable.
   { id: 'stool', name: 'name.stool', polygon: rect(88, 228, 52, 48), verbs: ['look', 'use'] },
+  { id: 'workbench', name: 'name.workbench', polygon: rect(14, 124, 178, 128), verbs: ['look', 'use'], walkTo: pt(110, 278), face: 'up' },
   { id: 'drum', name: 'name.drum', polygon: rect(242, 194, 94, 66), verbs: ['look', 'use'], walkTo: pt(290, 278), face: 'up' },
   { id: 'stove', name: 'name.stove', polygon: rect(366, 206, 38, 48), verbs: ['look', 'use', 'open'], walkTo: pt(385, 278), face: 'up' },
   { id: 'tentFlap', name: 'name.tentFlap', polygon: rect(566, 84, 74, 186), verbs: ['look', 'go', 'open'], walkTo: pt(606, 284), face: 'right' },
@@ -59,7 +60,7 @@ const firingHouseHotspots: HotspotDef[] = [
   { id: 'soup', name: 'name.soup', polygon: rect(82, 176, 44, 26), verbs: ['look', 'take', 'use'], walkTo: pt(110, 280), face: 'up' },
   { id: 'shoes', name: 'name.shoes', polygon: rect(34, 30, 120, 110), verbs: ['look', 'take'] },
   { id: 'hearth', name: 'name.hearth', polygon: rect(56, 170, 92, 92), verbs: ['look', 'use'] },
-  { id: 'stairs', name: 'name.stairs', polygon: [pt(410, 262), pt(510, 96), pt(566, 96), pt(470, 262)], verbs: ['look', 'go'], walkTo: pt(450, 284), face: 'up' },
+  { id: 'stairs', name: 'name.stairs', polygon: [pt(366, 262), pt(486, 96), pt(518, 132), pt(410, 262)], verbs: ['look', 'go'], walkTo: pt(390, 284), face: 'up' },
   // Nell's rolls in the basket on the table under the stairs (the morning's bread errand).
   { id: 'breadBasket', name: 'name.breadBasket', polygon: rect(516, 192, 38, 28), verbs: ['look', 'take'], walkTo: pt(535, 282), face: 'up' },
   { id: 'kilnGate', name: 'name.kilnGate', polygon: rect(586, 96, 54, 168), verbs: ['look', 'open', 'go'], walkTo: pt(616, 290), face: 'right' },
@@ -82,7 +83,7 @@ const galleryHotspots: HotspotDef[] = [
 // the pipe, the ash sweeper blocking the passage under the old bridge (right side), and after the
 // valve is vented, the sweeper scurried off to the warm pipe.
 const ashwaysHotspots: HotspotDef[] = [
-  { id: 'pressureCell', name:'name.pressureCell', polygon:rect(176,202,28,36),verbs:['look','use'],walkTo:pt(220,300),face:'left',outline:{objects:['pressureCell']} },
+  { id: 'pressureCell', name:'name.pressureCell', polygon:rect(120,170,28,36),verbs:['look','use'],walkTo:pt(175,300),face:'left',outline:{objects:['pressureCell']} },
   { id:'sweeperDisabled',name:'name.sweeper',polygon:rect(290,235,140,70),verbs:['look'],visibleIf:[{flag:'ashwaysWon'}],outline:{objects:['sweeperDisabled']} },
   { id: 'sweeper', name: 'name.sweeper', polygon: rect(470, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ notFlag: 'valveVented' }] },
   { id: 'sweeperAtPipe', name: 'name.sweeper', polygon: rect(130, 228, 130, 70), verbs: ['look', 'talk', 'use'], visibleIf: [{ flag: 'valveVented' },{notFlag:'ashwaysExploded'}], outline: { objects: ['sweeper'] } },
@@ -157,7 +158,7 @@ export const ROOMS: Record<string, RoomDef> = {
       { image: 'hall-crate', x: 98, y: 311, depth: 339 },
     ],
     props: [{ kind: 'swing', image: 'pulley', x: 100, y: 60, pivotX: 0.5, hotspot: 'pulleys' }],
-    sign: { x: 150, y: 48, drop: 14, w: 100, h: 22, style: 'wood' },
+    sign: { x: 245, y: 48, drop: 14, w: 100, h: 22, style: 'wood' },
     ambient: {
       particles: [{ kind: 'embers', x: 320, y: 150, w: 180, h: 80, warm: true }],
       glows: [

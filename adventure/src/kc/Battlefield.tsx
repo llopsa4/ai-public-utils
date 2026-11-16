@@ -86,6 +86,7 @@ export function Battlefield({ state, animation, onInspectIntent, intentBlocked, 
       <div key={`hero-motion-${motionKey}`} className="fighter-motion hero-motion">
       <span className="ground-shadow" />
       <img className="fighter hero-art" id="hero-art" data-pose={pose} src={heroSprite} alt="Mara in ceramic armour, ready to fight with a powered gauntlet." />
+      <img className="fighter hero-contact-upper" src={heroSprite} alt="" aria-hidden="true" />
       {animation?.actor==='hero'&&['guard','support','vent','cycle'].includes(animation.motion)&&<span className={`stance-effect stance-${animation.motion}`} aria-hidden="true"><ResourceSymbol kind="block"/><i/><i/><i/></span>}
       {animation?.overload&&contact&&<span className="overload-release" aria-hidden="true"/>}
       {animation?.actor==='hero'&&animation.enemyHit&&contact&&<span className="motion-trail" aria-hidden="true"/>}
@@ -104,7 +105,6 @@ export function Battlefield({ state, animation, onInspectIntent, intentBlocked, 
       <img key={`enemy-${state.revision}`} style={visual.ink?{height:`calc(var(--enemy-size) / ${visual.ink.height})`,bottom:`calc(var(--floor) - 3px - var(--enemy-size) * ${visual.ink.gap/visual.ink.height})`,maxWidth:'none'}:undefined} className="fighter enemy-art" id="enemy-art" src={visual.sprite} alt={`${encounter.enemy.name}, a grounded maintenance machine with all supports planted on the floor.`} />
       {visual.reinforced&&<StoryDetails kind="armor"/>}
       </div>
-      {visual.training&&<StoryDetails kind="cage"/>}
       {animation?.enemyHit&&contact&&<ContactBurst/>}
       <Pops pops={pops} who="enemy" />
     </div>

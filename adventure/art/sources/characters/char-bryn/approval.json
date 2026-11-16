@@ -1,0 +1,20 @@
+{
+  "assignment": "C5",
+  "revision": "bryn-redraw/r1",
+  "date": "2026-11-16",
+  "authorization": "User said continue immediately after the r1 review and approval gate",
+  "delivery": "art/inbox/done/bryn-redraw-r1/",
+  "tool": "image_gen.imagegen",
+  "sourceHashes": {
+    "body.png": "b6af62cf9fd64cb11995bdc238f5fc14e615c3709ff3b50400446965c9a87860",
+    "arm.png": "3f703642ca66b6ae66937f239dc3c0b6a9594d5ffc0a2e02924172dd8f4a886e",
+    "kneel.png": "b8ca953f5cc9b64b56ec879caca2699865bc47507fba1366de7e0df65acdc6f8",
+    "lie.png": "d0cdfd9c876be2cfe720b5aac7b193c8ad31bb1d14cfa74c5506e733b59e7df9",
+    "portrait-approved.png": "37ffab4b9ef63ca8d1806b1a2f9157079e05cd5f106f2df68f82dd1e57c645e8"
+  },
+  "installedHashes": {
+    "ch2/characters/bryn.png": "492a611b3c46264bf5892c0864f66a3ab4bb3cdd046328267c8567e6c72fcd86",
+    "ch2/characters/bryn.json": "f2e00aceeb45e50672584b4d9cb7f7d7b08aa03cf1b32270a43e227662f38bb1",
+    "ch2/portraits/bryn.png": "37ffab4b9ef63ca8d1806b1a2f9157079e05cd5f106f2df68f82dd1e57c645e8"
+  }
+}

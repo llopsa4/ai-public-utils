@@ -77,8 +77,11 @@ function WearArt({ slot }: { slot: WearSlot }) {
   return <span className="equipment-art">{src ? <img src={src} alt={BASIC_WEAR[slot].name} width="512" height="512" decoding="async" /> : slot === 'pants' ? PANTS : BOOT}</span>;
 }
 const STASH_CELLS = 8;
-// Two per row: the last row is health next to MP (now / most).
-const STAT_ROWS: ['power' | 'defense' | 'speed' | 'cards' | 'hp' | 'mp', string][] = [['power', 'Power'], ['defense', 'Defense'], ['speed', 'Speed'], ['cards', 'Opening cards'], ['hp', 'HP'], ['mp', 'MP']];
+// Two columns. Left: the build, top to bottom Power, Defense, Speed, Opening cards (common to every
+// main character) and, for Mara, his extra Attack strain. Right: HP above MP (now / most).
+type StatKey = 'power' | 'defense' | 'speed' | 'cards' | 'attackStrain' | 'hp' | 'mp';
+const BUILD_ROWS: [StatKey, string][] = [['power', 'Power'], ['defense', 'Defense'], ['speed', 'Speed'], ['cards', 'Opening cards'], ['attackStrain', 'Attack strain']];
+const VITAL_ROWS: [StatKey, string][] = [['hp', 'HP'], ['mp', 'MP']];
 
 /**
  * The gear pop-up as a paper doll: Mara's figure with his three slots on the body, a stash of square
@@ -107,8 +110,9 @@ function PaperDoll({ profile, owned, locked, onEquip, tonics = 0 }: ArmoryProps)
     setResult(`${EQUIPMENT[id].name} equipped.`);
   };
   const stats = deriveStats(profile);
-  const statValue = (key: (typeof STAT_ROWS)[number][0]) =>
-    key === 'cards' ? openingHandSize(5, stats.speed) : key === 'hp' ? `${profile.hp} / ${profile.maxHp}` : key === 'mp' ? `${profile.mp} / ${stats.maxMp}` : stats[key];
+  const statValue = (key: StatKey) =>
+    key === 'cards' ? openingHandSize(5, stats.speed) : key === 'hp' ? `${profile.hp} / ${profile.maxHp}` : key === 'mp' ? `${profile.mp} / ${stats.maxMp}` : key === 'attackStrain' ? `+${stats.attackStrain}` : stats[key];
+  const statColumn = (rows: [StatKey, string][]) => <div className="doll-stat-col">{rows.map(([key, label]) => <div key={key} data-stat={key}><dt>{label}</dt><dd>{statValue(key)}</dd></div>)}</div>;
   const spare = (id: string) => !(STARTING_EQUIPMENT_IDS as readonly string[]).includes(id);
   return <section className="kc-armory doll" aria-label="Mara's gear">
     <div className="doll-figure">
@@ -140,7 +144,7 @@ function PaperDoll({ profile, owned, locked, onEquip, tonics = 0 }: ArmoryProps)
       </button>
       <span className="doll-belt-label">Kiln Tonics <strong>{tonics} / {TONIC.max}</strong></span>
     </div>
-    <dl className="doll-stats">{STAT_ROWS.map(([key, label]) => <div key={key}><dt>{label}</dt><dd>{statValue(key)}</dd></div>)}</dl>
+    <dl className="doll-stats">{statColumn(BUILD_ROWS)}{statColumn(VITAL_ROWS)}</dl>
     <div className="doll-side">
       <h3 className="doll-heading">Stash <span>· {TYPE_NAME[view]}</span></h3>
       <div className="doll-stash">{Array.from({ length: Math.max(STASH_CELLS, shelf.length) }, (_, n) => {

@@ -29,7 +29,7 @@ Background people walk about the floor band here (the crowd); keep the band open
 
 Walk-behind pieces are cut from this painting: `hall-left` (from (0, 616)), `hall-right` (from (1114, 628)), `hall-crate` (from (196, 622)): paint those things in front of the floor there.
 
-The game hangs the room's name board around (300, 96): keep that patch of wall plain.
+The game hangs the room's name board around (490, 96): keep that patch of wall plain.
 
 Later in the story the game cools this room's colours (the kiln dies): do not paint that, paint it warm.
 

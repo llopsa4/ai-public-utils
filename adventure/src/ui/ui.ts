@@ -459,11 +459,17 @@ export class Ui {
     title.textContent = t(end.title);
     text.textContent = t(end.text);
     this.live.textContent = `${t('ui.endTag')}. ${t(end.text)}`;
-    $<HTMLButtonElement>('end-new').focus({ preventScroll: true });
+    const again = $<HTMLButtonElement>('end-new');
+    // A final card offers no way on; the pause menu (save, load, settings, title) stays reachable.
+    again.hidden = !!end.final;
+    this.syncScreenButtons();
+    (end.final ? this.menuButton : again).focus({ preventScroll: true });
   }
 
   hideEnd(): void {
     $('end').hidden = true;
+    $('end-new').hidden = false;
+    this.syncScreenButtons();
   }
 
   setBusy(busy: boolean): void {
@@ -474,7 +480,9 @@ export class Ui {
 
   /** Keep button availability aligned with the shortcut policy while gear loads or unlocks. */
   syncScreenButtons(): void {
-    this.menuButton.disabled = this.host.isBusy() || this.gearPending;
+    // The room stays "busy" behind a closing card, but the pause menu must still open.
+    const onEndCard = !$('end').hidden;
+    this.menuButton.disabled = (this.host.isBusy() && !onEndCard) || this.gearPending;
     $<HTMLButtonElement>('notebook-btn').disabled = this.gearPending;
     const gear = $<HTMLButtonElement>('gear-btn');
     gear.hidden = !this.forcingGear && !gearAvailable(this.host.getState());

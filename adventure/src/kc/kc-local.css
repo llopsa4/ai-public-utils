@@ -356,6 +356,9 @@
 .kc-armory-popup .doll-tonic { position: relative; transform: none; flex: none; }
 .kc-armory-popup .doll-slotname.doll-plain { text-transform: none; }
 .kc-armory-popup .doll-potion-icon, .kc-armory-popup .doll-potion-icon svg { display: block; width: var(--art); height: var(--art); }
+.kc-armory-popup .doll-potion-icon > img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.kc-armory-popup :is(.doll-tonic, .stash-tonic) .doll-potion-icon,
+.kc-armory-popup :is(.doll-tonic, .stash-tonic) .doll-potion-icon svg { width: 34px; height: 34px; }
 .kc-armory-popup .doll-count {
   position: absolute;
   right: 3px;
@@ -373,15 +376,18 @@
   width: 260px;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 2px 14px;
+  align-items: start;
+  gap: 0 14px;
   padding: 8px 12px;
   border: 1px solid #5c4426;
   border-radius: 4px;
   background: #0f0905c0;
 }
-.kc-armory-popup .doll-stats > div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dotted #5c442680; }
+.kc-armory-popup .doll-stat-col { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kc-armory-popup .doll-stats .doll-stat-col > div { display: flex; justify-content: space-between; gap: 8px; border-bottom: 1px dotted #5c442680; }
 .kc-armory-popup .doll-stats dt { font-size: 13px; color: var(--muted); }
 .kc-armory-popup .doll-stats dd { margin: 0; font-family: "MedievalSharp", Georgia, serif; font-size: 15px; color: var(--ivory); }
+.kc-armory-popup .doll-stats [data-stat="hp"] dd { font-size: 13px; white-space: nowrap; }
 .kc-armory-popup .doll-side { grid-column: 2; grid-row: 1 / span 3; min-width: 0; }
 .kc-armory-popup .doll-heading { margin: 0 0 6px; font: 600 13px "MedievalSharp", Georgia, serif; letter-spacing: 0.24em; text-transform: uppercase; color: var(--muted); }
 .kc-armory-popup .doll-stash {
@@ -418,7 +424,7 @@
 .kc-armory-popup .gear-deltas .stat-tradeoff dd strong, .kc-armory-popup .gear-deltas .stat-tradeoff dd small { color: #ff8e72; }
 .kc-armory-popup #armory-equip { margin-top: 10px; font-size: 15px; padding: 8px 14px; }
 .kc-armory-popup .doll-result { min-height: 1.2em; margin: 6px 0 0; font-size: 13px; color: #9dd17a; }
-@media (max-height: 640px), (max-width: 760px) {
+@media (max-height: 760px), (max-width: 760px) {
   .kc.kc-armory-popup { --cell: 48px; --art: 38px; }
   .kc-armory-popup .doll { grid-template-columns: 210px minmax(0, 1fr); gap: 10px 14px; }
   .kc-armory-popup .doll-figure { width: 200px; height: 300px; }
@@ -688,8 +694,10 @@
 }
 .kc .wordmark::after { content: attr(aria-label); font-size: 24px; color: #ffd99a; text-shadow: 0 2px 2px #000, 0 0 14px rgb(255 140 50 / .45); }
 /* The card game writes the name in capitals: show it as written instead. */
+.kc-armory-popup .preview-art .doll-potion-icon,
+.kc-armory-popup .preview-art .doll-potion-icon svg { width: 48px; height: 48px; }
 .kc .wordmark { font-size: 0 !important; letter-spacing: 0; }
-.kc .status-panel h2 { font-size: 22px; white-space: nowrap; color: #ffd99a; text-shadow: 0 2px 2px #000, 0 0 12px rgb(255 140 50 / .35); }
+.kc .status-panel h2 { font-size: 22px; white-space: normal; overflow-wrap: anywhere; text-wrap: balance; color: #ffd99a; text-shadow: 0 2px 2px #000, 0 0 12px rgb(255 140 50 / .35); }
 .kc .card-name { font-size: 17px; line-height: 1.05; min-height: 30px; color: #ffd99a; }
 .kc .end-turn { font-size: 17px; letter-spacing: .08em; }
 /* A quieter top bar: the icons step back. */
@@ -755,8 +763,30 @@
 #kc-root.in-room .battlefield::after { display: none; }
 #kc-root.in-room .battlefield :is(button, .status-panel) { pointer-events: auto; }
 #kc-root.in-room .combatant { width: 26%; }
-#kc-root.in-room .hero { left: calc(33.3% - 13%); }
-#kc-root.in-room .enemy { right: calc(33.3% - 13%); }
+/* The two stand well apart (30% and 70% across, centre to centre 40% of the stage) and the hero's
+   attack travels exactly that far: his extended fist (half his height from his centre) ends inside
+   the enemy's upper body (half its height past its centre), so the blow lands where the enemy is. */
+#kc-root.in-room .hero { left: calc(30% - 13%); }
+#kc-root.in-room .enemy { right: calc(30% - 13%); }
+#kc-root.in-room .battlefield { --duel-gap: calc(var(--room-width) * .4); }
+#kc-root.in-room .battlefield[data-phase] {
+  --hero-advance: var(--room-contact-advance);
+}
+.kc .hero-contact-upper { display: none; }
+#kc-root.in-room.low-target .battlefield[data-phase="contact"][data-actor="hero"] .hero-art {
+  clip-path: inset(45% 0 0 0);
+}
+#kc-root.in-room.low-target .battlefield[data-phase="contact"][data-actor="hero"] .hero-contact-upper {
+  display: block; height: var(--hero-size); bottom: calc(var(--floor) - 2px); max-width: none;
+  clip-path: inset(0 0 35% 0); transform-origin: 45% 56%;
+  transform: translateX(-50%) rotate(var(--room-contact-lean));
+}
+.reduce-motion #kc-root.in-room .battlefield .hero-contact-upper { display: none !important; }
+.reduce-motion #kc-root.in-room .battlefield .hero-art { clip-path: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  #kc-root.in-room .battlefield .hero-contact-upper { display: none !important; }
+  #kc-root.in-room .battlefield .hero-art { clip-path: none !important; }
+}
 #kc-root.in-room .status-panel { transform: scale(.7); top: 34px; }
 #kc-root.in-room .hero-status { left: 8px; transform-origin: top left; }
 #kc-root.in-room .enemy-status { right: 8px; transform-origin: top right; }

@@ -514,6 +514,8 @@ export class RoomScene extends Phaser.Scene {
 
   /** A fight is on over the room (fightBridge.ts): the room still animates, but takes no control. */
   inFight = false;
+  /** Room objects the fight's own picture stands in for (fightBridge.ts); kept out of sight until it ends. */
+  fightHidden = new Set<string>();
 
   private updateKeyboardMovement(delta: number): void {
     if (this.inFight) return;
@@ -545,7 +547,7 @@ export class RoomScene extends Phaser.Scene {
     const state = this.session.state;
     for (const def of this.room.objects) {
       const sprite = this.objects.get(def.id)!;
-      sprite.setVisible(conditionsHold(state, def.visibleIf));
+      sprite.setVisible(conditionsHold(state, def.visibleIf) && !this.fightHidden.has(def.id));
       if (def.flag && !def.anim) {
         const tag = state.flags[def.flag] ? def.whenTrue : def.whenFalse;
         if (tag) sprite.setFrame(tagFrame(def.sheet, tag));

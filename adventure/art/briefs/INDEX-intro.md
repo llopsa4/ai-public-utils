@@ -30,7 +30,7 @@ Regenerate: `npm run art:briefs -- --chapter intro`. Check freshness by adding `
 
 ### [Outer Door](room-prison-door.md)
 
-[Layout](../spec/outerDoor.svg) · [src/chapters/intro/rooms.ts · L173](../../src/chapters/intro/rooms.ts#L173)
+[Layout](../spec/outerDoor.svg) · [src/chapters/intro/rooms.ts · L174](../../src/chapters/intro/rooms.ts#L174)
 
 - [outer-lantern](outer-lantern.md) · visual
 

@@ -12,7 +12,7 @@ Outside Ironhaven's prison at night: a small heavy door with a lantern (left) in
 
 - **reference** — All implemented conditional placements; each target and sprite lists its own flag conditions.
 
-Source: [src/chapters/intro/rooms.ts · L173](../../src/chapters/intro/rooms.ts#L173)
+Source: [src/chapters/intro/rooms.ts · L174](../../src/chapters/intro/rooms.ts#L174)
 
 ## Fixed background
 
@@ -53,6 +53,6 @@ Sprite dimensions are read from each existing atlas sourceSize, preserving trans
 
 ## Sources
 
-[src/chapters/intro/rooms.ts · L173](../../src/chapters/intro/rooms.ts#L173) · [Chapter index](INDEX-intro.md)
+[src/chapters/intro/rooms.ts · L174](../../src/chapters/intro/rooms.ts#L174) · [Chapter index](INDEX-intro.md)
 
 Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

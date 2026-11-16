@@ -1,15 +1,16 @@
 # Adventure current status
 
-Updated 2026-11-15. Shared procedure: [WORKFLOW.md](WORKFLOW.md).
+Updated 2026-11-16. Shared procedure: [WORKFLOW.md](WORKFLOW.md).
 Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Codex](handoff/from-codex.md).
 Older verification history is in Git history of this file and in CHANGELOG.md.
 
 ## Checkout
-- Branch `dual-ownership`, HEAD `eee676d`. Last inspected remote and Pages deployment:
+- Branch `dual-ownership`, HEAD `c809fa9`. Last inspected remote and Pages deployment:
   `c14fdd4`. Earlier work is committed; published output is unchanged.
 - Claude's workflow audit and request-template changes are committed locally (not pushed).
-  Local changes: `WORKLOG.md`, both handoffs, cage/gate art, manifest and provenance;
-  r4 delivery archived in ignored `art/inbox/done/cell-cage-redraw-r4/`.
+  Local changes: C4 character detail plus C5 Bryn sources/sheet/portrait, measured rig, approval
+  guards, briefs/provenance and tests; C6 installed art, placement/UI/contact corrections and tests;
+  concurrent Claude/story/UI changes retained.
 
 ## Working on
 - **Active mode: Codex + Claude**, selected by the user on 2026-11-15. Split, handoff files
@@ -19,6 +20,8 @@ Older verification history is in Git history of this file and in CHANGELOG.md.
   `Ashlands Story Board.lnk`). User edits in `data/board.json`: preserve them; never reseed.
 
 ## Recently completed (installed, verified)
+- C6 artwork (2026-11-16): explicitly approved and installed brown sweeper fight/broken states, separate training rig and Sigrid warm-skin exports. Source geometry and registration preserved; exact-byte and reproduction guards added. Evidence: `art/inbox/done/playtest-c6-installation-r1/`.
+- C4 character detail (2026-11-16): guard pilot approved by “Continue”; all thirteen C4 characters installed. Existing rigs, dimensions/timing/anchors and portraits preserved. Fast / all 286 Node tests and art checker pass; all thirteen checked in scratch production rooms. Evidence: `art/inbox/done/character-detail-r1/` and `done/guard-detail-r1/`.
 - Cell cage/gate r4 (user approval 2026-11-15): new clean drawing, existing registration.
   Evidence: `art/inbox/done/cell-cage-redraw-r4/`. C3 complete; r1–r3 remain uninstalled references.
 - Portrait r2: sixteen standing-based identities with speaking frames and mood metadata.
@@ -45,6 +48,8 @@ Older verification history is in Git history of this file and in CHANGELOG.md.
   Font studies remain separate; game fonts unchanged. See README for player behavior.
 
 ## Latest verification
+- C6 installation: typecheck, 244 fast / 94 art Node tests and art checker pass; fresh scratch production assets match all five approved images byte-for-byte. Room/fight/dialogue captures, contact, gear/map/visibility/walker checks pass with zero page/HTTP errors. Evidence: `art/inbox/done/playtest-c6-installation-r1/HANDOFF.md`. No browser suites or published build changes. Before installation, all 290 Node tests passed for routine playtest fixes.
+- C5 installation: all 240 fast / 287 total Node tests and art checker pass; scratch production build, seven actual workshop/backroom/real-dialogue captures and approved-output hash checks pass. No browser suites or published build changes. Evidence: `art/inbox/done/bryn-redraw-installation-r1/`.
 - Kneeling-worker status confirmed: generator and installed human atlas tags hold frame 8;
   typecheck and 38 crowd tests pass, including the stationary work contract. No code/art edits
   or fresh browser playback during this status check.
@@ -70,4 +75,4 @@ Older verification history is in Git history of this file and in CHANGELOG.md.
   is an intentional placeholder. Oversized verb-icon notices are informational.
 
 ## Next action
-- No open Codex request; C3 is installed and complete. See per-agent handoffs.
+- C6 installed and complete; no active Codex claims or pending C6 approval. K3 documentation reconciliation remains for Claude. Published output unchanged, no commit or push. See per-agent handoffs.

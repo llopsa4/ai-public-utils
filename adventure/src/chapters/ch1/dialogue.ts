@@ -119,6 +119,9 @@ export const DIALOGUES: Record<string, DialogueTree> = {
       start: {
         branch: [
           { if: [{ flag: 'kilnCold' }], next: 'cold' },
+          // The latch fixed before the loaf: she still asks for (or reminds about) the bread.
+          { if: [{ flag: 'latchFixed' }, { notFlag: 'nellFed' }, { notFlag: 'breadAsked' }], next: 'first' },
+          { if: [{ flag: 'latchFixed' }, { notFlag: 'nellFed' }], next: 'breadAgain' },
           { if: [{ flag: 'latchFixed' }], next: 'afterLatch' },
           { if: [{ flag: 'nellFed' }], next: 'again' },
           { if: [{ flag: 'breadAsked' }], next: 'breadAgain' },

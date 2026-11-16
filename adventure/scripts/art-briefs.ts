@@ -88,7 +88,7 @@ export async function renderFullBriefs(MANIFEST: readonly ArtEntry[] = DEFAULT_M
         if (e.id.startsWith('char-mara')) lines.push('Mara is the player\'s character: he walks every room, crouches, lies down, talks (the rig animates this one drawing).');
         if (rooms.length) lines.push(`Appears in: ${rooms.join(', ')}.`);
         if (crowd.length) lines.push(`A background person in: ${crowd.join(', ')} (walks about, works, now and then says a line).`);
-        if (e.height) lines.push(`In the game ${e.height} art pixels tall (${Math.round((e.height ?? 0) / 2)} pixels on the 2-pixel grid; the face is only a couple of dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.`);
+        if (e.height) lines.push(`In the game ${e.height} art pixels tall (${Math.round((e.height ?? 0) / 2)} world pixels; people are built on a 1-art-pixel grid with the master palette, so the face is only a few dozen art pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.`);
         if (e.id === 'char-mara-casual') lines.push('Mara at the start of a new adventure: he wakes in his tent in everyday clothes and gears up (armour, the gauntlet) when he takes the ember cell from its cradle. Identical face, hair, skin, build and height to char-mara, so the player knows him at once.');
         break;
       }

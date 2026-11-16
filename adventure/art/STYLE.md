@@ -36,9 +36,8 @@ Everything is in true proportion to Mara. A chair seat is at his knee, a table a
 
 ## The pixel grid
 
-- **Mara detail exception:** his layered standing, walking, kneeling and lying frames use a 1-art-pixel grid to retain more of the approved source drawings. His outlined standing height remains 232 art pixels / 116 world pixels; the source scale, anchors, two-art-pixel outline and walk stride are unchanged. Other world artwork keeps the 2-pixel grid below.
-
-- **Everything drawn in the world** (rooms, people, objects, props, creatures and fight pictures) is pixel art on a **2-pixel grid**: a 1280×720 room is a 640×360 picture shown 2×, and Mara is 116 of its pixels tall, enough for faces, blinking and talking to show.
+- **Character detail (every approved character):** people (Mara, Silas, Sigrid, the guard and warden, Oren, Nell, Tobi, Bryn and the seven human extras) are built on a **1-art-pixel grid** with the master palette normalized the way Mara's layered renderer does it, to keep more of the approved source drawings. Heights, source scale, anchors, frame contract, the two-art-pixel outline, walk stride and portraits are unchanged: Mara is still 232 art pixels / 116 world pixels tall, the guard 216, Bryn 224. Standing, walking, kneeling, lying and sitting frames share the finer sampling. In `art/manifest.mjs` / `art/rig.mjs` a character opts in with `detail: { grid: 1, palette: 'master' }` (the extras share it); a character without it is a legacy placeholder and keeps the 2-pixel grid until it is redrawn. Bryn is no longer a placeholder.
+- **Everything else drawn in the world** (rooms, objects, props, creatures and fight pictures) is pixel art on a **2-pixel grid**: a 1280×720 room is a 640×360 picture shown 2×, and Mara is 116 of its pixels tall, enough for faces, blinking and talking to show. The "On its pixel grid" column above counts those 2-pixel units; a person's art-pixel height is the real height at either grid.
 - **Source drawings may use these sizes:**
   - rooms at 16:9, 1280×720 or larger
   - characters on 1024×1536

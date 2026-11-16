@@ -268,6 +268,13 @@ export const COMMANDS: { [K in Command['type']]: Handler<K> } = {
       await scene.session.chooseNextChapter({ calm: true });
       return false;
     }
+    // Outside ?debug chapter 1 is the last playable chapter: record it as finished and stop on its
+    // closing card (a save made here returns to it, see the ch1 story rules).
+    if (!scene.session.debug && scene.session.state.chapter === 'ch1') {
+      await COMMANDS.setFlag(scene, { type: 'setFlag', flag: 'ch1Ended', value: true });
+      scene.session.saveNow();
+      return COMMANDS.end(scene, { type: 'end' });
+    }
     // The chapter ends to black; the chapter map offers what to play next.
     scene.leaving = true;
     scene.session.ui.closeRadial();

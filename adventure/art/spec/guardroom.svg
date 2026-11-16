@@ -34,6 +34,7 @@
 <path d="M0 720 H1280" stroke="#bfae95" opacity=".25"/>
 <path d="M0 524 H1280 M0 636 H1280 M0 690 H1280" stroke="#77886b" stroke-dasharray="6 6"/>
 <polygon points="0,536 1280,536 1280,690 0,690" fill="#6c9f73" fill-opacity=".1" stroke="#497650"/>
+<polygon points="720,584 808,584 808,680 720,680" fill="#c14e44" fill-opacity=".1" stroke="#a74740"/>
 <g data-target="ledger" data-stages="reference" visibility="visible"><rect x="392" y="392" width="80" height="36" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>Tally ledger: look, take, open</title></rect></g>
 <g data-target="grate" data-stages="reference" visibility="visible"><rect x="1120" y="220" width="152" height="304" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>Iron grate: look, open, go, use</title></rect></g>
 <g data-target="downStairs" data-stages="reference" visibility="visible"><rect x="0" y="300" width="80" height="224" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>Stairs down: look, go</title></rect></g>

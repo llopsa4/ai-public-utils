@@ -20,7 +20,7 @@ Ironhaven’s prison cell at night in its approved gentle three-quarter cage vie
 
 ## Interactive targets — puzzle order
 
-- **Tin plate** (plate): look, take. Bounds (316,600), 60×28 art px. When: [{"notFlag":"tookPlate"}]. [floor-plate](floor-plate.md).
+- **Tin plate** (plate): look, take. Bounds (206,602), 60×28 art px. When: [{"notFlag":"tookPlate"}]. [floor-plate](floor-plate.md).
 - **Mask frame** (frame): look, take. Bounds (968,532), 44×24 art px. When: [{"flag":"cellLit"},{"notFlag":"gotFrame"}]. [table-frame](table-frame.md).
 - **Harrow's portrait** (roster): look. Bounds (1054,230), 76×100 art px. When: [{"flag":"cellLit"}].
 - **Hooded cloak** (cloak): look, take. Bounds (914,190), 92×224 art px. When: [{"flag":"cellLit"},{"notFlag":"tookCloak"}].
@@ -41,7 +41,7 @@ Ironhaven’s prison cell at night in its approved gentle three-quarter cage vie
 
 ## Sprites used by targets
 
-- [floor-plate](floor-plate.md) — 60×24 art px. Anchor (346,624), world; [{"notFlag":"tookPlate"}].
+- [floor-plate](floor-plate.md) — 60×24 art px. Anchor (236,626), world; [{"notFlag":"tookPlate"}].
 - [table-frame](table-frame.md) — 44×24 art px. Anchor (990,556), world; [{"flag":"cellLit"},{"notFlag":"gotFrame"}].
 - [floor-wax](floor-wax.md) — 28×10 art px. Anchor (804,640), world; [{"flag":"cellLit"},{"notFlag":"tookWax"}].
 - [table-stub](table-stub.md) — 28×36 art px. Anchor (896,562), world; Always.

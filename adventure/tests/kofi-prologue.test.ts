@@ -146,7 +146,7 @@ test('all prologue targets have reachable approaches, unique visible bounds and 
   }
  }
  for(const key of chapter.objectiveKeys){assert.ok(TABLES.en[key]);for(const level of [1,2])assert.ok(TABLES.en[`hint.${key.slice(4)}.${level}`],`${key} hint ${level}`);}
- assert.ok(openChapters(['intro']).includes('kofi1'));
+ assert.ok(openChapters(['intro', 'ch1']).includes('kofi1'));
 });
 test('archery announces charge; aimed setup spends no arrow and can be cancelled; no-ammo defence and recovery stay available',()=>{
  let s=newArchery('bear');s=archeryTurn(s,'aim');assert.equal(s.arrows,6);assert.equal(s.threat,28);assert.ok(s.aiming);assert.match(intent(s).name,/Charge/);

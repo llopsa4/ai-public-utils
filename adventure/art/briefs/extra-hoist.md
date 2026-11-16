@@ -11,7 +11,7 @@ Wren, the hoist hand (he/him), about 26: wiry and quick, medium height. Pale fre
 ## Use and placement
 
 A background person in: maraRoom (walks about, works, now and then says a line).
-In the game 222 art pixels tall (111 pixels on the 2-pixel grid; the face is only a couple of dozen pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
+In the game 222 art pixels tall (111 world pixels; people are built on a 1-art-pixel grid with the master palette, so the face is only a few dozen art pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
 
 ## Asset contract
 

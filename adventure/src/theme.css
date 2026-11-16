@@ -246,7 +246,7 @@ dialog[open] {
   background: none;
   border: none;
   border-radius: 3px;
-  cursor: pointer;
+  cursor: var(--interaction-cursor, pointer);
   transition: color 100ms, background 100ms, padding 100ms;
 }
 

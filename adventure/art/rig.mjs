@@ -15,10 +15,19 @@ import { encodeIndexed } from './png.mjs';
 import { RIGS } from './manifest.mjs';
 import { isFinal } from './guard.mjs';
 import { buildLayeredCharacter } from './layered-rig.mjs';
+import { snapToPalette, addOutline } from './normalize.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const kiln = join(here, '..', '..', 'FFCardGame', 'assets');
-const out = join(here, 'src');
+// A review export must never overwrite installed artwork or approved portraits.
+const outputOption = process.argv.indexOf('--out-dir');
+if (outputOption >= 0 && !process.argv[outputOption + 1]) throw new Error('--out-dir requires a path');
+const reviewExport = outputOption >= 0;
+const configOption = process.argv.indexOf('--review-config');
+if (configOption >= 0 && (!reviewExport || !process.argv[configOption + 1])) throw new Error('--review-config requires --out-dir and a JSON path');
+const reviewConfig = configOption >= 0 ? JSON.parse(readFileSync(resolve(process.argv[configOption + 1]), 'utf8')) : null;
+if (reviewConfig?.layeredPack) throw new Error('--review-config supports legacy body/arm rigs only');
+const out = reviewExport ? resolve(process.argv[outputOption + 1]) : join(here, 'src');
 
 const FW = 256, FH = 256, COLS = 5;
 
@@ -390,7 +399,7 @@ function rigOf(cfg, open) {
  * clothes and skin, another height, painted headgear), with a trimmed frame set and no portraits.
  * Frames: 0 stand, 1 blink, 2-7 walk, 8-9 work (crouched, bobbing), 10 carry, 11 reach, 12 sit.
  */
-const src = id => ({ source: `sources/characters/${id}/body.png`, armLayer: `sources/characters/${id}/arm.png` });
+const src = id => ({ source: `sources/characters/${id}/body.png`, armLayer: `sources/characters/${id}/arm.png`, detail: { grid: 1, palette: 'master' } });
 const EXTRAS = {
   // Codex's drawings, measured on their 1024x1536 canvases. Long coats and robes (Ansel, Corvin) hinge
   // low, so only the hem and boots step.
@@ -532,15 +541,14 @@ function buildExtra(id) {
   add(open, { upper: rotateAbout(-4, hipC), ...arm(-22) });                        // 10 carry: leaning back, arm forward
   add(open, { upper: mul(translate(0, -8), rotateAbout(-6, hipC)), ...arm(-60) });  // 11 reach: up on the toes, arm raised
   if (sit) still(sit); else add(open, { ...squashLegs(0.42), upper: rotateAbout(-2, hipC) }); // 12 sit
-  writeSheet(id, frames, EXTRA_TAGS, n => (n >= 2 && n <= 7 ? 110 : n === 8 || n === 9 ? 280 : 1000), 64);
+  writeSheet(id, frames, EXTRA_TAGS, n => (n >= 2 && n <= 7 ? 110 : n === 8 || n === 9 ? 280 : 1000), 64, '', base.detail);
 }
 
 /** Palette-reduces the frames, adds the outline and writes the PNG + Aseprite JSON pair. */
 /**
- * The pixel grid for characters (art pixels per grid pixel), the same as the rooms' (art/import.mjs
- * GRID): every frame is averaged into GRID x GRID blocks (a block is solid when most of it is),
- * snapped to the sheet palette, and outlined one block thick. At 2, faces keep enough pixels for
- * blinking and talking to show.
+ * Default grid for legacy placeholders, including Bryn. Approved source characters opt into
+ * detail.grid = 1 and detail.palette = 'master', matching Mara's colour normalization.
+ * The coarse path averages 2x2 blocks and outlines them one block thick.
  */
 const GRID = 2;
 
@@ -572,10 +580,13 @@ function writeGridFrame(sheet, f, fx, fy, pal) {
   }
 }
 
-function writeSheet(id, frames, tags, duration, colours, dir = '') {
+function writeSheet(id, frames, tags, duration, colours, dir = '', detail = {}) {
+  const grid = detail.grid ?? GRID;
+  const masterPalette = detail.palette === 'master';
   const samples = [];
-  for (const f of frames) for (let p = 0; p < FW * FH; p += 3) if (f.alpha[p] >= 0.5) samples.push([f.rgb[p * 3], f.rgb[p * 3 + 1], f.rgb[p * 3 + 2]]);
-  const pal = kmeans(samples, colours);
+  if (!masterPalette) for (const f of frames) for (let p = 0; p < FW * FH; p += 3) if (f.alpha[p] >= 0.5) samples.push([f.rgb[p * 3], f.rgb[p * 3 + 1], f.rgb[p * 3 + 2]]);
+  const pal = masterPalette ? null : kmeans(samples, colours);
+  if (masterPalette && grid !== 1) throw new Error('Master-palette detail requires a 1px grid');
   // Equal frames (the walk repeated for down, side and up; standing reused) are stored once and aliased.
   const same = (a, b) => Buffer.from(a.alpha.buffer).equals(Buffer.from(b.alpha.buffer)) && Buffer.from(a.rgb.buffer).equals(Buffer.from(b.rgb.buffer));
   const unique = [], slots = frames.map(f => { let i = unique.findIndex(u => same(u, f)); if (i < 0) { i = unique.length; unique.push(f); } return i; });
@@ -583,7 +594,20 @@ function writeSheet(id, frames, tags, duration, colours, dir = '') {
   const sheet = new PNG({ width: FW * COLS, height: FH * rows });
   unique.forEach((f, n) => {
     const fx = (n % COLS) * FW, fy = Math.floor(n / COLS) * FH;
-    if (GRID > 1) { writeGridFrame(sheet, f, fx, fy, pal); return; }
+    if (grid > 1) { writeGridFrame(sheet, f, fx, fy, pal); return; }
+    if (masterPalette) {
+      const data = Buffer.alloc(FW * FH * 4);
+      for (let p = 0; p < FW * FH; p++) {
+        if (f.alpha[p] < 0.5) continue;
+        for (let c = 0; c < 3; c++) data[p * 4 + c] = Math.round(f.rgb[p * 3 + c]);
+        data[p * 4 + 3] = 255;
+      }
+      // Same colour normalization and 2px outline as Mara's layered renderer.
+      snapToPalette(data, FW);
+      addOutline(data, FW, FH); addOutline(data, FW, FH);
+      for (let y = 0; y < FH; y++) data.copy(sheet.data, ((fy + y) * sheet.width + fx) * 4, y * FW * 4, (y + 1) * FW * 4);
+      return;
+    }
     const solid = new Uint8Array(FW * FH);
     for (let p = FW; p < FW * (FH - 1); p++) {
       if (f.alpha[p] >= 0.5) continue;
@@ -628,7 +652,14 @@ function writeSheet(id, frames, tags, duration, colours, dir = '') {
 }
 
 async function buildCharacter(id) {
-  const cfg = { ...CHARACTERS[id] };
+  const cfg = { ...(reviewConfig ?? CHARACTERS[id]) };
+  const bodyOption = process.argv.indexOf('--review-body');
+  if (bodyOption >= 0) {
+    if (!reviewExport || !process.argv[bodyOption + 1]) throw new Error('--review-body requires --out-dir and a source path');
+    cfg.source = relative(here, resolve(process.argv[bodyOption + 1]));
+    // Keep the registered drawn poses beside the authoritative source, not the local repair.
+    cfg.poseSource = CHARACTERS[id].source;
+  }
   // Later chapters' characters live in their chapter's folder (art/src/<chapter>/characters, portraits).
   const dir = cfg.dir ?? '';
   if (isFinal(`${dir}characters/${id}.png`)) { console.log(`  ${id}: final art, kept.`); return; }
@@ -676,7 +707,8 @@ async function buildCharacter(id) {
   // as soon as they are imported.
   // A recoloured stand-in (cfg.variant) borrows only the base's standing drawing: its other poses are
   // made from that, or they would show the base character's own colours.
-  const pose = name => { const p = cfg.source.startsWith('sources/') && !cfg.variant ? join(here, dirname(cfg.source), name) : null; return p && existsSync(p) ? p : null; };
+  const poseSource = cfg.poseSource ?? cfg.source;
+  const pose = name => { const p = (poseSource.startsWith('sources/') || (reviewConfig && poseSource.startsWith('inbox/'))) && !cfg.variant ? join(here, dirname(poseSource), name) : null; return p && existsSync(p) ? p : null; };
   const still = path => { const r = renderStill(load(path), k); frames.push(placeInFrame(r.pose, r.centerX)); };
   const kneel = pose('kneel.png'), lie = pose('lie.png');
   if (kneel) still(kneel); else add(open, crouchPose); // 23 crouch
@@ -696,16 +728,16 @@ async function buildCharacter(id) {
   }
 
   // Palette from all frames, then hard alpha and a 1px dark outline for readability on busy art.
-  writeSheet(id, frames, tags, n => (n >= 5 && n <= 22 ? 110 : 1000), 112, dir);
+  writeSheet(id, frames, tags, n => (n >= 5 && n <= 22 ? 110 : 1000), 112, dir, cfg.detail);
 
   // Dialogue portraits: area-averaged head-and-shoulders crops, 256x256 each, in a strip of frames
   // per mood (neutral, worried, angry), each with the mouth closed then open.
   // Mara has one portrait set (gauntlet lit), written by the 'mara-gauntlet' variant as mara.png.
-  if (cfg.unpowered || cfg.noPortrait) return;
+  if (cfg.unpowered || cfg.noPortrait || (reviewExport && !reviewConfig)) return;
   const portraitId = id.replace(/-gauntlet$/, '');
   // Approved portrait exports have their own standing crops and lip measurements.
   // Rebuilding a character sheet must not replace them with legacy generated faces.
-  if (isFinal(`${dir}portraits/${portraitId}.png`)) return;
+  if (!reviewConfig && isFinal(`${dir}portraits/${portraitId}.png`)) return;
   const [px, py, pw, ph] = cfg.portrait;
   const moods = cfg.moods ?? MOODS;
   const P = 256, portrait = new PNG({ width: P * moods.length * 2, height: P });
@@ -741,13 +773,17 @@ async function buildCharacter(id) {
     }
   }));
   mkdirSync(join(out, `${dir}portraits`), { recursive: true });
+  if (reviewConfig) snapToPalette(portrait.data, portrait.width);
   writeFileSync(join(out, `${dir}portraits`, `${portraitId}.png`), encodeIndexed(portrait));
 }
 
 // `node art/rig.mjs extras` rebuilds only the background people.
 const only = process.argv[2];
+if (reviewExport && ((!CHARACTERS[only] && !EXTRAS[only]) || CHARACTERS[only]?.layeredPack)) {
+  throw new Error('--out-dir requires one named legacy character or extra');
+}
 // `node art/rig.mjs <id>` rebuilds one sheet.
 const one = only && only !== 'extras' ? only : null;
 if (only !== 'extras') for (const id of Object.keys(CHARACTERS)) if (!one || one === id) await buildCharacter(id);
 for (const id of Object.keys(EXTRAS)) if (!one || one === id) buildExtra(id);
-console.log(`Rigged character sheets written to art/src (${one ?? (only === 'extras' ? '' : `${Object.keys(CHARACTERS).join(', ')}, `) + Object.keys(EXTRAS).join(', ')}).`);
+console.log(`Rigged character sheets written to ${out} (${one ?? (only === 'extras' ? '' : `${Object.keys(CHARACTERS).join(', ')}, `) + Object.keys(EXTRAS).join(', ')}).`);

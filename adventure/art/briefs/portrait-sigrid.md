@@ -32,9 +32,9 @@ Standing source: art/sources/characters/sigrid-layered/idle.png.
 
 User-approved revision r2, 2026-11-15. Preserve the installed final PNG; walking-rig rebuilds must not replace it.
 
-Installed with nearest master-palette normalization only; approved frame geometry, alpha and speaking registration are unchanged.
-
 Exact approved hashes, crop coordinates and speaking-lip registration: art/sources/dialogue-portraits/approved-r2.json.
+
+C6 r1 skin recolour approved 2026-11-16; frame geometry, alpha, moods and mouth registration unchanged. Reproduction and approval: art/sources/characters/sigrid-colour-c6/.
 
 ## Asset contract
 
@@ -43,6 +43,6 @@ Exact approved hashes, crop coordinates and speaking-lip registration: art/sourc
 
 ## Sources
 
-[art/manifest.mjs](../manifest.mjs) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
+[art/manifest.mjs · L704](../manifest.mjs#L704) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
 Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

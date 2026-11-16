@@ -35,3 +35,8 @@ The complete approved delivery, preparation scripts, visual regression, review g
 and installation evidence are retained locally in `art/inbox/done/dialogue-portraits-r2/`.
 Revision 1 remains as superseded evidence. Kofi/Chapter 2 received briefs only; their
 art production and rig installation remain paused. No private narrative is an input.
+
+C6 r1, approved 2026-11-16 (“Install the artwork”), supersedes only Sigrid's skin colours.
+Her original r2 export remains in `approved/sigrid.png`; `previousApproval` retains its hashes.
+The active Sigrid entry now points to the approved recoloured copy in
+`../characters/sigrid-colour-c6/`, with unchanged crop, alpha, moods and mouth registration.

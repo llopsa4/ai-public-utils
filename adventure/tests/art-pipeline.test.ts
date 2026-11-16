@@ -51,6 +51,28 @@ test('installed portrait normalization preserves every approved frame and alpha 
   }
 });
 
+test('the approved Sigrid skin pass reproduces installed exports without changing alpha or atlas', t => {
+  const scratch = mkdtempSync(join(tmpdir(), 'sigrid-colour-'));
+  t.after(() => {
+    assert.equal(dirname(resolve(scratch)), resolve(tmpdir()));
+    assert.ok(basename(scratch).startsWith('sigrid-colour-'));
+    rmSync(scratch, { recursive: true, force: true });
+  });
+  const game = fileURLToPath(new URL('..', import.meta.url));
+  const pack = join(game, 'art/sources/characters/sigrid-colour-c6');
+  const result = spawnSync(process.execPath, [join(pack, 'recolour.mjs'), scratch], { cwd: game, encoding: 'utf8' });
+  assert.equal(result.status, 0, result.stdout + result.stderr);
+  for (const [dir, before] of [['characters', 'sheet-before.png'], ['portraits', 'portrait-before.png']]) {
+    const file = `intro/${dir}/sigrid.png`;
+    const installed = readFileSync(join(game, 'art/src', file));
+    assert.deepEqual(readFileSync(join(scratch, 'candidate', file)), installed, `${dir} exactly reproduces approval`);
+    const original = PNG.sync.read(readFileSync(join(pack, before))), current = PNG.sync.read(installed);
+    assert.deepEqual([current.width, current.height], [original.width, original.height]);
+    for (let p = 3; p < current.data.length; p += 4) assert.equal(current.data[p], original.data[p], `${dir}: alpha unchanged`);
+  }
+  assert.deepEqual(readFileSync(join(pack, 'atlas.json')), readFileSync(join(game, 'art/src/intro/characters/sigrid.json')));
+});
+
 test('legacy and layered character rebuilds preserve independently approved portrait files', t => {
   const game = fileURLToPath(new URL('..', import.meta.url));
   const scratch = mkdtempSync(join(tmpdir(), 'portrait-guards-'));
@@ -73,8 +95,10 @@ test('legacy and layered character rebuilds preserve independently approved port
   const status = JSON.parse(readFileSync(join(art, 'status.json'), 'utf8'));
   status['portrait-oren'] = status['portrait-silas'] = 'final';
   status['char-oren'] = status['char-silas'] = 'placeholder';
+  status['portrait-bryn'] = 'final';
+  status['char-bryn'] = 'placeholder';
   writeFileSync(join(art, 'status.json'), JSON.stringify(status));
-  for (const [id, folder] of [['oren', ''], ['silas', 'intro/']]) {
+  for (const [id, folder] of [['oren', ''], ['silas', 'intro/'], ['bryn', 'ch2/']]) {
     const portrait = join(art, 'src', folder, 'portraits', `${id}.png`);
     mkdirSync(dirname(portrait), { recursive: true });
     const approved = Buffer.from(`approved-${id}-portrait`);

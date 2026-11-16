@@ -19,7 +19,7 @@ Everything the player can click, at these places (art pixels), each must be pain
 - **soup pot** (`soup`, x 164–252, y 352–404): look at, take, use.
 - **shoe racks** (`shoes`, x 68–308, y 60–280): look at, take.
 - **hearth** (`hearth`, x 112–296, y 340–524): look at, use.
-- **stairs to the gallery** (`stairs`, x 820–1132, y 192–524): look at, go through (an exit).
+- **stairs to the gallery** (`stairs`, x 732–1036, y 192–524): look at, go through (an exit).
 - **bread basket** (`breadBasket`, x 1032–1108, y 384–440): look at, take.
 - **kiln gate** (`kilnGate`, x 1172–1280, y 192–528): look at, open, go through (an exit).
 - **way to Mara's room** (`toRoom`, x 0–60, y 208–528): look at, go through (an exit).

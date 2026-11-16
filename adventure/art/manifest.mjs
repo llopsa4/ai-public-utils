@@ -66,6 +66,7 @@ const MARA_RIG = {
 export const RIGS = {
   // Tobi's original drawing: a younger child by the firing-house hearth.
   tobi: {
+    detail: { grid: 1, palette: 'master' },
     source: 'sources/characters/char-tobi/body.png', height: 140, walks: false,
     hipY: 1080, splitX: 510, hips: { near: [454, 1080], far: [559, 1080] }, knees: { near: [450, 1260], far: [560, 1260] },
     eyes: [{ x: 530, y: 712, rx: 12, ry: 7, skinAt: [529, 730] }, { x: 573, y: 707, rx: 9, ry: 6, skinAt: [576, 722] }],
@@ -88,6 +89,7 @@ export const RIGS = {
   },
   // Oren and Nell: Codex's drawings (they stand at their posts; kneeling and lying are drawn).
   oren: {
+    detail: { grid: 1, palette: 'master' },
     source: 'sources/characters/char-oren/body.png', armLayer: 'sources/characters/char-oren/arm.png', height: 226, walks: false,
     armPivot: [330, 320],
     hipY: 960, splitX: 464, hips: { near: [400, 960], far: [540, 960] }, knees: { near: [380, 1290], far: [560, 1290] },
@@ -99,6 +101,7 @@ export const RIGS = {
     face: { mouth: { x: 583, y: 213, rx: 12, ry: 4 }, brows: [{ x0: 530, x1: 580, y0: 113, y1: 131, inner: 'right' }, { x0: 598, x1: 622, y0: 115, y1: 126, inner: 'left' }] },
   },
   nell: {
+    detail: { grid: 1, palette: 'master' },
     source: 'sources/characters/char-nell/body.png', armLayer: 'sources/characters/char-nell/arm.png', height: 220, walks: false,
     armPivot: [390, 310],
     hipY: 1010, splitX: 486, hips: { near: [400, 1010], far: [560, 1010] }, knees: { near: [390, 1320], far: [600, 1320] },
@@ -108,19 +111,17 @@ export const RIGS = {
     moods: ['neutral'],
     face: { mouth: { x: 573, y: 227, rx: 19, ry: 5 }, brows: [{ x0: 520, x1: 565, y0: 146, y1: 158, inner: 'right' }, { x0: 583, x1: 602, y0: 147, y1: 156, inner: 'left' }] },
   },
-  // Chapter 2. Placeholder: Iven's body recoloured and re-dressed (a dark red kerchief, the plates
-  // turned to leather), rigged like Nell, until Codex draws Bryn.
+  // C5 approved smith drawings, 2026-11-16; measured on the new body/arm sources.
   bryn: {
     dir: 'ch2/',
-    variant: { hue: 345, sat: 0.75, light: 0.78, skin: 0.8, headgear: { kind: 'kerchief', color: [120, 42, 32] } },
-    source: 'kiln:opening/iven.png', height: 224, walks: false,
-    hipY: 1000, splitX: 480, hips: { near: [420, 1000], far: [640, 1000] }, knees: { near: [360, 1240], far: [760, 1250] },
+    source: 'sources/characters/char-bryn/body.png', armLayer: 'sources/characters/char-bryn/arm.png', height: 224, walks: false,
+    detail: { grid: 1, palette: 'master' }, armPivot: [391, 366],
+    hipY: 1135, splitX: 510, hips: { near: [375, 1135], far: [625, 1135] }, knees: { near: [360, 1300], far: [635, 1300] },
     fidgetLean: -3,
-    nearIsUpper: true, crouchSquash: 1,
-    eyes: [{ x: 452, y: 129, rx: 15, ry: 8, skinAt: [452, 148] }, { x: 507, y: 123, rx: 14, ry: 8, skinAt: [505, 142] }],
-    portrait: [320, 0, 340, 340],
+    eyes: [{ x: 548, y: 143, rx: 11, ry: 5, skinAt: [549, 160] }, { x: 589, y: 141, rx: 5, ry: 4, skinAt: [588, 155] }],
+    portrait: [342, 15, 350, 350],
     moods: ['neutral'],
-    face: { mouth: { x: 486, y: 174, rx: 17, ry: 5 }, brows: [{ x0: 418, x1: 468, y0: 92, y1: 120, inner: 'right' }, { x0: 476, x1: 516, y0: 88, y1: 116, inner: 'left' }] },
+    face: { mouth: { x: 572, y: 193, rx: 15, ry: 4 }, brows: [{ x0: 523, x1: 564, y0: 117, y1: 128, inner: 'right' }, { x0: 579, x1: 600, y0: 117, y1: 126, inner: 'left' }] },
   },
   // The intro (Silas's escape). Placeholders until Codex draws them: Silas is casual Mara recoloured
   // (dark, a red neckcloth), his masks are variants of that (a sergeant's cap for Harrow, a grey hood
@@ -145,6 +146,7 @@ export const RIGS = {
   // Codex's sitting picture with the chair (right colours), cut out along the chair-free one's outline
   // (the cell paints its own chair; the chair-free picture's colours were off).
   guard: {
+    detail: { grid: 1, palette: 'master' }, // C4 approved character detail; inherited by the no-key costume.
     dir: 'intro/', sits: 'asleep',
     source: 'sources/characters/char-guard/body.png', armLayer: 'sources/characters/char-guard/arm.png', height: 216, walks: true,
     armPivot: [368, 377],
@@ -166,6 +168,7 @@ export const RIGS = {
     return { ...this.guard, source: 'sources/characters/char-guard-nokeys/body.png', armLayer: 'sources/characters/char-guard-nokeys/arm.png', noPortrait: true, walks: false };
   },
   warden: {
+    detail: { grid: 1, palette: 'master' },
     dir: 'intro/',
     source: 'sources/characters/char-warden/body.png', armLayer: 'sources/characters/char-warden/arm.png', height: 230, walks: true,
     armPivot: [300, 330],
@@ -238,7 +241,7 @@ export const MANIFEST = [
   {"id": "regulator-closeup-valve", "kind": "prop", "file": "props/regulator-closeup-valve.png", "size": {"w": 80, "h": 80}, "anchor": "none", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "regulator closeup valve"},
   {"id": "ashways-pressure-cell", "kind": "prop", "file": "props/ashways-pressure-cell.png", "size": {"w": 40, "h": 64}, "anchor": "bottom-centre", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "ashways pressure cell"},
   {"id": "ashways-pressure-cell-ruptured", "kind": "prop", "file": "props/ashways-pressure-cell-ruptured.png", "size": {"w": 40, "h": 64}, "anchor": "bottom-centre", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "ashways pressure cell ruptured"},
-  {"id": "ashways-sweeper-disabled", "kind": "prop", "file": "props/ashways-sweeper-disabled.png", "size": {"w": 280, "h": 180}, "anchor": "bottom-centre", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "ashways sweeper disabled"},
+  {"id": "ashways-sweeper-disabled", "kind": "prop", "file": "props/ashways-sweeper-disabled.png", "size": {"w": 280, "h": 180}, "anchor": "bottom-centre", "chapter": "ch1", "status": "final", "generator": "approved C6 r1 matching brown sweeper state", "subject": "The brown Ashways room sweeper, disabled after the fight; same design and bottom-centre registration."},
   // ------------------------------------------------------------------------------ rooms ---
   room('room-tent', 'tent', "Mara's tent from inside, pixel art (a 640x360 grid shown 2x), seen side-on with very little perspective and believable proportions: a canvas back wall sagging between two poles under a ridge pole, seams and patches (a FINEST flour sack); his workbench along the left (tools on a board above it: wrench, handsaw, pliers, claw hammer, file; a tool roll, a candle, gloves, a glazed water jar; the charging cradle and the notebook stand on it), a crate and rope under it, a stool in front; the old brush drum, smaller, on a trestle against the back wall (centre, chalked PARTS); a coat on a hook on the right pole; a low cot with a blanket and laced boots along the right, Tobi's drawing pinned above; the door flap at the right edge open on the kiln hall's warm light; a striped rug on packed earth.", 'Warm hanging lantern (centre top) as the main light, falling off into dark corners, soft cast shadows under everything; warm light from the door flap (right) across the floor.'),
   room('room-mara', 'mara-room', 'The kiln hall: a vast vaulted hall built inside an old kiln, the glowing kiln mouths across the back, a pulley hoist (left), storage jars, an ash cart, the curtain to the firing house (right), and the spot where Mara\'s tent stands.', 'Key light from the three kiln mouths at the back (orange); cool dim fill from the left; the vault fades to darkness above.', { pilot: true }),
@@ -376,12 +379,14 @@ export const MANIFEST = [
   { ...room('room-road', 'road', "The road to Bryn's tempering house, at the edge of the ashways at dusk: a stone house (right) with a heavy wooden door, a lit window and a bell on a bracket, a lantern by the door, a chimney breathing steam; the ash road and a signpost back towards Cinderfold (left), great pipes in the haze behind.", 'Warm key light from the window and the door lantern (right); cool blue-grey dusk from the sky (left).'), file: 'ch2/rooms/road.png', chapter: 'ch2', generator: 'ch2.mjs' },
   { ...room('room-workshop', 'workshop', "Bryn's workshop inside the tempering house: a great ceramic return pipe across the top with a glowing flange (the reading valve), her bench with a glove and tools (left), a stool, a caged training rig in the middle, a coal crate, the open side on the right looking out over the valley, a curtain to the back room (left).", 'Warm daylight from the open side (right); the pipe flanges glow orange; cooler shadow on the left under the bench.'), file: 'ch2/rooms/workshop.png', chapter: 'ch2', generator: 'ch2.mjs' },
   { ...room('room-backroom', 'backroom', "Bryn's back room: a stone hearth with a pot on the fire (left), a shelf of supply crates and jars, a table with a bowl and bread, a map pinned on the wall above it, a cot under a blanket (right), a courier's pouch on a peg by the far door (right), the curtain back to the workshop (left edge).", 'Warm key light from the hearth (left); soft lamplight over the table; the far door side darker.'), file: 'ch2/rooms/backroom.png', chapter: 'ch2', generator: 'ch2.mjs' },
-  { id: 'char-bryn', kind: 'character', file: 'ch2/characters/bryn.png', sheet: 'ch2/characters/bryn.json', anchor: 'bottom-centre', height: 224, rig: 'bryn', chapter: 'ch2', status: 'placeholder', generator: 'rig.mjs',
+  { id: 'char-bryn', kind: 'character', file: 'ch2/characters/bryn.png', sheet: 'ch2/characters/bryn.json', anchor: 'bottom-centre', height: 224, rig: 'bryn', chapter: 'ch2', status: 'final', generator: 'rig.mjs (approved C5 smith source)',
     subject: 'Bryn, a gauntlet smith in her thirties who runs the tempering house: broad-shouldered and heavily muscled from hauling crucibles, sleeves rolled, a leather apron over work clothes, a kerchief over her hair, a quick grin.' },
-  { id: 'portrait-bryn', kind: 'portrait', file: 'ch2/portraits/bryn.png', anchor: 'none', moods: ['neutral'], chapter: 'ch2', status: 'placeholder', generator: 'rig.mjs', subject: "Bryn's head and shoulders." },
+  { id: 'portrait-bryn', kind: 'portrait', file: 'ch2/portraits/bryn.png', size: { w: 512, h: 256 }, anchor: 'none', moods: ['neutral'], chapter: 'ch2', status: 'final', generator: 'approved C5 standing portrait export', subject: "Bryn's approved smith standing portrait, neutral with closed/open mouth. Source and hashes: art/sources/characters/char-bryn/approval.json." },
   { id: 'battle-backdrop-workshop', kind: 'battle-backdrop', file: 'kc/tempering-house.webp', size: { w: 1280, h: 720 }, anchor: 'top-left', chapter: 'ch2', status: 'placeholder', generator: 'kc.mjs',
     subject: "Bryn's workshop as the sparring backdrop (same place as room-workshop, the floor clear in the lower third)." },
-  { id: 'battle-enemy-rig', kind: 'battle-portrait', file: 'kc/ash-sweeper.webp', anchor: 'bottom-centre', width: 768, chapter: 'ch2', status: 'placeholder', generator: 'kc.mjs',
+  { id: 'battle-enemy-ash-sweeper', kind: 'battle-portrait', file: 'kc/brown-sweeper.webp', anchor: 'bottom-centre', size: { w: 200, h: 140 }, chapter: 'ch1', status: 'final', generator: 'approved C6 r1 exact room idle-frame crop',
+    subject: 'The existing brown Ashways room sweeper, trimmed from its idle frame without changing painted pixels. Fight ink height 1, gap 0.' },
+  { id: 'battle-enemy-rig', kind: 'battle-portrait', file: 'kc/training-rig.webp', anchor: 'bottom-centre', size: { w: 768, h: 512 }, chapter: 'ch2', status: 'final', generator: 'approved C6 r1 ImageGen export',
     subject: "Bryn's training rig: a caged brush drum on a sprung frame that swings back at whoever strikes it." },
   // ------------------------------------------------ the intro: Silas's escape from Ironhaven's cells ---
   { ...room('room-cell', 'cell', "Ironhaven’s prison cell at night in its approved gentle three-quarter cage view: a cot and ragged blanket, high barred window, bucket and plate inside the cage; the small gate opens in the front bars, with the cage’s right side receding toward the back wall. Beyond it stand the guard’s table, candle, cup and Harrow portrait; Silas’s hooded cloak hangs on its nail. The table stub, fallen floor tallow, mask frame, plate placements, cage and gate are separate layers. The stairwell itself is offscreen to the right; only its doorway light lies on the floor. Preserve the approved painting and cage perspective.", 'Cold blue moonlight from the window (left); one warm candle pool on the table beyond the bars (right). The game darkens the room until Silas throws the moonlight across it, so paint it as seen lit.'), file: 'intro/rooms/cell.png', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/cell-cloak)' },
@@ -597,6 +602,10 @@ MANIFEST.push(...characterPack({
   notes: ["The sword: its scabbard hangs from her belt at the left hip, hilt forward, and belongs to the torso layer: keep it clear of the legs below mid-thigh, so the legs can swing behind and in front of it. Her coat ends at mid-thigh, split at the sides: draw the legs fully separate below it."],
 }));
 for (const e of MANIFEST) if (/^(char|portrait)-sigrid$/.test(e.id)) e.builtFrom = 'sigrid-layered';
+// C6 preserves the layered anatomy/atlas and approves only the recorded warm-skin pixel pass.
+Object.assign(MANIFEST.find(e => e.id === 'char-sigrid'), {
+  status: 'final', generator: 'approved layered rig with C6 warm-skin colour pass',
+});
 
 // Silas in his own hooded cloak (taken from the cell's corridor wall: the intro's last outfit), hood up
 // framing the face, the whole face open. A full pack like his casual one; his clerk guise in it is the
@@ -691,6 +700,11 @@ for (const portrait of approvedPortraits.portraits) {
     ],
   });
 }
+
+const sigridPortrait = MANIFEST.find(e => e.id === 'portrait-sigrid');
+sigridPortrait.generator = 'approved r2 standing portrait with C6 warm-skin colour pass';
+sigridPortrait.spec = [...sigridPortrait.spec.filter(line => !line.includes('normalization only')),
+  'C6 r1 skin recolour approved 2026-11-16; frame geometry, alpha, moods and mouth registration unchanged. Reproduction and approval: art/sources/characters/sigrid-colour-c6/.'];
 
 // Statuses set by the importer (art/status.json: { "<id>": "final" }) override the defaults above.
 import { existsSync, readFileSync } from 'node:fs';

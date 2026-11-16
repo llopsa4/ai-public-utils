@@ -1,0 +1,9 @@
+# Bryn — approved C5 smith source
+
+The user approved the C5 r1 review on 2026-11-16 by saying “continue” directly after the comparison and approval gate. This replaces the recoloured Kiln Courier/Iven shield placeholder with the smith design: dark red kerchief/shirt, braided hair, bare muscular arms, leather apron/wraps, belt gloves, hammer and tongs. No shield or armour.
+
+`body.png` and `arm.png` are registered on 1024×1536; `kneel.png` is a complete pose on the same canvas; `lie.png` is a complete 1536×1024 pose. `rig.json` records the measured rig/face/portrait configuration also installed in `art/manifest.mjs`. The configured height remains 224 art pixels and the existing stationary behavior/tags/anchors remain intact. Export uses 1px sampling, master-palette colours and the existing 2px outline.
+
+All four originals were generated separately with built-in `image_gen.imagegen` from Claude's C5 prompts, using Nell only for format, Mara casual for style/scale and the workshop for colour context. The generated body was the identity reference for the other three drawings. Preparation used hard alpha at128; the arm's whole-image registration was adjusted to90% with nearest-neighbour sampling at (+75,+15). No source anatomy or costume was painted procedurally. Raw originals, exact submitted prompts, references, processing scripts and review evidence are retained in `art/inbox/done/bryn-redraw-r1/`.
+
+`portrait-approved.png` is the exact user-approved neutral closed/open mouth strip, 512×256. It is final independently of the character sheet; ordinary rig rebuilds must preserve it. The original sixteen r2 portraits and their approval record are unchanged. `approval.json` locks source/output hashes for C5. Current installed-game verification and the original placeholder backup are in `art/inbox/done/bryn-redraw-installation-r1/`.

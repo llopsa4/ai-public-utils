@@ -329,10 +329,11 @@ Generated from the manifest. [Grouped catalog](CATALOG.md) · [Pilot references]
 | [room-road](room-road.md) | room | ch2 | placeholder |
 | [room-workshop](room-workshop.md) | room | ch2 | placeholder |
 | [room-backroom](room-backroom.md) | room | ch2 | placeholder |
-| [char-bryn](char-bryn.md) | character | ch2 | placeholder |
-| [portrait-bryn](portrait-bryn.md) | portrait | ch2 | placeholder |
+| [char-bryn](char-bryn.md) | character | ch2 | final |
+| [portrait-bryn](portrait-bryn.md) | portrait | ch2 | final |
 | [battle-backdrop-workshop](battle-backdrop-workshop.md) | battle-backdrop | ch2 | placeholder |
-| [battle-enemy-rig](battle-enemy-rig.md) | battle-portrait | ch2 | placeholder |
+| [battle-enemy-ash-sweeper](battle-enemy-ash-sweeper.md) | battle-portrait | ch1 | final |
+| [battle-enemy-rig](battle-enemy-rig.md) | battle-portrait | ch2 | final |
 | [room-cell](room-cell.md) | room | intro | final |
 | [room-cell-bare](room-cell-bare.md) | room | intro | final |
 | [room-guardroom](room-guardroom.md) | room | intro | final |
@@ -352,7 +353,7 @@ Generated from the manifest. [Grouped catalog](CATALOG.md) · [Pilot references]
 | [char-guard-nokeys](char-guard-nokeys.md) | character | intro | placeholder |
 | [char-warden](char-warden.md) | character | intro | placeholder |
 | [portrait-warden](portrait-warden.md) | portrait | intro | placeholder |
-| [char-sigrid](char-sigrid.md) | character | intro | placeholder |
+| [char-sigrid](char-sigrid.md) | character | intro | final |
 | [portrait-sigrid](portrait-sigrid.md) | portrait | intro | final |
 | [item-plate](item-plate.md) | item | intro | final |
 | [item-crust](item-crust.md) | item | intro | final |

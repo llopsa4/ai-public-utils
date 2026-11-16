@@ -6,7 +6,7 @@ Status: **final** · prop · chapter ch1
 
 ## Description
 
-ashways sweeper disabled
+The brown Ashways room sweeper, disabled after the fight; same design and bottom-centre registration.
 
 ## Use and placement
 

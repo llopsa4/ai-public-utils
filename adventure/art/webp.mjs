@@ -28,9 +28,11 @@ for (const folder of ['rooms', 'foreground', 'props', 'ch2/rooms', 'intro/rooms'
     total += best.length;
   }
 }
-// Background people's sheets (placeholders, many frames): lossy WebP is about a third smaller.
+// Keep detailed human extras exact; machine placeholders retain their existing encoding.
+const detailedExtras = new Set(MANIFEST.filter(e => e.kind === 'extra' && e.generator === 'rig.mjs').map(e => e.file));
 for (const name of readdirSync(join(here, 'src', 'characters')).filter(n => /^extra-.*\.png$/.test(n))) {
-  const info = await sharp(join(here, 'src', 'characters', name)).webp({ quality: 82, alphaQuality: 100, effort: 6 }).toFile(join(here, 'src', 'characters', name.replace(/\.png$/, '.webp')));
+  const options = detailedExtras.has(`characters/${name}`) ? { lossless: true, effort: 6 } : { quality: 82, alphaQuality: 100, effort: 6 };
+  const info = await sharp(join(here, 'src', 'characters', name)).webp(options).toFile(join(here, 'src', 'characters', name.replace(/\.png$/, '.webp')));
   total += info.size;
 }
 console.log(`WebP rooms and foregrounds written to art/src (${(total / 1024).toFixed(0)} KB).`);

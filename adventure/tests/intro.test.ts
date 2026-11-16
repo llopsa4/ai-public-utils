@@ -58,8 +58,10 @@ function toHarrow(): GameState {
 test('the intro comes first in the order of play, and opens only Mara 1 once done', () => {
   assert.equal(CHAPTER_IDS[0], 'intro');
   assert.deepEqual(openChapters([]), []);
-  assert.deepEqual(openChapters(['intro']), ['ch1', 'kofi1']);
+  assert.deepEqual(openChapters(['intro']), ['ch1']);
   assert.deepEqual(openChapters(['intro', 'ch1']), ['ch2', 'kofi1']);
+  assert.deepEqual(openChapters(['intro', 'ch1', 'kofi1']), ['ch2']);
+  assert.deepEqual(openChapters(['intro', 'ch1', 'ch2']), ['kofi1']);
 });
 
 test('nothing goes on until the plate lights the cell: "I can\'t see", with clues; the plate stays in the window', () => {

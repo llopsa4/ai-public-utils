@@ -4,6 +4,8 @@ export const FLAGS = [
   'concern-repair', 'concern-mother', 'concern-leaving', 'concern-whyMe',
   'galleryQuiet', 'farewellReminded', 'ashwaysStarted', 'ashwaysExploded', 'ashwaysWon',
   'ashwaysAftermath', 'ashwaysRetry', 'ashwaysRewarded', 'ashwaysConfronted',
+  // the closing "To be continued" card was reached (outside debug); a reload returns to it
+  'ch1Ended',
   // Mara's room
   'hasGauntlet', 'hasNotebook', 'dressed',
   // the morning's errands in everyday clothes: Wren's hoist, Nell's bread

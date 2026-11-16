@@ -54,6 +54,8 @@ export interface Member {
   blocker: Point | null;
   /** A kid tagging along: a spot near where Mara is going. */
   follow: Point | null;
+  /** Until this time (ms) nothing blocks the walker: a way out when it has been stopped over and over. */
+  slipUntil: number;
 }
 
 const TASK_TAG: Record<Task, string | null> = { stand: null, work: 'work', carry: 'carry', reach: 'reach', sit: 'sit', sweep: 'carry', tap: 'carry', park: 'park' };
@@ -70,6 +72,10 @@ const CHATTER_MAX = 20000;
 const BLOCK_DISTANCE = 16;
 /** How far someone steps to the side to get round a person in the way. */
 const SIDESTEP = 24;
+/** How many times a walker tries to get round whoever is in the way before it slips past them. */
+const WALK_TRIES = 4;
+/** How long (ms) a walker that slipped past is no longer stopped by anyone. */
+const SLIP_MS = 1400;
 /** Mara walking this close to someone standing still makes them step aside. */
 const MAKE_WAY = 20;
 /** Mara heading this close to a busy station makes its worker step aside. */
@@ -169,7 +175,7 @@ export class Crowd {
     scene.tweens.add({ targets: actor.sprite, alpha: 1, duration: 500 });
     const member: Member = {
       def, actor, schedule, target: null, task: null, carrying: false, held: false, vacate: false, react: null,
-      away: false, gone: false, prop: null, effect: null, talks: 0, last: { x: at.x, y: at.y }, blocker: null, follow: null,
+      away: false, gone: false, prop: null, effect: null, talks: 0, last: { x: at.x, y: at.y }, blocker: null, follow: null, slipUntil: 0,
     };
     if (def.carry && def.carry !== 'sack' && !def.carryDrawn) member.prop = scene.add.image(at.x, at.y, `crowd-${def.carry}`);
     actor.onStep = () => {
@@ -215,7 +221,7 @@ export class Crowd {
     switch (step.kind) {
       case 'go': {
         m.target = step.station.id;
-        if (!(await this.walk(m, step.station))) return;
+        if (!(await this.walk(m, step.station))) return this.giveUp(m);
         this.arrive(m, step.station);
         await this.pause(m, step.wait);
         this.leaveStation(m);
@@ -223,7 +229,7 @@ export class Crowd {
       }
       case 'detour': {
         m.target = null;
-        if (!(await this.walk(m, this.host.area.clamp(step.to)))) return;
+        if (!(await this.walk(m, this.host.area.clamp(step.to)))) return this.giveUp(m);
         await this.pause(m, step.wait);
         return;
       }
@@ -291,12 +297,15 @@ export class Crowd {
    * interrupted for another reason, or still blocked after a few tries.
    */
   private async walk(m: Member, to: Point): Promise<boolean> {
-    for (let attempt = 0; attempt < 4; attempt++) {
+    for (let attempt = 0; attempt <= WALK_TRIES; attempt++) {
       if (!this.alive || m.held || m.react) return false;
+      // Stopped four times running: slip past whoever it is instead of standing there for good.
+      if (attempt === WALK_TRIES) m.slipUntil = this.host.scene.time.now + SLIP_MS;
       const blocker = m.blocker;
       m.blocker = null;
-      if (blocker) {
-        const side = this.sidestep(m, to, blocker);
+      if (blocker && attempt < WALK_TRIES) {
+        // Round them on the far side; if that was blocked too, try the other side next time.
+        const side = this.sidestep(m, to, blocker, attempt % 2 === 1);
         if (side && !(await m.actor.walk([side])) && !m.blocker) return false;
       }
       const path = this.host.area.findPath(m.actor.position, to);
@@ -308,14 +317,24 @@ export class Crowd {
     return false;
   }
 
+  /**
+   * A walk that could not finish (blocked for good, or interrupted): the walker lets go of the
+   * station it was heading for, so someone else can use it, and rests a moment before choosing
+   * its next errand, instead of trying again at once.
+   */
+  private async giveUp(m: Member): Promise<void> {
+    m.target = null;
+    await this.pause(m, 500 + Math.random() * 700);
+  }
+
   /** A point a step to the side of the way to `to`, on the side away from whoever is in the way. */
-  private sidestep(m: Member, to: Point, blocker: Point): Point | null {
+  private sidestep(m: Member, to: Point, blocker: Point, flip = false): Point | null {
     const p = m.actor.position;
     const dx = to.x - p.x, dy = to.y - p.y, len = Math.hypot(dx, dy);
     if (len < 4) return null;
     const ux = dx / len, uy = dy / len;
     let nx = -uy, ny = ux;
-    if ((blocker.x - p.x) * nx + (blocker.y - p.y) * ny > 0) { nx = -nx; ny = -ny; }
+    if (((blocker.x - p.x) * nx + (blocker.y - p.y) * ny > 0) !== flip) { nx = -nx; ny = -ny; }
     return this.host.area.clamp({ x: p.x + nx * SIDESTEP + ux * 6, y: p.y + ny * SIDESTEP * 0.6 + uy * 6 });
   }
 
@@ -428,6 +447,20 @@ export class Crowd {
     return best && bd < 90 ? best : null;
   }
 
+  /** True while a fight's own pictures stand in the room: every person and what they carry stays out of sight. */
+  private fightHidden = false;
+
+  /** Hides (or shows again) every person for a fight, with their tools, and drops any bubble. */
+  setFightHidden(hidden: boolean): void {
+    this.fightHidden = hidden;
+    if (hidden) this.clearBubble();
+    for (const m of this.members) {
+      if (m.gone) continue;
+      m.actor.setHidden(hidden);
+      if (hidden) m.prop?.setVisible(false);
+    }
+  }
+
   // ------------------------------------------------------------ with Mara ---
   /** Stops someone so Mara can talk to them; they turn to face him. */
   hold(m: Member): void {
@@ -491,7 +524,7 @@ export class Crowd {
       const a = m.actor;
       // Walking into someone (Mara standing still, or another person) stops the walk; walk() then
       // steps round them. Walking away from someone, or alongside, is fine.
-      if (a.isWalking && !m.held) {
+      if (a.isWalking && !m.held && this.host.scene.time.now >= m.slipUntil) {
         const vx = a.sprite.x - m.last.x, vy = a.sprite.y - m.last.y;
         const obstacles: Point[] = [...(hero.isWalking ? [] : [hero.position]), ...this.host.others()];
         for (const o of this.members) if (o !== m && !o.gone && !o.away) obstacles.push(o.actor.position);
@@ -529,7 +562,7 @@ export class Crowd {
     const hold = HOLD[kind];
     const crouched = m.task === 'work' || m.task === 'sit';
     const sway = m.task === 'sweep' && !this.calm ? Math.sin(this.host.scene.time.now / 160) * 16 : m.task === 'work' && kind === 'shovel' && !this.calm ? Math.sin(this.host.scene.time.now / 260) * 10 : 0;
-    prop.setVisible(!m.away && s.visible)
+    prop.setVisible(!m.away && s.visible && !this.fightHidden)
       .setOrigin(hold.origin[0], hold.origin[1])
       .setPosition(s.x + side * hold.x * d, s.y - hold.y * d * (crouched ? 0.72 : 1))
       .setAngle(side * (hold.angle + sway))

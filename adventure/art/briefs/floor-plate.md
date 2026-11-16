@@ -16,7 +16,7 @@ look; take
 
 ## Placement and layers
 
-- [Cell](room-cell.md): anchor (346,624) art px / (173,312) logical; world; [{"notFlag":"tookPlate"}].
+- [Cell](room-cell.md): anchor (236,626) art px / (118,313) logical; world; [{"notFlag":"tookPlate"}].
 
 ## States, visibility and transitions
 
@@ -31,6 +31,6 @@ Existing file: art/src/intro/objects/floor-plate.png. Status: final. No new artw
 
 ## Sources
 
-[art/manifest.mjs · L417](../manifest.mjs#L417) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
+[art/manifest.mjs · L422](../manifest.mjs#L422) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
 Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

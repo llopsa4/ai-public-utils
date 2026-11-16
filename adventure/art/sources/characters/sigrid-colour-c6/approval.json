@@ -1,0 +1,23 @@
+{
+  "assignment": "C6",
+  "revision": "playtest-c6/r1",
+  "date": "2026-11-16",
+  "authority": "user",
+  "authorization": "Install the artwork",
+  "sourceHashes": {
+    "sheet-before.png": "287894f4d2f1a9c0a5392c7f8166a06ee84221cde6d2dbb50083dd2f93a6f879",
+    "atlas.json": "eed5408c71774465b5a51e716ea511302a3df2c4ecf2e4ded4322196aed5b208",
+    "portrait-before.png": "5376b7ca8cbc75b5b9d40f9ff39d0a05f83945c3bce7d5334d146514a816b71c",
+    "portrait-approved.png": "3cde4f2ad864a414622d7c548eabb368bf9a66c5cca2032b75ac63c7a81a4262",
+    "recolour.mjs": "af45e14aeba3aa05734c555a18fcc0f926671e465b328809c5606d98d98e40fa"
+  },
+  "installedHashes": {
+    "kc/brown-sweeper.webp": "a92328e097f97a08b8ce344acd16d4da4bbe7a411f57fd7df1665a5f90cd6b6d",
+    "kc/training-rig.webp": "f1717deb7aeb7a96fc0b78ead4d5cf9f119eba8e562fdc3f42d3f08413c75b2b",
+    "props/ashways-sweeper-disabled.png": "03462a4d52c226c94ee368d9489b95773c70d774daea6343a2df533f39ef834b",
+    "intro/characters/sigrid.png": "15eac1bff8cd2e0debbd83c9a5bf309e8443182822ae6aac7ec032408bab0faf",
+    "intro/portraits/sigrid.png": "3cde4f2ad864a414622d7c548eabb368bf9a66c5cca2032b75ac63c7a81a4262",
+    "intro/characters/sigrid.json": "eed5408c71774465b5a51e716ea511302a3df2c4ecf2e4ded4322196aed5b208"
+  },
+  "geometry": "Original atlas JSON and alpha preserved; new fight images use measured per-image ink."
+}

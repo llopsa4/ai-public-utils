@@ -177,7 +177,7 @@
         "worried",
         "angry"
       ],
-      "sha256": "5376b7ca8cbc75b5b9d40f9ff39d0a05f83945c3bce7d5334d146514a816b71c",
+      "sha256": "3cde4f2ad864a414622d7c548eabb368bf9a66c5cca2032b75ac63c7a81a4262",
       "source": "art/sources/characters/sigrid-layered/idle.png",
       "sourceSha256": "27bff79c8b83a65d6770c8e401ab1a3ff6a43ef4152416a73e9be9bbe4b46665",
       "crop": [
@@ -219,9 +219,15 @@
         "slope": 0
       },
       "method": "standing-source-export",
-      "approvedFile": "art/sources/dialogue-portraits/approved/sigrid.png",
-      "approvedSha256": "2c6eec02bd7b7a092636f21b0740f26e5f1293917a3964ddd28a079fe5f034c6",
-      "processing": "nearest game-palette normalization only; approved dimensions and alpha unchanged"
+      "approvedFile": "art/sources/characters/sigrid-colour-c6/portrait-approved.png",
+      "approvedSha256": "3cde4f2ad864a414622d7c548eabb368bf9a66c5cca2032b75ac63c7a81a4262",
+      "processing": "User-approved C6 r1 warm/rosy skin recolour, 2026-11-16; original alpha, crop, moods and speaking registration unchanged. See art/sources/characters/sigrid-colour-c6/approval.json.",
+      "previousApproval": {
+        "sha256": "5376b7ca8cbc75b5b9d40f9ff39d0a05f83945c3bce7d5334d146514a816b71c",
+        "approvedFile": "art/sources/dialogue-portraits/approved/sigrid.png",
+        "approvedSha256": "2c6eec02bd7b7a092636f21b0740f26e5f1293917a3964ddd28a079fe5f034c6",
+        "revision": "dialogue-portraits r2; originals retained"
+      }
     },
     {
       "id": "extra-stoker",

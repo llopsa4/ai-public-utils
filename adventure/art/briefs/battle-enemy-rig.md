@@ -1,6 +1,6 @@
 # battle-enemy-rig
 
-Status: **placeholder** · battle-portrait · chapter ch2
+Status: **final** · battle-portrait · chapter ch2
 
 [Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
 
@@ -14,7 +14,6 @@ Shown on the fight screen on the right, facing left towards Mara.
 
 ## Asset contract
 
-- Runtime path: `art/src/kc/ash-sweeper.webp` (placeholder).
+- Runtime path: `art/src/kc/training-rig.webp` (final).
 - Anchor: `bottom-centre`.
 - Canvas/frame: **768×512 art px**.
-- Figure width: 768 art px.

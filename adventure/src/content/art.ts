@@ -17,6 +17,7 @@ export const PORTRAIT_MOODS: Record<string, Mood[]> = {
   oren: ['neutral', 'worried', 'angry'],
   nell: ['neutral'],
   tobi: ['neutral', 'worried'],
+  bryn: ['neutral'],
   // Silas (his pack's portraits; his disguises have one mood).
   silas: ['neutral', 'worried', 'angry'],
   // Silas in his cloak (Codex's pack): three moods, like his casual portraits.

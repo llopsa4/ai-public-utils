@@ -55,6 +55,17 @@ test('chapter transitions enter the new chapter and end terminates its original 
   assert.equal(debug.chapter, 'ch2', 'debug end advances to the next chapter');
 });
 
+test('a chapter 1 save made on the closing card returns to it on entering the ashways', () => {
+  const s = newGame('ch1');
+  s.room = 'ashways';
+  s.flags.ashwaysStarted = s.flags.ashwaysAftermath = true;
+  assert.equal(enterStoryRoom(s).stopped, null, 'before the ending the room is free to explore');
+  s.flags.ch1Ended = true;
+  const back = enterStoryRoom(s);
+  assert.equal(back.stopped, 'chooseChapter');
+  assert.deepEqual(back.commands, [{ type: 'chooseChapter' }]);
+});
+
 test('initial entry and interactions use the state chapter rather than the global active chapter', async () => {
   await loadChapter('ch2');
   const s = newGame('ch2');

@@ -118,9 +118,9 @@ const FIRING_HOUSE: CrowdDef = {
     // The alarm: close to Nell (who stands at 250,300).
     st('byNellA', 276, 330, 'left', 'stand', [6000, 12000]),
     st('byNellB', 226, 324, 'right', 'stand', [6000, 12000]),
-    // The cold: huddled by the dead hearth.
-    st('coldA', 100, 340, 'left', 'sit', [8000, 14000]),
-    st('coldB', 140, 338, 'left', 'sit', [8000, 14000]),
+    // The cold: stand together beside Nell; there are no seats at these floor stations.
+    st('coldA', 208, 338, 'right', 'stand', [8000, 14000]),
+    st('coldB', 296, 338, 'left', 'stand', [8000, 14000]),
   ]),
   exits: {
     east: { id: 'east', x: 626, y: 326, out: { x: 662, y: 326 } },

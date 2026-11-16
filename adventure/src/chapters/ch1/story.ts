@@ -32,6 +32,8 @@ export const STORY: StoryRules = {
       flag('machineRefusalSeen'),
     ] },
     { room: 'ashways', if: [{ flag: 'ashwaysStarted' },{notFlag:'ashwaysAftermath'}], run: s => ashwaysFinale(s.flags) },
+    // A save made on the closing card returns to it.
+    { room: 'ashways', if: [{ flag: 'ch1Ended' }], run: () => [{ type: 'chooseChapter' }] },
     { room: 'gallery', if: [{ flag: 'kilnCold' }], run: s => afterRelease(s.flags) },
     // The first time Mara steps into the hall, Wren calls from the hoist.
     { room: 'maraRoom', if: [{ notFlag: 'wrenAsked' }, { notFlag: 'hoistHelped' }, { notFlag: 'alarm' }, { notFlag: 'kilnCold' }], run: () => wrenCalls() },

@@ -17,7 +17,8 @@ export class AshwaysSet {
   private readonly cell: Phaser.GameObjects.Sprite;
   private readonly disabled: Phaser.GameObjects.Sprite;
   constructor(private readonly scene: RoomScene) {
-    this.cell=scene.add.sprite(190,237,'ashways-cell').setOrigin(.5,1).setScale(.5).setDepth(236);
+    // The small side boss of the valve supports the cell, rather than empty wall behind it.
+    this.cell=scene.add.sprite(134,204,'ashways-cell').setOrigin(.5,1).setScale(.5).setDepth(263);
     this.disabled=scene.add.sprite(360,305,'ashways-disabled').setOrigin(.5,1).setScale(.5).setDepth(305).setVisible(false);
     scene.objects.set('pressureCell',this.cell);scene.objects.set('sweeperDisabled',this.disabled);
     scene.events.once('shutdown',()=>{
@@ -55,7 +56,7 @@ export class AshwaysSet {
     } else if(phase==='rupture') {
       if(m){m.actor.setFacing('left');m.actor.perform('reach');}
       await wait(s,400);sound.shatter();sound.hiss(500);
-      if(!calm) {s.cameras.main.shake(350,.006);s.props.burst([{x:190,y:215}]);}
+      if(!calm) {s.cameras.main.shake(350,.006);s.props.burst([{x:134,y:184}]);}
       this.cell.setTexture('ashways-cell-broken').setAlpha(1);
       if(m){
         m.actor.stop();m.actor.perform(null);m.actor.setPose('crouch');

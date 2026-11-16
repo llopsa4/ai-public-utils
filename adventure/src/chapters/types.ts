@@ -43,8 +43,8 @@ export interface Chapter {
   npcs: Partial<Record<NpcId, ActorState>>;
   /** Items a fresh start of the chapter hands over (a debug jump); a chapter change keeps Mara's own too. */
   startItems?: readonly string[];
-  /** The end card's title and text (string keys); without them the game's own. */
-  end?: { title: string; text: string };
+  /** The end card's title and text (string keys); without them the game's own. `final`: no New game button. */
+  end?: { title: string; text: string; final?: boolean };
   /** The chapter's art, loaded with it in the browser (later chapters; chapter 1's is the game's). */
   art?: () => Promise<void>;
   /** Optional viewpoint-specific battle rules; absent uses Mara's gauntlet deck. */

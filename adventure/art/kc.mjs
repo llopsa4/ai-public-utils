@@ -20,10 +20,8 @@ await webp('hero.png', 'hero.webp', 512);
 await webp('opening/pressure-scavenger.png', 'pressure-scavenger.webp', 768);
 await webp('card-atlas.png', 'card-atlas.webp', 768, 74);
 await webp('opening/regulator-gallery.png', 'regulator-gallery.webp', 1280, 72);
-// Chapter 2: Bryn's workshop for the sparring, and the training rig (Kiln Courier draws its
-// training rig with the sweeper picture).
+// Chapter 2 workshop. Approved C6 sweeper/training images have their own manifest entries.
 await webp('opening/tempering-house.png', 'tempering-house.webp', 1280, 72);
-await webp('opening/ash-sweeper.png', 'ash-sweeper.webp', 768);
 // Include every base item exposed by the gear screen (including debug/later-game gear).
 // Reinforced variants keep their existing base-art fallback until separately delivered.
 for (const name of readdirSync(join(kc, 'equipment', 'runtime')).filter(n => n.endsWith('.webp') && !n.endsWith('-upgraded.webp')).sort()) {

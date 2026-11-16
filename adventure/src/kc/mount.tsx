@@ -1,6 +1,7 @@
 // Cinderfold: the bridge to Kiln Courier's React screens. Loaded with import() when the first fight
 // starts, so React, the battle code, its art and fonts never weigh on the title screen.
 import { useEffect, useState } from 'react';
+import { roomContact } from './battleMotion';
 import { createRoot } from 'react-dom/client';
 import './kc.css';
 import './kc-local.css';
@@ -126,7 +127,13 @@ function Battle(o: BattleOptions) {
 export function mountBattle(el: HTMLElement, options: BattleOptions): () => void {
   const s = options.stage;
   el.classList.toggle('in-room', !!s);
+  el.classList.toggle('low-target', !!s && s.enemySize < s.heroSize * .78);
   if (s) for (const [k, v] of Object.entries({ '--room-left': s.left, '--room-top': s.top, '--room-width': s.width, '--room-height': s.height, '--room-hero': s.heroSize, '--room-enemy': s.enemySize, '--room-floor': s.floor })) el.style.setProperty(k, `${v}px`);
+  if (s) {
+    const contact = roomContact(s.heroSize, s.enemySize, s.width * .4);
+    el.style.setProperty('--room-contact-lean', `${contact.degrees}deg`);
+    el.style.setProperty('--room-contact-advance', `${contact.advance}px`);
+  }
   const root = createRoot(el);
   root.render(<div className="kc kc-screen"><Battle {...options} /></div>);
   return () => root.unmount();

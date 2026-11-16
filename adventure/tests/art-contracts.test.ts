@@ -34,11 +34,42 @@ test('approved standing portraits cover speaking workers and preserve the review
     assert.ok(isFinal(portrait.file), `${portrait.id} is protected from generators`);
     assert.deepEqual(PORTRAIT_MOODS[portrait.id], portrait.moods);
     const bytes = readFileSync(new URL(`../art/src/${portrait.file}`, import.meta.url));
-    assert.equal(createHash('sha256').update(bytes).digest('hex'), portrait.sha256, `${portrait.id} matches the installed palette-normalized r2 export`);
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), portrait.sha256, `${portrait.id} matches the currently approved export`);
     const approved = readFileSync(new URL(`../${portrait.approvedFile}`, import.meta.url));
     assert.equal(createHash('sha256').update(approved).digest('hex'), portrait.approvedSha256, `${portrait.id} retains the reviewed source`);
     assert.deepEqual([bytes.readUInt32BE(16), bytes.readUInt32BE(20)], [portrait.moods.length * 512, 256]);
   }
+});
+
+test('Bryn retains the approved smith sources and independently protected neutral portrait', () => {
+  const approval = JSON.parse(readFileSync(new URL('../art/sources/characters/char-bryn/approval.json', import.meta.url), 'utf8'));
+  for (const [file, hash] of Object.entries(approval.sourceHashes)) {
+    const bytes = readFileSync(new URL(`../art/sources/characters/char-bryn/${file}`, import.meta.url));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, `approved Bryn source ${file}`);
+  }
+  for (const [file, hash] of Object.entries(approval.installedHashes)) {
+    const bytes = readFileSync(new URL(`../art/src/${file}`, import.meta.url));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, `approved Bryn output ${file}`);
+  }
+  assert.equal(RIGS.bryn.source, 'sources/characters/char-bryn/body.png');
+  assert.equal(RIGS.bryn.variant, undefined, 'the shield placeholder recolour is gone');
+  assert.ok(isFinal('ch2/portraits/bryn.png'));
+  assert.deepEqual(PORTRAIT_MOODS.bryn, ['neutral']);
+});
+
+test('C6 retains the approved machine artwork and protected Sigrid colour exports', () => {
+  const approval = JSON.parse(readFileSync(new URL('../art/sources/characters/sigrid-colour-c6/approval.json', import.meta.url), 'utf8'));
+  for (const [file, hash] of Object.entries(approval.sourceHashes)) {
+    const bytes = readFileSync(new URL(`../art/sources/characters/sigrid-colour-c6/${file}`, import.meta.url));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, `C6 source ${file}`);
+  }
+  for (const [file, hash] of Object.entries(approval.installedHashes)) {
+    const bytes = readFileSync(new URL(`../art/src/${file}`, import.meta.url));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, `C6 installed ${file}`);
+    assert.ok(isFinal(file), `${file} is protected`);
+  }
+  assert.equal(MANIFEST.find(e => e.id === 'battle-enemy-rig')!.file, 'kc/training-rig.webp');
+  assert.equal(MANIFEST.find(e => e.id === 'battle-enemy-ash-sweeper')!.file, 'kc/brown-sweeper.webp');
 });
 
 test('art metadata registers unique files and every named character rig and portrait', () => {

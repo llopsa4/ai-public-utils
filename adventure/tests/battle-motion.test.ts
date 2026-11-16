@@ -1,7 +1,19 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { attackPhase, combatDuration, heroPose, isOffensive } from '../src/kc/battleMotion';
+import { attackPhase, combatDuration, heroPose, isOffensive, roomContact } from '../src/kc/battleMotion';
 import { cardMotion } from '../../FFCardGame/client/src/hooks/useBattle';
+
+test('a grounded punch reaches small machines without raising the enemy off the floor', () => {
+  const h = 232, gap = 460;
+  for (const ratio of [.22, .32, .45, .6, .9]) {
+    const e = h * ratio, plan = roomContact(h, e, gap), theta = plan.degrees * Math.PI / 180;
+    const fist = ratio < .78
+      ? { x: -.05 * h + .52 * h * Math.cos(theta) + .345 * h * Math.sin(theta), y: -.44 * h + .52 * h * Math.sin(theta) - .345 * h * Math.cos(theta) }
+      : { x: .47 * h, y: -.785 * h };
+    assert.ok(-fist.y > 0 && -fist.y < e, `${ratio}: the fist intersects the enemy's actual vertical ink`);
+    assert.ok(Math.abs(plan.advance + fist.x - gap) <= e * .3, `${ratio}: the fist reaches the enemy body`);
+  }
+});
 
 test('offensive attacks hold the punch for 500 ms between a 200 ms approach and return', () => {
   for (const motion of ['strike', 'heavy', 'pulse'] as const) {

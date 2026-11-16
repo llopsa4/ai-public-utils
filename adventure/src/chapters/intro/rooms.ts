@@ -17,7 +17,7 @@ const LIT = [{ flag: 'cellLit' }];
 // in the guard's corridor: Silas's confiscated cloak hanging on a nail, Sergeant Harrow's portrait,
 // the table with the candle and a cup (the mask frame on it), and the guard's chair. No stairs.
 const cellHotspots: HotspotDef[] = [
-  { id: 'plate', name: 'name.i.plate', polygon: rect(158, 300, 30, 14), verbs: ['look', 'take'], walkTo: pt(170, 318), face: 'down', visibleIf: [{ notFlag: 'tookPlate' }], outline: { objects: ['floorPlate'] } },
+  { id: 'plate', name: 'name.i.plate', polygon: rect(103, 301, 30, 14), verbs: ['look', 'take'], walkTo: pt(118, 318), face: 'down', visibleIf: [{ notFlag: 'tookPlate' }], outline: { objects: ['floorPlate'] } },
   { id: 'frame', name: 'name.i.frame', polygon: rect(484, 266, 22, 12), verbs: ['look', 'take'], walkTo: pt(340, 300), face: 'right', visibleIf: [...LIT, { notFlag: 'gotFrame' }], outline: { objects: ['frame'] } },
   { id: 'roster', name: 'name.i.roster', polygon: rect(527, 115, 38, 50), verbs: ['look'], visibleIf: LIT },
   // His cloak on its nail beyond the bars: out of reach until the door is open.
@@ -113,7 +113,7 @@ export const ROOMS: Record<string, RoomDef> = {
     entries: { start: { x: 100, y: 305, face: 'right' }, fromGuardroom: { x: 612, y: 336, face: 'left' } },
     // The tin plate stays wedged in the window bars once it has thrown the moonlight in.
     objects: [
-      { id: 'floorPlate', sheet: 'floor-plate', x: 173, y: 312, depth: 50, visibleIf: [{ notFlag: 'tookPlate' }] },
+      { id: 'floorPlate', sheet: 'floor-plate', x: 118, y: 313, depth: 50, visibleIf: [{ notFlag: 'tookPlate' }] },
       { id: 'windowPlate', sheet: 'window-plate', x: 170, y: 123, depth: 50, visibleIf: [{ flag: 'cellLit' }] },
       // The stairwell door's light on the floor, shaped like the doorway.
       { id: 'stairsLight', sheet: 'stairs-light', x: 590, y: 347, depth: 45 },
@@ -134,7 +134,8 @@ export const ROOMS: Record<string, RoomDef> = {
   guardroom: {
     id: 'guardroom',
     background: 'room-guardroom',
-    walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)], holes: [] },
+    // Benn sleeps on his stool by the stove (x 382): Silas goes round behind him, never through him.
+    walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)], holes: [rect(360, 292, 44, 48)] },
     scale: FLAT,
     surface: 'stone',
     music: 'tension',

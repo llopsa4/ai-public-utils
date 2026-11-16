@@ -8,7 +8,8 @@ import pressure_scavenger from '../../art/src/kc/pressure-scavenger.webp';
 import regulator_gallery from '../../art/src/kc/regulator-gallery.webp';
 import cardAtlas from '../../art/src/kc/card-atlas.webp';
 import tempering_house from '../../art/src/kc/tempering-house.webp';
-import ash_sweeper from '../../art/src/kc/ash-sweeper.webp';
+import ash_sweeper from '../../art/src/kc/brown-sweeper.webp';
+export { default as trainingRig } from '../../art/src/kc/training-rig.webp';
 import ashways from '../../art/src/rooms/ashways.webp';
 
 // The page icon is the adventure's own (the battle screen gets `brand`, which leaves it out).

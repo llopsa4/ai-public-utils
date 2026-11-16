@@ -2,11 +2,15 @@
 // chapter it requires has been finished, and closes once it has been played. More rules (one new
 // character per chapter, weaving between people, Day 4 and Day 5) come as more chapters exist.
 
-/** Each chapter's required chapters. The intro (Silas's flash-forward) opens Mara 1. */
+/**
+ * Each chapter's required chapters. The intro (Silas's flash-forward) opens Mara 1 only; finishing
+ * Mara 1 opens both Mara 2 and Kofi's prologue (STORY.md, "Unlock rules"), and the one not picked
+ * stays open on the map.
+ */
 export const REQUIRES: Record<string, readonly string[]> = {
   ch1: ['intro'],
   ch2: ['ch1'],
-  kofi1: ['intro'],
+  kofi1: ['ch1'],
 };
 
 /** The chapters open to start, in story order, given those already finished. */

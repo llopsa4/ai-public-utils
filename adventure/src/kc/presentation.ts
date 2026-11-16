@@ -3,7 +3,7 @@
 // in the regulator gallery, also during the lesson (which Kiln Courier would draw as its practice
 // sweeper); chapter 2's sparring is Bryn's training rig in her workshop, and its tunnel creatures
 // come from the creature registry (src/chapters/ch2/art.ts).
-import { openingArt } from './assets';
+import { openingArt, trainingRig } from './assets';
 import { CREATURE_ART } from '../game/assets';
 import type { BattleState } from '@kc/game/types';
 import type * as Original from '@kc/presentation';
@@ -15,7 +15,7 @@ export function battleVisual(state: BattleState): ReturnType<typeof Original.bat
 function fightVisual(state: BattleState): ReturnType<typeof Original.battleVisual> {
   if (state.config.encounter.id === 'berserk-ash-sweeper') return {
     machine: 'sweeper', sprite: openingArt['ash-sweeper'], arena: openingArt.ashways,
-    ink: { height: .74707, gap: .139648 }, training: false, reinforced: false,
+    ink: { height: 1, gap: 0 }, training: false, reinforced: false,
   };
   const creature = CREATURE_ART[state.config.encounter.id];
   if (creature) {
@@ -26,9 +26,9 @@ function fightVisual(state: BattleState): ReturnType<typeof Original.battleVisua
   if (state.config.encounter.id === 'training-rig') {
     return {
       machine: 'sweeper' as const,
-      sprite: openingArt['ash-sweeper'],
+      sprite: trainingRig,
       arena: openingArt['tempering-house'],
-      ink: { height: .74707, gap: .139648 },
+      ink: { height: .78125, gap: .04296875 },
       training: true,
       reinforced: false,
     };

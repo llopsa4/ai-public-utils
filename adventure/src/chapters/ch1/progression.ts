@@ -64,6 +64,6 @@ export function ashwaysFinale(f: Record<string, boolean>): Command[] {
     { type: 'say', actor: 'extra-merchant', text: 'line.corvinAdmits' },
     { type: 'say', actor: 'hero', text: 'line.maraNetwork' },
     { type: 'say', actor: 'extra-merchant', text: 'line.corvinSurvives' }, flag('ashwaysAftermath'), checkpoint);
-  out.push({ type: 'say', actor: 'hero', text: 'line.farewellUrgent' }, { type: 'end' });
+  out.push({ type: 'say', actor: 'hero', text: 'line.farewellUrgent' }, { type: 'chooseChapter' });
   return out;
 }
