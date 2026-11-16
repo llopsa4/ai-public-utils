@@ -30,9 +30,12 @@ for (const room of ['tent', 'mara-room', 'firing-house', 'gallery', 'ashways', '
   if (room !== 'tent') assert.ok(!has(room, 'png'), `PNG copy of ${room} shipped`);
 }
 // Background people (placeholders) ship as WebP only.
+// (Their dialogue portraits are also named extra-*.png, so compare content with the sheet, not names.)
+const builtPngs = await Promise.all(built.filter(n => n.endsWith('.png')).map(n => readFile(resolve(project, 'dist/build', n))));
 for (const extra of ['extra-stoker', 'extra-tally', 'extra-hauler', 'extra-runner', 'extra-hoist', 'extra-kid', 'extra-merchant']) {
   assert.ok(has(extra, 'webp'), `missing WebP: ${extra}`);
-  assert.ok(!has(extra, 'png'), `PNG copy of ${extra} shipped`);
+  const sheet = await readFile(resolve(project, 'art/src/characters', `${extra}.png`));
+  assert.ok(!builtPngs.some(b => b.equals(sheet)), `PNG copy of ${extra} shipped`);
 }
 for (const verb of ['look', 'open', 'close', 'take', 'use', 'talk', 'go', 'crouch', 'lie', 'stand']) {
   assert.ok(built.some(n => n.startsWith(`${verb}-`) && n.endsWith('.png')), `missing icon: ${verb}`);

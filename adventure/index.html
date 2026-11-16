@@ -2,12 +2,17 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta name="theme-color" content="#120d14">
   <title>The Rift: Ashlands</title>
-  <script type="module" crossorigin src="./build/index-CUjLpeq-.js"></script>
-  <link rel="stylesheet" crossorigin href="./build/index-DJ5ylr9a.css">
+  <script type="module" crossorigin src="./build/index-BSY5l0ky.js"></script>
+  <link rel="modulepreload" crossorigin href="./build/i18n-DB3GnR4x.js">
+  <link rel="modulepreload" crossorigin href="./build/progression-B0JGkGcp.js">
+  <link rel="modulepreload" crossorigin href="./build/preload-helper-h0kJq04I.js">
+  <link rel="modulepreload" crossorigin href="./build/combat-Bc4yybvZ.js">
+  <link rel="modulepreload" crossorigin href="./build/state-CFuTNnzT.js">
+  <link rel="stylesheet" crossorigin href="./build/index-DpHRz7iw.css">
 </head>
 <body>
   <main id="app">
@@ -73,7 +78,6 @@
   <section id="chapter-map" hidden aria-labelledby="chapter-map-heading">
     <h1 id="chapter-map-heading" data-i18n="ui.chapterMapTitle">Where next?</h1>
     <div id="chapter-map-svg"></div>
-    <div id="chapter-map-list" class="menu-list"></div>
   </section>
   <section id="intro" hidden aria-live="polite" aria-labelledby="intro-label">
     <img id="intro-backdrop" alt="" hidden>
@@ -181,13 +185,12 @@
     <dl class="controls">
       <dt data-i18n="ui.help.walkKey">Floor click / hold arrows</dt><dd data-i18n="ui.help.walk">Walk there / move until released; use exits explicitly</dd>
       <dt data-i18n="ui.help.actKey">Click a person or thing</dt><dd data-i18n="ui.help.act">Open the action ring, then choose</dd>
-      <dt data-i18n="ui.help.itemKey">Satchel: click / 1–9, 0 / drag</dt><dd data-i18n="ui.help.item">Carry an item, then click or drop it on a target. Double-click or double-tap an item for Look / Use</dd>
+      <dt data-i18n="ui.help.itemKey">Satchel: click / 1–9, 0 / drag</dt><dd data-i18n="ui.help.item">Carry an item, then click or drop it on a target. Double-click an item for Look / Use</dd>
       <dt data-i18n="ui.help.revealKey">Hold Space / the eye</dt><dd data-i18n="ui.help.reveal">Show everything you can interact with</dd>
       <dt data-i18n="ui.help.exitKey">Double-click a doorway</dt><dd data-i18n="ui.help.exit">Go straight through</dd>
       <dt data-i18n="ui.help.keysKey">Tab / Enter / number keys</dt><dd data-i18n="ui.help.keys">Focus things / act or inspect an item / select a satchel slot or dialogue reply</dd>
       <dt data-i18n="ui.help.screensKey">G / N / M</dt><dd data-i18n="ui.help.screens">Open or close Gear / Notebook / Menu</dd>
       <dt data-i18n="ui.help.cancelKey">Right-click or Esc</dt><dd data-i18n="ui.help.cancel">Cancel</dd>
-      <dt data-i18n="ui.help.touchKey">Touch: press and hold</dt><dd data-i18n="ui.help.touch">Show everything you can interact with</dd>
     </dl>
     <div class="panel-actions"><button type="button" class="btn dialog-close" data-i18n="ui.back">Back</button></div>
   </dialog>
@@ -215,7 +218,6 @@
     </div>
   </dialog>
 
-  <div id="rotate" data-i18n="ui.rotate">Turn your device sideways to play.</div>
   <div id="live" class="sr-only" aria-live="polite"></div>
 </body>
 </html>

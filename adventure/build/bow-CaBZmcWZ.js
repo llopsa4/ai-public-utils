@@ -1,0 +1,1 @@
+var e=`kofi-test-bow-drawn`;function t(t,n){let r=n<t.hero.x?`left`:`right`;return[{type:`face`,actor:`hero`,face:r},{type:`heroLayers`,sheet:e,origin:{x:112,y:224},layers:[{frame:r===`left`?`frame1`:`frame0`,depth:325}],ms:900}]}export{t as n,e as t};
