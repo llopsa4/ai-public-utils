@@ -21,6 +21,6 @@ export const DIARY: readonly DiaryEntry[] = [
 /** Where Mara is on the world map, and what he knows of it, on Day 1. */
 export const MAP: ChapterMap = {
   at: s => (s.room === 'ashways' ? 'ashways' : 'cinderfold'),
-  // Home and the Ashways he knows; the First Hearth once Oren names it.
-  known: flags => ['cinderfold', 'ashways', ...(flags.decided ? ['firstHearth'] : [])],
+  // Home and the Ashways he knows; Coppersong once Oren names it.
+  known: flags => ['cinderfold', 'ashways', ...(flags.decided ? ['coppersong'] : [])],
 };

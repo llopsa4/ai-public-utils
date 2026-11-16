@@ -22,6 +22,6 @@ export const MAP: ChapterMap = {
   known: (flags, room) => [
     'tunnels',
     ...(flags.knocked || (room && !TUNNELS.includes(room)) ? ['temperingHouse'] : []),
-    ...(flags.sawValley ? ['valley'] : []),
+    ...(flags.sawValley ? ['coppersong'] : []),
   ],
 };

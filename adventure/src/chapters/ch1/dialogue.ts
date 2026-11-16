@@ -70,6 +70,7 @@ export const DIALOGUES: Record<string, DialogueTree> = {
           { actor: 'hero', text: 'dlg.hero.decide2' },
           { actor: 'oren', text: 'dlg.oren.decide3' },
           { actor: 'hero', text: 'dlg.hero.decide4' },
+          { actor: 'oren', text: 'dlg.oren.decideLead' },
           { actor: 'oren', text: 'dlg.oren.decide5' },
         ],
         set: { decided: true },

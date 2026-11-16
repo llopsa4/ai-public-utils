@@ -27,9 +27,9 @@ test('the diary grows with the story and keeps earlier chapters under their day'
   assert.equal(lines().length, 1, 'a new game: only the morning');
   Object.assign(s.flags, { hoistHelped: true, nellFed: true });
   assert.equal(lines().length, 3);
-  assert.ok(!lines().some(l => l.includes('First Hearth')), 'nothing he has not heard of yet');
+  assert.ok(!lines().some(l => l.includes('Coppersong')), 'nothing he has not heard of yet');
   Object.assign(s.flags, { latchFixed: true, patchFailed: true, decided: true });
-  assert.ok(lines().some(l => l.includes('First Hearth')));
+  assert.ok(lines().some(l => l.includes('Coppersong')));
 
   // On Day 2, Day 1's entries stay (from the flags chapter 1 ended with), then Day 2's begin.
   const ch1Flags = { ...s.flags, kilnCold: true, fought: true, ashwaysWon: true };
@@ -52,7 +52,7 @@ test('the map marks where the viewpoint is and names only the places known', asy
   const s = newGame();
   assert.deepEqual(mapState(s), { at: 'cinderfold', known: ['cinderfold', 'ashways'] });
   s.flags.decided = true;
-  assert.ok(mapState(s).known.includes('firstHearth'), 'Oren names the First Hearth');
+  assert.ok(mapState(s).known.includes('coppersong'), 'Oren names Coppersong');
   s.room = 'ashways';
   assert.equal(mapState(s).at, 'ashways');
 
@@ -60,7 +60,7 @@ test('the map marks where the viewpoint is and names only the places known', asy
   Object.assign(s, { chapter: 'ch2', earlier: { ch1: { ...s.flags } }, flags: {}, room: 'tunnelSteam' });
   let m = mapState(s);
   assert.equal(m.at, 'tunnels');
-  assert.ok(['cinderfold', 'ashways', 'firstHearth', 'tunnels'].every(p => m.known.includes(p)), 'earlier places stay known');
+  assert.ok(['cinderfold', 'ashways', 'coppersong', 'tunnels'].every(p => m.known.includes(p)), 'earlier places stay known');
   assert.ok(!m.known.includes('temperingHouse') && !m.known.includes('ironhaven'));
   s.room = 'workshop';
   m = mapState(s);

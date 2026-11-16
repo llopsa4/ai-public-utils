@@ -46,11 +46,8 @@ export const PLACES: Record<string, Place> = {
   // The only crossing.
   spanwick: { name: 'place.spanwick', x: 548, y: 368, kind: 'town', label: 'below' },
   // East of the Rift.
-  valley: { name: 'place.valley', x: 660, y: 262, kind: 'site', label: 'above' },
   alderweir: { name: 'place.alderweir', x: 728, y: 420, kind: 'town', label: 'left' },
   kofiWoods: { name: 'place.kofiWoods', x: 785, y: 565, kind: 'town', label: 'left' },
-  firstHearth: { name: 'place.firstHearth', x: 880, y: 290, kind: 'town', label: 'below' },
-  garranHut: { name: 'place.garranHut', x: 832, y: 127, kind: 'site', label: 'left' },
 };
 
 /** The land, for the placeholder map (and the layout image Codex paints from). */
@@ -61,8 +58,8 @@ export const LAND = {
   rift: 'M572,52 L556,120 L578,190 L550,260 L574,330 L552,410 L576,480 L550,560 L570,668',
   /** Alderweir's river, from the north-eastern mountains to the south coast. */
   river: 'M820,140 C790,220 760,300 760,380 C760,430 740,460 735,470 C725,520 700,580 690,668',
-  /** The road the regulator travels: Cinderfold, the tunnels, Bryn's house, the bridge, the First Hearth. */
-  road: 'M215,455 L275,500 L330,420 L440,340 L500,385 L560,410 L620,380 L660,300 L760,320 L880,330',
+  /** The road the regulator travels: Cinderfold, the tunnels, Bryn's house, Coppersong, the bridge, Alderweir. */
+  road: 'M215,455 L275,500 L330,420 L425,300 L440,215 L500,300 L548,368 L620,400 L728,420',
   /** The snow around Ironhaven. */
   snow: 'M90,95 C200,60 380,60 470,90 C460,150 420,190 330,195 C230,200 140,180 90,150 Z',
   /** Hills around Coppersong (peaks). */

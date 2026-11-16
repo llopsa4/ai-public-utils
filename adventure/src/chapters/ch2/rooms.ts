@@ -80,7 +80,7 @@ const roadHotspots: HotspotDef[] = [
 
 // Bryn's workshop: the curtain to the back room (left edge), her bench with the crucible on it and a
 // stool, the caged training rig in the middle, the great return pipe across the top with its
-// reading valve, a coal crate, the open side looking out over the valley, the way out (right edge).
+// reading valve, a coal crate, the open side looking out over the land, the way out (right edge).
 const workshopHotspots: HotspotDef[] = [
   { id: 'crucible', name: 'name2.crucible', polygon: rect(70, 168, 30, 26), verbs: ['look'], walkTo: pt(110, 282), face: 'up', secret: true },
   { id: 'readingValve', name: 'name2.readingValve', polygon: rect(400, 80, 26, 36), verbs: ['look', 'use', 'open'], walkTo: pt(413, 282), face: 'up' },

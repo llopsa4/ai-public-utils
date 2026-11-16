@@ -5,7 +5,7 @@ const TOLD = ['toldRush', 'toldHome', 'toldAlone'];
 export const DIALOGUES: Record<string, DialogueTree> = {
   // Bryn, the gauntlet smith. In the workshop she offers practice, then asks what Mara is rushing
   // towards; every answer is heard and none is wrong. Mara names what he needs himself. In the back
-  // room, over supper: supplies (he learns to ask), the letter home, the valley on the map.
+  // room, over supper: supplies (he learns to ask), the letter home, Coppersong on the map.
   bryn: {
     start: 'start',
     nodes: {
