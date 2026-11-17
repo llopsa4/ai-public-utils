@@ -1,7 +1,7 @@
 # Adventure development
 
 See the [README layout](README.md#layout) for architecture and source ownership, the
-[shared workflow](WORKFLOW.md) for assignments, and [TESTING.md](TESTING.md) for validation
+[shared workflow](../process/WORKFLOW.md) for assignments, and [TESTING.md](TESTING.md) for validation
 and scratch previews. Paths below are relative to `adventure/`.
 
 Adventure targets desktop computer browsers with mouse, trackpad and keyboard. Phone/tablet

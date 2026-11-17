@@ -14,4 +14,4 @@ Authoring reference; may contain chapter spoilers. Runtime implementation is sep
 
 - **kofi1-item-garden-panel**: loose: the single carried form File: `kofi1-item-garden-panel.png`.
 
-[art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [WORKFLOW.md](../../../../WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md) · [Chapter index](../INDEX.md)
+[art/PIPELINE.md](../../../../art/PIPELINE.md) · [art/STYLE.md](../../../../art/STYLE.md) · [art/LAYERED-RIG.md](../../../../art/LAYERED-RIG.md) · [../process/WORKFLOW.md](../../../../../process/WORKFLOW.md) · [Chapter rules](../DRAWING-RULES.md) · [Chapter index](../INDEX.md)

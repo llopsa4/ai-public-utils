@@ -114,4 +114,4 @@ Regenerate: `npm run art:briefs -- --chapter ch1`. Check freshness by adding `--
 - [regulator-closeup-ring](regulator-closeup-ring.md)
 - [regulator-closeup-valve](regulator-closeup-valve.md)
 
-[Chapter drawing rules](RULES-ch1.md). Shared workflow, style and validation: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)
+[Chapter drawing rules](RULES-ch1.md). Shared workflow, style and validation: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [../process/WORKFLOW.md](../../../process/WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

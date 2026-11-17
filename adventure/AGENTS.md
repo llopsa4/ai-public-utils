@@ -1,56 +1,31 @@
 # Adventure entrypoint
 
-Follow the [parent repository instructions](../AGENTS.md).
+Follow the [repository instructions](../AGENTS.md) and the shared process for every game:
+[workflow](../process/WORKFLOW.md) (modes, ownership, handoff files, approval, session handoff),
+[requests](../process/REQUESTS.md) (stages and standing rules) and [art](../process/ART.md).
 
 ## Start of a session (keep it cheap)
 
-1. Read [WORKLOG.md](WORKLOG.md) sections *Checkout*, *Working on* and *Pending and paused*,
-   your own handoff file and the other agent's: [from Claude](handoff/from-claude.md),
+1. Read [WORKLOG.md](WORKLOG.md) sections *Checkout*, *Working on* and *Pending and paused*, your own
+   handoff file and the other agent's: [from Claude](handoff/from-claude.md),
    [from Codex](handoff/from-codex.md).
-2. Read [WORKFLOW.md](WORKFLOW.md) when the task involves ownership, another agent's work,
-   art approval/installation, commits or the end-of-session handoff.
-3. Read only the guide the task needs: [DEVELOPMENT.md](DEVELOPMENT.md) for game content and
-   runtime, [art/PIPELINE.md](art/PIPELINE.md) for artwork, [TESTING.md](TESTING.md) before
-   running checks. Read `STORY.md` (large, private) by searching for the relevant section,
-   never in full.
+2. Read the [shared workflow](../process/WORKFLOW.md) when the task involves ownership, another
+   agent's work, art approval/installation, commits or the end-of-session handoff.
+3. Read only the guide the task needs: [DEVELOPMENT.md](DEVELOPMENT.md) for game content and runtime
+   (including desktop-only scope and the FFCardGame relationship), [art/PIPELINE.md](art/PIPELINE.md)
+   and [art/STYLE.md](art/STYLE.md) for artwork, [TESTING.md](TESTING.md) before running checks,
+   [PROMPTING.md](PROMPTING.md) for the request templates.
 
-**"continue"** means: read the other agent's handoff file, take the first open request
-addressed to you, record it under *Taken from…* in your own file, do it, then report.
-Write only your own handoff file ([rules](WORKFLOW.md#handoff-files)).
+## Adventure rules
+
+- **Story:** `STORY.md` is large, private and local; read it by searching for the relevant section,
+  never in full. If it is unavailable, follow the shared
+  [session-handoff rule](../process/WORKFLOW.md#session-handoff) for private files.
+- **Visual authorities:** the [reference map](art/REFERENCES.md) identifies them, including the
+  approved Kofi prologue tracking exception.
+- **Scale:** scenes are sized against Silas (intro), Mara (his chapters) or Kofi (his chapter), with
+  the heights in [STYLE.md](art/STYLE.md#proportions).
 
 ## Handling requests
 
-Every request is interpreted with [PROMPTING.md](PROMPTING.md), even when the user does not
-use a template. Do not re-read that file for each request; these are its standing rules:
-
-- **Stage.** Identify DESIGN, WRITE, BUILD, CHANGE or REVIEW from the wording. If unclear,
-  assume the smallest stage that answers it (an idea → DESIGN; "what's wrong" → REVIEW) and say
-  which one you assumed. Never move to a later stage (script, code, finished art) uninvited.
-- **DESIGN:** one recommended option (two only for puzzle ideas), short outline, required vs
-  optional content, art needs listed but not produced. A scene gives entry state, key player
-  actions, meaningful interactions, exit state and link to the next scene.
-- **WRITE:** established voices, short player-facing lines; show the revised text only, plus one
-  note if a dependency needs a decision.
-- **Story CHANGE:** check connected scenes; flag contradictions and puzzle dependencies before a
-  broad rewrite; summarize consequences for dialogue, clues, objectives and later references.
-- **BUILD/behavior CHANGE:** only the requested behavior, existing art or placeholders as
-  allowed, required tests, save compatibility, no unrelated polish; report what still needs
-  visual verification.
-- **REVIEW:** inspect only the named material and its dependencies; up to three problems with
-  player effect and proposed fix (or say none found); checked vs assumed; no fixes.
-- **Art prompt:** write `PROMPTS.md` per [generation prompts](art/PIPELINE.md#generation-prompts),
-  flag missing contract data, keep removable objects separate, never install; add a Codex request.
-- **Missing fields.** Fill them from the existing game and guides. Ask only one blocking question
-  when the answer would change the result; otherwise state the assumption and proceed.
-- **Puzzle ideas:** premise, exact solution and how it follows from what the player observes,
-  visible clues, wrong attempts and recovery, nudge + plain hint, no dead ends across action
-  orders and revisits; recommend one. **Expanding** the chosen one: starting state, numbered
-  steps, item/state changes, clue placement, wrong-action responses, recoverability, any
-  alternative solution and unresolved choices; no code or art.
-- **Right agent.** If the task belongs to the other agent under [WORKFLOW.md](WORKFLOW.md), say
-  so in one line and, if the user agrees, write it as a request in your handoff file.
-- **Plans** end with one line, `Implement with: Sonnet` or `Implement with: Opus — <reason>`
-  (Claude) / `Implement with: Codex`. The user's default Claude model is `opusplan` (Opus while
-  planning, Sonnet when executing); flag only when Sonnet is not enough.
-- **Stop** when the request is satisfied; list optional follow-ups instead of doing them. No
-  publishing, commits or pushes unless asked. Keep reports and logs short.
+Moved to the shared [REQUESTS.md](../process/REQUESTS.md); it applies to every Adventure request.

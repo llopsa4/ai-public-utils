@@ -183,7 +183,7 @@ export function renderReference(spec: ReferenceSpec, options: ReferenceOptions):
   const roomFile=(r:ReferenceRoom)=>join(options.outputDir,spec.private?'rooms':'',`${spec.private?r.id:r.assetId??`room-${r.id}`}.md`);
   const layoutFile=(r:ReferenceRoom)=>spec.private?join(options.outputDir,'layouts',`${r.id}.svg`):join(options.rootDir,'art/spec',`${r.id}.svg`);
   const sources=(from:string,refs:ReferenceSource[]=[])=>(refs.map(s=>`[${s.file}${s.anchor?` · ${s.anchor}`:''}](${pathLink(from,resolve(options.rootDir,s.file))}${s.anchor?`#${s.anchor}`:''})`).join(' · ')||'Visual-only layer; see linked room and its scene sources.');
-  const styleReferences=(from:string)=>sources(from,['art/PIPELINE.md','art/STYLE.md','art/LAYERED-RIG.md','WORKFLOW.md'].map(file=>({file})))+` · [Chapter rules](${pathLink(from,rulesFile)})`;
+  const styleReferences=(from:string)=>sources(from,['art/PIPELINE.md','art/STYLE.md','art/LAYERED-RIG.md','../process/WORKFLOW.md'].map(file=>({file})))+` · [Chapter rules](${pathLink(from,rulesFile)})`;
   const header=(title:string)=>`# ${title}\n\n<!-- GENERATED: edit the authoritative source, then run ${spec.regeneration??'npm run art:briefs'}. -->\n\n${spec.private?'Authoring reference; may contain chapter spoilers. Runtime implementation is separate.':'Reference for the implemented chapter; existing artwork is preserved.'}\n\n`;
   const assetLink=(from:string,a:ReferenceAsset)=>`[${a.title}](${pathLink(from,assetFile(a))})`;
   const byId=new Map(spec.assets.map(a=>[a.id,a]));

@@ -64,4 +64,4 @@ Sprite dimensions are read from each existing atlas sourceSize, preserving trans
 
 [src/chapters/ch1/rooms.ts · L237](../../src/chapters/ch1/rooms.ts#L237) · [Chapter index](INDEX-ch1.md)
 
-Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [../process/WORKFLOW.md](../../../process/WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

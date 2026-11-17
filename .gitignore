@@ -58,7 +58,7 @@ Desktop.ini
 /FFCardGame/dist/
 /FFCardGame/AGENTS.md
 
-# Assistant state stays local; only the two shared-procedure skill entrypoints are versioned.
+# Assistant state stays local; only the shared-procedure skill entrypoints are versioned.
 .agents/
 !/.agents/
 /.agents/*
@@ -67,6 +67,9 @@ Desktop.ini
 !/.agents/skills/adventure-content/
 /.agents/skills/adventure-content/*
 !/.agents/skills/adventure-content/SKILL.md
-!/.agents/skills/pixel-art-pipeline/
-/.agents/skills/pixel-art-pipeline/*
-!/.agents/skills/pixel-art-pipeline/SKILL.md
+!/.agents/skills/adventure-art/
+/.agents/skills/adventure-art/*
+!/.agents/skills/adventure-art/SKILL.md
+!/.agents/skills/kota-content/
+/.agents/skills/kota-content/*
+!/.agents/skills/kota-content/SKILL.md

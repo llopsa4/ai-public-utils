@@ -15,11 +15,24 @@ For substantial new requests, grill first unless the decisions are already settl
 grilling/interview workflow, ask exactly one question and wait for the answer before the next.
 Order implementation plans easiest first. Refer to the user with they/them pronouns.
 
-## Adventure routing
+## Projects
 
-Before Adventure work from either launch directory, follow [adventure/AGENTS.md](adventure/AGENTS.md).
-It routes both tools to ordinary repository guides, current status and handoff files. Tool-specific
-skill files contain discovery metadata and a link only; they own no project procedure.
+Before working on a project, from either launch directory, follow its entry file. Each project owns
+its own rules; nothing in one project's guides applies to another.
+
+| Project | Entry | Notes |
+| --- | --- | --- |
+| Adventure (`adventure/`) | [adventure/AGENTS.md](adventure/AGENTS.md) | point-and-click game; Codex + Claude |
+| Kota (`kota/`) | [kota/AGENTS.md](kota/AGENTS.md) | isometric roguelike about Lakota culture; Codex + Claude |
+| FFCardGame (`FFCardGame/`) | its private, gitignored `AGENTS.md` | card-combat subgame serving Adventure |
+| Calendar (`calendari/`) | [calendari/AGENTS.md](calendari/AGENTS.md) | scheduling app with privacy rules |
+
+The games share one process for Codex and Claude: [process/WORKFLOW.md](process/WORKFLOW.md)
+(modes, ownership, handoff files, approval), [process/REQUESTS.md](process/REQUESTS.md) (request
+stages and standing rules) and [process/ART.md](process/ART.md) (art production). A game's own files
+add only what differs. Skills in `.claude/skills/` and `.agents/skills/` are named after their
+project (`adventure-…`, `kota-…`) and contain discovery metadata and a link only; they own no
+procedure.
 
 ## Shared memory (Claude and Codex)
 
@@ -30,9 +43,12 @@ junction links to that folder. Do not substitute a different checkout's memory w
 - **At the start of a session,** read `MEMORY.md` there (one line per memory) and open the files
   relevant to the task. If local memory is absent, use tracked instructions and acknowledge
   unavailable context; do not invent past decisions.
-- **When you learn something lasting,** write it there and nowhere else: a user preference, a
-  correction, a decision, a project constraint not visible in the code, or a pointer to an
-  outside resource. Don't save code facts the repo already records.
+- **When you learn something lasting that no guide owns,** write it there: a user preference, a
+  correction, a decision, a project constraint not visible in the code, or a pointer to an outside
+  resource. A rule that belongs in a project guide (a style, workflow or content rule) goes into that
+  guide instead, once, and not into memory. Don't save code facts the repo already records.
+- **Project scope:** a memory about one project starts its name with that project
+  (`adventure-…`, `kota-…`) and says so in its description; it never applies to another project.
 - **Format:** one fact per file, with this frontmatter (`type` is `user`, `feedback`, `project` or
   `reference`), then the fact, then a **Why:** line and a **How to apply:** line. Add a one-line
   pointer to `MEMORY.md`.

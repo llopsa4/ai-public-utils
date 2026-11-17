@@ -1,6 +1,6 @@
 # Chapter reference workflow
 
-Use [the shared workflow](../WORKFLOW.md) for assignments and approval,
+Use [the shared workflow](../../process/WORKFLOW.md) for assignments and approval,
 [PIPELINE.md](PIPELINE.md) for art production, and this document for reference authority.
 
 ## Authoritative sources

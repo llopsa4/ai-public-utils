@@ -55,7 +55,7 @@ npm run dev
 ```
 
 Use [DEVELOPMENT.md](DEVELOPMENT.md) for authoring and runtime gotchas,
-[WORKFLOW.md](WORKFLOW.md) for collaboration and publishing permissions, and
+[the shared workflow](../process/WORKFLOW.md) for collaboration and publishing permissions, and
 [TESTING.md](TESTING.md) for test, build and scratch-preview commands. GitHub Pages serves
 tracked `index.html` and `build/`; `dist/` and `node_modules/` are ignored.
 
@@ -115,7 +115,8 @@ Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/
 
 ## Art
 
-[The shared art pipeline](art/PIPELINE.md) covers delivery and approved integration.
+[The shared art process](../process/ART.md) covers delivery and approved integration, with
+Adventure's tools and files in [the Adventure art procedure](art/PIPELINE.md).
 [The reference map](art/REFERENCES.md) identifies visual authorities and generation commands;
 [STYLE.md](art/STYLE.md) defines the look, [LAYERED-RIG.md](art/LAYERED-RIG.md) the articulated
 contracts, and [PROVENANCE.md](art/PROVENANCE.md) the asset origins.

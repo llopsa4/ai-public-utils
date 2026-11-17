@@ -150,4 +150,4 @@ Regenerate: `npm run art:briefs -- --chapter intro`. Check freshness by adding `
 - [silas-walk-passing](silas-walk-passing.md)
 - [ui-suspicion-eye](ui-suspicion-eye.md)
 
-[Chapter drawing rules](RULES-intro.md). Shared workflow, style and validation: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)
+[Chapter drawing rules](RULES-intro.md). Shared workflow, style and validation: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [../process/WORKFLOW.md](../../../process/WORKFLOW.md) · [Chapter rules](RULES-intro.md)

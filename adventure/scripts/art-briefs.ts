@@ -49,7 +49,7 @@ export async function renderFullBriefs(MANIFEST: readonly ArtEntry[] = DEFAULT_M
     const list = ROOMS_BY_BACKGROUND.get(room.background) ?? [];
     list.push({ chapter: c.id, room }); ROOMS_BY_BACKGROUND.set(room.background, list);
   }
-  const guides = '[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)';
+  const guides = '[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../../process/WORKFLOW.md)';
 
   function functional(e: ArtEntry): string[] {
     const lines: string[] = [];

@@ -12,7 +12,7 @@ Start with [the room and puzzle index](INDEX-ch1.md). It separates interactive t
 Start with [the room and puzzle index](INDEX-intro.md). It separates interactive targets, changing sprites and foreground cuts, and links directly to implemented sources.
 <!-- /chapter-reference:intro -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../../process/WORKFLOW.md)
 
 ## game
 
@@ -528,10 +528,30 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **tent-stool**: [brief](tent-stool.md) · foreground · final.
 - **prop-gauge-face**: [brief](prop-gauge-face.md) · prop · final.
 - **prop-pulley**: [brief](prop-pulley.md) · prop · final.
+- **house-shoes**: [brief](house-shoes.md) · object · final.
+- **house-bell**: [brief](house-bell.md) · object · final.
+- **house-chalk**: [brief](house-chalk.md) · object · final.
+- **house-fire**: [brief](house-fire.md) · object · final.
+- **house-soup**: [brief](house-soup.md) · object · final.
+- **house-bread**: [brief](house-bread.md) · object · final.
+- **hall-tally**: [brief](hall-tally.md) · object · final.
+- **hall-hoist**: [brief](hall-hoist.md) · object · final.
+- **hall-jars**: [brief](hall-jars.md) · object · final.
+- **hall-cart**: [brief](hall-cart.md) · object · final.
+- **kiln-fire**: [brief](kiln-fire.md) · object · final.
+- **tent-workbench**: [brief](tent-workbench.md) · object · final.
+- **tent-jar**: [brief](tent-jar.md) · object · final.
+- **tent-chest**: [brief](tent-chest.md) · object · final.
+- **tent-drum**: [brief](tent-drum.md) · object · final.
+- **tent-stove**: [brief](tent-stove.md) · object · final.
 - **rack**: [brief](rack.md) · object · final.
 - **notebook**: [brief](notebook.md) · object · final.
 - **pantry-door**: [brief](pantry-door.md) · object · final.
 - **socket**: [brief](socket.md) · object · final.
+- **gallery-regulator**: [brief](gallery-regulator.md) · object · final.
+- **gallery-names**: [brief](gallery-names.md) · object · final.
+- **gallery-logbook**: [brief](gallery-logbook.md) · object · final.
+- **gallery-lantern**: [brief](gallery-lantern.md) · object · final.
 - **sweeper**: [brief](sweeper.md) · object · final.
 - **valve**: [brief](valve.md) · object · final.
 - **tent**: [brief](tent.md) · object · final.

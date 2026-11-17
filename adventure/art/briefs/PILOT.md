@@ -1,8 +1,7 @@
 # Pilot references
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../../process/WORKFLOW.md)
 
-- [room-mara](room-mara.md)
 - [rack](rack.md)
 - [char-mara](char-mara.md)
 - [battle-scavenger](battle-scavenger.md)

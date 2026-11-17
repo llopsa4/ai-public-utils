@@ -6,4 +6,4 @@ Source: [art/sources/characters/kofi-travel-layered/](../sources/characters/kofi
 
 Kofi travel right-facing walk derived from the eleven-piece articulated source pack in art/sources/characters/kofi-travel-layered; supersedes the flat generated strip, not yet installed.
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../../process/WORKFLOW.md)

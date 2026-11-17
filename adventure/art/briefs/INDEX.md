@@ -12,7 +12,7 @@ Start with [the room and puzzle index](INDEX-ch1.md). It separates interactive t
 Start with [the room and puzzle index](INDEX-intro.md). It separates interactive targets, changing sprites and foreground cuts, and links directly to implemented sources.
 <!-- /chapter-reference:intro -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../../process/WORKFLOW.md)
 
 Generated from the manifest. [Grouped catalog](CATALOG.md) · [Pilot references](PILOT.md).
 
@@ -241,10 +241,30 @@ Generated from the manifest. [Grouped catalog](CATALOG.md) · [Pilot references]
 | [tent-stool](tent-stool.md) | foreground | ch1 | final |
 | [prop-gauge-face](prop-gauge-face.md) | prop | ch1 | final |
 | [prop-pulley](prop-pulley.md) | prop | ch1 | final |
+| [house-shoes](house-shoes.md) | object | ch1 | final |
+| [house-bell](house-bell.md) | object | ch1 | final |
+| [house-chalk](house-chalk.md) | object | ch1 | final |
+| [house-fire](house-fire.md) | object | ch1 | final |
+| [house-soup](house-soup.md) | object | ch1 | final |
+| [house-bread](house-bread.md) | object | ch1 | final |
+| [hall-tally](hall-tally.md) | object | ch1 | final |
+| [hall-hoist](hall-hoist.md) | object | ch1 | final |
+| [hall-jars](hall-jars.md) | object | ch1 | final |
+| [hall-cart](hall-cart.md) | object | ch1 | final |
+| [kiln-fire](kiln-fire.md) | object | ch1 | final |
+| [tent-workbench](tent-workbench.md) | object | ch1 | final |
+| [tent-jar](tent-jar.md) | object | ch1 | final |
+| [tent-chest](tent-chest.md) | object | ch1 | final |
+| [tent-drum](tent-drum.md) | object | ch1 | final |
+| [tent-stove](tent-stove.md) | object | ch1 | final |
 | [rack](rack.md) | object | ch1 | final |
 | [notebook](notebook.md) | object | ch1 | final |
 | [pantry-door](pantry-door.md) | object | ch1 | final |
 | [socket](socket.md) | object | ch1 | final |
+| [gallery-regulator](gallery-regulator.md) | object | ch1 | final |
+| [gallery-names](gallery-names.md) | object | ch1 | final |
+| [gallery-logbook](gallery-logbook.md) | object | ch1 | final |
+| [gallery-lantern](gallery-lantern.md) | object | ch1 | final |
 | [sweeper](sweeper.md) | object | ch1 | final |
 | [valve](valve.md) | object | ch1 | final |
 | [tent](tent.md) | object | ch1 | final |
