@@ -8,24 +8,21 @@ const COLD = [{ flag: 'kilnCold' }];
 
 // Hotspots are tested in list order: put small things before large ones they overlap.
 
-// Mara's tent: his starting room (painted from scratch by art/tent.mjs to fit these spots).
-// The tent is the user's reference painting (tent-reference.png, re-gridded by art/tent-reference.mjs),
-// seen flat-on: the bench along the left (tool board above, the cradle and notebook stand on it as
-// objects), the stool in front, the drum on its trestle and a little clay stove by the back wall,
-// the cot with boots and the coat on the right, the door flap at the right edge. The floor is a
-// flat band from y 268: Mara walks sideways and a little forward and back, always the same size.
+// C7 tent r2: clean scenery, five independent furniture layers and one foreground stool.
+// Revised cradle/notebook artwork retains existing save flags; furniture depth stays
+// behind the walk band while tabletop objects draw above the workbench.
 const tentHotspots: HotspotDef[] = [
-  { id: 'notebook', name: 'name.notebook', polygon: rect(40, 184, 38, 14), verbs: ['look', 'take', 'open'], walkTo: pt(60, 278), face: 'up',
+  { id: 'notebook', name: 'name.notebook', polygon: rect(40, 200, 20, 10), verbs: ['look', 'take', 'open'], walkTo: pt(50, 278), face: 'up',
     visibleIf: [{ notFlag: 'hasNotebook' }] },
-  { id: 'rack', name: 'name.rack', polygon: rect(146, 128, 52, 70), verbs: ['look', 'take', 'use'], walkTo: pt(172, 278), face: 'up' },
-  { id: 'jar', name: 'name.jar', polygon: rect(104, 168, 26, 30), verbs: ['look', 'take'], walkTo: pt(118, 278), face: 'up' },
+  { id: 'rack', name: 'name.rack', polygon: rect(155, 182, 20, 26), verbs: ['look', 'take', 'use'], walkTo: pt(165, 278), face: 'up' },
+  { id: 'jar', outline: { objects: ['jar'] }, name: 'name.jar', polygon: rect(104, 180, 24, 28), verbs: ['look', 'take'], walkTo: pt(116, 278), face: 'up' },
   // The crate under the bench: his work clothes, armour and the gauntlet (before the workbench, which surrounds it).
-  { id: 'chest', name: 'name.chest', polygon: rect(36, 218, 32, 26), verbs: ['look', 'open', 'use'], walkTo: pt(52, 278), face: 'up' },
+  { id: 'chest', outline: { objects: ['chest'] }, name: 'name.chest', polygon: rect(35, 224, 36, 26), verbs: ['look', 'open', 'use'], walkTo: pt(52, 278), face: 'up' },
   // The stool before the workbench it overlaps, so its seat is clickable.
-  { id: 'stool', name: 'name.stool', polygon: rect(88, 228, 52, 48), verbs: ['look', 'use'] },
-  { id: 'workbench', name: 'name.workbench', polygon: rect(14, 124, 178, 128), verbs: ['look', 'use'], walkTo: pt(110, 278), face: 'up' },
-  { id: 'drum', name: 'name.drum', polygon: rect(242, 194, 94, 66), verbs: ['look', 'use'], walkTo: pt(290, 278), face: 'up' },
-  { id: 'stove', name: 'name.stove', polygon: rect(366, 206, 38, 48), verbs: ['look', 'use', 'open'], walkTo: pt(385, 278), face: 'up' },
+  { id: 'stool', name: 'name.stool', polygon: rect(98, 248, 32, 26), verbs: ['look', 'use'] },
+  { id: 'workbench', outline: { objects: ['workbench'] }, name: 'name.workbench', polygon: rect(14, 186, 180, 74), verbs: ['look', 'use'], walkTo: pt(110, 278), face: 'up' },
+  { id: 'drum', outline: { objects: ['drum'] }, name: 'name.drum', polygon: rect(242, 194, 94, 66), verbs: ['look', 'use'], walkTo: pt(290, 278), face: 'up' },
+  { id: 'stove', outline: { objects: ['stove'] }, name: 'name.stove', polygon: rect(366, 206, 38, 48), verbs: ['look', 'use', 'open'], walkTo: pt(385, 278), face: 'up' },
   { id: 'tentFlap', name: 'name.tentFlap', polygon: rect(566, 84, 74, 186), verbs: ['look', 'go', 'open'], walkTo: pt(606, 284), face: 'right' },
 ];
 
@@ -39,12 +36,12 @@ const tentHotspots: HotspotDef[] = [
 // Mara's tent pitched on the floor, the row of kiln mouths across the back wall, the ash cart, and
 // the curtain to the firing house (right edge).
 const maraRoomHotspots: HotspotDef[] = [
-  { id: 'tally', name: 'name.tally', polygon: rect(8, 150, 40, 70), verbs: ['look'], walkTo: pt(40, 280), face: 'up', secret: true },
-  { id: 'toTent', name: 'name.toTent', polygon: rect(204, 150, 92, 112), verbs: ['look', 'go'], walkTo: pt(250, 280), face: 'up', outline: { objects: ['tent'] } },
+  { id: 'tally', name: 'name.tally', polygon: rect(3, 138, 46, 114), verbs: ['look'], walkTo: pt(40, 280), face: 'up', secret: true, outline: { objects: ['tally'] } },
+  { id: 'toTent', name: 'name.toTent', polygon: rect(192, 124, 112, 140), verbs: ['look', 'go'], walkTo: pt(248, 280), face: 'up', outline: { objects: ['tent'] } },
   { id: 'niche', name: 'name.niche', polygon: rect(320, 120, 180, 120), verbs: ['look', 'use'], walkTo: pt(410, 280), face: 'up' },
-  { id: 'pulleys', name: 'name.pulleys', polygon: rect(74, 20, 52, 170), verbs: ['look', 'use'], walkTo: pt(100, 280), face: 'up', outline: { props: ['pulley'], painted: true } },
-  { id: 'jars', name: 'name.jars', polygon: rect(140, 214, 50, 48), verbs: ['look', 'take'], walkTo: pt(165, 280), face: 'up' },
-  { id: 'cart', name: 'name.cart', polygon: rect(504, 218, 60, 44), verbs: ['look', 'use'], walkTo: pt(534, 282), face: 'up' },
+  { id: 'pulleys', name: 'name.pulleys', polygon: rect(54, 19, 88, 180), verbs: ['look', 'use'], walkTo: pt(100, 280), face: 'up', outline: { objects: ['hoist'], props: ['pulley'] } },
+  { id: 'jars', name: 'name.jars', polygon: rect(129, 220, 60, 32), verbs: ['look', 'take'], walkTo: pt(165, 280), face: 'up', outline: { objects: ['jars'] } },
+  { id: 'cart', name: 'name.cart', polygon: rect(504, 188, 72, 64), verbs: ['look', 'use'], walkTo: pt(534, 282), face: 'up', outline: { objects: ['cart'] } },
   { id: 'roomCurtain', name: 'name.toFiringHouse', polygon: rect(592, 104, 48, 160), verbs: ['look', 'go'], walkTo: pt(616, 290), face: 'right' },
 ];
 
@@ -53,30 +50,30 @@ const maraRoomHotspots: HotspotDef[] = [
 // the back wall, the stairs climbing to the regulator gallery, and the kiln gate (right edge) out to
 // the ashways.
 const firingHouseHotspots: HotspotDef[] = [
-  { id: 'chalk', name: 'name.chalk', polygon: rect(160, 145, 32, 24), verbs: ['look'], walkTo: pt(190, 280), face: 'up', secret: true },
+  { id: 'chalk', name: 'name.chalk', polygon: rect(171, 203, 18, 28), verbs: ['look'], walkTo: pt(190, 280), face: 'up', secret: true, outline: { objects: ['chalk'] } },
   // Preserve the saved/outline identity; this is a bell in the approved painting, not a shop sign.
-  { id: 'sign', name: 'name.sign', polygon: rect(226, 44, 34, 38), verbs: ['look', 'use'], secret: true },
+  { id: 'sign', name: 'name.sign', polygon: rect(241, 52, 20, 24), verbs: ['look', 'use'], secret: true, outline: { objects: ['bell'] } },
   { id: 'pantryDoor', name: 'name.pantryDoor', polygon: rect(304, 110, 60, 152), verbs: ['look', 'open', 'use'], walkTo: pt(334, 280), face: 'up' },
-  { id: 'soup', name: 'name.soup', polygon: rect(82, 176, 44, 26), verbs: ['look', 'take', 'use'], walkTo: pt(110, 280), face: 'up' },
-  { id: 'shoes', name: 'name.shoes', polygon: rect(34, 30, 120, 110), verbs: ['look', 'take'] },
-  { id: 'hearth', name: 'name.hearth', polygon: rect(56, 170, 92, 92), verbs: ['look', 'use'] },
+  { id: 'soup', name: 'name.soup', polygon: rect(89, 181, 52, 42), verbs: ['look', 'take', 'use'], walkTo: pt(110, 280), face: 'up', outline: { objects: ['soup'] } },
+  { id: 'shoes', name: 'name.shoes', polygon: rect(38, 48, 148, 88), verbs: ['look', 'take'], outline: { objects: ['shoes'] } },
+  { id: 'hearth', name: 'name.hearth', polygon: rect(52, 162, 120, 100), verbs: ['look', 'use'], outline: { objects: ['fire'], painted: true } },
   { id: 'stairs', name: 'name.stairs', polygon: [pt(366, 262), pt(486, 96), pt(518, 132), pt(410, 262)], verbs: ['look', 'go'], walkTo: pt(390, 284), face: 'up' },
   // Nell's rolls in the basket on the table under the stairs (the morning's bread errand).
-  { id: 'breadBasket', name: 'name.breadBasket', polygon: rect(516, 192, 38, 28), verbs: ['look', 'take'], walkTo: pt(535, 282), face: 'up' },
+  { id: 'breadBasket', name: 'name.breadBasket', polygon: rect(518, 195, 36, 26), verbs: ['look', 'take'], walkTo: pt(535, 282), face: 'up', outline: { objects: ['bread'] } },
   { id: 'kilnGate', name: 'name.kilnGate', polygon: rect(586, 96, 54, 168), verbs: ['look', 'open', 'go'], walkTo: pt(616, 290), face: 'right' },
   { id: 'toRoom', name: 'name.toMaraRoom', polygon: rect(0, 104, 30, 160), verbs: ['look', 'go'], walkTo: pt(24, 290), face: 'left' },
 ];
 
-// The regulator gallery, high in the kiln: a lantern on the left wall, Oren's desk with the logbook,
-// the great regulator in its pipe ring (centre left) with the gauge on top, the railing with names
-// scratched into it, and the stairs down to the firing house (right edge).
+// C7 gallery r2 (mirrored): the stairs down to the firing house in a floor opening (left), the
+// railing with names scratched into it, the great regulator in its pipe ring (centre right) with
+// the gauge on top, Oren's desk with the logbook and a small lantern on its bracket (right).
 const galleryHotspots: HotspotDef[] = [
-  { id: 'railNames', name: 'name.railNames', polygon: rect(360, 206, 46, 50), verbs: ['look'], walkTo: pt(384, 282), face: 'up', secret: true },
-  { id: 'gauge', name: 'name.gauge', polygon: rect(216, 21, 44, 44), verbs: ['look', 'use'] },
-  { id: 'regulator', name: 'name.regulator', polygon: rect(160, 64, 160, 190), verbs: ['look', 'use', 'take', 'open'], walkTo: pt(240, 282), face: 'up' },
-  { id: 'logbook', name: 'name.logbook', polygon: rect(58, 208, 74, 54), verbs: ['look', 'take'] },
-  { id: 'lantern', name: 'name.lantern', polygon: rect(14, 140, 34, 60), verbs: ['look', 'take'] },
-  { id: 'galleryStairs', name: 'name.toFiringHouse', polygon: rect(586, 104, 54, 160), verbs: ['look', 'go'], walkTo: pt(612, 292), face: 'right' },
+  { id: 'railNames', name: 'name.railNames', polygon: rect(224, 212, 66, 42), verbs: ['look'], walkTo: pt(257, 282), face: 'up', secret: true, outline: { objects: ['railNames'] } },
+  { id: 'gauge', name: 'name.gauge', polygon: rect(380, 21, 44, 44), verbs: ['look', 'use'], outline: { props: ['gauge-face'], painted: false } },
+  { id: 'regulator', name: 'name.regulator', polygon: rect(320, 64, 160, 200), verbs: ['look', 'use', 'take', 'open'], walkTo: pt(400, 282), face: 'up', outline: { objects: ['regulator', 'socket'] } },
+  { id: 'logbook', name: 'name.logbook', polygon: rect(531, 190, 48, 22), verbs: ['look', 'take'], walkTo: pt(555, 282), face: 'up', outline: { objects: ['logbook'] } },
+  { id: 'lantern', name: 'name.lantern', polygon: rect(600, 146, 24, 32), verbs: ['look', 'take'], outline: { objects: ['lantern'] } },
+  { id: 'galleryStairs', name: 'name.toFiringHouse', polygon: rect(0, 212, 88, 100), verbs: ['look', 'go'], walkTo: pt(102, 286), face: 'left' },
 ];
 
 // The ashways: the way back into the kiln (left edge), great pipes overhead, the pressure valve on
@@ -113,22 +110,27 @@ export const ROOMS: Record<string, RoomDef> = {
       haze: [{ x: 312, y: 30, w: 24, h: 30 }],
       vignette: 0.18,
     },
-    foreground: [{ image: 'tent-stool', x: 88, y: 230, depth: 276 }],
+    foreground: [{ image: 'tent-stool', x: 96, y: 246, depth: 274 }],
     // The cell's flame in the charging cradle, until it goes into the gauntlet.
-    props: [{ kind: 'flame', x: 172, y: 164, size: 12, color: 0xffb050, depth: 197, visibleIf: [{ notFlag: 'hasGauntlet' }] }],
+    props: [{ kind: 'flame', x: 165, y: 197, size: 5, color: 0xffb050, depth: 263, visibleIf: [{ notFlag: 'hasGauntlet' }] }],
     sign: { x: 120, y: 14, drop: 12, w: 92, h: 20, style: 'wood' },
     ambient: {
       particles: [{ kind: 'dust', x: 240, y: 60, w: 200, h: 180 }],
       // Faint: the painting has its own light; these only flicker.
-      glows: [{ x: 606, y: 190, r: 40, color: 0xffa040, warm: true }, { x: 322, y: 52, r: 30, color: 0xffc070 }],
+      glows: [{ x: 606, y: 190, r: 40, color: 0xffa040, warm: true }, { x: 320, y: 50, r: 30, color: 0xffc070 }],
     },
     entries: {
       start: { x: 320, y: 300, face: 'down' },
       fromKilnHall: { x: 596, y: 292, face: 'left' },
     },
     objects: [
-      { id: 'rack', sheet: 'rack', x: 172, y: 197, flag: 'hasGauntlet', whenTrue: 'empty', whenFalse: 'full' },
-      { id: 'notebook', sheet: 'notebook', x: 58, y: 197, visibleIf: [{ notFlag: 'hasNotebook' }] },
+      { id: 'workbench', sheet: 'tent-workbench', x: 104, y: 260, depth: 260 },
+      { id: 'jar', sheet: 'tent-jar', x: 116, y: 208, depth: 262 },
+      { id: 'chest', sheet: 'tent-chest', x: 53, y: 250, depth: 261 },
+      { id: 'drum', sheet: 'tent-drum', x: 289, y: 259 },
+      { id: 'stove', sheet: 'tent-stove', x: 385, y: 258 },
+      { id: 'rack', sheet: 'rack', x: 165, y: 208, depth: 262, flag: 'hasGauntlet', whenTrue: 'empty', whenFalse: 'full' },
+      { id: 'notebook', sheet: 'notebook', x: 50, y: 208, depth: 262, visibleIf: [{ notFlag: 'hasNotebook' }] },
     ],
     hotspots: tentHotspots,
     actors: [],
@@ -157,22 +159,29 @@ export const ROOMS: Record<string, RoomDef> = {
       { image: 'hall-left', x: 0, y: 308, depth: 400 }, { image: 'hall-right', x: 557, y: 314, depth: 400 },
       { image: 'hall-crate', x: 98, y: 311, depth: 339 },
     ],
-    props: [{ kind: 'swing', image: 'pulley', x: 100, y: 60, pivotX: 0.5, hotspot: 'pulleys' }],
+    props: [{ kind: 'swing', image: 'pulley', x: 100, y: 60, pivotX: 0.5, hotspot: 'pulleys', depth: 251 }],
     sign: { x: 245, y: 48, drop: 14, w: 100, h: 22, style: 'wood' },
     ambient: {
       particles: [{ kind: 'embers', x: 320, y: 150, w: 180, h: 80, warm: true }],
       glows: [
-        { x: 350, y: 200, r: 30, color: 0xff8a2a, warm: true },
-        { x: 410, y: 196, r: 38, color: 0xff9a34, warm: true },
-        { x: 470, y: 200, r: 30, color: 0xff8a2a, warm: true },
+        { x: 340, y: 212, r: 30, color: 0xff8a2a, warm: true },
+        { x: 402, y: 212, r: 38, color: 0xff9a34, warm: true },
+        { x: 465, y: 212, r: 30, color: 0xff8a2a, warm: true },
       ],
     },
     entries: {
-      fromTent: { x: 250, y: 292, face: 'down' },
+      fromTent: { x: 248, y: 292, face: 'down' },
       fromFiringHouse: { x: 600, y: 296, face: 'left' },
     },
     objects: [
-      { id: 'tent', sheet: 'tent', x: 250, y: 264 },
+      { id: 'tally', sheet: 'hall-tally', x: 26.5, y: 252 },
+      { id: 'hoist', sheet: 'hall-hoist', x: 98, y: 199, depth: 250 },
+      { id: 'jars', sheet: 'hall-jars', x: 159, y: 252 },
+      { id: 'cart', sheet: 'hall-cart', x: 540, y: 252 },
+      { id: 'tent', sheet: 'tent', x: 248, y: 264 },
+      { id: 'fireA', sheet: 'kiln-fire', x: 340, y: 221, flag: 'kilnCold', whenTrue: 'cold', whenFalse: 'lit' },
+      { id: 'fireB', sheet: 'kiln-fire', x: 402.5, y: 221, flag: 'kilnCold', whenTrue: 'cold', whenFalse: 'lit' },
+      { id: 'fireC', sheet: 'kiln-fire', x: 465, y: 221, flag: 'kilnCold', whenTrue: 'cold', whenFalse: 'lit' },
     ],
     hotspots: maraRoomHotspots,
     actors: [],
@@ -195,9 +204,9 @@ export const ROOMS: Record<string, RoomDef> = {
       vignette: 0.3,
     },
     ambient: {
-      particles: [{ kind: 'embers', x: 64, y: 186, w: 80, h: 60, warm: true }, { kind: 'steam', x: 92, y: 168, w: 30, h: 14, warm: true }],
+      particles: [{ kind: 'embers', x: 86, y: 228, w: 54, h: 18, warm: true }, { kind: 'steam', x: 104, y: 194, w: 22, h: 5, warm: true }],
       glows: [
-        { x: 102, y: 230, r: 40, color: 0xff7a24, warm: true },
+        { x: 113, y: 242, r: 40, color: 0xff7a24, warm: true },
         { x: 612, y: 180, r: 34, color: 0xffb060, warm: true },
       ],
     },
@@ -208,54 +217,72 @@ export const ROOMS: Record<string, RoomDef> = {
     },
     objects: [
       { id: 'pantryDoor', sheet: 'pantry-door', x: 334, y: 262, flag: 'latchFixed', whenTrue: 'fixed', whenFalse: 'stuck' },
+      { id: 'shoes', sheet: 'house-shoes', x: 112, y: 136, flag: 'kilnCold', whenTrue: 'cold', whenFalse: 'warm' },
+      { id: 'bell', sheet: 'house-bell', x: 251, y: 76 },
+      { id: 'chalk', sheet: 'house-chalk', x: 180, y: 231 },
+      // Behind people; soup above fire, and below bubbles (depth = surface y + 1).
+      { id: 'fire', sheet: 'house-fire', x: 113, y: 251, flag: 'kilnCold', whenTrue: 'cold', whenFalse: 'lit', depth: 197 },
+      { id: 'soup', sheet: 'house-soup', x: 115, y: 223, flag: 'kilnCold', whenTrue: 'cold', whenFalse: 'warm', depth: 198 },
+      { id: 'bread', sheet: 'house-bread', x: 536, y: 221 },
     ],
     hotspots: firingHouseHotspots,
     actors: [
       { id: 'nell', x: 250, y: 300 },
       { id: 'tobi', x: 155, y: 300, body: 0.6 },
     ],
-    props: [{ kind: 'bubbles', x: 104, y: 180, w: 22, h: 4, color: 0xf0d090, warm: true }],
+    props: [{ kind: 'bubbles', x: 104, y: 199, w: 22, h: 2, color: 0xf0d090, warm: true }],
     interactionSounds: { sign: 'bell' },
     sign: { x: 480, y: 50, drop: 12, w: 112, h: 22, style: 'wood' },
   },
   gallery: {
     id: 'gallery',
     background: 'room-gallery',
-    walkable: { outer: [pt(0, 268), pt(640, 268), pt(640, 345), pt(0, 345)], holes: [rect(464, 290, 32, 12)] },
+    // The stairwell opening (world x 0–86, y 261–311) is not floor; people pass in front of it.
+    walkable: { outer: [pt(86, 268), pt(640, 268), pt(640, 345), pt(0, 345), pt(0, 312), pt(86, 312)], holes: [rect(144, 290, 32, 12)] },
     // Flat 2D: the same size at the back and the front of the floor.
     scale: { farY: 268, farScale: 1, nearY: 345, nearScale: 1 },
     surface: 'metal',
     music: 'tension',
     look: {
       grade: { saturation: 1.04, brightness: 1, contrast: 1.07, warmth: 0.2 },
-      haze: [{ x: 200, y: 0, w: 80, h: 60 }],
+      haze: [{ x: 360, y: 0, w: 80, h: 60 }],
       vignette: 0.38,
       reflective: { polygon: [{ x: 0, y: 268 }, { x: 640, y: 268 }, { x: 640, y: 345 }, { x: 0, y: 345 }], alpha: 0.2 },
     },
     coldIf: COLD,
     light: { tint: 0xffdcb8, farDim: 1 },
     ambient: {
-      particles: [{ kind: 'steam', x: 160, y: 60, w: 180, h: 60, warm: true }],
-      glows: [{ x: 31, y: 168, r: 30, color: 0xffa040 }, { x: 234, y: 40, r: 24, color: 0xff9a34, warm: true }],
+      particles: [{ kind: 'steam', x: 300, y: 60, w: 180, h: 60, warm: true }],
+      glows: [
+        { x: 612, y: 165, r: 18, color: 0xffa040 },
+        { x: 402, y: 43, r: 24, color: 0xff9a34, warm: true },
+        // Warm light rising from the firing house below the stairwell.
+        { x: 42, y: 290, r: 40, color: 0xffa040, warm: true },
+      ],
     },
     entries: {
-      fromFiringHouse: { x: 600, y: 296, face: 'left' },
+      fromFiringHouse: { x: 102, y: 286, face: 'right' },
     },
+    // Registration: art/sources/gallery-c7/approval.json (art origin + anchor, halved).
     objects: [
-      { id: 'socket', sheet: 'socket', x: 240, y: 230, flag: 'kilnCold', whenTrue: 'removed', whenFalse: 'installed', depth: -1 },
+      // Behind the gauge (prop depth -9000) and the socket; the gauge sits on its stem.
+      { id: 'regulator', sheet: 'gallery-regulator', x: 403, y: 264, flag: 'patchFailed', whenTrue: 'ringCracked', whenFalse: 'cracked', depth: -9500 },
+      { id: 'socket', sheet: 'socket', x: 400, y: 230, flag: 'kilnCold', whenTrue: 'removed', whenFalse: 'installed', depth: -1 },
+      { id: 'railNames', sheet: 'gallery-names', x: 257, y: 254 },
+      { id: 'logbook', sheet: 'gallery-logbook', x: 555, y: 209 },
+      { id: 'lantern', sheet: 'gallery-lantern', x: 612, y: 175 },
     ],
     hotspots: galleryHotspots,
-    actors: [{ id: 'oren', x: 480, y: 296 }],
+    actors: [{ id: 'oren', x: 160, y: 296 }],
     props: [
       // Running: shivering near the red. Cold: at rest, near the dial's zero.
-      // Socket centre measured at (476,86) in the 1280x720 painting; world coordinates are half-size.
-      { kind: 'gauge', image: 'gauge-face', x: 238, y: 43, length: 12, angle: 36, rest: -128 },
-      { kind: 'flame', x: 31, y: 166, size: 12, color: 0xffc060, depth: 9000 },
+      { kind: 'gauge', image: 'gauge-face', x: 402, y: 43, length: 12, angle: 36, rest: -128 },
+      { kind: 'flame', x: 612, y: 165, size: 5, color: 0xffc060, depth: 9000 },
     ],
-    sign: { x: 520, y: 60, drop: 10, w: 74, h: 50, style: 'iron' },
-    // The round hatch in the pipe ring, open once the regulator is out: the scavenger squeezes out
-    // of it and leaps down to the floor in front of Mara.
-    hatch: { x: 240, y: 164, r: 40, stepBack: { x: 420, y: 306 }, land: { x: 320, y: 304 } },
+    sign: { x: 120, y: 60, drop: 10, w: 74, h: 50, style: 'iron' },
+    // The round hatch in the pipe ring (the socket's hollow), open once the regulator is out: the
+    // scavenger squeezes out of it and leaps down to the floor in front of Mara.
+    hatch: { x: 400, y: 188, r: 24, stepBack: { x: 220, y: 306 }, land: { x: 320, y: 304 } },
   },
   ashways: {
     id: 'ashways',

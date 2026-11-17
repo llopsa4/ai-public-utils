@@ -14,7 +14,10 @@ test('Silas references use current targets, cage registration and Silas scale', 
   const cell = spec.rooms[0];
   assert.equal(cell.assetId, 'room-cell');
   assert.equal(cell.title, 'Cell');
-  assert.ok(cell.backgroundVariants?.some(v => v.assetId === 'room-cell-bare' && v.condition.includes('tookCloak')));
+  assert.deepEqual(cell.backgroundVariants, [], 'cloak collection uses an independent layer');
+  const cloak = spec.assets.find(a => a.id === 'cell-cloak')!;
+  assert.deepEqual([cloak.width, cloak.height], [96, 160]);
+  assert.deepEqual([cloak.placements[0].x, cloak.placements[0].y], [962, 346]);
   assert.ok(cell.targets?.some(t => t.id === 'floorWax'));
   assert.ok(cell.targets?.some(t => t.id === 'tableStub'));
   assert.ok(!cell.targets?.some(t => t.id === 'stub'));
@@ -28,7 +31,7 @@ test('Silas references use current targets, cage registration and Silas scale', 
   assert.equal(cage.anchor, 'top-left');
   assert.deepEqual([cage.placements[0].x, cage.placements[0].y], [0, 0]);
   assert.match(spec.rules!.join('\n'), /Silas, 220 art pixels/);
-  assert.match(cell.notes!.join('\n'), /room-cell-bare.*tookCloak/);
+  assert.ok(!cell.notes!.join('\n').includes('room-cell-bare'));
 });
 
 test('reference dimensions keep the atlas source canvas rather than its trimmed rectangle', async () => {

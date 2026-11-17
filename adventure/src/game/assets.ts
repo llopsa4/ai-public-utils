@@ -43,8 +43,38 @@ import valveJson from '../../art/src/objects/valve.json';
 import valvePng from '../../art/src/objects/valve.png';
 import maraRoomPng from '../../art/src/rooms/mara-room.webp';
 import tentRoomPng from '../../art/src/rooms/tent.webp';
+import halltallyPng from '../../art/src/objects/hall-tally.png';
+import halltallyJson from '../../art/src/objects/hall-tally.json';
+import hallhoistPng from '../../art/src/objects/hall-hoist.png';
+import hallhoistJson from '../../art/src/objects/hall-hoist.json';
+import halljarsPng from '../../art/src/objects/hall-jars.png';
+import halljarsJson from '../../art/src/objects/hall-jars.json';
+import hallcartPng from '../../art/src/objects/hall-cart.png';
+import hallcartJson from '../../art/src/objects/hall-cart.json';
+import kilnfirePng from '../../art/src/objects/kiln-fire.png';
+import kilnfireJson from '../../art/src/objects/kiln-fire.json';
 import tentJson from '../../art/src/objects/tent.json';
 import tentPng from '../../art/src/objects/tent.png';
+import houseshoesPng from '../../art/src/objects/house-shoes.png';
+import houseshoesJson from '../../art/src/objects/house-shoes.json';
+import housebellPng from '../../art/src/objects/house-bell.png';
+import housebellJson from '../../art/src/objects/house-bell.json';
+import housechalkPng from '../../art/src/objects/house-chalk.png';
+import housechalkJson from '../../art/src/objects/house-chalk.json';
+import housefirePng from '../../art/src/objects/house-fire.png';
+import housefireJson from '../../art/src/objects/house-fire.json';
+import housesoupPng from '../../art/src/objects/house-soup.png';
+import housesoupJson from '../../art/src/objects/house-soup.json';
+import housebreadPng from '../../art/src/objects/house-bread.png';
+import housebreadJson from '../../art/src/objects/house-bread.json';
+import galleryregulatorPng from '../../art/src/objects/gallery-regulator.png';
+import galleryregulatorJson from '../../art/src/objects/gallery-regulator.json';
+import gallerynamesPng from '../../art/src/objects/gallery-names.png';
+import gallerynamesJson from '../../art/src/objects/gallery-names.json';
+import gallerylogbookPng from '../../art/src/objects/gallery-logbook.png';
+import gallerylogbookJson from '../../art/src/objects/gallery-logbook.json';
+import gallerylanternPng from '../../art/src/objects/gallery-lantern.png';
+import gallerylanternJson from '../../art/src/objects/gallery-lantern.json';
 import firingHousePng from '../../art/src/rooms/firing-house.webp';
 import galleryPng from '../../art/src/rooms/gallery.webp';
 import ashwaysPng from '../../art/src/rooms/ashways.webp';
@@ -64,6 +94,17 @@ const casualFiles = import.meta.glob('../../art/src/characters/mara-casual.{png,
 const casualPng = casualFiles['../../art/src/characters/mara-casual.png'] as string | undefined;
 const casualJson = casualFiles['../../art/src/characters/mara-casual.json'] as AsepriteSheet | undefined;
 
+import tentworkbenchPng from '../../art/src/objects/tent-workbench.png';
+import tentworkbenchJson from '../../art/src/objects/tent-workbench.json';
+import tentjarPng from '../../art/src/objects/tent-jar.png';
+import tentjarJson from '../../art/src/objects/tent-jar.json';
+import tentchestPng from '../../art/src/objects/tent-chest.png';
+import tentchestJson from '../../art/src/objects/tent-chest.json';
+import tentdrumPng from '../../art/src/objects/tent-drum.png';
+import tentdrumJson from '../../art/src/objects/tent-drum.json';
+import tentstovePng from '../../art/src/objects/tent-stove.png';
+import tentstoveJson from '../../art/src/objects/tent-stove.json';
+
 export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   ...(casualPng && casualJson ? { 'mara-casual': { png: casualPng, json: casualJson } } : {}),
   mara: { png: maraPng, json: maraJson },
@@ -71,6 +112,26 @@ export const SHEETS: Record<string, { png: string; json: AsepriteSheet }> = {
   oren: { png: orenPng, json: orenJson },
   nell: { png: nellPng, json: nellJson },
   tobi: { png: tobiPng, json: tobiJson },
+  'house-shoes': { png: houseshoesPng, json: houseshoesJson },
+  'house-bell': { png: housebellPng, json: housebellJson },
+  'house-chalk': { png: housechalkPng, json: housechalkJson },
+  'house-fire': { png: housefirePng, json: housefireJson },
+  'house-soup': { png: housesoupPng, json: housesoupJson },
+  'house-bread': { png: housebreadPng, json: housebreadJson },
+  'gallery-regulator': { png: galleryregulatorPng, json: galleryregulatorJson },
+  'gallery-names': { png: gallerynamesPng, json: gallerynamesJson },
+  'gallery-logbook': { png: gallerylogbookPng, json: gallerylogbookJson },
+  'gallery-lantern': { png: gallerylanternPng, json: gallerylanternJson },
+  'hall-tally': { png: halltallyPng, json: halltallyJson },
+  'hall-hoist': { png: hallhoistPng, json: hallhoistJson },
+  'hall-jars': { png: halljarsPng, json: halljarsJson },
+  'hall-cart': { png: hallcartPng, json: hallcartJson },
+  'kiln-fire': { png: kilnfirePng, json: kilnfireJson },
+  'tent-workbench': { png: tentworkbenchPng, json: tentworkbenchJson },
+  'tent-jar': { png: tentjarPng, json: tentjarJson },
+  'tent-chest': { png: tentchestPng, json: tentchestJson },
+  'tent-drum': { png: tentdrumPng, json: tentdrumJson },
+  'tent-stove': { png: tentstovePng, json: tentstoveJson },
   notebook: { png: notebookPng, json: notebookJson },
   'pantry-door': { png: pantryDoorPng, json: pantryDoorJson },
   rack: { png: rackPng, json: rackJson },

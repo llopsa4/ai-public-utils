@@ -243,31 +243,51 @@ export const MANIFEST = [
   {"id": "ashways-pressure-cell-ruptured", "kind": "prop", "file": "props/ashways-pressure-cell-ruptured.png", "size": {"w": 40, "h": 64}, "anchor": "bottom-centre", "chapter": "ch1", "status": "requested", "generator": "Codex ImageGen", "subject": "ashways pressure cell ruptured"},
   {"id": "ashways-sweeper-disabled", "kind": "prop", "file": "props/ashways-sweeper-disabled.png", "size": {"w": 280, "h": 180}, "anchor": "bottom-centre", "chapter": "ch1", "status": "final", "generator": "approved C6 r1 matching brown sweeper state", "subject": "The brown Ashways room sweeper, disabled after the fight; same design and bottom-centre registration."},
   // ------------------------------------------------------------------------------ rooms ---
-  room('room-tent', 'tent', "Mara's tent from inside, pixel art (a 640x360 grid shown 2x), seen side-on with very little perspective and believable proportions: a canvas back wall sagging between two poles under a ridge pole, seams and patches (a FINEST flour sack); his workbench along the left (tools on a board above it: wrench, handsaw, pliers, claw hammer, file; a tool roll, a candle, gloves, a glazed water jar; the charging cradle and the notebook stand on it), a crate and rope under it, a stool in front; the old brush drum, smaller, on a trestle against the back wall (centre, chalked PARTS); a coat on a hook on the right pole; a low cot with a blanket and laced boots along the right, Tobi's drawing pinned above; the door flap at the right edge open on the kiln hall's warm light; a striped rug on packed earth.", 'Warm hanging lantern (centre top) as the main light, falling off into dark corners, soft cast shadows under everything; warm light from the door flap (right) across the floor.'),
-  room('room-mara', 'mara-room', 'The kiln hall: a vast vaulted hall built inside an old kiln, the glowing kiln mouths across the back, a pulley hoist (left), storage jars, an ash cart, the curtain to the firing house (right), and the spot where Mara\'s tent stands.', 'Key light from the three kiln mouths at the back (orange); cool dim fill from the left; the vault fades to darkness above.', { pilot: true }),
-  room('room-firing-house', 'firing-house', 'The firing house: a communal kitchen and workshop on a lower level, with a hearth (left), a soup pot on the long table, shoe racks, Nell\'s pantry door, stairs up to the regulator gallery (right) and the kiln gate.', 'Warm key light from the hearth (left) and the kiln gate (centre); cool fill from the stair well (right).'),
-  room('room-gallery', 'gallery', 'The regulator gallery: huge ceramic pipes, the regulator housing with its ring in the middle, a pressure gauge, a lantern and a workbench with an open notebook; a railing and a wet metal floor on the right where people stand.', 'Warm key light from the lantern (left) and the regulator\'s glow; cool, darker right side.'),
+  room('room-tent', 'tent', 'C7 clean 1px tent scenery: patched canvas, tool board, coat, cot and boots; independent workbench, jar, crate, drum, stove and stool omitted. Existing layout retained with approved scale approximations.', 'Warm small hanging lantern and kiln-hall doorway.', { status: 'final', generator: 'import.mjs' }),
+  room('room-mara', 'mara-room', 'C7 clean 1px kiln hall scenery, empty hearths; separate pillar, hoist, jars, tent, cart and fires.', 'Warm kiln light; cool left fill.', { status: 'final', generator: 'import.mjs' }),
+  room('room-firing-house', 'firing-house', 'C7 clean 1px communal kitchen: empty shoe rails, hearth and hook, pantry recess and bare bread spot; separate shoes, bell, chalk, fire, soup, bread and pantry door.', 'Even warm form shading; game adds hearth/kiln glows and cold grade.', { status: 'final', generator: 'import.mjs' }),
+  room('room-gallery', 'gallery', 'C7 clean 1px regulator gallery, mirrored: stairs down in a floor opening (left), plain railing, ceramic pipes through wall sleeves, empty regulator recess, raised desk and bare lantern bracket; separate regulator body, socket, gauge, names, logbook and lantern.', 'Even form shading; game adds lantern flame, regulator and stairwell glows, steam and cold grade.', { status: 'final', generator: 'import.mjs' }),
   room('room-ashways', 'ashways', 'The ashways: an open stone causeway under great pipes, a bridge and arches, a valve on a pipe (left), the passage out through an arch (centre right), ash drifting.', 'Hazy warm daylight through the arches at the back; cooler foreground; no fire.'),
-  fg('hall-left', 'room-mara', 'Rubble and broken pots in the front left corner of the kiln hall floor, drawn in front of anyone walking behind them.',
-    { polygons: [[[0, 620], [120, 636], [176, 720], [0, 720]]], box: [0, 616, 178, 720] }),
-  fg('hall-right', 'room-mara', 'A few cracked jars and clinker in the front right corner of the kiln hall floor.',
-    { polygons: [[[1136, 652], [1280, 630], [1280, 720], [1116, 720]]], box: [1114, 628, 1280, 720] }),
-  // Ansel's seat in the kiln hall: cut from Codex's ashways crate (art/hall-crate.mjs), so it needs no drawing of its own.
-  { id: 'hall-crate', kind: 'foreground', file: 'foreground/hall-crate.png', webp: true, anchor: 'top-left', room: 'room-mara', chapter: 'ch1', status: 'final', generator: 'hall-crate.mjs',
-    subject: "A wooden crate on the kiln hall floor that Ansel sits on (cut from Codex's ashways crate)." },
-  fg('tent-stool', 'room-tent', 'The stool in the tent, in front of the floor.',
-    { polygons: [[[150, 412], [336, 412], [338, 470], [332, 604], [146, 604], [150, 470]]], box: [146, 408, 340, 606] }),
-  { id: 'prop-gauge-face', kind: 'prop', file: 'props/gauge-face.png', webp: true, anchor: 'centre', chapter: 'ch1', status: 'placeholder', generator: 'pixelate.mjs', subject: 'The gallery pressure gauge dial without its needle (the game draws a live needle).' },
-  { id: 'prop-pulley', kind: 'prop', file: 'props/pulley.png', webp: true, anchor: 'top-centre', chapter: 'ch1', status: 'placeholder', generator: 'pixelate.mjs', subject: 'The kiln hall hoist: chains and a hanging pot, hung from its top edge (the game swings it).' },
+  { ...fg('hall-left', 'room-mara', 'Rubble and broken pots in the front left corner of the kiln hall floor, drawn in front of anyone walking behind them.',
+    { polygons: [[[0, 620], [120, 636], [176, 720], [0, 720]]], box: [0, 616, 178, 720] }), status: 'final', generator: 'import.mjs' },
+  { ...fg('hall-right', 'room-mara', 'A few cracked jars and clinker in the front right corner of the kiln hall floor.',
+    { polygons: [[[1136, 652], [1280, 630], [1280, 720], [1116, 720]]], box: [1114, 628, 1280, 720] }), status: 'final', generator: 'import.mjs' },
+  // C7 redrawn seat preserves Ansel's approved foreground registration.
+  { id: 'hall-crate', kind: 'foreground', file: 'foreground/hall-crate.png', webp: true, anchor: 'top-left', room: 'room-mara', chapter: 'ch1', status: 'final', generator: 'import.mjs',
+    subject: "C7 separate wooden crate on the kiln hall floor that Ansel sits on; original canvas retained." },
+  { id: 'tent-stool', kind: 'foreground', file: 'foreground/tent-stool.png', webp: true, anchor: 'top-left', room: 'room-tent',
+    size: { w: 72, h: 56 }, chapter: 'ch1', status: 'final', generator: 'import.mjs', subject: 'C7 separate mismatched-leg stool; clean background behind it.' },
+  { id: 'prop-gauge-face', kind: 'prop', file: 'props/gauge-face.png', webp: true, anchor: 'centre', chapter: 'ch1', status: 'final', generator: 'import.mjs', subject: 'C7 gallery gauge ring and face without its needle (the game draws a live needle); also used by the regulator close-up.' },
+  { id: 'prop-pulley', kind: 'prop', file: 'props/pulley.png', webp: true, anchor: 'top-centre', chapter: 'ch1', status: 'final', generator: 'import.mjs', subject: 'The kiln hall hoist: chains and a hanging pot, hung from its top edge (the game swings it).' },
 
   // ---------------------------------------------------------------------------- objects ---
-  object('rack', 'The charging rack in the tent: a lantern-frame cradle that holds the gauntlet\'s ember cell (full: the cell glowing in it; empty).', ['full', 'empty'], { pilot: true }),
-  object('notebook', "Mara's mother's notebook lying open on the workbench.", ['idle']),
-  object('pantry-door', "Nell's pantry door with its latch (stuck; fixed).", ['stuck', 'fixed']),
-  object('socket', 'The regulator ring in its socket (installed; removed: an empty hollow).', ['installed', 'removed']),
+  object('house-shoes', 'C7 separate firing-house shoes, clean transparent backing.', ["warm", "cold"], { status: 'final', generator: 'import.mjs', frame: { w: 296, h: 176 } }),
+  object('house-bell', 'C7 separate firing-house bell, clean transparent backing.', ["idle"], { status: 'final', generator: 'import.mjs', frame: { w: 40, h: 48 } }),
+  object('house-chalk', 'C7 separate firing-house chalk, clean transparent backing.', ["idle"], { status: 'final', generator: 'import.mjs', frame: { w: 36, h: 56 } }),
+  object('house-fire', 'C7 separate firing-house fire, clean transparent backing.', ["lit", "cold"], { status: 'final', generator: 'import.mjs', frame: { w: 136, h: 52 } }),
+  object('house-soup', 'C7 separate firing-house soup, clean transparent backing.', ["warm", "cold"], { status: 'final', generator: 'import.mjs', frame: { w: 104, h: 84 } }),
+  object('house-bread', 'C7 separate firing-house bread, clean transparent backing.', ["idle"], { status: 'final', generator: 'import.mjs', frame: { w: 72, h: 52 } }),
+  object('hall-tally', 'C7 separate kiln hall hall-tally, transparent clean backing.', ["idle"], { status: 'final', generator: 'import.mjs', frame: { w: 96, h: 232 } }),
+  object('hall-hoist', 'C7 separate kiln hall hall-hoist, transparent clean backing.', ["idle"], { status: 'final', generator: 'import.mjs', frame: { w: 176, h: 360 } }),
+  object('hall-jars', 'C7 separate kiln hall hall-jars, transparent clean backing.', ["idle"], { status: 'final', generator: 'import.mjs', frame: { w: 120, h: 64 } }),
+  object('hall-cart', 'C7 separate kiln hall hall-cart, transparent clean backing.', ["idle"], { status: 'final', generator: 'import.mjs', frame: { w: 144, h: 128 } }),
+  object('kiln-fire', 'C7 separate kiln hall kiln-fire, transparent clean backing.', ["lit", "cold"], { status: 'final', generator: 'import.mjs', frame: { w: 56, h: 44 } }),
+  object('tent-workbench', 'C7 separate tent workbench, clean transparent backing.', ['idle'], { status: 'final', generator: 'import.mjs', frame: { w: 360, h: 148 } }),
+  object('tent-jar', 'C7 separate tent jar, clean transparent backing.', ['idle'], { status: 'final', generator: 'import.mjs', frame: { w: 48, h: 56 } }),
+  object('tent-chest', 'C7 separate tent chest, clean transparent backing.', ['idle'], { status: 'final', generator: 'import.mjs', frame: { w: 72, h: 52 } }),
+  object('tent-drum', 'C7 separate tent drum, clean transparent backing.', ['idle'], { status: 'final', generator: 'import.mjs', frame: { w: 192, h: 132 } }),
+  object('tent-stove', 'C7 separate tent stove, clean transparent backing.', ['idle'], { status: 'final', generator: 'import.mjs', frame: { w: 80, h: 108 } }),
+  object('rack', 'The charging rack in the tent: a lantern-frame cradle that holds the gauntlet\'s ember cell (full: the cell glowing in it; empty).', ['full', 'empty'], { pilot: true, generator: 'import.mjs' }),
+  object('notebook', "Mara's mother's notebook lying open on the workbench.", ['idle'], { generator: 'import.mjs' }),
+  object('pantry-door', "C7 Nell's plank pantry door with three left hinges and stuck/fixed latch.", ['stuck', 'fixed'], { status: 'final', generator: 'import.mjs', frame: { w: 120, h: 304 } }),
+  object('socket', 'C7 regulator ring in its socket (installed; removed: the empty hollow the scavenger squeezes out of).', ['installed', 'removed'], { status: 'final', generator: 'import.mjs', frame: { w: 160, h: 160 } }),
+  object('gallery-regulator', 'C7 separate regulator body with valves and gauge stem (cracked; crack reaching the locking ring).', ['cracked', 'ringCracked'], { status: 'final', generator: 'import.mjs', frame: { w: 384, h: 412 } }),
+  object('gallery-names', 'C7 names scratched into the gallery railing, transparent clean backing.', ['idle'], { status: 'final', generator: 'import.mjs', frame: { w: 132, h: 80 } }),
+  object('gallery-logbook', "C7 Oren's open logbook with inkwell and quill, transparent clean backing.", ['idle'], { status: 'final', generator: 'import.mjs', frame: { w: 80, h: 32 } }),
+  object('gallery-lantern', 'C7 small gallery lantern hanging from its bracket hook, transparent clean backing.', ['idle'], { status: 'final', generator: 'import.mjs', frame: { w: 24, h: 44 } }),
   object('sweeper', 'The ash sweeper: a squat machine with brush drums (idle; scurrying).', ['idle', 'scurry']),
   object('valve', 'The steam valve on a pipe in the ashways (closed; venting steam).', ['closed', 'venting']),
-  object('tent', "Mara's tent as seen in the kiln hall: a canvas tent with a dark entrance.", ['idle']),
+  object('tent', "C7 walk-in patched canvas tent, separate from the clean kiln hall.", ['idle'], { status: 'final', generator: 'import.mjs', frame: { w: 224, h: 280 } }),
 
   // ------------------------------------------------------------------------- characters ---
   { id: 'char-mara', kind: 'character', file: 'characters/mara.png', sheet: 'characters/mara.json', anchor: 'bottom-centre', height: 232, rig: 'mara', chapter: 'game', status: 'placeholder', generator: 'rig.mjs', pilot: true,
@@ -389,10 +409,9 @@ export const MANIFEST = [
   { id: 'battle-enemy-rig', kind: 'battle-portrait', file: 'kc/training-rig.webp', anchor: 'bottom-centre', size: { w: 768, h: 512 }, chapter: 'ch2', status: 'final', generator: 'approved C6 r1 ImageGen export',
     subject: "Bryn's training rig: a caged brush drum on a sprung frame that swings back at whoever strikes it." },
   // ------------------------------------------------ the intro: Silas's escape from Ironhaven's cells ---
-  { ...room('room-cell', 'cell', "Ironhaven’s prison cell at night in its approved gentle three-quarter cage view: a cot and ragged blanket, high barred window, bucket and plate inside the cage; the small gate opens in the front bars, with the cage’s right side receding toward the back wall. Beyond it stand the guard’s table, candle, cup and Harrow portrait; Silas’s hooded cloak hangs on its nail. The table stub, fallen floor tallow, mask frame, plate placements, cage and gate are separate layers. The stairwell itself is offscreen to the right; only its doorway light lies on the floor. Preserve the approved painting and cage perspective.", 'Cold blue moonlight from the window (left); one warm candle pool on the table beyond the bars (right). The game darkens the room until Silas throws the moonlight across it, so paint it as seen lit.'), file: 'intro/rooms/cell.png', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/cell-cloak)' },
-  { ...room('room-cell-bare', 'cell-bare', "The same cell painting with the cloak gone from its nail (shown once Silas takes it back); identical everywhere else.", 'As room-cell.'), file: 'intro/rooms/cell-bare.png', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/cell-cloak)' },
-  { ...room('room-guardroom', 'guardroom', "The guardroom above the prison cells: the return stairway at the left edge, an empty shelf for the separately drawn red tally ledger, a black iron stove in the middle, Kell’s desk left of the stove, and the iron grate at the right edge opening onto the snowy night. The clerk’s hood is not on a peg. Three wall torches and their runtime flames light the room; the ledger disappears when collected.", 'Warm orange light from the stove (centre); cold blue night through the grate (right).'), file: 'intro/rooms/guardroom.png', chapter: 'intro', generator: 'intro.mjs' },
-  { ...room('room-prison-door', 'prison-door', "Outside Ironhaven's prison at night: a small heavy door with a lantern (left) in a black stone wall with crenellations, snow on the ground and falling, the city's iron roofs faint in the distance.", 'Cold blue night; the lantern by the door the one warm light.'), file: 'intro/rooms/prison-door.png', chapter: 'intro', generator: 'intro.mjs' },
+  { ...room('room-cell', 'cell', "The user-approved C7 r1 prison cell at Silas's 1px detail: clean stone architecture, barred window, wall plates, bare cloak nail and fixed guard chair. Cot, blanket, bucket, roster, table with cup, candles, cloak, floor wax, mask frame and plate states are independent overlays over complete backing. The stairs remain offscreen; only their doorway light reaches the floor. Approved cage and gate r4 retain their registration. Floor seam y477; true Silas-relative proportions and approved 34px blanket.", 'Even form lighting; moonlight and candle flames/glows are added at runtime.'), file: 'intro/rooms/cell.png', chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen scenery assembly' },
+  { ...room('room-guardroom', 'guardroom', "The approved C7 r2 guardroom at Silas's 1-art-pixel detail: stairs at the left, empty ledger shelf, Kell's desk to the right of the central flue, Benn's stool, and an unbarred snowy yard through the right frame. Ledger, stove body, three torches and the closed/open grate leaf are separate overlays over complete backing. Numeric layout: wall/floor seam y536, shelf top y426, desk top y432 and feet y524, stool seat y534 and feet y590, yard opening x1120–1272/y220–524.", 'Even form lighting; stove glow and torch flames are added at runtime.'), file: 'intro/rooms/guardroom.png', chapter: 'intro', status: 'final', generator: 'approved C7 r2 ImageGen scenery assembly' },
+  { ...room('room-prison-door', 'prison-door', "User-approved C7 r1 outer prison wall at Silas's 1px detail: city skyline, snowy crenellations, fixed heavy door and frame, clean stone backing and trampled snow. Both wall lanterns are separate overlays; no painted lanterns, brackets or glow.", 'Even cold night form lighting; lantern flames/glows and snowfall added at runtime.'), file: 'intro/rooms/prison-door.png', chapter: 'intro', status: 'final', generator: 'approved C7 outer-door r1 ImageGen export' },
   ...[
     ['silas', 'Silas, the con man.', 220],
     ['silas-harrow', 'Silas wearing the Harrow mask (only the face and head differ from char-silas).', 220],
@@ -417,18 +436,33 @@ export const MANIFEST = [
     ['keys', 'An iron key ring with three heavy keys.'], ['hood', "A drab grey clerk's hood."], ['ledger', 'A thick red tally ledger.'],
     ['maskClerk', "The clerk's guise: the grey hood folded over the red ledger."],
   ].map(([id, subject]) => ({ ...item(id, subject), file: `intro/items/${id}.png`, chapter: 'intro', generator: 'intro.mjs' })),
-  { ...object('window-plate', "The dented tin plate wedged at the bottom of the cell's barred window, tilted to throw the moonlight into the cell, its dent shining.", ['idle']),
-    file: 'intro/objects/window-plate.png', sheet: 'intro/objects/window-plate.json', chapter: 'intro', generator: 'intro.mjs' },
-  { ...object('floor-plate', 'A dented tin plate with a stale crust on it, lying on the cell floor by the cot.', ['idle']),
-    file: 'intro/objects/floor-plate.png', sheet: 'intro/objects/floor-plate.json', chapter: 'intro', generator: 'intro.mjs' },
-  // The guardroom's ledger on its shelf, cut from Codex's painting along its outline; the room itself
-  // is Codex's empty version (art/inbox/done/intro-next-review), so it can go.
+  { ...object('window-plate', 'The identical dented tin plate tilted in the barred window to throw moonlight.', ['idle']),
+    file: 'intro/objects/window-plate.png', sheet: 'intro/objects/window-plate.json', frame: { w: 36, h: 24 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
+  { ...object('floor-plate', 'A human-scale dented tin plate lying flat on the floor by Silas.', ['idle']),
+    file: 'intro/objects/floor-plate.png', sheet: 'intro/objects/floor-plate.json', frame: { w: 36, h: 18 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
+  { ...object('cell-cot', 'Plain wooden prison cot with thin straw tick; blanket is separate.', ['idle']),
+    file: 'intro/objects/cell-cot.png', sheet: 'intro/objects/cell-cot.json', frame: { w: 256, h: 72 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
+  { ...object('cell-blanket', 'Threadbare wool blanket, 208 by 34px ink, draped over the cot.', ['idle']),
+    file: 'intro/objects/cell-blanket.png', sheet: 'intro/objects/cell-blanket.json', frame: { w: 216, h: 48 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
+  { ...object('cell-bucket', 'Small rusty iron slop bucket, 48 by 56px ink, under the drip.', ['idle']),
+    file: 'intro/objects/cell-bucket.png', sheet: 'intro/objects/cell-bucket.json', frame: { w: 64, h: 64 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
+  { ...object('cell-roster', 'Small framed notice bearing the moustached Harrow portrait, without writing.', ['idle']),
+    file: 'intro/objects/cell-roster.png', sheet: 'intro/objects/cell-roster.json', frame: { w: 52, h: 64 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
+  { ...object('cell-table', 'Wooden guard table with one tiny tin cup and a bare surface for removable objects.', ['idle']),
+    file: 'intro/objects/cell-table.png', sheet: 'intro/objects/cell-table.json', frame: { w: 224, h: 108 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
+  { ...object('cell-candle', 'Human-scale tallow candle and saucer, unlit; runtime supplies the flame.', ['idle']),
+    file: 'intro/objects/cell-candle.png', sheet: 'intro/objects/cell-candle.json', frame: { w: 16, h: 40 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
+  { ...object('cell-cloak', 'Confiscated hooded wool travelling cloak hanging from its loop; disappears with tookCloak.', ['idle']),
+    file: 'intro/objects/cell-cloak.png', sheet: 'intro/objects/cell-cloak.json', frame: { w: 96, h: 160 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
+  // C7 r2: approved independent drawings, clean backing and the user-selected numeric layout.
   { ...object('guardroom-ledger', 'The red-brown tally ledger lying on the guardroom shelf.', ['idle']),
-    file: 'intro/objects/guardroom-ledger.png', sheet: 'intro/objects/guardroom-ledger.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
-  // Silas's hooded cloak on its nail in the cell's corridor, cut from Codex's painting (the wall behind
-  // it painted in from the stones beside it) so it goes when he takes it.
-  { ...object('table-stub', "The guard's spare candle burnt down to almost nothing on the left end of his table: a short ivory stub in its own puddle, a dribble run over the edge and a tiny guttering flame (the game adds the glow).", ['idle']),
-    file: 'intro/objects/table-stub.png', sheet: 'intro/objects/table-stub.json', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/table-wax)' },
+    file: 'intro/objects/guardroom-ledger.png', sheet: 'intro/objects/guardroom-ledger.json', frame: { w: 48, h: 20 }, chapter: 'intro', status: 'final', generator: 'approved C7 r2 ImageGen export' },
+  { ...object('guardroom-grate', 'The forged-iron grate leaf onto the winter yard: identical design in closed and outward-open states, aligned to the clean background opening.', ['closed', 'open']),
+    file: 'intro/objects/guardroom-grate.png', sheet: 'intro/objects/guardroom-grate.json', frame: { w: 176, h: 324 }, chapter: 'intro', status: 'final', generator: 'approved C7 r2 ImageGen export' },
+  { ...object('guardroom-stove', 'The squat black iron guardroom stove with a small barred coal window and short flue stub; the game adds its glow.', ['idle']),
+    file: 'intro/objects/guardroom-stove.png', sheet: 'intro/objects/guardroom-stove.json', frame: { w: 128, h: 176 }, chapter: 'intro', status: 'final', generator: 'approved C7 r2 ImageGen export' },
+  { ...object('table-stub', 'A tiny unlit spare candle stump in melted wax; the game adds its guttering flame.', ['idle']),
+    file: 'intro/objects/table-stub.png', sheet: 'intro/objects/table-stub.json', frame: { w: 16, h: 16 }, chapter: 'intro', status: 'final', generator: 'approved C7 cell r1 ImageGen export' },
   { ...object('floor-wax', "A fat drop of fallen tallow on the floor between the cage and the table, glossy and still soft, the one Silas reaches for through the cage's right side.", ['idle']),
     file: 'intro/objects/floor-wax.png', sheet: 'intro/objects/floor-wax.json', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/table-wax)' },
   // Silas on one knee reaching through the cage's right-side bars for the wax (only that pickup): the
@@ -438,10 +472,10 @@ export const MANIFEST = [
   { id: 'item-wax', kind: 'item', file: 'intro/items/wax.png', size: { w: 64, h: 64 }, anchor: 'none', chapter: 'intro', status: 'final', generator: 'Codex (art/inbox/done/candle-stub)', subject: 'A lump of soft tallow, warmed and kneaded in the hand.' },
   { ...object('stairs-light', 'Warm light thrown across the cell corridor floor from the stairwell door off to the right, in the shape of the doorway.', ['idle']),
     file: 'intro/objects/stairs-light.png', sheet: 'intro/objects/stairs-light.json', chapter: 'intro', status: 'placeholder', generator: 'Claude (a soft light effect, not palette art)' },
-  { ...object('outer-lantern', "The outer door's wall lantern on its bracket (cut from Codex's painting), hung again mid-wall.", ['idle']),
-    file: 'intro/objects/outer-lantern.png', sheet: 'intro/objects/outer-lantern.json', chapter: 'intro', status: 'final', generator: 'Codex (cut out by Claude)' },
+  { ...object('outer-lantern', "User-approved C7 r1 small iron wall lantern on its bracket, one drawing reused twice. Body 18 by 32 art pixels against Silas's 220px height; glass centre at canvas (20,28), bottom-centre anchor (20,44).", ['idle']),
+    file: 'intro/objects/outer-lantern.png', sheet: 'intro/objects/outer-lantern.json', frame: { w: 40, h: 44 }, chapter: 'intro', status: 'final', generator: 'approved C7 outer-door r1 ImageGen export' },
   { ...object('guardroom-torch', 'A wall torch: a pitch-wrapped head on a wooden haft, for the iron brackets on the guardroom walls (unlit: the game adds the flame).', ['idle']),
-    file: 'intro/objects/guardroom-torch.png', sheet: 'intro/objects/guardroom-torch.json', chapter: 'intro', generator: 'intro.mjs' },
+    file: 'intro/objects/guardroom-torch.png', sheet: 'intro/objects/guardroom-torch.json', frame: { w: 14, h: 90 }, chapter: 'intro', status: 'final', generator: 'approved C7 r2 ImageGen export' },
   { ...object('table-frame', "Silas's articulated brass mask frame lying flat on the guard's table, with a clear brass rim and open centre.", ['idle']),
     file: 'intro/objects/table-frame.png', sheet: 'intro/objects/table-frame.json', chapter: 'intro', status: 'final', generator: 'Codex' },
   // User-approved new cage/leaf drawing r4 (art/inbox/done/cell-cage-redraw-r4).
@@ -460,13 +494,13 @@ export const MANIFEST = [
  * on its bottom centre (the object's foot point in the room).
  */
 const OBJECT_FRAMES = {
-  rack: { w: 56, h: 72 },          // a brass cradle on the workbench, hand-and-a-half tall
-  notebook: { w: 72, h: 24 },      // a book lying open on the bench
+  rack: { w: 40, h: 52 },          // C7 r2 lantern-frame cradle, full/empty red-glass cell
+  notebook: { w: 40, h: 14 },      // C7 r2 stitched notebook lying open on the bench
   'pantry-door': { w: 120, h: 304 }, // a full-height plank door, 1.3x Mara
   socket: { w: 160, h: 160 },      // the regulator ring set in the great pipe
   sweeper: { w: 260, h: 140 },     // a squat machine, reaching Mara's chest
   valve: { w: 112, h: 204 },       // a valve wheel on its standpipe
-  tent: { w: 184, h: 224 },        // Mara's tent pitched in the hall, about his height at the ridge
+  tent: { w: 224, h: 280 },        // C7 walk-in tent; 272px ridge, 228px nominal entrance
   grate: { w: 148, h: 224 },       // the grate filling the tunnel's end opening
   steam: { w: 140, h: 280 },       // the jet from floor to pipe
   bridge: { w: 320, h: 220 },      // the drawbridge up (on end) or down across the pit

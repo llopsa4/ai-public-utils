@@ -1,0 +1,43 @@
+{
+  "frames": [
+    {
+      "filename": "idle",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 144,
+        "h": 128
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 144,
+        "h": 128
+      },
+      "sourceSize": {
+        "w": 144,
+        "h": 128
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 kiln hall r1 review",
+    "image": "hall-cart.png",
+    "size": {
+      "w": 144,
+      "h": 128
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "idle",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      }
+    ]
+  }
+}

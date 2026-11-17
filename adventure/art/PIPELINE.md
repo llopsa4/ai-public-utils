@@ -27,6 +27,11 @@ reference-generation commands. This procedure covers artwork; a generated brief 
   intended overlaps and depth. State variants retain the same canvas and anchor registration.
 - Clickable targets are geometry, distinct from the artwork. One object's image can support
   several actions; it does not need a separate image per verb or an empty image when hidden.
+- Everything in a scene, whether painted in the background or a separate overlay, is sized
+  against the scene's main character (Silas in the intro, Mara in Chapter 1, Kofi in his
+  chapter) using the heights in [STYLE.md](STYLE.md#proportions). A book, glove, chair or tool
+  must make sense in that character's hands or beside them; an oversized or toy-sized prop is
+  a defect to report, not a style choice.
 
 Apply this contract when creating or replacing scene artwork. It does not authorise regenerating
 existing art or resuming paused production.
@@ -40,11 +45,19 @@ working example. A prompt states, in this order:
 
 1. **Use case and novelty:** new asset, matching state of an existing asset, or precise edit.
 2. **Canvas:** exact size, transparency, and padding that must stay empty.
-3. **Geometry:** key corners, edges and anchors in canvas coordinates; what continues off-canvas.
-4. **Each reference image and its only role** (geometry, style, identity); never copy pixels.
-5. **Material and style:** stroke widths, spacing, palette notes from [STYLE.md](STYLE.md).
-6. **Exclusions:** room, floor, shadows, people, props, matte, text, checkerboard, panels.
-7. **Priority:** which property wins on conflict (usually geometry and continuity over detail).
+3. **Scale:** for every room, object or prop, the exact size in canvas pixels of each depicted
+   thing that has a real-world size (a book, glove, chair, table, door, tool), stated against
+   the scene's main character (name, art-pixel height and the body part it is compared with,
+   for example "a ledger about a hand span wide, roughly one eighth of Silas's 220 px height;
+   a stool seat at his knee"). Check each figure against the [proportions
+   table](STYLE.md#proportions); a prompt without these sizes is incomplete.
+4. **Geometry:** key corners, edges and anchors in canvas coordinates; what continues off-canvas.
+5. **Each reference image and its only role** (geometry, style, identity); never copy pixels.
+6. **Material and style:** stroke widths, spacing, palette notes from [STYLE.md](STYLE.md),
+   and the pixel definition: scene art is drawn at Silas's detail (1-art-pixel grid, master
+   palette), never coarser than the characters it stands beside.
+7. **Exclusions:** room, floor, shadows, people, props, matte, text, checkerboard, panels.
+8. **Priority:** which property wins on conflict (usually geometry and continuity over detail).
 
 For a matching state (open/closed, lit/dark), say that it is the identical design and describe
 the projected silhouette with coordinates. One asset per prompt; no comparison sheets.

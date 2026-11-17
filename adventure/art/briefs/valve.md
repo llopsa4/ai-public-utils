@@ -1,23 +1,37 @@
 # valve
 
-Status: **final** · object · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `valve` · object · **target** · final
 
 ## Description
 
 The steam valve in the ashways: an iron standpipe rising from the ground with a big red-painted valve wheel on top and a pressure plate. closed: wheel tight; venting: wheel turned, a plume of steam bursting from the side vent.
 
-## Use and placement
+## What the game does with it
 
-Stands in the room `ashways` on its foot point (236, 524) (bottom centre of the picture); it shows "venting" or "closed" as the story moves on.
-States: closed, venting: one picture each, identical framing; only what changes between states differs.
+look; open; close; use
+
+## Placement and layers
+
+- [The Ashways](room-ashways.md): anchor (236,524) art px / (118,262) logical; world; Always; valveVented: closed -> venting.
+
+## States, visibility and transitions
+
+- **closed** — The steam valve in the ashways: an iron standpipe rising from the ground with a big red-painted valve wheel on top and a pressure plate. closed: wheel tight; venting: wheel turned, a plume of steam bursting from the side vent. When: Existing closed frame; placement flag conditions above determine when it is used..
+- **venting** — The steam valve in the ashways: an iron standpipe rising from the ground with a big red-painted valve wheel on top and a pressure plate. closed: wheel tight; venting: wheel turned, a plume of steam bursting from the side vent. When: Existing venting frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/objects/valve.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/objects/valve.png` (final).
-- Anchor: `bottom-centre`.
-- Canvas/frame: **112×204 art px**.
-- State tags: `closed`, `venting`.
-- Atlas metadata: `art/src/objects/valve.json`.
-- Import names: `valve-closed.png`, `valve-venting.png`.
+- Canvas: **112×204 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/valve-closed.png`, `art/inbox/valve-venting.png`.
+
+## Sources
+
+[art/manifest.mjs · L289](../manifest.mjs#L289) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

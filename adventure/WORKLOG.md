@@ -1,25 +1,30 @@
 # Adventure current status
 
-Updated 2026-11-16. Shared procedure: [WORKFLOW.md](WORKFLOW.md).
+Updated 2026-11-17. Shared procedure: [WORKFLOW.md](WORKFLOW.md).
 Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Codex](handoff/from-codex.md).
 Older verification history is in Git history of this file and in CHANGELOG.md.
 
 ## Checkout
-- Branch `dual-ownership`, HEAD `c809fa9`. Last inspected remote and Pages deployment:
+- Branch `redesign`, HEAD `0c595ac` at C7 installation. Last inspected remote and Pages deployment:
   `c14fdd4`. Earlier work is committed; published output is unchanged.
 - Claude's workflow audit and request-template changes are committed locally (not pushed).
   Local changes: C4 character detail plus C5 Bryn sources/sheet/portrait, measured rig, approval
   guards, briefs/provenance and tests; C6 installed art, placement/UI/contact corrections and tests;
+  C7 guardroom and cell artwork/registration, approval guards, provenance/references and tests;
   concurrent Claude/story/UI changes retained.
 
 ## Working on
-- **Active mode: Codex + Claude**, selected by the user on 2026-11-15. Split, handoff files
-  and model guidance: [WORKFLOW.md](WORKFLOW.md). Pauses and approvals unchanged.
+- **Active mode: Claude only (Codex paused)**, selected by the user on 2026-11-17 while Codex is
+  out of usage; Claude does all Codex work except image generation. Returns to Codex + Claude when
+  the user says so. Split and handoffs: [WORKFLOW.md](WORKFLOW.md). Pauses and approvals unchanged.
+- **Redrawing paused** by the user (2026-11-17): C7 Ashways (last room) not started, no prompts.
 - Current tasks, claims and deliveries awaiting the user are in the two handoff files.
 - Local Ashlands Story Board in ignored `private/story-board/` (desktop shortcut
   `Ashlands Story Board.lnk`). User edits in `data/board.json`: preserve them; never reseed.
 
 ## Recently completed (installed, verified)
+- C7 gallery r2 (2026-11-17): user said “install”; Codex installed the approved bytes and ran out of usage, Claude finished the mirrored wiring (stairhead (102,286)), outlines, records, golden (coordinate-only) and tests. Evidence: `art/inbox/done/gallery-installation-r2/HANDOFF.md`. Close-up brass centre still from the pre-C7 socket (follow-up art).
+- C7 guardroom pilot r2 (2026-11-17): user approved with “Continue”; installed exact selected numeric-layout art and independent overlays, closed/open grate with existing save flag, smaller ledger target, final protection and provenance. Evidence: `art/inbox/done/guardroom-installation-r2/`. Cell r1 also approved, installed and verified: `art/inbox/done/cell-installation-r1/HANDOFF.md`; outer-door prompts requested as K5.
 - C6 artwork (2026-11-16): explicitly approved and installed brown sweeper fight/broken states, separate training rig and Sigrid warm-skin exports. Source geometry and registration preserved; exact-byte and reproduction guards added. Evidence: `art/inbox/done/playtest-c6-installation-r1/`.
 - C4 character detail (2026-11-16): guard pilot approved by “Continue”; all thirteen C4 characters installed. Existing rigs, dimensions/timing/anchors and portraits preserved. Fast / all 286 Node tests and art checker pass; all thirteen checked in scratch production rooms. Evidence: `art/inbox/done/character-detail-r1/` and `done/guard-detail-r1/`.
 - Cell cage/gate r4 (user approval 2026-11-15): new clean drawing, existing registration.
@@ -48,6 +53,9 @@ Older verification history is in Git history of this file and in CHANGELOG.md.
   Font studies remain separate; game fonts unchanged. See README for player behavior.
 
 ## Latest verification
+- C7 gallery r2 installation (Claude): typecheck, 251 fast / 299 art+story+saves+input+crowd+runtime tests, art checker and ch1 reference freshness pass. Scratch production build: four body/socket states, stairhead, six pointer targets, exact loaded/bundled art, stairs both ways, rail names, hatch, Tab/Enter and resize; zero page/HTTP errors; reduced motion only. No browser suites, published output, commit or push.
+- C7 cell installation: typecheck, 246 fast / 263 art+story+saves+input tests, art checker and intro-reference freshness pass. Eight production room states, real cloak/window interactions, sleeping guard, seven pointer/outline targets and exact loaded/bundled artwork verified; zero page/HTTP errors. Scratch build only; no browser suites, published output, commit or push.
+- C7 installation: typecheck, 245 fast / 243 art+story+saves feature tests and art checker pass. Four production room states, actual nail interaction and both guards inspected; approved texture pixels and bundled images exact, zero page/HTTP errors. Scratch build only; no browser suites, published output changes, commit or push.
 - C6 installation: typecheck, 244 fast / 94 art Node tests and art checker pass; fresh scratch production assets match all five approved images byte-for-byte. Room/fight/dialogue captures, contact, gear/map/visibility/walker checks pass with zero page/HTTP errors. Evidence: `art/inbox/done/playtest-c6-installation-r1/HANDOFF.md`. No browser suites or published build changes. Before installation, all 290 Node tests passed for routine playtest fixes.
 - C5 installation: all 240 fast / 287 total Node tests and art checker pass; scratch production build, seven actual workshop/backroom/real-dialogue captures and approved-output hash checks pass. No browser suites or published build changes. Evidence: `art/inbox/done/bryn-redraw-installation-r1/`.
 - Kneeling-worker status confirmed: generator and installed human atlas tags hold frame 8;
@@ -75,4 +83,5 @@ Older verification history is in Git history of this file and in CHANGELOG.md.
   is an intentional placeholder. Oversized verb-icon notices are informational.
 
 ## Next action
-- C6 installed and complete; no active Codex claims or pending C6 approval. K3 documentation reconciliation remains for Claude. Published output unchanged, no commit or push. See per-agent handoffs.
+- Branch `redesign`, HEAD `0c595ac`; all work since is uncommitted (dirty tree includes earlier Codex/Claude changes). No published output, commit or push.
+- Redrawing is paused (C7 Ashways). Codex's handoff still shows its gallery claim; Codex reconciles it on return (Claude took it over, see `handoff/from-claude.md`).

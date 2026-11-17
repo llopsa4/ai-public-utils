@@ -1,0 +1,38 @@
+{
+  "assignment": "C7",
+  "revision": "scene-redraw-outer-door/r1",
+  "date": "2026-11-17",
+  "authority": "user",
+  "approval": "approved, directly after the outer-door r1 review; includes disclosed dithering and fixed-scenery differences",
+  "delivery": "art/inbox/done/scene-redraw-outer-door-r1",
+  "installedHashes": {
+    "intro/rooms/prison-door.png": "3296b5f49afb3a45524d6b833b315dafdaf59b4c250e4bffe1dfebbe22cb220a",
+    "intro/objects/outer-lantern.png": "7c065fc3aeb7bd33c3d2015c52588a636dd08cb17ceca71366132c24765700c6",
+    "intro/objects/outer-lantern.json": "cef14de8cae11e79e21cfc2ef04fa984137cf21dec071e59357e4c0ae5b1c37f",
+    "intro/rooms/prison-door.webp": "13390981b908a8d7f9432e628b1b89cbbf5a21936a45cad471a1a0d1f81a9ebc"
+  },
+  "webp": {
+    "encoding": "lossless",
+    "bytes": 217392
+  },
+  "placements": [
+    [
+      142,
+      130
+    ],
+    [
+      330,
+      130
+    ]
+  ],
+  "glassCentres": [
+    [
+      142,
+      122
+    ],
+    [
+      330,
+      122
+    ]
+  ]
+}

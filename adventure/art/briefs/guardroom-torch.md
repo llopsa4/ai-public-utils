@@ -4,7 +4,7 @@
 
 Reference for the implemented chapter; existing artwork is preserved.
 
-ID: `guardroom-torch` · object · **visual** · placeholder
+ID: `guardroom-torch` · object · **visual** · final
 
 ## Description
 
@@ -24,7 +24,7 @@ Visual layer only; no additional interaction is introduced.
 
 - **idle** — A wall torch: a pitch-wrapped head on a wooden haft, for the iron brackets on the guardroom walls (unlit: the game adds the flame). When: Existing idle frame; placement flag conditions above determine when it is used..
 
-Existing file: art/src/intro/objects/guardroom-torch.png. Status: placeholder. No new artwork is produced by reference generation.
+Existing file: art/src/intro/objects/guardroom-torch.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
@@ -33,6 +33,6 @@ Existing file: art/src/intro/objects/guardroom-torch.png. Status: placeholder. N
 
 ## Sources
 
-[art/manifest.mjs · L443](../manifest.mjs#L443) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
+[art/manifest.mjs · L457](../manifest.mjs#L457) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
 Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

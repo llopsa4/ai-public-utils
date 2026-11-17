@@ -1,0 +1,46 @@
+{
+  "assignment": "C7",
+  "revision": "scene-redraw-cell/r1",
+  "date": "2026-11-17",
+  "authority": "user",
+  "approval": "Continue directly after cell r1 review delivery, including disclosed fixed-scenery/tabletop placement approximations.",
+  "blanketDecision": "34px cloth; top y532, hem y566",
+  "delivery": "art/inbox/done/scene-redraw-cell-r1",
+  "installedHashes": {
+    "intro/rooms/cell.png": "94694a5be4d5da376994f7cb8bc5e91927f08bd122a5d563ac0830211ba51f4c",
+    "intro/objects/cell-cot.png": "69adce056e1bdab32361039b1a0ad919fb9211798f63b950fc88ae81166ed74f",
+    "intro/objects/cell-cot.json": "83d33905c95d4224935a6e5f3884853ce36c72a7935419ffc62fd3c10d14bbc0",
+    "intro/objects/cell-blanket.png": "0ed9211b61a23bca47af8be5973eb3e679d0c7278ddbfbe6814c3609cd4726b3",
+    "intro/objects/cell-blanket.json": "4f7c2b32dea0de712f2bcb103019c56d74666b6830b767bc1db8a0a08fe8475d",
+    "intro/objects/cell-bucket.png": "4e1946aa9875139857ee5a7d2583e83defcd4ba629059c9c739aaa622f18f30b",
+    "intro/objects/cell-bucket.json": "7c9e8dee1dc8fe75eb4aceb256278ac052ae1e03de1bcd88b12eaaa0bbe972dd",
+    "intro/objects/cell-roster.png": "d8d5de3acb0d10eacb8faa153d9a97867c6e7f8094c3e2f85ab399d8bddb0802",
+    "intro/objects/cell-roster.json": "a2c887f87e2545d27163a98fd1aa4ae938b321094263d33f9ef3d65ad42010a3",
+    "intro/objects/cell-table.png": "56149aba85a76bc65cbcbe191bba0a4ccb4b690cfa122b3162e6e274c8fc3f77",
+    "intro/objects/cell-table.json": "52926d11adc299f83c65f07c18884220d811a40d494cefe2461dd2dc1e5b6768",
+    "intro/objects/cell-candle.png": "0eaa28b1acec7bdc0b46fede82aa65373f48e926ab8ebf365e478737bf89640b",
+    "intro/objects/cell-candle.json": "420aa8de342e08aef4624cd93d473a4663eacb03cad453d808a545df58af6aae",
+    "intro/objects/table-stub.png": "14bd2cf7d8f64aa5a6122342838d0c06f70bb835a504b8e85b8656be29abad9d",
+    "intro/objects/table-stub.json": "9a53463342050138a020fc057137be133eae82c970155093789f4dfe784e98fe",
+    "intro/objects/cell-cloak.png": "810adf34fdc381cee018c9f77841b037d8bb9f7bece9760a55af183a20fd2704",
+    "intro/objects/cell-cloak.json": "55c0e0f0aa2c1e76d70ab6a54df2e00b349833292b903434a55afac1a6dbf83b",
+    "intro/objects/floor-plate.png": "a9dc20113a7b64d927e43065e6fab5ed203e12e7cb44c8d00ca4b600f5e38149",
+    "intro/objects/floor-plate.json": "eb9b2d74b7edd8efc6afd25e548b49593f0ff54f3e1668626fffc83c33eaa52f",
+    "intro/objects/window-plate.png": "51bcff705c98c0575430d88df6155b557a7cef12f49d5bc0ef0661002e0f576e",
+    "intro/objects/window-plate.json": "65d6eabbec4ad10db7ea84cd6fa539631b517fb2c1e0d4fbd5589029c4f942de",
+    "intro/rooms/cell.webp": "bff49d5e79270643d797d9cab624b9cc367a0339b0ba42fe74d5eedc0bdbb363"
+  },
+  "preservedHashes": {
+    "foreground/cell-cage.png": "92599e61aa0fab7ecd334fab7666b2069940e87e539acba3455b74c96bdd5e4f",
+    "foreground/cell-cage.webp": "f6a0d08d11cc84df63f9a66a1be984fa3de7539b464f4eefe37e404b2c178df4",
+    "intro/objects/cell-gate.png": "6e0881c8d08449721e841d7d030613bf6633f7a30b22bd10f5def373d62bda1a",
+    "intro/objects/cell-gate.json": "984945ef83a101b7732b3fe60cfdf06bd45922f8bdeb0fad49151f25c269ce6f",
+    "intro/objects/table-frame.png": "23991c2ce1975c2a9639fbbccbce18c6b2f7b869f3f96a8cae9312a6810feae5",
+    "intro/objects/floor-wax.png": "cba67978cf63cd8b5ae8dbf142506a076f770a45a02fa7a88885b2f2bf0f1c94"
+  },
+  "webp": {
+    "encoding": "lossless",
+    "reason": "Retain approved master-palette 1px pixels exactly.",
+    "bytes": 346058
+  }
+}

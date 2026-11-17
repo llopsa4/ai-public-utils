@@ -1,5 +1,11 @@
 # Asset reference index
 
+<!-- chapter-reference:ch1 -->
+## Chapter reading order: Chapter 1: Kiln Courier
+
+Start with [the room and puzzle index](INDEX-ch1.md). It separates interactive targets, changing sprites and foreground cuts, and links directly to implemented sources.
+<!-- /chapter-reference:ch1 -->
+
 <!-- chapter-reference:intro -->
 ## Chapter reading order: Intro: The Man With Many Faces
 
@@ -335,7 +341,6 @@ Generated from the manifest. [Grouped catalog](CATALOG.md) · [Pilot references]
 | [battle-enemy-ash-sweeper](battle-enemy-ash-sweeper.md) | battle-portrait | ch1 | final |
 | [battle-enemy-rig](battle-enemy-rig.md) | battle-portrait | ch2 | final |
 | [room-cell](room-cell.md) | room | intro | final |
-| [room-cell-bare](room-cell-bare.md) | room | intro | final |
 | [room-guardroom](room-guardroom.md) | room | intro | final |
 | [room-prison-door](room-prison-door.md) | room | intro | final |
 | [char-silas](char-silas.md) | character | intro | placeholder |
@@ -371,14 +376,23 @@ Generated from the manifest. [Grouped catalog](CATALOG.md) · [Pilot references]
 | [item-maskClerk](item-maskClerk.md) | item | intro | final |
 | [window-plate](window-plate.md) | object | intro | final |
 | [floor-plate](floor-plate.md) | object | intro | final |
+| [cell-cot](cell-cot.md) | object | intro | final |
+| [cell-blanket](cell-blanket.md) | object | intro | final |
+| [cell-bucket](cell-bucket.md) | object | intro | final |
+| [cell-roster](cell-roster.md) | object | intro | final |
+| [cell-table](cell-table.md) | object | intro | final |
+| [cell-candle](cell-candle.md) | object | intro | final |
+| [cell-cloak](cell-cloak.md) | object | intro | final |
 | [guardroom-ledger](guardroom-ledger.md) | object | intro | final |
+| [guardroom-grate](guardroom-grate.md) | object | intro | final |
+| [guardroom-stove](guardroom-stove.md) | object | intro | final |
 | [table-stub](table-stub.md) | object | intro | final |
 | [floor-wax](floor-wax.md) | object | intro | final |
 | [silas-kneel-reach](silas-kneel-reach.md) | object | intro | final |
 | [item-wax](item-wax.md) | item | intro | final |
 | [stairs-light](stairs-light.md) | object | intro | placeholder |
 | [outer-lantern](outer-lantern.md) | object | intro | final |
-| [guardroom-torch](guardroom-torch.md) | object | intro | placeholder |
+| [guardroom-torch](guardroom-torch.md) | object | intro | final |
 | [table-frame](table-frame.md) | object | intro | final |
 | [cell-gate](cell-gate.md) | object | intro | final |
 | [cell-cage](cell-cage.md) | foreground | intro | final |

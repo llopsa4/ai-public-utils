@@ -1,0 +1,43 @@
+{
+  "frames": [
+    {
+      "filename": "idle",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 360,
+        "h": 148
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 360,
+        "h": 148
+      },
+      "sourceSize": {
+        "w": 360,
+        "h": 148
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 revised design r2",
+    "image": "tent-workbench.png",
+    "size": {
+      "w": 360,
+      "h": 148
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "idle",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      }
+    ]
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "frames": [
+    {
+      "filename": "idle",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 132
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 192,
+        "h": 132
+      },
+      "sourceSize": {
+        "w": 192,
+        "h": 132
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 delivery",
+    "image": "tent-drum.png",
+    "size": {
+      "w": 192,
+      "h": 132
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "idle",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      }
+    ]
+  }
+}

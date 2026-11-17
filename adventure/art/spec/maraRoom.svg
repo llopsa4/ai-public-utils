@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1300" viewBox="0 0 1900 1300" role="group" aria-labelledby="title desc"><title id="title">The Kiln Hall — reference layout</title><desc id="desc">1280 by 720 art-pixel frame. Stage controls select illustrative states; numbers link to asset briefs. Green floor, pink actor scale; targets and visual layers are separate.</desc>
+<style>[role=button]:focus rect{stroke:#315b73;stroke-width:3}</style><rect width="1900" height="1300" fill="#f8f1e4"/>
+<text x="34" y="38" font-family="Georgia,serif" font-size="28" fill="#342a20">The Kiln Hall</text>
+<text x="34" y="63" font-family="Georgia,serif" font-size="16" fill="#342a20">Generated reference · art pixels · diagrams only; source specification owns all placements</text>
+<g role="button" tabindex="0" aria-label="Show reference" aria-pressed="true" data-button="reference" onclick="showStage('reference')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('reference')}" ><rect x="34" y="77" width="103" height="27" rx="4" fill="#dfcba8" stroke="#8d775b"/><text x="44" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">reference</text></g>
+<g role="button" tabindex="0" aria-label="Show all" aria-pressed="false" data-button="all" onclick="showStage('all')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('all')}" ><rect x="144" y="77" width="78" height="27" rx="4" fill="#fff9ee" stroke="#8d775b"/><text x="154" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">all</text></g>
+<g transform="translate(34 110)"><rect width="1280" height="720" fill="#efe4cf" stroke="#6f5b43"/><rect y="536" width="1280" height="154" fill="#d5dfc9"/><rect y="636" width="1280" height="54" fill="#b7c9a6"/>
+<path d="M0 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M80 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M160 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M240 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M320 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M400 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M480 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M560 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M640 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M720 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M800 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M880 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M960 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1040 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1120 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1200 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1280 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M0 0 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 80 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 160 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 240 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 320 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 400 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 480 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 560 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 640 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 720 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 524 H1280 M0 636 H1280 M0 690 H1280" stroke="#77886b" stroke-dasharray="6 6"/>
+<polygon points="0,536 1280,536 1280,690 0,690" fill="#6c9f73" fill-opacity=".1" stroke="#497650"/>
+<g data-target="tally" data-stages="reference" visibility="visible"><rect x="6" y="276" width="92" height="228" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>scratches on the pillar: look</title></rect></g>
+<g data-target="toTent" data-stages="reference" visibility="visible"><rect x="384" y="248" width="224" height="280" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>Mara&#39;s tent: look, go</title></rect></g>
+<g data-target="niche" data-stages="reference" visibility="visible"><rect x="640" y="240" width="360" height="240" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>kiln mouths: look, use</title></rect></g>
+<g data-target="pulleys" data-stages="reference" visibility="visible"><rect x="108" y="38" width="176" height="360" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>pulley hoist: look, use</title></rect></g>
+<g data-target="jars" data-stages="reference" visibility="visible"><rect x="258" y="440" width="120" height="64" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>storage jars: look, take</title></rect></g>
+<g data-target="cart" data-stages="reference" visibility="visible"><rect x="1008" y="376" width="144" height="128" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>ash cart: look, use</title></rect></g>
+<g data-target="roomCurtain" data-stages="reference" visibility="visible"><rect x="1184" y="208" width="96" height="320" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>way to the firing house: look, go</title></rect></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/hall-tally.md"><title>hall-tally; Always; maraRoom-tally</title><rect x="5" y="272" width="96" height="232" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M49 504 h8 M53 500 v8" stroke="#9c571c"/><circle cx="16" cy="284" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="10" y="289" font-family="Georgia,serif" font-size="12" fill="#342a20">1</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/tent.md"><title>tent; Always; maraRoom-tent</title><rect x="384" y="248" width="224" height="280" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M492 528 h8 M496 524 v8" stroke="#9c571c"/><circle cx="395" cy="260" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="389" y="265" font-family="Georgia,serif" font-size="12" fill="#342a20">2</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/hall-hoist.md"><title>hall-hoist; Always; maraRoom-hoist</title><rect x="108" y="38" width="176" height="360" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M192 398 h8 M196 394 v8" stroke="#9c571c"/><circle cx="119" cy="50" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="113" y="55" font-family="Georgia,serif" font-size="12" fill="#342a20">3</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/hall-jars.md"><title>hall-jars; Always; maraRoom-jars</title><rect x="258" y="440" width="120" height="64" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M314 504 h8 M318 500 v8" stroke="#9c571c"/><circle cx="269" cy="452" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="263" y="457" font-family="Georgia,serif" font-size="12" fill="#342a20">4</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/hall-cart.md"><title>hall-cart; Always; maraRoom-cart</title><rect x="1008" y="376" width="144" height="128" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M1076 504 h8 M1080 500 v8" stroke="#9c571c"/><circle cx="1019" cy="388" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="1013" y="393" font-family="Georgia,serif" font-size="12" fill="#342a20">5</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/kiln-fire.md"><title>kiln-fire; Always; kilnCold: lit -&gt; cold; maraRoom-fireA</title><rect x="652" y="398" width="56" height="44" fill="#366b85" fill-opacity=".07" stroke="#366b85" stroke-dasharray="5 3"/><path d="M676 442 h8 M680 438 v8" stroke="#366b85"/><circle cx="663" cy="410" r="11" fill="#fff9ee" stroke="#366b85"/><text x="657" y="415" font-family="Georgia,serif" font-size="12" fill="#342a20">6</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/kiln-fire.md"><title>kiln-fire; Always; kilnCold: lit -&gt; cold; maraRoom-fireB</title><rect x="777" y="398" width="56" height="44" fill="#366b85" fill-opacity=".07" stroke="#366b85" stroke-dasharray="5 3"/><path d="M801 442 h8 M805 438 v8" stroke="#366b85"/><circle cx="788" cy="410" r="11" fill="#fff9ee" stroke="#366b85"/><text x="782" y="415" font-family="Georgia,serif" font-size="12" fill="#342a20">6</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/kiln-fire.md"><title>kiln-fire; Always; kilnCold: lit -&gt; cold; maraRoom-fireC</title><rect x="902" y="398" width="56" height="44" fill="#366b85" fill-opacity=".07" stroke="#366b85" stroke-dasharray="5 3"/><path d="M926 442 h8 M930 438 v8" stroke="#366b85"/><circle cx="913" cy="410" r="11" fill="#fff9ee" stroke="#366b85"/><text x="907" y="415" font-family="Georgia,serif" font-size="12" fill="#342a20">6</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/hall-crate.md"><title>hall-crate; Always; maraRoom-hall-crate</title><rect x="196" y="622" width="68" height="58" fill="#784489" fill-opacity=".07" stroke="#784489" stroke-dasharray="5 3"/><path d="M192 622 h8 M196 618 v8" stroke="#784489"/><circle cx="207" cy="634" r="11" fill="#fff9ee" stroke="#784489"/><text x="201" y="639" font-family="Georgia,serif" font-size="12" fill="#342a20">7</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/hall-left.md"><title>hall-left; Always; maraRoom-hall-left</title><rect x="0" y="616" width="178" height="104" fill="#784489" fill-opacity=".07" stroke="#784489" stroke-dasharray="5 3"/><path d="M-4 616 h8 M0 612 v8" stroke="#784489"/><circle cx="13" cy="628" r="11" fill="#fff9ee" stroke="#784489"/><text x="6" y="633" font-family="Georgia,serif" font-size="12" fill="#342a20">8</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/hall-right.md"><title>hall-right; Always; maraRoom-hall-right</title><rect x="1114" y="628" width="166" height="92" fill="#784489" fill-opacity=".07" stroke="#784489" stroke-dasharray="5 3"/><path d="M1110 628 h8 M1114 624 v8" stroke="#784489"/><circle cx="1125" cy="640" r="11" fill="#fff9ee" stroke="#784489"/><text x="1119" y="645" font-family="Georgia,serif" font-size="12" fill="#342a20">9</text></a></g>
+<rect x="470" y="352" width="52" height="232" rx="22" fill="#bc5a8a" fill-opacity=".15" stroke="#a14878"/>
+<text x="12" y="545" font-family="Georgia,serif" font-size="16" fill="#342a20">Mara&#39;s tent</text>
+<text x="1040" y="565" font-family="Georgia,serif" font-size="16" fill="#342a20">way to the firing house</text>
+</g>
+<text x="1350" y="113" font-family="Georgia,serif" font-size="20" fill="#342a20">OBJECT KEY · room and puzzle order</text>
+<text x="1350" y="141" font-family="Georgia,serif" font-size="15" fill="#342a20">T target · V visual-only · F foreground</text>
+<text x="1350" y="170" font-family="Georgia,serif" font-size="18" fill="#342a20">1 T · hall-tally</text>
+<text x="1370" y="187" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="212" font-family="Georgia,serif" font-size="18" fill="#342a20">2 T · tent</text>
+<text x="1370" y="229" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="254" font-family="Georgia,serif" font-size="18" fill="#342a20">3 T · hall-hoist</text>
+<text x="1370" y="271" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="296" font-family="Georgia,serif" font-size="18" fill="#342a20">4 T · hall-jars</text>
+<text x="1370" y="313" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="338" font-family="Georgia,serif" font-size="18" fill="#342a20">5 T · hall-cart</text>
+<text x="1370" y="355" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="380" font-family="Georgia,serif" font-size="18" fill="#342a20">6 V · kiln-fire</text>
+<text x="1370" y="397" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="422" font-family="Georgia,serif" font-size="18" fill="#342a20">7 F · hall-crate</text>
+<text x="1370" y="439" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="464" font-family="Georgia,serif" font-size="18" fill="#342a20">8 F · hall-left</text>
+<text x="1370" y="481" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="506" font-family="Georgia,serif" font-size="18" fill="#342a20">9 F · hall-right</text>
+<text x="1370" y="523" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="34" y="866" font-family="Georgia,serif" font-size="18" fill="#342a20">speaker.mara: 232 art px / 116 logical units. Background stays fixed; props and stages are independent.</text>
+<text x="34" y="898" font-family="Georgia,serif" font-size="18" fill="#342a20">Click a stage to view one snapshot; All shows alternative footprints, not a simultaneous scene.</text>
+<text x="34" y="940" font-family="Georgia,serif" font-size="17" fill="#342a20">reference: All implemented conditional placements; each target and sprite lists its own flag conditions.</text>
+<script><![CDATA[function showStage(stage){document.querySelectorAll('[data-stages]').forEach(function(g){g.setAttribute('visibility',stage==='all'||g.getAttribute('data-stages').split(' ').indexOf(stage)>=0?'visible':'hidden')});document.querySelectorAll('[data-button]').forEach(function(g){var selected=g.getAttribute('data-button')===stage;g.querySelector('rect').setAttribute('fill',selected?'#dfcba8':'#fff9ee');g.setAttribute('aria-pressed',selected?'true':'false')})}]]></script></svg>

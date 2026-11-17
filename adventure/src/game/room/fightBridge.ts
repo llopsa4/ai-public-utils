@@ -49,7 +49,8 @@ export async function blowHatch(scene: RoomScene): Promise<void> {
   await wait(scene, calm ? 200 : 600);
   await new Promise<void>(resolve => {
     const emerge = () => {
-      const crawler = scene.add.image(hatch.x, hatch.y, 'battle-scavenger').setOrigin(0.5, 0.5).setScale(0.08).setFlipX(true).setDepth(0);
+      // The art faces left; turned round when it leaps to the right (towards Mara stepping back).
+      const crawler = scene.add.image(hatch.x, hatch.y, 'battle-scavenger').setOrigin(0.5, 0.5).setScale(0.08).setFlipX(hatch.land.x > hatch.x).setDepth(0);
       const hole = scene.make.graphics({}, false).fillCircle(hatch.x, hatch.y, hatch.r);
       crawler.setMask(hole.createGeometryMask());
       scene.hatchCreature = crawler;

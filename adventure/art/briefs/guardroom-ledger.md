@@ -26,11 +26,11 @@ Existing file: art/src/intro/objects/guardroom-ledger.png. Status: final. No new
 
 ## Asset contract
 
-- Canvas: **88×40 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Canvas: **48×20 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
 - Files: `art/inbox/guardroom-ledger-idle.png`.
 
 ## Sources
 
-[art/manifest.mjs · L426](../manifest.mjs#L426) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
+[art/manifest.mjs · L438](../manifest.mjs#L438) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
 Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

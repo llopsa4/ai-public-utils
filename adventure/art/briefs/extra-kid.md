@@ -1,22 +1,36 @@
 # extra-kid
 
-Status: **placeholder** · extra · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `extra-kid` · extra · **visual** · placeholder
 
 ## Description
 
 Bea, a little girl of about 8 (a little shorter than Pip): round face, dark skin, her hair in two puffy buns. An oversized cream knitted cardigan over a red smock, bare knees, sandals. She carries a wooden board as a toy shield, painted with a kiln sun.
 
-## Use and placement
+## What the game does with it
 
-A background person in: firingHouse (walks about, works, now and then says a line).
-In the game 146 art pixels tall (73 world pixels; people are built on a 1-art-pixel grid with the master palette, so the face is only a few dozen art pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — Bea, a little girl of about 8 (a little shorter than Pip): round face, dark skin, her hair in two puffy buns. An oversized cream knitted cardigan over a red smock, bare knees, sandals. She carries a wooden board as a toy shield, painted with a kiln sun. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/characters/extra-kid.png. Status: placeholder. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/characters/extra-kid.png` (placeholder).
-- Anchor: `bottom-centre`.
-- Canvas/frame: **256×256 art px**.
-- Figure height: 146 art px.
-- Atlas metadata: `art/src/characters/extra-kid.json`.
+- Canvas: **256×256 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/extra-kid.png`.
+
+## Sources
+
+[art/manifest.mjs · L315](../manifest.mjs#L315) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

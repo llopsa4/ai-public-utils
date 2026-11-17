@@ -8,7 +8,7 @@ ID: `window-plate` · object · **visual** · final
 
 ## Description
 
-The dented tin plate wedged at the bottom of the cell's barred window, tilted to throw the moonlight into the cell, its dent shining.
+The identical dented tin plate tilted in the barred window to throw moonlight.
 
 ## What the game does with it
 
@@ -20,17 +20,17 @@ Visual layer only; no additional interaction is introduced.
 
 ## States, visibility and transitions
 
-- **idle** — The dented tin plate wedged at the bottom of the cell's barred window, tilted to throw the moonlight into the cell, its dent shining. When: Existing idle frame; placement flag conditions above determine when it is used..
+- **idle** — The identical dented tin plate tilted in the barred window to throw moonlight. When: Existing idle frame; placement flag conditions above determine when it is used..
 
 Existing file: art/src/intro/objects/window-plate.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Canvas: **44×28 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Canvas: **36×24 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
 - Files: `art/inbox/window-plate-idle.png`.
 
 ## Sources
 
-[art/manifest.mjs · L420](../manifest.mjs#L420) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
+[art/manifest.mjs · L419](../manifest.mjs#L419) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
 Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

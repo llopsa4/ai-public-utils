@@ -1,5 +1,49 @@
 # Art provenance
 
+## C7 tent r2 revised design, approved and installed 2026-11-17
+
+User explicitly said “Install” after reviewing r2, including disclosed background geometry, approximately34px boots against30px and tiny motif limits. This supersedes r1 for the tent: r1 had missed Claude's revised K6 design. Twelve built-in ImageGen calls produced the new workbench/three repairs, jug, notebook, full/empty red-cell cradle, courier crate, tool board and repaired four-leg stool. Drum/stove reuse approved r1 artwork. Exact prompts, references, originals and preparation: `inbox/done/scene-redraw-tent-r2/`. No new generation during installation.
+
+Approved PNG/atlas bytes installed unchanged; room/stool WebPs are pixel-exact lossless. Current protected hashes and registration: `sources/tent-c7/approval.json`; historical r1 approval preserved as `approval-r1.json`. Tabletop y416 and shelf y500 are reflected in smaller targets, approach positions and all new object anchors. The cradle glow is world(165,197), size5; tabletop depth keeps all objects visible. Existing `hasGauntlet`, `hasNotebook`, `dressed` and save semantics retained. Precisely reviewed golden-fixture changes update56 old notebook/rack approach x coordinates only, with all remaining command data identical. Evidence and old-file backups: `inbox/done/tent-installation-r2/`.
+
+## C7 tent r1, approved 2026-11-17
+
+User “Continue” approved exact reviewed candidates and disclosed painted geometry, lantern-centre and boot-size approximations. Built-in ImageGen originals, calls, reference roles and preparation: `inbox/done/scene-redraw-tent-r1/`. Exact PNG/atlas bytes and pixel-exact lossless room/stool WebPs installed; protected hashes and registration: `sources/tent-c7/approval.json`. Five furniture layers and one foreground stool replace baked scenery. Existing cradle/notebook bytes, positions and save flags preserved. Explicit depths retain tabletop support and gloves in front of jar; stool target/alpha outline and lantern glow aligned. Installation evidence: `inbox/done/tent-installation-r1/`. No new generation.
+
+## C7 outer-door r1, approved 2026-11-17
+
+User explicitly replied “approved” after the exact r1 review, including disclosed room dithering and small fixed-scenery differences. OpenAI built-in ImageGen generated a new clean background and one reusable lantern from Claude's prompts. Source roles, exact generation calls, unmodified originals and reproducible preparation: `inbox/done/scene-redraw-outer-door-r1/`. Supersedes the old room and cut-out lantern described in the historical record below.
+
+Installed PNG/atlas bytes are exact approved candidates; room WebP is lossless and pixel-exact. Protected hashes: `sources/outer-door-c7/approval.json`. Both lanterns are independent objects at world (142,130)/(330,130); flame centres remain (142,122)/(330,122), size reduced to 4 to fit the smaller glass. Glows, snow, actors, walk area, hotspots and save semantics unchanged. Installation evidence: `inbox/done/outer-door-installation-r1/`.
+
+## C7 cell r1, approved 2026-11-17
+
+The user’s “Continue” directly after the cell r1 review approved the exact candidates and disclosed fixed-scenery/tabletop placement differences. Built-in ImageGen produced the clean room and ten independent overlays at Silas’s detail. A separate generated fixed chair is flattened into the opaque room; all interactive objects retain clean backing. The approved blanket is 34px tall, mattress top y532 and hem y566.
+
+Installed PNG/atlas files match candidate bytes exactly; lossless room WebP preserves their pixels. Approval and unchanged cage/gate/frame/wax hashes: `sources/cell-c7/approval.json`. The existing `tookCloak`, `tookPlate`, `cellLit`, `gotFrame` and `cellOpen` flags retain their meaning; no save migration. The cloak is now an overlay and the `cell-bare` swap is retired. The spare candle remains on the table after its existing take response; no new collection state was invented. Smaller click areas and object-derived outlines follow the approved drawings; flame, glow and drip endpoints were re-anchored.
+
+Sources and review evidence: `art/inbox/done/scene-redraw-cell-r1/`. Installation, superseded files and actual production captures: `art/inbox/done/cell-installation-r1/`. No new generation during installation or published build changes.
+
+## C7 guardroom pilot r2, approved 2026-11-16
+
+The user's “Continue” directly after the r2 delivery approved that exact pilot. Their earlier
+“New” selected the numeric coordinates over the old painted positions. Built-in ImageGen
+produced the background, clean backing and fixed scenery, plus independent ledger, stove,
+torch and closed/open grate drawings. Fixed scenery is flattened at the specified coordinates;
+the four interactive assets remain separate. All use 1-art-pixel detail, the master palette
+and hard alpha; no generator or normalizer was run over approved installation bytes.
+
+The installed PNG/atlas files match the approved r2 candidates byte-for-byte. The served room
+WebP follows the existing smaller-of-lossy/lossless policy; its encoding and visual verification
+are recorded in the installation evidence. Exact PNG/atlas and WebP hashes are protected in
+`sources/guardroom-c7/approval.json`. Grate state uses the existing `grateOpen` flag, preserving
+saved progress; the ledger target now fits its smaller drawing.
+
+Originals, exact prompts, preparation and review evidence: `art/inbox/done/scene-redraw-guardroom-r2/`.
+Installation checks and superseded-art backup: `art/inbox/done/guardroom-installation-r2/`.
+The selected y524 feet/y536 floor-seam consequence and painted-edge approximations remain
+as disclosed and approved. No new artwork during installation; published output unchanged.
+
 ## C6 playtest artwork, approved 2026-11-16
 
 The user explicitly instructed “Install the artwork” after reviewing C6 r1. The Ashways
@@ -58,7 +102,8 @@ this document is unchanged; these are derivatives of those approved sources.
 
 The puzzle now reuses `props/gauge-face.png` for its painted dial, with a separate animated
 needle and safe-band overlay. Its solid removable brass centre (`props/regulator-closeup-center.png`)
-reuses the installed frame of `objects/socket.png`: crop (40,36,80,80), original centre (80,76),
+reuses the installed frame of `objects/socket.png` as it was before the C7 gallery redraw (kept as
+`art/sources/regulator-closeup/socket-pre-c7.png`): crop (40,36,80,80), original centre (80,76),
 hard circular mask radius36 on the existing 2px grid. Retained source RGBA pixels are unchanged;
 no new image generation, recolouring or room repaint was used. Reproduce only this derivative
 with `node art/sources/regulator-closeup/prepare-center.mjs`. The 80px source canvas is displayed
@@ -104,15 +149,12 @@ The work-glove interaction cursor (`ui/cursor-work-glove.png`), ceramic regulato
 | `objects/tent.*` (the tent seen in the kiln hall) | `opening/tempering-house.png` (cloth over the workbench) | `pixelate.mjs` | the painted cloth mapped onto a tent silhouette (mirrored on the far slope, shaded by side), dark entrance and pole drawn |
 | `rooms/mara-room.png` (kiln hall) | `kiln-hall.png` | `pixelate.mjs` | 1280×720 area downscale, light grade, 96-colour palette |
 | `rooms/firing-house.png` | `opening/cinderfold.png` | `pixelate.mjs` | as above |
-| `rooms/gallery.png` | `opening/regulator-gallery.png` | `pixelate.mjs` | as above |
 | `rooms/ashways.png` | `opening/ashways.png` | `pixelate.mjs` | crop 140,120 1392×783 (removes corner artifacts), as above |
 | `objects/sweeper.*` | `opening/ash-sweeper.png` | `pixelate.mjs` | 240 px wide, halo removed, 48 colours, outline, bob frames |
 | `objects/notebook.*`, `items/notebook.png` | `opening/regulator-gallery.png` (open notebook on the bench) | `pixelate.mjs` | polygon mask, downscale |
-| `objects/socket.*` | `opening/regulator-gallery.png` (regulator ring) | `pixelate.mjs` | circular mask; the empty hollow is painted |
 | `objects/pantry-door.*` | `card-atlas.png` (door tile) | `pixelate.mjs` | arch mask, downscale; latch drawn on top |
 | `objects/valve.*` | `card-atlas.png` (valve wheel and steam-stack tiles) | `pixelate.mjs` | circular mask on the wheel, stack crop as the pipe; steam drawn |
 | `objects/rack.*` (charging cradle) | `opening/regulator-gallery.png` (lantern) | `pixelate.mjs` | lantern mask; the empty frame has the glow dimmed |
-| `props/gauge-face.png` | `rooms/gallery.png` (the gauge dial) | `pixelate.mjs` | disc cut-out; the painted needle is refilled from the dial at the same radius (the game draws a live needle) |
 | `props/pulley.png` | `rooms/mara-room.png` (hoist chains and pot) | `pixelate.mjs` | polygon cut-out, swung by the game |
 | `foreground/*.png` | the rendered rooms above | `pixelate.mjs` | polygon cut-outs of the same pixels (kiln-hall rubble, gallery railing) |
 | `items/gauntlet.png` | `equipment/courier-gauntlet.png` | `pixelate.mjs` | 64×64 icon |
@@ -160,3 +202,15 @@ Nell supplied format/pose references, Mara casual style/scale, workshop colour c
 - **`intro/objects/stairs-light.png`**: a soft light effect by Claude, not palette art.
 - **Cage and door** (`foreground/cell-cage.png` / `.webp`, `intro/objects/cell-gate.png` / `.json`): new r4 cage and matching open leaf generated by Codex with built-in image generation, explicitly approved by the user on 2026-11-15 (“cage looks perfect, install”). Sources, exact prompts, processing, coordinate-fitting limitations and checks: `art/inbox/done/cell-cage-redraw-r4/`. r1–r3 supplied geometry references only; no old cage pixels were reused. Fixed iron and moving leaf retain the existing dimensions, frames and anchors. Older installations remain in `done/cell-door-leaf/`, `done/cell-cage-perspective/` and `done/cell-door-small/`.
 - **Wax-only kneeling reach** (`intro/objects/silas-kneel-reach.png`): the first floor-reaching illustration selected by the user, prepared as body and exposed-arm layers in `art/inbox/done/silas-kneel-reach/`. Its source pixels are preserved; the original general kneel remains unchanged.
+
+## C7 kiln hall r1 — installed 2026-11-17
+
+User Continue after r1 review, following established C7 approval precedent. Exact reviewed room, tally/hoist/jars/cart/tent, two-state fires, pulley and three foreground drawings installed. Fifteen built-in OpenAI ImageGen calls recorded with originals/prompts/references in `art/inbox/done/scene-redraw-kiln-hall-r1/`; disclosed geometry approximations retained. Installation generated no artwork. Lossless WebPs reproduce approved PNG pixels. Hashes/registration: `art/sources/kiln-hall-c7/approval.json`; validation, backups and actual production captures: `art/inbox/done/kiln-hall-installation-r1/HANDOFF.md`. Existing save flags and crowd stations preserved.
+
+## C7 firing house r1 — installed 2026-11-17
+
+Explicit user approval: “Install” after reviewing r1. Exact clean-room PNG and independent shoes/bell/chalk/fire/soup/bread/pantry-door PNG/atlas files installed; lossless room WebP reproduces approved pixels. Seventeen built-in OpenAI ImageGen calls, actual prompts/references, originals and disclosed approximations: `art/inbox/done/scene-redraw-firing-house-r1/`. No generation during installation. Hashes/registration: `art/sources/firing-house-c7/approval.json`; backup and actual scratch production verification: `art/inbox/done/firing-house-installation-r1/HANDOFF.md`. Existing save flags and approach points retained; interaction golden unchanged.
+
+## C7 gallery r2 — installed 2026-11-17
+
+Explicit user approval: “install” after reviewing r2 with the retained r1 overlays. Codex installed the exact clean-room PNG (r2 stairwell edit of the mirrored r1 room) and the r1 regulator-body, socket, gauge-face, lantern, logbook and names PNG/atlas files; lossless room and gauge WebPs reproduce approved pixels. Codex then ran out of usage; Claude completed the wiring and verification under the temporary Claude-only mode. Generation: eleven (r1) plus three (r2) built-in ImageGen calls, prompts/references, originals and disclosed approximations in `art/inbox/done/scene-redraw-gallery-r1/` and `art/inbox/done/scene-redraw-gallery-r2/`. No generation during installation. Hashes/registration: `art/sources/gallery-c7/approval.json`; backups and verification: `art/inbox/done/gallery-installation-r2/HANDOFF.md`. Room mirrored, so gallery coordinates moved; interaction golden changes are coordinate/facing only. The regulator close-up's brass centre still comes from the pre-C7 socket.

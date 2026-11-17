@@ -546,7 +546,7 @@ function buildExtra(id) {
 
 /** Palette-reduces the frames, adds the outline and writes the PNG + Aseprite JSON pair. */
 /**
- * Default grid for legacy placeholders, including Bryn. Approved source characters opt into
+ * Default grid for legacy placeholders. Approved source characters opt into
  * detail.grid = 1 and detail.palette = 'master', matching Mara's colour normalization.
  * The coarse path averages 2x2 blocks and outlines them one block thick.
  */

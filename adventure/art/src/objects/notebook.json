@@ -1,45 +1,43 @@
 {
- "frames": [
-  {
-   "filename": "0",
-   "frame": {
-    "x": 0,
-    "y": 0,
-    "w": 72,
-    "h": 24
-   },
-   "rotated": false,
-   "trimmed": false,
-   "spriteSourceSize": {
-    "x": 0,
-    "y": 0,
-    "w": 72,
-    "h": 24
-   },
-   "sourceSize": {
-    "w": 72,
-    "h": 24
-   },
-   "duration": 1000
+  "frames": [
+    {
+      "filename": "idle",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 40,
+        "h": 14
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 40,
+        "h": 14
+      },
+      "sourceSize": {
+        "w": 40,
+        "h": 14
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 revised design r2",
+    "image": "notebook.png",
+    "size": {
+      "w": 40,
+      "h": 14
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "idle",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      }
+    ]
   }
- ],
- "meta": {
-  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
-  "version": "1",
-  "image": "notebook.png",
-  "format": "RGBA8888",
-  "size": {
-   "w": 72,
-   "h": 24
-  },
-  "scale": "1",
-  "frameTags": [
-   {
-    "name": "idle",
-    "from": 0,
-    "to": 0,
-    "direction": "forward"
-   }
-  ]
- }
 }

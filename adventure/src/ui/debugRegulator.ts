@@ -11,8 +11,8 @@ export function prepareRegulatorDebugState(current: GameState): GameState {
   state.earlier = structuredClone(current.earlier);
   state.reached = [...new Set([...current.reached, 'ch1'])];
   state.room = 'gallery';
-  state.hero = { x: 240, y: 282, face: 'up', pose: 'stand' };
-  state.npcs.oren = { pose: 'stand', face: 'left' };
+  state.hero = { x: 400, y: 282, face: 'up', pose: 'stand' };
+  state.npcs.oren = { pose: 'stand', face: 'right' };
   for (const flag of ['boltLeft', 'boltRight', 'pressureBled', 'ringReleased', 'kilnCold',
     'fought', 'gearChecked', 'galleryQuiet', 'machineRefusalSeen', 'farewellReminded',
     'valveVented', 'sawSweeper', 'metMerchant', ...Object.keys(state.flags).filter(flag => flag.startsWith('ashways'))]) {

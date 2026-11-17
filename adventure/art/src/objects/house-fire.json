@@ -1,0 +1,71 @@
+{
+  "frames": [
+    {
+      "filename": "lit",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 136,
+        "h": 52
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 136,
+        "h": 52
+      },
+      "sourceSize": {
+        "w": 136,
+        "h": 52
+      },
+      "duration": 1000
+    },
+    {
+      "filename": "cold",
+      "frame": {
+        "x": 136,
+        "y": 0,
+        "w": 136,
+        "h": 52
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 136,
+        "h": 52
+      },
+      "sourceSize": {
+        "w": 136,
+        "h": 52
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 firing house r1 review",
+    "image": "house-fire.png",
+    "size": {
+      "w": 272,
+      "h": 52
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "lit",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "cold",
+        "from": 1,
+        "to": 1,
+        "direction": "forward"
+      }
+    ]
+  }
+}

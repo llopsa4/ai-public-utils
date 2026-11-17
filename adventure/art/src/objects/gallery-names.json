@@ -1,0 +1,43 @@
+{
+  "frames": [
+    {
+      "filename": "idle",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 132,
+        "h": 80
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 132,
+        "h": 80
+      },
+      "sourceSize": {
+        "w": 132,
+        "h": 80
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 gallery r1 review",
+    "image": "gallery-names.png",
+    "size": {
+      "w": 132,
+      "h": 80
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "idle",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      }
+    ]
+  }
+}

@@ -15,6 +15,7 @@ import { PORTRAIT_MOODS } from '../src/content/art';
 import { createHash } from 'node:crypto';
 import { EXTRAS } from '../src/chapters/ch1/crowd';
 import { isFinal } from '../art/guard.mjs';
+import { ROOMS as INTRO_ROOMS } from '../src/chapters/intro/rooms';
 
 // JSON-only fixtures: no PNG decoding, layer compositing, or chapter preloading in this file.
 const configs = ['casual', 'light', 'medium'].map(id =>
@@ -70,6 +71,185 @@ test('C6 retains the approved machine artwork and protected Sigrid colour export
   }
   assert.equal(MANIFEST.find(e => e.id === 'battle-enemy-rig')!.file, 'kc/training-rig.webp');
   assert.equal(MANIFEST.find(e => e.id === 'battle-enemy-ash-sweeper')!.file, 'kc/brown-sweeper.webp');
+});
+
+test('C7 retains the approved guardroom pixels and registered removable/stateful overlays', () => {
+  const approval = JSON.parse(readFileSync(new URL('../art/sources/guardroom-c7/approval.json', import.meta.url), 'utf8'));
+  for (const [file, hash] of Object.entries(approval.installedHashes)) {
+    const bytes = readFileSync(new URL(`../art/src/${file}`, import.meta.url));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, `approved C7 ${file}`);
+    assert.ok(isFinal(file), `${file} is protected`);
+  }
+  const room = INTRO_ROOMS.guardroom;
+  const grate = room.objects.find(o => o.id === 'grate')!;
+  assert.equal(grate.flag, 'grateOpen', 'existing save progress drives the visible gate');
+  const atlas = JSON.parse(readFileSync(new URL('../art/src/intro/objects/guardroom-grate.json', import.meta.url), 'utf8'));
+  for (const [open, expected] of [[false, 0], [true, 1]] as const) {
+    const tag = open ? grate.whenTrue : grate.whenFalse;
+    const frame = atlas.meta.frameTags.find((t: { name: string }) => t.name === tag);
+    assert.equal(frame.from, expected);
+    assert.deepEqual(atlas.frames[frame.from].sourceSize, { w: 176, h: 324 });
+  }
+  assert.deepEqual([grate.x, grate.y], [596, 264]);
+  const ledger = room.objects.find(o => o.id === 'ledger')!;
+  assert.deepEqual(ledger.visibleIf, [{ notFlag: 'tookLedger' }]);
+  const stove = room.objects.find(o => o.id === 'stove')!;
+  assert.deepEqual([stove.sheet, stove.x, stove.y], ['guardroom-stove', 330, 262]);
+  assert.equal(room.objects.filter(o => o.sheet === 'guardroom-torch').length, 3);
+});
+
+test('C7 cell retains approved layers and existing save-driven item visibility', () => {
+  const approval = JSON.parse(readFileSync(new URL('../art/sources/cell-c7/approval.json', import.meta.url), 'utf8'));
+  for (const [file, hash] of Object.entries({ ...approval.installedHashes, ...approval.preservedHashes })) {
+    const bytes = readFileSync(new URL(`../art/src/${file}`, import.meta.url));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, `C7 cell approved/preserved ${file}`);
+    assert.ok(isFinal(file), `${file} is protected`);
+  }
+  const room = INTRO_ROOMS.cell;
+  assert.equal(room.backgroundWhen, undefined, 'a taken cloak must not replace the clean room');
+  assert.equal(MANIFEST.some(e => e.id === 'room-cell-bare'), false);
+  const byId = (id: string) => room.objects.find(o => o.id === id)!;
+  assert.deepEqual(byId('cloak').visibleIf, [{ notFlag: 'tookCloak' }]);
+  assert.deepEqual(byId('floorPlate').visibleIf, [{ notFlag: 'tookPlate' }]);
+  assert.deepEqual(byId('windowPlate').visibleIf, [{ flag: 'cellLit' }]);
+  assert.deepEqual(byId('frame').visibleIf, [{ flag: 'cellLit' }, { notFlag: 'gotFrame' }]);
+  for (const id of ['cot', 'blanket', 'bucket', 'roster', 'table', 'candle', 'cloak']) {
+    assert.ok(byId(id), `${id} has an independent layer`);
+    assert.deepEqual(room.hotspots.find(h => h.id === id)!.outline, { objects: [id] });
+  }
+  assert.deepEqual([byId('cot').x, byId('cot').y, byId('blanket').x, byId('blanket').y], [95, 289, 95, 283]);
+  assert.deepEqual([byId('frame').y, byId('candle').y, byId('tableStub').y], [280, 280, 280]);
+  assert.deepEqual([byId('cellDoor').x, byId('cellDoor').y, byId('cellDoor').flag], [183, 338, 'cellOpen']);
+  assert.ok(room.props?.some(p => p.kind === 'flame' && p.x === 473 && p.y === 266));
+  assert.equal(room.ambient?.drips?.[0].bottom, 266);
+});
+
+test('C7 outer door preserves approved pixels and two independently registered lanterns', () => {
+  const approval = JSON.parse(readFileSync(new URL('../art/sources/outer-door-c7/approval.json', import.meta.url), 'utf8'));
+  for (const [file, hash] of Object.entries(approval.installedHashes)) {
+    const bytes = readFileSync(new URL(`../art/src/${file}`, import.meta.url));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, `approved outer door ${file}`);
+    assert.ok(isFinal(file), `${file} is protected`);
+  }
+  const room = INTRO_ROOMS.outerDoor;
+  assert.equal(room.background, 'room-prison-door');
+  assert.deepEqual(room.objects.map(o => [o.id, o.sheet, o.x, o.y]), [
+    ['lantern1', 'outer-lantern', 142, 130], ['lantern2', 'outer-lantern', 330, 130],
+  ]);
+  const atlas = JSON.parse(readFileSync(new URL('../art/src/intro/objects/outer-lantern.json', import.meta.url), 'utf8'));
+  assert.deepEqual(atlas.frames[0].sourceSize, { w: 40, h: 44 });
+  assert.deepEqual(room.props?.filter(p => p.kind === 'flame').map(p => [p.x, p.y, p.size]), [[142, 122, 4], [330, 122, 4]]);
+});
+
+test('C7 tent preserves approved layers, tabletop depth and save-driven cradle/notebook states', () => {
+  const approval = JSON.parse(readFileSync(new URL('../art/sources/tent-c7/approval.json', import.meta.url), 'utf8'));
+  for (const [file, hash] of Object.entries({ ...approval.installedHashes, ...approval.preservedHashes })) {
+    const bytes = readFileSync(new URL(`../art/src/${file}`, import.meta.url));
+    assert.equal(createHash('sha256').update(bytes).digest('hex'), hash, `approved tent ${file}`);
+    assert.ok(isFinal(file), `${file} is protected`);
+  }
+  const room = CH1.rooms.tent;
+  const byId = (id: string) => room.objects.find(o => o.id === id)!;
+  for (const id of ['workbench', 'jar', 'chest', 'drum', 'stove']) {
+    const spec = approval.registration.specs[`tent-${id}`];
+    const object = byId(id);
+    assert.equal(object.sheet, `tent-${id}`);
+    assert.deepEqual([object.x, object.y], [(spec.origin[0] + spec.anchor[0]) / 2, (spec.origin[1] + spec.anchor[1]) / 2]);
+    assert.deepEqual(room.hotspots.find(h => h.id === id)!.outline, { objects: [id] });
+  }
+  const benchDepth = byId('workbench').depth!;
+  for (const id of ['rack', 'notebook', 'chest']) assert.ok(byId(id).depth! > benchDepth);
+  assert.ok(byId('jar').depth! > benchDepth, 'new jug stands above the revised bench');
+  assert.equal(approval.revision, 'scene-redraw-tent/r2');
+  for (const [id, position, frame] of [['rack', [165, 208], [40, 52]], ['notebook', [50, 208], [40, 14]]] as const) {
+    assert.deepEqual([byId(id).x, byId(id).y], position);
+    const entry = MANIFEST.find(e => e.id === id)!;
+    assert.deepEqual(entry.frame, { w: frame[0], h: frame[1] });
+  }
+  assert.ok(room.props?.some(p => p.kind === 'flame' && p.x === 165 && p.y === 197 && p.size === 5));
+  assert.deepEqual([byId('rack').flag, byId('rack').whenTrue, byId('rack').whenFalse], ['hasGauntlet', 'empty', 'full']);
+  assert.deepEqual(byId('notebook').visibleIf, [{ notFlag: 'hasNotebook' }]);
+  assert.deepEqual(room.foreground, [{ image: 'tent-stool', x: 96, y: 246, depth: 274 }]);
+});
+
+test('C7 kiln hall protects approved pixels and registers cold fires and hoist depth', () => {
+  const approval = JSON.parse(readFileSync(new URL('../art/sources/kiln-hall-c7/approval.json', import.meta.url), 'utf8'));
+  for (const [file, hash] of Object.entries(approval.installedHashes)) {
+    assert.equal(createHash('sha256').update(readFileSync(new URL(`../art/src/${file}`, import.meta.url))).digest('hex'), hash, file);
+    assert.ok(isFinal(file), `${file} protected from generators`);
+  }
+  const room = CH1.rooms.maraRoom;
+  const byId = (id: string) => room.objects.find(o => o.id === id)!;
+  for (const [id, x] of [['fireA', 340], ['fireB', 402.5], ['fireC', 465]] as const) {
+    const fire = byId(id);
+    assert.deepEqual([fire.sheet, fire.x, fire.y, fire.flag, fire.whenTrue, fire.whenFalse], ['kiln-fire', x, 221, 'kilnCold', 'cold', 'lit']);
+  }
+  const swing = room.props!.find(p => p.kind === 'swing')!;
+  assert.equal(swing.depth, 251);
+  assert.ok(byId('hoist').depth! < swing.depth!);
+  assert.ok(swing.depth! < room.walkable.outer[0].y);
+  assert.deepEqual([byId('tent').x, byId('tent').y], [248, 264]);
+  assert.deepEqual(room.hotspots.find(h => h.id === 'pulleys')!.outline, { objects: ['hoist'], props: ['pulley'] });
+  for (const id of ['tally', 'jars', 'cart']) assert.deepEqual(room.hotspots.find(h => h.id === id)!.outline, { objects: [id] });
+});
+
+test('C7 firing house protects approved pixels, state flags and soup/fire/bubble registration', () => {
+  const approval = JSON.parse(readFileSync(new URL('../art/sources/firing-house-c7/approval.json', import.meta.url), 'utf8'));
+  for (const [file, hash] of Object.entries(approval.installedHashes)) {
+    assert.equal(createHash('sha256').update(readFileSync(new URL(`../art/src/${file}`, import.meta.url))).digest('hex'), hash, file);
+    assert.ok(isFinal(file), `${file} protected from generators`);
+  }
+  const room = CH1.rooms.firingHouse;
+  const object = (id: string) => room.objects.find(o => o.id === id)!;
+  for (const [id, sheet, x, y, cold, warm] of [
+    ['shoes', 'house-shoes', 112, 136, 'cold', 'warm'],
+    ['fire', 'house-fire', 113, 251, 'cold', 'lit'],
+    ['soup', 'house-soup', 115, 223, 'cold', 'warm'],
+    ['pantryDoor', 'pantry-door', 334, 262, 'fixed', 'stuck'],
+  ] as const) {
+    const o = object(id);
+    assert.deepEqual([o.sheet, o.x, o.y, o.flag, o.whenTrue, o.whenFalse], [sheet, x, y, id === 'pantryDoor' ? 'latchFixed' : 'kilnCold', cold, warm]);
+  }
+  assert.ok(object('fire').depth! < object('soup').depth!);
+  const bubbles = room.props!.find(p => p.kind === 'bubbles')!;
+  assert.deepEqual([bubbles.x, bubbles.y, bubbles.w, bubbles.h, bubbles.warm], [104, 199, 22, 2, true]);
+  assert.ok(bubbles.y + 1 > object('soup').depth!);
+  assert.ok(object('soup').depth! < room.walkable.outer[0].y);
+  assert.deepEqual(room.hotspots.find(h => h.id === 'chalk')!.polygon, [{x:171,y:203},{x:189,y:203},{x:189,y:231},{x:171,y:231}]);
+  for (const [target,id] of [['chalk','chalk'], ['sign','bell'], ['soup','soup'], ['shoes','shoes'], ['breadBasket','bread']]) {
+    assert.deepEqual(room.hotspots.find(h => h.id === target)!.outline, { objects: [id] });
+  }
+});
+
+test('C7 gallery protects approved pixels and registers the mirrored room, states and stairwell', () => {
+  const approval = JSON.parse(readFileSync(new URL('../art/sources/gallery-c7/approval.json', import.meta.url), 'utf8'));
+  for (const [file, hash] of Object.entries(approval.installedHashes)) {
+    assert.equal(createHash('sha256').update(readFileSync(new URL(`../art/src/${file}`, import.meta.url))).digest('hex'), hash, file);
+    assert.ok(isFinal(file), `${file} protected from generators`);
+  }
+  const room = CH1.rooms.gallery;
+  const byId = (id: string) => room.objects.find(o => o.id === id)!;
+  for (const [id, sheet] of [['regulator', 'gallery-regulator'], ['socket', 'socket'], ['railNames', 'gallery-names'], ['logbook', 'gallery-logbook'], ['lantern', 'gallery-lantern']] as const) {
+    const spec = approval.registration[sheet];
+    // Every sheet is placed by its bottom centre, whatever anchor the delivery recorded.
+    assert.deepEqual([byId(id).sheet, byId(id).x, byId(id).y], [sheet, (spec.origin[0] + spec.canvas[0] / 2) / 2, (spec.origin[1] + spec.canvas[1]) / 2], id);
+  }
+  assert.deepEqual([byId('regulator').flag, byId('regulator').whenTrue, byId('regulator').whenFalse], ['patchFailed', 'ringCracked', 'cracked']);
+  assert.deepEqual([byId('socket').flag, byId('socket').whenTrue, byId('socket').whenFalse], ['kilnCold', 'removed', 'installed']);
+  assert.ok(byId('regulator').depth! < -9000, 'the body draws beneath the gauge face');
+  const gauge = room.props!.find(p => p.kind === 'gauge')!;
+  assert.deepEqual([gauge.x * 2, gauge.y * 2], approval.registration['gauge-face'].origin.map((v: number, i: number) => v + approval.registration['gauge-face'].centre[i]));
+  // Ring centre art (800,376): the hatch is the removed socket's hollow (96 art px across).
+  assert.deepEqual([room.hatch!.x, room.hatch!.y, room.hatch!.r], [400, 188, 24]);
+  // The stairwell opening is not floor; the stairhead entry and walk-to stand clear of it.
+  const [ox, oy, ow, oh] = approval.stairs.opening;
+  const stairs = room.hotspots.find(h => h.id === 'galleryStairs')!;
+  assert.deepEqual([stairs.walkTo, room.entries.fromFiringHouse], [{ x: 102, y: 286 }, { x: 102, y: 286, face: 'right' }]);
+  assert.ok(stairs.walkTo!.x > ox + ow);
+  assert.ok(room.walkable.outer.some(p => p.x > ox + ow && p.x < stairs.walkTo!.x && p.y > oy + oh), 'the walk area steps round the opening');
+  for (const [target, ids] of [['regulator', ['regulator', 'socket']], ['railNames', ['railNames']], ['logbook', ['logbook']], ['lantern', ['lantern']]] as const) {
+    assert.deepEqual(room.hotspots.find(h => h.id === target)!.outline!.objects, ids);
+  }
 });
 
 test('art metadata registers unique files and every named character rig and portrait', () => {

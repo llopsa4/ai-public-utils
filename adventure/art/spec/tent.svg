@@ -1,0 +1,79 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1300" viewBox="0 0 1900 1300" role="group" aria-labelledby="title desc"><title id="title">Mara&#39;s Tent — reference layout</title><desc id="desc">1280 by 720 art-pixel frame. Stage controls select illustrative states; numbers link to asset briefs. Green floor, pink actor scale; targets and visual layers are separate.</desc>
+<style>[role=button]:focus rect{stroke:#315b73;stroke-width:3}</style><rect width="1900" height="1300" fill="#f8f1e4"/>
+<text x="34" y="38" font-family="Georgia,serif" font-size="28" fill="#342a20">Mara&#39;s Tent</text>
+<text x="34" y="63" font-family="Georgia,serif" font-size="16" fill="#342a20">Generated reference · art pixels · diagrams only; source specification owns all placements</text>
+<g role="button" tabindex="0" aria-label="Show reference" aria-pressed="true" data-button="reference" onclick="showStage('reference')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('reference')}" ><rect x="34" y="77" width="103" height="27" rx="4" fill="#dfcba8" stroke="#8d775b"/><text x="44" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">reference</text></g>
+<g role="button" tabindex="0" aria-label="Show all" aria-pressed="false" data-button="all" onclick="showStage('all')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('all')}" ><rect x="144" y="77" width="78" height="27" rx="4" fill="#fff9ee" stroke="#8d775b"/><text x="154" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">all</text></g>
+<g transform="translate(34 110)"><rect width="1280" height="720" fill="#efe4cf" stroke="#6f5b43"/><rect y="536" width="1280" height="154" fill="#d5dfc9"/><rect y="636" width="1280" height="54" fill="#b7c9a6"/>
+<path d="M0 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M80 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M160 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M240 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M320 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M400 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M480 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M560 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M640 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M720 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M800 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M880 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M960 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1040 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1120 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1200 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1280 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M0 0 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 80 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 160 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 240 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 320 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 400 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 480 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 560 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 640 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 720 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 524 H1280 M0 636 H1280 M0 690 H1280" stroke="#77886b" stroke-dasharray="6 6"/>
+<polygon points="0,536 1280,536 1280,690 0,690" fill="#6c9f73" fill-opacity=".1" stroke="#497650"/>
+<polygon points="172,536 284,536 284,552 172,552" fill="#c14e44" fill-opacity=".1" stroke="#a74740"/>
+<g data-target="notebook" data-stages="reference" visibility="visible"><rect x="80" y="400" width="40" height="20" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>mother&#39;s notebook: look, take, open</title></rect></g>
+<g data-target="rack" data-stages="reference" visibility="visible"><rect x="310" y="364" width="40" height="52" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>charging rack: look, take, use</title></rect></g>
+<g data-target="jar" data-stages="reference" visibility="visible"><rect x="208" y="360" width="48" height="56" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>water jar: look, take</title></rect></g>
+<g data-target="chest" data-stages="reference" visibility="visible"><rect x="70" y="448" width="72" height="52" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>clothes crate: look, open, use</title></rect></g>
+<g data-target="stool" data-stages="reference" visibility="visible"><rect x="196" y="496" width="64" height="52" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>stool: look, use</title></rect></g>
+<g data-target="workbench" data-stages="reference" visibility="visible"><rect x="28" y="372" width="360" height="148" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>workbench: look, use</title></rect></g>
+<g data-target="drum" data-stages="reference" visibility="visible"><rect x="484" y="388" width="188" height="132" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>old brush drum: look, use</title></rect></g>
+<g data-target="stove" data-stages="reference" visibility="visible"><rect x="732" y="412" width="76" height="96" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>clay stove: look, use, open</title></rect></g>
+<g data-target="tentFlap" data-stages="reference" visibility="visible"><rect x="1132" y="168" width="148" height="372" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>tent flap: look, go, open</title></rect></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/notebook.md"><title>notebook; [{&quot;notFlag&quot;:&quot;hasNotebook&quot;}]; tent-notebook</title><rect x="80" y="402" width="40" height="14" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M96 416 h8 M100 412 v8" stroke="#9c571c"/><circle cx="91" cy="414" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="85" y="419" font-family="Georgia,serif" font-size="12" fill="#342a20">1</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/rack.md"><title>rack; Always; hasGauntlet: full -&gt; empty; tent-rack</title><rect x="310" y="364" width="40" height="52" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M326 416 h8 M330 412 v8" stroke="#9c571c"/><circle cx="321" cy="376" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="315" y="381" font-family="Georgia,serif" font-size="12" fill="#342a20">2</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/tent-jar.md"><title>tent-jar; Always; tent-jar</title><rect x="208" y="360" width="48" height="56" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M228 416 h8 M232 412 v8" stroke="#9c571c"/><circle cx="219" cy="372" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="213" y="377" font-family="Georgia,serif" font-size="12" fill="#342a20">3</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/tent-chest.md"><title>tent-chest; Always; tent-chest</title><rect x="70" y="448" width="72" height="52" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M102 500 h8 M106 496 v8" stroke="#9c571c"/><circle cx="81" cy="460" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="75" y="465" font-family="Georgia,serif" font-size="12" fill="#342a20">4</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/tent-workbench.md"><title>tent-workbench; Always; tent-workbench</title><rect x="28" y="372" width="360" height="148" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M204 520 h8 M208 516 v8" stroke="#9c571c"/><circle cx="39" cy="384" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="33" y="389" font-family="Georgia,serif" font-size="12" fill="#342a20">5</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/tent-drum.md"><title>tent-drum; Always; tent-drum</title><rect x="482" y="386" width="192" height="132" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M574 518 h8 M578 514 v8" stroke="#9c571c"/><circle cx="493" cy="398" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="487" y="403" font-family="Georgia,serif" font-size="12" fill="#342a20">6</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/tent-stove.md"><title>tent-stove; Always; tent-stove</title><rect x="730" y="408" width="80" height="108" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M766 516 h8 M770 512 v8" stroke="#9c571c"/><circle cx="741" cy="420" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="735" y="425" font-family="Georgia,serif" font-size="12" fill="#342a20">7</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/tent-stool.md"><title>tent-stool; Always; tent-tent-stool</title><rect x="192" y="492" width="72" height="56" fill="#784489" fill-opacity=".07" stroke="#784489" stroke-dasharray="5 3"/><path d="M188 492 h8 M192 488 v8" stroke="#784489"/><circle cx="203" cy="504" r="11" fill="#fff9ee" stroke="#784489"/><text x="197" y="509" font-family="Georgia,serif" font-size="12" fill="#342a20">8</text></a></g>
+<rect x="614" y="368" width="52" height="232" rx="22" fill="#bc5a8a" fill-opacity=".15" stroke="#a14878"/>
+<text x="1040" y="553" font-family="Georgia,serif" font-size="16" fill="#342a20">tent flap</text>
+</g>
+<text x="1350" y="113" font-family="Georgia,serif" font-size="20" fill="#342a20">OBJECT KEY · room and puzzle order</text>
+<text x="1350" y="141" font-family="Georgia,serif" font-size="15" fill="#342a20">T target · V visual-only · F foreground</text>
+<text x="1350" y="170" font-family="Georgia,serif" font-size="18" fill="#342a20">1 T · notebook</text>
+<text x="1370" y="187" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="212" font-family="Georgia,serif" font-size="18" fill="#342a20">2 T · rack</text>
+<text x="1370" y="229" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="254" font-family="Georgia,serif" font-size="18" fill="#342a20">3 T · tent-jar</text>
+<text x="1370" y="271" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="296" font-family="Georgia,serif" font-size="18" fill="#342a20">4 T · tent-chest</text>
+<text x="1370" y="313" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="338" font-family="Georgia,serif" font-size="18" fill="#342a20">5 T · tent-workbench</text>
+<text x="1370" y="355" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="380" font-family="Georgia,serif" font-size="18" fill="#342a20">6 T · tent-drum</text>
+<text x="1370" y="397" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="422" font-family="Georgia,serif" font-size="18" fill="#342a20">7 T · tent-stove</text>
+<text x="1370" y="439" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="464" font-family="Georgia,serif" font-size="18" fill="#342a20">8 F · tent-stool</text>
+<text x="1370" y="481" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="34" y="866" font-family="Georgia,serif" font-size="18" fill="#342a20">speaker.mara: 232 art px / 116 logical units. Background stays fixed; props and stages are independent.</text>
+<text x="34" y="898" font-family="Georgia,serif" font-size="18" fill="#342a20">Click a stage to view one snapshot; All shows alternative footprints, not a simultaneous scene.</text>
+<text x="34" y="940" font-family="Georgia,serif" font-size="17" fill="#342a20">reference: All implemented conditional placements; each target and sprite lists its own flag conditions.</text>
+<script><![CDATA[function showStage(stage){document.querySelectorAll('[data-stages]').forEach(function(g){g.setAttribute('visibility',stage==='all'||g.getAttribute('data-stages').split(' ').indexOf(stage)>=0?'visible':'hidden')});document.querySelectorAll('[data-button]').forEach(function(g){var selected=g.getAttribute('data-button')===stage;g.querySelector('rect').setAttribute('fill',selected?'#dfcba8':'#fff9ee');g.setAttribute('aria-pressed',selected?'true':'false')})}]]></script></svg>

@@ -14,8 +14,15 @@ Regenerate: `npm run art:briefs -- --chapter intro`. Check freshness by adding `
 
 - [floor-plate](floor-plate.md) · target
 - [table-frame](table-frame.md) · target
+- [cell-roster](cell-roster.md) · target
+- [cell-cloak](cell-cloak.md) · target
+- [cell-candle](cell-candle.md) · target
 - [floor-wax](floor-wax.md) · target
 - [table-stub](table-stub.md) · target
+- [cell-table](cell-table.md) · target
+- [cell-blanket](cell-blanket.md) · target
+- [cell-cot](cell-cot.md) · target
+- [cell-bucket](cell-bucket.md) · target
 - [cell-gate](cell-gate.md) · target
 - [stairs-light](stairs-light.md) · target
 - [window-plate](window-plate.md) · visual
@@ -23,14 +30,16 @@ Regenerate: `npm run art:briefs -- --chapter intro`. Check freshness by adding `
 
 ### [Guardroom](room-guardroom.md)
 
-[Layout](../spec/guardroom.svg) · [src/chapters/intro/rooms.ts · L134](../../src/chapters/intro/rooms.ts#L134)
+[Layout](../spec/guardroom.svg) · [src/chapters/intro/rooms.ts · L141](../../src/chapters/intro/rooms.ts#L141)
 
 - [guardroom-ledger](guardroom-ledger.md) · target
+- [guardroom-grate](guardroom-grate.md) · target
+- [guardroom-stove](guardroom-stove.md) · target
 - [guardroom-torch](guardroom-torch.md) · visual
 
 ### [Outer Door](room-prison-door.md)
 
-[Layout](../spec/outerDoor.svg) · [src/chapters/intro/rooms.ts · L174](../../src/chapters/intro/rooms.ts#L174)
+[Layout](../spec/outerDoor.svg) · [src/chapters/intro/rooms.ts · L182](../../src/chapters/intro/rooms.ts#L182)
 
 - [outer-lantern](outer-lantern.md) · visual
 

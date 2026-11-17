@@ -19,7 +19,7 @@ export const CH1: Chapter = {
   start: { room: START_ROOM, entry: START_ENTRY },
   // Outside debug the story stops here: a final card, no New game button.
   end: { title: 'end1.title', text: 'end1.text', final: true },
-  npcs: { oren: { pose: 'stand', face: 'left' }, nell: { pose: 'stand', face: 'right' }, tobi: { pose: 'stand', face: 'right' } },
+  npcs: { oren: { pose: 'stand', face: 'right' }, nell: { pose: 'stand', face: 'right' }, tobi: { pose: 'stand', face: 'right' } },
   rooms: ROOMS,
   flags: FLAGS,
   items: ITEMS,

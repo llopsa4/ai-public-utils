@@ -1,0 +1,27 @@
+{
+  "assignment": "C7",
+  "revision": "scene-redraw-guardroom/r2",
+  "date": "2026-11-16",
+  "authority": "user",
+  "approval": "Continue directly after the r2 delivery",
+  "geometryDecision": "New numeric coordinates",
+  "delivery": "art/inbox/done/scene-redraw-guardroom-r2",
+  "installedHashes": {
+    "intro/rooms/guardroom.png": "2c45983d9f26e3bdbfebf41ee84a00f7b9a07754cbaeea2ca5f687130c296ed2",
+    "intro/objects/guardroom-ledger.png": "a1f5dfc865b813574b74ff245328d2409153718b921a9c6aee012c877806a0cc",
+    "intro/objects/guardroom-ledger.json": "75206204c7bc61829491a62bb3486548cc864877840332205fae95a3a0077996",
+    "intro/objects/guardroom-grate.png": "200e489be3b8e6749e8c8808cfbe9e21775af5b8f36c8b9033bceb2883a1bb41",
+    "intro/objects/guardroom-grate.json": "d7cf9967c621d46834ebec2e73cf4550801b22489ed6afb412b29315634e4292",
+    "intro/objects/guardroom-stove.png": "7397ae2b926d195d7c64891a7d5fc358af441d8f08cdd780db119671f7ae5198",
+    "intro/objects/guardroom-stove.json": "32cd2a932f65cb8579ac552b793c8f4360ca23f1d19fade236ef9fae8824b435",
+    "intro/objects/guardroom-torch.png": "20bd473bd03290f1e7768a391ddedf2b93e83a5c70a3c41baf48d0628ca65159",
+    "intro/objects/guardroom-torch.json": "e9c70b26e2c07617ceb75499b33cc826474094b6fbe3daf4f4cfe290e678ac05",
+    "intro/rooms/guardroom.webp": "0331b13828e0942ab95b73c35a6d15ce4fc30d25eba7b3759532f04ed69a1c7d"
+  },
+  "webp": {
+    "encoding": "lossless",
+    "reason": "Preserve the approved 1px detail and master-palette pixels exactly.",
+    "lossyBytes": 199526,
+    "losslessBytes": 311622
+  }
+}

@@ -1,23 +1,36 @@
 # tent
 
-Status: **final** · object · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `tent` · object · **target** · final
 
 ## Description
 
 Mara's tent seen from outside in the kiln hall: a patched ochre canvas tent on two poles with a ridge (about his height), guy ropes pegged into the stone, the door flap tied back on the dark inside, a lantern glow faint within.
 
-## Use and placement
+## What the game does with it
 
-Stands in the room `maraRoom` on its foot point (500, 528) (bottom centre of the picture).
-States: idle: one picture each, identical framing; only what changes between states differs.
+look; go
+
+## Placement and layers
+
+- [The Kiln Hall](room-mara.md): anchor (496,528) art px / (248,264) logical; world; Always.
+
+## States, visibility and transitions
+
+- **idle** — Mara's tent seen from outside in the kiln hall: a patched ochre canvas tent on two poles with a ridge (about his height), guy ropes pegged into the stone, the door flap tied back on the dark inside, a lantern glow faint within. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/objects/tent.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/objects/tent.png` (final).
-- Anchor: `bottom-centre`.
-- Canvas/frame: **184×224 art px**.
-- State tags: `idle`.
-- Atlas metadata: `art/src/objects/tent.json`.
-- Import names: `tent-idle.png`.
+- Canvas: **224×280 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/tent-idle.png`.
+
+## Sources
+
+[art/manifest.mjs · L16](../manifest.mjs#L16) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

@@ -4,7 +4,7 @@ import {fileURLToPath} from 'node:url';
 import sharp from 'sharp';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'../../..');
-const source=resolve(root,'art/src/objects/socket.png');
+const source=resolve(root,'art/sources/regulator-closeup/socket-pre-c7.png');
 const output=resolve(root,'art/src/props/regulator-closeup-center.png');
 const {data,info}=await sharp(source).ensureAlpha().raw().toBuffer({resolveWithObject:true});
 const pixels=Buffer.alloc(80*80*4);
@@ -17,4 +17,4 @@ for(let y=0;y<80;y++)for(let x=0;x<80;x++){
   data.copy(pixels,(y*80+x)*4,from,from+4);
 }
 await sharp(pixels,{raw:{width:80,height:80,channels:4}}).png().toFile(output);
-console.log('Prepared regulator centre: installed socket frame; crop (40,36,80,80), centre (40,40), radius36, 2px grid.');
+console.log('Prepared regulator centre: pre-C7 socket frame (socket-pre-c7.png); crop (40,36,80,80), centre (40,40), radius36, 2px grid.');

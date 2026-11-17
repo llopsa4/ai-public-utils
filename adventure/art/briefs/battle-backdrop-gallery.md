@@ -1,19 +1,36 @@
 # battle-backdrop-gallery
 
-Status: **final** · battle-backdrop · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `battle-backdrop-gallery` · battle-backdrop · **visual** · final
 
 ## Description
 
 The regulator gallery as the fight backdrop: the same place as the room, seen flat-on, the floor clear in the lower third where the fighters stand.
 
-## Use and placement
+## What the game does with it
 
-The fight screen's backdrop: the fighters stand on its lower third, the cards cover the bottom.
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — The regulator gallery as the fight backdrop: the same place as the room, seen flat-on, the floor clear in the lower third where the fighters stand. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/kc/regulator-gallery.webp. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/kc/regulator-gallery.webp` (final).
-- Anchor: `top-left`.
-- Canvas/frame: **1280×720 art px**.
+- Canvas: **1280×720 art px**. Top-left anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/battle-backdrop-gallery.png`.
+
+## Sources
+
+[art/manifest.mjs · L346](../manifest.mjs#L346) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

@@ -16,7 +16,8 @@ test('regulator close-up reuses the painted gauge and solid installed centre ins
 });
 
 test('removable close-up centre retains opaque brass source pixels and transparent backing',()=>{
- const source=PNG.sync.read(readFileSync(new URL('../art/src/objects/socket.png',import.meta.url)));
+ // Cut from the socket drawing installed before the C7 gallery redraw, kept as its source.
+ const source=PNG.sync.read(readFileSync(new URL('../art/sources/regulator-closeup/socket-pre-c7.png',import.meta.url)));
  const centre=PNG.sync.read(readFileSync(new URL('../art/src/props/regulator-closeup-center.png',import.meta.url)));
  assert.deepEqual([centre.width,centre.height],[80,80]);
  assert.equal(centre.data[(40*80+40)*4+3],255,'the former black hole has an opaque brass centre');
@@ -41,11 +42,11 @@ test('regulator illustration fits resized desktop windows without distortion',()
 });
 test('gallery gauge face, needle and click target share the painted socket centre',()=>{
  const gauge=ROOMS.gallery.props!.find(p=>p.kind==='gauge')!;
- // Measured on the installed 1280x720 painting: socket centre (476,86) art pixels.
- assert.deepEqual([gauge.x*2,gauge.y*2],[476,86]);
+ // C7 gallery r2 registration: gauge centre (804,86) art pixels (art/sources/gallery-c7/approval.json).
+ assert.deepEqual([gauge.x*2,gauge.y*2],[804,86]);
  const target=ROOMS.gallery.hotspots.find(h=>h.id==='gauge')!;
  const xs=target.polygon.map(p=>p.x),ys=target.polygon.map(p=>p.y);
- assert.deepEqual([(Math.min(...xs)+Math.max(...xs))/2,(Math.min(...ys)+Math.max(...ys))/2],[238,43]);
+ assert.deepEqual([(Math.min(...xs)+Math.max(...xs))/2,(Math.min(...ys)+Math.max(...ys))/2],[402,43]);
 });
 
 test('close-up dial stays centred on its painted socket as the board scales',()=>{

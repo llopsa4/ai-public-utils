@@ -7,11 +7,19 @@ Use the [development guide](DEVELOPMENT.md), [art pipeline](art/PIPELINE.md) and
 
 ## Ownership and assignments
 
-- **Active mode: Codex + Claude**, selected by the user on 2026-11-15 until they change it.
-  Existing task pauses, review-only restrictions and art approval requirements remain in force;
-  changing mode does not approve pending artwork or resume paused work.
-- The user can select **Codex only** (Codex owns everything below) or **Codex + Claude**.
-  Record their selection here and in the work log.
+- **Active mode: Claude only (Codex paused)**, selected by the user on 2026-11-17 while Codex
+  is out of usage, until the user ends it; the mode then returns to **Codex + Claude**
+  (selected 2026-11-15). Existing task pauses, review-only restrictions and art approval
+  requirements remain in force; changing mode does not approve pending artwork or resume
+  paused work.
+- The user can select **Codex only** (Codex owns everything below), **Codex + Claude** or
+  **Claude only (Codex paused)**. Record their selection here and in the work log.
+- **Claude only (Codex paused):** Claude also does every Codex task below except image
+  generation: delivery preparation and validation, approved installation, registration,
+  provenance, in-game verification, routine wiring, long test runs and reviews. Generation
+  stays queued as requests for Codex in Claude's handoff file. Claude still writes only its own
+  handoff file; it records any Codex claim it takes over there, and Codex reconciles its own
+  file on return.
 - Claude's quota is the scarcer one, so in Codex + Claude mode the split saves Claude for the
   work where it is clearly better:
   - **Claude:** story, scene and puzzle design; dialogue; the image-generation prompt for each art

@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1300" viewBox="0 0 1900 1300" role="group" aria-labelledby="title desc"><title id="title">The Firing House — reference layout</title><desc id="desc">1280 by 720 art-pixel frame. Stage controls select illustrative states; numbers link to asset briefs. Green floor, pink actor scale; targets and visual layers are separate.</desc>
+<style>[role=button]:focus rect{stroke:#315b73;stroke-width:3}</style><rect width="1900" height="1300" fill="#f8f1e4"/>
+<text x="34" y="38" font-family="Georgia,serif" font-size="28" fill="#342a20">The Firing House</text>
+<text x="34" y="63" font-family="Georgia,serif" font-size="16" fill="#342a20">Generated reference · art pixels · diagrams only; source specification owns all placements</text>
+<g role="button" tabindex="0" aria-label="Show reference" aria-pressed="true" data-button="reference" onclick="showStage('reference')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('reference')}" ><rect x="34" y="77" width="103" height="27" rx="4" fill="#dfcba8" stroke="#8d775b"/><text x="44" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">reference</text></g>
+<g role="button" tabindex="0" aria-label="Show all" aria-pressed="false" data-button="all" onclick="showStage('all')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('all')}" ><rect x="144" y="77" width="78" height="27" rx="4" fill="#fff9ee" stroke="#8d775b"/><text x="154" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">all</text></g>
+<g transform="translate(34 110)"><rect width="1280" height="720" fill="#efe4cf" stroke="#6f5b43"/><rect y="536" width="1280" height="154" fill="#d5dfc9"/><rect y="636" width="1280" height="54" fill="#b7c9a6"/>
+<path d="M0 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M80 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M160 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M240 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M320 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M400 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M480 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M560 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M640 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M720 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M800 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M880 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M960 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1040 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1120 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1200 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1280 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M0 0 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 80 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 160 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 240 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 320 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 400 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 480 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 560 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 640 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 720 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 524 H1280 M0 636 H1280 M0 690 H1280" stroke="#77886b" stroke-dasharray="6 6"/>
+<polygon points="0,536 1280,536 1280,690 0,690" fill="#6c9f73" fill-opacity=".1" stroke="#497650"/>
+<polygon points="468,588 532,588 532,612 468,612" fill="#c14e44" fill-opacity=".1" stroke="#a74740"/>
+<polygon points="290,588 330,588 330,612 290,612" fill="#c14e44" fill-opacity=".1" stroke="#a74740"/>
+<g data-target="chalk" data-stages="reference" visibility="visible"><rect x="342" y="406" width="36" height="56" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>chalk marks: look</title></rect></g>
+<g data-target="sign" data-stages="reference" visibility="visible"><rect x="482" y="104" width="40" height="48" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>firing-house bell: look, use</title></rect></g>
+<g data-target="pantryDoor" data-stages="reference" visibility="visible"><rect x="608" y="220" width="120" height="304" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>Nell&#39;s pantry door: look, open, use</title></rect></g>
+<g data-target="soup" data-stages="reference" visibility="visible"><rect x="178" y="362" width="104" height="84" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>soup pot: look, take, use</title></rect></g>
+<g data-target="shoes" data-stages="reference" visibility="visible"><rect x="76" y="96" width="296" height="176" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>shoe racks: look, take</title></rect></g>
+<g data-target="hearth" data-stages="reference" visibility="visible"><rect x="104" y="324" width="240" height="200" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>hearth: look, use</title></rect></g>
+<g data-target="stairs" data-stages="reference" visibility="visible"><rect x="732" y="192" width="304" height="332" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>stairs to the gallery: look, go</title></rect></g>
+<g data-target="breadBasket" data-stages="reference" visibility="visible"><rect x="1036" y="390" width="72" height="52" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>bread basket: look, take</title></rect></g>
+<g data-target="kilnGate" data-stages="reference" visibility="visible"><rect x="1172" y="192" width="108" height="336" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>kiln gate: look, open, go</title></rect></g>
+<g data-target="toRoom" data-stages="reference" visibility="visible"><rect x="0" y="208" width="60" height="320" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>way to Mara&#39;s room: look, go</title></rect></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/house-chalk.md"><title>house-chalk; Always; firingHouse-chalk</title><rect x="342" y="406" width="36" height="56" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M356 462 h8 M360 458 v8" stroke="#9c571c"/><circle cx="353" cy="418" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="347" y="423" font-family="Georgia,serif" font-size="12" fill="#342a20">1</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/house-bell.md"><title>house-bell; Always; firingHouse-bell</title><rect x="482" y="104" width="40" height="48" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M498 152 h8 M502 148 v8" stroke="#9c571c"/><circle cx="493" cy="116" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="487" y="121" font-family="Georgia,serif" font-size="12" fill="#342a20">2</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/pantry-door.md"><title>pantry-door; Always; latchFixed: stuck -&gt; fixed; firingHouse-pantryDoor</title><rect x="608" y="220" width="120" height="304" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M664 524 h8 M668 520 v8" stroke="#9c571c"/><circle cx="619" cy="232" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="613" y="237" font-family="Georgia,serif" font-size="12" fill="#342a20">3</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/house-soup.md"><title>house-soup; Always; kilnCold: warm -&gt; cold; firingHouse-soup</title><rect x="178" y="362" width="104" height="84" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M226 446 h8 M230 442 v8" stroke="#9c571c"/><circle cx="189" cy="374" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="183" y="379" font-family="Georgia,serif" font-size="12" fill="#342a20">4</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/house-shoes.md"><title>house-shoes; Always; kilnCold: warm -&gt; cold; firingHouse-shoes</title><rect x="76" y="96" width="296" height="176" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M220 272 h8 M224 268 v8" stroke="#9c571c"/><circle cx="87" cy="108" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="81" y="113" font-family="Georgia,serif" font-size="12" fill="#342a20">5</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/house-fire.md"><title>house-fire; Always; kilnCold: lit -&gt; cold; firingHouse-fire</title><rect x="158" y="450" width="136" height="52" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M222 502 h8 M226 498 v8" stroke="#9c571c"/><circle cx="169" cy="462" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="163" y="467" font-family="Georgia,serif" font-size="12" fill="#342a20">6</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/house-bread.md"><title>house-bread; Always; firingHouse-bread</title><rect x="1036" y="390" width="72" height="52" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M1068 442 h8 M1072 438 v8" stroke="#9c571c"/><circle cx="1047" cy="402" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="1041" y="407" font-family="Georgia,serif" font-size="12" fill="#342a20">7</text></a></g>
+<rect x="54" y="360" width="52" height="232" rx="22" fill="#bc5a8a" fill-opacity=".15" stroke="#a14878"/>
+<text x="1040" y="553" font-family="Georgia,serif" font-size="16" fill="#342a20">stairs to the gallery</text>
+<text x="1040" y="565" font-family="Georgia,serif" font-size="16" fill="#342a20">kiln gate</text>
+<text x="12" y="565" font-family="Georgia,serif" font-size="16" fill="#342a20">way to Mara&#39;s room</text>
+</g>
+<text x="1350" y="113" font-family="Georgia,serif" font-size="20" fill="#342a20">OBJECT KEY · room and puzzle order</text>
+<text x="1350" y="141" font-family="Georgia,serif" font-size="15" fill="#342a20">T target · V visual-only · F foreground</text>
+<text x="1350" y="170" font-family="Georgia,serif" font-size="18" fill="#342a20">1 T · house-chalk</text>
+<text x="1370" y="187" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="212" font-family="Georgia,serif" font-size="18" fill="#342a20">2 T · house-bell</text>
+<text x="1370" y="229" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="254" font-family="Georgia,serif" font-size="18" fill="#342a20">3 T · pantry-door</text>
+<text x="1370" y="271" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="296" font-family="Georgia,serif" font-size="18" fill="#342a20">4 T · house-soup</text>
+<text x="1370" y="313" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="338" font-family="Georgia,serif" font-size="18" fill="#342a20">5 T · house-shoes</text>
+<text x="1370" y="355" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="380" font-family="Georgia,serif" font-size="18" fill="#342a20">6 T · house-fire</text>
+<text x="1370" y="397" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="422" font-family="Georgia,serif" font-size="18" fill="#342a20">7 T · house-bread</text>
+<text x="1370" y="439" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="34" y="866" font-family="Georgia,serif" font-size="18" fill="#342a20">speaker.mara: 232 art px / 116 logical units. Background stays fixed; props and stages are independent.</text>
+<text x="34" y="898" font-family="Georgia,serif" font-size="18" fill="#342a20">Click a stage to view one snapshot; All shows alternative footprints, not a simultaneous scene.</text>
+<text x="34" y="940" font-family="Georgia,serif" font-size="17" fill="#342a20">reference: All implemented conditional placements; each target and sprite lists its own flag conditions.</text>
+<script><![CDATA[function showStage(stage){document.querySelectorAll('[data-stages]').forEach(function(g){g.setAttribute('visibility',stage==='all'||g.getAttribute('data-stages').split(' ').indexOf(stage)>=0?'visible':'hidden')});document.querySelectorAll('[data-button]').forEach(function(g){var selected=g.getAttribute('data-button')===stage;g.querySelector('rect').setAttribute('fill',selected?'#dfcba8':'#fff9ee');g.setAttribute('aria-pressed',selected?'true':'false')})}]]></script></svg>

@@ -45,6 +45,8 @@ const STEP_DUST: Record<string, { tint: number; count: number; scale: number; al
  * plus footstep dust and the sparks when the kiln groans. Presentation only: nothing here changes state.
  */
 export class Props {
+  /** Gauge faces, so a hover outline can follow their picture. */
+  private faces: Phaser.GameObjects.Image[] = [];
   private needles: { g: Phaser.GameObjects.Graphics; def: Extract<PropDef, { kind: 'gauge' }>; angle: number }[] = [];
   private swings = new Map<string, Phaser.GameObjects.Image>();
   private flames: { img: Phaser.GameObjects.Image; def: Extract<PropDef, { kind: 'flame' }> }[] = [];
@@ -82,14 +84,14 @@ export class Props {
 
   /** A swinging prop's picture by its image name (for the hover outline), if this room has one. */
   image(name: string): Phaser.GameObjects.Image | undefined {
-    return [...this.swings.values()].find(img => img.texture.key === `prop-${name}`);
+    return [...this.swings.values(), ...this.faces].find(img => img.texture.key === `prop-${name}`);
   }
 
   private build(def: PropDef): void {
     const scene = this.scene;
     switch (def.kind) {
       case 'gauge': {
-        scene.add.image(def.x, def.y, `prop-${def.image}`).setOrigin(0.5).setScale(1 / ART_SCALE).setDepth(-9000);
+        this.faces.push(scene.add.image(def.x, def.y, `prop-${def.image}`).setOrigin(0.5).setScale(1 / ART_SCALE).setDepth(-9000));
         const g = scene.add.graphics().setDepth(-8999);
         this.needles.push({ g, def, angle: def.angle });
         break;

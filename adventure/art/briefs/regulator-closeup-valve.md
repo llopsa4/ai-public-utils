@@ -1,19 +1,36 @@
 # regulator-closeup-valve
 
-Status: **final** · prop · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `regulator-closeup-valve` · prop · **visual** · final
 
 ## Description
 
 regulator closeup valve
 
-## Use and placement
+## What the game does with it
 
-A separately rendered prop; placement and behavior follow its description and chapter definition.
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — regulator closeup valve When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/props/regulator-closeup-valve.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/props/regulator-closeup-valve.png` (final).
-- Anchor: `none`.
-- Canvas/frame: **80×80 art px**.
+- Canvas: **80×80 art px**. Image tile anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/regulator-closeup-valve.png`.
+
+## Sources
+
+[art/manifest.mjs](../manifest.mjs) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

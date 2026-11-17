@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1900" height="1300" viewBox="0 0 1900 1300" role="group" aria-labelledby="title desc"><title id="title">The Ashways — reference layout</title><desc id="desc">1280 by 720 art-pixel frame. Stage controls select illustrative states; numbers link to asset briefs. Green floor, pink actor scale; targets and visual layers are separate.</desc>
+<style>[role=button]:focus rect{stroke:#315b73;stroke-width:3}</style><rect width="1900" height="1300" fill="#f8f1e4"/>
+<text x="34" y="38" font-family="Georgia,serif" font-size="28" fill="#342a20">The Ashways</text>
+<text x="34" y="63" font-family="Georgia,serif" font-size="16" fill="#342a20">Generated reference · art pixels · diagrams only; source specification owns all placements</text>
+<g role="button" tabindex="0" aria-label="Show reference" aria-pressed="true" data-button="reference" onclick="showStage('reference')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('reference')}" ><rect x="34" y="77" width="103" height="27" rx="4" fill="#dfcba8" stroke="#8d775b"/><text x="44" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">reference</text></g>
+<g role="button" tabindex="0" aria-label="Show all" aria-pressed="false" data-button="all" onclick="showStage('all')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();showStage('all')}" ><rect x="144" y="77" width="78" height="27" rx="4" fill="#fff9ee" stroke="#8d775b"/><text x="154" y="96" font-family="Georgia,serif" font-size="14" fill="#342a20">all</text></g>
+<g transform="translate(34 110)"><rect width="1280" height="720" fill="#efe4cf" stroke="#6f5b43"/><rect y="536" width="1280" height="154" fill="#d5dfc9"/><rect y="636" width="1280" height="54" fill="#b7c9a6"/>
+<path d="M0 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M80 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M160 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M240 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M320 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M400 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M480 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M560 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M640 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M720 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M800 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M880 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M960 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1040 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1120 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1200 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M1280 0 V720" stroke="#bfae95" opacity=".25"/>
+<path d="M0 0 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 80 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 160 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 240 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 320 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 400 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 480 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 560 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 640 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 720 H1280" stroke="#bfae95" opacity=".25"/>
+<path d="M0 524 H1280 M0 636 H1280 M0 690 H1280" stroke="#77886b" stroke-dasharray="6 6"/>
+<polygon points="0,536 1280,536 1280,690 0,690" fill="#6c9f73" fill-opacity=".1" stroke="#497650"/>
+<g data-target="pressureCell" data-stages="reference" visibility="visible"><rect x="240" y="340" width="56" height="72" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>brass pressure cell: look, use</title></rect></g>
+<g data-target="sweeperDisabled" data-stages="reference" visibility="visible"><rect x="580" y="470" width="280" height="140" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>ash sweeper: look</title></rect></g>
+<g data-target="sweeper" data-stages="reference" visibility="visible"><rect x="940" y="456" width="260" height="140" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>ash sweeper: look, talk, use</title></rect></g>
+<g data-target="sweeperAtPipe" data-stages="reference" visibility="visible"><rect x="260" y="456" width="260" height="140" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>ash sweeper: look, talk, use</title></rect></g>
+<g data-target="valve" data-stages="reference" visibility="visible"><rect x="180" y="320" width="112" height="204" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>steam valve: look, open, close, use</title></rect></g>
+<g data-target="passage" data-stages="reference" visibility="visible"><rect x="1120" y="200" width="160" height="328" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>passage under the bridge: look, go</title></rect></g>
+<g data-target="pipes" data-stages="reference" visibility="visible"><rect x="0" y="0" width="600" height="200" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>old pipes: look, use</title></rect></g>
+<g data-target="wayBack" data-stages="reference" visibility="visible"><rect x="0" y="240" width="60" height="288" fill="none" stroke="#b39125" stroke-dasharray="3 5"><title>way back to Cinderfold: look, go</title></rect></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/sweeper.md"><title>sweeper; Always; ashways-sweeper</title><rect x="940" y="456" width="260" height="140" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M1066 596 h8 M1070 592 v8" stroke="#9c571c"/><circle cx="951" cy="468" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="945" y="473" font-family="Georgia,serif" font-size="12" fill="#342a20">1</text></a></g>
+<g data-stages="reference" visibility="visible"><a href="../briefs/valve.md"><title>valve; Always; valveVented: closed -&gt; venting; ashways-valve</title><rect x="180" y="320" width="112" height="204" fill="#9c571c" fill-opacity=".07" stroke="#9c571c" stroke-dasharray="0"/><path d="M232 524 h8 M236 520 v8" stroke="#9c571c"/><circle cx="191" cy="332" r="11" fill="#fff9ee" stroke="#9c571c"/><text x="185" y="337" font-family="Georgia,serif" font-size="12" fill="#342a20">2</text></a></g>
+<rect x="94" y="368" width="52" height="232" rx="22" fill="#bc5a8a" fill-opacity=".15" stroke="#a14878"/>
+<text x="1040" y="569" font-family="Georgia,serif" font-size="16" fill="#342a20">passage under the bridge</text>
+<text x="12" y="569" font-family="Georgia,serif" font-size="16" fill="#342a20">way back to Cinderfold</text>
+</g>
+<text x="1350" y="113" font-family="Georgia,serif" font-size="20" fill="#342a20">OBJECT KEY · room and puzzle order</text>
+<text x="1350" y="141" font-family="Georgia,serif" font-size="15" fill="#342a20">T target · V visual-only · F foreground</text>
+<text x="1350" y="170" font-family="Georgia,serif" font-size="18" fill="#342a20">1 T · sweeper</text>
+<text x="1370" y="187" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="1350" y="212" font-family="Georgia,serif" font-size="18" fill="#342a20">2 T · valve</text>
+<text x="1370" y="229" font-family="Georgia,serif" font-size="12" fill="#342a20">reference</text>
+<text x="34" y="866" font-family="Georgia,serif" font-size="18" fill="#342a20">speaker.mara: 232 art px / 116 logical units. Background stays fixed; props and stages are independent.</text>
+<text x="34" y="898" font-family="Georgia,serif" font-size="18" fill="#342a20">Click a stage to view one snapshot; All shows alternative footprints, not a simultaneous scene.</text>
+<text x="34" y="940" font-family="Georgia,serif" font-size="17" fill="#342a20">reference: All implemented conditional placements; each target and sprite lists its own flag conditions.</text>
+<script><![CDATA[function showStage(stage){document.querySelectorAll('[data-stages]').forEach(function(g){g.setAttribute('visibility',stage==='all'||g.getAttribute('data-stages').split(' ').indexOf(stage)>=0?'visible':'hidden')});document.querySelectorAll('[data-button]').forEach(function(g){var selected=g.getAttribute('data-button')===stage;g.querySelector('rect').setAttribute('fill',selected?'#dfcba8':'#fff9ee');g.setAttribute('aria-pressed',selected?'true':'false')})}]]></script></svg>

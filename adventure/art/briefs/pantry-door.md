@@ -1,23 +1,37 @@
 # pantry-door
 
-Status: **final** · object · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `pantry-door` · object · **target** · final
 
 ## Description
 
 Nell's pantry door, set in the firing house wall: a full-height plank door (taller than Mara) with iron strap hinges and an iron latch. stuck: the latch bent and jammed, a sliver of dark gap; fixed: the latch straight, the door shut properly.
 
-## Use and placement
+## What the game does with it
 
-Stands in the room `firingHouse` on its foot point (668, 524) (bottom centre of the picture); it shows "fixed" or "stuck" as the story moves on.
-States: stuck, fixed: one picture each, identical framing; only what changes between states differs.
+look; open; use
+
+## Placement and layers
+
+- [The Firing House](room-firing-house.md): anchor (668,524) art px / (334,262) logical; world; Always; latchFixed: stuck -> fixed.
+
+## States, visibility and transitions
+
+- **stuck** — Nell's pantry door, set in the firing house wall: a full-height plank door (taller than Mara) with iron strap hinges and an iron latch. stuck: the latch bent and jammed, a sliver of dark gap; fixed: the latch straight, the door shut properly. When: Existing stuck frame; placement flag conditions above determine when it is used..
+- **fixed** — Nell's pantry door, set in the firing house wall: a full-height plank door (taller than Mara) with iron strap hinges and an iron latch. stuck: the latch bent and jammed, a sliver of dark gap; fixed: the latch straight, the door shut properly. When: Existing fixed frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/objects/pantry-door.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/objects/pantry-door.png` (final).
-- Anchor: `bottom-centre`.
-- Canvas/frame: **120×304 art px**.
-- State tags: `stuck`, `fixed`.
-- Atlas metadata: `art/src/objects/pantry-door.json`.
-- Import names: `pantry-door-stuck.png`, `pantry-door-fixed.png`.
+- Canvas: **120×304 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/pantry-door-stuck.png`, `art/inbox/pantry-door-fixed.png`.
+
+## Sources
+
+[art/manifest.mjs · L282](../manifest.mjs#L282) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

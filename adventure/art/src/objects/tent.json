@@ -1,45 +1,43 @@
 {
- "frames": [
-  {
-   "filename": "0",
-   "frame": {
-    "x": 0,
-    "y": 0,
-    "w": 184,
-    "h": 224
-   },
-   "rotated": false,
-   "trimmed": false,
-   "spriteSourceSize": {
-    "x": 0,
-    "y": 0,
-    "w": 184,
-    "h": 224
-   },
-   "sourceSize": {
-    "w": 184,
-    "h": 224
-   },
-   "duration": 1000
+  "frames": [
+    {
+      "filename": "idle",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 224,
+        "h": 280
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 224,
+        "h": 280
+      },
+      "sourceSize": {
+        "w": 224,
+        "h": 280
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 kiln hall r1 review",
+    "image": "tent.png",
+    "size": {
+      "w": 224,
+      "h": 280
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "idle",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      }
+    ]
   }
- ],
- "meta": {
-  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
-  "version": "1",
-  "image": "tent.png",
-  "format": "RGBA8888",
-  "size": {
-   "w": 184,
-   "h": 224
-  },
-  "scale": "1",
-  "frameTags": [
-   {
-    "name": "idle",
-    "from": 0,
-    "to": 0,
-    "direction": "forward"
-   }
-  ]
- }
 }

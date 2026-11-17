@@ -1,0 +1,566 @@
+{
+  "assignment": "C7",
+  "revision": "scene-redraw-firing-house/r1",
+  "date": "2026-11-17",
+  "authority": "user",
+  "approval": "Install, directly after r1 review; includes disclosed frame/brick/rail/bracket and tiny-motif approximations.",
+  "delivery": "art/inbox/done/scene-redraw-firing-house-r1",
+  "installedHashes": {
+    "rooms/firing-house.png": "e4414913d045d3cf659dc2d6ba75d1b00ee13df57c6bdf028375be6854985ea4",
+    "objects/house-shoes.png": "0efa513b99e7636434de8878b97d78d4642b73025d0382204db04c881c0d2840",
+    "objects/house-shoes.json": "b2ad992176d3aac288d36f2aefbb61561f455524c7bbd0cf557886b3e62774d8",
+    "objects/house-bell.png": "1707c41cdc333f4cba4de6deb520b2842179b0b631beb18552882c1845117672",
+    "objects/house-bell.json": "d4b9fee6130fb18baa0d16934d1a9f5253a7aff8d8ff1189cc379f1a26b810b3",
+    "objects/house-chalk.png": "15b3bb184870a2d1b2534315e310a1b21cc337d7eefa4cc3e9806f31962dceba",
+    "objects/house-chalk.json": "03ac41b5c766357cc024bd28bc8fa785f74cc6b91dfe0f11ec6e681da5151c38",
+    "objects/house-fire.png": "5e150aeca85d386415c47abc69e01291aee3e2a98ce28956f573b49858e64114",
+    "objects/house-fire.json": "1bd187092202d448e503dfa7812bdfdcb6da212159168005dc6317ece6436055",
+    "objects/house-soup.png": "16fe935deaf0d5b27229c31472fa2e308ce48dc705426222385f162c288a61f5",
+    "objects/house-soup.json": "96a34098d2ca4b6be0144dfbe240898623af56cee1d9d5ada68677ea3c3e3996",
+    "objects/house-bread.png": "7ea31f106d581657b1ad8eb0b474b91d95cc3f2199712b1789a5014d752c510f",
+    "objects/house-bread.json": "66457355b161f8a81d35efb6bfb21380cbb6754961b802c9a0f2eefa298e154c",
+    "objects/pantry-door.png": "da7a935102987adfd7d41b204fa298b7edc9f1cb1fab30caf1468ae50f701131",
+    "objects/pantry-door.json": "d1a9369c7a648f82e29478e9a7f631565f028204763a490a47549fdfcef86134",
+    "rooms/firing-house.webp": "446dd7cf022cb51d11348ce6616452a9827cce63b4bf0632d2f4f8cfc5ae0c35"
+  },
+  "registration": {
+    "house-shoes": {
+      "canvas": [
+        296,
+        176
+      ],
+      "origin": [
+        76,
+        96
+      ],
+      "anchor": [
+        148,
+        176
+      ],
+      "tags": [
+        "warm",
+        "cold"
+      ],
+      "pairs": [
+        {
+          "row": 0,
+          "pair": 1,
+          "adult": false,
+          "bodyHeight": 18,
+          "lace": 8,
+          "x": 4,
+          "y": 6,
+          "removed": false
+        },
+        {
+          "row": 0,
+          "pair": 2,
+          "adult": false,
+          "bodyHeight": 20,
+          "lace": 8,
+          "x": 33,
+          "y": 6,
+          "removed": true
+        },
+        {
+          "row": 0,
+          "pair": 3,
+          "adult": false,
+          "bodyHeight": 22,
+          "lace": 8,
+          "x": 62,
+          "y": 6,
+          "removed": false
+        },
+        {
+          "row": 0,
+          "pair": 4,
+          "adult": false,
+          "bodyHeight": 24,
+          "lace": 8,
+          "x": 91,
+          "y": 6,
+          "removed": false
+        },
+        {
+          "row": 0,
+          "pair": 5,
+          "adult": false,
+          "bodyHeight": 18,
+          "lace": 8,
+          "x": 120,
+          "y": 6,
+          "removed": true
+        },
+        {
+          "row": 0,
+          "pair": 6,
+          "adult": false,
+          "bodyHeight": 20,
+          "lace": 8,
+          "x": 149,
+          "y": 6,
+          "removed": false
+        },
+        {
+          "row": 0,
+          "pair": 7,
+          "adult": false,
+          "bodyHeight": 22,
+          "lace": 8,
+          "x": 178,
+          "y": 6,
+          "removed": false
+        },
+        {
+          "row": 0,
+          "pair": 8,
+          "adult": true,
+          "bodyHeight": 30,
+          "lace": 8,
+          "x": 207,
+          "y": 6,
+          "removed": false
+        },
+        {
+          "row": 0,
+          "pair": 9,
+          "adult": false,
+          "bodyHeight": 18,
+          "lace": 8,
+          "x": 236,
+          "y": 6,
+          "removed": true
+        },
+        {
+          "row": 0,
+          "pair": 10,
+          "adult": false,
+          "bodyHeight": 20,
+          "lace": 8,
+          "x": 265,
+          "y": 6,
+          "removed": false
+        },
+        {
+          "row": 1,
+          "pair": 1,
+          "adult": false,
+          "bodyHeight": 18,
+          "lace": 8,
+          "x": 4,
+          "y": 104,
+          "removed": false
+        },
+        {
+          "row": 1,
+          "pair": 2,
+          "adult": false,
+          "bodyHeight": 20,
+          "lace": 8,
+          "x": 33,
+          "y": 104,
+          "removed": false
+        },
+        {
+          "row": 1,
+          "pair": 3,
+          "adult": true,
+          "bodyHeight": 30,
+          "lace": 8,
+          "x": 62,
+          "y": 104,
+          "removed": true
+        },
+        {
+          "row": 1,
+          "pair": 4,
+          "adult": false,
+          "bodyHeight": 24,
+          "lace": 8,
+          "x": 91,
+          "y": 104,
+          "removed": false
+        },
+        {
+          "row": 1,
+          "pair": 5,
+          "adult": false,
+          "bodyHeight": 18,
+          "lace": 8,
+          "x": 120,
+          "y": 104,
+          "removed": false
+        },
+        {
+          "row": 1,
+          "pair": 6,
+          "adult": false,
+          "bodyHeight": 20,
+          "lace": 8,
+          "x": 149,
+          "y": 104,
+          "removed": true
+        },
+        {
+          "row": 1,
+          "pair": 7,
+          "adult": false,
+          "bodyHeight": 22,
+          "lace": 8,
+          "x": 178,
+          "y": 104,
+          "removed": false
+        },
+        {
+          "row": 1,
+          "pair": 8,
+          "adult": false,
+          "bodyHeight": 24,
+          "lace": 8,
+          "x": 207,
+          "y": 104,
+          "removed": true
+        },
+        {
+          "row": 1,
+          "pair": 9,
+          "adult": false,
+          "bodyHeight": 18,
+          "lace": 8,
+          "x": 236,
+          "y": 104,
+          "removed": false
+        },
+        {
+          "row": 1,
+          "pair": 10,
+          "adult": true,
+          "bodyHeight": 30,
+          "lace": 8,
+          "x": 265,
+          "y": 104,
+          "removed": false
+        }
+      ]
+    },
+    "house-bell": {
+      "canvas": [
+        40,
+        48
+      ],
+      "origin": [
+        482,
+        104
+      ],
+      "anchor": [
+        20,
+        0
+      ],
+      "tags": [
+        "idle"
+      ]
+    },
+    "house-chalk": {
+      "canvas": [
+        36,
+        56
+      ],
+      "origin": [
+        342,
+        406
+      ],
+      "anchor": [
+        18,
+        56
+      ],
+      "tags": [
+        "idle"
+      ]
+    },
+    "house-fire": {
+      "canvas": [
+        136,
+        52
+      ],
+      "origin": [
+        158,
+        450
+      ],
+      "anchor": [
+        68,
+        52
+      ],
+      "tags": [
+        "lit",
+        "cold"
+      ]
+    },
+    "house-soup": {
+      "canvas": [
+        104,
+        84
+      ],
+      "origin": [
+        178,
+        362
+      ],
+      "anchor": [
+        52,
+        84
+      ],
+      "tags": [
+        "warm",
+        "cold"
+      ]
+    },
+    "house-bread": {
+      "canvas": [
+        72,
+        52
+      ],
+      "origin": [
+        1036,
+        390
+      ],
+      "anchor": [
+        36,
+        52
+      ],
+      "tags": [
+        "idle"
+      ]
+    },
+    "pantry-door": {
+      "canvas": [
+        120,
+        304
+      ],
+      "origin": [
+        608,
+        220
+      ],
+      "anchor": [
+        60,
+        304
+      ],
+      "tags": [
+        "stuck",
+        "fixed"
+      ]
+    },
+    "backgroundRegistration": {
+      "regions": [
+        {
+          "box": [
+            76,
+            76,
+            296,
+            196
+          ],
+          "xs": [
+            0,
+            296
+          ],
+          "ys": [
+            0,
+            35,
+            126,
+            196
+          ],
+          "xt": [
+            0,
+            296
+          ],
+          "yt": [
+            0,
+            26,
+            124,
+            196
+          ]
+        },
+        {
+          "box": [
+            440,
+            78,
+            104,
+            74
+          ],
+          "xs": [
+            0,
+            6,
+            90,
+            104
+          ],
+          "ys": [
+            0,
+            4,
+            22,
+            68,
+            74
+          ],
+          "xt": [
+            0,
+            10,
+            62,
+            104
+          ],
+          "yt": [
+            0,
+            4,
+            26,
+            32,
+            74
+          ]
+        },
+        {
+          "box": [
+            105,
+            324,
+            237,
+            200
+          ],
+          "xs": [
+            0,
+            115,
+            237
+          ],
+          "ys": [
+            0,
+            18,
+            28,
+            62,
+            178,
+            200
+          ],
+          "xt": [
+            0,
+            125,
+            237
+          ],
+          "yt": [
+            0,
+            18,
+            28,
+            40,
+            178,
+            200
+          ]
+        },
+        {
+          "box": [
+            280,
+            278,
+            38,
+            46
+          ],
+          "xs": [
+            0,
+            9,
+            30,
+            38
+          ],
+          "ys": [
+            0,
+            8,
+            46
+          ],
+          "xt": [
+            0,
+            5,
+            23,
+            38
+          ],
+          "yt": [
+            0,
+            14,
+            46
+          ]
+        },
+        {
+          "box": [
+            328,
+            466,
+            58,
+            58
+          ],
+          "xs": [
+            0,
+            28,
+            58
+          ],
+          "ys": [
+            0,
+            8,
+            58
+          ],
+          "xt": [
+            0,
+            30,
+            58
+          ],
+          "yt": [
+            0,
+            2,
+            58
+          ]
+        }
+      ],
+      "railFit": {
+        "xs": [
+          0,
+          210,
+          337,
+          465,
+          593,
+          719,
+          846,
+          973,
+          1100,
+          1224,
+          1350,
+          1557
+        ],
+        "xt": [
+          0,
+          17,
+          46,
+          75,
+          104,
+          133,
+          162,
+          191,
+          220,
+          249,
+          278,
+          296
+        ],
+        "ys": [
+          0,
+          96,
+          130,
+          178,
+          245,
+          578,
+          620,
+          683,
+          742,
+          1010
+        ],
+        "yt": [
+          0,
+          9,
+          22,
+          26,
+          38,
+          106,
+          120,
+          124,
+          138,
+          192
+        ]
+      },
+      "notes": "Newly generated clean plate fitted by local nearest-neighbour bands. Separate generated ten-peg rail correction patches. Rails/hook/bracket numeric fit; remaining painted geometry is approximate."
+    }
+  }
+}

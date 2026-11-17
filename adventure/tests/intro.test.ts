@@ -300,5 +300,10 @@ test('the spilt tallow by the table: reached through the cage door, or picked up
 });
 
 test('the cell shows the bare wall once Silas takes his cloak back', () => {
-  assert.deepEqual(INTRO.rooms.cell.backgroundWhen, [{ if: [{ flag: 'tookCloak' }], background: 'room-cell-bare' }]);
+  const state = newGame('intro');
+  const cloak = INTRO.rooms.cell.objects.find(o => o.id === 'cloak')!;
+  assert.ok(conditionsHold(state, cloak.visibleIf));
+  state.flags.tookCloak = true;
+  assert.ok(!conditionsHold(state, cloak.visibleIf), 'collected cloak reveals the same clean wall');
+  assert.equal(INTRO.rooms.cell.backgroundWhen, undefined);
 });

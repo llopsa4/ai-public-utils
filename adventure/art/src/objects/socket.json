@@ -1,73 +1,71 @@
 {
- "frames": [
-  {
-   "filename": "0",
-   "frame": {
-    "x": 0,
-    "y": 0,
-    "w": 160,
-    "h": 160
-   },
-   "rotated": false,
-   "trimmed": false,
-   "spriteSourceSize": {
-    "x": 0,
-    "y": 0,
-    "w": 160,
-    "h": 160
-   },
-   "sourceSize": {
-    "w": 160,
-    "h": 160
-   },
-   "duration": 1000
-  },
-  {
-   "filename": "1",
-   "frame": {
-    "x": 160,
-    "y": 0,
-    "w": 160,
-    "h": 160
-   },
-   "rotated": false,
-   "trimmed": false,
-   "spriteSourceSize": {
-    "x": 0,
-    "y": 0,
-    "w": 160,
-    "h": 160
-   },
-   "sourceSize": {
-    "w": 160,
-    "h": 160
-   },
-   "duration": 1000
+  "frames": [
+    {
+      "filename": "installed",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 160
+      },
+      "duration": 1000
+    },
+    {
+      "filename": "removed",
+      "frame": {
+        "x": 160,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 160,
+        "h": 160
+      },
+      "sourceSize": {
+        "w": 160,
+        "h": 160
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 gallery r1 review",
+    "image": "socket.png",
+    "size": {
+      "w": 320,
+      "h": 160
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "installed",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "removed",
+        "from": 1,
+        "to": 1,
+        "direction": "forward"
+      }
+    ]
   }
- ],
- "meta": {
-  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
-  "version": "1",
-  "image": "socket.png",
-  "format": "RGBA8888",
-  "size": {
-   "w": 320,
-   "h": 160
-  },
-  "scale": "1",
-  "frameTags": [
-   {
-    "name": "installed",
-    "from": 0,
-    "to": 0,
-    "direction": "forward"
-   },
-   {
-    "name": "removed",
-    "from": 1,
-    "to": 1,
-    "direction": "forward"
-   }
-  ]
- }
 }

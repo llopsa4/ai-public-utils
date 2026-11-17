@@ -1,22 +1,36 @@
 # extra-runner
 
-Status: **placeholder** · extra · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `extra-runner` · extra · **visual** · placeholder
 
 ## Description
 
 Pip, a child errand-runner, about 10: small and skinny (about 63% of an adult's height). Light-brown skin, a big grin with a missing tooth, a flat cap much too large for him. A scruffy patched blue jacket, knee-length shorts, mismatched socks (one striped), a small message satchel across his chest.
 
-## Use and placement
+## What the game does with it
 
-A background person in: firingHouse (walks about, works, now and then says a line).
-In the game 150 art pixels tall (75 world pixels; people are built on a 1-art-pixel grid with the master palette, so the face is only a few dozen art pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — Pip, a child errand-runner, about 10: small and skinny (about 63% of an adult's height). Light-brown skin, a big grin with a missing tooth, a flat cap much too large for him. A scruffy patched blue jacket, knee-length shorts, mismatched socks (one striped), a small message satchel across his chest. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/characters/extra-runner.png. Status: placeholder. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/characters/extra-runner.png` (placeholder).
-- Anchor: `bottom-centre`.
-- Canvas/frame: **256×256 art px**.
-- Figure height: 150 art px.
-- Atlas metadata: `art/src/characters/extra-runner.json`.
+- Canvas: **256×256 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/extra-runner.png`.
+
+## Sources
+
+[art/manifest.mjs · L313](../manifest.mjs#L313) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

@@ -1,19 +1,36 @@
 # item-scarf
 
-Status: **final** · item · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `item-scarf` · item · **visual** · final
 
 ## Description
 
 Tobi's orange knitted scarf, folded, with a fringe.
 
-## Use and placement
+## What the game does with it
 
-A satchel item: shown in the inventory bar and on the cursor while it is being used.
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — Tobi's orange knitted scarf, folded, with a fringe. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/items/scarf.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/items/scarf.png` (final).
-- Anchor: `none`.
-- Canvas/frame: **64×64 art px**.
+- Canvas: **64×64 art px**. Image tile anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/item-scarf.png`.
+
+## Sources
+
+[art/manifest.mjs](../manifest.mjs) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

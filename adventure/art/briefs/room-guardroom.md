@@ -6,28 +6,30 @@ Reference for the implemented chapter; existing artwork is preserved.
 
 ## Description
 
-The guardroom above the prison cells: the return stairway at the left edge, an empty shelf for the separately drawn red tally ledger, a black iron stove in the middle, Kell’s desk left of the stove, and the iron grate at the right edge opening onto the snowy night. The clerk’s hood is not on a peg. Three wall torches and their runtime flames light the room; the ledger disappears when collected.
+The approved C7 r2 guardroom at Silas's 1-art-pixel detail: stairs at the left, empty ledger shelf, Kell's desk to the right of the central flue, Benn's stool, and an unbarred snowy yard through the right frame. Ledger, stove body, three torches and the closed/open grate leaf are separate overlays over complete backing. Numeric layout: wall/floor seam y536, shelf top y426, desk top y432 and feet y524, stool seat y534 and feet y590, yard opening x1120–1272/y220–524.
 
 ## What the game does with it
 
 - **reference** — All implemented conditional placements; each target and sprite lists its own flag conditions.
 
-Source: [src/chapters/intro/rooms.ts · L134](../../src/chapters/intro/rooms.ts#L134)
+Source: [src/chapters/intro/rooms.ts · L141](../../src/chapters/intro/rooms.ts#L141)
 
 ## Fixed background
 
-The guardroom above the prison cells: the return stairway at the left edge, an empty shelf for the separately drawn red tally ledger, a black iron stove in the middle, Kell’s desk left of the stove, and the iron grate at the right edge opening onto the snowy night. The clerk’s hood is not on a peg. Three wall torches and their runtime flames light the room; the ledger disappears when collected.
+The approved C7 r2 guardroom at Silas's 1-art-pixel detail: stairs at the left, empty ledger shelf, Kell's desk to the right of the central flue, Benn's stool, and an unbarred snowy yard through the right frame. Ledger, stove body, three torches and the closed/open grate leaf are separate overlays over complete backing. Numeric layout: wall/floor seam y536, shelf top y426, desk top y432 and feet y524, stool seat y534 and feet y590, yard opening x1120–1272/y220–524.
 
 ## Interactive targets — puzzle order
 
-- **Tally ledger** (ledger): look, take, open. Bounds (392,392), 80×36 art px. When: [{"notFlag":"tookLedger"}]. [guardroom-ledger](guardroom-ledger.md).
-- **Iron grate** (grate): look, open, go, use. Bounds (1120,220), 152×304 art px. When: Always.
+- **Tally ledger** (ledger): look, take, open. Bounds (408,406), 48×20 art px. When: [{"notFlag":"tookLedger"}]. [guardroom-ledger](guardroom-ledger.md).
+- **Iron grate** (grate): look, open, go, use. Bounds (1120,220), 152×304 art px. When: Always. [guardroom-grate](guardroom-grate.md).
 - **Stairs down** (downStairs): look, go. Bounds (0,300), 80×224 art px. When: Always.
-- **Stove** (stove): look, use. Bounds (600,360), 120×164 art px. When: Always.
+- **Stove** (stove): look, use. Bounds (600,360), 120×164 art px. When: Always. [guardroom-stove](guardroom-stove.md).
 
 ## Sprites used by targets
 
-- [guardroom-ledger](guardroom-ledger.md) — 88×40 art px. Anchor (432,426), world; [{"notFlag":"tookLedger"}].
+- [guardroom-ledger](guardroom-ledger.md) — 48×20 art px. Anchor (432,426), world; [{"notFlag":"tookLedger"}].
+- [guardroom-grate](guardroom-grate.md) — 176×324 art px. Anchor (1192,528), world; Always; grateOpen: closed -> open.
+- [guardroom-stove](guardroom-stove.md) — 128×176 art px. Anchor (660,524), world; Always.
 
 ## Separate visual-only objects and changing scenery
 
@@ -60,6 +62,6 @@ Sprite dimensions are read from each existing atlas sourceSize, preserving trans
 
 ## Sources
 
-[src/chapters/intro/rooms.ts · L134](../../src/chapters/intro/rooms.ts#L134) · [Chapter index](INDEX-intro.md)
+[src/chapters/intro/rooms.ts · L141](../../src/chapters/intro/rooms.ts#L141) · [Chapter index](INDEX-intro.md)
 
 Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

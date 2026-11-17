@@ -1,0 +1,71 @@
+{
+  "frames": [
+    {
+      "filename": "warm",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 104,
+        "h": 84
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 104,
+        "h": 84
+      },
+      "sourceSize": {
+        "w": 104,
+        "h": 84
+      },
+      "duration": 1000
+    },
+    {
+      "filename": "cold",
+      "frame": {
+        "x": 104,
+        "y": 0,
+        "w": 104,
+        "h": 84
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 104,
+        "h": 84
+      },
+      "sourceSize": {
+        "w": 104,
+        "h": 84
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 firing house r1 review",
+    "image": "house-soup.png",
+    "size": {
+      "w": 208,
+      "h": 84
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "warm",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "cold",
+        "from": 1,
+        "to": 1,
+        "direction": "forward"
+      }
+    ]
+  }
+}

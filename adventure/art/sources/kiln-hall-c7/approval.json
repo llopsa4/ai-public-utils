@@ -1,0 +1,280 @@
+{
+  "assignment": "C7",
+  "revision": "scene-redraw-kiln-hall/r1",
+  "date": "2026-11-17",
+  "authority": "user",
+  "approval": "Continue after r1 review delivery, following established C7 room approval precedent; includes disclosed geometry approximations.",
+  "delivery": "art/inbox/done/scene-redraw-kiln-hall-r1",
+  "installedHashes": {
+    "rooms/mara-room.png": "bb3bca0ff3feece659b5f7229472c2019d1a66b8e4248c8f5392e064106b8cf5",
+    "props/pulley.png": "34a36a29d2f2cf9596abf4861de62ed4acfcfa16b8c076d82c205987a37e472f",
+    "foreground/hall-left.png": "0f1dcedcf0cef9b041b3cdbe0185d075bebf1b10da01b9f0c6398bd1f3f65a22",
+    "foreground/hall-right.png": "478f3e974b273f4e1ff6c040480b61bb91fc97cb55c2e83cf59fae1cc3e43e42",
+    "foreground/hall-crate.png": "1164266dcd2284483bdbbc6ab3e0c452eb11bb8dd8ebe6f5e4d26777d7025542",
+    "objects/hall-tally.png": "ac553210438834133a8cb78109bb90ec0dffbcf869d5a12abc87469cd0d09149",
+    "objects/hall-tally.json": "0266aa8fee7d60fee3634714c4d8689e4551eba00df828018cedd828d191921d",
+    "objects/hall-hoist.png": "dbd90a89cb47ba238007ba393ac7ea99404feada157329084d2e31fbacc3ebae",
+    "objects/hall-hoist.json": "b736f82430bc9b2c9d99e91747899736e32a32da21fb1bcb03046125e58ed703",
+    "objects/hall-jars.png": "bcb5488656afcdcc396810015d2712d69be4d30f2d1b028883a83c0972944a66",
+    "objects/hall-jars.json": "684c7ffbfa19247cac8af9af3f378f0132af04aaec367cdc0c16fb8282e4177b",
+    "objects/hall-cart.png": "f9dd63af949c840d0a3bc58f461ee4bdf7577f28bb449a9aa6315856aaaa2bf6",
+    "objects/hall-cart.json": "69ffd19dbca5964164d61a48e1c4cf071b9968bdfaf8ae945d35e0861b0267f4",
+    "objects/kiln-fire.png": "121a1b4a492ca658d63bb62404a9b0686cfdf11e411a512c3a7aa5b0203af789",
+    "objects/kiln-fire.json": "aecdaa20f18a44327e627248dffd95c7993dcd2f298acfc5a85d12e28372fe64",
+    "objects/tent.png": "c9bd90dab6ae04daab66ec3b02eff1f6ffc3dc3df228ffa7a69b5904d2379960",
+    "objects/tent.json": "7e01e180a614df8ba7fb262aecb86a06b9981779963c6e899e0275c5987cd007",
+    "rooms/mara-room.webp": "66c05c1b3cdbf91b4920e672ea09776d9eb8e2587f1c4bda30619e59aca00b78",
+    "props/pulley.webp": "5891b888cfa1dec24b2d6c12fd7dd1d759bd85361db2651a8761f42c00ad6c82",
+    "foreground/hall-left.webp": "c6ec5eb1ff55fdac2720b5391985e361c0e88c35cd38dc3bf85c25618bc8e0c0",
+    "foreground/hall-right.webp": "81a623755a0e777e52e2229257e02a80cda7334442e0818959f3a82be40c83e8",
+    "foreground/hall-crate.webp": "68ac41bfba8422ccf47d497e92f4e34fe32bea6d6750e912314ba0f4d7a4f26f"
+  },
+  "registration": {
+    "hall-tally": {
+      "canvas": [
+        96,
+        232
+      ],
+      "ink": [
+        3,
+        4,
+        91,
+        228
+      ],
+      "origin": [
+        5,
+        272
+      ]
+    },
+    "hall-hoist": {
+      "canvas": [
+        176,
+        360
+      ],
+      "origin": [
+        108,
+        38
+      ],
+      "xs": [
+        58,
+        100,
+        240,
+        515,
+        813
+      ],
+      "xt": [
+        4,
+        17,
+        50,
+        92,
+        172
+      ],
+      "ys": [
+        150,
+        330,
+        513,
+        1559
+      ],
+      "yt": [
+        4,
+        42,
+        82,
+        358
+      ]
+    },
+    "hall-jars": {
+      "canvas": [
+        120,
+        64
+      ],
+      "origin": [
+        258,
+        440
+      ],
+      "xs": [
+        317,
+        1390
+      ],
+      "xt": [
+        4,
+        116
+      ],
+      "ys": [
+        154,
+        370,
+        430,
+        908
+      ],
+      "yt": [
+        8,
+        20,
+        26,
+        64
+      ]
+    },
+    "tent": {
+      "canvas": [
+        224,
+        280
+      ],
+      "origin": [
+        384,
+        248
+      ],
+      "xs": [
+        17,
+        440,
+        715,
+        1104
+      ],
+      "xt": [
+        4,
+        82,
+        142,
+        220
+      ],
+      "ys": [
+        48,
+        300,
+        1364
+      ],
+      "yt": [
+        8,
+        52,
+        280
+      ]
+    },
+    "hall-cart": {
+      "canvas": [
+        144,
+        128
+      ],
+      "origin": [
+        1008,
+        376
+      ],
+      "xs": [
+        191,
+        300,
+        980,
+        1125
+      ],
+      "xt": [
+        4,
+        16,
+        128,
+        140
+      ],
+      "ys": [
+        380,
+        520,
+        660,
+        935,
+        1154
+      ],
+      "yt": [
+        6,
+        34,
+        54,
+        98,
+        128
+      ]
+    },
+    "pulley": {
+      "canvas": [
+        98,
+        216
+      ],
+      "origin": [
+        151,
+        120
+      ],
+      "xs": [
+        184,
+        430,
+        565
+      ],
+      "xt": [
+        20,
+        49,
+        78
+      ],
+      "ys": [
+        0,
+        500,
+        984,
+        1323,
+        1794
+      ],
+      "yt": [
+        0,
+        28,
+        125,
+        165,
+        216
+      ]
+    },
+    "hall-left": {
+      "canvas": [
+        178,
+        104
+      ],
+      "ink": [
+        0,
+        5,
+        175,
+        99
+      ],
+      "origin": [
+        0,
+        616
+      ]
+    },
+    "hall-right": {
+      "canvas": [
+        166,
+        92
+      ],
+      "origin": [
+        1114,
+        628
+      ],
+      "xs": [
+        41,
+        1671
+      ],
+      "xt": [
+        3,
+        166
+      ],
+      "ys": [
+        25,
+        270,
+        915,
+        918
+      ],
+      "yt": [
+        3,
+        36,
+        91,
+        92
+      ]
+    },
+    "hall-crate": {
+      "canvas": [
+        68,
+        58
+      ],
+      "ink": [
+        0,
+        0,
+        68,
+        58
+      ],
+      "origin": [
+        196,
+        622
+      ]
+    }
+  }
+}

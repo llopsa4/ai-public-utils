@@ -1,0 +1,71 @@
+{
+  "frames": [
+    {
+      "filename": "cracked",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 384,
+        "h": 412
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 384,
+        "h": 412
+      },
+      "sourceSize": {
+        "w": 384,
+        "h": 412
+      },
+      "duration": 1000
+    },
+    {
+      "filename": "ringCracked",
+      "frame": {
+        "x": 384,
+        "y": 0,
+        "w": 384,
+        "h": 412
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 384,
+        "h": 412
+      },
+      "sourceSize": {
+        "w": 384,
+        "h": 412
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 gallery r1 review",
+    "image": "gallery-regulator.png",
+    "size": {
+      "w": 768,
+      "h": 412
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "cracked",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "ringCracked",
+        "from": 1,
+        "to": 1,
+        "direction": "forward"
+      }
+    ]
+  }
+}

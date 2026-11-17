@@ -1,20 +1,36 @@
 # battle-scavenger
 
-Status: **final** · battle · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `battle-scavenger` · battle · **visual** · final
 
 ## Description
 
 The Hatch Scavenger: a squat pressure machine with ceramic claws and bucket arms and a glowing furnace belly, the size of a large dog standing (about half Mara's height), climbing out of a round hatch.
 
-## Use and placement
+## What the game does with it
 
-The creature's sprite in the room: it squeezes out of the gallery's round hatch and leaps to the floor before the fight (the fight screen itself uses battle-enemy-scavenger). Drawn facing left; the game mirrors it as needed.
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — The Hatch Scavenger: a squat pressure machine with ceramic claws and bucket arms and a glowing furnace belly, the size of a large dog standing (about half Mara's height), climbing out of a round hatch. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/battle/scavenger.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/battle/scavenger.png` (final).
-- Anchor: `bottom-centre`.
-- Canvas/frame: **300×176 art px**.
-- Figure width: 300 art px.
+- Canvas: **300×176 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/battle-scavenger.png`.
+
+## Sources
+
+[art/manifest.mjs · L336](../manifest.mjs#L336) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

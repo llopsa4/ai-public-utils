@@ -1,5 +1,11 @@
 # Asset reference catalog
 
+<!-- chapter-reference:ch1 -->
+## Chapter reading order: Chapter 1: Kiln Courier
+
+Start with [the room and puzzle index](INDEX-ch1.md). It separates interactive targets, changing sprites and foreground cuts, and links directly to implemented sources.
+<!-- /chapter-reference:ch1 -->
+
 <!-- chapter-reference:intro -->
 ## Chapter reading order: Intro: The Man With Many Faces
 
@@ -381,7 +387,6 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **reveal-plains**: [brief](reveal-plains.md) · prop · final.
 - **reveal-ridge**: [brief](reveal-ridge.md) · prop · final.
 - **room-cell**: [brief](room-cell.md) · room · final.
-- **room-cell-bare**: [brief](room-cell-bare.md) · room · final.
 - **room-guardroom**: [brief](room-guardroom.md) · room · final.
 - **room-prison-door**: [brief](room-prison-door.md) · room · final.
 - **char-silas**: [brief](char-silas.md) · character · placeholder.
@@ -417,14 +422,23 @@ Start with [the room and puzzle index](INDEX-intro.md). It separates interactive
 - **item-maskClerk**: [brief](item-maskClerk.md) · item · final.
 - **window-plate**: [brief](window-plate.md) · object · final.
 - **floor-plate**: [brief](floor-plate.md) · object · final.
+- **cell-cot**: [brief](cell-cot.md) · object · final.
+- **cell-blanket**: [brief](cell-blanket.md) · object · final.
+- **cell-bucket**: [brief](cell-bucket.md) · object · final.
+- **cell-roster**: [brief](cell-roster.md) · object · final.
+- **cell-table**: [brief](cell-table.md) · object · final.
+- **cell-candle**: [brief](cell-candle.md) · object · final.
+- **cell-cloak**: [brief](cell-cloak.md) · object · final.
 - **guardroom-ledger**: [brief](guardroom-ledger.md) · object · final.
+- **guardroom-grate**: [brief](guardroom-grate.md) · object · final.
+- **guardroom-stove**: [brief](guardroom-stove.md) · object · final.
 - **table-stub**: [brief](table-stub.md) · object · final.
 - **floor-wax**: [brief](floor-wax.md) · object · final.
 - **silas-kneel-reach**: [brief](silas-kneel-reach.md) · object · final.
 - **item-wax**: [brief](item-wax.md) · item · final.
 - **stairs-light**: [brief](stairs-light.md) · object · placeholder.
 - **outer-lantern**: [brief](outer-lantern.md) · object · final.
-- **guardroom-torch**: [brief](guardroom-torch.md) · object · placeholder.
+- **guardroom-torch**: [brief](guardroom-torch.md) · object · final.
 - **table-frame**: [brief](table-frame.md) · object · final.
 - **cell-gate**: [brief](cell-gate.md) · object · final.
 - **cell-cage**: [brief](cell-cage.md) · foreground · final.

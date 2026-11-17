@@ -8,7 +8,7 @@ ID: `floor-plate` · object · **target** · final
 
 ## Description
 
-A dented tin plate with a stale crust on it, lying on the cell floor by the cot.
+A human-scale dented tin plate lying flat on the floor by Silas.
 
 ## What the game does with it
 
@@ -20,17 +20,17 @@ look; take
 
 ## States, visibility and transitions
 
-- **idle** — A dented tin plate with a stale crust on it, lying on the cell floor by the cot. When: Existing idle frame; placement flag conditions above determine when it is used..
+- **idle** — A human-scale dented tin plate lying flat on the floor by Silas. When: Existing idle frame; placement flag conditions above determine when it is used..
 
 Existing file: art/src/intro/objects/floor-plate.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Canvas: **60×24 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Canvas: **36×18 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
 - Files: `art/inbox/floor-plate-idle.png`.
 
 ## Sources
 
-[art/manifest.mjs · L422](../manifest.mjs#L422) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
+[art/manifest.mjs · L421](../manifest.mjs#L421) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
 Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

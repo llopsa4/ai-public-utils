@@ -40,7 +40,7 @@ export const ACTOR_VERBS: Partial<Record<ActorId, Verb[]>> = {
 
 /** Where Mara stands to talk to each character. */
 const TALK_SPOTS: Partial<Record<NpcId, { at: Point; face: 'left' | 'right'; npcFace: 'left' | 'right' }>> = {
-  oren: { at: { x: 436, y: 302 }, face: 'right', npcFace: 'left' },
+  oren: { at: { x: 204, y: 302 }, face: 'left', npcFace: 'right' },
   nell: { at: { x: 290, y: 302 }, face: 'left', npcFace: 'right' },
   tobi: { at: { x: 195, y: 300 }, face: 'left', npcFace: 'right' },
 };

@@ -1,73 +1,71 @@
 {
- "frames": [
-  {
-   "filename": "0",
-   "frame": {
-    "x": 0,
-    "y": 0,
-    "w": 56,
-    "h": 72
-   },
-   "rotated": false,
-   "trimmed": false,
-   "spriteSourceSize": {
-    "x": 0,
-    "y": 0,
-    "w": 56,
-    "h": 72
-   },
-   "sourceSize": {
-    "w": 56,
-    "h": 72
-   },
-   "duration": 1000
-  },
-  {
-   "filename": "1",
-   "frame": {
-    "x": 56,
-    "y": 0,
-    "w": 56,
-    "h": 72
-   },
-   "rotated": false,
-   "trimmed": false,
-   "spriteSourceSize": {
-    "x": 0,
-    "y": 0,
-    "w": 56,
-    "h": 72
-   },
-   "sourceSize": {
-    "w": 56,
-    "h": 72
-   },
-   "duration": 1000
+  "frames": [
+    {
+      "filename": "full",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 40,
+        "h": 52
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 40,
+        "h": 52
+      },
+      "sourceSize": {
+        "w": 40,
+        "h": 52
+      },
+      "duration": 1000
+    },
+    {
+      "filename": "empty",
+      "frame": {
+        "x": 40,
+        "y": 0,
+        "w": 40,
+        "h": 52
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 40,
+        "h": 52
+      },
+      "sourceSize": {
+        "w": 40,
+        "h": 52
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 revised design r2",
+    "image": "rack.png",
+    "size": {
+      "w": 80,
+      "h": 52
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "full",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "empty",
+        "from": 1,
+        "to": 1,
+        "direction": "forward"
+      }
+    ]
   }
- ],
- "meta": {
-  "app": "adventure art/import.mjs (Aseprite JSON-array compatible)",
-  "version": "1",
-  "image": "rack.png",
-  "format": "RGBA8888",
-  "size": {
-   "w": 112,
-   "h": 72
-  },
-  "scale": "1",
-  "frameTags": [
-   {
-    "name": "full",
-    "from": 0,
-    "to": 0,
-    "direction": "forward"
-   },
-   {
-    "name": "empty",
-    "from": 1,
-    "to": 1,
-    "direction": "forward"
-   }
-  ]
- }
 }

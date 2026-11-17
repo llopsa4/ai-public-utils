@@ -1,0 +1,186 @@
+{
+  "assignment": "C7",
+  "revision": "scene-redraw-gallery/r2 + r1 overlays",
+  "date": "2026-11-17",
+  "authority": "user",
+  "approval": "install, directly after r2 review; includes disclosed stair geometry and ground-safe entry adjustment.",
+  "delivery": "art/inbox/done/scene-redraw-gallery-r2",
+  "r1Delivery": "art/inbox/done/scene-redraw-gallery-r1",
+  "installedHashes": {
+    "rooms/gallery.png": "9ddd502195e40bd2f1964f9011050bb549d90ca59d34b563502eabbcaccc46e8",
+    "props/gauge-face.png": "7d1d4c6d26956125d2984f96f35f8c3138f57ebb4fee74650385956758a97b61",
+    "objects/gallery-regulator.png": "5186205f452f189034744260a6f941430bd52dfa05847447c7976062e82676e2",
+    "objects/gallery-regulator.json": "c244de39ebbd1ed4ea2d5aa30c627384f4cad9f9461c43c254f54d0352b491c5",
+    "objects/socket.png": "806c4b63c5b2b6c68758dc976bb90ed7d7baa8006258e7da882bbc04b0044c41",
+    "objects/socket.json": "c39aabc7e36403e8ba037c0ed0fbc0d463b277bee1373af9209d97cbeda9b0a3",
+    "objects/gallery-lantern.png": "3c6ab42a6f00101af67aba85111db4c7a509659ffbd5a3f434da48c938ec8bff",
+    "objects/gallery-lantern.json": "ef18d14b361764ad307dc23b1ca2644a270611e8b4a7c8b55cbc2c03bcfc6fd8",
+    "objects/gallery-logbook.png": "ee33d741aabefac8cf3242531d00f9f16b8e8fcb1f14c4dbb6866b646827492e",
+    "objects/gallery-logbook.json": "1985e144b3b5a2b836cedaf1a9cd284f6d7e9654b5e80204824fde5faab77eea",
+    "objects/gallery-names.png": "3b19a3e7868b95b8e8807fc71ca4ac0569d5222981a2105cdd762d295f2ea1ce",
+    "objects/gallery-names.json": "2b43f5e26b927c40dab3217f4391305eac34bdbf6435aff586e8a145591fdac0",
+    "rooms/gallery.webp": "708c058fc02b90393c876292cdd499ef81b7efc147c9dcc9148d16c5837ef7e5",
+    "props/gauge-face.webp": "06cb0ec2dac8518a8770ffdd8ce05a6af5508dd7650d10d3f09d0792119a1403"
+  },
+  "registration": {
+    "gallery-regulator": {
+      "canvas": [
+        384,
+        412
+      ],
+      "origin": [
+        614,
+        116
+      ],
+      "anchor": [
+        192,
+        412
+      ],
+      "tags": [
+        "cracked",
+        "ringCracked"
+      ]
+    },
+    "socket": {
+      "canvas": [
+        160,
+        160
+      ],
+      "origin": [
+        720,
+        300
+      ],
+      "anchor": [
+        80,
+        160
+      ],
+      "tags": [
+        "installed",
+        "removed"
+      ]
+    },
+    "gallery-lantern": {
+      "canvas": [
+        24,
+        44
+      ],
+      "origin": [
+        1212,
+        306
+      ],
+      "anchor": [
+        12,
+        0
+      ],
+      "tags": [
+        "idle"
+      ]
+    },
+    "gallery-logbook": {
+      "canvas": [
+        80,
+        32
+      ],
+      "origin": [
+        1070,
+        386
+      ],
+      "anchor": [
+        40,
+        32
+      ],
+      "tags": [
+        "idle"
+      ]
+    },
+    "gallery-names": {
+      "canvas": [
+        132,
+        80
+      ],
+      "origin": [
+        448,
+        428
+      ],
+      "anchor": [
+        0,
+        0
+      ],
+      "tags": [
+        "idle"
+      ]
+    },
+    "gauge-face": {
+      "canvas": [
+        80,
+        80
+      ],
+      "origin": [
+        764,
+        46
+      ],
+      "centre": [
+        40,
+        40
+      ]
+    },
+    "background": {
+      "canvas": [
+        1280,
+        720
+      ],
+      "floor": 522,
+      "xSourceBands": [
+        0,
+        174,
+        438,
+        481,
+        514,
+        582,
+        675,
+        887,
+        994,
+        1064,
+        1096,
+        1174,
+        1280
+      ],
+      "xTargetBands": [
+        0,
+        152,
+        457,
+        481,
+        515,
+        585,
+        670,
+        940,
+        1010,
+        1075,
+        1133,
+        1195,
+        1280
+      ],
+      "stairs": {
+        "rise": 26,
+        "run": 18,
+        "source": "generated room only;diagonal extension at left"
+      }
+    }
+  },
+  "stairs": {
+    "opening": [
+      0,
+      261,
+      85,
+      49
+    ],
+    "entry": [
+      102,
+      286
+    ],
+    "frontWalkBand": [
+      312,
+      345
+    ]
+  }
+}

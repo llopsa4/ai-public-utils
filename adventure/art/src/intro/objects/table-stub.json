@@ -1,36 +1,36 @@
 {
   "frames": [
     {
-      "filename": "0",
+      "filename": "idle",
       "frame": {
         "x": 0,
         "y": 0,
-        "w": 28,
-        "h": 36
+        "w": 16,
+        "h": 16
       },
       "rotated": false,
       "trimmed": false,
       "spriteSourceSize": {
         "x": 0,
         "y": 0,
-        "w": 28,
-        "h": 36
+        "w": 16,
+        "h": 16
       },
       "sourceSize": {
-        "w": 28,
-        "h": 36
+        "w": 16,
+        "h": 16
       },
       "duration": 1000
     }
   ],
   "meta": {
-    "app": "Codex table-stub-big/prepare.mjs",
+    "app": "C7 cell delivery preparation",
     "version": "1",
     "image": "table-stub.png",
     "format": "RGBA8888",
     "size": {
-      "w": 28,
-      "h": 36
+      "w": 16,
+      "h": 16
     },
     "scale": "1",
     "frameTags": [

@@ -1,0 +1,71 @@
+{
+  "frames": [
+    {
+      "filename": "warm",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 296,
+        "h": 176
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 296,
+        "h": 176
+      },
+      "sourceSize": {
+        "w": 296,
+        "h": 176
+      },
+      "duration": 1000
+    },
+    {
+      "filename": "cold",
+      "frame": {
+        "x": 296,
+        "y": 0,
+        "w": 296,
+        "h": 176
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 296,
+        "h": 176
+      },
+      "sourceSize": {
+        "w": 296,
+        "h": 176
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 firing house r1 review",
+    "image": "house-shoes.png",
+    "size": {
+      "w": 592,
+      "h": 176
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "warm",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      },
+      {
+        "name": "cold",
+        "from": 1,
+        "to": 1,
+        "direction": "forward"
+      }
+    ]
+  }
+}

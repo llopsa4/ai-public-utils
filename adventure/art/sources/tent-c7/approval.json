@@ -1,0 +1,279 @@
+{
+  "assignment": "C7",
+  "revision": "scene-redraw-tent/r2",
+  "date": "2026-11-17",
+  "authority": "user",
+  "approval": "Install, directly after r2 revised-design review; includes disclosed background geometry, 34px boots and tiny-motif approximations",
+  "delivery": "art/inbox/done/scene-redraw-tent-r2",
+  "installedHashes": {
+    "rooms/tent.png": "01edefe87c96aee54db371d84697ac6e7880ec09b9c927ec920f487fa4ef236b",
+    "foreground/tent-stool.png": "e420793f0c5ee901542d05a57dd7ad9bee42ae0e052b050713445fd60ef219c3",
+    "objects/tent-workbench.png": "05a0089dccc65139b5e8050c5965bf9d0ece168a21d1748a74d765e280cac5de",
+    "objects/tent-workbench.json": "e392064f844e13e15582225a2794a8184a01e318a382ffb9fe60cc6bcc3b299f",
+    "objects/tent-jar.png": "081c591b6f0295a7f5db790febdb64ccfd7897fdf7a11b28f1c9cc765230afea",
+    "objects/tent-jar.json": "949ea7b41757d47db0ce94f67c882ef944799049e25b9c0b006d71ef614dfffb",
+    "objects/tent-chest.png": "e288f5ea29ebfb9bf92f166e682966dafc6adde6a17ec0b32d2907ca5fc5065d",
+    "objects/tent-chest.json": "7566fd44772b2a7614ffc758aa6dad02af3b9fdaa52970f84b482800fa61dc0f",
+    "objects/tent-drum.png": "075f49f83cb8720c8927f397005600e414b6be1ee17589387eba6d5092028ebd",
+    "objects/tent-drum.json": "66fb96845ffd05499703381f969fba6cd03a59214a55748751eed0f0393b200b",
+    "objects/tent-stove.png": "51e09f013c95bf92691fc8f96a90fcd51c3482c3fe975d81083424e91f29d4fe",
+    "objects/tent-stove.json": "90255094b57556fbacae97a46b7e0fa9eb55ac40da68c19a51acdfe1f36cc714",
+    "objects/rack.png": "4b53e705abdeb2b4e145b64e5877595340f95678d2884b195428e5e14cea8203",
+    "objects/rack.json": "4aeb742762cf70cc70f2825367ba4a55d5546675eb40d4d60b80b9fa8fcaaaf6",
+    "objects/notebook.png": "97016d781c35448bac76b191b91bc0cda7bb58086b49b979dbb35d856fd5ec3d",
+    "objects/notebook.json": "4b65df30eb0959f10d957a97077c42bba81f289c23e8c0d8dfef0ca13bf6f315",
+    "rooms/tent.webp": "fa0571be69f3ebd084c5a53a81d46b6e26042237588b4873d72de490143a4c62",
+    "foreground/tent-stool.webp": "8c0bd6c9d83c2fb8a51ccf96b0e4924756372b6a7899910fe63efa149f41e85c"
+  },
+  "preservedHashes": {},
+  "registration": {
+    "specs": {
+      "tent-workbench": {
+        "canvas": [
+          360,
+          148
+        ],
+        "ink": [
+          7,
+          8,
+          346,
+          140
+        ],
+        "origin": [
+          28,
+          372
+        ],
+        "anchor": [
+          180,
+          148
+        ]
+      },
+      "tent-jar": {
+        "canvas": [
+          48,
+          56
+        ],
+        "ink": [
+          2,
+          4,
+          44,
+          52
+        ],
+        "origin": [
+          208,
+          360
+        ],
+        "anchor": [
+          24,
+          56
+        ]
+      },
+      "notebook": {
+        "canvas": [
+          40,
+          14
+        ],
+        "ink": [
+          2,
+          4,
+          36,
+          10
+        ],
+        "origin": [
+          80,
+          402
+        ],
+        "anchor": [
+          20,
+          14
+        ]
+      },
+      "rack": {
+        "canvas": [
+          40,
+          52
+        ],
+        "ink": [
+          2,
+          4,
+          36,
+          48
+        ],
+        "origin": [
+          310,
+          364
+        ],
+        "anchor": [
+          20,
+          52
+        ]
+      },
+      "tent-chest": {
+        "canvas": [
+          72,
+          52
+        ],
+        "ink": [
+          4,
+          4,
+          64,
+          48
+        ],
+        "origin": [
+          70,
+          448
+        ],
+        "anchor": [
+          36,
+          52
+        ]
+      },
+      "tent-drum": {
+        "canvas": [
+          192,
+          132
+        ],
+        "origin": [
+          482,
+          386
+        ],
+        "anchor": [
+          96,
+          132
+        ],
+        "reused": true
+      },
+      "tent-stove": {
+        "canvas": [
+          80,
+          108
+        ],
+        "origin": [
+          730,
+          408
+        ],
+        "anchor": [
+          40,
+          108
+        ],
+        "reused": true
+      },
+      "tent-stool": {
+        "canvas": [
+          72,
+          56
+        ],
+        "ink": [
+          4,
+          4,
+          64,
+          52
+        ],
+        "origin": [
+          192,
+          492
+        ],
+        "anchor": [
+          0,
+          0
+        ]
+      }
+    },
+    "processing": {
+      "tent-workbench": {
+        "bands": {
+          "cuts": [
+            0,
+            162,
+            328,
+            520,
+            756
+          ],
+          "targets": [
+            0,
+            32,
+            46,
+            120,
+            140
+          ]
+        },
+        "source": "tent-workbench-corrected"
+      },
+      "rack": {
+        "bands": {
+          "cuts": [
+            0,
+            665,
+            1075,
+            1403
+          ],
+          "targets": [
+            0,
+            17,
+            35,
+            48
+          ]
+        }
+      },
+      "rackEdit": {
+        "left": 10,
+        "top": 17,
+        "width": 20,
+        "height": 28
+      },
+      "tent-stool": {
+        "source": "tent-stool-corrected"
+      },
+      "roomPatches": [
+        {
+          "file": "room-corrected.png",
+          "regions": [
+            [
+              62,
+              242,
+              232,
+              110
+            ],
+            [
+              618,
+              64,
+              44,
+              74
+            ],
+            [
+              878,
+              486,
+              76,
+              66
+            ]
+          ]
+        },
+        {
+          "file": "room-corrected-2.png",
+          "regions": [
+            [
+              60,
+              238,
+              218,
+              104
+            ],
+            [
+              618,
+              60,
+              44,
+              76
+            ]
+          ]
+        }
+      ]
+    },
+    "cellCentre": [
+      330,
+      394
+    ],
+    "benchTop": 416,
+    "shelfTop": 500,
+    "approvalAuthority": "user",
+    "installed": true
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "frames": [
+    {
+      "filename": "idle",
+      "frame": {
+        "x": 0,
+        "y": 0,
+        "w": 80,
+        "h": 108
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 80,
+        "h": 108
+      },
+      "sourceSize": {
+        "w": 80,
+        "h": 108
+      },
+      "duration": 1000
+    }
+  ],
+  "meta": {
+    "app": "C7 delivery",
+    "image": "tent-stove.png",
+    "size": {
+      "w": 80,
+      "h": 108
+    },
+    "scale": "1",
+    "frameTags": [
+      {
+        "name": "idle",
+        "from": 0,
+        "to": 0,
+        "direction": "forward"
+      }
+    ]
+  }
+}

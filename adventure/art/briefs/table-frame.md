@@ -16,7 +16,7 @@ look; take
 
 ## Placement and layers
 
-- [Cell](room-cell.md): anchor (990,556) art px / (495,278) logical; world; [{"flag":"cellLit"},{"notFlag":"gotFrame"}].
+- [Cell](room-cell.md): anchor (990,560) art px / (495,280) logical; world; [{"flag":"cellLit"},{"notFlag":"gotFrame"}].
 
 ## States, visibility and transitions
 
@@ -31,6 +31,6 @@ Existing file: art/src/intro/objects/table-frame.png. Status: final. No new artw
 
 ## Sources
 
-[art/manifest.mjs · L445](../manifest.mjs#L445) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
+[art/manifest.mjs · L459](../manifest.mjs#L459) · [src/chapters/intro/rooms.ts](../../src/chapters/intro/rooms.ts) · [src/chapters/intro/interactions.ts](../../src/chapters/intro/interactions.ts) · [Chapter index](INDEX-intro.md)
 
 Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-intro.md)

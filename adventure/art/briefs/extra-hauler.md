@@ -1,22 +1,36 @@
 # extra-hauler
 
-Status: **placeholder** · extra · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `extra-hauler` · extra · **visual** · placeholder
 
 ## Description
 
 Dace, the clay hauler (she/her), about 30: tall and rangy, wide shoulders. Light tan skin, shaved head, a moss-green kerchief tied at her neck. A sleeveless clay-stained tunic over grey leggings, wrapped shins, sandals with straps; a heavy clay sack carried on one shoulder.
 
-## Use and placement
+## What the game does with it
 
-A background person in: maraRoom (walks about, works, now and then says a line).
-In the game 224 art pixels tall (112 world pixels; people are built on a 1-art-pixel grid with the master palette, so the face is only a few dozen art pixels): design for that size, with a clear silhouette, a distinctive head and colours that tell them apart from everyone else in the cast.
+Visual layer only; no additional interaction is introduced.
+
+## Placement and layers
+
+Inventory, character or shared reference; no freestanding room instance.
+
+## States, visibility and transitions
+
+- **idle** — Dace, the clay hauler (she/her), about 30: tall and rangy, wide shoulders. Light tan skin, shaved head, a moss-green kerchief tied at her neck. A sleeveless clay-stained tunic over grey leggings, wrapped shins, sandals with straps; a heavy clay sack carried on one shoulder. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/characters/extra-hauler.png. Status: placeholder. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/characters/extra-hauler.png` (placeholder).
-- Anchor: `bottom-centre`.
-- Canvas/frame: **256×256 art px**.
-- Figure height: 224 art px.
-- Atlas metadata: `art/src/characters/extra-hauler.json`.
+- Canvas: **256×256 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/extra-hauler.png`.
+
+## Sources
+
+[art/manifest.mjs · L312](../manifest.mjs#L312) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

@@ -19,7 +19,7 @@ Visual conventions shared by every asset. Assignments and delivery steps are in 
 
 ## Proportions
 
-Everything is in true proportion to Mara. A chair seat is at his knee, a table at his hip, a doorway well over his head. Heights below are in art pixels at 1280×720; see `art/style/scale.png`.
+Everything is in true proportion to the people in the scene: Mara in his chapters, Silas (220 art pixels) in the intro, Kofi in his. Art prompts state the size of every real-world object against that character ([generation prompts](PIPELINE.md#generation-prompts)). A chair seat is at his knee, a table at his hip, a doorway well over his head. Heights below are in art pixels at 1280×720; see `art/style/scale.png`.
 
 | What | Height (art px) | On its pixel grid |
 | --- | --- | --- |
@@ -37,7 +37,8 @@ Everything is in true proportion to Mara. A chair seat is at his knee, a table a
 ## The pixel grid
 
 - **Character detail (every approved character):** people (Mara, Silas, Sigrid, the guard and warden, Oren, Nell, Tobi, Bryn and the seven human extras) are built on a **1-art-pixel grid** with the master palette normalized the way Mara's layered renderer does it, to keep more of the approved source drawings. Heights, source scale, anchors, frame contract, the two-art-pixel outline, walk stride and portraits are unchanged: Mara is still 232 art pixels / 116 world pixels tall, the guard 216, Bryn 224. Standing, walking, kneeling, lying and sitting frames share the finer sampling. In `art/manifest.mjs` / `art/rig.mjs` a character opts in with `detail: { grid: 1, palette: 'master' }` (the extras share it); a character without it is a legacy placeholder and keeps the 2-pixel grid until it is redrawn. Bryn is no longer a placeholder.
-- **Everything else drawn in the world** (rooms, objects, props, creatures and fight pictures) is pixel art on a **2-pixel grid**: a 1280×720 room is a 640×360 picture shown 2×, and Mara is 116 of its pixels tall, enough for faces, blinking and talking to show. The "On its pixel grid" column above counts those 2-pixel units; a person's art-pixel height is the real height at either grid.
+- **Scene detail matches the characters (rule for new and replaced art):** every drawing in a scene (rooms, objects, props, foreground cut-outs, creatures and fight pictures) uses the same pixel definition as Silas: a **1-art-pixel grid** with the master palette, so the scenery is as fine as the people standing in it. A prompt for scene art states this ([generation prompts](PIPELINE.md#generation-prompts)), and a delivery is checked side by side with Silas (or the scene's main character) at the same scale. This rule does not by itself authorise regenerating existing art.
+- **Legacy 2-pixel art:** scene art made before that rule is pixel art on a **2-pixel grid** (a 1280×720 room is a 640×360 picture shown 2×, Mara 116 of its pixels tall). It stays until it is replaced; an audit lists it as not yet matching the rule. The "On its pixel grid" column above counts those 2-pixel units; a person's art-pixel height is the real height at either grid.
 - **Source drawings may use these sizes:**
   - rooms at 16:9, 1280×720 or larger
   - characters on 1024×1536

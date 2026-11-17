@@ -1,23 +1,37 @@
 # rack
 
-Status: **final** · object · chapter ch1
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
 
-[Art procedure](../PIPELINE.md) · [Visual conventions](../STYLE.md) · [Rig contracts](../LAYERED-RIG.md) · [Assignments and approval](../../WORKFLOW.md)
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `rack` · object · **target** · final
 
 ## Description
 
-The charging cradle on Mara's workbench: a small brass frame like a lantern without glass, on a square wooden base, that holds the gauntlet's ember cell. full: a round ember cell of dark glass in the frame, glowing orange; empty: the frame alone, its clips open.
+C7 r2 charging cradle built from an old rusty iron street-lantern frame, without panes: full has an upright red-glass capsule with brass caps held by copper clips; empty has sprung clips and loose wires. Identical 40×52 frames, 36×48 ink, bottom at art (330,416), capsule centre (330,394).
 
-## Use and placement
+## What the game does with it
 
-Stands in the room `tent` on its foot point (344, 394) (bottom centre of the picture); it shows "empty" or "full" as the story moves on.
-States: full, empty: one picture each, identical framing; only what changes between states differs.
+look; take; use
+
+## Placement and layers
+
+- [Mara's Tent](room-tent.md): anchor (330,416) art px / (165,208) logical; world; Always; hasGauntlet: full -> empty.
+
+## States, visibility and transitions
+
+- **full** — C7 r2 charging cradle built from an old rusty iron street-lantern frame, without panes: full has an upright red-glass capsule with brass caps held by copper clips; empty has sprung clips and loose wires. Identical 40×52 frames, 36×48 ink, bottom at art (330,416), capsule centre (330,394). When: Existing full frame; placement flag conditions above determine when it is used..
+- **empty** — C7 r2 charging cradle built from an old rusty iron street-lantern frame, without panes: full has an upright red-glass capsule with brass caps held by copper clips; empty has sprung clips and loose wires. Identical 40×52 frames, 36×48 ink, bottom at art (330,416), capsule centre (330,394). When: Existing empty frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/objects/rack.png. Status: final. No new artwork is produced by reference generation.
 
 ## Asset contract
 
-- Runtime path: `art/src/objects/rack.png` (final).
-- Anchor: `bottom-centre`.
-- Canvas/frame: **56×72 art px**.
-- State tags: `full`, `empty`.
-- Atlas metadata: `art/src/objects/rack.json`.
-- Import names: `rack-full.png`, `rack-empty.png`.
+- Canvas: **40×52 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/rack-full.png`, `art/inbox/rack-empty.png`.
+
+## Sources
+
+[art/manifest.mjs · L280](../manifest.mjs#L280) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [WORKFLOW.md](../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

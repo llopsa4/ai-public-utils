@@ -1,0 +1,171 @@
+{
+  "assignment": "C7",
+  "revision": "scene-redraw-tent/r1",
+  "date": "2026-11-17",
+  "authority": "user",
+  "approval": "Continue following tent r1 review delivery; includes disclosed painted geometry, lantern-centre and boot-size approximations",
+  "delivery": "art/inbox/done/scene-redraw-tent-r1",
+  "installedHashes": {
+    "rooms/tent.png": "c945754b9203210a4d13ba3492ff079454a0eb59d95caea7a2324aa64fbeb68d",
+    "foreground/tent-stool.png": "14d953549b7b8ad5f100aca413f0cda73b6c82649f52fd101936a9750ad7e5b9",
+    "objects/tent-workbench.png": "90f5ae9be941fd2a8c6a3820549f8e35af69a562c7dd7e59627f85f4490d3738",
+    "objects/tent-workbench.json": "54fb369bcd85d5df9fc711a025ecd8c86688caf4282d170aaa67bc3b82745312",
+    "objects/tent-jar.png": "b436f746466f6f2993f2a9c2f8429f2f6bd3a5e35d5e41a4d093797fd8ae0a75",
+    "objects/tent-jar.json": "44e1c24d391b51809bb06c7a4eb5e3af54766576b6a2f04c68e3c06694b0a356",
+    "objects/tent-chest.png": "77dbb2b6a0909cf6f9ea3db6fabe76e824281d11db521d888e106105ef6e1615",
+    "objects/tent-chest.json": "525bc79f477866986a18013374e21c70c1aed2e3b482492f8fb3c791a2950ed7",
+    "objects/tent-drum.png": "075f49f83cb8720c8927f397005600e414b6be1ee17589387eba6d5092028ebd",
+    "objects/tent-drum.json": "66fb96845ffd05499703381f969fba6cd03a59214a55748751eed0f0393b200b",
+    "objects/tent-stove.png": "51e09f013c95bf92691fc8f96a90fcd51c3482c3fe975d81083424e91f29d4fe",
+    "objects/tent-stove.json": "90255094b57556fbacae97a46b7e0fa9eb55ac40da68c19a51acdfe1f36cc714",
+    "rooms/tent.webp": "acbeeb9391a05838cac788f6744af095d87246793026ab1c4c9c6c8d08f434c2",
+    "foreground/tent-stool.webp": "f37a2ee756cdf4637900ca7e12c15c09f78b0a35087d86cafbd99e8bfc999f87"
+  },
+  "preservedHashes": {
+    "objects/rack.png": "8c68e70e34297c760f4b4f628f0419fda9349ad669dd99f070daafe71eaeb419",
+    "objects/rack.json": "eece0903e8a58b33151c43813edef67791abc7f4ee1db242e14046eeaff6267d",
+    "objects/notebook.png": "6b859ca0f5f9912688a828fd77336abfa1fb11d265f0ec5bab9b518054b9c5f0",
+    "objects/notebook.json": "1eebe150c78111ad0b2db3183301def7dbac642e0e418e29cadbad3b49004061"
+  },
+  "registration": {
+    "specs": {
+      "tent-workbench": {
+        "canvas": [
+          360,
+          164
+        ],
+        "ink": [
+          7,
+          4,
+          346,
+          160
+        ],
+        "origin": [
+          28,
+          356
+        ],
+        "anchor": [
+          180,
+          164
+        ]
+      },
+      "tent-jar": {
+        "canvas": [
+          48,
+          56
+        ],
+        "ink": [
+          2,
+          4,
+          44,
+          52
+        ],
+        "origin": [
+          210,
+          338
+        ],
+        "anchor": [
+          24,
+          56
+        ]
+      },
+      "tent-chest": {
+        "canvas": [
+          72,
+          52
+        ],
+        "ink": [
+          4,
+          4,
+          64,
+          48
+        ],
+        "origin": [
+          70,
+          436
+        ],
+        "anchor": [
+          36,
+          52
+        ]
+      },
+      "tent-drum": {
+        "canvas": [
+          192,
+          132
+        ],
+        "ink": [
+          8,
+          8,
+          176,
+          124
+        ],
+        "origin": [
+          482,
+          386
+        ],
+        "anchor": [
+          96,
+          132
+        ]
+      },
+      "tent-stove": {
+        "canvas": [
+          80,
+          108
+        ],
+        "ink": [
+          3,
+          8,
+          74,
+          100
+        ],
+        "origin": [
+          730,
+          408
+        ],
+        "anchor": [
+          40,
+          108
+        ]
+      },
+      "tent-stool": {
+        "canvas": [
+          72,
+          56
+        ],
+        "ink": [
+          4,
+          4,
+          64,
+          52
+        ],
+        "origin": [
+          192,
+          492
+        ],
+        "anchor": [
+          0,
+          0
+        ]
+      }
+    },
+    "roomDither": false,
+    "correctionRegions": [
+      {
+        "left": 808,
+        "top": 96,
+        "width": 60,
+        "height": 82,
+        "feather": 4
+      },
+      {
+        "left": 1142,
+        "top": 638,
+        "width": 104,
+        "height": 90,
+        "feather": 10
+      }
+    ]
+  }
+}
