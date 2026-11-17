@@ -8,8 +8,8 @@ History: Git history of this file, [CHANGELOG.md](CHANGELOG.md) and [art provena
 - Branch `redesign`, HEAD `c9f9711` ("Republish Adventure with the C7 room redraws"), equal to
   `origin/redesign` and `origin/main`: the C7 redraws through the gallery are committed, pushed and
   published.
-- Local, uncommitted: the docs reorganization (root `process/`, `kota/`, skill rename, Adventure
-  guides, handoff pruning); see `handoff/from-claude.md`.
+- Docs reorganization (root `process/`, `kota/`, skill rename, Adventure guides, handoff pruning)
+  committed locally on `redesign` in `3f72ff4`, not pushed.
 
 ## Working on
 - **Active mode: Claude only (Codex paused)**, selected by the user on 2026-11-17 while Codex is out
@@ -50,4 +50,4 @@ History: Git history of this file, [CHANGELOG.md](CHANGELOG.md) and [art provena
   `--chapter` runs); check those with the chapter commands instead.
 
 ## Next action
-- User review of the docs reorganization; commit only on request. Codex, on return: request C8.
+- Codex, on return: request C8 in `handoff/from-claude.md`.

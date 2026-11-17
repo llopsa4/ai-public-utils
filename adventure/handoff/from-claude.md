@@ -9,7 +9,7 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   Claude did the mirrored wiring (stairhead (102,286), user decision), outlines, manifest/status,
   provenance, golden (coordinate-only), tests and scratch production verification. Evidence:
   `art/inbox/done/gallery-installation-r2/HANDOFF.md`. Claims released.
-- **Docs reorganization (user, 2026-11-17), done locally, not committed.** Game-neutral process moved
+- **Docs reorganization (user, 2026-11-17), committed in `3f72ff4`, not pushed.** Game-neutral process moved
   to root `process/` (WORKFLOW, REQUESTS, ART); Adventure's `WORKFLOW.md`, the moved
   `art/PIPELINE.md` sections and `AGENTS.md#handling-requests` are now link stubs keeping old
   anchors; `PROMPTING.md` holds templates only; new `kota/` skeleton; skill `pixel-art-pipeline`
@@ -17,7 +17,7 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   process/WORKFLOW.md); shared memory pruned to facts no guide records. Claims released.
 
 ## Awaiting the user
-- Review of the docs reorganization above; commit only on request.
+- Nothing.
 
 ## Requests for Codex
 - **C8 (2026-11-17) — open, for when Codex returns.** Docs moved: read root `AGENTS.md` (projects
