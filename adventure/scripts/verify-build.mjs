@@ -96,10 +96,11 @@ assert.ok(total < TOTAL_BUDGET * MB, `build is ${(total / MB).toFixed(2)} MB (bu
 assert.ok(firstLoad < FIRST_BUDGET * MB, `first load is ${(firstLoad / MB).toFixed(2)} MB (budget ${FIRST_BUDGET} MB)`);
 // The fight screens' code (the `mount` chunk: React and Kiln Courier's battle and workshop screens).
 const fightCode = built.filter(n => /^mount-[\w-]{8}\.(js|css)$/.test(n)).reduce((sum, n) => sum + size(n), 0);
-// Doubled with the totals above (were 2.5, 1.5 and 0.4 MB).
+// Doubled with the totals above (were 2.5, 1.5 and 0.4 MB). The intro joined the opening budget on
+// 2026-11-17 at the user's request (its approved 1-pixel C7 rooms reached 3.04 MB of 3).
 const CHAPTER_ART_BUDGET = 5, LATER_CHAPTER_BUDGET = 3, FIGHT_CODE_BUDGET = 0.8;
 for (const [chapter, bytes] of Object.entries(perChapter)) {
-  const budget = chapter === 'game' || chapter === 'ch1' ? CHAPTER_ART_BUDGET : LATER_CHAPTER_BUDGET;
+  const budget = chapter === 'game' || chapter === 'ch1' || chapter === 'intro' ? CHAPTER_ART_BUDGET : LATER_CHAPTER_BUDGET;
   assert.ok(bytes < budget * MB, `${chapter} is ${(bytes / MB).toFixed(2)} MB (budget ${budget} MB)`);
 }
 assert.ok(fightCode < FIGHT_CODE_BUDGET * MB, `fight code is ${(fightCode / MB).toFixed(2)} MB (budget ${FIGHT_CODE_BUDGET} MB)`);
