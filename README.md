@@ -2,7 +2,7 @@
 
 Personal static web applications hosted on GitHub Pages.
 
-- [Cinderfold](https://llopsa4.github.io/ai-public-utils/adventure/) — a point-and-click adventure built from the first scene of Kiln Courier's story (Phaser). See [the adventure guide](adventure/README.md).
+- [The Rift: Ashlands](https://llopsa4.github.io/ai-public-utils/adventure/) — a point-and-click adventure for desktop browsers (Phaser). See [the adventure guide](adventure/README.md).
 
 - [Kiln Courier](https://llopsa4.github.io/ai-public-utils/FFCardGame/) — an original industrial-fantasy card combat prototype. See [local play instructions](FFCardGame/README.md).
 

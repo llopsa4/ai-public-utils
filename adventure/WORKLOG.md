@@ -5,16 +5,15 @@ Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Co
 History: Git history of this file, [CHANGELOG.md](CHANGELOG.md) and [art provenance](art/PROVENANCE.md).
 
 ## Checkout
-- Branch `redesign`, HEAD `c9f9711` ("Republish Adventure with the C7 room redraws"), equal to
-  `origin/redesign` and `origin/main`: the C7 redraws through the gallery are committed, pushed and
-  published.
-- Docs reorganization (root `process/`, `kota/`, skill rename, Adventure guides, handoff pruning)
-  committed locally on `redesign` in `3f72ff4`, not pushed.
+- Branch `redesign`. `origin/redesign` and `origin/main` are at `c9f9711` (C7 redraws through the
+  gallery, published). Two local commits are not pushed: `3f72ff4` and `eb7c5f5` (docs
+  reorganization). The docs split of Adventure and Kota (2026-11-17) is uncommitted.
 
 ## Working on
-- **Active mode: Claude only (Codex paused)**, selected by the user on 2026-11-17 while Codex is out
-  of usage; Claude does all Codex work except image generation. Returns to Codex + Claude when the
-  user says so ([modes](../process/WORKFLOW.md#modes-and-ownership)).
+- **Active mode: Claude only (Codex paused)**, selected by the user on 2026-11-17 for a few days.
+  Both agents normally work here. While Codex is paused only image generation stops (queued as
+  requests for Codex); Claude does the other Codex tasks. Returns to Codex + Claude when the user
+  says so ([modes](../process/WORKFLOW.md#modes-and-ownership)).
 - **Redrawing paused** by the user (2026-11-17): C7 Ashways (last room) not started, no prompts.
 - Local Ashlands Story Board in ignored `private/story-board/` (desktop shortcut
   `Ashlands Story Board.lnk`). User edits in `data/board.json`: preserve them; never reseed.

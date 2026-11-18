@@ -1,6 +1,6 @@
 # The Rift: Ashlands
 
-A point-and-click adventure built from the first scene of **Kiln Courier**'s story. Mara, a courier and kiln-minder in Cinderfold (a village built inside an old industrial kiln), must shut down the cracked regulator and carry it away for assessment. He doesn't want to go. The game runs entirely in the browser as static files on GitHub Pages: no server, no accounts, no tracking. It uses only free software: Phaser 3 (MIT), React (MIT, for the fight and gear screens), TypeScript, Vite and the MedievalSharp and Zilla Slab fonts (OFL); the art and test tools (pngjs, upng-js, sharp, Playwright) are development-only.
+A point-and-click adventure for desktop browsers. Mara, a courier and kiln-minder in Cinderfold (a village built inside an old industrial kiln), must shut down the cracked regulator and carry it away for assessment. He doesn't want to go. The game runs entirely in the browser as static files on GitHub Pages: no server, no accounts, no tracking. It uses only free software: Phaser 3 (MIT), React (MIT, for the fight and gear screens), TypeScript, Vite and the MedievalSharp and Zilla Slab fonts (OFL); the art and test tools (pngjs, upng-js, sharp, Playwright) are development-only.
 
 ## Play
 
@@ -115,8 +115,8 @@ Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/
 
 ## Art
 
-[The shared art process](../process/ART.md) covers delivery and approved integration, with
-Adventure's tools and files in [the Adventure art procedure](art/PIPELINE.md).
+[The Adventure art procedure](art/PIPELINE.md) covers scene construction, generation prompts,
+deliveries and approved integration, with its tools and files.
 [The reference map](art/REFERENCES.md) identifies visual authorities and generation commands;
 [STYLE.md](art/STYLE.md) defines the look, [LAYERED-RIG.md](art/LAYERED-RIG.md) the articulated
 contracts, and [PROVENANCE.md](art/PROVENANCE.md) the asset origins.

@@ -1,17 +1,66 @@
-# Requesting Adventure scenes, puzzles and changes
+# Requesting and handling Adventure work
 
-Describe the player experience; you do not need to name code files. Use one template per task
-and delete fields you do not care about. The assistant infers implementation details from
-the existing game and [shared guides](DEVELOPMENT.md), not by asking you to design the code.
+How Codex and Claude interpret every Adventure request, even without a template, followed by the
+fill-in templates. Ownership, handoffs and approval are in the repository
+[workflow](../process/WORKFLOW.md), which also holds the rules that apply to every request
+(hand-over phrases, plan endings, stopping, saving usage).
 
-Begin each request with its stage (DESIGN, WRITE, BUILD, CHANGE or REVIEW), so an idea does not
-automatically become a large implementation. Both agents apply the stage rules, hand-over phrases
-and usage tips in the shared [REQUESTS.md](../process/REQUESTS.md) automatically, so templates
-contain only your fields. A one-line request such as "DESIGN a puzzle for the cold firing house" is
-enough.
+Describe the player experience; you do not need to name code files. Use one template per task and
+delete fields you do not care about. The assistant infers implementation details from the existing
+game and [DEVELOPMENT.md](DEVELOPMENT.md), not by asking you to design the code. Examples are
+hypothetical requests, not changes to the approved story or permission to resume paused work.
 
-Examples below are hypothetical requests, not changes to the approved story or permission to
-resume paused work. Artwork follows [the Adventure art procedure](art/PIPELINE.md).
+## Stages
+
+Begin each request with its stage, so an idea does not automatically become a large implementation.
+Identify the stage from the wording. If unclear, assume the smallest stage that answers it (an idea
+→ DESIGN; "what's wrong" → REVIEW) and say which one you assumed. Never move to a later stage
+(script, code, finished art) uninvited. A one-line request such as "DESIGN a puzzle for the cold
+firing house" is enough.
+
+- **DESIGN:** propose the scene, mechanic or system; no code, finished artwork or full script. One
+  recommended option (two only for puzzle ideas), short outline, required vs optional content, art
+  needs listed but not produced. A scene gives entry state, key player actions, meaningful
+  interactions, exit state and link to the next scene.
+- **WRITE:** expand an approved design into dialogue, descriptions, clues and consequences, in
+  established voices with short player-facing lines; show the revised text only, plus one note if a
+  dependency needs a decision.
+- **BUILD:** implement the approved design; only the requested behavior, existing art or
+  placeholders as allowed, required tests, save compatibility, no unrelated polish; report what
+  still needs visual verification.
+- **CHANGE:** revise one existing scene, interaction or behavior while preserving the rest. A
+  **story** change checks connected scenes, flags contradictions and puzzle dependencies before a
+  broad rewrite, and summarizes consequences for dialogue, clues, objectives and later references.
+  A **behavior** change follows the BUILD rules.
+- **REVIEW:** inspect only the named material and its dependencies; up to three problems with
+  player effect and proposed fix (or say none found); what was checked vs assumed; no fixes.
+
+## Standing rules
+
+- **Missing fields.** Fill them from the existing game and its guides. Ask only one blocking
+  question when the answer would change the result; otherwise state the assumption and proceed.
+  Substantial ideas with unsettled decisions are grilled as the
+  [repository instructions](../AGENTS.md#working-with-the-user) say. Once a design is approved, refer
+  to it instead of restarting the discussion.
+- **Puzzle ideas:** premise, exact solution and how it follows from what the player observes,
+  visible clues, wrong attempts and recovery, nudge + plain hint, no dead ends across action orders
+  and revisits; recommend one. **Expanding** the chosen one: starting state, numbered steps,
+  item/state changes, clue placement, wrong-action responses, recoverability, any alternative
+  solution and unresolved choices; no code or art.
+- **Art prompt:** write the revision's `PROMPTS.md` per
+  [generation prompts](art/PIPELINE.md#generation-prompts), flag missing contract data, keep
+  removable objects separate, never install; add a request for the generating agent.
+
+## Spend less usage on each request
+
+- Settle the **player goal and desired payoff** before asking for rooms, dialogue or asset batches.
+- Ask for **two short ideas**, choose one, then expand only that one.
+- Name the scene and intended difference instead of requesting an unrestricted review.
+- Say what must stay unchanged; this prevents unnecessary rewrites and save/progression changes.
+- Reuse approved decisions and art references. Ask for the smallest acceptable prototype before
+  commissioning finished artwork or every animation/state.
+
+## Templates
 
 ## 1. A new scene
 
@@ -80,8 +129,8 @@ Must communicate: [...]. Must not reveal/change: [...].
 ## 6. Artwork for a specific game use
 
 Ask Claude for the generation prompt; Claude writes it to the revision's `PROMPTS.md`
-([generation prompts](../process/ART.md#generation-prompts)) and leaves a request for Codex.
-Then tell Codex: `continue` (hand-over phrases: [REQUESTS.md](../process/REQUESTS.md#hand-over-phrases)).
+([generation prompts](art/PIPELINE.md#generation-prompts)) and leaves a request for Codex.
+Then tell Codex: `continue` (hand-over phrases: [workflow](../process/WORKFLOW.md#hand-over-phrases)).
 
 ```text
 WRITE THE GENERATION PROMPT for [named room, character, object or state].

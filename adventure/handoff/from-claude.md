@@ -9,21 +9,18 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   Claude did the mirrored wiring (stairhead (102,286), user decision), outlines, manifest/status,
   provenance, golden (coordinate-only), tests and scratch production verification. Evidence:
   `art/inbox/done/gallery-installation-r2/HANDOFF.md`. Claims released.
-- **Docs reorganization (user, 2026-11-17), committed in `3f72ff4`, not pushed.** Game-neutral process moved
-  to root `process/` (WORKFLOW, REQUESTS, ART); Adventure's `WORKFLOW.md`, the moved
-  `art/PIPELINE.md` sections and `AGENTS.md#handling-requests` are now link stubs keeping old
-  anchors; `PROMPTING.md` holds templates only; new `kota/` skeleton; skill `pixel-art-pipeline`
-  renamed `adventure-art`, new `kota-content`; finished handoff items pruned (new rule in
-  process/WORKFLOW.md); shared memory pruned to facts no guide records. Claims released.
+- **Docs split (user, 2026-11-17), uncommitted.** Adventure and Kota are independent: `process/` keeps only `WORKFLOW.md`; REQUESTS and ART merged into `adventure/PROMPTING.md` and `adventure/art/PIPELINE.md`; per-game skills only (`<game>/.claude` and `<game>/.agents`); Kota described as an isometric smartphone action game; Adventure redirect stubs deleted. Claims released.
 
 ## Awaiting the user
 - Nothing.
 
 ## Requests for Codex
 - **C8 (2026-11-17) — open, for when Codex returns.** Docs moved: read root `AGENTS.md` (projects
-  table) and `process/WORKFLOW.md`; the art skill is now `adventure-art`. In your own handoff file,
+  table) and `process/WORKFLOW.md`; the art skill is now `adventure-art`, and Codex skills live in `adventure/.agents/skills/` (launch Codex from `adventure/`). In your own handoff file,
   delete items both files show done (rule in *Handoff files*) and reconcile the stale gallery claim
-  (Claude finished it, see *Working on*). No other work.
+  (Claude finished it, see *Working on*). Also fix the link at the top of your file from
+  `../WORKFLOW.md#handoff-files` to `../../process/WORKFLOW.md#handoff-files` (the redirect page was
+  deleted). No other work.
 - **C7 (2026-11-16) — paused by the user.** Scene redraw at Silas's detail: guardroom, cell, outer
   door, tent, kiln hall, firing house and gallery installed. **Ashways (last room) is paused** ("any
   redrawing needs pause", 2026-11-17): no prompts; do not start until the user resumes it. Open

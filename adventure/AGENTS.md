@@ -1,8 +1,11 @@
 # Adventure entrypoint
 
-Follow the [repository instructions](../AGENTS.md) and the shared process for every game:
-[workflow](../process/WORKFLOW.md) (modes, ownership, handoff files, approval, session handoff),
-[requests](../process/REQUESTS.md) (stages and standing rules) and [art](../process/ART.md).
+Adventure (The Rift: Ashlands) is a point-and-click game for desktop browsers. Follow the
+[repository instructions](../AGENTS.md) and the shared Codex/Claude
+[workflow](../process/WORKFLOW.md) (modes, ownership, handoff files, approval, session handoff).
+Adventure's own guides: [PROMPTING.md](PROMPTING.md) (request stages and templates),
+[art/PIPELINE.md](art/PIPELINE.md) (art procedure), [DEVELOPMENT.md](DEVELOPMENT.md) and
+[TESTING.md](TESTING.md).
 
 ## Start of a session (keep it cheap)
 
@@ -14,7 +17,7 @@ Follow the [repository instructions](../AGENTS.md) and the shared process for ev
 3. Read only the guide the task needs: [DEVELOPMENT.md](DEVELOPMENT.md) for game content and runtime
    (including desktop-only scope and the FFCardGame relationship), [art/PIPELINE.md](art/PIPELINE.md)
    and [art/STYLE.md](art/STYLE.md) for artwork, [TESTING.md](TESTING.md) before running checks,
-   [PROMPTING.md](PROMPTING.md) for the request templates.
+   [PROMPTING.md](PROMPTING.md) for how requests and their stages are handled and the templates.
 
 ## Adventure rules
 
@@ -25,7 +28,5 @@ Follow the [repository instructions](../AGENTS.md) and the shared process for ev
   approved Kofi prologue tracking exception.
 - **Scale:** scenes are sized against Silas (intro), Mara (his chapters) or Kofi (his chapter), with
   the heights in [STYLE.md](art/STYLE.md#proportions).
-
-## Handling requests
-
-Moved to the shared [REQUESTS.md](../process/REQUESTS.md); it applies to every Adventure request.
+- **Requests:** every Adventure request follows the stages and standing rules in
+  [PROMPTING.md](PROMPTING.md).

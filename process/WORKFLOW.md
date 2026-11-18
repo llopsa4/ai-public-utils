@@ -1,9 +1,9 @@
 # Working with Codex and Claude
 
-The shared collaboration procedure for every game in this repository (Adventure, Kota). Each game's
-`AGENTS.md` names its own guides; repository-wide rules (pushing, working with the user, shared
-memory) are in the [repository instructions](../AGENTS.md). Requests are interpreted with
-[REQUESTS.md](REQUESTS.md); artwork follows [ART.md](ART.md).
+The collaboration procedure shared by every game in this repository (Adventure, Kota). It covers
+only how Codex and Claude work together; it says nothing about a game's genre, art or design. Each
+game's `AGENTS.md` names its own guides, including its request and art guides; repository-wide rules
+(pushing, working with the user, shared memory) are in the [repository instructions](../AGENTS.md).
 
 Every game folder has the same working files:
 
@@ -23,7 +23,7 @@ Every game folder has the same working files:
 - **Codex + Claude.** Claude's quota is the scarcer one, so the split saves Claude for the work where
   it is clearly better:
   - **Claude:** story, scene and puzzle design; dialogue; the image-generation prompt for each art
-    assignment ([generation prompts](ART.md#generation-prompts)); gameplay and runtime code that is
+    assignment (in the format its art guide specifies); gameplay and runtime code that is
     new or tricky; reviews and documentation of procedures.
   - **Codex:** image generation from Claude's prompt, delivery preparation and validation, and,
     after the user's approval, installation, registration, central provenance and in-game art
@@ -61,13 +61,36 @@ addressed to you, record it under *Taken from…* in your own file, do it, then 
 references are not assignments and do not resume paused work. Use no competing NEXT, FIXES or root
 HANDOFF documents.
 
+## Hand-over phrases
+
+- `continue`: the agent takes the first open request the other agent left for it (see above).
+- `Ask Codex to [task]` / `Ask Claude to [task]`: the agent writes the request in its own handoff
+  file; then tell the other agent `continue`.
+
+## Every request
+
+These rules apply to any request in any game; each game's request guide (Adventure:
+`PROMPTING.md`) adds its own stages and genre rules.
+
+- **Right agent.** If the task belongs to the other agent under *Modes and ownership*, say so in
+  one line and, if the user agrees, write it as a request in your handoff file.
+- **Plans** end with one line, `Implement with: Sonnet` or `Implement with: Opus — <reason>` (Claude)
+  / `Implement with: Codex`. Flag Opus only when Sonnet is not enough.
+- **Stop** when the request is satisfied; list optional follow-ups instead of doing them. No
+  publishing, commits or pushes unless asked. Keep reports and logs short.
+- **Spend less usage:** use one implementing agent by default, and the right one for the task; keep
+  related iterations together and, at a natural task boundary, start a fresh chat with the selected
+  design, current state and next action. In Claude, `/model opusplan` plans with Opus and executes
+  with Sonnet; plan mode is not available over Remote Control, so there use `/model opus` for design
+  and review requests.
+
 ## Approval
 
 Each art assignment specifies an ID, authoritative brief/revision, allowed paths, output files,
 measured dimensions/anchors/states, required validation and **Approval authority: user | Claude**.
 Missing approval authority blocks installation pending clarification. Passing technical checks or
 approval of an older delivery is not approval of the candidate revision. Review-only notes receive
-no retroactive approval. [ART.md](ART.md) defines delivery contents and installation steps.
+no retroactive approval. The game's art guide defines delivery contents and installation steps.
 
 ## Shared-checkout coordination
 
