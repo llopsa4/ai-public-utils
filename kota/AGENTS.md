@@ -1,8 +1,10 @@
 # Kota entrypoint
 
-Kota is an isometric roguelike about Lakota tribal culture. It is at the design stage: there is no
-code or art yet. Follow the [repository instructions](../AGENTS.md) and the shared process:
-[workflow](../process/WORKFLOW.md), [requests](../process/REQUESTS.md) and [art](../process/ART.md).
+Kota is a Brotato-style 2D top-down arena survivor for smartphones and tablets (touch controls),
+about Dakota culture first (Lakota and Nakota later). It was pivoted on 2026-11-18 and is being
+rebuilt on Phaser 3 per [PLAN.md](PLAN.md); the old 3D game is being removed. Follow the
+[repository instructions](../AGENTS.md) and the shared Codex/Claude
+[workflow](../process/WORKFLOW.md) (modes, ownership, handoff files, approval, session handoff).
 
 ## Start of a session (keep it cheap)
 
@@ -13,12 +15,21 @@ code or art yet. Follow the [repository instructions](../AGENTS.md) and the shar
 
 ## Kota rules
 
-- **CULTURE.md is binding.** Every DESIGN, WRITE and art-prompt request checks it and names the
-  sections it relied on. Never invent cultural detail it does not source (ceremonies, sacred objects,
-  regalia, symbols, names, Lakota words, history): add the gap under *Needs review* and ask the user.
+- **CULTURE.md is reference, not binding** (user, 2026-11-18). Game content may be invented when it
+  is plainly fantasy (weapons, items, spirit enemies, arenas, props, upgrades). Claims about the real
+  culture (named beings, history, words, what Dakota people did) still need a source in CULTURE.md;
+  add a gap under *Needs review* and ask the user. Claude's own limits always apply (PROMPTING.md
+  *Standing rules*).
 - **DESIGN.md holds settled decisions only.** Proposals stay in the conversation or a handoff file
   until the user accepts them.
-- **Guides not written yet:** art style (`art/STYLE.md`), request templates (`PROMPTING.md`),
-  development and testing guides. Create each when that work starts, from the user's decisions;
-  until then the shared process documents apply on their own.
-- Adventure's rules (its style bible, story, flat-2D staging and characters) do not apply here.
+- **Requests:** [PROMPTING.md](PROMPTING.md) defines stages, standing rules, usage-saving rules and
+  templates for every Kota request.
+- **Plan:** [PLAN.md](PLAN.md) lists the task units, easiest first, each with a recommended model.
+- **Art:** [art/STYLE.md](art/STYLE.md) (look) and [art/PIPELINE.md](art/PIPELINE.md). Both still
+  describe the retired 3D/Blender work until plan tasks A5 and D1 rewrite them for hand-painted 2D
+  stills; follow PLAN.md where they disagree.
+- **Guides not written yet:** development and testing guides. Create each when that work starts, from
+  the user's decisions, written for a Phaser 2D touch arena survivor. Until then only the shared
+  workflow applies.
+- Adventure's rules (its style bible, story, flat-2D point-and-click staging, desktop scope and
+  characters) do not apply here, and Adventure's guides are not templates to copy unchanged.

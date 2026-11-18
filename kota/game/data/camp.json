@@ -1,0 +1,19 @@
+{
+  "goodsName": "goods returned to the people",
+  "unlocks": [
+    { "id": "maple_grove", "name": "Maple-sugar grove", "cost": 3,
+      "text": "The camp's stored maple sugar makes food heal 10 more.",
+      "mods": { "add": { "foodBonus": 10 } },
+      "culture": "CULTURE.md May show: Minnesota River Valley maple-sugar groves; food: maple sugar" },
+    { "id": "practice_ground", "name": "Practice ground", "cost": 6,
+      "text": "Archery games sharpen your aim: arrow volley does 20% more damage.",
+      "mods": { "mul": { "volleyMul": 1.2 } },
+      "culture": "CULTURE.md May show: archery games on the camp practice ground (Eastman)" }
+  ],
+  "stories": [
+    { "id": "iya", "when": "metIya", "title": "Iya, the Camp-Eater",
+      "source": "Zitkala-Sa, Old Indian Legends (1901), via research/dakota.md; Dakota telling. DRAFT TEXT: needs user review.",
+      "credit": "From Zitkala-Ša, Old Indian Legends (1901).",
+      "text": "Iya came to a camp disguised as a baby, and from inside the camp he swallowed it. A young mother noticed the strange sounds the baby made, and the people slipped away at midnight. At dawn Iya chased them, but his thin legs could not carry his great body, and warriors with long knives brought him down. The whole camp walked out of him, free." }
+  ]
+}

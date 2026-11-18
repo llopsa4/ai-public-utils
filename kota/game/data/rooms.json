@@ -1,0 +1,84 @@
+{
+  "rooms": [
+    {
+      "id": "lakeshore",
+      "name": "Lakeshore",
+      "floor": "#5d6a5a",
+      "enemies": [
+        "frost_wisp",
+        "frost_wisp",
+        "blight_swarm",
+        "blight_swarm",
+        "blight_swarm"
+      ],
+      "ambience": "water",
+      "season": "summer"
+    },
+    {
+      "id": "woodland",
+      "name": "River-valley woodland",
+      "floor": "#51614a",
+      "enemies": [
+        "hunger_shade",
+        "frost_wisp",
+        "frost_wisp"
+      ],
+      "ambience": "woods",
+      "season": "summer"
+    },
+    {
+      "id": "maple_grove",
+      "name": "Maple-sugar grove",
+      "floor": "#6b6a4a",
+      "enemies": [
+        "hunger_shade",
+        "blight_swarm",
+        "blight_swarm",
+        "blight_swarm",
+        "blight_swarm",
+        "blight_swarm"
+      ],
+      "ambience": "woods",
+      "season": "spring thaw"
+    },
+    {
+      "id": "rice_lake",
+      "name": "Wild-rice lake edge",
+      "floor": "#6a6a52",
+      "enemies": [
+        "frost_wisp",
+        "frost_wisp",
+        "frost_wisp",
+        "hunger_shade"
+      ],
+      "ambience": "water",
+      "season": "late summer"
+    },
+    {
+      "id": "prairie",
+      "name": "Prairie before dawn",
+      "floor": "#5a5646",
+      "enemies": [
+        "hunger_shade",
+        "hunger_shade",
+        "frost_wisp",
+        "frost_wisp",
+        "blight_swarm",
+        "blight_swarm",
+        "blight_swarm"
+      ],
+      "ambience": "night",
+      "season": "night"
+    }
+  ],
+  "boss": {
+    "id": "dawn_prairie",
+    "name": "Open prairie at dawn",
+    "floor": "#7a6f55",
+    "boss": true,
+    "enemies": [
+      "iya"
+    ],
+    "ambience": "wind"
+  }
+}

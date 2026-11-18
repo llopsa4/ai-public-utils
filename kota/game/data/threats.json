@@ -1,0 +1,23 @@
+{
+  "frost_wisp": {
+    "name": "Frost wisp", "hp": [4, 2.0], "damage": [1, 0.6], "speed": 120, "value": 1, "size": 18,
+    "behaviour": "chaser", "onHit": { "slow": 0.3, "time": 1 }, "floats": true
+  },
+  "blight_swarm": {
+    "name": "Blight swarm", "hp": [2, 1.0], "damage": [1, 0.4], "speed": 165, "value": 1, "valueChance": 0.6, "size": 10,
+    "behaviour": "chaser", "cluster": 5
+  },
+  "hunger_shade": {
+    "name": "Hunger shade", "hp": [10, 4.0], "damage": [2, 0.8], "speed": 95, "value": 2, "size": 22,
+    "behaviour": "chaser", "onHit": { "noHeal": 3 }
+  },
+  "sleet_spirit": {
+    "name": "Sleet spirit", "hp": [6, 2.5], "damage": [1, 0.5], "speed": 100, "value": 2, "size": 18,
+    "behaviour": "ranged", "contact": false, "floats": true, "keep": [300, 420], "interval": 2.4, "windup": 0.6,
+    "shard": { "speed": 260, "life": 3, "radius": 10 }
+  },
+  "gnawing_hollow": {
+    "name": "Gnawing hollow", "hp": [14, 5.0], "damage": [3, 1.0], "speed": 140, "value": 3, "size": 26,
+    "behaviour": "burrower", "under": 2.0, "ring": 0.8, "ringRadius": 50, "up": 2.0, "swallowRadius": 30
+  }
+}

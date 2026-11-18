@@ -1,0 +1,16 @@
+{
+  "arena": [1600, 1200],
+  "viewHeight": 640,
+  "hero": {
+    "speed": 220,
+    "iframes": 0.5,
+    "dash": { "distance": 170, "time": 0.18, "iframes": 0.25, "cooldown": 3 }
+  },
+  "pickup": { "baseReach": 80 },
+  "food": { "chance": 0.03, "heal": 3 },
+  "caps": { "threats": 90, "projectiles": 80 },
+  "weaponSlots": 6,
+  "sellRate": 0.4,
+  "tierPriceMul": [1, 2, 4, 7.5],
+  "waveCount": 20
+}

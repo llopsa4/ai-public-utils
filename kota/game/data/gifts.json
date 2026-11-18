@@ -1,0 +1,8 @@
+[
+  { "id": "skiska",   "helper": "Skiska the duck",        "name": "Warning",      "text": "Your dash is ready again when an enemy winds up to strike.", "effect": "dashOnWindup" },
+  { "id": "patkasa",  "helper": "Patkasa the turtle",     "name": "Shell",        "text": "The first hit in each room is blocked.",                     "effect": "shieldPerRoom", "value": 1 },
+  { "id": "muskrat",  "helper": "The muskrat",            "name": "Quick feet",   "text": "You move 15% faster.",                                       "effect": "speedMul", "value": 1.15 },
+  { "id": "coyote",   "helper": "The coyote",             "name": "Rolling clear","text": "Dashing shakes off cold and slowing.",                       "effect": "dashClearsSlow" },
+  { "id": "manstin",  "helper": "Manstin the rabbit",     "name": "Sure arrows",  "text": "Arrow volley does 30% more damage.",                         "effect": "volleyMul", "value": 1.3 },
+  { "id": "bear",     "helper": "The youngest bear",      "name": "Shared food",  "text": "Heal 20 after each room.",                                   "effect": "healAfterRoom", "value": 20 }
+]

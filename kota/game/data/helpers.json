@@ -1,0 +1,11 @@
+[
+  { "id": "skiska",        "name": "Skiska the duck",      "stats": ["dodgePct", "luck"],          "line": "Keep one eye open.",                "requires": null },
+  { "id": "patkasa",       "name": "Patkasa the turtle",   "stats": ["armour", "maxHp"],           "line": "Slow is not the same as beaten.",   "requires": null },
+  { "id": "muskrat",       "name": "The muskrat",          "stats": ["speedPct", "pickupRange"],   "line": "I won that race. Ask anyone.",      "requires": null },
+  { "id": "coyote",        "name": "The coyote",           "stats": ["critPct", "atkSpdPct"],      "line": "Roll first. Think after.",          "requires": null },
+  { "id": "manstin",       "name": "Manstin the rabbit",   "stats": ["ranged", "range"],           "line": "Aim for the heart.",                "requires": null },
+  { "id": "youngest_bear", "name": "The youngest bear",    "stats": ["regen", "melee"],            "line": "There is always enough to share.",  "requires": null },
+  { "id": "wabeda",        "name": "Wabeda the dog",       "stats": ["pickupRange", "armour"],     "line": "Something is coming. I'll tell you.","requires": "wabeda_fire" },
+  { "id": "mink",          "name": "The mink",             "stats": ["atkSpdPct", "dmgPct"],       "line": "Break the hunt before it starts.",  "requires": "shore_canoes" },
+  { "id": "water_snake",   "name": "The water snake",      "stats": ["dmgPct", "range"],           "line": "Slip in. Slip out.",                "requires": "shore_canoes" }
+]

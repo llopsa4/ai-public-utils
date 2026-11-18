@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1d1a16">
+<title>Kota</title>
+<style>
+  :root { --ui: rgba(255, 244, 225, 0.18); --ui-edge: rgba(255, 244, 225, 0.55); --ink: #fff4e1; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1d1a16; color: var(--ink);
+    font: 14px/1.3 system-ui, sans-serif; user-select: none; -webkit-user-select: none; }
+  #game { position: fixed; inset: 0; touch-action: none; }
+  #game canvas { display: block; width: 100% !important; height: 100% !important; }
+  #hud { position: fixed; bottom: max(4px, env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%);
+    font-size: 11px; opacity: 0.6; pointer-events: none; }
+  .stick-base, .stick-knob { position: fixed; border-radius: 50%; pointer-events: none; display: none; }
+  .stick-base { width: 120px; height: 120px; margin: -60px 0 0 -60px; background: var(--ui); border: 2px solid var(--ui-edge); }
+  .stick-knob { width: 52px; height: 52px; margin: -26px 0 0 -26px; background: var(--ui-edge); }
+  #buttons { position: fixed; bottom: max(16px, env(safe-area-inset-bottom)); right: max(16px, env(safe-area-inset-right));
+    width: 190px; height: 110px; touch-action: none; display: none; }
+  #buttons.left { right: auto; left: max(16px, env(safe-area-inset-left)); }
+  .btn { position: absolute; border-radius: 50%; background: var(--ui); border: 2px solid var(--ui-edge);
+    color: var(--ink); display: flex; align-items: center; justify-content: center; text-align: center;
+    font-size: 12px; touch-action: none; }
+  .btn.down { background: var(--ui-edge); }
+  .btn[data-act="ability"] { width: 88px; height: 88px; right: 0; bottom: 0; }
+  .btn[data-act="dash"] { width: 64px; height: 64px; right: 104px; bottom: 0; }
+  #buttons.left .btn { right: auto; }
+  #buttons.left .btn[data-act="ability"] { left: 0; }
+  #buttons.left .btn[data-act="dash"] { left: 104px; }
+  #settings-btn { z-index: 6; position: fixed; top: max(8px, env(safe-area-inset-top)); right: max(8px, env(safe-area-inset-right));
+    background: var(--ui); color: var(--ink); border: 1px solid var(--ui-edge); border-radius: 6px; padding: 6px 10px; font-size: 12px; }
+  #hp { position: fixed; top: max(8px, env(safe-area-inset-top)); left: max(8px, env(safe-area-inset-left)); width: 160px; height: 16px;
+    background: rgba(0,0,0,0.5); border: 1px solid var(--ui-edge); border-radius: 8px; overflow: hidden; pointer-events: none; display: none; }
+  #hp-fill { height: 100%; width: 100%; background: #b8452f; }
+  #hp-text { position: absolute; inset: 0; text-align: center; font-size: 11px; line-height: 15px; }
+  #exp { position: fixed; top: calc(max(8px, env(safe-area-inset-top)) + 20px); left: max(8px, env(safe-area-inset-left)); width: 160px; height: 12px;
+    background: rgba(0,0,0,0.5); border: 1px solid var(--ui-edge); border-radius: 6px; overflow: hidden; pointer-events: none; display: none; }
+  #exp-fill { height: 100%; width: 0; background: #d9a441; }
+  #exp-text { position: absolute; inset: 0; text-align: center; font-size: 10px; line-height: 11px; }
+  #embers { position: fixed; top: calc(max(8px, env(safe-area-inset-top)) + 38px); left: max(8px, env(safe-area-inset-left));
+    font-size: 12px; pointer-events: none; display: none; text-shadow: 0 1px 2px #000; }
+  #wave-label { position: fixed; top: max(8px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
+    font-size: 13px; opacity: 0.9; pointer-events: none; display: none; text-shadow: 0 1px 2px #000; }
+  body.in-run #hp, body.in-run #exp, body.in-run #embers, body.in-run #wave-label, body.in-run #buttons { display: block; }
+  #hint { position: fixed; top: 48px; left: 50%; transform: translateX(-50%); z-index: 7; display: none; align-items: center; gap: 10px;
+    max-width: min(420px, 70vw); padding: 8px 12px; background: var(--ui); border: 1px solid var(--ui-edge); border-radius: 8px;
+    font-size: 13px; text-align: center; pointer-events: none; }
+  #hint-skip { pointer-events: auto; flex: none; background: transparent; color: var(--ink); border: 1px solid var(--ui-edge); border-radius: 6px;
+    padding: 4px 8px; font-size: 11px; }
+  #banner { position: fixed; top: 20%; left: 50%; transform: translateX(-50%); z-index: 7; text-align: center; pointer-events: none;
+    opacity: 0; transition: opacity 0.4s; text-shadow: 0 1px 3px #000, 0 0 6px #000; }
+  #banner.show { opacity: 1; }
+  #banner-title { font-size: 24px; font-weight: 700; }
+  #banner-sub { font-size: 13px; opacity: 0.9; }
+  #screen { position: fixed; inset: 0; z-index: 5; display: none; flex-direction: column; align-items: center; justify-content: center;
+    gap: 12px; background: rgba(20,17,14,0.82); padding: 16px; text-align: center; }
+  #screen h1 { margin: 0; font-size: 22px; }
+  #screen-body { max-width: 460px; opacity: 0.85; white-space: pre-line; }
+  #screen-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+  .opt { display: flex; flex-direction: column; gap: 4px; min-width: 150px; max-width: 220px; min-height: 48px; padding: 10px 14px;
+    background: var(--ui); color: var(--ink); border: 2px solid var(--ui-edge); border-radius: 8px; font: inherit; text-align: center; }
+  .opt span { font-size: 12px; opacity: 0.85; white-space: pre-line; }
+  .opt:active { background: var(--ui-edge); }
+  .opt:disabled { opacity: 0.45; }
+  #screen-panel { display: none; width: 100%; max-height: 100%; justify-content: center; }
+  .shop { width: min(840px, 100%); max-height: 100%; overflow-y: auto; display: grid; grid-template-columns: 1fr 176px;
+    gap: 6px 10px; text-align: left; align-items: start; }
+  .shop-head { grid-column: 1 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .shop-head h1 { font-size: 16px; flex: 1 1 auto; }
+  .shop-head .embers { font-size: 14px; color: #f2b84a; }
+  .shop-head .opt { min-width: 0; min-height: 48px; padding: 6px 12px; flex-direction: row; }
+  .note { min-height: 16px; font-size: 12px; color: #f2b84a; }
+  .offers, .mine-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+  .mine-row { grid-template-columns: repeat(6, 1fr); }
+  .shop-main { min-width: 0; }
+  .card { display: flex; flex-direction: column; gap: 2px; padding: 6px; background: var(--ui); border: 1px solid var(--ui-edge);
+    border-radius: 8px; min-width: 0; }
+  .card.locked { border-color: #f2b84a; }
+  .card.empty { justify-content: center; align-items: center; min-height: 96px; opacity: 0.5; }
+  .card-name { font-weight: 700; font-size: 12px; }
+  .card-sub { font-size: 11px; opacity: 0.75; text-transform: capitalize; }
+  .card-text { font-size: 11px; white-space: pre-line; flex: 1; }
+  .card .row { display: flex; gap: 4px; margin-top: 4px; }
+  .card button { flex: 1; min-height: 48px; background: var(--ui); color: var(--ink); border: 1px solid var(--ui-edge);
+    border-radius: 6px; font: inherit; font-size: 11px; padding: 2px; }
+  .card button.buy { background: rgba(217, 164, 65, 0.35); font-weight: 700; }
+  .card button.armed { background: #b8452f; }
+  .card button:disabled { opacity: 0.4; }
+  .stats { font-size: 11px; background: rgba(0,0,0,0.3); border-radius: 8px; padding: 6px; }
+  .stats-title { font-weight: 700; margin: 2px 0; }
+  .stat { display: flex; justify-content: space-between; }
+  .stat.zero { opacity: 0.5; }
+  .carried { font-size: 10px; opacity: 0.85; }
+  @media (max-width: 700px) { .shop { grid-template-columns: 1fr; } .offers { grid-template-columns: repeat(2, 1fr); } .mine-row { grid-template-columns: repeat(3, 1fr); } }
+  #rotate { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; text-align: center;
+    background: #1d1a16; font-size: 18px; padding: 24px; z-index: 10; }
+  @media (orientation: portrait) and (pointer: coarse) { #rotate { display: flex; } }
+</style>
+</head>
+<body>
+<div id="game"></div>
+<div id="hud"></div>
+<div id="hp"><div id="hp-fill"></div><div id="hp-text"></div></div>
+<div id="exp"><div id="exp-fill"></div><div id="exp-text"></div></div>
+<div id="embers"></div>
+<div id="wave-label"></div>
+<div id="hint"><span id="hint-text"></span><button id="hint-skip" type="button">Skip hints</button></div>
+<div id="banner"><div id="banner-title"></div><div id="banner-sub"></div></div>
+<div class="stick-base"></div><div class="stick-knob"></div>
+<div id="buttons">
+  <div class="btn" data-act="dash">Dash</div>
+  <div class="btn" data-act="ability">Ability</div>
+</div>
+<button id="settings-btn" type="button">Settings</button>
+<div id="screen"><h1 id="screen-title"></h1><div id="screen-body"></div><div id="screen-actions"></div><div id="screen-panel"></div></div>
+<div id="rotate">Turn your device sideways to play.</div>
+<script src="vendor/phaser.min.js"></script>
+<script type="module" src="src/main.js"></script>
+</body>
+</html>

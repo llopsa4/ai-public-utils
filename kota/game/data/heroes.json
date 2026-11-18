@@ -1,0 +1,19 @@
+[
+  {
+    "id": "ash_wolf",
+    "name": "Ash Wolf",
+    "startWeapon": "stone_axe",
+    "stats": { "melee": 2, "speedPct": 5 },
+    "rangedFinalMul": 0.7,
+    "ability": {
+      "id": "ash_circle",
+      "label": "Ash circle",
+      "radius": 200,
+      "damage": 10,
+      "meleeScale": 1.0,
+      "knock": 140,
+      "iframes": 0.5,
+      "cooldown": 12
+    }
+  }
+]

@@ -1,0 +1,21 @@
+[
+  { "id": "dried_meat",      "name": "Dried meat",            "rarity": "common",   "price": 12, "stats": { "maxHp": 3 },                       "max": null, "special": null },
+  { "id": "maple_cake",      "name": "Maple-sugar cake",      "rarity": "common",   "price": 14, "stats": { "regen": 2 },                       "max": null, "special": null },
+  { "id": "sinew_string",    "name": "Sinew bowstring",       "rarity": "common",   "price": 15, "stats": { "ranged": 2 },                      "max": null, "special": null },
+  { "id": "whetstone",       "name": "Whetstone",             "rarity": "common",   "price": 15, "stats": { "melee": 2 },                       "max": null, "special": null },
+  { "id": "wristguard",      "name": "Bead-banded wristguard","rarity": "common",   "price": 16, "stats": { "atkSpdPct": 6 },                   "max": null, "special": null },
+  { "id": "light_moccasins", "name": "Light moccasins",       "rarity": "common",   "price": 15, "stats": { "speedPct": 8, "armour": -1 },      "max": null, "special": null },
+  { "id": "rawhide_pouch",   "name": "Rawhide pouch",         "rarity": "common",   "price": 18, "stats": { "gather": 5, "pickupRange": 20 },   "max": null, "special": null },
+  { "id": "squirrel_nuts",   "name": "A squirrel's nuts",     "rarity": "common",   "price": 12, "stats": { "luck": 10 },                       "max": null, "special": null },
+  { "id": "rice_kettle",     "name": "Kettle of wild rice",   "rarity": "common",   "price": 16, "stats": {},                                   "max": 3,    "special": { "foodHeal": 2 },
+    "text": "Food heals 2 more." },
+  { "id": "hide_plate",      "name": "Hardened-hide plate",   "rarity": "uncommon", "price": 30, "stats": { "armour": 3, "speedPct": -3 },      "max": null, "special": null },
+  { "id": "smoke_cloak",     "name": "Smoke-dark cloak",      "rarity": "uncommon", "price": 30, "stats": { "dodgePct": 6 },                    "max": null, "special": null },
+  { "id": "tracking_stick",  "name": "Tracking stick",        "rarity": "uncommon", "price": 28, "stats": { "range": 40, "critPct": 3 },        "max": null, "special": null },
+  { "id": "ember_stone",     "name": "Ember stone",           "rarity": "uncommon", "price": 34, "stats": {},                                   "max": 1,    "special": { "burnChance": 0.15, "burnDps": 3, "burnTime": 2 },
+    "text": "Hits may set threats burning." },
+  { "id": "long_snowshoes",  "name": "Long snowshoes",        "rarity": "uncommon", "price": 32, "stats": { "speedPct": 10 },                   "max": 1,    "special": { "water": true },
+    "text": "Shallow water does not slow you." },
+  { "id": "hide_shield",     "name": "Painted hide shield",   "rarity": "rare",     "price": 60, "stats": { "armour": 4, "dodgePct": 5, "atkSpdPct": -8 }, "max": null, "special": null },
+  { "id": "campfire_ash",    "name": "Ash of the camp fire",  "rarity": "rare",     "price": 55, "stats": { "dmgPct": 10, "maxHp": -3 },        "max": null, "special": null }
+]
