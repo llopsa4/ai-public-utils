@@ -69,7 +69,7 @@ export class Between {
 
   nextLevelUp() {
     const sc = this.scene;
-    if (sc.pendingLevels <= 0) { this.startShop(); return; }
+    if (sc.pendingLevels <= 0) { this.freeGift(); return; }
     sc.pendingLevels--;
     this.app.hints.trigger('levelup');
     const more = sc.pendingLevels;
@@ -79,6 +79,30 @@ export class Between {
       onClick: () => { sc.addStats({ [o.stat]: o.value }); this.nextLevelUp(); },
     }));
     this.app.ui.show('Level up!', more ? `Choose a helper (${more} more after this).` : 'Choose a helper.', options);
+  }
+
+  /* ---------- Double-Face's reward ---------- */
+
+  /** After Double-Face falls the shop opens with a free item: one of three uncommon or rare ones. */
+  freeGift() {
+    const sc = this.scene;
+    if (!sc.freeItem) { this.startShop(); return; }
+    sc.freeItem = false;
+    const open = this.itemList.filter((d) => !this.itemAtMax(d));
+    const good = open.filter((d) => d.rarity !== 'common');
+    const choices = shuffle(good.length >= 3 ? good : open).slice(0, 3);
+    const options = choices.map((def) => ({
+      label: def.name,
+      detail: this.describeItem(def),
+      onClick: () => {
+        sc.items[def.id] = this.itemCount(def.id) + 1;
+        sc.addStats(def.stats);
+        sc.refreshSpecials();
+        this.app.audio.pickup();
+        this.startShop();
+      },
+    }));
+    this.app.ui.show('The child is free', 'He will grow up among the people.\nTake a gift from the camp.', options);
   }
 
   /* ---------- the shop ---------- */

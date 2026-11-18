@@ -1,5 +1,5 @@
 // Run: one bounded top-down arena with the hero, the waves, the threats and the pickups
-// (DESIGN-m1.md). Bosses come in plan task C5. Between waves the Between helper runs the level-ups and shop.
+// (DESIGN-m1.md) and the two bosses. Between waves the Between helper runs the level-ups and shop.
 // Game logic advances in fixed 1/60 s steps so it behaves the same at any frame rate.
 
 import { makeStats, moveSpeed } from '../run/stats.js';
@@ -7,6 +7,9 @@ import { Threats } from '../run/threats.js';
 import { Pickups } from '../run/pickups.js';
 import { Spawner, waveLength } from '../run/waves.js';
 import { Weapons } from '../combat/weapons.js';
+import { Bosses } from '../combat/bosses.js';
+import { campBonus, recordRun } from '../camp/save.js';
+import { Place } from '../run/arena.js';
 import { Between } from '../between/between.js';
 
 const STEP = 1 / 60;
@@ -16,7 +19,7 @@ const clock = (s) => `${Math.floor(s / 60)}:${String(Math.ceil(s) % 60).padStart
 export class RunScene extends Phaser.Scene {
   constructor() { super('Run'); }
 
-  init(data) { this.heroId = data?.hero ?? 'ash_wolf'; }
+  init(data) { this.heroId = data?.hero ?? 'ash_wolf'; this.placeId = data?.arena ?? 'prairie'; }
 
   create() {
     const app = this.app = this.registry.get('app');
@@ -26,27 +29,36 @@ export class RunScene extends Phaser.Scene {
     app.mode = 'run';
     this.acc = 0;
 
-    // Arena: tiled ground and a soft border that the hero cannot cross.
-    this.add.tileSprite(0, 0, AW, AH, 'ground').setOrigin(0).setDepth(0);
-    this.add.rectangle(AW / 2, AH / 2, AW - 6, AH - 6).setStrokeStyle(6, 0x3a3528, 0.9).setDepth(1);
+    // Place: ground, decoration, border and the twist (wind or shallow water).
+    const arenas = this.cache.json.get('arenas');
+    this.placeDef = arenas.find((a) => a.id === this.placeId) ?? arenas[0];
+    this.place = new Place(this, this.placeDef);
 
     this.stats = makeStats(this.heroDef);
+    this.campData = this.cache.json.get('camp');
+    this.campBonus = campBonus(app.camp, this.campData.upgrades);      // permanent upgrades from the camp
+    for (const [k, v] of Object.entries(this.campBonus.stats)) this.stats[k] += v;
     this.hero = this.add.image(AW / 2, AH / 2, 'hero_placeholder').setDepth(10);
     this.facing = { x: 1, y: 0 };
     this.walkClock = 0;
     this.dash = { t: 0, dir: { x: 1, y: 0 }, cooldown: 0, iframes: 0, ghost: 0 };
     this.abilityCooldown = 0;
     this.hurtT = 0; this.slowT = 0; this.noHealT = 0; this.regenClock = 0;
+    this.swallowT = 0;                          // seconds left inside Iya (the hero is hidden and still)
 
     // Run progress.
     this.embers = 0; this.level = 1; this.xp = 0; this.pendingLevels = 0;
     this.gatherValue = this.stats.gather;
     this.beaten = 0;
+    this.bossT = null;                          // the boss shown in the boss bar
+    this.met = new Set(); this.defeated = new Set();   // bosses met and beaten this run (the camp reads these in C6)
+    this.freeItem = false;                      // Double-Face beaten: the next shop starts with a free item
     this.phase = 'fight';                       // fight | ending | between | over
     this.items = {};                            // shop items carried: id -> count
     this.special = { foodHeal: 0, burnChance: 0, burnDps: 0, burnTime: 0, water: false };
 
     const threatDefs = this.cache.json.get('threats');
+    this.bosses = new Bosses(this);
     this.threats = new Threats(this, threatDefs);
     this.pickups = new Pickups(this);
     this.waves = this.cache.json.get('waves');
@@ -66,14 +78,15 @@ export class RunScene extends Phaser.Scene {
     this.events.once('shutdown', () => {
       this.scale.off('resize', this.applyZoom);
       this.threats.clear(); this.pickups.clear(); this.weapons.clear();
+      this.app.ui.setBoss(null);
     });
 
     app.input.setActive(true);
     app.ui.showHud(true);
     app.ui.setAbilityLabel(this.heroDef.ability.label);
-    app.audio.setAmbience('wind');
+    app.audio.setAmbience(this.placeDef.ambience ?? 'wind');
     app.hints.banner('Mni Sota Makoce', 'the land where the waters reflect the sky', 3);
-    app.hints.banner('Prairie before dawn', '', 2);          // placeholder arena name until C7
+    app.hints.banner(this.placeDef.name, '', 2);
     app.hints.trigger('move');
     app.hints.later('weapons', 2);
     this.startWave(1);
@@ -83,7 +96,7 @@ export class RunScene extends Phaser.Scene {
 
   startWave(n) {
     this.wave = n;
-    this.waveLen = waveLength(n);       // wave 20 has no timer in the final game; until C5 it also runs 60 s
+    this.waveLen = this.waves[n - 1].timer === false ? Infinity : waveLength(n);   // wave 20 ends when Iya falls
     this.waveT = 0;
     this.phase = 'fight';
     this.stats.hp = this.stats.maxHp;   // fully healed at the start of every wave
@@ -91,18 +104,52 @@ export class RunScene extends Phaser.Scene {
     if (n > 1) this.app.hints.banner(`Wave ${n}`, '', 1.2);
   }
 
-  endWave() {
+  endWave(text) {
     this.phase = 'ending';
+    if (this.bosses.main) this.app.hints.banner('Double-Face slips away', '', 1.6);   // the timer ran out first: no reward
     this.spawner.stop();
     this.threats.clear();
+    this.setBoss(null);
+    this.place.gfx.clear(); this.place.gust = null;
     this.pickups.flyAll();
     if (this.gatherValue > 0) {         // Gathering pays out embers at the end of each wave, then grows 5%
       this.gainEmbers(Math.round(this.gatherValue));
       this.gatherValue *= 1.05;
     }
     this.endClock = 1.2;
-    this.app.hints.banner(`Wave ${this.wave} cleared`, '', 1.2);
+    this.app.hints.banner(text ?? `Wave ${this.wave} cleared`, '', 1.2);
     this.app.audio.win();
+  }
+
+  /** Iya has fallen: clear the arena, then show the win screen. */
+  winRun(line) {
+    this.winLine = line;
+    this.endWave('Dawn');
+    this.endClock = 2.4;
+  }
+
+  setBoss(t) { this.bossT = t; if (!t) this.app.ui.setBoss(null); }
+
+  /** Iya swallows the hero: damage, hidden and still for a moment, then spat out far from him. */
+  swallowHero(iya, S) {
+    this.damageHero(S.damage, null, true);
+    if (this.phase !== 'fight') return;
+    this.swallowT = S.hidden;
+    this.dash.t = 0;
+    this.hero.setVisible(false);
+    this.weapons.setVisible(false);
+    this.app.hints.banner('Swallowed!', '', S.hidden);
+  }
+
+  spitOut() {
+    const iya = this.bosses && this.threats.list.find((t) => t.id === 'iya'), [AW, AH] = this.arena;
+    for (let i = 0; i < 30; i++) {
+      const x = 80 + Math.random() * (AW - 160), y = 80 + Math.random() * (AH - 160);
+      if (!iya || Math.hypot(x - iya.x, y - iya.y) >= 300) { this.hero.setPosition(x, y); break; }
+    }
+    this.hero.setVisible(true);
+    this.weapons.setVisible(true);
+    this.hurtT = 0.8;                                      // a moment of grace after being spat out
   }
 
   finish(won) {
@@ -110,19 +157,23 @@ export class RunScene extends Phaser.Scene {
     this.phase = 'over';
     this.spawner.stop();
     this.threats.clear();
+    this.setBoss(null);
     this.app.mode = 'end';
     this.app.input.setActive(false);
-    const text = `Waves cleared: ${won ? this.wave : this.wave - 1}   Threats beaten: ${this.beaten}`;
+    const cleared = won ? this.wave : this.wave - 1;
+    const goods = recordRun(this.app.camp, this.campData, { wavesCleared: cleared, won, met: this.met, defeated: this.defeated });
+    const text = `Waves cleared: ${cleared}   Threats beaten: ${this.beaten}   Goods earned: ${goods}`;
     const back = [{ label: 'Return to camp', onClick: () => { if (this.app.mode === 'end') { this.app.ui.hide(); this.scene.start('Camp'); } } }];
-    if (won) this.app.ui.show('You held the arena', `${text}\n(The wave 20 boss arrives in plan task C5.)`, back);
-    else this.app.ui.show('Carried home', `You are carried back to camp to rest.\n${text}`, back);
+    if (won) this.app.ui.show('The camp walks out freed', `${this.winLine ?? 'Iya falls at dawn, and the swallowed people step out into the light.'}\n${text}`, back);
+    else { this.app.fell = true; this.app.ui.show('Carried home', `You are carried back to camp to rest.\n${text}`, back); }
   }
 
   /* ---------- the hero ---------- */
 
   /** Returns false when the hit is blocked by invulnerability (the attacker may try again), true otherwise. */
-  damageHero(amount, effect) {
-    if (this.phase !== 'fight' || this.hurtT > 0 || this.dash.iframes > 0) return false;
+  damageHero(amount, effect, force) {
+    if (this.phase !== 'fight' || this.swallowT > 0) return false;
+    if (!force && (this.hurtT > 0 || this.dash.iframes > 0)) return false;
     const s = this.stats;
     this.hurtT = this.rules.hero.iframes;
     this.app.hints.trigger('dash');
@@ -141,7 +192,7 @@ export class RunScene extends Phaser.Scene {
   healHero(amount) { this.stats.hp = Math.min(this.stats.maxHp, this.stats.hp + amount); }
 
   eatFood() {
-    const heal = Math.max(1, Math.round((this.rules.food.heal + this.special.foodHeal) * (this.noHealT > 0 ? 0.5 : 1)));
+    const heal = Math.max(1, Math.round((this.rules.food.heal + this.campBonus.foodHeal + this.special.foodHeal) * (this.noHealT > 0 ? 0.5 : 1)));
     this.healHero(heal);
     this.floatText(this.hero.x, this.hero.y - 40, `+${heal}`, '#9fe0a0');
     this.app.audio.pickup();
@@ -195,7 +246,7 @@ export class RunScene extends Phaser.Scene {
     const amount = Math.max(1, Math.round((a.damage + a.meleeScale * this.stats.melee) * (1 + this.stats.dmgPct / 100)));
     for (const t of this.threats.list.slice()) {
       if (!t.hittable || Math.hypot(t.x - hero.x, t.y - hero.y) > a.radius + t.r) continue;
-      this.threats.damage(t, amount, { knock: { x: hero.x, y: hero.y, px: a.knock } });
+      this.threats.damage(t, amount, { tags: ['melee'], knock: { x: hero.x, y: hero.y, px: a.knock } });
     }
     const ring = this.add.circle(hero.x, hero.y, 10).setStrokeStyle(4, 0xd9d2c0, 0.9).setDepth(9);
     this.tweens.add({ targets: ring, scale: a.radius / 10, alpha: 0, duration: 350, onComplete: () => ring.destroy() });
@@ -216,7 +267,8 @@ export class RunScene extends Phaser.Scene {
     ui.setExp(this.xp / xpNeeded(this.level), this.level);
     ui.setEmbers(this.embers);
     const left = Math.max(0, this.waveLen - this.waveT);
-    ui.setWave(`Wave ${this.wave} / ${this.rules.waveCount}   ${clock(left)}`);
+    ui.setWave(`Wave ${this.wave} / ${this.rules.waveCount}${Number.isFinite(left) ? `   ${clock(left)}` : ''}`);
+    if (this.bossT) ui.setBoss(this.bossT.def.name, this.bossT.hp / this.bossT.maxHp);
     ui.setCooldowns({
       dash: this.dash.cooldown / this.rules.hero.dash.cooldown,
       ability: this.abilityCooldown / this.heroDef.ability.cooldown,
@@ -240,9 +292,11 @@ export class RunScene extends Phaser.Scene {
     this.hurtT = Math.max(0, this.hurtT - dt);
     this.slowT = Math.max(0, this.slowT - dt);
     this.noHealT = Math.max(0, this.noHealT - dt);
+    if (this.swallowT > 0) { this.swallowT -= dt; if (this.swallowT <= 0) this.spitOut(); }
+    const held = this.swallowT > 0;                        // inside Iya: no moving, dashing or ability
 
     const stick = input.getMove();
-    const moving = Math.hypot(stick.x, stick.y) > 0.1;
+    const moving = !held && Math.hypot(stick.x, stick.y) > 0.1;
     if (moving) {
       const len = Math.hypot(stick.x, stick.y);
       this.facing = { x: stick.x / len, y: stick.y / len };
@@ -250,12 +304,13 @@ export class RunScene extends Phaser.Scene {
     }
 
     // Dash: a short burst in the stick direction (or the facing), untouchable for a moment.
-    if (input.consume('dash') && dash.cooldown === 0 && dash.t <= 0) {
+    if (held) { input.consume('dash'); input.consume('ability'); }
+    else if (input.consume('dash') && dash.cooldown === 0 && dash.t <= 0) {
       dash.t = dashRules.time; dash.dir = { ...this.facing };
       dash.cooldown = dashRules.cooldown; dash.iframes = dashRules.iframes;
       this.app.audio.dash();
     }
-    if (input.consume('ability') && this.abilityCooldown === 0 && this.phase === 'fight') this.useAbility();
+    if (!held && input.consume('ability') && this.abilityCooldown === 0 && this.phase === 'fight') this.useAbility();
     if (this.abilityCooldown === 0 && this.phase === 'fight' && this.threats.list.length) hints.trigger('ability');
 
     if (dash.t > 0) {
@@ -266,7 +321,9 @@ export class RunScene extends Phaser.Scene {
       dash.ghost -= dt;
       if (dash.ghost <= 0) { dash.ghost = 0.04; this.afterimage(); }
     } else if (moving) {
-      const speed = moveSpeed(stats, this.rules) * (this.slowT > 0 ? 0.7 : 1);
+      const wade = this.place.heroSpeedMul();
+      if (wade < 1) hints.trigger('water');
+      const speed = moveSpeed(stats, this.rules) * (this.slowT > 0 ? 0.7 : 1) * wade;
       hero.x += stick.x * speed * dt; hero.y += stick.y * speed * dt;
     }
 
@@ -290,7 +347,8 @@ export class RunScene extends Phaser.Scene {
       }
       this.spawner.update(dt);
       this.threats.update(dt);
-      this.weapons.update(dt, true);
+      this.place.update(dt);
+      this.weapons.update(dt, !held);
       this.pickups.update(dt);
       this.waveT += dt;
       if (this.phase === 'fight' && this.waveT >= this.waveLen) this.endWave();
@@ -315,6 +373,7 @@ export class RunScene extends Phaser.Scene {
 
   /** Back to camp without finishing the run (Settings > Leave run). */
   leave() {
+    recordRun(this.app.camp, this.campData, { wavesCleared: 0, won: false, met: this.met, defeated: this.defeated, finished: false });   // bosses met still count
     this.app.paused = false;
     this.app.ui.hide();
     this.scene.start('Camp');

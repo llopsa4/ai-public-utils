@@ -19,6 +19,8 @@ export const HINTS = {
   merge: 'Two of the same weapon merge into a stronger one.',
   double_face: 'He strikes in front and behind. Stay at his sides, and trust your ranged weapons.',
   iya: 'Watch for his lunge and keep out of his swallow. He weakens as dawn comes.',
+  wind: 'A gust is coming. The arrow shows where it blows.',
+  water: 'Shallow water slows you. Fliers and long snowshoes ignore it.',
   carried: 'You are carried home. Goods you earned stay with the camp.',
 };
 

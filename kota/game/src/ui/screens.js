@@ -6,6 +6,7 @@ export function createUI() {
   const hpFill = $('hp-fill'), hpText = $('hp-text'), waveLabel = $('wave-label');
   const expFill = $('exp-fill'), expText = $('exp-text'), embersLabel = $('embers');
   const panel = $('screen-panel');
+  const bossName = $('boss-name'), bossFill = $('boss-fill');
   const buttons = {};
   for (const el of document.querySelectorAll('.btn')) buttons[el.dataset.act] = el;
 
@@ -30,6 +31,7 @@ export function createUI() {
       const b = document.createElement('button');
       b.type = 'button';
       b.className = 'opt';
+      if (o.disabled) b.disabled = true;
       const name = document.createElement('strong');
       name.textContent = o.label;
       b.append(name);
@@ -61,6 +63,13 @@ export function createUI() {
       hpText.textContent = `${Math.ceil(hp)}`;
     },
     setWave(text) { waveLabel.textContent = text; },
+    /** Boss bar under the wave label: name and health fraction (0..1), or null to hide it. */
+    setBoss(name, frac) {
+      document.body.classList.toggle('boss', name != null);
+      if (name == null) return;
+      bossName.textContent = name;
+      bossFill.style.width = `${Math.min(1, Math.max(0, frac)) * 100}%`;
+    },
     /** Experience bar fill (0..1) and the hero's level. */
     setExp(frac, level) {
       expFill.style.width = `${Math.min(1, Math.max(0, frac)) * 100}%`;

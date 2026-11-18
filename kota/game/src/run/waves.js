@@ -19,10 +19,11 @@ export class Spawner {
 
   start(wave) {
     this.wave = wave; this.def = this.waves[wave - 1]; this.clock = 0.3;
-    // def.elite and def.boss (Double-Face on wave 10, Iya on wave 20) are spawned by plan task C5.
+    this.boss = this.def.elite ?? this.def.boss ?? null;          // Double-Face on wave 10, Iya on wave 20
+    this.bossClock = this.boss ? this.boss.at : 0;
   }
 
-  stop() { this.def = null; }
+  stop() { this.def = null; this.boss = null; }
 
   /** A random spot in the arena at least 260 px from the hero and clear of the edge. */
   spot() {
@@ -37,6 +38,10 @@ export class Spawner {
 
   update(dt) {
     if (!this.def) return;
+    if (this.boss) {
+      this.bossClock -= dt;
+      if (this.bossClock <= 0) { const p = this.spot(); this.threats.queue(this.boss.id, p.x, p.y, this.wave); this.boss = null; }
+    }
     this.clock -= dt;
     while (this.clock <= 0) {
       this.clock += this.def.every;

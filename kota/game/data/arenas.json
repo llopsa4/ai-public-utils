@@ -1,0 +1,8 @@
+[
+  { "id": "prairie", "name": "Prairie before dawn", "ground": "ground_prairie", "ambience": "wind", "requires": null,
+    "props": [ { "tex": "prop_sage", "count": 16 }, { "tex": "prop_willow", "count": 4 } ],
+    "twist": { "kind": "wind", "every": 20, "time": 3, "push": 40, "warn": 1 } },
+  { "id": "lakeshore", "name": "Lakeshore", "ground": "ground_lakeshore", "ambience": "water", "requires": "shore_canoes",
+    "props": [ { "tex": "prop_reeds", "count": 14, "y": [250, 420] }, { "tex": "prop_canoe", "count": 1, "y": [330, 380] }, { "tex": "prop_sage", "count": 5 } ],
+    "twist": { "kind": "water", "rect": [0, 0, 1600, 300], "mul": 0.7 } }
+]

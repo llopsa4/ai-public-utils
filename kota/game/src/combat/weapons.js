@@ -156,7 +156,7 @@ export class Weapons {
   hit(t, w, tier, origin) {
     const { amount, crit } = this.rollDamage(w);
     const knock = tier.knock ? { x: origin.x, y: origin.y, px: tier.knock } : null;
-    this.scene.threats.damage(t, amount, { crit, knock });
+    this.scene.threats.damage(t, amount, { crit, knock, tags: this.defs[w.id].tags });
     const sp = this.scene.special;       // the ember stone: a hit may set the threat burning
     if (sp.burnChance && Math.random() < sp.burnChance && this.scene.threats.list.includes(t)) this.scene.threats.applyBurn(t, sp.burnDps, sp.burnTime);
   }
@@ -257,6 +257,9 @@ export class Weapons {
       }
     }
   }
+
+  /** Hide or show the hovering weapons (while the hero is swallowed). */
+  setVisible(on) { for (const w of this.list) w.sprite.setVisible(on); }
 
   clear() {
     for (const w of this.list) w.sprite.destroy();

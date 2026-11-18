@@ -141,3 +141,34 @@ Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Co
   waves, reroll costs 2 then 3, merge, sell 12, full-slot and max-item refusals, Settings over the shop; the shop fits
   an 844x390 frame (332 px) with six weapons. Not yet tried on a phone. Camp-unlocked helpers read `app.camp.built` (C6
   must set it). **Next: C5 (Double-Face and Iya, win and fall screens).**
+- **C5 done (Sonnet):** `src/combat/bosses.js` + `double_face`, `double_face_false`, `iya` in `data/threats.json`. Spawner
+  queues the wave's `elite`/`boss` entry at its `at` time. Double-Face: front and back swipes (telegraphed wedges, aim locks
+  for the last 0.2 s), lure pull (a dash breaks it), ranged x1.5 / melee x0.85 (`takes`, weapons pass `tags`), a false double
+  below 50% (1 HP, half damage, back 6 s after it dies, swaps places every 6 s), 30 embers on defeat. Iya: lunge with path
+  line, swallow cone and pull (hero hidden 1.5 s, 6 damage, spat out 300+ px away), night overlay that lifts with his health,
+  below 50% slower, recovers longer, takes x1.3 and sways; wave 20 has no timer and ends when he falls (`winRun`), win screen
+  "The camp walks out freed". Boss bar in the HUD. Deviation from DESIGN-m1 section 9: the free item after Double-Face is a
+  pick-1-of-3 screen ("The child is free", uncommon or rare items) before the shop, not a fifth offer card. `RunScene` keeps
+  `met` and `defeated` sets for C6 (goods: +3 and +8, elder stories). Verified in Chrome by a scripted run: all states, damage
+  multipliers, false double cycle, reward screen, Iya phases, dawn alpha, swallow, win screen; no console errors. Iya's
+  lunge interval (5 s) and recovery (0.8 s) were my choices (not in the spec): tune in C8. Not tried on a phone.
+  Debug: `kota.run().debugSetWave(10 or 20)` then `advance(4)` spawns the boss. **Next: C6 (camp and save).**
+- **C6 done (Sonnet):** `src/camp/save.js` (save `kota.v2.camp` = goods, built, met, runs, wins, bestWave; `campBonus`,
+  `goodsFor`, `recordRun`), `src/camp/camp.js` (camp hub with totals, upgrades screen, elder stories), `data/camp.json`
+  rewritten (4 upgrades from DESIGN-m1 section 11, 2 stories; Double-Face story is DRAFT, CULTURE.md NR 25). `app.camp`
+  and `app.saveCamp()` live in main.js; `ui.show` options accept `disabled`. A run pays goods on win or fall (1 per wave
+  cleared, +3 Double-Face, +8 Iya); Settings > Leave run pays none but still records bosses met (elder stories open after
+  meeting a boss). Maple grove (+1 food heal, +1% food drop) and Practice ground (+1 Melee, +1 Ranged at run start) apply
+  in the run; Wabeda joins the helpers (already gated on `built`); Canoes also gates the mink and water snake, and the
+  lakeshore arena in C7. First fall shows the `carried` hint in the camp. Verified in Chrome: purchase and disabled
+  states, goods totals, upgrades change the next run, save survives a reload, elder stories, no console errors.
+  **Next: C7 (arenas).**
+- **C7 done (Sonnet):** `data/arenas.json` (prairie, lakeshore), `src/run/arena.js` (`Place`: tiled ground, seeded decoration props,
+  the twist), placeholder ground and prop textures in BootScene. Prairie wind: every 20 s of fighting a 3 s gust pushes the hero
+  and all threats (not burrowed ones) 40 px/s one way, with a floating arrow 1 s before and during it. Lakeshore: the top 300 px
+  is shallow water; walkers move x0.7 (wisps and sleet spirits float; long snowshoes ignore it for the hero; bosses are not
+  slowed). "Begin a run" asks "Choose a place" once Canoes on the shore is built (otherwise starts the prairie); the place name
+  banner and ambience (wind or water) follow the place; two extra hints, `wind` and `water` (not in DESIGN-m1 section 13).
+  `RunScene.place` is the Place (`scene.arena` is still the size). Verified in Chrome: chooser, wind push on threats, warning
+  and arrow, water slowing and the snowshoe/floater exceptions, screenshot of the lakeshore; no console errors. Not tried on a
+  phone. Wave 1 (20 s) never reaches a gust; the clock runs across waves. **Next: C8 (milestone 1 review and tuning, Opus + you).**

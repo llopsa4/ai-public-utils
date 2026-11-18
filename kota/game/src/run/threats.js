@@ -1,5 +1,6 @@
 // Threats (DESIGN-m1.md section 6): the five behaviours (chaser, cluster, ranged, burrower) as data-driven code.
-// Stats come from data/threats.json and grow each wave. Weapons (plan task C3) call damage(); bosses come in C5.
+// Stats come from data/threats.json and grow each wave. Weapons call damage(); bosses (combat/bosses.js) plug in as
+// the "boss" behaviour.
 
 const HERO_R = 20;
 const MARK_TIME = 0.8;          // spawn marks show this long before a threat appears
@@ -42,6 +43,7 @@ export class Threats {
     };
     if (def.behaviour === 'burrower') { t.state = 'under'; t.t = def.under; t.hittable = false; sprite.setVisible(false); }
     this.list.push(t);
+    if (def.behaviour === 'boss') this.scene.bosses.init(t);
     return t;
   }
 
@@ -60,6 +62,7 @@ export class Threats {
     }
 
     for (const t of this.list.slice()) {
+      if (!this.list.includes(t)) continue;                       // removed meanwhile (a boss fell and the wave ended)
       if (t.burn) {
         t.burn.time -= dt; t.burn.tick -= dt;
         if (t.burn.tick <= 0) { t.burn.tick += 0.5; this.damage(t, t.burn.dps * 0.5, { burn: true }); }
@@ -71,6 +74,7 @@ export class Threats {
       if (b === 'chaser') this.chase(t, dt);
       else if (b === 'ranged') this.ranged(t, dt);
       else if (b === 'burrower') this.burrow(t, dt);
+      else if (b === 'boss') this.scene.bosses.update(t, dt);
       t.x = Math.min(Math.max(t.x, 20), s.arena[0] - 20);
       t.y = Math.min(Math.max(t.y, 20), s.arena[1] - 20);
     }
@@ -92,8 +96,9 @@ export class Threats {
     }
 
     for (const t of L) {
-      const wob = 1 + 0.06 * Math.sin(this.clock * 6 + t.phase);
+      const boss = t.def.behaviour === 'boss', wob = boss ? 1 : 1 + 0.06 * Math.sin(this.clock * 6 + t.phase);
       t.sprite.setPosition(t.x, t.y).setScale(wob, 2 - wob).setDepth(10 + t.y / s.arena[1]);
+      if (boss) s.bosses.draw(t);
       if (t.flash > 0) { t.flash -= dt; t.sprite.setTintFill(0xffffff); } else if (t.burn) t.sprite.setTint(0xffb070); else t.sprite.clearTint();
     }
 
@@ -103,7 +108,7 @@ export class Threats {
   toward(t, dt, speedMul = 1, away = false) {
     const hero = this.scene.hero;
     const dx = hero.x - t.x, dy = hero.y - t.y, d = Math.hypot(dx, dy) || 1;
-    const sgn = away ? -1 : 1, sp = t.def.speed * speedMul * dt;
+    const sgn = away ? -1 : 1, sp = t.def.speed * speedMul * dt * this.scene.place.speedMul(t.x, t.y, t.def.floats);
     t.x += (dx / d) * sp * sgn; t.y += (dy / d) * sp * sgn;
     return d;
   }
@@ -181,6 +186,12 @@ export class Threats {
    */
   damage(t, amount, opts = {}) {
     if (!t.hittable) return false;
+    let mul = t.dmgMul ?? 1;                                  // Iya takes more once dawn rises
+    if (t.def.takes && opts.tags) {                           // Double-Face: ranged hits count more, melee less
+      const tag = ['ranged', 'melee'].find((k) => opts.tags.includes(k) && t.def.takes[k] != null);
+      if (tag) mul *= t.def.takes[tag];
+    }
+    if (mul !== 1) amount = Math.max(1, Math.round(amount * mul));
     t.hp -= amount;
     t.flash = 0.08;
     const color = opts.crit ? '#ffd34a' : opts.burn ? '#f2a64a' : '#fff4e1';
@@ -205,12 +216,14 @@ export class Threats {
     this.list.splice(i, 1);
     t.sprite.destroy();
     const def = t.def;
+    if (def.noDrops) { s.bosses.onKilled(t); return; }              // a false double leaves nothing behind
     const embers = (def.valueChance == null || Math.random() < def.valueChance) ? def.value : 0;
     s.pickups.dropEmbers(t.x, t.y, embers + t.swallowed.embers);            // a gnawing hollow releases what it swallowed
-    const foodChance = s.rules.food.chance + s.stats.luck / 1000;
+    const foodChance = s.rules.food.chance + s.campBonus.foodChance + s.stats.luck / 1000;
     for (let k = 0; k < t.swallowed.foods; k++) s.pickups.dropFood(t.x + (k + 1) * 14, t.y);
     if (Math.random() < foodChance) s.pickups.dropFood(t.x, t.y);
     s.onThreatKilled?.(t);
+    if (def.boss) s.bosses.onKilled(t);
   }
 
   killAll() { for (const t of this.list.slice()) this.kill(t); this.marks.length = 0; }
@@ -221,5 +234,6 @@ export class Threats {
     for (const sh of this.shards) sh.sprite.destroy();
     this.list.length = 0; this.shards.length = 0; this.marks.length = 0;
     this.gfx.clear();
+    this.scene.bosses?.reset();
   }
 }

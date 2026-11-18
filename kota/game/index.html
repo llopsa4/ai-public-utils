@@ -43,6 +43,11 @@
     font-size: 12px; pointer-events: none; display: none; text-shadow: 0 1px 2px #000; }
   #wave-label { position: fixed; top: max(8px, env(safe-area-inset-top)); left: 50%; transform: translateX(-50%);
     font-size: 13px; opacity: 0.9; pointer-events: none; display: none; text-shadow: 0 1px 2px #000; }
+  #boss { position: fixed; top: calc(max(8px, env(safe-area-inset-top)) + 22px); left: 50%; transform: translateX(-50%); width: min(280px, 36vw);
+    pointer-events: none; display: none; text-align: center; font-size: 11px; text-shadow: 0 1px 2px #000; }
+  #boss-bar { height: 10px; margin-top: 2px; background: rgba(0,0,0,0.55); border: 1px solid var(--ui-edge); border-radius: 5px; overflow: hidden; }
+  #boss-fill { height: 100%; width: 100%; background: #9a3a2a; }
+  body.in-run.boss #boss { display: block; }
   body.in-run #hp, body.in-run #exp, body.in-run #embers, body.in-run #wave-label, body.in-run #buttons { display: block; }
   #hint { position: fixed; top: 48px; left: 50%; transform: translateX(-50%); z-index: 7; display: none; align-items: center; gap: 10px;
     max-width: min(420px, 70vw); padding: 8px 12px; background: var(--ui); border: 1px solid var(--ui-edge); border-radius: 8px;
@@ -106,6 +111,7 @@
 <div id="exp"><div id="exp-fill"></div><div id="exp-text"></div></div>
 <div id="embers"></div>
 <div id="wave-label"></div>
+<div id="boss"><div id="boss-name"></div><div id="boss-bar"><div id="boss-fill"></div></div></div>
 <div id="hint"><span id="hint-text"></span><button id="hint-skip" type="button">Skip hints</button></div>
 <div id="banner"><div id="banner-title"></div><div id="banner-sub"></div></div>
 <div class="stick-base"></div><div class="stick-knob"></div>

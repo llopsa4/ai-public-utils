@@ -14,6 +14,8 @@ export class BootScene extends Phaser.Scene {
     this.load.json('items', 'items.json');
     this.load.json('helpers', 'helpers.json');
     this.load.json('helperValues', 'helperValues.json');
+    this.load.json('camp', 'camp.json');
+    this.load.json('arenas', 'arenas.json');
   }
 
   create() {
@@ -33,13 +35,44 @@ export class BootScene extends Phaser.Scene {
     });
 
     // Ground tile: a muted prairie green-grey with scattered darker flecks.
-    makeTexture('ground', 256, 256, (g) => {
+    makeTexture('ground_prairie', 256, 256, (g) => {
       g.fillStyle(0x5a5646, 1); g.fillRect(0, 0, 256, 256);
       const rand = new Phaser.Math.RandomDataGenerator(['kota-ground']);
       for (let i = 0; i < 90; i++) {
         g.fillStyle(rand.pick([0x514e3f, 0x636050, 0x585a44]), 0.7);
         g.fillCircle(rand.between(0, 255), rand.between(0, 255), rand.between(2, 7));
       }
+    });
+
+    // Lakeshore ground: dark moss and mud.
+    makeTexture('ground_lakeshore', 256, 256, (g) => {
+      g.fillStyle(0x4c5240, 1); g.fillRect(0, 0, 256, 256);
+      const rand = new Phaser.Math.RandomDataGenerator(['kota-shore']);
+      for (let i = 0; i < 90; i++) {
+        g.fillStyle(rand.pick([0x434a38, 0x5a5a44, 0x3f3a2c]), 0.7);
+        g.fillCircle(rand.between(0, 255), rand.between(0, 255), rand.between(2, 8));
+      }
+    });
+
+    // Decoration placeholders (no collision).
+    makeTexture('prop_sage', 40, 32, (g) => {
+      g.fillStyle(0x7d8a72, 1); g.fillCircle(12, 20, 10); g.fillCircle(26, 18, 12); g.fillCircle(19, 12, 9);
+      g.lineStyle(2, 0x5a6650, 1); g.strokeCircle(26, 18, 12);
+    });
+    makeTexture('prop_willow', 64, 80, (g) => {
+      g.fillStyle(0x4a3a2a, 1); g.fillRect(29, 40, 6, 36);
+      g.fillStyle(0x6e8456, 0.95); g.fillCircle(32, 30, 26);
+      g.lineStyle(2, 0x4a6040, 1); g.strokeCircle(32, 30, 26);
+    });
+    makeTexture('prop_reeds', 36, 56, (g) => {
+      g.lineStyle(3, 0x7a8a4a, 1);
+      for (const [x, dx] of [[8, -3], [16, 2], [24, -1], [30, 4]]) g.lineBetween(x, 54, x + dx, 6);
+      g.fillStyle(0x6b4a2a, 1); g.fillRect(14, 4, 5, 12); g.fillRect(28, 8, 5, 12);
+    });
+    makeTexture('prop_canoe', 110, 36, (g) => {
+      g.fillStyle(0xd8c6a0, 1); g.fillEllipse(55, 18, 104, 30);
+      g.lineStyle(3, 0x7a5a38, 1); g.strokeEllipse(55, 18, 104, 30);
+      g.fillStyle(0x4a3a2a, 1); g.fillEllipse(55, 18, 80, 16);
     });
 
     // Threat placeholders: shapeless, cold or dull, no faces (art/STYLE.md; replaced by painted stills later).
@@ -70,6 +103,26 @@ export class BootScene extends Phaser.Scene {
       g.fillStyle(0x3a2d48, 1); g.fillCircle(32, 32, 26);
       g.lineStyle(4, 0x6e5a82, 1); g.strokeCircle(32, 32, 26);
       g.fillStyle(0x140f1a, 1); g.fillCircle(32, 32, 15);
+    });
+    // Boss placeholders: they turn with the boss, so the faces sit at the right and the left.
+    const doubleFace = (g, bundle) => {
+      g.fillStyle(0x2a2420, 0.35); g.fillEllipse(48, 80, 70, 14);
+      g.fillStyle(0x5a4f45, 1); g.fillCircle(48, 48, 36);
+      g.lineStyle(3, 0x2a211a, 1); g.strokeCircle(48, 48, 36);
+      g.fillStyle(0xd8c6a8, 1); g.fillCircle(80, 48, 11); g.fillCircle(16, 48, 11);          // front face, back face
+      g.fillStyle(0x2a211a, 1); g.fillCircle(83, 45, 2); g.fillCircle(83, 51, 2); g.fillCircle(13, 45, 2); g.fillCircle(13, 51, 2);
+      if (bundle) { g.fillStyle(0xb08a5a, 1); g.fillRoundedRect(40, 70, 16, 14, 4); }        // the stolen child in a hide bundle
+    };
+    makeTexture('threat_double_face', 96, 96, (g) => doubleFace(g, true));
+    makeTexture('threat_double_face_false', 96, 96, (g) => doubleFace(g, false));
+    makeTexture('threat_iya', 140, 140, (g) => {
+      g.fillStyle(0x2a2420, 0.35); g.fillEllipse(70, 124, 100, 18);
+      g.lineStyle(5, 0x3a2a1c, 1);                                                          // thin legs
+      for (const x of [44, 62, 80, 98]) g.lineBetween(x, 96, x + (x < 70 ? -6 : 6), 128);
+      g.fillStyle(0x6e4e32, 1); g.fillCircle(70, 62, 52);
+      g.lineStyle(4, 0x3a2a1c, 1); g.strokeCircle(70, 62, 52);
+      g.fillStyle(0x24160e, 1); g.fillEllipse(106, 62, 20, 30);                            // the mouth, facing right
+      g.fillStyle(0xd8c6a8, 1); g.fillCircle(96, 40, 4); g.fillCircle(96, 82, 4);
     });
     makeTexture('ember', 16, 16, (g) => {
       g.fillStyle(0xd9892a, 0.45); g.fillCircle(8, 8, 8);

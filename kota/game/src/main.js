@@ -6,6 +6,7 @@ import { createAudio } from './audio/audio.js';
 import { createInput } from './input/touch.js';
 import { createUI } from './ui/screens.js';
 import { createHints } from './ui/hints.js';
+import { loadCamp, saveCamp } from './camp/save.js';
 import { BootScene } from './scenes/BootScene.js';
 import { CampScene } from './scenes/CampScene.js';
 import { RunScene } from './scenes/RunScene.js';
@@ -25,7 +26,8 @@ const hints = createHints({
   hintEl: $('hint'), textEl: $('hint-text'), skipEl: $('hint-skip'),
   bannerEl: $('banner'), titleEl: $('banner-title'), subEl: $('banner-sub'),
 });
-const app = { settings, ui, input, audio, hints, paused: false, mode: 'boot' };
+const app = { settings, ui, input, audio, hints, paused: false, mode: 'boot', camp: loadCamp(), fell: false };
+app.saveCamp = () => saveCamp(app.camp);
 
 // Browsers only start sound after a touch or key press.
 const unlockAudio = () => { audio.unlock(); if (audio.pending) { audio.setAmbience(audio.pending); audio.pending = null; } };

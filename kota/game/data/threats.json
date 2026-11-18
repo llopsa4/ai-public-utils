@@ -19,5 +19,23 @@
   "gnawing_hollow": {
     "name": "Gnawing hollow", "hp": [14, 5.0], "damage": [3, 1.0], "speed": 140, "value": 3, "size": 26,
     "behaviour": "burrower", "under": 2.0, "ring": 0.8, "ringRadius": 50, "up": 2.0, "swallowRadius": 30
+  },
+  "double_face": {
+    "name": "Double-Face", "hp": [900, 0], "damage": [4, 0], "speed": 110, "value": 30, "size": 40,
+    "behaviour": "boss", "boss": true, "takes": { "ranged": 1.5, "melee": 0.85 },
+    "swipe": { "damage": 6, "wind": 0.8, "every": 3, "reach": 140, "arc": 120, "turn": 90 },
+    "lure": { "every": 8, "time": 1.5, "pull": 90 }, "falseBelow": 0.5, "falseDelay": 6, "swapEvery": 6
+  },
+  "double_face_false": {
+    "name": "False double", "hp": [1, 0], "damage": [2, 0], "speed": 110, "value": 0, "size": 40,
+    "behaviour": "boss", "boss": true, "noDrops": true,
+    "swipe": { "damage": 3, "wind": 0.8, "every": 3, "reach": 140, "arc": 120, "turn": 90 }
+  },
+  "iya": {
+    "name": "Iya, the Camp-Eater", "hp": [4000, 0], "damage": [5, 0], "speed": 90, "value": 0, "size": 58,
+    "behaviour": "boss", "boss": true,
+    "lunge": { "every": 5, "wind": 1.0, "distance": 300, "speed": 900, "damage": 8, "recover": 0.8 },
+    "swallow": { "every": 9, "wind": 1.0, "arc": 90, "reach": 260, "pull": 200, "pullTime": 1.0, "catch": 70, "hidden": 1.5, "damage": 6 },
+    "weak": { "below": 0.5, "speed": 0.6, "recover": 1.6, "takes": 1.3 }
   }
 }

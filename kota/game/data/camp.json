@@ -1,19 +1,26 @@
 {
-  "goodsName": "goods returned to the people",
-  "unlocks": [
-    { "id": "maple_grove", "name": "Maple-sugar grove", "cost": 3,
-      "text": "The camp's stored maple sugar makes food heal 10 more.",
-      "mods": { "add": { "foodBonus": 10 } },
-      "culture": "CULTURE.md May show: Minnesota River Valley maple-sugar groves; food: maple sugar" },
+  "goodsName": "goods",
+  "goodsPerWave": 1,
+  "goodsDoubleFace": 3,
+  "goodsIya": 8,
+  "upgrades": [
+    { "id": "maple_grove", "name": "Maple-sugar grove", "cost": 4,
+      "text": "Food heals 1 more and drops 1% more often.",
+      "mods": { "foodHeal": 1, "foodChance": 0.01 } },
+    { "id": "wabeda_fire", "name": "Wabeda by the fire", "cost": 5,
+      "text": "Wabeda the dog joins the helpers." },
     { "id": "practice_ground", "name": "Practice ground", "cost": 6,
-      "text": "Archery games sharpen your aim: arrow volley does 20% more damage.",
-      "mods": { "mul": { "volleyMul": 1.2 } },
-      "culture": "CULTURE.md May show: archery games on the camp practice ground (Eastman)" }
+      "text": "Every run starts with +1 Melee and +1 Ranged.",
+      "startStats": { "melee": 1, "ranged": 1 } },
+    { "id": "shore_canoes", "name": "Canoes on the shore", "cost": 8,
+      "text": "The lakeshore arena opens. The mink and the water snake join the helpers." }
   ],
   "stories": [
-    { "id": "iya", "when": "metIya", "title": "Iya, the Camp-Eater",
-      "source": "Zitkala-Sa, Old Indian Legends (1901), via research/dakota.md; Dakota telling. DRAFT TEXT: needs user review.",
+    { "id": "iya", "when": "iya", "title": "Iya, the Camp-Eater",
       "credit": "From Zitkala-Ša, Old Indian Legends (1901).",
-      "text": "Iya came to a camp disguised as a baby, and from inside the camp he swallowed it. A young mother noticed the strange sounds the baby made, and the people slipped away at midnight. At dawn Iya chased them, but his thin legs could not carry his great body, and warriors with long knives brought him down. The whole camp walked out of him, free." }
+      "text": "Iya came to a camp disguised as a baby, and from inside the camp he swallowed it. A young mother noticed the strange sounds the baby made, and the people slipped away at midnight. At dawn Iya chased them, but his thin legs could not carry his great body, and warriors with long knives brought him down. The whole camp walked out of him, free." },
+    { "id": "double_face", "when": "double_face", "title": "Old Double-Face",
+      "credit": "From Zitkala-Ša, Old Indian Legends (1901), and Charles Eastman (Ohiyesa) with Elaine Goodale Eastman, Wigwam Evenings. DRAFT text.",
+      "text": "Old Double-Face was a giant with a face in front and a face behind, so no one could creep up on him. He lured children away from the camps. Once he carried off a baby boy and kept him far from his people. Manstin the rabbit hid behind a sage bush and shot him through the heart. The boy was free, and he grew up to be a young man." }
   ]
 }
