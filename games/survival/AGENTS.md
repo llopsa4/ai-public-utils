@@ -31,8 +31,8 @@ the [repository instructions](../../AGENTS.md) and the shared Codex/Claude
   anchors, palette); the register is [art/ASSETS.md](art/ASSETS.md). Claude draws placeholders in
   code; Codex generates final art later.
 - **Free software only;** this game keeps no LICENSES.md (user, 2026-11-19).
-- **Guides not written yet:** `DEVELOPMENT.md` (plan task C1) and `TESTING.md` (plan task C7).
-  Until then only the shared workflow and PLAN.md's *Fixed technical shape* apply.
+- **Guides:** [DEVELOPMENT.md](DEVELOPMENT.md) (commands, layout) and [TESTING.md](TESTING.md)
+  (unit and smoke tests, hand checks).
 - **Skills:** Claude's is `.claude/skills/survival-content/`; Codex's identical copy in
   `.agents/skills/` is created when Codex starts working here.
 - Kota's and Adventure's rules (touch controls, style bibles, stories, staging) do not apply here,

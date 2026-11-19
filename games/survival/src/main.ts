@@ -3,6 +3,7 @@ import { Boot } from './scenes/Boot';
 import { BuildScene } from './scenes/Build';
 import { GameScene } from './scenes/Game';
 import { HudScene } from './scenes/Hud';
+import { MenuScene } from './scenes/Menu';
 import { SelectScene } from './scenes/Select';
 
 new Phaser.Game({
@@ -12,5 +13,5 @@ new Phaser.Game({
   height: 720,
   backgroundColor: '#2b2a24',
   scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
-  scene: [Boot, GameScene, BuildScene, HudScene, SelectScene],
+  scene: [Boot, MenuScene, GameScene, BuildScene, HudScene, SelectScene],
 });

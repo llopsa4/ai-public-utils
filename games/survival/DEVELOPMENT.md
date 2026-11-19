@@ -13,7 +13,7 @@ How to run, test and extend the game. Fixed technical shape: [PLAN.md](PLAN.md);
 | `npm test` | simulation and maths unit tests (`tests/**/*.test.ts`, Node's test runner via tsx) |
 | `npm run build` | Vite build into `dist/` (not committed) |
 | `npm run publish` | build, then write `index.html` and `build/` here, which GitHub Pages serves (commit them only when the user asks; pushing `main` deploys the site) |
-| `npm run e2e` | Playwright smoke test (added by plan task C7) |
+| `npm run e2e` | Playwright smoke test on its own dev server (port 5184); see [TESTING.md](TESTING.md) |
 
 Run `npm run typecheck && npm test` before finishing a task.
 
@@ -24,8 +24,8 @@ Run `npm run typecheck && npm test` before finishing a task.
   `orders.ts` applies the orders queue, `tick.ts` has `newGame` and `step`).
 - `src/render/`: projection and drawing helpers (`iso.ts`, `camera.ts` pure maths; `manifest.ts`,
   `placeholders.ts`, `people.ts` draws the people from state).
-- `src/scenes/`: Phaser scenes (`Boot.ts` loads art and starts `Game.ts`; `Build.ts` is the build
-  menu, `Hud.ts` the resource and Wotakuye bars, and `Select.ts` selection, right-click orders, the
+- `src/scenes/`: Phaser scenes (`Boot.ts` loads art and starts `Menu.ts` (title, Start, Random seed, controls), which starts `Game.ts`; `Build.ts` is the build
+  menu, `Hud.ts` the resource and Wotakuye bars, the pause / speed buttons, the wave banner and the end screen, and `Select.ts` selection, right-click orders, the
   selection panel and toasts, all drawn above it). Scenes draw and send
   orders; they never hold game rules.
 - `src/data/*.json`: numbers and content. `art/manifest.json`: every sprite.

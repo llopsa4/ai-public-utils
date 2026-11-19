@@ -1,8 +1,9 @@
 // The HUD (DESIGN-slice.md `## UI`): resource bar and Wotakuye bar, in screen space above the Game scene.
-// Pause/speed, the wave banner, toasts and the selection panel arrive with later tasks.
+// Also the pause/speed buttons and the wave banner; toasts and the selection panel live in Select.ts.
 import Phaser from 'phaser';
 import data from '../data/resources.json';
 import { unityBand } from '../sim/economy';
+import { queueOrders } from '../sim/orders';
 import { DAY_TICKS, storeCap, type GameState, type Res } from '../sim/state';
 import { waveBanner } from '../sim/waves';
 import type { GameScene } from './Game';
@@ -10,6 +11,14 @@ import type { GameScene } from './Game';
 const BAR = { x: 0, y: 0, w: 1280, h: 32 };
 const BANNER = { x: 400, y: 44, w: 480, h: 40 };
 const UNITY = { x: 760, y: 6, w: 240, h: 20 };
+const SPEED = { x: 1016, y: 4, w: 256, h: 24 };
+// A speed button also resumes a paused game; the number keys only change the speed.
+const SPEED_BUTTONS: { label: string; pause: boolean; speed?: 1 | 2 | 4 }[] = [
+  { label: 'Pause', pause: true },
+  { label: '1x', pause: false, speed: 1 },
+  { label: '2x', pause: false, speed: 2 },
+  { label: '4x', pause: false, speed: 4 },
+];
 const INK = '#f3e9d2';
 const RES: Res[] = ['food', 'wood', 'hides'];
 
@@ -23,6 +32,7 @@ export class HudScene extends Phaser.Scene {
   private endBox!: Phaser.GameObjects.Rectangle;
   private endText!: Phaser.GameObjects.Text;
   private endButton!: Phaser.GameObjects.Text;
+  private speedButtons: { bg: Phaser.GameObjects.Rectangle; label: Phaser.GameObjects.Text; b: (typeof SPEED_BUTTONS)[number] }[] = [];
 
   constructor() {
     super('Hud');
@@ -58,8 +68,22 @@ export class HudScene extends Phaser.Scene {
       .setVisible(false)
       .setDepth(11)
       .setInteractive({ useHandCursor: true });
-    // A fresh page is the simplest restart until the menu scene (C7) can start a run.
-    this.endButton.on('pointerdown', () => location.reload());
+    this.endButton.on('pointerdown', () => {
+      for (const key of ['Game', 'Build', 'Select']) this.scene.stop(key);
+      this.scene.start('Menu'); // also stops this scene
+    });
+
+    // With `?debug`, the smoke test reads the banner as drawn.
+    const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
+    if (camp) camp.banner = () => (this.bannerBox.visible ? this.bannerText.text : null);
+
+    // Pause / 1x / 2x / 4x: the buttons only send orders, like the keys in Select.ts.
+    this.speedButtons = SPEED_BUTTONS.map((b, i) => {
+      const bg = this.add.rectangle(SPEED.x + i * 64, SPEED.y, 60, SPEED.h, 0x3a3328, 1).setOrigin(0).setInteractive({ useHandCursor: true });
+      const label = this.add.text(bg.x + 30, bg.y + SPEED.h / 2, b.label, { fontFamily: 'sans-serif', fontSize: '13px', color: INK }).setOrigin(0.5);
+      bg.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && queueOrders(this.game2.state, [...(b.speed ? [{ type: 'speed', value: b.speed } as const] : []), { type: 'pause', on: b.pause }]));
+      return { bg, label, b };
+    });
   }
 
   private showEnd(s: GameState): void {
@@ -87,6 +111,10 @@ export class HudScene extends Phaser.Scene {
     this.bannerBox.setVisible(!!banner);
     this.bannerText.setVisible(!!banner);
     if (banner) this.bannerText.setText(banner.seconds === null ? banner.text : `${banner.text} — ${banner.seconds} s`);
+    for (const { bg, b } of this.speedButtons) {
+      const active = b.pause ? s.paused : !s.paused && b.speed === s.speed;
+      bg.setFillStyle(active ? 0x8a6d2f : 0x3a3328, 1);
+    }
     if (s.result) this.showEnd(s);
   }
 }

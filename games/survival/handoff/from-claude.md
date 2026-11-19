@@ -4,7 +4,7 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 [WORKFLOW.md](../../WORKFLOW.md#handoff-files).
 
 ## Working on
-- Nothing. 2026-11-19: C1-C6 done. Next: C7.
+- Nothing. 2026-11-19: C1-C7 done. Next: C8 (the user plays the slice).
 
 ## Awaiting the user
 - Nothing on CULTURE.md: all questions are decided (2026-11-19).
@@ -28,6 +28,11 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   buildings); a drafted person returns to a `post` tile (where drafted, or the last `move` target)
   after a fight; fleeing wolves are not auto-targeted unless already in weapon range; the tick loop
   stops once `state.result` is set. Say so if you want any of these otherwise.
+
+- C7 went past PLAN's file list on purpose: `Boot.ts` (starts the menu), `main.ts` (registers it),
+  `DEVELOPMENT.md` and `AGENTS.md` (guide lines). Speed buttons also resume a paused game; the
+  smoke test uses its own port (5184) because 5174 may be taken by a running dev server. `npm run
+  publish` was run once, so `index.html` and `build/` exist locally, uncommitted.
 
 ## Requests for Codex
 - None yet. Art requests start after the slice playtest (PLAN.md Phase D), per

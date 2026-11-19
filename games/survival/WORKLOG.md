@@ -19,7 +19,9 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   selection panel and toasts. C6 done 2026-11-19: `combat.ts` (bow/club fighters by stance, wolves,
   undrafted people flee to the fire), `waves.ts` (30 s warning, 3 waves, won/lost result), the
   `attack` order (right-click a wolf), placeholder wolves, a wave banner and an end screen in the HUD.
-  60 tests pass. Nothing committed or pushed.
+  C7 done 2026-11-19: `Menu.ts` (Start, Random seed, controls), pause / 1x / 2x / 4x buttons in the
+  HUD, "Play again" returns to the menu, `npm run e2e` smoke test, `TESTING.md`, `npm run publish`
+  writes `index.html` + `build/` (local only). 60 tests pass. C7 files are not committed; nothing pushed.
 
 ## Open items
 - CULTURE.md: the user decided 2026-11-19 (keep Tiyospaye and Wotakuye, free-form camp, generic
@@ -27,8 +29,9 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   hunters, healers and builders stay in English.
 - Untested by hand: mouse-edge pan and WASD pan; shift-click toggle; Delete on a site; 1-3 speed keys.
 - Untested by hand: wolves, fighting, the banner and the end screen (only the sim is tested).
-- Not done yet from `## UI`: pause/speed buttons (now in plan task C7), the hungry-bowl icon.
-  "Play again" reloads the page until the menu scene (C7) exists. Toasts live in `Select.ts` for now (a later HUD task may move them).
+- Not done yet from `## UI`: the hungry-bowl icon. Toasts live in `Select.ts` for now (a later HUD
+  task may move them).
+- Untested by hand: the pause / speed buttons and Play again (e2e covers menu -> run -> wave warning).
 - Decided 2026-11-19 (user delegated): map deviations are now in the spec; drafted people keep
   their worker slot; balance is left to C8.
 - Balance to judge at C8: 10 unhoused people cost 10 Wotakuye a day against +4 from meals, so the
@@ -36,5 +39,5 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   tiles/s, so a tipi takes about 2 minutes to supply.
 
 ## Next action
-- C7 (Sonnet): menu scene, pause / speed buttons, Playwright smoke test, `TESTING.md`, publish script.
-  Reads `## UI`, `## Tests`.
+- C8 (gate, the user): play the slice (`npm run dev`, then Start) and say whether it feels right;
+  Claude (Opus) records a fix list in `handoff/from-claude.md`. Judge the balance items above.
