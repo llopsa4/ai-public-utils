@@ -6,7 +6,7 @@ import mapConfig from '../data/map.json';
 import { buildingDefs, buildingName } from '../sim/buildings';
 import { queueOrders } from '../sim/orders';
 import { ages } from '../sim/people';
-import type { Building, GameState, Order, Person, Res, Stance, Tile2 } from '../sim/state';
+import type { Building, Enemy, GameState, Order, Person, Res, Stance, Tile2 } from '../sim/state';
 import { TILE_H, TILE_W, tileToWorld, worldToTile } from '../render/iso';
 import type { BuildScene } from './Build';
 import type { GameScene } from './Game';
@@ -201,6 +201,24 @@ export class SelectScene extends Phaser.Scene {
     return best;
   }
 
+  /** The wolf nearest a screen point within the click radius, or null. */
+  private enemyAt(sx: number, sy: number): Enemy | null {
+    const cam = this.game2.cameras.main;
+    const w = cam.getWorldPoint(sx, sy);
+    const reach = (CLICK_PX + 6) / cam.zoom;
+    let best: Enemy | null = null;
+    let bestD = reach;
+    for (const e of this.state.enemies) {
+      const f = tileToWorld(e.x, e.y, this.state.map.size);
+      const d = Math.min(Math.hypot(w.x - f.x, w.y - f.y), Math.hypot(w.x - f.x, w.y - (f.y - BODY_UP / 2)));
+      if (d <= bestD) {
+        bestD = d;
+        best = e;
+      }
+    }
+    return best;
+  }
+
   private onUp(p: Phaser.Input.Pointer): void {
     const d = this.down;
     this.down = null;
@@ -252,6 +270,11 @@ export class SelectScene extends Phaser.Scene {
   private rightClick(sx: number, sy: number): void {
     const ids = this.selected;
     if (ids.length === 0) return;
+    const wolf = this.enemyAt(sx, sy);
+    if (wolf) {
+      this.send([{ type: 'attack', ids, enemy: wolf.id }]);
+      return;
+    }
     const t = this.tileAt(sx, sy);
     const s = this.state;
     const b = this.buildingAtTile(t);

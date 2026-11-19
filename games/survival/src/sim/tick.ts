@@ -1,7 +1,9 @@
 // The simulation loop: a fixed tick of 10 per second, orders applied at the start of each tick.
 // Pure TypeScript, no Phaser. Order handling is in `orders.ts`.
 import mapConfig from '../data/map.json';
+import { stepEnemies } from './combat';
 import { stepEconomy } from './economy';
+import { stepWaves } from './waves';
 import { stepPerson } from './jobs';
 import { syncWorkers } from './buildings';
 import { flushOrders } from './orders';
@@ -29,11 +31,13 @@ function stepOnce(s: GameState): void {
   }
   for (const p of s.people) stepPerson(s, p);
   syncWorkers(s);
+  stepEnemies(s);
   s.tick++;
   stepEconomy(s);
+  stepWaves(s);
 }
 
-/** Advances the simulation by `n` ticks. */
+/** Advances the simulation by `n` ticks; a finished run (`state.result`) stops advancing. */
 export function step(s: GameState, n = 1): void {
-  for (let i = 0; i < n; i++) stepOnce(s);
+  for (let i = 0; i < n && s.result === null; i++) stepOnce(s);
 }

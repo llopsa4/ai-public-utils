@@ -4,10 +4,10 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 [WORKFLOW.md](../../WORKFLOW.md#handoff-files).
 
 ## Working on
-- Nothing. 2026-11-19: C1-C5 done. Next: C6.
+- Nothing. 2026-11-19: C1-C6 done. Next: C7.
 
 ## Awaiting the user
-- Answer CULTURE.md *Needs review* questions (real words used as game names).
+- Nothing on CULTURE.md: all questions are decided (2026-11-19).
 - C1 map deviations (river stays inside the clearing; berry patches never touch it): the user left
   the call to Claude on 2026-11-19, so the code was kept and `## Map` in DESIGN-slice.md was updated
   to match. Tell Claude if you want the old rule back.
@@ -20,6 +20,14 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   `orders.ts`), `jobs.ts` (drafted people only walk), `Game.ts`, `Build.ts` (`isOpen`) and `main.ts`,
   and `Select.ts` includes toasts and pause/speed keys. Drafted people keep their job and its worker
   slot, and resume it when undrafted. Say so if you want it otherwise.
+
+- C6 went past PLAN's file list on purpose: `state.ts` (enemies, wave progress, `result`, `post` on
+  a person, the `attack` order), `people.ts`, `jobs.ts` and `tick.ts` (hooks), `orders.ts`, plus
+  `render/enemies.ts`, `Hud.ts` (wave banner, end screen), `Select.ts` (right-click a wolf) and
+  `Game.ts`. Choices the design left open: wolves walk in straight lines (they ignore the river and
+  buildings); a drafted person returns to a `post` tile (where drafted, or the last `move` target)
+  after a fight; fleeing wolves are not auto-targeted unless already in weapon range; the tick loop
+  stops once `state.result` is set. Say so if you want any of these otherwise.
 
 ## Requests for Codex
 - None yet. Art requests start after the slice playtest (PLAN.md Phase D), per

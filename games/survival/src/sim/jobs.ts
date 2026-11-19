@@ -4,6 +4,7 @@ import jobsData from '../data/jobs.json';
 import {
   buildingDefs, buildingName, findAutoWork, materialsComplete, nearestBuilding, nextHaulLoad, ringSpot,
 } from './buildings';
+import { stepFighter, stepFlee } from './combat';
 import { HUNGRY_AT, HUNGRY_WORK, unityWork } from './economy';
 import { ages, beginWalk, canWork, idleTask, movePerson, releaseJob, walkable } from './people';
 import { rngNext } from './rng';
@@ -332,8 +333,12 @@ function arrive(s: GameState, p: Person): void {
 /** Advances one person by one tick. */
 export function stepPerson(s: GameState, p: Person): void {
   if (p.cooldown > 0) p.cooldown--;
-  // A drafted person only walks where ordered; their job waits and resumes when they are undrafted.
-  if (p.drafted && p.task.step !== 'walk') return;
+  if (p.drafted) {
+    // A drafted person fights, or walks where ordered; their job waits and resumes when undrafted.
+    if (stepFighter(s, p) || p.task.step !== 'walk') return;
+  } else if (s.enemies.length > 0 || p.task.step === 'flee') {
+    if (stepFlee(s, p)) return;
+  }
   switch (p.task.step) {
     case 'idle':
       decide(s, p);

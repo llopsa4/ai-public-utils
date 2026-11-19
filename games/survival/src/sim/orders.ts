@@ -53,6 +53,10 @@ function orderMove(s: GameState, ids: number[], at: Tile2): void {
     // A drafted person keeps the job to go back to when undrafted.
     if (!p.drafted) releaseJob(p);
     if (!targets[i] || !beginWalk(s, p, targets[i], 'idle')) addMessage(s, `${p.name} can't reach there.`);
+    else if (p.drafted) {
+      p.post = targets[i];
+      p.attackTarget = null;
+    }
   });
 }
 
@@ -108,6 +112,7 @@ function orderDraft(s: GameState, ids: number[], on: boolean): void {
     // Drafting stops whatever they were doing; the job stays and resumes when undrafted.
     p.task = idleTask();
     p.attackTarget = null;
+    p.post = on ? [Math.round(p.x), Math.round(p.y)] : null;
   }
   if (adults === 0) addMessage(s, 'Only adults can be drafted.');
 }
@@ -129,6 +134,10 @@ export function applyOrder(s: GameState, o: Order): void {
       return;
     case 'draft':
       orderDraft(s, o.ids, o.on);
+      return;
+    case 'attack':
+      // Only drafted people take it; the others keep working (or fleeing).
+      if (s.enemies.some((e) => e.id === o.enemy)) for (const p of people(s, o.ids)) if (p.drafted) p.attackTarget = o.enemy;
       return;
     case 'stance':
       for (const p of people(s, o.ids)) if (p.drafted) p.stance = o.stance;

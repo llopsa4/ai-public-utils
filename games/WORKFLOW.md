@@ -1,6 +1,6 @@
 # Working with Codex and Claude
 
-The collaboration procedure shared by every game in this repository (Adventure, Kota). It covers
+The collaboration procedure shared by every game in this repository (Adventure, Kota, Survival). It covers
 only how Codex and Claude work together; it says nothing about a game's genre, art or design. Each
 game's `AGENTS.md` names its own guides, including its request and art guides; repository-wide rules
 (pushing, working with the user, shared memory) are in the [repository instructions](../AGENTS.md).

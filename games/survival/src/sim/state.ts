@@ -2,6 +2,7 @@
 import buildingsData from '../data/buildings.json';
 import mapConfig from '../data/map.json';
 import resourceData from '../data/resources.json';
+import wavesData from '../data/waves.json';
 import { generateMap, type GameMap, type MapConfig } from './map';
 import { makeRng, type RngState } from './rng';
 
@@ -15,7 +16,7 @@ export type JobKind = 'gather' | 'hunt' | 'chop' | 'build' | 'haul' | 'fight';
 export type Tile2 = [number, number];
 
 export interface Task {
-  step: 'idle' | 'walk' | 'work' | 'deliver';
+  step: 'idle' | 'walk' | 'work' | 'deliver' | 'flee';
   target: Tile2 | null;
   path: Tile2[];
   /** Idle: ticks to wait before deciding again. Deliver: ticks until the next retry. */
@@ -47,8 +48,33 @@ export interface Person {
   drafted: boolean;
   stance: Stance;
   attackTarget: number | null;
+  /** The tile a drafted person holds and returns to after a fight. */
+  post: Tile2 | null;
   home: number | null;
   cooldown: number;
+}
+
+export interface Enemy {
+  id: number;
+  kind: string;
+  x: number;
+  y: number;
+  hp: number;
+  cooldown: number;
+  /** Below `fleeBelow` of its HP a wolf runs for the nearest map edge. */
+  fleeing: boolean;
+  /** Index of the wave it belongs to. */
+  wave: number;
+}
+
+export type Edge = 'north' | 'east' | 'south';
+
+/** Run-time progress of one wave from `waves.json`. */
+export interface WaveRun {
+  phase: 'pending' | 'warning' | 'active' | 'defeated';
+  edge: Edge | null;
+  /** Middle of the spawn segment along the chosen edge. */
+  centre: number;
 }
 
 export interface Building {
@@ -66,9 +92,10 @@ export interface Building {
 
 export type Stance = 'hold' | 'defend' | 'chase';
 
-/** Orders applied at the start of the next tick (`orders.ts`). `attack` arrives with combat (C6). */
+/** Orders applied at the start of the next tick (`orders.ts`). */
 export type Order =
   | { type: 'move'; ids: number[]; to: Tile2 }
+  | { type: 'attack'; ids: number[]; enemy: number }
   | { type: 'assign'; ids: number[]; job: 'gather' | 'chop'; tile: Tile2 }
   | { type: 'assign'; ids: number[]; building: number }
   | { type: 'draft'; ids: number[]; on: boolean }
@@ -87,6 +114,10 @@ export interface GameState {
   mapVersion: number;
   people: Person[];
   buildings: Building[];
+  enemies: Enemy[];
+  waves: WaveRun[];
+  /** Set once the run ends; the tick loop stops advancing. */
+  result: 'won' | 'lost' | null;
   /** Tiles covered by a building footprint, indexed like `map.tiles`. */
   blocked: boolean[];
   store: Record<Res, number>;
@@ -100,6 +131,7 @@ export interface GameState {
   messages: { tick: number; text: string }[];
   nextPersonId: number;
   nextBuildingId: number;
+  nextEnemyId: number;
 }
 
 export const START_STORE: Record<Res, number> = {
@@ -136,6 +168,9 @@ export function createState(seed: number): GameState {
     mapVersion: 0,
     people: [],
     buildings: [],
+    enemies: [],
+    waves: wavesData.waves.map(() => ({ phase: 'pending' as const, edge: null, centre: 0 })),
+    result: null,
     blocked: new Array(map.size * map.size).fill(false),
     store: { ...START_STORE },
     wotakuye: resourceData.wotakuye.start,
@@ -145,6 +180,7 @@ export function createState(seed: number): GameState {
     messages: [],
     nextPersonId: 1,
     nextBuildingId: 1,
+    nextEnemyId: 1,
   };
   addBuilding(s, 'fire', map.fire[0], map.fire[1], true);
   for (const b of map.prebuilt) addBuilding(s, b.type, b.at[0], b.at[1], true);

@@ -10,6 +10,7 @@ rules; nothing in one game's guides applies to another.
 | --- | --- | --- |
 | Adventure (`adventure/`) | [adventure/AGENTS.md](adventure/AGENTS.md) | point-and-click game for desktop browsers (The Rift: Ashlands); Codex + Claude |
 | Kota (`kota/`) | [kota/AGENTS.md](kota/AGENTS.md) | Brotato-style 2D top-down arena survivor for smartphones and tablets about Dakota culture (Lakota and Nakota later); Codex + Claude |
+| Survival (`survival/`) | [survival/AGENTS.md](survival/AGENTS.md) | desktop Stronghold-style camp-management game about a fictional Dakota camp; Claude only for now, Codex for art later |
 | FFCardGame (`FFCardGame/`) | its private, gitignored `AGENTS.md` | card-combat subgame serving Adventure |
 
 The games are independent: nothing in one game's guides applies to the other. They share only the

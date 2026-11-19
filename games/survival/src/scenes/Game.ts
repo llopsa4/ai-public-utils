@@ -6,7 +6,9 @@ import { newGame, queueOrders, step } from '../sim/tick';
 import type { GameState, Order } from '../sim/state';
 import { TILE_H, TILE_W, tileToWorld, worldBounds, worldToTileF } from '../render/iso';
 import { entry, manifest } from '../render/manifest';
+import { EnemiesView } from '../render/enemies';
 import { PeopleView } from '../render/people';
+import { ENEMIES } from '../sim/combat';
 import type { BuildScene } from './Build';
 import type { SelectScene } from './Select';
 import { clampCenter, clampZoom, edgeDirection, panVector, zoomAtCursor, zoomStep } from '../render/camera';
@@ -26,6 +28,7 @@ export class GameScene extends Phaser.Scene {
   private keys!: Record<string, Phaser.Input.Keyboard.Key>;
   private pointerInside = false;
   private people!: PeopleView;
+  private enemies!: EnemiesView;
   private ground: Phaser.GameObjects.Image[] = [];
   private trees = new Map<number, Phaser.GameObjects.Image>();
   private seenMapVersion = 0;
@@ -46,6 +49,7 @@ export class GameScene extends Phaser.Scene {
     this.state = newGame(data.seed);
     this.drawMap();
     this.people = new PeopleView(this, this.state.map.size);
+    this.enemies = new EnemiesView(this, this.state.map.size);
     this.setupCamera();
     this.setupPlacing();
     this.scene.launch('Build', { game: this });
@@ -264,5 +268,6 @@ export class GameScene extends Phaser.Scene {
     this.syncBuildings();
     this.updateGhost();
     this.people.sync(this.state.people, delta, time);
+    this.enemies.sync(this.state.enemies, (kind) => ENEMIES[kind].hp);
   }
 }

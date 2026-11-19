@@ -180,7 +180,7 @@ export function makePerson(s: GameState, family: number, age: Age, name: string,
   return {
     id: s.nextPersonId++, name, family, age, x, y, health: 100, hunger: 20,
     job: null, task: idleTask(), carry: { res: 'food', amount: 0 }, society: null, drafted: false,
-    stance: 'defend', attackTarget: null, home: null, cooldown: 0,
+    stance: 'defend', attackTarget: null, post: null, home: null, cooldown: 0,
   };
 }
 
