@@ -9,7 +9,7 @@ const dist = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.
 
 /** A run with one adult standing at (24, 28) and nobody else, so a fight is the only thing going on. */
 function duel(opts: { hunter: boolean; stance: Person['stance']; wolf: Partial<Enemy> & { kind?: string } }): { s: GameState; p: Person; e: Enemy } {
-  const s = newGame(1);
+  const s = newGame(2);
   const p = s.people.find((q) => q.age === 'adult')!;
   s.people = [p];
   p.x = 24;

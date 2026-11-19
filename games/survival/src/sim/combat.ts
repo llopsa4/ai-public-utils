@@ -31,7 +31,7 @@ const FIGHTERS = enemyData.fighters as Record<string, Fighter & { society?: stri
 export const ENEMIES = enemyData.enemies as Record<string, EnemyDef>;
 const STANCES = enemyData.stances;
 const FLEE = jobsData.flee;
-const FLEE_SPEED = 0.1;
+const FLEE_SPEED = 0.2;
 
 /** A drafted hunter shoots a bow, any other drafted adult swings a club. */
 export function fighterOf(p: Person): Fighter {

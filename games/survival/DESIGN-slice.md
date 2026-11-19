@@ -103,9 +103,9 @@ start, never stored in JSON.
 
 | Age | Works | Can be drafted | Food per meal | Speed |
 |---|---|---|---|---|
-| adult | all jobs | yes | 1 | 0.05 |
-| elder | gather only, at x0.5 rate | no | 1 | 0.04 |
-| child | no | no | 0.5 | 0.05 |
+| adult | all jobs | yes | 1 | 0.1 |
+| elder | gather only, at x0.5 rate | no | 1 | 0.08 |
+| child | no | no | 0.5 | 0.1 |
 
 **Health** 0..100, start 100; 0 = dies (removed, Wotakuye event). Regenerates 0.01/tick while
 hunger < 70. **Hunger** 0..100 (0 = full), start 20; see `## Economy`. Hunger >= 70 = *hungry*
@@ -134,9 +134,9 @@ People live in `map.json` `start` (counts) and `jobs.json` `ages` (per-age numbe
 
 ```json
 "ages": {
-  "adult": { "speed": 0.05, "meal": 1,   "works": "all",    "rate": 1.0, "draft": true },
-  "elder": { "speed": 0.04, "meal": 1,   "works": ["gather"], "rate": 0.5, "draft": false },
-  "child": { "speed": 0.05, "meal": 0.5, "works": [],       "rate": 0,   "draft": false }
+  "adult": { "speed": 0.1, "meal": 1,   "works": "all",    "rate": 1.0, "draft": true },
+  "elder": { "speed": 0.08, "meal": 1,   "works": ["gather"], "rate": 0.5, "draft": false },
+  "child": { "speed": 0.1, "meal": 0.5, "works": [],       "rate": 0,   "draft": false }
 },
 "health": { "max": 100, "regen": 0.01, "regenBelowHunger": 70, "starveDamage": 0.05 }
 ```
@@ -360,13 +360,13 @@ within `range` (tiles, centre to centre), else walks toward it.
 
 | Fighter | HP | Range | Damage | Cooldown | Accuracy | Speed | Sight |
 |---|---|---|---|---|---|---|---|
-| drafted hunter (hunters society): bow | 100 (health) | 4.0 | 12 | 15 | 0.75 | 0.05 | 10 |
-| other drafted adult: club | 100 (health) | 0.8 | 8 | 12 | 0.8 | 0.05 | 10 |
-| wolf | 40 | 0.7 | 10 | 10 | 0.7 | 0.08 | 8 |
-| pack leader (wave 3) | 90 | 0.8 | 16 | 10 | 0.75 | 0.08 | 10 |
+| drafted hunter (hunters society): bow | 100 (health) | 4.0 | 12 | 15 | 0.75 | 0.1 | 10 |
+| other drafted adult: club | 100 (health) | 0.8 | 8 | 12 | 0.8 | 0.1 | 10 |
+| wolf | 40 | 0.7 | 10 | 10 | 0.7 | 0.16 | 8 |
+| pack leader (wave 3) | 90 | 0.8 | 16 | 10 | 0.75 | 0.16 | 10 |
 
 **Wolf behaviour:** target the nearest person within sight (any age; ties go to the lowest id),
-else walk toward the fire. A wolf below 20% HP **flees** to the nearest map edge at speed 0.1 and
+else walk toward the fire. A wolf below 20% HP **flees** to the nearest map edge at speed 0.2 and
 counts as defeated when it leaves the map. The pack leader never flees. Wolves do not attack the fire
 or buildings in the slice (the fire-loss check still runs for later eras). Enemies drop no loot.
 
@@ -382,8 +382,8 @@ people never attack; they flee (`## Jobs`).
     "club": { "range": 0.8, "damage": 8,  "cooldown": 12, "accuracy": 0.8,  "sight": 10 }
   },
   "enemies": {
-    "wolf":        { "hp": 40, "range": 0.7, "damage": 10, "cooldown": 10, "accuracy": 0.7,  "speed": 0.08, "sight": 8,  "fleeBelow": 0.2, "fleeSpeed": 0.1 },
-    "pack_leader": { "hp": 90, "range": 0.8, "damage": 16, "cooldown": 10, "accuracy": 0.75, "speed": 0.08, "sight": 10, "fleeBelow": 0 }
+    "wolf":        { "hp": 40, "range": 0.7, "damage": 10, "cooldown": 10, "accuracy": 0.7,  "speed": 0.16, "sight": 8,  "fleeBelow": 0.2, "fleeSpeed": 0.2 },
+    "pack_leader": { "hp": 90, "range": 0.8, "damage": 16, "cooldown": 10, "accuracy": 0.75, "speed": 0.16, "sight": 10, "fleeBelow": 0 }
   },
   "stances": { "defendRadius": 8, "chaseSight": 10 }
 }

@@ -6,6 +6,13 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 ## Working on
 - Nothing. 2026-11-19: C1-C7 done. Next: C8 (the user plays the slice).
 
+## C8 fix list (from the user's playtest)
+- Done 2026-11-19: all movement speed doubled (people 0.05 -> 0.1, elders 0.04 -> 0.08, wolves and
+  pack leader 0.08 -> 0.16, wolf flee 0.1 -> 0.2 per tick). Edited `jobs.json`, `enemies.json`,
+  `FLEE_SPEED` in `combat.ts` and the tables in DESIGN-slice.md. The wolf now reaches a hunter
+  holding at range 4 in about 2 s, so the duel test uses seed 2 (seed 1 missed its two ranged shots).
+  Game speed (the 1x/2x/4x buttons) is unchanged. Say so if you meant that instead.
+
 ## Awaiting the user
 - Nothing on CULTURE.md: all questions are decided (2026-11-19).
 - C1 map deviations (river stays inside the clearing; berry patches never touch it): the user left

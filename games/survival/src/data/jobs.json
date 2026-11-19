@@ -11,9 +11,9 @@
   "storeRetryTicks": 50,
   "wander": { "radius": 3, "idleMin": 50, "idleSpan": 100 },
   "ages": {
-    "adult": { "speed": 0.05, "meal": 1,   "works": "all",     "rate": 1.0, "draft": true },
-    "elder": { "speed": 0.04, "meal": 1,   "works": ["gather"], "rate": 0.5, "draft": false },
-    "child": { "speed": 0.05, "meal": 0.5, "works": [],        "rate": 0,   "draft": false }
+    "adult": { "speed": 0.1, "meal": 1,   "works": "all",     "rate": 1.0, "draft": true },
+    "elder": { "speed": 0.08, "meal": 1,   "works": ["gather"], "rate": 0.5, "draft": false },
+    "child": { "speed": 0.1, "meal": 0.5, "works": [],        "rate": 0,   "draft": false }
   },
   "health": { "max": 100, "regen": 0.01, "regenBelowHunger": 70, "starveDamage": 0.05 }
 }

@@ -35,8 +35,8 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
 - Decided 2026-11-19 (user delegated): map deviations are now in the spec; drafted people keep
   their worker slot; balance is left to C8.
 - Balance to judge at C8: 10 unhoused people cost 10 Wotakuye a day against +4 from meals, so the
-  start camp slides into Quarrelling by about day 7 unless tipis are built; people walk 0.5
-  tiles/s, so a tipi takes about 2 minutes to supply.
+  start camp slides into Quarrelling by about day 7 unless tipis are built; people walk 1.0
+  tiles/s (doubled in C8), so a tipi takes about 1 minute to supply.
 
 ## Next action
 - C8 (gate, the user): play the slice (`npm run dev`, then Start) and say whether it feels right;
