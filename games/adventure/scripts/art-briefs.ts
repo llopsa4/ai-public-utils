@@ -12,6 +12,7 @@ import { renderRuntimeReferences, runtimeDimensions } from './art-reference-runt
 import { writeReferences } from './art-reference';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const PUBLIC_REFERENCE_CHAPTERS = ['intro', 'ch1'] as const;
 
 export function validateBriefManifest(entries: readonly ArtEntry[]): void {
   const problems: string[] = [];
@@ -170,8 +171,14 @@ export async function renderFullBriefs(MANIFEST: readonly ArtEntry[] = DEFAULT_M
     catalog.push('');
   }
   files.set(join(out, 'CATALOG.md'), catalog.join('\n'));
-  const { files: introFiles } = await renderRuntimeReferences('intro', ROOT, files, markdownOnly);
-  for (const [file, content] of introFiles) files.set(file, content);
+  // The public chapters' own generators overwrite part of this catalog (their briefs, layouts and the
+  // INDEX/CATALOG navigation), so the full catalog applies the same overlays, in this order, and a
+  // full check agrees with `--chapter <id>`. Add a new public chapter here when it gets references.
+  // Private chapters (kofi1) use `--private-spec` and write outside this catalog.
+  for (const chapterId of PUBLIC_REFERENCE_CHAPTERS) {
+    const { files: chapterFiles } = await renderRuntimeReferences(chapterId, ROOT, files, markdownOnly);
+    for (const [file, content] of chapterFiles) files.set(file, content);
+  }
   return files;
 }
 

@@ -1,0 +1,26 @@
+# Line endings: text files are stored with LF and checked out with LF on every machine, so Codex
+# and Claude produce the same bytes. (The index is already LF, so this changes no stored content.)
+* text=auto eol=lf
+
+# Windows scripts keep CRLF in the working tree.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Never touch binary files.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.jfif binary
+*.ico binary
+*.pdf binary
+*.ttf binary
+*.woff binary
+*.woff2 binary
+*.glb binary
+*.mp3 binary
+*.ogg binary
+*.wav binary
+*.zip binary

@@ -1,5 +1,8 @@
 # Dakota content pack (B1): DRAFT, waiting for the user's review
 
+> **Status note (2026-11-19):** the 3D parts of this record are retired. The 3D briefs were removed,
+> and the 3D model `iya.glb` is no longer used. Art follows [art/PIPELINE.md](art/PIPELINE.md) (2D).
+
 Written by Claude (Opus) on 2026-11-18 for [PLAN-dakota.md](PLAN-dakota.md) phase B. It builds on
 [SLICE.md](SLICE.md) (approved) and [DESIGN.md](DESIGN.md), and every cultural element cites
 [CULTURE.md](CULTURE.md) (**CM**). The research it draws on is in
@@ -141,7 +144,7 @@ G gnawing hollow · F fever mist.
 As built, with HP 480. Win text unchanged.
 
 ### Eya (final boss, second telling; ✔ CM 17b; mechanics 🎮)
-The same monster as Iya in Eastman's telling. The **iya.glb model is reused**; the shells and the
+The same monster as Iya in Eastman's telling. Its art is not the retired 3D `iya.glb`; the shells and the
 helpless pose come from code and the kit.
 - **Phase 1** (> 50%): the Iya lunge (as built), plus a **swallow**: windup 1.2 s, then a cone
   (90°, length 4) pulls the hero in for 1.0 s. If the hero ends within 1.2 of him, she or he is
@@ -285,7 +288,7 @@ button, and Settings gets *"Hints: on/off"*. Seen hints are saved as `kota.hints
 | Man hero | hero_dakota_man (brief to be written) | C4 |
 | Sleet spirit, gnawing hollow, fever mist | sleet_spirit (brief to be written), gnawing_hollow (brief to be written), fever_mist (brief to be written) | C3 |
 | Double-Face | double_face (brief to be written) | C5 |
-| Eya | reuses iya.glb; shells in the props kit | C5 |
+| Eya | own 2D sprite (brief to be written); shells in the props kit | C5 |
 | Lacrosse stick, digging stick, quiver, parfleche, 2 snowshoes | lacrosse_stick (brief to be written), digging_stick (brief to be written), fringed_quiver (brief to be written), parfleche_bag (brief to be written), long_snowshoes (brief to be written), short_snowshoes (brief to be written) | C2 |
 | Room props | props_dakota (brief to be written) | C3 |
 

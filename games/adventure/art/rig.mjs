@@ -59,7 +59,7 @@ function loadSource(cfg) {
 }
 
 function load(path) {
-  if (!existsSync(path)) throw new Error(`Missing source ${path}. The Kiln Courier folder must sit next to adventure/.`);
+  if (!existsSync(path)) throw new Error(`Missing source ${path}. The Kiln Courier folder must sit next to games/adventure/.`);
   return PNG.sync.read(readFileSync(path));
 }
 

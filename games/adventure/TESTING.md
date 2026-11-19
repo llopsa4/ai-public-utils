@@ -24,6 +24,7 @@ Debug commands and script-driving gotchas are in [DEVELOPMENT.md](DEVELOPMENT.md
 - `npm run test:all`: typecheck and every Node test, including bitmap rendering/import, interaction goldens and exhaustive story exploration.
 - `npm run test:release`: validate the entire inventory, typecheck once, run every Node test, build and verify once, then run every desktop browser check and full journey against that artifact.
 - `npm run test:inventory`: audit and summarize Node and browser classification without launching a browser or building the site.
+- `npm run art:briefs -- --check`: checks that the whole generated art catalog (`art/briefs`, `art/spec`) matches its sources. It applies the intro and chapter 1 overlays, so it agrees with `--chapter intro --check` and `--chapter ch1 --check`. Kofi's private references are checked separately with `--private-spec private/kofi1/spec.json --check`. Without `--check` the command rewrites the generated files.
 
 Add `--list` to any test selection to see its files or browser cases without executing tests, typechecking or building: `npm run test:browser -- crowd --list`. Unknown features and unclassified tests fail instead of silently selecting nothing.
 

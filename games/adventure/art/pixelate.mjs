@@ -21,7 +21,7 @@ const out = join(here, 'src');
 
 function load(path) {
   const full = join(kiln, path);
-  if (!existsSync(full)) throw new Error(`Missing source ${full}. The Kiln Courier folder must sit next to adventure/.`);
+  if (!existsSync(full)) throw new Error(`Missing source ${full}. The Kiln Courier folder must sit next to games/adventure/.`);
   return PNG.sync.read(readFileSync(full));
 }
 
