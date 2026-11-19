@@ -1,0 +1,36 @@
+# tent-workbench
+
+<!-- GENERATED: edit the authoritative source, then run npm run art:briefs -- --chapter ch1. -->
+
+Reference for the implemented chapter; existing artwork is preserved.
+
+ID: `tent-workbench` · object · **target** · final
+
+## Description
+
+C7 separate tent workbench, clean transparent backing.
+
+## What the game does with it
+
+look; use
+
+## Placement and layers
+
+- [Mara's Tent](room-tent.md): anchor (208,520) art px / (104,260) logical; world; Always.
+
+## States, visibility and transitions
+
+- **idle** — C7 separate tent workbench, clean transparent backing. When: Existing idle frame; placement flag conditions above determine when it is used..
+
+Existing file: art/src/objects/tent-workbench.png. Status: final. No new artwork is produced by reference generation.
+
+## Asset contract
+
+- Canvas: **360×148 art px**. Bottom-centre anchor; preserve dimensions and registration across states.
+- Files: `art/inbox/tent-workbench-idle.png`.
+
+## Sources
+
+[art/manifest.mjs · L275](../manifest.mjs#L275) · [src/chapters/ch1/rooms.ts](../../src/chapters/ch1/rooms.ts) · [src/chapters/ch1/interactions.ts](../../src/chapters/ch1/interactions.ts) · [Chapter index](INDEX-ch1.md)
+
+Shared guides: [art/PIPELINE.md](../PIPELINE.md) · [art/STYLE.md](../STYLE.md) · [art/LAYERED-RIG.md](../LAYERED-RIG.md) · [../WORKFLOW.md](../../../WORKFLOW.md) · [Chapter rules](RULES-ch1.md)

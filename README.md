@@ -2,10 +2,7 @@
 
 Personal static web applications hosted on GitHub Pages.
 
-- [The Rift: Ashlands](https://llopsa4.github.io/ai-public-utils/adventure/) — a point-and-click adventure for desktop browsers (Phaser). See [the adventure guide](adventure/README.md).
-
-- [Kiln Courier](https://llopsa4.github.io/ai-public-utils/FFCardGame/) — an original industrial-fantasy card combat prototype. See [local play instructions](FFCardGame/README.md).
-
+- [Games](games/README.md) — The Rift: Ashlands, Kiln Courier and Kota, each published under `games/`.
 - [Duty calendar](https://llopsa4.github.io/ai-public-utils/calendari/) — monthly scheduling with Catalan public and local holidays. See [the planner guide](calendari/README.md).
 - [Premiere Tracker](tracker/README.md) — a Windows tray app (not a web page) that measures the time you actively work in Adobe Premiere Pro, per project. Install with `tracker/Setup.bat`.
 - [Family tree](https://llopsa4.github.io/ai-public-utils/arbre/) — password-protected, read-only family tree. Unencrypted data and editors stay in the ignored `arbre/local/` folder. See [the tree guide](arbre/README.md).
@@ -14,7 +11,7 @@ Personal static web applications hosted on GitHub Pages.
 
 GitHub Pages serves the root of the `main` branch. The empty `.nojekyll` file disables Jekyll processing; HTML, native JavaScript modules, CSS, and the scheduling worker are served directly.
 
-Kiln Courier uses TypeScript, React, and Vite. Run `npm ci` and `npm run build` inside `FFCardGame` after changing its source; include its generated `index.html` and `build/` assets with the source changes. Its build preserves this branch-based hosting layout and does not build or replace the other applications. The Cinderfold adventure works the same way: run `npm ci` and `npm run build` inside `adventure`, then commit its generated `index.html` and `build/` with the source.
+The games build and publish from their own folders; see [the games publishing notes](games/README.md#publishing).
 
 To update the site, commit your changes and push `main` to `origin`. GitHub Pages deploys the updated files automatically. Check the repository's Actions tab for deployment status.
 

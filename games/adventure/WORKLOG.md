@@ -1,0 +1,54 @@
+# Adventure current status
+
+Updated 2026-11-17. Shared procedure: [WORKFLOW.md](../WORKFLOW.md).
+Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Codex](handoff/from-codex.md).
+History: Git history of this file, [CHANGELOG.md](CHANGELOG.md) and [art provenance](art/PROVENANCE.md).
+
+## Checkout
+- Branch `main` at `108d214`, level with `origin/main`. Earlier commits up to `c9f9711` (C7 redraws, docs
+  reorganization `3f72ff4`, `eb7c5f5`) are on `main` too. The docs split (2026-11-17) is committed.
+- 2026-11-19 (uncommitted): the game moved from `adventure/` to `games/adventure/`, next to `games/kota/` and
+  `games/FFCardGame/`. Launch Codex and Claude from `games/adventure/`; the live and preview URLs are now
+  `/games/adventure/` and the shared workflow is now `games/WORKFLOW.md` (the old `process/` folder is gone). Old Codex threads still point at the old folder.
+
+## Working on
+- **Active mode: Claude only (Codex paused)**, selected by the user on 2026-11-17 for a few days.
+  Both agents normally work here. While Codex is paused only image generation stops (queued as
+  requests for Codex); Claude does the other Codex tasks. Returns to Codex + Claude when the user
+  says so ([modes](../WORKFLOW.md#modes-and-ownership)).
+- **Redrawing paused** by the user (2026-11-17): C7 Ashways (last room) not started, no prompts.
+- Local Ashlands Story Board in ignored `private/story-board/` (desktop shortcut
+  `Ashlands Story Board.lnk`). User edits in `data/board.json`: preserve them; never reseed.
+
+## Current implementation
+- Intro and Chapter 1 rooms through the gallery redrawn at Silas's detail (C7); Ashways still 2px.
+  Gallery close-up brass centre still from the pre-C7 socket (follow-up art).
+- Kofi prologue: six rooms, eight survivor/wildlife routes, utility arrows, folding bow,
+  construction/rite/agreements/robot ending, cancellable archery and save v12. 182 geometric
+  placeholder PNGs; approved character rigs remain uninstalled. The temporary runtime grid does not
+  replace the approved prologue art composition.
+- UI polish (cursors, ceramic regulator and heat warning, viewport fitting, bell actions, battle
+  popup footer, resumable Sigrid departure): `art/sources/ui-polish/BRIEF.md`. Debug panel
+  Puzzles → Regulator puzzle opens a fresh, prepared gallery replay in the active save.
+- Machine workers/routines, remarks, action rings, map fitting, scene labels and stationary ambient
+  phrases implemented. Font studies remain separate; game fonts unchanged.
+
+## Latest verification
+- C7 gallery r2 installation (Claude): typecheck, 251 fast / 299 art+story+saves+input+crowd+runtime
+  tests, art checker and ch1 reference freshness pass; scratch production build checks with zero
+  page/HTTP errors, reduced motion only. Evidence: `art/inbox/done/gallery-installation-r2/HANDOFF.md`.
+- Browser suites (`test:browser`, `test:release`, `e2e`) have not been run recently.
+- Fresh Codex Desktop recovery is unverified (earlier fresh processes discovered skills but file
+  readers failed with "registered Core launch requires an installed app").
+
+## Pending and paused
+- C7 Ashways redraw paused (above). The discarded 2026-11-11 interaction-effects brief remains
+  rejected. Cell-visual browser changes were stopped before a full run. Soft stairs light is an
+  intentional placeholder. Oversized verb-icon notices are informational.
+- `art/REPLACING.md` and its layout images are stale since `36b31bc` (pre-C7 geometry; found
+  2026-11-17): regenerate with `npm run art:guide` when the user asks. The full-catalog
+  `art:briefs --check` always lists the chapter-generated briefs as stale (they are overwritten by the
+  `--chapter` runs); check those with the chapter commands instead.
+
+## Next action
+- Codex, on return: request C8 in `handoff/from-claude.md`.

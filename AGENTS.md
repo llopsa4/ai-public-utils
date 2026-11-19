@@ -22,18 +22,8 @@ its own rules; nothing in one project's guides applies to another.
 
 | Project | Entry | Notes |
 | --- | --- | --- |
-| Adventure (`adventure/`) | [adventure/AGENTS.md](adventure/AGENTS.md) | point-and-click game for desktop browsers (The Rift: Ashlands); Codex + Claude |
-| Kota (`kota/`) | [kota/AGENTS.md](kota/AGENTS.md) | Brotato-style 2D top-down arena survivor for smartphones and tablets about Dakota culture (Lakota and Nakota later); Codex + Claude |
-| FFCardGame (`FFCardGame/`) | its private, gitignored `AGENTS.md` | card-combat subgame serving Adventure |
+| Games (`games/`: Adventure, Kota, FFCardGame) | [games/AGENTS.md](games/AGENTS.md) | each game has its own entry file, listed there; the Codex/Claude procedure is [games/WORKFLOW.md](games/WORKFLOW.md) |
 | Calendar (`calendari/`) | [calendari/AGENTS.md](calendari/AGENTS.md) | scheduling app with privacy rules |
-
-The games are independent: nothing in one game's guides applies to the other. They share only the
-Codex/Claude collaboration procedure, [process/WORKFLOW.md](process/WORKFLOW.md) (modes, ownership,
-handoff files, approval); each game owns its request, design and art guides. Each game has its own
-skills, named after it (`adventure-…`, `kota-…`), in `<game>/.claude/skills/` (Claude) and
-`<game>/.agents/skills/` (Codex), kept identical. A skill holds discovery metadata and a link only;
-it owns no procedure. There are no repository-wide game skills: launch from the game folder to use
-its skills.
 
 ## Shared memory (Claude and Codex)
 

@@ -1,0 +1,131 @@
+# The Rift: Ashlands
+
+A point-and-click adventure for desktop browsers. Mara, a courier and kiln-minder in Cinderfold (a village built inside an old industrial kiln), must shut down the cracked regulator and carry it away for assessment. He doesn't want to go. The game runs entirely in the browser as static files on GitHub Pages: no server, no accounts, no tracking. It uses only free software: Phaser 3 (MIT), React (MIT, for the fight and gear screens), TypeScript, Vite and the MedievalSharp and Zilla Slab fonts (OFL); the art and test tools (pngjs, upng-js, sharp, Playwright) are development-only.
+
+## Play
+
+Adventure targets desktop computer browsers with mouse, trackpad and keyboard. Phone and tablet support is outside the game's scope. Window resizing, browser zoom, fullscreen and reduced motion remain supported.
+
+Live: <https://llopsa4.github.io/ai-public-utils/games/adventure/>
+
+- **New game** opens on black with three cards (where and when, the day, then the title *The Man With Many Faces*); each fades on its own, a click moves on, Skip ends them. Then Silas's escape from Ironhaven's prison (the intro chapter) leads into chapter 1.
+- **Kofi prologue (local implementation):** after Silas, the chapter map also offers **A Place to Stay**. For direct testing, run `npm run dev`, open `/?debug=panel` and select `kofi1` / **A Place to Stay** in the chapter dropdown. Six rooms, both survivor routes, construction, the rite, three agreements and the hut ending are playable. All Kofi visuals are labelled geometric placeholders; the approved character rigs remain uninstalled. Nothing is published by editing or running the development preview.
+- **Kofi’s folding bow:** a camp exchange explains Deyu’s handmade bow and everyday arrow jobs. Use the carried bow to fold/unfold it. With it unfolded, use the wooden blunt arrow to dislodge the campfire stick; later combine a normal arrow and light cord to rig the clearing’s high fork. Both utility arrows are recovered. A geometric tensed-bow pose appears before shooting and stays held during Aimed shot. No finished art was added.
+- **Kofi combat:** choose Shot, Aimed shot, Step back, Fire brand, Huska! or Gather arrows. Aimed shot takes a setup turn and another selection to release; a different card cancels it before spending an arrow. Enemy attacks are announced. Retry preserves the chapter's earlier choices. Kill/release decisions happen after combat, with no loot advantage.
+- **Chapter map:** hover or focus a red pin for its location and chapter; activate it to travel. Click or press Enter to select an available chapter.
+- **Regulator:** loosen both outer bolts, bleed pressure, then turn the retaining ring. The close-up uses the same painted gauge and solid brass center as the gallery, with separate aligned interactive parts.
+- **Walk:** click the floor.
+- **Act:** click a person or object to open the action ring, then choose an action (Look at, Open, Close, Pick up, Use, Talk to, Go to). Arrow keys move around the ring and Esc closes it.
+- **Satchel:** click an item or press its numbered slot (1–9, then 0) to carry it at the pointer. Click a target or another satchel item to use it, or drag and drop it there. Each attempt puts the cursor back to normal, including a rejected use. Clicking/dropping onto empty floor cancels the item and walks there. Double-click an item for its Look / Use menu; inventory clicks wait 300 ms to distinguish these gestures. Enter opens the menu when an item has keyboard focus. Right-click, Esc, clicking the selected item again, or dropping outside the game cancels it.
+- **Poses:** click Mara, Oren or Nell for Crouch, Lie down and Stand up.
+- **Background people:** four workers go about their day in the kiln hall: Hollis kneels at the fire and takes ash to the cart, Wren works the hoist, Dace kneels beside the broken jars sorting pottery for reuse, and Ansel keeps the tally. Pip and Bea play in the firing house, while Tobi stands by the hearth: talk to him about his drawings and hear him offer his scarf when Mara says goodbye. They work or play and their ambient remarks float above their heads in outlined warm text; some walk rounds or take breaks. Click one to look at them or talk (they stop, turn to Mara and say a line). When the alarm goes up the kids run to Nell; when the kiln goes cold the workers stare at it and two of them leave, and the kids huddle by the dead hearth.
+- **Room names** hang on a board in every room (an iron shield-plate in the regulator gallery).
+- **Talk:** choose a reply with the mouse or the number keys. Lines appear in the panel at the bottom with the speaker's portrait, which talks and shows a mood (worried, angry) on some lines. Every line waits for a click (or a key) before the next.
+- **Explore:** looking at something again often gets a different line, and four small secrets are hidden around Cinderfold (the notebook counts the ones you've found).
+- **Labels:** hold **Space** (or press the eye button) to label everything you can interact with. **Notebook** lists what Mara has done and what he is doing now.
+- **Exits:** double-click a doorway to go straight through.
+- **Keyboard:** hold arrows to walk, including diagonals, and release to stop. Obstacles stop direct movement; exits still need an explicit action. **G** toggles Gear when unlocked, **N** the Notebook, and **M** the Menu; each key closes its own screen, and Escape still works. These shortcuts do not interrupt speech, choices, fights, text entry or other dialogs; G also opens Oren's guided Gear prompt. Tab moves between room targets and bar buttons; Enter acts on the focused target. Arrow keys navigate an open action ring, and number keys choose dialogue replies instead of inventory slots while choices are shown. Opening a screen cancels held movement and pending satchel gestures.
+- **Fullscreen:** the fullscreen button switches to full screen where the browser allows it.
+- **Menu** (pause): Resume, **History** (everything said so far), **How to play**, saves, **Settings** (text speed, effects and music volume, mute, reduced motion, text size, high contrast) and **Title screen**.
+- **Hints:** the notebook's **Hint** button gives a nudge for the current goal, then the plain answer.
+- **Cursor:** the pointer shows the name of what it is over and what a click will do (look, handle, talk, leave).
+
+The chapter covers the morning errands in Mara's tent, the kiln hall and firing house; the regulator problem and shutdown in the Gallery; farewells by the cold hearth; and departure through the Ashways. Dressing, collecting bread, helping Wren, feeding Nell and fixing the latch can be done in a flexible order. The alarm starts once the hoist, soup and latch are dealt with.
+
+After Mara learns the shutdown procedure, speak to Oren again before releasing the regulator. Oren gives and equips his medium armour, then asks Mara to check its fit in Gear (press G or the highlighted button). The gift and guided visit happen once; later outfit choices remain yours. After the fight Oren still gives his spare light coat and harness, without another forced Gear visit. Older saves retain their equipment and progress; saves already past shutdown continue without being rewound.
+
+Combat uses the approved lower guard at rest, the raised guard during a 200 ms approach, and an extended punch held for 500 ms at contact before a 200 ms return. Damage appears at contact; input stays locked until the return finishes. Reduced motion keeps the poses and timing without travel or shake. Combat adapts to resized desktop windows. Extra cards scroll horizontally; action buttons remain readable and keyboard accessible.
+
+Text is **English only** for now. Languages can be added back by dropping a `strings/<code>.json` beside `en.json` and listing it in `src/engine/i18n.ts`. The switcher reappears once there are two.
+
+### Saves
+
+Progress is **autosaved in this browser** (localStorage, one slot) after each walk, action and room change; the title screen offers **Continue**. Use **Save game** (in the Menu, or on the title screen) to download a `.json` copy and **Load game** on the title screen to load one. Autosaves and imports go through the same validation: a damaged or foreign save is rejected and never loaded. Saves from older versions of the game are upgraded step by step (`src/engine/migrations.ts`, with a fixture save per old version in `tests/fixtures/saves/`). A save records the chapter, the chapters reached and each chapter's flags separately; Mara's kit, bag and the items a chapter marks as kept carry into the next chapter.
+
+## Develop
+
+To request scenes, story revisions, puzzles, gameplay changes or art, use the
+[Adventure request templates](PROMPTING.md).
+
+Requires Node 22.12+. Install and start the development preview from this directory:
+
+```sh
+npm ci
+npm run dev
+```
+
+Use [DEVELOPMENT.md](DEVELOPMENT.md) for authoring and runtime gotchas,
+[the shared workflow](../WORKFLOW.md) for collaboration and publishing permissions, and
+[TESTING.md](TESTING.md) for test, build and scratch-preview commands. GitHub Pages serves
+tracked `index.html` and `build/`; `dist/` and `node_modules/` are ignored.
+
+Add `?debug` to the URL to draw the walk areas (green), obstacles (red), hotspots (yellow), approach points (blue) and entries (pink), and to expose `window.adventure = { game, session, sound, chapters, newGame, interact }` (the e2e tests use it). In debug mode the comma key (`,`) opens the **debug panel** (`?debug=panel` opens it at start): jump to a chapter or room, switch flags and items, add salvage, tonics or all gear, open the gear screen or shop, start a fight, and switch the visual quality or the walk-area overlay. In debug mode the gear screen also shows every equipable piece in the game, gauntlet slot unlocked; equipping one adds it to Mara's gear.
+
+The debug panel's **Medium armour** checkbox dresses Mara and equips Layered Armor directly; turning it off selects light armour. Gauntlet power stays controlled separately by `hasGauntlet`. These selections use the existing equipment and dressing save data.
+
+Under **Puzzles**, **Regulator puzzle** jumps straight to the gallery and opens a fresh two-screw puzzle, preparing the required equipment and story state. It resets regulator progress and its shutdown aftermath in the active game, so subsequent play can overwrite autosave. Close any blocking screen or finish the current action before using it.
+
+## Chapter 1: regulator and departure
+
+The regulator now opens a mechanical close-up after Mara has learned the procedure and Oren has prepared him. Loosen both outer bolts, open the bleed valve until the gauge settles into the marked safe band, then turn the ring a quarter-turn and lift out the regulator. Wrong actions give feedback without damage or resetting progress. The close-up includes the notebook procedure and two-stage hints; Escape returns to the room, retaining progress. The mechanisms support mouse and keyboard focus.
+
+Oren remembers Mara's first voiced concern and echoes it after the Gallery fight; Mara also records a reflection in his notebook. A brief quiet moment follows the fight. At the kiln gate, a one-time reminder offers an optional goodbye. Either Nell or Tobi can initiate the family's shared farewell, giving bread and scarf only once.
+
+In the Ashways, the valve still distracts the sweeper. When Mara steps out, Corvin tries to salvage a pressure cell from its pipe. The cell bursts, injuring Corvin and sending the sweeper berserk. Mara returns for a normal boss fight: Pressure winding (4 block), Brush surge (12 damage), Motor stall (recovery). The boss has 52 HP. Existing health and MP carry into the first attempt; defeat retries restore both but do not refund tonics. Victory pays 8 salvage once, and a brief aftermath precedes departure. The actual Ashways backdrop and Ash Sweeper artwork are used.
+
+Version 10 saves preserve puzzle and finale checkpoints. Older saves retain established morning and shutdown progress; saves already in Chapter 2 are not returned to the new boss.
+
+## Chapter 2 (debug only)
+
+Chapter 2, **Tempered Flow**, is playable only in debug mode for now. Open the game with `?debug` and either finish chapter 1 (its end leads into chapter 2 instead of the end card), or press `` ` `` and pick `ch2` in the debug panel's chapter menu. It opens calm, at dawn at the mouth of a service tunnel (a pipe to sit on, thoughts of home); as he goes in, the roof falls behind him. Then he crosses the tunnels under the ashways: three dark scenes, each with a small puzzle that wakes a creature, drawn at random from four (Cinder Rat, Rat Pack, Ash Mite Swarm, Pipe Beetle) on every attempt, including after a lost fight:
+- the collapsed tunnel: pry the rusted grate open with the gauntlet
+- the steam junction: turn the valve the leaking pipe runs to (the wrong one scalds him for 5 health)
+- the ash cistern: the chain holding the drawbridge up is too hot to grip, even with the gauntlet; Mara wraps Tobi's scarf round it (a Mara who left chapter 1 without the scarf finds an oily rag in the first tunnel's rubble instead)
+
+His health carries from fight to fight (tonics can be drunk), and each win leaves 4 salvage. Then he reaches Bryn's tempering house on the road out of Cinderfold country, and later her cot heals him:
+- she retunes his gauntlet: Kiln Courier's **Tempered Flow** technique, plus +6 most health and +2 most MP, kept for later chapters
+- he tries it on her training rig: Kiln Courier's technique practice (the first play must be the highlighted Tempered Flow card, its banner explains the cost; he fights at full health and MP and loses nothing)
+- he answers her question about what he is rushing towards
+- she reads the regulator's records (the fault lies further along the return circuit), then supper
+- over supper he writes home to Oren, lets Bryn pack his supplies, and finds the valley marked abandoned on her map
+- he sleeps on her cot (health and MP back), and in the night a pressure surge through her return line shakes the house and puts out the lamps: the fault is still spreading, and he leaves before first light
+
+Without `?debug` nothing changes: chapter 1 ends with its end card, and chapter 2's code and art are never downloaded. Chapter 2 lives in `src/chapters/ch2/`, loads on demand (`loadChapter` in `src/chapters/index.ts`), brings its own cast (Bryn) and its art (`src/chapters/ch2/art.ts`, `art/src/ch2/`), and has its own size budget. All of its art is placeholder, listed in the art manifest with Codex briefs.
+
+## Fights
+
+Fights use **Kiln Courier**'s card rules and battle screens from `../FFCardGame/client/src` in this repository, imported directly (as `@kc/...`, set in `tsconfig.json` and `vite.config.ts`), not copied. They load only when the first fight or the gear screen opens (`src/kc/mount.tsx`, the bridge, with `Armory.tsx`, the equip-only workshop).
+
+- Kiln Courier's battle screen takes optional settings for a host game: `brand` (the Cinderfold title), `rewards` (what the fight paid, in the victory dialog), `extraControls` (the Kiln Tonic button), and for its guided lesson an `encounter` and reworded `prompts`. The first fight is that lesson taught against chapter 1's Hatch Scavenger (`src/chapters/ch1/combat.ts`).
+- Fights play over the room they happen in (`src/game/room/fightBridge.ts`): the room stays on screen and slides up so its floor clears the card strip along the bottom; the fighters stand on that floor at their real size next to Mara (`ENEMY_HEIGHT`). On short screens the strip slims to one row of small cards without pictures.
+- Integration gotchas and shared battle validation are described in [DEVELOPMENT.md](DEVELOPMENT.md#runtime-and-integration-gotchas).
+
+## Layout
+
+| Path | Contents |
+| --- | --- |
+| `src/engine/` | Pure, Phaser-free logic: types, geometry, pathfinding (visibility graph + A*), state, save files, dialogue runner, click rules (`rules.ts`), story rules (`story.ts`), i18n |
+| `src/chapters/` | One folder per chapter behind the `Chapter` interface (`types.ts`, registry in `index.ts`). `ch1/`: rooms, click rules (`interactions.ts`), story rules (`story.ts`), dialogue trees, crowds, the fight, objectives, flags and `strings.en.json` |
+| `src/content/` | What every chapter shares: Mara's kit (`kit.ts`), the interface strings (`strings/en.json`), art lists |
+| `src/game/` | Phaser scenes (`scenes.ts`; the room's input, lighting, script runner, command handlers and fight bridge in `room/`), the `Actor` (pose/walk/blink/task poses), the background people (`Crowd`), room name boards (`sign.ts`), asset list, session |
+| `src/ui/` | DOM interface over the canvas: `ui.ts` (layout, title, menu, satchel, toasts) with one module per screen: `speech`, `radial` (action ring, choices), `labels` (hotspot labels and fullscreen), `notebook` (goals, history), `settingsMenu`, `gear`, `shop`, `intro`, `saves` |
+| `src/audio/` | Web Audio synthesizer for ambience, effects, footsteps per floor surface, and a generative score per room mood (no sound files) |
+| `art/` | Art scripts and their output in `art/src/` (see [PROVENANCE](art/PROVENANCE.md)) |
+| `tests/` | `node:test` suites run with tsx |
+
+## Art
+
+[The Adventure art procedure](art/PIPELINE.md) covers scene construction, generation prompts,
+deliveries and approved integration, with its tools and files.
+[The reference map](art/REFERENCES.md) identifies visual authorities and generation commands;
+[STYLE.md](art/STYLE.md) defines the look, [LAYERED-RIG.md](art/LAYERED-RIG.md) the articulated
+contracts, and [PROVENANCE.md](art/PROVENANCE.md) the asset origins.
+
+## Current limits
+
+- Current implementation, unfinished reviews and remaining placeholders are recorded in [WORKLOG.md](WORKLOG.md); asset origins are recorded in the provenance document.
+- Rig animation quality varies by source pack; see the recorded rig contracts and unverified cases in WORKLOG.md.
+- Nell uses Iven's illustration from Kiln Courier, shield included. In this game the shield is her old counter shutter.
+- Sound is synthesized, so it is simple rather than recorded. No cloud sync. English only.
+- Desktop Chromium is the automated browser target. Other desktop browsers, including Safari, are not yet verified; phone and tablet support is not maintained.
+- Portrait techniques and available moods vary by character; source-pack and drawn-face contracts are described in [LAYERED-RIG.md](art/LAYERED-RIG.md).
