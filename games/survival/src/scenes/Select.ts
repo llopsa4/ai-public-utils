@@ -4,6 +4,7 @@
 import Phaser from 'phaser';
 import mapConfig from '../data/map.json';
 import { buildingDefs, buildingName } from '../sim/buildings';
+import { HUNGRY_AT } from '../sim/economy';
 import { queueOrders } from '../sim/orders';
 import { ages } from '../sim/people';
 import type { Building, Enemy, GameState, Order, Person, Res, Stance, Tile2 } from '../sim/state';
@@ -329,6 +330,7 @@ export class SelectScene extends Phaser.Scene {
         this.bars.fillStyle(0x000000, 0.6).fillRect(f.x - 11, f.y - 38, 22, 4);
         this.bars.fillStyle(p.health < 40 ? 0xc0392b : 0x6aa84f, 1).fillRect(f.x - 10, f.y - 37, 20 * Math.max(0, p.health / 100), 2);
       }
+      if (p.hunger >= HUNGRY_AT) this.bowl(f.x, f.y - (p.health < 100 ? 46 : 40));
     }
     const b = this.building(this.selectedBuilding);
     if (b) {
@@ -344,6 +346,12 @@ export class SelectScene extends Phaser.Scene {
         true,
       );
     }
+  }
+
+  /** The hungry-person icon: a small empty bowl over the head. */
+  private bowl(x: number, y: number): void {
+    this.bars.fillStyle(0x000000, 0.6).fillEllipse(x, y, 11, 8);
+    this.bars.fillStyle(0xd9a05b, 1).fillRect(x - 4, y - 3, 8, 1).fillTriangle(x - 4, y - 2, x + 4, y - 2, x, y + 2);
   }
 
   private jobLabel(p: Person): string {

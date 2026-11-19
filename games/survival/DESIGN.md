@@ -79,7 +79,7 @@ Three tiers, unlocked with gift value plus camp size or Wotakuye:
 - **Seasons:** spring newcomers and floods, summer hunting, autumn harvest and drying, winter hunger
   and cold. The camp does not move in early versions; moving camp with travois comes later.
 - **Saving:** automatic to the browser's localStorage, 3 slots, export/import as a file. No accounts,
-  no network calls.
+  no network calls. Details: [DESIGN-saves.md](DESIGN-saves.md).
 - **Difficulty:** Gentle, Standard, Hard.
 
 ## 8. Look and art

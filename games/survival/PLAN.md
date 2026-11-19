@@ -124,6 +124,19 @@ Each task ends with the line `Implement with: Sonnet` in its report if it needed
 | C7 | `## UI`, `## Tests` | `src/scenes/Menu.ts`, `src/scenes/Hud.ts` (pause / 1x / 2x / 4x buttons, sending the `pause` and `speed` orders), `tests/smoke.spec.ts`, `playwright.config.ts`, `TESTING.md` | `npm run e2e` loads the game, starts a run and reaches wave 1 with no console errors; `npm run publish` writes `index.html` + `build/` |
 | C8 (Opus + user, gate) | `DESIGN-slice.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays the slice and says it feels right; the root landing link is added only after this and a push request |
 
+## Phase D: saves (spec settled 2026-11-19, build next)
+
+Spec: [DESIGN-saves.md](DESIGN-saves.md). Common rules as in Phase C; run
+`npm run typecheck && npm test` (and `npm run e2e` in DS4). Storage access stays out of `src/sim`.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| DS1 | Sonnet | `DESIGN-saves.md` `## Save file`, `## Reading a save`, `## Continue (loading)`, `## Tests`; `src/sim/state.ts` | `src/sim/save.ts` (`SAVE_VERSION`, `serialize`, `parseSave`, `loadState`), `tests/sim/save.test.ts` | the save tests in `## Tests` pass, including the 2500 + 1000 = 3500 determinism check |
+| DS2 | Sonnet | `## Slots`, `## Storage failure`, `## Tests`; `src/sim/save.ts` | `src/save/slots.ts` (read / write / clear / list / import over an injectable `Storage`, `probe`), `tests/save/slots.test.ts` | the slots tests pass with an in-memory storage and a throwing one |
+| DS3 | Sonnet | `## When it saves`, `## Continue (loading)`, `## Storage failure`; `src/scenes/Game.ts`, `src/scenes/Hud.ts` (end screen), `src/save/slots.ts` | `src/scenes/Game.ts` (create from `{ slot, seed }` or `{ slot, save }`, the 4 save triggers, clear on result, the once-per-run toast) | by hand: a run in slot 1 writes `campfire.slot.1` at day start, on pause and on tab hide; winning or losing removes it; typecheck and tests pass |
+| DS4 | Sonnet | `## Menu`, `## HUD menu`, `## Storage failure`, `## Tests`; `src/scenes/{Menu,Hud}.ts`, `tests/smoke.spec.ts`, `TESTING.md` | `src/scenes/Menu.ts` (slot cards, inline delete, export, import, Enter), `src/scenes/Hud.ts` (Menu button + panel), `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the new smoke test (new camp -> day 2 save -> reload -> Continue, paused) with no console errors |
+| DS5 (user, gate) | Opus | `DESIGN-saves.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays: starts camps in two slots, quits, continues, exports, imports, deletes, and says it works |
+
 ## Phase D (planned after C8 is approved)
 
 Seasons and hardships; autosave (3 slots) + export/import; eras 2-3 and bosses; upgrade tiers 1-3;

@@ -4,7 +4,17 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 [WORKFLOW.md](../../WORKFLOW.md#handoff-files).
 
 ## Working on
-- Nothing. 2026-11-19: C1-C7 done. Next: C8 (the user plays the slice).
+- Nothing. 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
+  (`save.ts`: `serialize`, `parseSave`, `loadState`, plus `dayOf` and `SAVE_FORMAT`); DS2 done
+  (`src/save/slots.ts`: `listSlots`, `readSlot`, `writeSlot`, `clearSlot`, `importSlot`, `probe`,
+  `firstEmptySlot`, `browserStorage`); DS3 done (`GameScene.saveNow()` and `saveSlot` are the hooks
+  for the DS4 HUD menu). Next: DS4.
+
+## DS3 notes
+- DS3 also fixed a latent bug in `Game.ts`: the scene object outlives a run, so `ground`, `trees` and
+  `buildingViews` were never reset on restart (a second run would have drawn no buildings). `create`
+  now resets them. It also adds `scene` to the `?debug` `window.camp` object.
+- With no slot (the menu has no slot picker until DS4) the "Autosave is off" toast shows at run start.
 
 ## C8 fix list (from the user's playtest)
 - Done 2026-11-19: all movement speed doubled (people 0.05 -> 0.1, elders 0.04 -> 0.08, wolves and

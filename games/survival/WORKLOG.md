@@ -29,8 +29,8 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   hunters, healers and builders stay in English.
 - Untested by hand: mouse-edge pan and WASD pan; shift-click toggle; Delete on a site; 1-3 speed keys.
 - Untested by hand: wolves, fighting, the banner and the end screen (only the sim is tested).
-- Not done yet from `## UI`: the hungry-bowl icon. Toasts live in `Select.ts` for now (a later HUD
-  task may move them).
+- Hungry-bowl icon added 2026-11-19 in `Select.ts` (`drawWorld`, shown at hunger >= 70); untested by
+  hand. Toasts live in `Select.ts` for now (a later HUD task may move them).
 - Untested by hand: the pause / speed buttons and Play again (e2e covers menu -> run -> wave warning).
 - Decided 2026-11-19 (user delegated): map deviations are now in the spec; drafted people keep
   their worker slot; balance is left to C8.
@@ -39,5 +39,13 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   tiles/s (doubled in C8), so a tipi takes about 1 minute to supply.
 
 ## Next action
-- C8 (gate, the user): play the slice (`npm run dev`, then Start) and say whether it feels right;
-  Claude (Opus) records a fix list in `handoff/from-claude.md`. Judge the balance items above.
+- C8 passed 2026-11-19: the user played the slice and said "all good" (no further fixes; the balance
+  items above stand as they are). The root landing link is still not added: it needs a push request.
+- Phase D, saves first (user, 2026-11-19). Spec settled by grilling: [DESIGN-saves.md](DESIGN-saves.md).
+  DS1 done 2026-11-19 (`src/sim/save.ts`, `tests/sim/save.test.ts`; 65 tests pass, uncommitted).
+  DS2 done 2026-11-19 (`src/save/slots.ts`, `tests/save/slots.test.ts`; 73 tests pass, uncommitted).
+  DS3 done 2026-11-19 (`Game.ts`: create from `{ slot, seed }` or `{ slot, save }`, the 4 save
+  triggers via `saveNow()`, slot cleared on a result, once-per-run toast; checked in a browser with a
+  throwaway Playwright script, since the menu cannot pick a slot until DS4; uncommitted).
+  Next: DS4 (Sonnet) in [PLAN.md](PLAN.md) *Phase D: saves*, then the DS5 playtest.
+  Other Phase D items (seasons, eras, upgrades, moving camp, art) wait until saves are done.

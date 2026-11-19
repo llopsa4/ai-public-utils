@@ -3,7 +3,9 @@ import mapConfig from '../data/map.json';
 import { buildingDefs, placementError } from '../sim/buildings';
 import { flushOrders } from '../sim/orders';
 import { newGame, queueOrders, step } from '../sim/tick';
-import type { GameState, Order } from '../sim/state';
+import { loadState, serialize, type SaveFile } from '../sim/save';
+import { addMessage, DAY_TICKS, type GameState, type Order } from '../sim/state';
+import { browserStorage, clearSlot, writeSlot, type SlotId, type SlotStorage } from '../save/slots';
 import { TILE_H, TILE_W, tileToWorld, worldBounds, worldToTileF } from '../render/iso';
 import { entry, manifest } from '../render/manifest';
 import { EnemiesView } from '../render/enemies';
@@ -40,13 +42,48 @@ export class GameScene extends Phaser.Scene {
   private ghostTiles!: Phaser.GameObjects.Graphics;
   /** `downTime` of the last press this scene used for building placement, so selection ignores it. */
   consumedDownTime = -1;
+  /** The slot this run saves into, or null when the browser cannot store (DESIGN-saves.md). */
+  private slot: SlotId | null = null;
+  private storage: SlotStorage | null = null;
+  private lastDay = 0;
+  private lastPaused = false;
+  /** Set once the run has a result: its slot was cleared and nothing is saved after that. */
+  private ended = false;
+  private warned = false;
+  private readonly onHide = (): void => {
+    if (document.visibilityState === 'hidden') this.saveNow();
+  };
+  private readonly onPageHide = (): void => void this.saveNow();
 
   constructor() {
     super('Game');
   }
 
-  create(data: { seed: number }): void {
-    this.state = newGame(data.seed);
+  /** A new camp (`seed`) or a loaded one (`save`), in a slot or in none. */
+  create(data: { slot?: SlotId | null; seed?: number; save?: SaveFile }): void {
+    this.state = data.save ? loadState(data.save) : newGame(data.seed ?? mapConfig.start.seed);
+    // The scene object outlives a run: forget the last run's views and save bookkeeping.
+    this.ground = [];
+    this.trees.clear();
+    this.buildingViews.clear();
+    this.acc = 0;
+    this.placing = null;
+    this.consumedDownTime = -1;
+    this.seenMapVersion = this.state.mapVersion;
+    this.slot = data.slot ?? null;
+    this.storage = this.slot === null ? null : browserStorage();
+    if (!this.storage) this.slot = null;
+    this.lastDay = Math.floor(this.state.tick / DAY_TICKS);
+    this.lastPaused = this.state.paused;
+    this.ended = false;
+    this.warned = false;
+    document.addEventListener('visibilitychange', this.onHide);
+    window.addEventListener('pagehide', this.onPageHide);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+      document.removeEventListener('visibilitychange', this.onHide);
+      window.removeEventListener('pagehide', this.onPageHide);
+    });
+    if (this.slot === null) this.warnAutosaveOff();
     this.drawMap();
     this.people = new PeopleView(this, this.state.map.size);
     this.enemies = new EnemiesView(this, this.state.map.size);
@@ -61,8 +98,49 @@ export class GameScene extends Phaser.Scene {
         state: s,
         step: (n: number) => step(s, n),
         orders: (list: Order[]) => queueOrders(s, list),
+        scene: this,
       };
     }
+  }
+
+  /** The slot a save would go into (the HUD menu reads it for the export name). */
+  get saveSlot(): SlotId | null {
+    return this.slot;
+  }
+
+  private warnAutosaveOff(): void {
+    if (this.warned) return;
+    this.warned = true;
+    addMessage(this.state, "Autosave is off: the browser can't store it.");
+  }
+
+  /** Writes the run into its slot now; false when there is no slot, the write failed or the run ended. */
+  saveNow(): boolean {
+    if (this.ended || this.state.result !== null) return false;
+    if (this.slot === null || !this.storage) {
+      this.warnAutosaveOff();
+      return false;
+    }
+    const ok = writeSlot(this.storage, this.slot, serialize(this.state));
+    if (!ok) this.warnAutosaveOff();
+    return ok;
+  }
+
+  /** After the ticks of a frame (never in the middle of one): the result, a new day, a fresh pause. */
+  private autosave(): void {
+    const s = this.state;
+    if (this.ended) return;
+    if (s.result !== null) {
+      this.ended = true;
+      if (this.slot !== null && this.storage) clearSlot(this.storage, this.slot);
+      return;
+    }
+    const day = Math.floor(s.tick / DAY_TICKS);
+    const newDay = day > this.lastDay;
+    const justPaused = s.paused && !this.lastPaused;
+    this.lastDay = Math.max(this.lastDay, day);
+    this.lastPaused = s.paused;
+    if (newDay || justPaused) this.saveNow();
   }
 
   private place(key: string, tx: number, ty: number, dx = 0, dy = 0): Phaser.GameObjects.Image {
@@ -261,6 +339,7 @@ export class GameScene extends Phaser.Scene {
       }
       if (guard >= 40) this.acc = 0;
     }
+    this.autosave();
     if (this.state.mapVersion !== this.seenMapVersion) {
       this.seenMapVersion = this.state.mapVersion;
       this.refreshMap();
