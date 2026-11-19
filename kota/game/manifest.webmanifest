@@ -1,0 +1,11 @@
+{
+  "name": "Kota",
+  "short_name": "Kota",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#1d1a16",
+  "theme_color": "#1d1a16"
+}

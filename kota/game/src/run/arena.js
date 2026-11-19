@@ -4,20 +4,54 @@
 //   water (lakeshore): inside `rect` walkers move x `mul`; fliers (wisps, sleet spirits) and long snowshoes ignore it.
 // Bosses are not slowed by water. The arena is bounded by rules.arena; `scene.arena` holds its size.
 
+const SWAY = new Set(['prop_grass', 'prop_flowers', 'prop_reeds', 'prop_cattail']);   // drawn with their foot on the spot
+
 export class Place {
   constructor(scene, def) {
     this.scene = scene; this.def = def; this.twist = def.twist;
     const [AW, AH] = scene.arena;
     scene.add.tileSprite(0, 0, AW, AH, def.ground).setOrigin(0).setDepth(0);
-    if (this.twist.kind === 'water') {
-      const [x, y, w, h] = this.twist.rect;
-      scene.add.rectangle(x, y, w, h, 0x3d6f86, 0.45).setOrigin(0).setDepth(0.5);
-      scene.add.rectangle(x, y + h, w, 4, 0xa9cfdc, 0.5).setOrigin(0, 0.5).setDepth(0.5);   // the shoreline
-    }
+    if (this.twist.kind === 'water') this.drawWater(this.twist.rect);
+    this.swayers = [];                                                    // props that bend in the wind (atmosphere.js animates them)
     this.scatter(def);
-    scene.add.rectangle(AW / 2, AH / 2, AW - 6, AH - 6).setStrokeStyle(6, 0x3a3528, 0.9).setDepth(1);
+    this.drawEdge();
     this.gfx = scene.add.graphics().setDepth(29);
     this.clock = 0; this.gust = null; this.warned = false;
+  }
+
+  /** Shallow water along the top: deeper colour away from the shore, ripples and a foamy, wavy shoreline. */
+  drawWater([x, y, w, h]) {
+    const s = this.scene, g = s.add.graphics().setDepth(0.5);
+    const bands = 8;
+    for (let i = 0; i < bands; i++) {
+      const t = i / (bands - 1);                                           // 0 = far from shore, 1 = at the shore
+      const c = Phaser.Display.Color.Interpolate.ColorWithColor(new Phaser.Display.Color(0x24, 0x4c, 0x66), new Phaser.Display.Color(0x5a, 0x96, 0xaa), 1, t);
+      g.fillStyle(Phaser.Display.Color.GetColor(c.r, c.g, c.b), 0.5);
+      g.fillRect(x, y + (h * i) / bands, w, h / bands + 1);
+    }
+    const rand = new Phaser.Math.RandomDataGenerator(['kota-ripples']);
+    for (let i = 0; i < 46; i++) {
+      const rx = rand.between(x + 20, x + w - 20), ry = rand.between(y + 20, y + h - 30), rw = rand.between(18, 44);
+      g.lineStyle(2, 0xcfe6ee, 0.22); g.beginPath(); g.moveTo(rx - rw / 2, ry);
+      g.lineTo(rx - rw / 4, ry - 3); g.lineTo(rx, ry); g.lineTo(rx + rw / 4, ry - 3); g.lineTo(rx + rw / 2, ry); g.strokePath();
+    }
+    g.lineStyle(4, 0xe4f1f4, 0.5); g.beginPath(); g.moveTo(x, y + h);                         // the shoreline
+    for (let px = x; px <= x + w; px += 12) g.lineTo(px, y + h + Math.sin(px * 0.03) * 5 + Math.sin(px * 0.11) * 2);
+    g.strokePath();
+    g.lineStyle(2, 0x2c566e, 0.3); g.beginPath(); g.moveTo(x, y + h + 10);
+    for (let px = x; px <= x + w; px += 12) g.lineTo(px, y + h + 10 + Math.sin(px * 0.04 + 1) * 4);
+    g.strokePath();
+    this.water = g;
+  }
+
+  /** The arena edge: a trodden earth line and a soft dark shade inside, instead of a hard stroke. */
+  drawEdge() {
+    const [AW, AH] = this.scene.arena, g = this.scene.add.graphics().setDepth(1);
+    for (let i = 0; i < 10; i++) {
+      g.lineStyle(8, 0x0d0a07, 0.5 * (1 - i / 10) ** 2);
+      g.strokeRect(4 + i * 7, 4 + i * 7, AW - 8 - i * 14, AH - 8 - i * 14);
+    }
+    g.lineStyle(5, 0x4a3a28, 0.95); g.strokeRect(2, 2, AW - 4, AH - 4);
   }
 
   /** Decoration only: no collision. Seeded by the place id so a place always looks the same. */
@@ -29,7 +63,8 @@ export class Place {
         const [y0, y1] = p.y ?? [80, AH - 60];
         let x = rand.between(60, AW - 60), y = rand.between(y0, y1);
         if (Math.hypot(x - AW / 2, y - AH / 2) < 140) x += 260;         // keep the hero's start clear
-        s.add.image(x, y, p.tex).setDepth(2 + y / AH);
+        const img = s.add.image(x, y, p.tex).setDepth(2 + y / AH);
+        if (SWAY.has(p.tex)) { img.setOrigin(0.5, 1); this.swayers.push(img); }
       }
     }
   }

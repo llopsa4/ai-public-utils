@@ -1,7 +1,7 @@
 // Player settings, saved in the browser. Other modules read `values` and listen with onChange.
 
 const SAVE_KEY = 'kota.settings';
-const DEFAULTS = { sound: true, leftHanded: false, reduceShake: false, quality: 'high', hints: true };
+const DEFAULTS = { sound: true, music: true, leftHanded: false, reduceShake: false, quality: 'high', hints: true, fullscreen: true };
 
 export function createSettings() {
   const values = { ...DEFAULTS };

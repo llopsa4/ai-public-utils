@@ -64,11 +64,11 @@
   "every": 1.1,
   "group": 4,
   "mix": {
-   "frost_wisp": 30,
+   "frost_wisp": 34,
    "blight_swarm": 20,
    "hunger_shade": 25,
    "sleet_spirit": 15,
-   "gnawing_hollow": 10
+   "gnawing_hollow": 6
   }
  },
  {
@@ -76,23 +76,23 @@
   "every": 1.0,
   "group": 4,
   "mix": {
-   "frost_wisp": 30,
+   "frost_wisp": 34,
    "blight_swarm": 20,
    "hunger_shade": 25,
    "sleet_spirit": 15,
-   "gnawing_hollow": 10
+   "gnawing_hollow": 6
   }
  },
  {
   "wave": 9,
-  "every": 1.0,
-  "group": 5,
+  "every": 0.9,
+  "group": 4,
   "mix": {
-   "frost_wisp": 25,
+   "frost_wisp": 29,
    "blight_swarm": 20,
    "hunger_shade": 25,
    "sleet_spirit": 15,
-   "gnawing_hollow": 15
+   "gnawing_hollow": 11
   }
  },
  {

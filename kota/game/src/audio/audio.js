@@ -1,9 +1,11 @@
-// Sound, made entirely in code with WebAudio: effects and natural ambience only.
-// No music, no recorded audio, no files (user decision 2026-11-18; see PLAN-dakota.md).
+// Sound, made entirely in code with WebAudio: effects, natural ambience and, during waves only, fight music
+// (audio/music.js; user decision 2026-11-19, replacing the 2026-11-18 "no music" rule). No recordings, no files.
 // Browsers only start audio after a touch or key press, so call unlock() from one.
 
+import { createMusic } from './music.js';
+
 export function createAudio(settings) {
-  let ctx = null, master = null, noise = null, ambience = null, crickets = null;
+  let ctx = null, master = null, noise = null, ambience = null, crickets = null, place = null, ducked = false;
   const lastPlayed = {};
 
   function unlock() {
@@ -19,6 +21,7 @@ export function createAudio(settings) {
       for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
     }
     if (ctx.state === 'suspended') ctx.resume();
+    music.ready();
   }
 
   /** Skip a sound if it played less than `gap` seconds ago (many hits at once stay pleasant). */
@@ -88,19 +91,26 @@ export function createAudio(settings) {
     for (let i = 0; i < 3; i++) tone({ f0: f, dur: 0.03, gain: 0.012, delay: i * 0.06 });
   }
 
+  const music = createMusic({ getCtx: () => ctx, getMaster: () => master, getNoise: () => noise, settings });
+  music.onDuck = (on) => {          // the ambience steps back while the fight music plays
+    ducked = on;
+    if (ambience && place) ambience.gain.gain.setTargetAtTime(place.gain * (on ? 0.5 : 1), ctx.currentTime, 0.6);
+  };
+
   const api = {
+    music,
     unlock,
     ctxState: () => (ctx ? ctx.state : 'none'),
     setEnabled(on) { if (master) master.gain.setTargetAtTime(on ? 0.5 : 0, ctx.currentTime, 0.05); },
     setAmbience(name) {
       if (!ctx) { api.pending = name; return; }
-      const place = PLACES[name] ?? PLACES.camp;
+      place = PLACES[name] ?? PLACES.camp;
       if (!ambience) startAmbience();
       const t = ctx.currentTime;
       ambience.filter.type = place.type; ambience.filter.Q.value = place.q;
       ambience.filter.frequency.setTargetAtTime(place.f, t, 0.3);
       ambience.depth.gain.setTargetAtTime(place.f * place.sway, t, 0.3);
-      ambience.gain.gain.setTargetAtTime(place.gain, t, 0.5);
+      ambience.gain.gain.setTargetAtTime(place.gain * (ducked ? 0.5 : 1), t, 0.5);
       crickets = place.crickets ? true : null;
     },
     swing() { if (ready('swing', 0.05)) burst({ f0: 500, f1: 1800, q: 1.5, dur: 0.12, gain: 0.25 }); },

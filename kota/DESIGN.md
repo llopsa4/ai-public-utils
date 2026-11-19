@@ -102,6 +102,17 @@ Details: [art/STYLE.md](art/STYLE.md) and [art/PIPELINE.md](art/PIPELINE.md), bo
 **Phaser 3** (MIT, vendored). The game is rebuilt rather than converted; the data files, sound,
 settings, save and touch ideas carry over where they fit.
 
+## Look and sound of the world (user, 2026-11-19)
+
+Until painted art arrives, the menu, camp backdrop and arenas are drawn in code with serious Dakota
+ambience: a camp of teepees around a fire under a night sky, prairie dawn and lakeshore dusk, earth
+tones, and invented geometric bands in plain blue, white and rust (no real beadwork pattern copied).
+Never drawn: star quilts, feathers, headdresses, the pipe, the medicine wheel or any sacred object.
+**Fight music plays during waves only** (replacing the earlier "no music" rule): a hand-drum
+heartbeat, soft rattle, low drone and a sparse invented flute, all synthesised in code; no voices, chant
+or war-cries. Camp, shop and menus keep ambience only. Settings has Music on/off; "light" quality
+turns the arena atmosphere off.
+
 ## Language
 
 English text. Native words only where CULTURE.md gives the spelling and meaning, with the translation

@@ -15,7 +15,7 @@ Runs entirely in the browser as static files: no server, no accounts, no trackin
 - **Locally:** from this folder run `python -m http.server 8765 --directory game` and open
   `http://localhost:8765/`. On a phone on the same Wi-Fi open `http://<your PC's IP>:8765/`.
 - **Phone or tablet:** hold the device sideways. Left thumb: floating stick. Right thumb: attack,
-  dash, Volley and Track (drag from a button to aim it). **Settings** (top right) has left-handed play, sound, shake and quality.
+  dash, Volley and Track (drag from a button to aim it). **Settings** (top right) has left-handed play, sound, music (fights only), shake and quality.
 - **Keyboard (testing):** WASD or arrows move, Space dashes, J attacks, 1 Volley, 2 Track.
 - Add `?debug` to the address to expose `window.kota` for testing.
 

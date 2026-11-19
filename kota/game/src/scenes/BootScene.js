@@ -34,25 +34,32 @@ export class BootScene extends Phaser.Scene {
       g.fillStyle(0x3a2c20, 1); g.fillCircle(46, 24, 5);                   // facing notch
     });
 
-    // Ground tile: a muted prairie green-grey with scattered darker flecks.
-    makeTexture('ground_prairie', 256, 256, (g) => {
-      g.fillStyle(0x5a5646, 1); g.fillRect(0, 0, 256, 256);
-      const rand = new Phaser.Math.RandomDataGenerator(['kota-ground']);
-      for (let i = 0; i < 90; i++) {
-        g.fillStyle(rand.pick([0x514e3f, 0x636050, 0x585a44]), 0.7);
-        g.fillCircle(rand.between(0, 255), rand.between(0, 255), rand.between(2, 7));
+    // Ground tiles (256 px, seamless: every mark is also drawn on the opposite edge). Dawn-lit prairie and shore.
+    const ground = (key, seed, base, patches, earth, blades, flowers) => makeTexture(key, 256, 256, (g) => {
+      const rand = new Phaser.Math.RandomDataGenerator([seed]);
+      const wrap = (x, y, draw) => { for (const dx of [-256, 0, 256]) for (const dy of [-256, 0, 256]) draw(x + dx, y + dy); };
+      g.fillStyle(base, 1); g.fillRect(0, 0, 256, 256);
+      for (let i = 0; i < 70; i++) {                                    // broad patches of lighter and darker turf
+        const x = rand.between(0, 255), y = rand.between(0, 255), r = rand.between(10, 30), c = rand.pick(patches);
+        wrap(x, y, (px, py) => { g.fillStyle(c, 0.35); g.fillEllipse(px, py, r * 2, r * 1.4); });
+      }
+      for (let i = 0; i < 9; i++) {                                     // bare trodden earth
+        const x = rand.between(0, 255), y = rand.between(0, 255), r = rand.between(8, 20);
+        wrap(x, y, (px, py) => { g.fillStyle(earth, 0.4); g.fillEllipse(px, py, r * 2.2, r); });
+      }
+      for (let i = 0; i < 260; i++) {                                   // short blades of grass
+        const x = rand.between(0, 255), y = rand.between(0, 255), h = rand.between(4, 10), lean = rand.between(-3, 3), c = rand.pick(blades);
+        wrap(x, y, (px, py) => { g.lineStyle(1, c, 0.75); g.lineBetween(px, py, px + lean, py - h); });
+      }
+      for (let i = 0; i < flowers.count; i++) {                         // a few small flowers
+        const x = rand.between(0, 255), y = rand.between(0, 255), c = rand.pick(flowers.colors);
+        wrap(x, y, (px, py) => { g.fillStyle(c, 0.9); g.fillCircle(px, py, 1.5); });
       }
     });
-
-    // Lakeshore ground: dark moss and mud.
-    makeTexture('ground_lakeshore', 256, 256, (g) => {
-      g.fillStyle(0x4c5240, 1); g.fillRect(0, 0, 256, 256);
-      const rand = new Phaser.Math.RandomDataGenerator(['kota-shore']);
-      for (let i = 0; i < 90; i++) {
-        g.fillStyle(rand.pick([0x434a38, 0x5a5a44, 0x3f3a2c]), 0.7);
-        g.fillCircle(rand.between(0, 255), rand.between(0, 255), rand.between(2, 8));
-      }
-    });
+    ground('ground_prairie', 'kota-ground', 0x625c3f, [0x716a47, 0x56523a, 0x6b6444, 0x4d4a35], 0x76603f,
+      [0x8a8654, 0x4f5a34, 0x9a8f5a, 0x6c7442], { count: 7, colors: [0xe8d77a, 0xb690c8, 0xf0e8d0] });
+    ground('ground_lakeshore', 'kota-shore', 0x4b5342, [0x58604a, 0x3f4a38, 0x5e5a42, 0x384236], 0x6a5a40,
+      [0x6e7c4c, 0x45573a, 0x8a8a5a], { count: 6, colors: [0xf0e8d0, 0xe8d77a] });
 
     // Decoration placeholders (no collision).
     makeTexture('prop_sage', 40, 32, (g) => {
@@ -73,6 +80,37 @@ export class BootScene extends Phaser.Scene {
       g.fillStyle(0xd8c6a0, 1); g.fillEllipse(55, 18, 104, 30);
       g.lineStyle(3, 0x7a5a38, 1); g.strokeEllipse(55, 18, 104, 30);
       g.fillStyle(0x4a3a2a, 1); g.fillEllipse(55, 18, 80, 16);
+    });
+
+    makeTexture('prop_grass', 32, 28, (g) => {
+      for (const [x, dx, h, c] of [[10, -5, 20, 0x6e7a40], [14, -1, 26, 0x879350], [18, 3, 22, 0x6e7a40], [22, 6, 17, 0x56633a], [16, 0, 14, 0x9aa45e]]) {
+        g.lineStyle(2, c, 1); g.beginPath(); g.moveTo(x, 27); g.lineTo(x + dx * 0.5, 27 - h * 0.6); g.lineTo(x + dx, 27 - h); g.strokePath();
+      }
+    });
+    makeTexture('prop_flowers', 30, 30, (g) => {
+      for (const [x, h, c] of [[8, 16, 0xe8d77a], [15, 22, 0xb690c8], [22, 14, 0xf0e8d0]]) {
+        g.lineStyle(2, 0x56633a, 1); g.lineBetween(x, 29, x, 29 - h);
+        g.fillStyle(c, 1); g.fillCircle(x, 29 - h, 3.2);
+        g.fillStyle(0x6b4a2a, 1); g.fillCircle(x, 29 - h, 1.2);
+      }
+    });
+    makeTexture('prop_stone', 40, 26, (g) => {
+      g.fillStyle(0x15110d, 0.35); g.fillEllipse(20, 22, 36, 8);
+      g.fillStyle(0x7a7468, 1); g.fillEllipse(20, 14, 34, 20);
+      g.fillStyle(0x938c7c, 1); g.fillEllipse(16, 10, 18, 9);
+      g.lineStyle(2, 0x4a463e, 1); g.strokeEllipse(20, 14, 34, 20);
+    });
+    makeTexture('prop_cattail', 28, 66, (g) => {
+      for (const [x, dx, h] of [[8, -2, 54], [14, 1, 62], [21, 3, 50]]) {
+        g.lineStyle(3, 0x6f7e46, 1); g.lineBetween(x, 64, x + dx, 64 - h);
+        g.fillStyle(0x5a3a22, 1); g.fillRoundedRect(x + dx - 3, 64 - h, 6, 16, 3);
+      }
+    });
+    makeTexture('prop_driftwood', 84, 22, (g) => {
+      g.fillStyle(0x15110d, 0.3); g.fillEllipse(42, 18, 78, 7);
+      g.fillStyle(0x8a7a62, 1); g.fillRoundedRect(4, 6, 76, 9, 4);
+      g.lineStyle(1, 0x5a4e3c, 1); g.lineBetween(10, 9, 70, 9); g.lineBetween(14, 12, 74, 12);
+      g.fillStyle(0x8a7a62, 1); g.fillRect(30, 1, 5, 7); g.fillRect(58, 14, 4, 6);
     });
 
     // Threat placeholders: shapeless, cold or dull, no faces (art/STYLE.md; replaced by painted stills later).

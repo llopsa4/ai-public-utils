@@ -9,8 +9,9 @@ export const LEVEL_GATES = { 2: 5, 3: 10, 4: 15 };      // hero level at which a
 export const SHOP_GATES = { 2: 4, 3: 8, 4: 12 };        // wave at which a weapon tier can appear
 const OFFERS = 4;
 const WEAPON_SHARE = 0.35;
+const MIN_HP = 5;                // an item that lowers health cannot take it below this
 
-export const priceFactor = (wave) => 1 + 0.08 * (wave - 1);
+export const priceFactor = (wave) => 1 + 0.25 * (wave - 1);
 
 /** Highest tier whose gate is open and whose luck-scaled chance hits, checked IV down to II; otherwise I. */
 export function pickTier(progress, gates, luck, rand = Math.random) {
@@ -173,6 +174,7 @@ export class Between {
     } else {
       const def = this.itemDefs[o.id];
       if (this.itemAtMax(def)) { this.note = `You already carry the most of ${def.name}.`; this.render(); return; }
+      if (def.stats.maxHp < 0 && sc.stats.maxHp + def.stats.maxHp < MIN_HP) { this.note = `${def.name} would leave you too frail.`; this.render(); return; }
       sc.embers -= o.price;
       sc.items[o.id] = this.itemCount(o.id) + 1;
       sc.addStats(def.stats);

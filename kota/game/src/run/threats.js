@@ -34,10 +34,10 @@ export class Threats {
 
   create(id, def, x, y, wave) {
     const sprite = this.scene.add.image(x, y, `threat_${id}`);
-    const hp = def.hp[0] + def.hp[1] * (wave - 1);
+    const hp = def.hp[0] + def.hp[1] * (wave - 1) + (def.hp[2] ?? 0) * (wave - 1) ** 2;     // [base, per wave, per wave squared]
     const t = {
       id, def, sprite, x, y, hp, maxHp: hp, r: def.size,
-      damage: Math.max(1, Math.round(def.damage[0] + def.damage[1] * (wave - 1))),
+      damage: Math.max(1, Math.round(def.damage[0] + def.damage[1] * (wave - 1) + (def.damage[2] ?? 0) * (wave - 1) ** 2)),
       hitCd: 0, phase: Math.random() * 6, state: 'move', t: 0, cd: 1 + Math.random(),
       swallowed: { embers: 0, foods: 0 }, aim: null, hittable: true,
     };
@@ -172,6 +172,7 @@ export class Threats {
     const s = this.scene, hero = s.hero;
     for (let i = this.shards.length - 1; i >= 0; i--) {
       const sh = this.shards[i];
+      if (!sh) break;                                         // a fatal hit cleared the arena (finish -> clear) mid-loop
       sh.life -= dt; sh.x += sh.vx * dt; sh.y += sh.vy * dt;
       sh.sprite.setPosition(sh.x, sh.y);
       const hit = Math.hypot(hero.x - sh.x, hero.y - sh.y) < sh.r + HERO_R - 4 && s.damageHero(sh.damage, null);

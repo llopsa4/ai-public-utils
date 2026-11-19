@@ -12,9 +12,16 @@ CULTURE.md *Needs review* and the asset uses a plain placeholder there until it 
 
 ## Look
 
-- **Heroes only: stylized hand-painted 3D** (user, 2026-11-18). Smooth, softly shaded forms with
-  painted colour, wear and a normal map; no photorealism, no outlines. This note applies to the
-  two Dakota heroes until another plan extends it. **Everything else stays stylized low-poly:**
+- **2D update (user, 2026-11-18, supersedes the 3D lines in this file; DESIGN.md and PIPELINE.md win):
+  every asset is a hand-painted 2D still. The hero (Ash Wolf) has a thin dark brown-black painted outline,
+  soft shading inside and light from the upper left, and slightly stylised heroic proportions (head about
+  1/5 of her height, chunky shapes, bold colour blocks), not cute or chibi. Her palette: charcoal, dark hide
+  brown, rust, bone-tan, blue/white/rust bead bands, no green. Full rewrite of this file is plan task D1.**
+- **Code-drawn world (2026-11-19):** the menu, camp backdrop and arenas are drawn in code (src/camp/backdrop.js, BootScene textures,
+  src/run/atmosphere.js) until painted art replaces them; see DESIGN.md *Look and sound of the world*.
+- **Heroes only: stylized hand-painted 3D** (retired, see above). Smooth, softly shaded forms with
+  painted colour, wear and a normal map; no photorealism, no outlines. This note applied to the
+  two Dakota heroes. **Everything else stays stylized low-poly:**
   flat-shaded, faceted forms with clear silhouettes, colour from **vertex colours or one small
   palette texture**, not painted detail.
 - **Read at phone size first.** At the game camera a character stands about 60–80 px tall on a

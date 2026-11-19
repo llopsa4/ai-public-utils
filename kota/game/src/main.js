@@ -34,6 +34,31 @@ const unlockAudio = () => { audio.unlock(); if (audio.pending) { audio.setAmbien
 for (const type of ['pointerdown', 'keydown']) window.addEventListener(type, unlockAudio);
 $('screen').addEventListener('click', (e) => { if (e.target.closest('.opt')) audio.click(); });
 
+// Fullscreen (phones and tablets; iPhone Safari has none, so it offers "Add to Home Screen" instead, see the manifest).
+// Browsers only allow it from a tap, so it starts on the first tap when the setting is on, and when the setting is switched on.
+const root = document.documentElement;
+const fsRequest = root.requestFullscreen?.bind(root) ?? root.webkitRequestFullscreen?.bind(root);
+const fsExit = () => (document.exitFullscreen ?? document.webkitExitFullscreen)?.call(document);
+const inFullscreen = () => !!(document.fullscreenElement ?? document.webkitFullscreenElement);
+const fullscreenOk = !!fsRequest;
+async function enterFullscreen() {
+  if (!fullscreenOk || inFullscreen()) return;
+  try {
+    await fsRequest();
+    await screen.orientation?.lock?.('landscape').catch(() => {});      // phones: stay sideways
+  } catch { /* refused: the game works windowed */ }
+}
+const touchDevice = matchMedia('(pointer: coarse)').matches;
+let autoFullscreenDone = false;
+window.addEventListener('pointerup', () => {
+  if (autoFullscreenDone || !touchDevice || !settings.values.fullscreen) return;
+  autoFullscreenDone = true;
+  enterFullscreen();
+});
+const onFsChange = () => { if (!inFullscreen() && settings.values.fullscreen && autoFullscreenDone) settings.set('fullscreen', false); };   // the player left it: do not nag
+document.addEventListener('fullscreenchange', onFsChange);
+document.addEventListener('webkitfullscreenchange', onFsChange);
+
 // The canvas is drawn at the screen's pixel ratio (capped at 2; 1 on "light" quality) and shown at 100%.
 const pixelRatio = () => (settings.values.quality === 'low' ? 1 : Math.min(window.devicePixelRatio || 1, 2));
 const canvasSize = () => ({ width: Math.round(window.innerWidth * pixelRatio()), height: Math.round(window.innerHeight * pixelRatio()) });
@@ -57,23 +82,32 @@ let settingsSnap = null;
 function openSettings() {
   if (!settingsSnap) settingsSnap = ui.snapshot();
   app.paused = true;
+  audio.music.setPaused(true);
   const s = settings.values;
   const options = [
     { label: `Sound: ${s.sound ? 'on' : 'off'}`, onClick: () => { settings.set('sound', !s.sound); openSettings(); } },
+    { label: `Music: ${s.music ? 'on' : 'off'}`, detail: 'Plays during waves', onClick: () => { settings.set('music', !s.music); openSettings(); } },
     { label: `Controls: ${s.leftHanded ? 'left-handed' : 'right-handed'}`, onClick: () => { settings.set('leftHanded', !s.leftHanded); openSettings(); } },
     { label: `Screen shake: ${s.reduceShake ? 'reduced' : 'normal'}`, onClick: () => { settings.set('reduceShake', !s.reduceShake); openSettings(); } },
     { label: `Hints: ${s.hints ? 'on' : 'off'}`, onClick: () => { settings.set('hints', !s.hints); openSettings(); } },
+    fullscreenOk
+      ? { label: `Fullscreen: ${s.fullscreen && inFullscreen() ? 'on' : 'off'}`, onClick: () => {
+          if (inFullscreen()) { settings.set('fullscreen', false); fsExit(); } else { settings.set('fullscreen', true); autoFullscreenDone = true; enterFullscreen(); }
+          setTimeout(openSettings, 250);                   // the label updates once the browser has switched
+        } }
+      : { label: 'Fullscreen: not available', detail: 'On iPhone: Share, then Add to Home Screen', disabled: true, onClick: () => {} },
     { label: `Quality: ${s.quality === 'high' ? 'high' : 'light (faster)'}`, onClick: () => { settings.set('quality', s.quality === 'high' ? 'low' : 'high'); openSettings(); } },
   ];
   if (app.mode === 'run') {
     options.push({ label: 'Leave run', detail: 'Return to camp', onClick: () => { settingsSnap = null; game.scene.getScene('Run').leave(); } });
   }
-  options.push({ label: 'Back', onClick: () => { app.paused = false; ui.restore(settingsSnap); settingsSnap = null; } });
+  options.push({ label: 'Back', onClick: () => { app.paused = false; audio.music.setPaused(false); ui.restore(settingsSnap); settingsSnap = null; } });
   ui.show('Settings', 'Saved on this device.', options);
 }
 $('settings-btn').addEventListener('click', () => { if (!settingsSnap) openSettings(); });
 settings.onChange((key, value) => {
   if (key === 'sound') audio.setEnabled(value);
+  if (key === 'music') audio.music.setEnabled(value);
   if (key === 'leftHanded') input.setLeftHanded(value);
   if (key === 'quality') resizeCanvas();
 });

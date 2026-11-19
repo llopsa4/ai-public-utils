@@ -10,6 +10,7 @@ import { Weapons } from '../combat/weapons.js';
 import { Bosses } from '../combat/bosses.js';
 import { campBonus, recordRun } from '../camp/save.js';
 import { Place } from '../run/arena.js';
+import { Atmosphere } from '../run/atmosphere.js';
 import { Between } from '../between/between.js';
 
 const STEP = 1 / 60;
@@ -33,6 +34,7 @@ export class RunScene extends Phaser.Scene {
     const arenas = this.cache.json.get('arenas');
     this.placeDef = arenas.find((a) => a.id === this.placeId) ?? arenas[0];
     this.place = new Place(this, this.placeDef);
+    this.atmosphere = app.settings.values.quality === 'low' ? null : new Atmosphere(this, this.place);
 
     this.stats = makeStats(this.heroDef);
     this.campData = this.cache.json.get('camp');
@@ -78,6 +80,8 @@ export class RunScene extends Phaser.Scene {
     this.events.once('shutdown', () => {
       this.scale.off('resize', this.applyZoom);
       this.threats.clear(); this.pickups.clear(); this.weapons.clear();
+      this.atmosphere?.destroy();
+      this.app.audio.music.stop(0.3); this.app.audio.music.setPaused(false);
       this.app.ui.setBoss(null);
     });
 
@@ -101,11 +105,13 @@ export class RunScene extends Phaser.Scene {
     this.phase = 'fight';
     this.stats.hp = this.stats.maxHp;   // fully healed at the start of every wave
     this.spawner.start(n);
+    this.app.audio.music.start(n, n === 10 || n === 20);          // fight music: tempo and layers follow the wave; heavier on the bosses
     if (n > 1) this.app.hints.banner(`Wave ${n}`, '', 1.2);
   }
 
   endWave(text) {
     this.phase = 'ending';
+    this.app.audio.music.stop(1.2);
     if (this.bosses.main) this.app.hints.banner('Double-Face slips away', '', 1.6);   // the timer ran out first: no reward
     this.spawner.stop();
     this.threats.clear();
@@ -155,6 +161,7 @@ export class RunScene extends Phaser.Scene {
   finish(won) {
     if (this.phase === 'over') return;
     this.phase = 'over';
+    this.app.audio.music.stop(1.5);
     this.spawner.stop();
     this.threats.clear();
     this.setBoss(null);
@@ -258,6 +265,7 @@ export class RunScene extends Phaser.Scene {
     if (this.app.paused) return;
     this.acc += Math.min(delta, 100) / 1000;               // a long frame never runs the game in a burst
     while (this.acc >= STEP) { this.step(STEP); this.acc -= STEP; }
+    this.atmosphere?.update(Math.min(delta, 100) / 1000);
     this.updateHud();
   }
 

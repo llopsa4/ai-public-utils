@@ -125,13 +125,15 @@ Stats grow each wave: `hp = hp0 + hpPerWave × (wave − 1)`, the same for damag
 drops `value` embers (each ember is 1 experience + 1 money) and, with a **3% chance (+ luck/10 %)**,
 one food (heals 3 HP; drawn as wild rice, a maple-sugar cake or berries 📖).
 
-| Id | Kind | hp0 / per wave | Contact dmg / per wave | Speed | Value | Behaviour | First wave |
+| Id | Kind | hp0 / per wave / per wave² | Contact dmg / per wave / per wave² | Speed | Value | Behaviour | First wave |
 |---|---|---|---|---|---|---|---|
-| `frost_wisp` 🎮 | winter | 4 / 2.0 | 1 / 0.6 | 120 | 1 | chaser; a hit slows the hero 30% for 1 s; floats (ignores water) | 1 |
-| `blight_swarm` 🎮 | sickness | 2 / 1.0 | 1 / 0.4 | 165 | 1 (60% chance) | spawns as a cluster of 5 on one mark | 2 |
-| `hunger_shade` 🎮 | hunger | 10 / 4.0 | 2 / 0.8 | 95 | 2 | tough chaser; a hit stops Mending and halves food healing for 3 s | 3 |
-| `sleet_spirit` 🎮 | winter, ranged | 6 / 2.5 | 1 / 0.5 (shard) | 100 | 2 | keeps 300–420 px from the hero; every 2.4 s winds up 0.6 s (a thin line shows the aim) and fires a shard (260 px/s, 3 s life); no contact damage; floats | 4 |
-| `gnawing_hollow` 🎮 | hunger, burrower | 14 / 5.0 | 3 / 1.0 (bite) | 140 under ground | 3 | under ground 2.0 s (only a ripple shows; cannot be hit) and swallows any embers or food it passes; then surfaces under the hero's position (0.8 s ring, radius 50) and bites; stays up 2.0 s, then sinks; **beaten, it releases everything it swallowed** | 7 |
+| `frost_wisp` 🎮 | winter | 4 / 1.8 / 0.1 | 1 / 0.3 / 0.03 | 120 | 1 | chaser; a hit slows the hero 30% for 1 s; floats (ignores water) | 1 |
+| `blight_swarm` 🎮 | sickness | 2 / 0.9 / 0.05 | 1 / 0.2 / 0.015 | 165 | 1 (60% chance) | spawns as a cluster of 5 on one mark | 2 |
+| `hunger_shade` 🎮 | hunger | 10 / 3.6 / 0.2 | 2 / 0.35 / 0.04 | 95 | 2 | tough chaser; a hit stops Mending and halves food healing for 3 s | 3 |
+| `sleet_spirit` 🎮 | winter, ranged | 6 / 2.2 / 0.12 | 1 / 0.25 / 0.02 (shard) | 100 | 2 | keeps 300–420 px from the hero; every 2.4 s winds up 0.6 s (a thin line shows the aim) and fires a shard (260 px/s, 3 s life); no contact damage; floats | 4 |
+| `gnawing_hollow` 🎮 | hunger, burrower | 14 / 4.5 / 0.25 | 2 / 0.4 / 0.03 (bite) | 140 under ground | 3 | under ground 2.0 s (only a ripple shows; cannot be hit) and swallows any embers or food it passes; then surfaces under the hero's position (0.8 s ring, radius 50) and bites; stays up 2.0 s, then sinks; **beaten, it releases everything it swallowed** | 7 |
+
+*C8 tuning (2026-11-19):* hp and damage are `base + per wave·(w−1) + per wave²·(w−1)²` (the third number is optional); waves 7–9 carry fewer gnawing hollows (6, 6, 11) and wave 9 is 4 per 0.9 s.
 
 ## 7. Waves, pickups, level-ups and the shop
 
@@ -163,7 +165,7 @@ Double-Face; **wave 20** has no timer and ends when Iya falls.
   stats (§8) at a tier: I always possible; II from level 5, III from level 10, IV from level 15, with
   chance tier II 30%, III 15%, IV 5% when unlocked, each × (1 + luck/100), checked IV → I.
 - **Shop ("the makers' fire")** after the level-ups: **4 offers**, each a weapon (35%) or an item (65%).
-  - **Wave price factor:** × (1 + 0.08 · (wave − 1)), rounded.
+  - **Wave price factor:** × (1 + 0.25 · (wave − 1)), rounded.
   - **Weapon tier** offered: I; II from wave 4; III from wave 8; IV from wave 12 (chances like the
     level-up tiers, by wave instead of level).
   - **Item rarity:** uncommon chance = min(40%, 4% × (wave − 2)) × (1 + luck/100); rare chance =
@@ -197,7 +199,7 @@ Speed % 3/6/9/12 · Luck 5/10/15/20 · Gathering 5/8/10/12 · Reach 20/30/40/50.
 
 - A tall gaunt male giant with a face in front and a face behind, a hide bundle (the stolen child) at
   his hip (never a woman, never one beautiful and one ugly face, so he is not Anog-Ite; the child is
-  never hit or hurt). HP **900** (fixed), speed 110, contact damage 4.
+  never hit or hurt). HP **2400** (fixed), speed 110, contact damage 4.
 - **Two faces:** every 3 s he winds up 0.8 s and swipes **in front and behind** (two 120° arcs, 140 px,
   6 damage). His **sides are safe**. He turns at 90°/s.
 - **The lure:** every 8 s he beckons for 1.5 s: the hero is pulled toward him at 90 px/s unless dashing.
@@ -210,7 +212,7 @@ Speed % 3/6/9/12 · Luck 5/10/15/20 · Gathering 5/8/10/12 · Reach 20/30/40/50.
 
 ## 10. Iya, the Camp-Eater (wave 20 boss) 📖 CULTURE.md *May show*, mechanics 🎮
 
-- A huge heavy earth-brown giant on thin legs. HP **4000** (fixed), speed 90, contact damage 5.
+- A huge heavy earth-brown giant on thin legs. HP **22000** (fixed), speed 90, contact damage 5.
   The sky starts at night and **brightens toward dawn as his health falls** (the story: his thin legs
   fail him at dawn).
 - **Lunge:** winds up 1.0 s (a line shows the path), then rushes 300 px (8 damage on the way).
@@ -324,7 +326,7 @@ All in `game/data/`. Ids are lowercase with underscores; sprite ids match (art/P
    "line": "I won that race. Ask anyone.", "requires": null }]
 // helperValues.json  { "maxHp": [3, 6, 9, 12], "regen": [2, 3, 4, 5], … }
 // threats.json
-{ "frost_wisp": { "name": "Frost wisp", "hp": [4, 2.0], "damage": [1, 0.6], "speed": 120, "value": 1,
+{ "frost_wisp": { "name": "Frost wisp", "hp": [4, 1.8, 0.1], "damage": [1, 0.3, 0.03], "speed": 120, "value": 1,
    "behaviour": "chaser", "onHit": { "slow": 0.3, "time": 1 }, "floats": true, "size": 18 }, … }
 // waves.json
 [{ "wave": 1, "every": 1.6, "group": 2, "mix": { "frost_wisp": 100 } }, …,

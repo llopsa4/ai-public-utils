@@ -2,6 +2,7 @@
 // "Begin a run" asks for the place when more than one is unlocked.
 
 import { showCamp } from '../camp/camp.js';
+import { CampBackdrop } from '../camp/backdrop.js';
 
 export class CampScene extends Phaser.Scene {
   constructor() { super('Camp'); }
@@ -12,7 +13,10 @@ export class CampScene extends Phaser.Scene {
     app.input.setActive(false);
     app.ui.showHud(false);
     app.audio.setAmbience('camp');
-    this.cameras.main.setBackgroundColor('#6b6258');
+    this.cameras.main.setBackgroundColor('#0b1022');
+    this.backdrop = new CampBackdrop(this, app.settings.values.quality);
+    document.body.classList.add('camp');                       // lets the menu sit in the sky above the camp
+    this.events.once('shutdown', () => document.body.classList.remove('camp'));
     const data = this.cache.json.get('camp');
     const places = this.cache.json.get('arenas').filter((a) => !a.requires || app.camp.built.includes(a.requires));
     const start = (arena) => {
@@ -31,5 +35,9 @@ export class CampScene extends Phaser.Scene {
     if (app.fell) { app.fell = false; app.hints.trigger('carried'); }
   }
 
-  update(time, delta) { if (!this.app.paused) this.app.hints.update(Math.min(delta, 100) / 1000); }
+  update(time, delta) {
+    const dt = Math.min(delta, 100) / 1000;
+    this.backdrop.update(dt);
+    if (!this.app.paused) this.app.hints.update(dt);
+  }
 }

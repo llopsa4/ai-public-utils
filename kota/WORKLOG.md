@@ -1,6 +1,6 @@
 # Kota current status
 
-Updated 2026-11-18. Shared procedure: [process/WORKFLOW.md](../process/WORKFLOW.md).
+Updated 2026-11-19. Shared procedure: [process/WORKFLOW.md](../process/WORKFLOW.md).
 Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Codex](handoff/from-codex.md).
 
 ## Mode
@@ -172,3 +172,42 @@ Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Co
   `RunScene.place` is the Place (`scene.arena` is still the size). Verified in Chrome: chooser, wind push on threats, warning
   and arrow, water slowing and the snowshoe/floater exceptions, screenshot of the lakeshore; no console errors. Not tried on a
   phone. Wave 1 (20 s) never reaches a gust; the clock runs across waves. **Next: C8 (milestone 1 review and tuning, Opus + you).**
+- **Phone fullscreen and menu fit (Sonnet, 2026-11-18, user request during C8 prep):** Settings has a **Fullscreen** option (on by default
+  on touch devices: the first tap enters fullscreen and locks landscape where the browser allows; leaving it by the system gesture
+  turns the setting off so it does not nag). iPhone Safari has no fullscreen API: the option reads "not available" and says
+  Share > Add to Home Screen; `game/manifest.webmanifest` (display fullscreen, landscape) plus the Apple meta tags make that
+  home-screen app fullscreen (no icons yet). Menu fixes in `index.html`: `#screen` scrolls (safe centering, safe-area padding),
+  compact menus below 480 px height, the shop header keeps clear of the Settings button, hints moved to the bottom centre
+  (they covered the shop heading and boss bar). Verified in an 844x390 frame (settings, camp, upgrades, elder, level-up, shop)
+  and the real fullscreen toggle in desktop Chrome. Not yet tried on a real phone.
+- **Ash Wolf 2D sprite prompt (2026-11-18, user request, grilled):** the Gemini prompt is in
+  [art/briefs/hero_dakota_woman.md](art/briefs/hero_dakota_woman.md) *Generation prompt (2D sprite)*. The user attaches
+  `art/refs/hero_dakota_woman/sheet.jpg`, generates a few 1:1 images and saves them as `art/refs/ash_wolf/raw_NN.png`; Claude
+  then checks them (flat green, no green on her, readable at 80 px) and keys them with the D4 tool. Decisions: stylised heroic
+  proportions, thin dark painted outline, empty hands, dark palette with no green. STYLE.md has a short 2D note (full rewrite is D1).
+- **Ash Wolf art, 2026-11-19:** the user generated `art/refs/ash_wolf/raw_01.jfif` (checked: clean key, no green, hands empty; head about 1/7
+  height, more realistic than the 1/5 asked) and asked for Vampire-Survivors-style movement, so a 4-frame walk strip `walk_01.jfif`
+  was generated (all frames consistent, facing the camera only). `art/tools/process_sprite.py` (D4: green key, despill, one scale for all
+  frames, feet and body-centre alignment) made `art/refs/ash_wolf/processed/ash_wolf_walk_1..4.png`. Not installed in the game yet:
+  waiting for the user's approval. Plan: play the 4 frames in a loop while she moves (flip for left or right, idle = frame 2), and a
+  ground shadow.
+- **C8 bot balance pass done 2026-11-19 (Sonnet; the user said "continue with kota, forget about the art"):** a scripted bot (temporary
+  `game/_bot.js`, deleted; it kites, picks up, dodges the hollow's ring, buys by stat score) played full 20-wave runs through the `?debug`
+  hook. Found: the economy outran the threats (about 130 items bought by wave 19; Iya died in 3-7 s, Double-Face in 5-10 s; waves 13-19
+  cost almost no health). Changes (data and one-line code): shop price factor 0.08 -> 0.25 per wave; threat hp and damage gain an optional
+  per-wave-squared term (`[base, per wave, per wave^2]`, threats.js); damage slopes lowered, late waves harder; Double-Face 900 -> 2400 hp,
+  Iya 4000 -> 22000 hp; fewer gnawing hollows in waves 7-9 and wave 9 eased (4 per 0.9 s); items that lower health cannot take it below 5
+  (campfire ash stacked to 1 HP). Result for the bot: about 65% wins (deaths in waves 6-11), bosses last 20-55 s, late-wave damage 7-17 HP.
+  **Bug fixed:** a shard that killed the hero crashed `updateShards` (arena cleared mid-loop). DESIGN-m1.md updated. NOT checked with a human:
+  the bot is not a player, so real feel, the wave 7-9 difficulty and boss length still need the user's phone playtest. Nothing committed.
+- **Dakota look and fight music 2026-11-19 (Sonnet, user request, grilled; plan in the user's .claude/plans):** all code-drawn, no art files.
+  (1) Menu: hide-brown palette, blue/white/rust triangle bands top and bottom of every menu, framed cards, gold uppercase headings
+  (`index.html`). (2) Camp: `src/camp/backdrop.js` (night sky, stars, moon, hills, ring of 7 teepees around a flickering fire, smoke, sparks;
+  the camp menu sits in the sky via `body.camp`). (3) Arenas: seamless richer ground tiles, new props (grass, flowers, stones, cattails,
+  driftwood) in BootScene and `data/arenas.json`, water gradient with ripples and a wavy foam shoreline, soft dark edge. (4) `src/run/atmosphere.js`
+  (dawn on the prairie, dusk on the lakeshore via the `#light` overlay, 36 swaying props, drifting dust, fireflies on the shore; off in "light"
+  quality). (5) `src/audio/music.js`: hand drum + rattle + drone + sparse D-minor-pentatonic flute, 84 -> 112 bpm over the waves, heavier drum
+  and no flute on waves 10 and 20, fades at wave end, ducks the ambience, Settings > Music, pauses with Settings. Verified in Chrome (screenshots,
+  844x390 shop and level-up, music level by an analyser: plays, silent after the wave, boss wave, toggle, pause; no page errors).
+  NOT verified: how it sounds (nobody has listened) and the phone fps; the user judges the music and the look on the phone. Nothing committed.
+
