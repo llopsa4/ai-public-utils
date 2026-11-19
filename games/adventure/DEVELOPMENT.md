@@ -58,3 +58,11 @@ user asks for a push.
   and blocking fight/screen outcomes. Its limits and test registration are in TESTING.md.
 - Request art through the shared workflow. Temporary test grids do not replace approved visual
   composition; the [reference map](art/REFERENCES.md) identifies the relevant authority.
+
+## Helper scripts
+
+- `scripts/probe.mjs`: screenshots any room at any point of the story from the built game (run
+  `npm run build` first); options are in the script header. Output goes to `shots/`, which is not
+  committed.
+- `art/palette_png.py`: Python helper that saves a sprite with the master palette
+  (`art/style/palette.json`). `art/menu-flame.py` imports it; it needs Pillow.
