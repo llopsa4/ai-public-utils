@@ -1,0 +1,29 @@
+{
+  "resources": {
+    "food":  { "start": 120, "label": "Food" },
+    "wood":  { "start": 40,  "label": "Wood" },
+    "hides": { "start": 6,   "label": "Hides" }
+  },
+  "labels": { "unity": "Wotakuye", "family": "family" },
+  "economy": {
+    "hungerPerTick": 0.08333,
+    "mealEvery": 600,
+    "mealRelief": 50,
+    "hungryAt": 70,
+    "hungryWork": 0.75,
+    "rule": "even"
+  },
+  "wotakuye": {
+    "start": 60, "min": 0, "max": 100,
+    "events": {
+      "mealFull": 2, "mealShortBase": -1, "mealShortScale": -8, "death": -8,
+      "unhousedPerDay": -1, "waveCleanNoDeaths": 6, "waveCleanWithDeaths": 2
+    },
+    "bands": [
+      { "name": "Quarrelling", "from": 0,  "work": 0.7,  "dayEffect": "leave" },
+      { "name": "Strained",    "from": 20, "work": 0.85, "dayEffect": null },
+      { "name": "Steady",      "from": 40, "work": 1.0,  "dayEffect": null },
+      { "name": "United",      "from": 70, "work": 1.2,  "dayEffect": "newcomer", "newcomerMinFood": 40 }
+    ]
+  }
+}

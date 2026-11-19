@@ -1,0 +1,19 @@
+{
+  "jobs": {
+    "gather": { "res": "food", "rate": 0.01, "carry": 5, "spotBonus": 1.5, "spotRadius": 10 },
+    "hunt":   { "food": 10, "hides": 1, "huntTicks": 300, "spotDist": [14, 22], "success": 0.7 },
+    "chop":   { "res": "wood", "rate": 0.015, "carry": 5, "searchRadius": 4 },
+    "build":  { "rate": 1, "maxPerSite": 3 },
+    "haul":   { "carry": 5, "maxPerSite": 2 },
+    "fight":  {}
+  },
+  "flee": { "triggerDist": 5, "safeDist": 8, "resumeTicks": 100 },
+  "storeRetryTicks": 50,
+  "wander": { "radius": 3, "idleMin": 50, "idleSpan": 100 },
+  "ages": {
+    "adult": { "speed": 0.05, "meal": 1,   "works": "all",     "rate": 1.0, "draft": true },
+    "elder": { "speed": 0.04, "meal": 1,   "works": ["gather"], "rate": 0.5, "draft": false },
+    "child": { "speed": 0.05, "meal": 0.5, "works": [],        "rate": 0,   "draft": false }
+  },
+  "health": { "max": 100, "regen": 0.01, "regenBelowHunger": 70, "starveDamage": 0.05 }
+}
