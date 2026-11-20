@@ -12,7 +12,7 @@ export const DAY_TICKS = 1200;
 
 export type Res = 'food' | 'wood' | 'hides' | 'pemmican';
 export type Age = 'adult' | 'elder' | 'child';
-export type JobKind = 'gather' | 'hunt' | 'dry' | 'heal' | 'chop' | 'build' | 'haul' | 'fight';
+export type JobKind = 'gather' | 'hunt' | 'dry' | 'heal' | 'scout' | 'drill' | 'chop' | 'build' | 'haul' | 'fight';
 export type Tile2 = [number, number];
 
 export interface Task {
@@ -75,6 +75,8 @@ export interface WaveRun {
   edge: Edge | null;
   /** Middle of the spawn segment along the chosen edge. */
   centre: number;
+  /** True when a staffed scouts' lodge gave the early warning, so the banner shows the count. */
+  scouted: boolean;
 }
 
 export interface Building {
@@ -145,13 +147,18 @@ export const START_STORE: Record<Res, number> = {
   hides: resourceData.resources.hides.start,
   pemmican: resourceData.resources.pemmican.start,
 };
-const TYPES = buildingsData.types as unknown as Record<string, { hp?: number; houses?: number; caps?: Record<Res, number> }>;
+const TYPES = buildingsData.types as unknown as Record<string, { size: Tile2; hp?: number; houses?: number; caps?: Record<Res, number> }>;
 export const TIPI_BEDS = TYPES.tipi.houses!;
 
-/** Tiles of a 2x2 footprint placed by its top-left tile. */
-export function footprint(x: number, y: number): Tile2[] {
-  return [[x, y], [x + 1, y], [x, y + 1], [x + 1, y + 1]];
+/** Tiles of a footprint placed by its top-left tile: 2x2 unless `size` says otherwise (traps and pits are 1x1). */
+export function footprint(x: number, y: number, size: Tile2 = [2, 2]): Tile2[] {
+  const out: Tile2[] = [];
+  for (let dy = 0; dy < size[1]; dy++) for (let dx = 0; dx < size[0]; dx++) out.push([x + dx, y + dy]);
+  return out;
 }
+
+/** The footprint of a building type placed at its top-left tile. */
+export const footprintOf = (type: string, x: number, y: number): Tile2[] => footprint(x, y, TYPES[type]?.size);
 
 export function addBuilding(s: GameState, type: string, x: number, y: number, done: boolean): Building {
   const b: Building = {
@@ -159,7 +166,7 @@ export function addBuilding(s: GameState, type: string, x: number, y: number, do
     hp: TYPES[type]?.hp ?? null,
   };
   s.buildings.push(b);
-  for (const [tx, ty] of footprint(x, y)) s.blocked[ty * s.map.size + tx] = true;
+  for (const [tx, ty] of footprintOf(type, x, y)) s.blocked[ty * s.map.size + tx] = true;
   return b;
 }
 
@@ -175,7 +182,7 @@ export function createState(seed: number): GameState {
     people: [],
     buildings: [],
     enemies: [],
-    waves: wavesData.waves.map(() => ({ phase: 'pending' as const, edge: null, centre: 0 })),
+    waves: wavesData.waves.map(() => ({ phase: 'pending' as const, edge: null, centre: 0, scouted: false })),
     result: null,
     blocked: new Array(map.size * map.size).fill(false),
     store: { ...START_STORE },

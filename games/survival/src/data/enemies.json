@@ -1,7 +1,9 @@
 {
   "fighters": {
     "bow":  { "range": 4.0, "damage": 12, "cooldown": 15, "accuracy": 0.75, "sight": 10, "society": "hunters" },
-    "club": { "range": 0.8, "damage": 8,  "cooldown": 12, "accuracy": 0.8,  "sight": 10 }
+    "club": { "range": 0.8, "damage": 8,  "cooldown": 12, "accuracy": 0.8,  "sight": 10 },
+    "lancer": { "range": 1.6, "damage": 14, "cooldown": 14, "accuracy": 0.8, "sight": 10, "society": "lancers" },
+    "archer": { "range": 4.0, "damage": 12, "cooldown": 15, "accuracy": 0.75, "sight": 10, "society": "archers" }
   },
   "enemies": {
     "wolf":        { "hp": 40, "range": 0.7, "damage": 10, "cooldown": 10, "accuracy": 0.7,  "speed": 0.16, "sight": 8,  "fleeBelow": 0.2, "fleeSpeed": 0.2 },

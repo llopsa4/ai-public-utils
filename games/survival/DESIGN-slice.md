@@ -397,6 +397,8 @@ people never attack; they flee (`## Jobs`).
 | 2 | 7200 (day 7) | 3 wolves | 6-tile segment |
 | 3 | 10800 (day 10) | 5 wolves + 1 pack leader | 8-tile segment |
 | 4 | 14400 (day 13) | 7 wolves + 1 pack leader | 8-tile segment |
+| 5 | 18000 (day 16) | 9 wolves + 1 pack leader | 8-tile segment |
+| 6 | 21600 (day 19) | 10 wolves + 2 pack leaders | 10-tile segment |
 
 - **Warning:** at arrival - 300 ticks (30 s at 1x) the wave banner shows "Scouts: wolves coming from
   the <north|east|south>" with a countdown.
@@ -405,7 +407,7 @@ people never attack; they flee (`## Jobs`).
   tiles (rng); spawns land on passable tiles of that edge.
 - A wave is **defeated** when every enemy is dead or has fled. Waves do not wait for each other: a
   wave still alive when the next arrives just adds to it.
-- **End of slice:** wave 4 defeated (added 2026-11-20 so the first winter, days 10-12, is played) -> "The camp held" screen with day, people left and Wotakuye,
+- **End of the run:** wave 6 defeated (wave 4 from 2026-11-20 so the first winter is played; waves 5-6 added 2026-11-20 with upgrades tier 2, see DESIGN-upgrades-2.md) -> "The camp held" screen with day, people left and Wotakuye,
   and a "Play again" button.
 - **Lose:** no living people, or fire HP 0 -> "The camp is lost" screen, same summary and button.
 - Not in the slice: calling a wave early (needs gift value), difficulty, waves scaling with strength.
@@ -421,9 +423,11 @@ people never attack; they flee (`## Jobs`).
     { "at": 3600,  "groups": [ { "enemy": "wolf", "count": 1 } ], "spread": 1 },
     { "at": 7200,  "groups": [ { "enemy": "wolf", "count": 3 } ], "spread": 6 },
     { "at": 10800, "groups": [ { "enemy": "wolf", "count": 5 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
-    { "at": 14400, "groups": [ { "enemy": "wolf", "count": 7 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 }
+    { "at": 14400, "groups": [ { "enemy": "wolf", "count": 7 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
+    { "at": 18000, "groups": [ { "enemy": "wolf", "count": 9 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
+    { "at": 21600, "groups": [ { "enemy": "wolf", "count": 10 }, { "enemy": "pack_leader", "count": 2 } ], "spread": 10 }
   ],
-  "winAfterWave": 4
+  "winAfterWave": 6
 }
 ```
 
@@ -476,7 +480,7 @@ Simulation tests (`node --import tsx --test`), no Phaser:
 - `tests/sim/combat.test.ts`: a drafted hunter at range 4 hits a wolf with a fixed seed; a club
   fighter must close in; a wolf below 20% flees; the pack leader does not.
 - `tests/sim/waves.test.ts`: the warning starts at tick 3300 with an allowed edge; wave 3 spawns 6
-  enemies; defeating wave 4 sets `state.result = "won"` (wave 3 no longer does); killing every person sets `"lost"`.
+  enemies; defeating wave 6 sets `state.result = "won"` (waves 3-5 do not); killing every person sets `"lost"`.
 
 Browser smoke test (`tests/smoke.spec.ts`, Playwright, C7): open the dev server with `?debug`,
 click **Start**, check the canvas renders and `window.camp.state.people.length === 20`, call

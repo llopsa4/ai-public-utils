@@ -3,7 +3,7 @@
 import { DAY_TICKS, type GameState } from './state';
 
 /** Raise whenever `GameState` changes shape. Older versions are not migrated: they are unreadable. */
-export const SAVE_VERSION = 3; // 2: `store.pemmican` (seasons); 3: `gift`, `upgrades`
+export const SAVE_VERSION = 4; // 2: `store.pemmican` (seasons); 3: `gift`, `upgrades`; 4: wave runs have `scouted`, tier 2 buildings and societies
 export const SAVE_FORMAT = 'camp-fire-save';
 
 export interface SaveSummary {
@@ -67,6 +67,7 @@ export function parseSave(text: string): ParsedSave {
   for (const key of ['people', 'buildings', 'enemies', 'waves', 'blocked']) {
     if (!Array.isArray(s[key])) return { ok: false, reason: `bad ${key}` };
   }
+  if (!(s.waves as unknown[]).every((w) => isObject(w) && typeof w.scouted === 'boolean')) return { ok: false, reason: 'bad waves' };
   if (!Array.isArray(s.upgrades)) return { ok: false, reason: 'bad upgrades' };
   const store = s.store;
   if (!isObject(store) || !isNum(store.food) || !isNum(store.wood) || !isNum(store.hides) || !isNum(store.pemmican)) {

@@ -148,7 +148,7 @@ test("the healers' lodge needs the society first", () => {
   const s = newGame(1);
   s.store.wood = 100;
   s.store.hides = 20;
-  assert.equal(placeBuilding(s, 'healers_lodge', 28, 26).error, "Needs the healers' society.");
+  assert.equal(placeBuilding(s, 'healers_lodge', 28, 26).error, "Needs the Healers' society.");
   s.upgrades.push('healers');
   const r = placeBuilding(s, 'healers_lodge', 28, 26);
   assert.ok(r.building, r.error ?? 'placed');

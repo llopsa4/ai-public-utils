@@ -4,7 +4,7 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 [WORKFLOW.md](../../WORKFLOW.md#handoff-files).
 
 ## Working on
-- Nothing. 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
+- Nothing. 2026-11-20: tier 2 V1-V8 done (next: V9, the user's playtest). 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
   (`save.ts`: `serialize`, `parseSave`, `loadState`, plus `dayOf` and `SAVE_FORMAT`); DS2 done
   (`src/save/slots.ts`: `listSlots`, `readSlot`, `writeSlot`, `clearSlot`, `importSlot`, `probe`,
   `firstEmptySlot`, `browserStorage`); DS3 done (`GameScene.saveNow()` and `saveSlot` are the hooks
@@ -21,6 +21,24 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   (it also tints the build menu a little); spring newcomers use the United band's 40-food rule.
 - Winter tint at 18% is subtle (grass goes from (143,174,90) to (151,186,116)); raise it in
   `seasons.json` if you want it louder.
+
+## Tier 2 notes (V1-V8, 2026-11-20)
+- Went past PLAN's file list on purpose: `state.ts` (`footprint(x, y, size)`, `footprintOf`, `WaveRun.scouted`),
+  `buildings.ts` (`removeBuilding`, `standsAt`, a size-aware `ringSpot`, the requirement message now reads
+  `Needs the <upgrade label>.`), `Game.ts` and `Select.ts` (1x1 ghost, sprite centre, click and outline),
+  `Menu.ts` (controls text mentions Tab), `tests/sim/{buildings,save,upgrades}.test.ts` (menu order, a v3 file,
+  the new message), `DESIGN-slice.md` (waves 5-6), `TESTING.md`.
+- Choices the spec left open: `scouted` is a boolean and the banner counts come from `waves.json`; the early
+  warning fires only if the lodge is staffed at exactly tick `at - 600`, else the old 300; "staffed" means a
+  `scout` worker standing on the lodge's ring of tiles; scouts and drillers just wait there; a trap springs on
+  any wolf, fleeing or not, and says `A trap sprang on a wolf.`; fire pits slow fleeing wolves too; traps and
+  pits block their tile for people like any building; upgrade labels are `Akicita scouts`, `Akicita warriors`,
+  `Builders' society`, `Better tools`; the Upgrades panel is two columns (tier 1 left, tier 2 right, each tier 2
+  card next to nothing in particular) and 960 x 512; the Build panel is now 140 px tall (a page strip on top).
+- `parseSave` also rejects a wave run without a boolean `scouted`.
+- The smoke test presses keys with a retry (`pressUntil`): Phaser reads keys from a per-frame queue and a key
+  that lands between frames is sometimes missed, so a single press made the test fail about half the time.
+- Not done (spec: not in this pass): riders and horses, barricades, calling a wave early.
 
 ## Upgrades notes (U1-U5, 2026-11-20)
 - Went past PLAN's file list on purpose: `state.ts` (`gift`, `upgrades`, the `buy` order), `orders.ts`,

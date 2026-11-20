@@ -7,6 +7,7 @@ import { workRate } from '../../src/sim/jobs';
 import { walkable } from '../../src/sim/people';
 import type { Building, GameState } from '../../src/sim/state';
 import { newGame, queueOrders, step } from '../../src/sim/tick';
+import { UPGRADE_IDS } from '../../src/sim/upgrades';
 import { stepFed } from './helpers';
 
 const rich = (s: GameState) => {
@@ -43,8 +44,11 @@ const adults = (s: GameState) => s.people.filter((p) => p.age === 'adult');
 const tilesOf = (s: GameState, type: string) =>
   s.map.tiles.map((t, i) => [t, i] as const).filter(([t]) => t === type).map(([, i]) => [i % 48, Math.floor(i / 48)] as [number, number]);
 
-test('the six buildings are the buildable types, in menu order', () => {
-  assert.deepEqual(BUILDABLE, ['tipi', 'gathering_spot', 'hunting_lodge', 'store', 'drying_rack', 'healers_lodge']);
+test('the buildable types are in menu order', () => {
+  assert.deepEqual(BUILDABLE, [
+    'tipi', 'gathering_spot', 'hunting_lodge', 'store', 'drying_rack', 'healers_lodge', 'scouts_lodge',
+    'lancers_lodge', 'archers_lodge', 'trap', 'fire_pit',
+  ]);
 });
 
 test('placement is refused off grass, out of range, overlapping, off the map or short of cost', () => {
@@ -87,8 +91,9 @@ test('placement is refused off grass, out of range, overlapping, off the map or 
 test('a valid placement takes the whole cost at once and makes an unfinished site', () => {
   const s = newGame(1);
   rich(s);
-  s.store.wood = 200;
-  s.upgrades.push('healers');
+  s.store.wood = 300;
+  s.store.hides = 60;
+  s.upgrades.push(...UPGRADE_IDS);
   for (const type of BUILDABLE) {
     const cost = buildingDefs[type].cost!;
     const before = { ...s.store };
@@ -100,7 +105,7 @@ test('a valid placement takes the whole cost at once and makes an unfinished sit
     assert.equal(walkable(s, b.x, b.y), false, 'the footprint is blocked');
     assert.equal(placementError(s, type, b.x, b.y), 'Something is in the way.');
   }
-  assert.equal(s.buildings.length, 1 + 3 + 6); // fire, 2 tipis, store, then the new six
+  assert.equal(s.buildings.length, 4 + BUILDABLE.length); // fire, 2 tipis, store, then one of each type
 });
 
 test('a place order is applied at the start of the next tick', () => {

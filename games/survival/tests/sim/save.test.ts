@@ -87,6 +87,14 @@ test('unreadable saves are refused', () => {
   delete noGift.state.gift;
   assert.equal(parseSave(JSON.stringify(noGift)).ok, false, 'a version 2 style state');
 
+  const v3 = structuredClone(good);
+  v3.version = 3;
+  assert.equal(parseSave(JSON.stringify(v3)).ok, false, 'a version 3 file is unreadable');
+
+  const noScouted = structuredClone(good);
+  delete noScouted.state.waves[0].scouted;
+  assert.equal(parseSave(JSON.stringify(noScouted)).ok, false, 'a wave run without scouted');
+
   const badUpgrades = structuredClone(good);
   badUpgrades.state.upgrades = 'dogs';
   assert.equal(parseSave(JSON.stringify(badUpgrades)).ok, false);

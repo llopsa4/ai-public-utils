@@ -4,6 +4,8 @@
     "hunt":   { "food": 10, "hides": 1, "huntTicks": 300, "spotDist": [14, 22], "success": 0.7 },
     "chop":   { "res": "wood", "rate": 0.015, "carry": 5, "searchRadius": 4 },
     "dry":    { "take": 6, "give": 4, "ticks": 200 },
+    "scout":  {},
+    "drill":  {},
     "heal":   { "below": 80, "ticks": 50, "amount": 15, "coldEase": 1, "reach": 2.5 },
     "build":  { "rate": 1, "maxPerSite": 3 },
     "haul":   { "carry": 5, "maxPerSite": 2 },

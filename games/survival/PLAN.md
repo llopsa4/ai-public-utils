@@ -166,6 +166,23 @@ Spec: [DESIGN-upgrades.md](DESIGN-upgrades.md). Common rules as in Phase C; run
 | U5 | Sonnet | `## Tests` (smoke); `tests/smoke.spec.ts`, `TESTING.md` | `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the upgrades case with no console errors |
 | U6 (user, gate) | Opus | `DESIGN-upgrades.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays a run, buys at least one upgrade, and says the gift pacing feels right |
 
+## Phase D: upgrades tier 2 (spec approved 2026-11-20)
+
+Spec: [DESIGN-upgrades-2.md](DESIGN-upgrades-2.md). Common rules as in Phase C; run
+`npm run typecheck && npm test` (and `npm run e2e` when a scene changes). Easiest first.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| V1 | Sonnet | `## Waves 5 and 6`; `src/data/waves.json`, `src/sim/waves.ts`, `tests/sim/waves.test.ts` | `src/data/waves.json` (waves 5-6, `winAfterWave` 6), `DESIGN-slice.md` wave table, tests | the wave tests pass; the run is won after wave 6 |
+| V2 | Sonnet | `## Upgrades`, `## Tools`, `## Data`; `src/sim/{upgrades,jobs}.ts`, `src/data/upgrades.json` | the same files (`requires` check in `buyUpgrade`, four new upgrades, `buildSpeed`), `tests/sim/upgrades2.test.ts` | the requirement and tools tests pass |
+| V3 | Sonnet | `## Scouts' lodge`; `src/sim/{waves,jobs,buildings}.ts`, `src/data/{buildings,jobs}.json` | the same files (`scouts_lodge`, `scout` job, early warning, `scouted`) | the scout tests pass |
+| V4 | Sonnet | `## Builders: traps and fire pits`; `src/sim/{buildings,combat}.ts`, `src/data/{buildings,enemies}.json` | the same files (`trap`, `fire_pit`, wolf slowing and trap damage) | the trap and fire pit tests pass |
+| V5 | Sonnet | `## Warriors' lodges`; `src/sim/{buildings,combat,jobs}.ts`, `src/data/{buildings,enemies,jobs}.json` | the same files (`lancers_lodge`, `archers_lodge`, `drill` job, `fighterOf`) | the lancer and archer tests pass |
+| V6 | Sonnet | `## Save format`; `src/sim/save.ts`, `tests/sim/save.test.ts` | `SAVE_VERSION = 4`, tests | a v3 file is unreadable; a v4 round trip keeps `scouted` |
+| V7 | Sonnet | `## UI`; `src/scenes/{Hud,Build}.ts`, `src/render/placeholders.ts`, `art/manifest.json`, `art/ASSETS.md` | the same files (seven-card panel, Build pages on Tab, banner count, toasts, placeholder art) | by hand: a tier 2 buy needs its tier 1 upgrade; the Societies page shows only unlocked entries |
+| V8 | Sonnet | `## Tests` (smoke); `tests/smoke.spec.ts`, `TESTING.md` | `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the tier 2 case with no console errors |
+| V9 (user, gate) | Opus | `DESIGN-upgrades-2.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays to wave 6, buys at least one tier 2 upgrade, and says the pacing feels right |
+
 ## Phase D: Wotakuye help (done 2026-11-20, before U6)
 
 Spec: [DESIGN-upgrades.md](DESIGN-upgrades.md) `## Wotakuye help`.

@@ -127,6 +127,66 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.fillStyle(0x4f8a3a, 1).fillEllipse(cx + 22, cy - 8, 8, 12);
     g.fillStyle(0xe7e1c8, 1).fillCircle(cx + 22, cy - 22, 2);
   },
+  building_scouts_lodge: (g, w, h) => {
+    // A small lodge with a tall lookout pole and a red pennant.
+    lodgeBody(g, w, h, 0x8a6a44, 0x6f5234, 0x9c7f55);
+    const cx = w / 2;
+    const cy = h * 0.75;
+    g.lineStyle(3, 0x5a3b22, 1).lineBetween(cx + 30, cy + 4, cx + 30, cy - 70);
+    g.fillStyle(0xb9473c, 1).fillTriangle(cx + 30, cy - 70, cx + 52, cy - 62, cx + 30, cy - 54);
+    g.fillStyle(0xe7e1c8, 1).fillCircle(cx + 30, cy - 72, 2.5);
+  },
+  building_lancers_lodge: (g, w, h) => {
+    // A lodge with three lances standing in front, points up, with red bands.
+    lodgeBody(g, w, h, 0x7a5a3a, 0x62482e, 0xb08a58);
+    const cx = w / 2;
+    const cy = h * 0.75;
+    for (const dx of [-8, 0, 8]) {
+      g.lineStyle(2, 0x5a3b22, 1).lineBetween(cx + 24 + dx, cy + 14, cx + 22 + dx * 0.6, cy - 34);
+      g.fillStyle(0xcfd3d6, 1).fillTriangle(cx + 22 + dx * 0.6, cy - 44, cx + 19 + dx * 0.6, cy - 33, cx + 25 + dx * 0.6, cy - 33);
+      g.fillStyle(0xb9473c, 1).fillRect(cx + 20 + dx * 0.6, cy - 30, 4, 3);
+    }
+  },
+  building_archers_lodge: (g, w, h) => {
+    // A lodge with a round target on a stand and a bow leaning on the wall.
+    lodgeBody(g, w, h, 0x7e6240, 0x654a30, 0xa8905f);
+    const cx = w / 2;
+    const cy = h * 0.75;
+    g.lineStyle(2, 0x5a3b22, 1).lineBetween(cx + 30, cy + 14, cx + 30, cy - 8).lineBetween(cx + 22, cy + 16, cx + 38, cy + 16);
+    g.fillStyle(0xe6d3a3, 1).fillCircle(cx + 30, cy - 18, 13);
+    g.fillStyle(0xb9473c, 1).fillCircle(cx + 30, cy - 18, 9);
+    g.fillStyle(0xe6d3a3, 1).fillCircle(cx + 30, cy - 18, 5);
+    g.fillStyle(0xb9473c, 1).fillCircle(cx + 30, cy - 18, 2);
+    g.lineStyle(2, 0x4a3624, 1).beginPath().arc(cx - 26, cy - 2, 14, -1.2, 1.2).strokePath();
+    g.lineStyle(1, 0xe7e1c8, 1).lineBetween(cx - 26 + 14 * Math.cos(-1.2), cy - 2 + 14 * Math.sin(-1.2), cx - 26 + 14 * Math.cos(1.2), cy - 2 + 14 * Math.sin(1.2));
+  },
+  building_trap: (g, w, h) => {
+    // A snare: a bent sapling holding a rope loop over a pit of sticks, on one tile.
+    const cx = w / 2;
+    const cy = h * 0.75;
+    shadow(g, cx + 1, cy + 1, 34, 14);
+    g.fillStyle(0x6a5a3a, 1).fillPoints([p(cx, cy - 9), p(cx + 18, cy), p(cx, cy + 9), p(cx - 18, cy)], true);
+    g.lineStyle(2, 0x5a3b22, 1);
+    for (const dx of [-9, -3, 3, 9]) g.lineBetween(cx + dx, cy - 2, cx + dx * 0.6, cy + 3);
+    g.lineStyle(2, 0x4a3624, 1).beginPath().arc(cx - 12, cy - 4, 14, -1.3, 0.2).strokePath();
+    g.lineStyle(2, 0xc9a56e, 1).strokeEllipse(cx + 2, cy - 1, 18, 8);
+  },
+  building_fire_pit: (g, w, h) => {
+    // A ring of stones round glowing embers and a few logs, on one tile.
+    const cx = w / 2;
+    const cy = h * 0.75;
+    shadow(g, cx + 1, cy + 2, 36, 14);
+    g.fillStyle(0x3a2a20, 1).fillEllipse(cx, cy, 28, 13);
+    g.fillStyle(0xe8601c, 1).fillEllipse(cx, cy, 18, 8);
+    g.fillStyle(0xf6a53a, 1).fillEllipse(cx, cy - 1, 10, 4);
+    g.fillStyle(0x8c8c84, 1);
+    for (let i = 0; i < 9; i++) {
+      const a = (i / 9) * Math.PI * 2;
+      g.fillCircle(cx + Math.cos(a) * 15, cy + Math.sin(a) * 7, 3);
+    }
+    g.fillStyle(0xe8601c, 1).fillTriangle(cx, cy - 20, cx - 6, cy - 2, cx + 6, cy - 2);
+    g.fillStyle(0xfbe08a, 1).fillTriangle(cx, cy - 12, cx - 3, cy - 2, cx + 3, cy - 2);
+  },
   fire_central: (g, w, h) => {
     const cx = w / 2;
     shadow(g, cx + 2, h - 6, 40, 14);
@@ -142,6 +202,21 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.fillStyle(0xfbe08a, 1).fillTriangle(cx, h - 20, cx - 3, h - 9, cx + 4, h - 9);
   },
 };
+
+/** The common lodge body for the societies: two walls, a roof and a door, on the 2x2 footprint. */
+function lodgeBody(g: G, w: number, h: number, left: number, right: number, roof: number): void {
+  const cx = w / 2 - 6;
+  const cy = h * 0.75;
+  shadow(g, cx + 10, cy + 4, 104, 40);
+  const hw = 34;
+  const hh = 17;
+  const rise = 24;
+  g.fillStyle(left, 1).fillPoints([p(cx - hw, cy), p(cx, cy + hh), p(cx, cy + hh - rise), p(cx - hw, cy - rise)], true);
+  g.fillStyle(right, 1).fillPoints([p(cx + hw, cy), p(cx, cy + hh), p(cx, cy + hh - rise), p(cx + hw, cy - rise)], true);
+  g.fillStyle(roof, 1).fillPoints([p(cx, cy - hh - rise - 8), p(cx + hw + 4, cy - rise), p(cx, cy + hh - rise + 4), p(cx - hw - 4, cy - rise)], true);
+  g.lineStyle(1, 0x4a3624, 1).strokePoints([p(cx - hw - 4, cy - rise), p(cx, cy + hh - rise + 4), p(cx + hw + 4, cy - rise)], false);
+  g.fillStyle(0x4a3624, 1).fillRect(cx + 6, cy - 4, 10, 12);
+}
 
 function p(x: number, y: number): Phaser.Types.Math.Vector2Like {
   return { x, y };

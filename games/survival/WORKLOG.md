@@ -87,4 +87,21 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   Wotakuye help done 2026-11-20 (the user asked for the rules to be shown in the game): a hover tooltip on
   the Wotakuye bar with a `?` hint (`src/sim/help.ts`, `Hud.ts`; live numbers and rules read from the data;
   101 tests and 5 e2e tests pass; checked by screenshot, not by hand). Uncommitted.
-  Next: U6, the user plays a run, buys an upgrade and judges the gift pacing (and the tooltip).
+  Committed and pushed to `main` on the user's request, 2026-11-20 (`3ac7f71`).
+  Tier 2 started 2026-11-20 before U6 (the user asked to go ahead). Grilled: all four items (scouts,
+  warriors, builders, faster building), gated by gift + goods + one tier 1 upgrade, waves 5-6 added,
+  scouts' lodge, warriors' lodges with a class per lodge (lancers or archers), traps and fire pits only.
+  Spec drafted in [DESIGN-upgrades-2.md](DESIGN-upgrades-2.md), plan rows V1-V9 in [PLAN.md](PLAN.md).
+  Approved by the user 2026-11-20 (numbers, the v3 -> v4 save break, the Tab-paged Build menu). U6
+  passed 2026-11-20: the user said it is fine (no fixes raised).
+  V1-V8 done 2026-11-20 (the user chose "all of V1-V8 in order"): waves 5-6 (`winAfterWave` 6); `requires`
+  and `tools` (`buildSpeed`); the scouts' lodge (`scout` job, warning at `at - 600` only if staffed at that
+  exact tick, `WaveRun.scouted`, banner `Wolves from the north: 9 and a leader`); traps and fire pits (1x1
+  sites, `footprintOf`, `removeBuilding`); lancers' and archers' lodges (`drill` job, `fighterOf`);
+  `SAVE_VERSION` 4; a two-column Upgrades panel, a Tab-paged Build menu (Camp / Societies, `page` in
+  `buildings.json`), placeholder art for five new keys; 121 tests and `npm run e2e` (6 tests, stable over
+  5 runs) pass; all uncommitted, nothing pushed. Checked by screenshot (panel, Societies page, the five new
+  buildings, the fire pit ghost); not checked by hand: the real Buy button on tier 2, a scout staffing the
+  lodge in the live game, wolves meeting a trap or pit, a lancer or archer drafted from their lodge.
+  **Next: V9, the user's playtest** (play to wave 6, buy at least one tier 2 upgrade, say if the pacing
+  feels right).

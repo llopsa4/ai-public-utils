@@ -3,11 +3,19 @@
   "upgrades": {
     "dogs":    { "label": "Hunting dogs",     "cost": { "gift": 4, "food": 10 },            "huntSuccess": 1.15, "bowAccuracy": 0.05 },
     "bows":    { "label": "Better bows",      "cost": { "gift": 6, "wood": 5, "hides": 3 }, "bowRange": 5.0, "bowDamage": 15 },
-    "healers": { "label": "Healers' society", "cost": { "gift": 8, "wood": 20 },            "unlocks": "healers_lodge" }
+    "healers": { "label": "Healers' society", "cost": { "gift": 8, "wood": 20 },            "unlocks": "healers_lodge" },
+    "scouts":   { "label": "Akicita scouts",   "cost": { "gift": 8, "wood": 10, "hides": 5 },  "requires": "dogs",    "unlocks": "scouts_lodge" },
+    "warriors": { "label": "Akicita warriors", "cost": { "gift": 10, "wood": 15, "hides": 5 }, "requires": "bows",    "unlocks": ["lancers_lodge", "archers_lodge"] },
+    "builders": { "label": "Builders' society", "cost": { "gift": 10, "wood": 25 },            "requires": "healers", "unlocks": ["trap", "fire_pit"] },
+    "tools":    { "label": "Better tools",     "cost": { "gift": 6, "wood": 10, "hides": 4 },  "requires": "bows",    "buildSpeed": 1.5 }
   },
   "toasts": {
     "dogs": "Hunting dogs joined the hunters.",
     "bows": "Hunters' bows are stronger.",
-    "healers": "The healers can build a lodge."
+    "healers": "The healers can build a lodge.",
+    "scouts": "The scouts can build a lodge.",
+    "warriors": "The warriors can build lodges.",
+    "builders": "The builders can set traps and fire pits.",
+    "tools": "Building goes faster."
   }
 }

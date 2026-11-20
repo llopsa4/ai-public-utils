@@ -4,7 +4,7 @@ import { buildingDefs, placementError } from '../sim/buildings';
 import { flushOrders } from '../sim/orders';
 import { newGame, queueOrders, step } from '../sim/tick';
 import { loadState, serialize, type SaveFile } from '../sim/save';
-import { addMessage, DAY_TICKS, type GameState, type Order } from '../sim/state';
+import { addMessage, DAY_TICKS, footprintOf, type GameState, type Order } from '../sim/state';
 import { browserStorage, clearSlot, writeSlot, type SlotId, type SlotStorage } from '../save/slots';
 import { TILE_H, TILE_W, tileToWorld, worldBounds, worldToTileF } from '../render/iso';
 import { entry, manifest } from '../render/manifest';
@@ -184,7 +184,8 @@ export class GameScene extends Phaser.Scene {
       let img = this.buildingViews.get(b.id);
       if (!img) {
         const fire = b.type === 'fire';
-        img = this.place(fire ? 'fire_central' : `building_${b.type}`, b.x + 0.5, b.y + 0.5, 0, fire ? 8 : 0);
+        const [w, h] = buildingDefs[b.type].size;
+        img = this.place(fire ? 'fire_central' : `building_${b.type}`, b.x + (w - 1) / 2, b.y + (h - 1) / 2, 0, fire ? 8 : 0);
         this.buildingViews.set(b.id, img);
       }
       const points = buildingDefs[b.type].buildPoints ?? 1;
@@ -243,7 +244,7 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
-  /** Top-left tile of a 2x2 footprint centred under the pointer. */
+  /** The tile under the pointer: the top-left tile of the footprint being placed. */
   private ghostTile(pointer: Phaser.Input.Pointer): [number, number] {
     const w = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
     const f = worldToTileF(w.x, w.y, this.state.map.size);
@@ -259,11 +260,12 @@ export class GameScene extends Phaser.Scene {
     }
     const [x, y] = this.ghostTile(pointer);
     const ok = placementError(this.state, this.placing, x, y) === null;
-    const c = tileToWorld(x + 0.5, y + 0.5, this.state.map.size);
+    const [w, h] = buildingDefs[this.placing].size;
+    const c = tileToWorld(x + (w - 1) / 2, y + (h - 1) / 2, this.state.map.size);
     this.ghost.setPosition(c.x, c.y).setVisible(true).setTint(ok ? 0xffffff : 0xff8080);
     this.ghostTiles.clear().fillStyle(ok ? 0x4caf50 : 0xd9534f, 0.4);
-    for (const [dx, dy] of [[0, 0], [1, 0], [0, 1], [1, 1]]) {
-      const t = tileToWorld(x + dx, y + dy, this.state.map.size);
+    for (const [tx, ty] of footprintOf(this.placing, x, y)) {
+      const t = tileToWorld(tx, ty, this.state.map.size);
       this.ghostTiles.fillPoints([
         { x: t.x, y: t.y - TILE_H / 2 }, { x: t.x + TILE_W / 2, y: t.y },
         { x: t.x, y: t.y + TILE_H / 2 }, { x: t.x - TILE_W / 2, y: t.y },

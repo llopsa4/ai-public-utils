@@ -8,7 +8,9 @@ import seasonData from '../data/seasons.json';
 import { downloadText, exportName } from '../save/files';
 import { queueOrders } from '../sim/orders';
 import { serialize } from '../sim/save';
-import { missingFor, upgradeCost, upgradeLabel, UPGRADE_IDS, hasUpgrade, type UpgradeId } from '../sim/upgrades';
+import {
+  hasUpgrade, missingFor, missingRequirement, requiresOf, upgradeCost, upgradeLabel, UPGRADE_IDS, type UpgradeId,
+} from '../sim/upgrades';
 import { dayInSeason, seasonLabel, seasonOf, yearOf } from '../sim/seasons';
 import { DAY_TICKS, storeCap, type GameState, type Res } from '../sim/state';
 import { waveBanner } from '../sim/waves';
@@ -27,13 +29,18 @@ const SPEED_BUTTONS: { label: string; pause: boolean; speed?: 1 | 2 | 4 }[] = [
   { label: '4x', pause: false, speed: 4 },
 ];
 const UPGRADES_BUTTON = { x: 1176, y: 38, w: 96, h: 26 };
-const UPGRADES_PANEL = { x: 320, y: 190, w: 640, h: 250 };
-const CARD_W = 200;
+// Two columns of cards: tier 1 on the left, the tier 2 upgrades on the right (DESIGN-upgrades-2.md `## UI`).
+const UPGRADES_PANEL = { x: 160, y: 100, w: 960, h: 512 };
+const CARD = { w: 460, h: 100, gap: 8 };
 /** One line on what each upgrade does (DESIGN-upgrades.md `## Upgrades`). */
 const UPGRADE_EFFECT: Record<UpgradeId, string> = {
   dogs: 'Hunting succeeds 15% more often, and hunters aim a little better.',
   bows: "Hunters' bows reach 5 tiles and hit for 15.",
   healers: "Lets you build a healers' lodge: they heal the wounded and ease winter cold.",
+  scouts: "Lets you build a scouts' lodge: staffed, it warns of a wave a minute ahead and counts the wolves.",
+  warriors: "Lets you build lancers' and archers' lodges: assigned people fight as that class.",
+  builders: 'Lets you set traps and fire pits.',
+  tools: 'All building goes 1.5 times faster.',
 };
 const TIP_W = 440;
 const INK = '#f3e9d2';
@@ -182,21 +189,26 @@ export class HudScene extends Phaser.Scene {
     const close = this.add.text(P.x + P.w - 14, P.y + 8, 'x', font(18)).setOrigin(1, 0).setDepth(16).setInteractive({ useHandCursor: true });
     close.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.setUpgradesOpen(false));
     objs.push(close);
-    UPGRADE_IDS.forEach((id, i) => {
-      const x = P.x + 14 + i * (CARD_W + 8);
-      const y = P.y + 44;
-      objs.push(this.add.rectangle(x, y, CARD_W, 192, 0x3a3328, 1).setOrigin(0).setDepth(16));
-      objs.push(this.add.text(x + 10, y + 8, upgradeLabel(id), font(15)).setDepth(17));
-      objs.push(this.add.text(x + 10, y + 36, UPGRADE_EFFECT[id], font(12, '#cdbf9c')).setWordWrapWidth(CARD_W - 20).setDepth(17));
-      const costText = this.add.text(x + 10, y + 100, '', font(12)).setWordWrapWidth(CARD_W - 20).setDepth(17);
-      const buy = this.add
-        .text(x + 10, y + 150, ' Buy ', { ...font(15, '#1d1a16'), backgroundColor: INK })
-        .setPadding(10, 5).setDepth(17).setInteractive({ useHandCursor: true });
-      buy.on('pointerdown', (p: Phaser.Input.Pointer) => {
-        if (p.leftButtonDown() && this.canBuy(id)) queueOrders(this.game2.state, [{ type: 'buy', upgrade: id }]);
+    const tier1 = UPGRADE_IDS.filter((id) => !requiresOf(id));
+    const tier2 = UPGRADE_IDS.filter((id) => requiresOf(id));
+    [tier1, tier2].forEach((ids, col) => {
+      const x = P.x + 14 + col * (CARD.w + 14);
+      objs.push(this.add.text(x, P.y + 40, col === 0 ? 'Tier 1' : 'Tier 2: needs a tier 1 upgrade', font(13, '#cdbf9c')).setDepth(16));
+      ids.forEach((id, row) => {
+        const y = P.y + 64 + row * (CARD.h + CARD.gap);
+        objs.push(this.add.rectangle(x, y, CARD.w, CARD.h, 0x3a3328, 1).setOrigin(0).setDepth(16));
+        objs.push(this.add.text(x + 10, y + 8, upgradeLabel(id), font(15)).setDepth(17));
+        objs.push(this.add.text(x + 10, y + 34, UPGRADE_EFFECT[id], font(12, '#cdbf9c')).setWordWrapWidth(CARD.w - 190).setDepth(17));
+        const costText = this.add.text(x + CARD.w - 170, y + 8, '', font(12)).setWordWrapWidth(160).setDepth(17);
+        const buy = this.add
+          .text(x + CARD.w - 170, y + 62, ' Buy ', { ...font(15, '#1d1a16'), backgroundColor: INK })
+          .setPadding(10, 4).setDepth(17).setInteractive({ useHandCursor: true });
+        buy.on('pointerdown', (p: Phaser.Input.Pointer) => {
+          if (p.leftButtonDown() && this.canBuy(id)) queueOrders(this.game2.state, [{ type: 'buy', upgrade: id }]);
+        });
+        this.cards[id] = { cost: costText, buy };
+        objs.push(costText, buy);
       });
-      this.cards[id] = { cost: costText, buy };
-      objs.push(costText, buy);
     });
     this.setUpgradesOpen(false);
     const kb = this.input.keyboard!;
@@ -211,7 +223,7 @@ export class HudScene extends Phaser.Scene {
 
   private canBuy(id: UpgradeId): boolean {
     const s = this.game2.state;
-    return !hasUpgrade(s, id) && missingFor(s, id).length === 0;
+    return !hasUpgrade(s, id) && !missingRequirement(s, id) && missingFor(s, id).length === 0;
   }
 
   setUpgradesOpen(on: boolean): void {
@@ -230,9 +242,13 @@ export class HudScene extends Phaser.Scene {
       const { cost, buy } = this.cards[id];
       const owned = hasUpgrade(s, id);
       const missing = missingFor(s, id);
+      const needs = missingRequirement(s, id);
       const price = Object.entries(upgradeCost(id)).map(([r, n]) => `${n} ${r}`).join(', ');
-      cost.setText(owned ? 'Bought' : missing.length ? `Cost: ${price}\nMissing: ${missing.join(', ')}` : `Cost: ${price}`);
-      buy.setText(owned ? ' Bought ' : ' Buy ').setAlpha(owned || missing.length ? 0.4 : 1);
+      const lines = [`Cost: ${price}`];
+      if (needs) lines.push(`Needs ${upgradeLabel(needs)}`);
+      if (missing.length) lines.push(`Missing: ${missing.join(', ')}`);
+      cost.setText(owned ? 'Bought' : lines.join('\n'));
+      buy.setText(owned ? ' Bought ' : ' Buy ').setAlpha(owned || needs || missing.length ? 0.4 : 1);
     }
   }
 

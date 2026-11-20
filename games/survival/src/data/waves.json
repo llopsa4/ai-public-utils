@@ -1,12 +1,15 @@
 {
   "warningTicks": 300,
+  "scoutedWarningTicks": 600,
   "edges": ["north", "east", "south"],
   "edgeJitter": 10,
   "waves": [
     { "at": 3600,  "groups": [ { "enemy": "wolf", "count": 1 } ], "spread": 1 },
     { "at": 7200,  "groups": [ { "enemy": "wolf", "count": 3 } ], "spread": 6 },
     { "at": 10800, "groups": [ { "enemy": "wolf", "count": 5 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
-    { "at": 14400, "groups": [ { "enemy": "wolf", "count": 7 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 }
+    { "at": 14400, "groups": [ { "enemy": "wolf", "count": 7 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
+    { "at": 18000, "groups": [ { "enemy": "wolf", "count": 9 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
+    { "at": 21600, "groups": [ { "enemy": "wolf", "count": 10 }, { "enemy": "pack_leader", "count": 2 } ], "spread": 10 }
   ],
-  "winAfterWave": 4
+  "winAfterWave": 6
 }

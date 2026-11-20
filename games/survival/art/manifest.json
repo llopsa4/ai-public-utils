@@ -14,5 +14,10 @@
   "building_gathering_spot": { "file": "building_gathering_spot.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
   "building_hunting_lodge": { "file": "building_hunting_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
   "building_drying_rack": { "file": "building_drying_rack.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_healers_lodge": { "file": "building_healers_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" }
+  "building_healers_lodge": { "file": "building_healers_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
+  "building_scouts_lodge": { "file": "building_scouts_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
+  "building_lancers_lodge": { "file": "building_lancers_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
+  "building_archers_lodge": { "file": "building_archers_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
+  "building_trap": { "file": "building_trap.png", "size": [64, 64], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
+  "building_fire_pit": { "file": "building_fire_pit.png", "size": [64, 64], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" }
 }

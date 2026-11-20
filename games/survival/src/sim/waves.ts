@@ -2,6 +2,7 @@
 // and the end of the run. Pure TypeScript, no Phaser.
 import wavesData from '../data/waves.json';
 import mapConfig from '../data/map.json';
+import { standsAt } from './buildings';
 import { ENEMIES } from './combat';
 import { rngNext } from './rng';
 import { addMessage, type Edge, type GameState, type Tile2 } from './state';
@@ -25,13 +26,30 @@ function edgeTiles(s: GameState, edge: Edge, centre: number, spread: number): Ti
   return [at(centre)];
 }
 
-function warn(s: GameState, i: number): void {
+/** True when a completed scouts' lodge has at least one scout standing at it (DESIGN-upgrades-2.md). */
+export function scoutsStaffed(s: GameState): boolean {
+  return s.buildings.some(
+    (b) => b.type === 'scouts_lodge' && b.done && s.people.some((p) => p.job?.kind === 'scout' && p.job.building === b.id && standsAt(p, b)),
+  );
+}
+
+/** "9 and a leader": the wolves of a wave and its pack leaders, as a scouted banner says it. */
+function countText(i: number): string {
+  const groups = wavesData.waves[i].groups;
+  const count = (kind: string): number => groups.filter((g) => g.enemy === kind).reduce((n, g) => n + g.count, 0);
+  const wolves = count('wolf');
+  const leaders = count('pack_leader');
+  return leaders === 0 ? `${wolves}` : leaders === 1 ? `${wolves} and a leader` : `${wolves} and ${leaders} leaders`;
+}
+
+function warn(s: GameState, i: number, scouted: boolean): void {
   const run = s.waves[i];
+  run.scouted = scouted;
   run.edge = wavesData.edges[Math.floor(rngNext(s.rng) * wavesData.edges.length)] as Edge;
   const jitter = wavesData.edgeJitter;
   run.centre = Math.floor(s.map.size / 2) + Math.floor(rngNext(s.rng) * (2 * jitter + 1)) - jitter;
   run.phase = 'warning';
-  addMessage(s, `Scouts: wolves coming from the ${run.edge}.`);
+  addMessage(s, scouted ? `Scouts: wolves coming from the ${run.edge}: ${countText(i)}.` : `Scouts: wolves coming from the ${run.edge}.`);
 }
 
 function spawn(s: GameState, i: number): void {
@@ -53,7 +71,8 @@ function spawn(s: GameState, i: number): void {
 export function stepWaves(s: GameState): void {
   wavesData.waves.forEach((def, i) => {
     const run = s.waves[i];
-    if (run.phase === 'pending' && s.tick >= def.at - wavesData.warningTicks) warn(s, i);
+    if (run.phase === 'pending' && s.tick === def.at - wavesData.scoutedWarningTicks && scoutsStaffed(s)) warn(s, i, true);
+    else if (run.phase === 'pending' && s.tick >= def.at - wavesData.warningTicks) warn(s, i, false);
     if (run.phase === 'warning' && s.tick >= def.at) spawn(s, i);
     if (run.phase === 'active' && !s.enemies.some((e) => e.wave === i)) {
       run.phase = 'defeated';
@@ -71,7 +90,8 @@ export function waveBanner(s: GameState): { text: string; seconds: number | null
     const run = s.waves[i];
     if (run.phase === 'warning') {
       const seconds = Math.max(0, Math.ceil((wavesData.waves[i].at - s.tick) / 10));
-      return { text: `Scouts: wolves coming from the ${run.edge}`, seconds };
+      const text = run.scouted ? `Wolves from the ${run.edge}: ${countText(i)}` : `Scouts: wolves coming from the ${run.edge}`;
+      return { text, seconds };
     }
   }
   const active = s.waves.findIndex((w) => w.phase === 'active');

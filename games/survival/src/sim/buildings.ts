@@ -4,14 +4,17 @@ import buildingsData from '../data/buildings.json';
 import jobsData from '../data/jobs.json';
 import { canWork, idleTask, releaseJob, walkable } from './people';
 import {
-  addBuilding, addMessage, footprint, type Building, type GameState, type Job, type JobKind, type Person, type Res,
+  addBuilding, addMessage, footprintOf, type Building, type GameState, type Job, type JobKind, type Person, type Res,
   type Tile2,
 } from './state';
+import { upgradeLabel, type UpgradeId } from './upgrades';
 
 export interface BuildingDef {
   size: [number, number];
   hp?: number;
   buildable?: boolean;
+  /** The Build menu page the type is on: Camp or Societies (Tab switches). */
+  page?: 'camp' | 'societies';
   cost?: Partial<Record<Res, number>>;
   buildPoints?: number;
   houses?: number;
@@ -30,6 +33,8 @@ export const BUILDABLE = Object.keys(buildingDefs).filter((k) => buildingDefs[k]
 const NAMES: Record<string, string> = {
   tipi: 'tipi', gathering_spot: 'gathering spot', hunting_lodge: 'hunting lodge', store: 'store', fire: 'fire',
   drying_rack: 'drying rack', healers_lodge: "healers' lodge",
+  scouts_lodge: "scouts' lodge", lancers_lodge: "lancers' lodge", archers_lodge: "archers' lodge",
+  trap: 'trap', fire_pit: 'fire pit',
 };
 export function buildingName(type: string): string {
   return NAMES[type] ?? type;
@@ -43,9 +48,9 @@ function campCentre(s: GameState): Tile2 {
 export function placementError(s: GameState, type: string, x: number, y: number): string | null {
   const def = buildingDefs[type];
   if (!def || def.buildable === false || !def.cost) return "Can't build that.";
-  if (def.requires && !s.upgrades.includes(def.requires)) return "Needs the healers' society.";
+  if (def.requires && !s.upgrades.includes(def.requires)) return `Needs the ${upgradeLabel(def.requires as UpgradeId)}.`;
   const [cx, cy] = campCentre(s);
-  const tiles = footprint(x, y);
+  const tiles = footprintOf(type, x, y);
   if (tiles.some(([tx, ty]) => tx < 0 || ty < 0 || tx >= s.map.size || ty >= s.map.size)) return 'Outside the map.';
   for (const [tx, ty] of tiles) {
     if (s.map.tiles[ty * s.map.size + tx] !== buildingsData.placement.tile) return 'Needs open grass.';
@@ -82,7 +87,16 @@ export function cancelSite(s: GameState, id: number): boolean {
   const b = s.buildings[i];
   const cost = buildingDefs[b.type].cost ?? {};
   for (const res of Object.keys(cost) as Res[]) s.store[res] += cost[res] ?? 0;
-  for (const [tx, ty] of footprint(b.x, b.y)) s.blocked[ty * s.map.size + tx] = false;
+  removeBuilding(s, id);
+  return true;
+}
+
+/** Takes a building out of the camp: its tiles are free again and anyone working on it is released. */
+export function removeBuilding(s: GameState, id: number): void {
+  const i = s.buildings.findIndex((b) => b.id === id);
+  if (i < 0) return;
+  const b = s.buildings[i];
+  for (const [tx, ty] of footprintOf(b.type, b.x, b.y)) s.blocked[ty * s.map.size + tx] = false;
   s.buildings.splice(i, 1);
   for (const p of s.people) {
     if (p.job?.building === id) {
@@ -90,7 +104,6 @@ export function cancelSite(s: GameState, id: number): boolean {
       p.task = idleTask();
     }
   }
-  return true;
 }
 
 export function materialsComplete(b: Building): boolean {
@@ -118,13 +131,14 @@ export function countJobs(s: GameState, buildingId: number, kind: JobKind, excep
   return s.people.filter((p) => p.id !== exceptId && p.job?.kind === kind && p.job.building === buildingId).length;
 }
 
-/** The free walkable tile beside a 2x2 building that is closest to `from`. */
+/** The free walkable tile beside a building that is closest to `from`. */
 export function ringSpot(s: GameState, from: { x: number; y: number }, b: Building): Tile2 | null {
   let spot: Tile2 | null = null;
   let bestD = Infinity;
-  for (let y = b.y - 1; y <= b.y + 2; y++) {
-    for (let x = b.x - 1; x <= b.x + 2; x++) {
-      if (x >= b.x && x <= b.x + 1 && y >= b.y && y <= b.y + 1) continue;
+  const [w, h] = buildingDefs[b.type].size;
+  for (let y = b.y - 1; y <= b.y + h; y++) {
+    for (let x = b.x - 1; x <= b.x + w; x++) {
+      if (x >= b.x && x < b.x + w && y >= b.y && y < b.y + h) continue;
       if (!walkable(s, x, y)) continue;
       const d = Math.hypot(x - from.x, y - from.y);
       if (d < bestD) {
@@ -134,6 +148,14 @@ export function ringSpot(s: GameState, from: { x: number; y: number }, b: Buildi
     }
   }
   return spot;
+}
+
+/** True when the person stands on the ring of tiles round a building (where a ring walk ends). */
+export function standsAt(p: { x: number; y: number }, b: Building): boolean {
+  const x = Math.round(p.x);
+  const y = Math.round(p.y);
+  const [w, h] = buildingDefs[b.type].size;
+  return x >= b.x - 1 && x <= b.x + w && y >= b.y - 1 && y <= b.y + h;
 }
 
 /** The nearest completed building of a type. */

@@ -183,7 +183,10 @@ export class SelectScene extends Phaser.Scene {
   }
 
   private buildingAtTile(t: Tile2): Building | undefined {
-    return this.state.buildings.find((b) => t[0] >= b.x && t[0] <= b.x + 1 && t[1] >= b.y && t[1] <= b.y + 1);
+    return this.state.buildings.find((b) => {
+      const [w, h] = buildingDefs[b.type].size;
+      return t[0] >= b.x && t[0] < b.x + w && t[1] >= b.y && t[1] < b.y + h;
+    });
   }
 
   /** The person nearest a screen point within the click radius (feet or body), or null. */
@@ -336,10 +339,11 @@ export class SelectScene extends Phaser.Scene {
     }
     const b = this.building(this.selectedBuilding);
     if (b) {
+      const [w, h] = buildingDefs[b.type].size;
       const top = tileToWorld(b.x, b.y, size);
-      const right = tileToWorld(b.x + 1, b.y, size);
-      const bottom = tileToWorld(b.x + 1, b.y + 1, size);
-      const left = tileToWorld(b.x, b.y + 1, size);
+      const right = tileToWorld(b.x + w - 1, b.y, size);
+      const bottom = tileToWorld(b.x + w - 1, b.y + h - 1, size);
+      const left = tileToWorld(b.x, b.y + h - 1, size);
       this.rings.lineStyle(2, 0xf3e9d2, 0.95).strokePoints(
         [
           { x: top.x, y: top.y - TILE_H / 2 }, { x: right.x + TILE_W / 2, y: right.y },

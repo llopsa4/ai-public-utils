@@ -1,12 +1,13 @@
 // Combat (DESIGN-slice.md `## Combat`): drafted people fight by stance, wolves hunt the nearest person,
 // everyone else flees to the fire. Pure TypeScript, no Phaser. Wolves walk in straight lines.
+import buildingsData from '../data/buildings.json';
 import enemyData from '../data/enemies.json';
 import jobsData from '../data/jobs.json';
 import upgradeData from '../data/upgrades.json';
-import { ringSpot } from './buildings';
+import { removeBuilding, ringSpot } from './buildings';
 import { ages, beginWalk, idleTask, movePerson, walkable } from './people';
 import { rngNext } from './rng';
-import type { Enemy, GameState, Person, Tile2 } from './state';
+import { addMessage, type Enemy, type GameState, type Person, type Tile2 } from './state';
 import { hasUpgrade } from './upgrades';
 
 export interface Fighter {
@@ -35,10 +36,15 @@ const STANCES = enemyData.stances;
 const FLEE = jobsData.flee;
 const FLEE_SPEED = 0.2;
 
-/** A drafted hunter shoots a bow, any other drafted adult swings a club. */
+/**
+ * A drafted hunter or archer shoots a bow (the bows and dogs upgrades apply to both), a lancer thrusts a
+ * lance, any other drafted adult swings a club.
+ */
 export function fighterOf(s: GameState, p: Person): Fighter {
-  if (p.society !== FIGHTERS.bow.society) return FIGHTERS.club;
-  const bow = { ...FIGHTERS.bow };
+  if (p.society === FIGHTERS.lancer.society) return FIGHTERS.lancer;
+  const base = p.society === FIGHTERS.bow.society ? FIGHTERS.bow : p.society === FIGHTERS.archer.society ? FIGHTERS.archer : null;
+  if (!base) return FIGHTERS.club;
+  const bow = { ...base };
   if (hasUpgrade(s, 'bows')) {
     bow.range = upgradeData.upgrades.bows.bowRange;
     bow.damage = upgradeData.upgrades.bows.bowDamage;
@@ -152,17 +158,40 @@ function enemyStep(e: Enemy, speed: number, x: number, y: number): void {
   }
 }
 
+const DEFENCE = buildingsData.types as unknown as Record<string, { defence?: Record<string, number> }>;
+
+/** A finished trap takes the first wolf standing on it: 25 damage, then the trap is gone (DESIGN-upgrades-2.md). */
+function springTraps(s: GameState): void {
+  const { trapRadius, trapDamage } = DEFENCE.trap.defence!;
+  for (const trap of s.buildings.filter((b) => b.type === 'trap' && b.done)) {
+    const victim = s.enemies.find((e) => e.hp > 0 && Math.hypot(e.x - trap.x, e.y - trap.y) <= trapRadius);
+    if (!victim) continue;
+    victim.hp -= trapDamage;
+    removeBuilding(s, trap.id);
+    addMessage(s, 'A trap sprang on a wolf.');
+  }
+}
+
+/** 0.5 for a wolf within 3 tiles of any finished fire pit (pits do not stack), else 1. */
+function pitSlow(s: GameState, e: Enemy): number {
+  const { slowRadius, slow } = DEFENCE.fire_pit.defence!;
+  return s.buildings.some((b) => b.type === 'fire_pit' && b.done && Math.hypot(e.x - b.x, e.y - b.y) <= slowRadius) ? slow : 1;
+}
+
 /** One tick for every wolf: flee, bite the nearest person in sight, or head for the fire. */
 export function stepEnemies(s: GameState): void {
   const gone = new Set<number>();
   s.enemies = s.enemies.filter((e) => e.hp > 0); // shot dead earlier this tick
+  springTraps(s);
+  s.enemies = s.enemies.filter((e) => e.hp > 0); // a trap may have killed one
   for (const e of s.enemies) {
     const def = ENEMIES[e.kind];
+    const slow = pitSlow(s, e);
     if (e.cooldown > 0) e.cooldown--;
     if (!e.fleeing && e.hp < def.hp * def.fleeBelow) e.fleeing = true;
     if (e.fleeing) {
       const [ex, ey] = edgePoint(s.map.size, e);
-      enemyStep(e, def.fleeSpeed ?? FLEE_SPEED, ex, ey);
+      enemyStep(e, (def.fleeSpeed ?? FLEE_SPEED) * slow, ex, ey);
       if (e.x <= 0 || e.y <= 0 || e.x >= s.map.size - 1 || e.y >= s.map.size - 1) gone.add(e.id);
       continue;
     }
@@ -177,7 +206,7 @@ export function stepEnemies(s: GameState): void {
     }
     if (!target) {
       const [fx, fy] = fireCentre(s);
-      if (Math.hypot(fx - e.x, fy - e.y) > 2) enemyStep(e, def.speed, fx, fy);
+      if (Math.hypot(fx - e.x, fy - e.y) > 2) enemyStep(e, def.speed * slow, fx, fy);
       continue;
     }
     if (best <= def.range) {
@@ -186,7 +215,7 @@ export function stepEnemies(s: GameState): void {
         e.cooldown = def.cooldown;
       }
     } else {
-      enemyStep(e, def.speed, target.x, target.y);
+      enemyStep(e, def.speed * slow, target.x, target.y);
     }
   }
   s.enemies = s.enemies.filter((e) => e.hp > 0 && !gone.has(e.id));

@@ -3,7 +3,7 @@
 import jobsData from '../data/jobs.json';
 import upgradeData from '../data/upgrades.json';
 import {
-  buildingDefs, buildingName, findAutoWork, materialsComplete, nearestBuilding, nextHaulLoad, ringSpot,
+  buildingDefs, buildingName, findAutoWork, materialsComplete, nearestBuilding, nextHaulLoad, ringSpot, standsAt,
 } from './buildings';
 import { stepFighter, stepFlee } from './combat';
 import { HUNGRY_AT, HUNGRY_WORK, unityWork } from './economy';
@@ -13,7 +13,7 @@ import { seasonal } from './seasons';
 import {
   addMessage, storeCap, type Building, type GameState, type Job, type JobKind, type Person, type Res, type Tile2,
 } from './state';
-import { hasUpgrade } from './upgrades';
+import { buildSpeed, hasUpgrade } from './upgrades';
 
 export { canWork };
 
@@ -30,6 +30,7 @@ export function workRate(s: GameState, p: Person, kind: JobKind): number {
   const base = kind === 'build' ? jobsData.jobs.build.rate : TILE_JOBS[kind]?.rate;
   if (base === undefined || !canWork(p, kind)) return 0;
   let rate = base * ages[p.age].rate * unityWork(s) * (p.hunger >= HUNGRY_AT ? HUNGRY_WORK : 1);
+  if (kind === 'build') rate *= buildSpeed(s);
   if (kind === 'gather') {
     rate *= seasonal(s, 'gatherRate');
     if (p.job?.building != null) rate *= jobsData.jobs.gather.spotBonus;
@@ -137,7 +138,7 @@ function validateBuildingJob(s: GameState, p: Person): void {
   const job = p.job;
   if (!job || job.building === null) return;
   const b = building(s, job.building);
-  const working = job.kind === 'gather' || job.kind === 'hunt' || job.kind === 'dry' || job.kind === 'heal';
+  const working = job.kind === 'gather' || job.kind === 'hunt' || job.kind === 'dry' || job.kind === 'heal' || job.kind === 'scout' || job.kind === 'drill';
   if (!b || (working ? !b.done : b.done)) releaseJob(p);
 }
 
@@ -209,6 +210,16 @@ function decideHeal(s: GameState, p: Person): void {
   if (!tile || !beginWalk(s, p, tile, 'work')) p.task = idleTask(HEAL.ticks);
 }
 
+/** A scout or a drilling warrior (DESIGN-upgrades-2.md): waits on the ring of the lodge and makes nothing. */
+function decideStation(s: GameState, p: Person, lodge: Building): void {
+  if (standsAt(p, lodge)) {
+    p.task = idleTask(RETRY);
+    return;
+  }
+  const spot = ringSpot(s, p, lodge);
+  if (!spot || !beginWalk(s, p, spot, 'work')) p.task = idleTask(RETRY);
+}
+
 /** Chooses the next step for an idle person. */
 function decide(s: GameState, p: Person): void {
   const t = p.task;
@@ -223,6 +234,7 @@ function decide(s: GameState, p: Person): void {
   if (job?.kind === 'hunt') return decideHunt(s, p);
   if (job?.kind === 'dry') return decideDry(s, p, building(s, job.building)!);
   if (job?.kind === 'heal') return decideHeal(s, p);
+  if (job?.kind === 'scout' || job?.kind === 'drill') return decideStation(s, p, building(s, job.building)!);
 
   const def = job ? TILE_JOBS[job.kind] : undefined;
   if (job && def) {
@@ -298,6 +310,10 @@ function doWork(s: GameState, p: Person): void {
       p.carry = { res: 'food', amount: jobsData.jobs.hunt.food, hides: jobsData.jobs.hunt.hides };
     }
     p.task = idleTask();
+    return;
+  }
+  if (job.kind === 'scout' || job.kind === 'drill') {
+    p.task = idleTask(RETRY);
     return;
   }
   if (job.kind === 'heal') {
