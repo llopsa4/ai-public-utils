@@ -399,6 +399,8 @@ people never attack; they flee (`## Jobs`).
 | 4 | 14400 (day 13) | 7 wolves + 1 pack leader | 8-tile segment |
 | 5 | 18000 (day 16) | 9 wolves + 1 pack leader | 8-tile segment |
 | 6 | 21600 (day 19) | 10 wolves + 2 pack leaders | 10-tile segment |
+| 7 | 25200 (day 22) | 12 wolves + 2 pack leaders, two edges at once | 12-tile segment each |
+| 8 | 28800 (day 25) | 14 wolves + 3 pack leaders, two edges at once | 12-tile segment each |
 
 - **Warning:** at arrival - 300 ticks (30 s at 1x) the wave banner shows "Scouts: wolves coming from
   the <north|east|south>" with a countdown.
@@ -407,7 +409,7 @@ people never attack; they flee (`## Jobs`).
   tiles (rng); spawns land on passable tiles of that edge.
 - A wave is **defeated** when every enemy is dead or has fled. Waves do not wait for each other: a
   wave still alive when the next arrives just adds to it.
-- **End of the run:** wave 6 defeated (wave 4 from 2026-11-20 so the first winter is played; waves 5-6 added 2026-11-20 with upgrades tier 2, see DESIGN-upgrades-2.md) -> "The camp held" screen with day, people left and Wotakuye,
+- **End of the run:** wave 8 defeated (wave 4 from 2026-11-20 so the first winter is played; waves 5-6 added 2026-11-20 with upgrades tier 2, see DESIGN-upgrades-2.md; waves 7-8 with tier 3, see DESIGN-upgrades-3.md) -> "The camp held" screen with day, people left and Wotakuye,
   and a "Play again" button.
 - **Lose:** no living people, or fire HP 0 -> "The camp is lost" screen, same summary and button.
 - Not in the slice: calling a wave early (needs gift value), difficulty, waves scaling with strength.
@@ -425,9 +427,11 @@ people never attack; they flee (`## Jobs`).
     { "at": 10800, "groups": [ { "enemy": "wolf", "count": 5 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
     { "at": 14400, "groups": [ { "enemy": "wolf", "count": 7 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
     { "at": 18000, "groups": [ { "enemy": "wolf", "count": 9 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
-    { "at": 21600, "groups": [ { "enemy": "wolf", "count": 10 }, { "enemy": "pack_leader", "count": 2 } ], "spread": 10 }
+    { "at": 21600, "groups": [ { "enemy": "wolf", "count": 10 }, { "enemy": "pack_leader", "count": 2 } ], "spread": 10 },
+    { "at": 25200, "groups": [ { "enemy": "wolf", "count": 12 }, { "enemy": "pack_leader", "count": 2 } ], "spread": 12, "edges": 2 },
+    { "at": 28800, "groups": [ { "enemy": "wolf", "count": 14 }, { "enemy": "pack_leader", "count": 3 } ], "spread": 12, "edges": 2 }
   ],
-  "winAfterWave": 6
+  "winAfterWave": 8
 }
 ```
 

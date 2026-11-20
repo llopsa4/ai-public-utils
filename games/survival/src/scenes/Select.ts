@@ -5,9 +5,14 @@ import Phaser from 'phaser';
 import mapConfig from '../data/map.json';
 import { buildingDefs, buildingName } from '../sim/buildings';
 import { HUNGRY_AT } from '../sim/economy';
+import { displayLabel, englishLabel } from '../sim/labels';
+import { createHover, type Hover } from './hover';
 import { queueOrders } from '../sim/orders';
 import { ages } from '../sim/people';
 import type { Building, Enemy, GameState, Order, Person, Res, Stance, Tile2 } from '../sim/state';
+import {
+  hasUpgrade, missingFor, upgradeCost, upgradeNeeds, upgradesOf, type UpgradeId,
+} from '../sim/upgrades';
 import { TILE_H, TILE_W, tileToWorld, worldToTile } from '../render/iso';
 import type { BuildScene } from './Build';
 import type { GameScene } from './Game';
@@ -22,6 +27,34 @@ const BODY_UP = 14;
 const TOAST_TICKS = 50;
 const INK = '#f3e9d2';
 const HINT = 'Left-click to select, right-click to order, B to build';
+/** The Upgrades list of a selected finished building: one row per upgrade, just above the selection panel. */
+const UP = { x: 0, w: 620, head: 28, row: 50, maxRows: 8 };
+/** One line on what each upgrade does (DESIGN-upgrades.md `## Upgrades`). */
+const UPGRADE_EFFECT: Record<UpgradeId, string> = {
+  dogs: 'Hunting succeeds 15% more often, and hunters aim a little better.',
+  bows: "Hunters' bows reach 5 tiles and hit for 15.",
+  healers: "Lets you build a healers' lodge: they heal the wounded and ease winter cold.",
+  scouts: "Lets you build a scouts' lodge: staffed, it warns of a wave a minute ahead and counts the wolves.",
+  warriors: "Lets you build lancers' and archers' lodges: assigned people fight as that class.",
+  builders: 'Lets you set traps and fire pits.',
+  tools: 'All building goes 1.5 times faster.',
+  barricades: 'Lets you raise spike barricades (drag a line): they block wolves and people, and wolves break them (60 hp).',
+  horses: 'Two horses join the camp at once; a tended corral breeds one more every 3 days.',
+  riders: 'Drafted lancers ride a free horse: 2.5 times faster, reach 1.8, hit for 18. A rider who dies loses the horse.',
+  spirits: 'Lets you build a spirit lodge, where the camp buys its four powers.',
+  spirit_warriors: 'Power (F1), once a wave: four spirit fighters guard the fire for 60 seconds.',
+  guardian_wolves: 'Power (F2), once a wave: five friendly wolves fight at the fire for 60 seconds.',
+  bison_charge: 'Power (F3), once a wave: a herd runs across the map through a point you pick and hurts every wolf it touches.',
+  storm_caller: 'Power (F4), once a wave: a storm over a point you pick slows and hurts wolves for 20 seconds.',
+};
+interface UpgradeRow {
+  bg: Phaser.GameObjects.Rectangle;
+  label: Phaser.GameObjects.Text;
+  effect: Phaser.GameObjects.Text;
+  status: Phaser.GameObjects.Text;
+  buy: Phaser.GameObjects.Text;
+  id: UpgradeId | null;
+}
 
 interface Button {
   bg: Phaser.GameObjects.Rectangle;
@@ -48,6 +81,12 @@ export class SelectScene extends Phaser.Scene {
   private draftButton!: Button;
   private stanceButtons: Button[] = [];
   private cancelButton!: Button;
+  private upBg!: Phaser.GameObjects.Rectangle;
+  private upHead!: Phaser.GameObjects.Text;
+  private upRows: UpgradeRow[] = [];
+  private hover!: Hover;
+  /** The screen rectangle of the Upgrades list while it shows, else null (the map ignores clicks on it). */
+  private upRect: { x: number; y: number; w: number; h: number } | null = null;
 
   constructor() {
     super('Select');
@@ -60,6 +99,8 @@ export class SelectScene extends Phaser.Scene {
     this.down = null;
     this.busy = false;
     this.stanceButtons = [];
+    this.upRows = [];
+    this.upRect = null;
   }
 
   private get state(): GameState {
@@ -93,6 +134,11 @@ export class SelectScene extends Phaser.Scene {
       );
     });
     this.cancelButton = this.button(560, 648, 110, 28, 'Cancel (Del)', () => this.cancelSite());
+    this.createUpgrades();
+    this.hover.attach(this.title, () => {
+      const t = this.building(this.selectedBuilding)?.type;
+      return t && displayLabel(t) !== englishLabel(t) ? englishLabel(t) : null;
+    });
 
     this.shift = this.input.keyboard!.addKey('SHIFT');
     this.input.on('pointerdown', (p: Phaser.Input.Pointer) => {
@@ -125,6 +171,83 @@ export class SelectScene extends Phaser.Scene {
     return { bg, label: t, onClick };
   }
 
+  /** The pooled rows of the Upgrades list (DESIGN-upgrades-3.md `## Upgrade homes`); `drawUpgrades` fills them. */
+  private createUpgrades(): void {
+    const font = (size: number, color = INK) => ({ fontFamily: 'sans-serif', fontSize: `${size}px`, color });
+    this.hover = createHover(this);
+    this.upBg = this.add.rectangle(UP.x, 0, UP.w, 10, 0x1d1a16, 0.92).setOrigin(0).setStrokeStyle(1, 0x6b5a3a).setVisible(false);
+    this.upHead = this.add.text(UP.x + 10, 0, '', font(14)).setVisible(false);
+    for (let i = 0; i < UP.maxRows; i++) {
+      const bg = this.add.rectangle(UP.x + 4, 0, UP.w - 8, UP.row - 4, 0x3a3328, 1).setOrigin(0).setVisible(false);
+      const label = this.add.text(UP.x + 12, 0, '', font(14)).setVisible(false);
+      const effect = this.add.text(UP.x + 12, 0, '', font(11, '#cdbf9c')).setWordWrapWidth(UP.w - 250).setVisible(false);
+      const status = this.add.text(UP.x + UP.w - 232, 0, '', font(12)).setWordWrapWidth(130).setVisible(false);
+      const buy = this.add
+        .text(UP.x + UP.w - 84, 0, ' Buy ', { ...font(14, '#1d1a16'), backgroundColor: INK })
+        .setPadding(10, 4).setVisible(false).setInteractive({ useHandCursor: true });
+      const row: UpgradeRow = { bg, label, effect, status, buy, id: null };
+      this.hover.attach(label, () => (row.id && displayLabel(row.id) !== englishLabel(row.id) ? englishLabel(row.id) : null));
+      buy.on('pointerdown', (p: Phaser.Input.Pointer) => {
+        if (p.leftButtonDown() && row.id && this.canBuy(row.id)) this.send([{ type: 'buy', upgrade: row.id }]);
+      });
+      this.upRows.push(row);
+    }
+    const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
+    if (camp) {
+      camp.selectBuilding = (id: number | null) => { this.selected = []; this.selectedBuilding = id; };
+      // What each shown row says (cost or Needs), by upgrade id; empty while no list shows.
+      camp.upgradeRows = () => Object.fromEntries(this.upRows.filter((r) => r.id && r.bg.visible).map((r) => [r.id, r.status.text]));
+      // The screen centre of a shown row's Buy button (1280 x 720 space), or null.
+      camp.upgradeBuy = (id: string) => {
+        const r = this.upRows.find((row) => row.id === id && row.buy.visible);
+        return r ? [r.buy.x + r.buy.displayWidth / 2, r.buy.y + r.buy.displayHeight / 2] : null;
+      };
+    }
+  }
+
+  private canBuy(id: UpgradeId): boolean {
+    const s = this.state;
+    return !hasUpgrade(s, id) && !upgradeNeeds(s, id) && missingFor(s, id).length === 0;
+  }
+
+  /** Shows the selected finished building's upgrades (price, Buy, Needs, Owned), or hides the list. */
+  private drawUpgrades(b: Building | undefined, showList: boolean): void {
+    const ids = b && b.done && showList ? upgradesOf(b.type) : [];
+    const top = ids.length > 0 ? PANEL.y - UP.head - ids.length * UP.row - 4 : PANEL.y;
+    this.upRect = ids.length > 0 ? { x: UP.x, y: top, w: UP.w, h: PANEL.y - top } : null;
+    this.toasts.setY(top - 80);
+    this.upBg.setVisible(ids.length > 0);
+    this.upHead.setVisible(ids.length > 0);
+    if (ids.length > 0) {
+      this.upBg.setPosition(UP.x, top).setSize(UP.w, PANEL.y - top);
+      this.upHead.setPosition(UP.x + 10, top + 6).setText(`${buildingName(b!.type)} upgrades   ·   gift value ${Math.floor(this.state.gift)}`);
+    }
+    this.upRows.forEach((r, i) => {
+      const id = ids[i] ?? null;
+      r.id = id;
+      for (const o of [r.bg, r.label, r.effect, r.status, r.buy]) o.setVisible(id !== null);
+      if (!id) {
+        r.buy.disableInteractive();
+        return;
+      }
+      const s = this.state;
+      const y = top + UP.head + i * UP.row;
+      const owned = hasUpgrade(s, id);
+      const needs = upgradeNeeds(s, id);
+      const missing = missingFor(s, id);
+      const price = Object.entries(upgradeCost(id)).map(([res, n]) => `${n} ${res}`).join(', ');
+      r.bg.setPosition(UP.x + 4, y);
+      r.label.setPosition(UP.x + 12, y + 4).setText(displayLabel(id));
+      r.effect.setPosition(UP.x + 12, y + 23).setText(UPGRADE_EFFECT[id]);
+      const lines = [`Cost: ${price}`, ...(missing.length ? [`Missing: ${missing.join(', ')}`] : [])];
+      r.status.setPosition(UP.x + UP.w - 232, y + 4).setText(owned ? 'Owned' : needs ?? lines.join('\n'));
+      const buyable = !owned && !needs;
+      r.buy.setPosition(UP.x + UP.w - 84, y + 8).setVisible(buyable).setAlpha(missing.length ? 0.4 : 1);
+      if (buyable) r.buy.setInteractive({ useHandCursor: true });
+      else r.buy.disableInteractive();
+    });
+  }
+
   private setVisible(b: Button, on: boolean): void {
     b.bg.setVisible(on);
     b.label.setVisible(on);
@@ -137,7 +260,7 @@ export class SelectScene extends Phaser.Scene {
     const inside = (r: { x: number; y: number; w: number; h: number }) =>
       x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
     const hud = this.scene.get('Hud') as HudScene | undefined;
-    return !!hud?.menuOpen || !!hud?.upgradesOverUi(x, y) || inside(PANEL) || inside(BAR) || !!this.buildScene()?.overUi(x, y);
+    return !!hud?.menuOpen || !!hud?.overPowers(x, y) || inside(PANEL) || inside(BAR) || (!!this.upRect && inside(this.upRect)) || !!this.buildScene()?.overUi(x, y);
   }
 
   private send(orders: Order[]): void {
@@ -300,7 +423,7 @@ export class SelectScene extends Phaser.Scene {
     const s = this.state;
     this.selected = this.selected.filter((id) => s.people.some((p) => p.id === id));
     if (this.selectedBuilding !== null && !this.building(this.selectedBuilding)) this.selectedBuilding = null;
-    this.busy = this.game2.placing !== null || !!this.buildScene()?.isOpen();
+    this.busy = this.game2.placing !== null || this.game2.aiming !== null || !!this.buildScene()?.isOpen();
 
     this.drawBox();
     this.drawWorld();
@@ -313,6 +436,7 @@ export class SelectScene extends Phaser.Scene {
     this.box.clear();
     const p = this.input.activePointer;
     if (!this.down || this.down.ui || !p.leftButtonDown()) return;
+    if (this.game2.consumedDownTime === p.downTime) return; // a press used for placing (a barricade drag)
     if (Math.hypot(p.x - this.down.x, p.y - this.down.y) <= DRAG_PX) return;
     const x = Math.min(p.x, this.down.x);
     const y = Math.min(p.y, this.down.y);
@@ -387,6 +511,8 @@ export class SelectScene extends Phaser.Scene {
       sb.bg.setFillStyle(people.some((p) => p.drafted && p.stance === stance) ? 0x6b5a2e : 0x3a3328, 1);
     });
     this.setVisible(this.cancelButton, !!b && !b.done);
+    this.drawUpgrades(b, people.length === 0);
+    this.hover.update();
 
     if (people.length === 1) {
       const p = people[0];
@@ -410,13 +536,15 @@ export class SelectScene extends Phaser.Scene {
       ].join('\n'));
     } else if (b) {
       const def = buildingDefs[b.type];
-      this.title.setText(buildingName(b.type));
+      this.title.setText(displayLabel(b.type));
       const lines: string[] = [];
       if (!b.done) {
         const need = def.buildPoints ?? 1;
         lines.push(`Under construction: ${Math.floor((100 * Math.min(need, b.built)) / need)}%`);
         const cost = def.cost ?? {};
         lines.push(`Materials: ${(Object.keys(cost) as Res[]).map((r) => `${r} ${Math.floor(b.delivered[r] ?? 0)} / ${cost[r]}`).join(', ')}`);
+      } else if (def.hp && b.hp !== null && def.buildable !== false) {
+        lines.push(`Strength ${Math.ceil(b.hp)} / ${def.hp}`);
       } else if (def.workers) {
         lines.push(`Workers ${b.workers.length} / ${def.workers}`);
       } else if (def.houses) {

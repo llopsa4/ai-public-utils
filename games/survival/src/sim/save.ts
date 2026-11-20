@@ -3,7 +3,7 @@
 import { DAY_TICKS, type GameState } from './state';
 
 /** Raise whenever `GameState` changes shape. Older versions are not migrated: they are unreadable. */
-export const SAVE_VERSION = 4; // 2: `store.pemmican` (seasons); 3: `gift`, `upgrades`; 4: wave runs have `scouted`, tier 2 buildings and societies
+export const SAVE_VERSION = 5; // 2: `store.pemmican` (seasons); 3: `gift`, `upgrades`; 4: wave runs have `scouted`, tier 2 buildings and societies; 5: `horses`, `tended` on buildings, `powersUsed`
 export const SAVE_FORMAT = 'camp-fire-save';
 
 export interface SaveSummary {
@@ -60,7 +60,7 @@ export function parseSave(text: string): ParsedSave {
   if (raw.version !== SAVE_VERSION) return { ok: false, reason: 'wrong version' };
   const s = raw.state;
   if (!isObject(s)) return { ok: false, reason: 'no state' };
-  for (const key of ['seed', 'tick', 'wotakuye', 'gift', 'nextPersonId', 'nextBuildingId', 'nextEnemyId']) {
+  for (const key of ['seed', 'tick', 'wotakuye', 'gift', 'horses', 'nextPersonId', 'nextBuildingId', 'nextEnemyId']) {
     if (!isNum(s[key])) return { ok: false, reason: `bad ${key}` };
   }
   if (!isObject(s.rng) || !isNum(s.rng.s)) return { ok: false, reason: 'bad rng' };
@@ -68,7 +68,9 @@ export function parseSave(text: string): ParsedSave {
     if (!Array.isArray(s[key])) return { ok: false, reason: `bad ${key}` };
   }
   if (!(s.waves as unknown[]).every((w) => isObject(w) && typeof w.scouted === 'boolean')) return { ok: false, reason: 'bad waves' };
+  if (!(s.buildings as unknown[]).every((b) => isObject(b) && isNum(b.tended))) return { ok: false, reason: 'bad buildings' };
   if (!Array.isArray(s.upgrades)) return { ok: false, reason: 'bad upgrades' };
+  if (!Array.isArray(s.powersUsed)) return { ok: false, reason: 'bad powersUsed' };
   const store = s.store;
   if (!isObject(store) || !isNum(store.food) || !isNum(store.wood) || !isNum(store.hides) || !isNum(store.pemmican)) {
     return { ok: false, reason: 'bad store' };

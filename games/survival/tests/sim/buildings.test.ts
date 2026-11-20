@@ -46,8 +46,8 @@ const tilesOf = (s: GameState, type: string) =>
 
 test('the buildable types are in menu order', () => {
   assert.deepEqual(BUILDABLE, [
-    'tipi', 'gathering_spot', 'hunting_lodge', 'store', 'drying_rack', 'healers_lodge', 'scouts_lodge',
-    'lancers_lodge', 'archers_lodge', 'trap', 'fire_pit',
+    'tipi', 'gathering_spot', 'hunting_lodge', 'store', 'drying_rack', 'horse_corral', 'healers_lodge', 'scouts_lodge',
+    'lancers_lodge', 'archers_lodge', 'trap', 'fire_pit', 'barricade', 'spirit_lodge',
   ]);
 });
 

@@ -1,7 +1,12 @@
 import seasons from '../../src/data/seasons.json';
 import { mealNeed } from '../../src/sim/economy';
-import type { GameState } from '../../src/sim/state';
+import { addBuilding, type GameState } from '../../src/sim/state';
 import { step } from '../../src/sim/tick';
+
+/** Adds a finished hunting lodge, the home of Hunting dogs, Better bows and Akicita scouts. */
+export function addHuntingLodge(s: GameState): void {
+  addBuilding(s, 'hunting_lodge', 36, 36, true);
+}
 
 /**
  * Steps `n` ticks and puts back the food each meal eats, so job tests can watch the store alone.

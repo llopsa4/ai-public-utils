@@ -11,6 +11,8 @@ import { upgradeLabel, type UpgradeId } from './upgrades';
 
 export interface BuildingDef {
   size: [number, number];
+  /** The Dakota word for the label, empty until the user approves one in CULTURE.md. */
+  dakota?: string;
   hp?: number;
   buildable?: boolean;
   /** The Build menu page the type is on: Camp or Societies (Tab switches). */
@@ -21,6 +23,8 @@ export interface BuildingDef {
   workers?: number;
   job?: JobKind;
   society?: string;
+  /** Placed by dragging a straight line of 1x1 segments, each its own site (the barricade). */
+  line?: boolean;
   /** An upgrade id that must be bought before this can be placed. */
   requires?: string;
   caps?: Record<Res, number>;
@@ -32,9 +36,9 @@ export const BUILDABLE = Object.keys(buildingDefs).filter((k) => buildingDefs[k]
 
 const NAMES: Record<string, string> = {
   tipi: 'tipi', gathering_spot: 'gathering spot', hunting_lodge: 'hunting lodge', store: 'store', fire: 'fire',
-  drying_rack: 'drying rack', healers_lodge: "healers' lodge",
+  drying_rack: 'drying rack', horse_corral: 'horse corral', healers_lodge: "healers' lodge",
   scouts_lodge: "scouts' lodge", lancers_lodge: "lancers' lodge", archers_lodge: "archers' lodge",
-  trap: 'trap', fire_pit: 'fire pit',
+  trap: 'trap', fire_pit: 'fire pit', barricade: 'barricade', spirit_lodge: 'spirit lodge',
 };
 export function buildingName(type: string): string {
   return NAMES[type] ?? type;
@@ -63,6 +67,51 @@ export function placementError(s: GameState, type: string, x: number, y: number)
     if (s.store[res] < (def.cost[res] ?? 0)) return `Not enough ${res}.`;
   }
   return null;
+}
+
+/**
+ * The tiles of a line dragged from a to b: horizontal, vertical or diagonal on the tile grid, whichever is
+ * nearest the drag, starting at a.
+ */
+export function lineTiles(a: Tile2, b: Tile2): Tile2[] {
+  let dx = b[0] - a[0];
+  let dy = b[1] - a[1];
+  const ax = Math.abs(dx);
+  const ay = Math.abs(dy);
+  if (ax >= 2 * ay) dy = 0;
+  else if (ay >= 2 * ax) dx = 0;
+  else {
+    const len = Math.max(ax, ay);
+    dx = Math.sign(dx) * len;
+    dy = Math.sign(dy) * len;
+  }
+  const steps = Math.max(Math.abs(dx), Math.abs(dy));
+  const out: Tile2[] = [];
+  for (let i = 0; i <= steps; i++) out.push([a[0] + Math.sign(dx) * i, a[1] + Math.sign(dy) * i]);
+  return out;
+}
+
+/**
+ * Which tiles of a dragged line can take a site: each must pass `placementError`, and the store pays for the
+ * segments in order until it runs short. `error` is the first refusal, for a toast when nothing fits.
+ */
+export function lineSites(s: GameState, type: string, a: Tile2, b: Tile2): { tiles: Tile2[]; ok: boolean[]; error: string | null } {
+  const tiles = lineTiles(a, b);
+  const cost = buildingDefs[type]?.cost ?? {};
+  let afford = Infinity;
+  for (const res of Object.keys(cost) as Res[]) if (cost[res]) afford = Math.min(afford, Math.floor(s.store[res] / cost[res]!));
+  let error: string | null = null;
+  let taken = 0;
+  const ok = tiles.map(([x, y]) => {
+    const e = placementError(s, type, x, y) ?? (taken >= afford ? `Not enough ${(Object.keys(cost) as Res[]).find((r) => s.store[r] < (taken + 1) * (cost[r] ?? 0))}.` : null);
+    if (e) {
+      error ??= e;
+      return false;
+    }
+    taken++;
+    return true;
+  });
+  return { tiles, ok, error };
 }
 
 /** Places a construction site and takes its whole cost from the store at once. */

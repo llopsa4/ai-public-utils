@@ -127,6 +127,25 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.fillStyle(0x4f8a3a, 1).fillEllipse(cx + 22, cy - 8, 8, 12);
     g.fillStyle(0xe7e1c8, 1).fillCircle(cx + 22, cy - 22, 2);
   },
+  building_horse_corral: (g, w, h) => {
+    // A trampled-earth diamond fenced with posts and two rails, and two brown horses standing inside.
+    const cx = w / 2;
+    const cy = h * 0.75;
+    shadow(g, cx + 4, cy + 2, 100, 36);
+    const ring = [p(cx, cy - 24), p(cx + 48, cy), p(cx, cy + 24), p(cx - 48, cy)];
+    g.fillStyle(0xb39a6a, 1).fillPoints(ring, true);
+    g.lineStyle(3, 0x5a3b22, 1).strokePoints([p(cx - 48, cy - 8), p(cx, cy - 32), p(cx + 48, cy - 8)], false);
+    g.lineStyle(3, 0x5a3b22, 1).strokePoints([p(cx - 48, cy - 16), p(cx, cy - 40), p(cx + 48, cy - 16)], false);
+    for (const [px, py] of [[-48, 0], [-24, -12], [0, -24], [24, -12], [48, 0], [-24, 12], [0, 24], [24, 12]]) {
+      g.fillStyle(0x5a3b22, 1).fillRect(cx + px - 1.5, cy + py - 18, 3, 20);
+    }
+    for (const [hx, hy, coat] of [[-14, 2, 0x8a5a36], [14, -4, 0xa8794a]]) {
+      g.fillStyle(coat, 1).fillEllipse(cx + hx, cy + hy - 8, 20, 11);
+      g.fillRect(cx + hx + 7, cy + hy - 18, 5, 11);
+      g.fillEllipse(cx + hx + 12, cy + hy - 18, 8, 5);
+      g.fillStyle(0x3a2616, 1).fillRect(cx + hx - 7, cy + hy - 4, 2, 7).fillRect(cx + hx + 4, cy + hy - 4, 2, 7);
+    }
+  },
   building_scouts_lodge: (g, w, h) => {
     // A small lodge with a tall lookout pole and a red pennant.
     lodgeBody(g, w, h, 0x8a6a44, 0x6f5234, 0x9c7f55);
@@ -160,6 +179,15 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.lineStyle(2, 0x4a3624, 1).beginPath().arc(cx - 26, cy - 2, 14, -1.2, 1.2).strokePath();
     g.lineStyle(1, 0xe7e1c8, 1).lineBetween(cx - 26 + 14 * Math.cos(-1.2), cy - 2 + 14 * Math.sin(-1.2), cx - 26 + 14 * Math.cos(1.2), cy - 2 + 14 * Math.sin(1.2));
   },
+  building_spirit_lodge: (g, w, h) => {
+    // A pale lodge with a ring of blue-white sky marks above the door and a drifting smoke curl.
+    lodgeBody(g, w, h, 0x8a8f9c, 0x6c7284, 0xb7bcc9);
+    const cx = w / 2;
+    const cy = h * 0.75;
+    g.lineStyle(2, 0xcfe2f3, 1).strokeCircle(cx, cy - 34, 10).strokeCircle(cx, cy - 34, 5);
+    g.fillStyle(0xf2f6fb, 1).fillCircle(cx, cy - 34, 2);
+    g.lineStyle(2, 0xe7e1c8, 0.8).beginPath().arc(cx + 22, cy - 52, 9, 0.5, 3.6).strokePath();
+  },
   building_trap: (g, w, h) => {
     // A snare: a bent sapling holding a rope loop over a pit of sticks, on one tile.
     const cx = w / 2;
@@ -186,6 +214,77 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     }
     g.fillStyle(0xe8601c, 1).fillTriangle(cx, cy - 20, cx - 6, cy - 2, cx + 6, cy - 2);
     g.fillStyle(0xfbe08a, 1).fillTriangle(cx, cy - 12, cx - 3, cy - 2, cx + 3, cy - 2);
+  },
+  building_barricade: (g, w, h) => {
+    // Sharpened stakes leaning out of a low earth bank, on one tile.
+    const cx = w / 2;
+    const cy = h * 0.75;
+    shadow(g, cx + 1, cy + 2, 38, 14);
+    g.fillStyle(0x6a5232, 1).fillPoints([p(cx, cy - 8), p(cx + 18, cy + 1), p(cx, cy + 10), p(cx - 18, cy + 1)], true);
+    for (const dx of [-12, -6, 0, 6, 12]) {
+      const base = cy + 2 - Math.abs(dx) * 0.2;
+      g.fillStyle(0x8a6a3e, 1).fillTriangle(cx + dx - 3, base, cx + dx + 3, base, cx + dx + 5, base - 22);
+      g.fillStyle(0xe7d3a8, 1).fillTriangle(cx + dx + 3, base - 16, cx + dx + 5, base - 22, cx + dx + 2, base - 15);
+    }
+    g.lineStyle(2, 0x4a3624, 1).lineBetween(cx - 16, cy - 6, cx + 16, cy - 6);
+  },
+  building_store_open: (g, w, h) => {
+    // The store's cutaway: bare earth floor, the two back walls seen from inside, only low rims in front.
+    const cx = w / 2;
+    const cy = h * 0.75;
+    shadow(g, cx + 8, cy + 4, 110, 44);
+    const hw = 40;
+    const hh = 20;
+    const rise = 30;
+    g.fillStyle(0x5a4630, 1).fillPoints([p(cx, cy - hh), p(cx + hw, cy), p(cx, cy + hh), p(cx - hw, cy)], true);
+    g.fillStyle(0x6f5234, 1).fillPoints([p(cx - hw, cy), p(cx, cy - hh), p(cx, cy - hh - rise), p(cx - hw, cy - rise)], true);
+    g.fillStyle(0x8a6a44, 1).fillPoints([p(cx + hw, cy), p(cx, cy - hh), p(cx, cy - hh - rise), p(cx + hw, cy - rise)], true);
+    g.lineStyle(1, 0x4a3624, 1).strokePoints([p(cx - hw, cy - rise), p(cx, cy - hh - rise), p(cx + hw, cy - rise)], false);
+    g.fillStyle(0x8a6a44, 1).fillPoints([p(cx - hw, cy), p(cx, cy + hh), p(cx, cy + hh - 6), p(cx - hw, cy - 6)], true);
+    g.fillStyle(0x6f5234, 1).fillPoints([p(cx + hw, cy), p(cx, cy + hh), p(cx, cy + hh - 6), p(cx + hw, cy - 6)], true);
+  },
+  icon_food: (g) => {
+    // A haunch: a red-brown joint with a pale bone sticking out.
+    g.fillStyle(0xe7e1c8, 1).fillRect(20, 6, 4, 12).fillCircle(20, 6, 3.5).fillCircle(24, 6, 3.5);
+    g.fillStyle(0xa8392f, 1).fillEllipse(14, 20, 22, 18);
+    g.fillStyle(0xc9594a, 1).fillEllipse(11, 17, 10, 7);
+  },
+  icon_wood: (g) => {
+    // Two logs side by side and one on top, with pale cut ends.
+    for (const [x, y] of [[9, 22], [23, 22], [16, 10]]) {
+      g.fillStyle(0x7a5a3a, 1).fillRect(x - 8, y - 5, 16, 10);
+      g.fillStyle(0xd9b98a, 1).fillCircle(x + 8, y, 5);
+      g.lineStyle(1, 0x7a5a3a, 1).strokeCircle(x + 8, y, 2.5);
+    }
+  },
+  icon_hides: (g) => {
+    // A folded hide: a tan sheet with a darker fold and curled corners.
+    g.fillStyle(0xc9a56e, 1).fillPoints([p(5, 9), p(27, 6), p(28, 25), p(4, 26)], true);
+    g.fillStyle(0xa8854f, 1).fillPoints([p(5, 17), p(28, 15), p(28, 25), p(4, 26)], true);
+    g.lineStyle(1, 0x6f5234, 1).strokePoints([p(5, 9), p(27, 6), p(28, 25), p(4, 26)], true);
+    g.fillStyle(0xe6d3a3, 1).fillCircle(8, 12, 2.5).fillCircle(24, 10, 2.5);
+  },
+  icon_pemmican: (g) => {
+    // A dark red-brown cake with pale berry flecks.
+    g.fillStyle(0x5e3326, 1).fillRoundedRect(3, 9, 26, 16, 4);
+    g.fillStyle(0x7e4632, 1).fillRoundedRect(3, 9, 26, 7, 4);
+    g.fillStyle(0xe0c28a, 1);
+    for (const [x, y] of [[9, 14], [16, 19], [22, 13], [24, 21], [11, 22]]) g.fillCircle(x, y, 1.8);
+  },
+  icon_gift: (g) => {
+    // A hide bundle tied with a red band.
+    g.fillStyle(0xc9a56e, 1).fillEllipse(16, 19, 24, 20);
+    g.fillStyle(0xe6d3a3, 1).fillEllipse(12, 15, 10, 6);
+    g.fillStyle(0xb9473c, 1).fillRect(13, 9, 6, 20);
+    g.fillStyle(0xb9473c, 1).fillCircle(16, 9, 4);
+    g.fillStyle(0x8a2f26, 1).fillCircle(16, 9, 1.8);
+  },
+  icon_horses: (g) => {
+    // A horse's head in profile: brown neck and muzzle, a dark mane and a pale eye.
+    g.fillStyle(0x8a5a36, 1).fillPoints([p(8, 28), p(11, 10), p(19, 4), p(26, 10), p(29, 21), p(24, 24), p(22, 17), p(18, 28)], true);
+    g.fillStyle(0xa8794a, 1).fillPoints([p(19, 4), p(26, 10), p(29, 21), p(24, 24), p(22, 17)], true);
+    g.fillStyle(0x3a2616, 1).fillPoints([p(11, 10), p(19, 4), p(17, 9), p(13, 18), p(8, 28)], true);
+    g.fillStyle(0xe7e1c8, 1).fillCircle(22, 11, 1.6);
   },
   fire_central: (g, w, h) => {
     const cx = w / 2;
@@ -235,6 +334,40 @@ function ground(g: G, w: number, h: number, base: number, speckles: number[], ed
   spots.forEach(([x, y], i) => {
     g.fillStyle(speckles[i % speckles.length], 0.9).fillRect(x, y, 2, 1);
   });
+}
+
+/** Where the n items of a pile sit on its 32 x 24 canvas (a small heap: a row on the ground and one on top). */
+const HEAP: [number, number][][] = [
+  [],
+  [[16, 19]],
+  [[11, 19], [21, 19]],
+  [[10, 19], [22, 19], [16, 11]],
+  [[7, 19], [16, 19], [25, 19], [16, 11]],
+];
+
+/** One pile per stored resource, 1-4 items: the open store (R2) shows these inside. */
+for (const res of ['food', 'wood', 'hides', 'pemmican'] as const) {
+  for (let n = 1; n <= 4; n++) {
+    DRAW[`pile_${res}_${n}`] = (g) => {
+      if (res === 'hides') {
+        // Hides lie flat, one on another.
+        for (let i = 0; i < n; i++) {
+          g.fillStyle(i % 2 ? 0xc9a56e : 0xb8935a, 1).fillRect(7, 20 - i * 5, 18, 5);
+          g.fillStyle(0xe6d3a3, 1).fillRect(7, 20 - i * 5, 18, 1);
+        }
+        return;
+      }
+      for (const [x, y] of HEAP[n]) {
+        if (res === 'food') {
+          g.fillStyle(0xa8392f, 1).fillCircle(x, y, 5).fillStyle(0xc9594a, 1).fillCircle(x - 1.5, y - 1.5, 2);
+        } else if (res === 'wood') {
+          g.fillStyle(0x7a5a3a, 1).fillRect(x - 7, y - 3, 14, 6).fillStyle(0xd9b98a, 1).fillCircle(x + 7, y, 3);
+        } else {
+          g.fillStyle(0x5e3326, 1).fillRoundedRect(x - 5, y - 3, 10, 6, 2).fillStyle(0xe0c28a, 1).fillCircle(x - 1, y, 1);
+        }
+      }
+    };
+  }
 }
 
 /** Draws a texture for every manifest key that has none yet. */

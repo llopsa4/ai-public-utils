@@ -4,15 +4,23 @@ interface Camp {
   state: {
     people: unknown[]; tick: number; result: string | null; gift: number; upgrades: string[];
     store: Record<string, number>;
+    buildings: { id: number; type: string; x: number; y: number; done: boolean }[];
   };
   orders: (list: unknown[]) => void;
-  upgradesOpen: () => boolean;
-  upgradeCard: (id: string) => string | null;
+  selectBuilding: (id: number | null) => void;
+  upgradeRows: () => Record<string, string>;
+  upgradeBuy: (id: string) => [number, number] | null;
   buildMenu: () => { open: boolean; page: string; shown: string[] };
   wotakuyeTip: () => string | null;
   step: (n: number) => void;
   banner: () => string | null;
   hudText: () => string;
+  hudBar: () => { icon: string | null; text: string; right: number }[];
+  storeOpen: () => { id: number; piles: Record<string, string | null> } | null;
+  powers: () => string[];
+  powerButton: (id: string) => [number, number] | null;
+  hoverTip: () => string | null;
+  scene: { aiming: string | null; cameras: { main: { worldView: { x: number; y: number }; zoom: number } } };
 }
 interface MenuHook {
   buttons: () => Record<string, [number, number]>;
@@ -29,6 +37,22 @@ declare global {
 async function clickMenu(page: Page, name: string): Promise<void> {
   const box = (await page.locator('#game canvas').boundingBox())!;
   const [x, y] = await page.evaluate((n) => window.menu.buttons()[n], name);
+  await page.mouse.click(box.x + (x / 1280) * box.width, box.y + (y / 720) * box.height);
+}
+
+/** Adds a finished hunting lodge through the debug state (the start camp has none) and returns its id. */
+async function addHuntingLodge(page: Page): Promise<number> {
+  return page.evaluate(() => {
+    const s = window.camp.state as unknown as { nextBuildingId: number; buildings: unknown[] };
+    const id = s.nextBuildingId++;
+    s.buildings.push({ id, type: 'hunting_lodge', x: 36, y: 36, done: true, built: 0, delivered: {}, workers: [], residents: [], tended: 0, hp: null });
+    return id;
+  });
+}
+
+/** Clicks a point given in the 1280 x 720 canvas space. */
+async function clickCanvas(page: Page, [x, y]: [number, number]): Promise<void> {
+  const box = (await page.locator('#game canvas').boundingBox())!;
   await page.mouse.click(box.x + (x / 1280) * box.width, box.y + (y / 720) * box.height);
 }
 
@@ -121,27 +145,32 @@ test('the HUD names the season: spring at the start, winter on day 10', async ({
   expect(errors).toEqual([]);
 });
 
-test('the Upgrades panel opens with U, buys dogs with gift value, and shows the Gift', async ({ page }) => {
+test("a finished building's panel lists its upgrades and buys dogs with gift value from the hunting lodge", async ({ page }) => {
   const errors = watchErrors(page);
 
   await page.goto('/?debug');
   await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
   await clickMenu(page, 'slot1.new');
-  await page.waitForFunction(() => window.camp?.upgradesOpen);
+  await page.waitForFunction(() => !!window.camp?.selectBuilding);
   expect(await page.evaluate(() => window.camp.hudText())).toContain('Gift 0');
 
-  await page.keyboard.press('u');
-  await expect.poll(() => page.evaluate(() => window.camp.upgradesOpen())).toBe(true);
-  await expect.poll(() => page.evaluate(() => window.camp.upgradeCard('dogs'))).toContain('Missing: gift 4');
+  // The council fire (building 1) sells the society upgrades; the hunting lodge sells dogs, bows and scouts.
+  await page.evaluate(() => window.camp.selectBuilding(1));
+  await expect.poll(() => page.evaluate(() => Object.keys(window.camp.upgradeRows()))).toEqual(['healers', 'warriors', 'builders', 'barricades', 'tools', 'spirits']);
+  const lodge = await addHuntingLodge(page);
+  await page.evaluate((id) => window.camp.selectBuilding(id), lodge);
+  await expect.poll(() => page.evaluate(() => Object.keys(window.camp.upgradeRows()))).toEqual(['dogs', 'bows', 'scouts']);
+  await expect.poll(() => page.evaluate(() => window.camp.upgradeRows().dogs)).toContain('Missing: gift 4');
+  expect(await page.evaluate(() => window.camp.upgradeRows().scouts)).toBe('Needs Hunting dogs');
 
-  // Give the camp gift value through the debug state, then buy through the panel's order.
-  await page.evaluate(() => {
-    window.camp.state.gift = 5;
-    window.camp.orders([{ type: 'buy', upgrade: 'dogs' }]);
-  });
-  await page.evaluate(() => window.camp.step(2));
-  await expect.poll(() => page.evaluate(() => window.camp.upgradeCard('dogs'))).toBe('Bought');
-  expect(await page.evaluate(() => window.camp.state.upgrades)).toEqual(['dogs']);
+  // Give the camp gift value through the debug state, then click the real Buy button.
+  await page.evaluate(() => { window.camp.state.gift = 5; });
+  await expect.poll(() => page.evaluate(() => window.camp.upgradeRows().dogs)).not.toContain('Missing');
+  await page.screenshot({ path: 'test-results/w3-lodge-upgrades.png' });
+  const buy = (await page.evaluate(() => window.camp.upgradeBuy('dogs')))!;
+  await clickCanvas(page, buy);
+  await expect.poll(() => page.evaluate(() => window.camp.state.upgrades)).toEqual(['dogs']);
+  await expect.poll(() => page.evaluate(() => window.camp.upgradeRows().dogs)).toBe('Owned');
   expect(await page.evaluate(() => window.camp.hudText())).toContain('Gift 1');
 
   expect(errors).toEqual([]);
@@ -153,9 +182,10 @@ test('tier 2: a society upgrade needs its tier 1 upgrade, and Tab pages the Buil
   await page.goto('/?debug');
   await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
   await clickMenu(page, 'slot1.new');
-  await page.waitForFunction(() => !!window.camp?.upgradesOpen && !!window.camp?.buildMenu); // the Build scene starts after the HUD
+  await page.waitForFunction(() => !!window.camp?.selectBuilding && !!window.camp?.buildMenu); // the Build scene starts after the HUD
 
   // Rich camp: the gift and goods are not the limit, the requirement is.
+  const lodge = await addHuntingLodge(page);
   await page.evaluate(() => {
     window.camp.state.gift = 60;
     window.camp.state.store.wood = 200;
@@ -164,10 +194,11 @@ test('tier 2: a society upgrade needs its tier 1 upgrade, and Tab pages the Buil
   });
   await page.evaluate(() => window.camp.step(2));
   expect(await page.evaluate(() => window.camp.state.upgrades)).toEqual([]);
-  await pressUntil(page, 'u', () => page.evaluate(() => window.camp.upgradesOpen()));
-  await expect.poll(() => page.evaluate(() => window.camp.upgradeCard('scouts'))).toContain('Needs Hunting dogs');
+  await page.evaluate((id) => window.camp.selectBuilding(id), lodge);
+  await expect.poll(() => page.evaluate(() => window.camp.upgradeRows().scouts)).toBe('Needs Hunting dogs');
   await page.screenshot({ path: 'test-results/tier2-upgrades-panel.png' });
-  await pressUntil(page, 'u', async () => !(await page.evaluate(() => window.camp.upgradesOpen())));
+  await page.evaluate(() => window.camp.selectBuilding(null));
+  await expect.poll(() => page.evaluate(() => Object.keys(window.camp.upgradeRows()))).toEqual([]);
 
   // With dogs, scouts can be bought.
   await page.evaluate(() => window.camp.orders([{ type: 'buy', upgrade: 'dogs' }, { type: 'buy', upgrade: 'scouts' }]));
@@ -206,6 +237,115 @@ test('hovering the Wotakuye bar shows the rules tooltip, even while paused', asy
 
   await at(400, 400);
   await expect.poll(() => page.evaluate(() => window.camp.wotakuyeTip())).toBeNull();
+
+  expect(errors).toEqual([]);
+});
+
+test('the power bar casts F1 at once, aims the storm at a map click, and Esc cancels aiming', async ({ page }) => {
+  const errors = watchErrors(page);
+
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => !!window.camp?.powers);
+  expect(await page.evaluate(() => window.camp.powers())).toEqual([]);
+
+  await page.evaluate(() => {
+    window.camp.state.upgrades.push('spirit_warriors', 'bison_charge', 'storm_caller');
+    (window.camp.state as unknown as { wotakuye: number }).wotakuye = 100;
+  });
+  await expect.poll(() => page.evaluate(() => window.camp.powers())).toEqual(['spirit_warriors', 'bison_charge', 'storm_caller']);
+  await page.screenshot({ path: 'test-results/w10-power-bar.png' });
+
+  // F1 casts at once (the key is retried, as in the other tests); the button then says it is spent.
+  const used = () => page.evaluate(() => (window.camp.state as unknown as { powersUsed: string[] }).powersUsed);
+  await pressUntil(page, 'F1', async () => (await used()).includes('spirit_warriors'));
+  const box = (await page.locator('#game canvas').boundingBox())!;
+  const [fx, fy] = (await page.evaluate(() => window.camp.powerButton('spirit_warriors')))!;
+  await page.mouse.move(box.x + (fx / 1280) * box.width, box.y + (fy / 720) * box.height);
+  await expect.poll(() => page.evaluate(() => window.camp.hoverTip())).toContain('Spent');
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+
+  // The bison waits for a click; Esc cancels it and nothing is spent.
+  const aiming = () => page.evaluate(() => window.camp.scene.aiming);
+  const [bx, by] = (await page.evaluate(() => window.camp.powerButton('bison_charge')))!;
+  await clickCanvas(page, [bx, by]);
+  await expect.poll(aiming).toBe('bison_charge');
+  await pressUntil(page, 'Escape', async () => (await aiming()) === null);
+  expect(await used()).toEqual(['spirit_warriors']);
+
+  // The storm: click its button, then the map.
+  const [sx, sy] = (await page.evaluate(() => window.camp.powerButton('storm_caller')))!;
+  await clickCanvas(page, [sx, sy]);
+  await expect.poll(aiming).toBe('storm_caller');
+  // Several steps: the first move after leaving a HUD button only ends its hover, and the map sees the next one.
+  await page.mouse.move(box.x + box.width * 0.5, box.y + box.height * 0.4, { steps: 5 });
+  await page.waitForTimeout(300);
+  await page.screenshot({ path: 'test-results/w10-aiming-storm.png' });
+  await clickCanvas(page, [640, 288]);
+  await expect.poll(used).toContain('storm_caller');
+  expect(await aiming()).toBeNull();
+  expect(await page.evaluate(() => (window.camp.state as unknown as { effects: unknown[] }).effects.length)).toBe(1);
+
+  expect(errors).toEqual([]);
+});
+
+test('the resource bar has an icon before each resource, and hovering a store opens it with piles', async ({ page }) => {
+  const errors = watchErrors(page);
+
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => !!window.camp?.hudBar && !!window.camp?.storeOpen);
+
+  // R1: food, wood, hides, pemmican and gift each lead with their icon; people and the season have none, and
+  // the bar stops before the Wotakuye bar (x 750).
+  await expect.poll(() => page.evaluate(() => window.camp.hudBar().length)).toBeGreaterThanOrEqual(7);
+  const bar = await page.evaluate(() => window.camp.hudBar());
+  expect(bar.slice(0, 5).map((b) => b.icon)).toEqual(['icon_food', 'icon_wood', 'icon_hides', 'icon_pemmican', 'icon_gift']);
+  expect(bar.slice(5).every((b) => b.icon === null)).toBe(true);
+  expect(Math.max(...bar.map((b) => b.right))).toBeLessThan(745);
+  await page.screenshot({ path: 'test-results/r1-resource-bar.png', clip: { x: 0, y: 0, width: 1280, height: 40 } });
+
+  // R2: the start store. Put the pointer on its floor; its inside shows piles sized by how full the camp's store is.
+  const at = await page.evaluate(() => {
+    const s = window.camp.state;
+    const b = s.buildings.find((x) => x.type === 'store' && x.done)!;
+    const size = 48;
+    const tx = b.x + 0.5;
+    const ty = b.y + 0.5;
+    const wx = (tx - ty) * 32 + size * 32;
+    const wy = (tx + ty) * 16 + 32;
+    const cam = window.camp.scene.cameras.main;
+    return { id: b.id, x: (wx - cam.worldView.x) * cam.zoom, y: (wy - cam.worldView.y) * cam.zoom };
+  });
+  const box = (await page.locator('#game canvas').boundingBox())!;
+  const toPage = (x: number, y: number): [number, number] => [box.x + (x / 1280) * box.width, box.y + (y / 720) * box.height];
+  const shot = async (name: string) => {
+    await page.waitForTimeout(250);
+    await page.screenshot({ path: `test-results/r2-store-${name}.png`, clip: { x: Math.max(0, box.x + at.x - 130), y: Math.max(0, box.y + at.y - 130), width: 260, height: 200 } });
+  };
+  expect(await page.evaluate(() => window.camp.storeOpen())).toBeNull();
+  await shot('closed');
+  await page.mouse.move(...toPage(at.x, at.y + 60));
+  await page.mouse.move(...toPage(at.x, at.y), { steps: 6 });
+  await expect.poll(() => page.evaluate(() => window.camp.storeOpen()?.id)).toBe(at.id);
+
+  for (const [name, fill] of [['empty', 0], ['half', 0.5], ['full', 1]] as const) {
+    await page.evaluate((f) => {
+      const st = window.camp.state.store;
+      // One store holds 200 food, 150 wood, 40 hides, 100 pemmican.
+      for (const [r, cap] of [['food', 200], ['wood', 150], ['hides', 40], ['pemmican', 100]] as const) st[r] = f * cap;
+    }, fill);
+    await shot(name);
+    const piles = (await page.evaluate(() => window.camp.storeOpen()))!.piles;
+    const sizes = Object.values(piles).map((k) => (k ? Number(k.slice(-1)) : 0));
+    expect(sizes).toEqual(fill === 0 ? [0, 0, 0, 0] : fill === 0.5 ? [2, 2, 2, 2] : [4, 4, 4, 4]);
+  }
+
+  // Leaving the store brings the roof back.
+  await page.mouse.move(...toPage(at.x + 400, at.y + 150), { steps: 6 });
+  await expect.poll(() => page.evaluate(() => window.camp.storeOpen())).toBeNull();
 
   expect(errors).toEqual([]);
 });

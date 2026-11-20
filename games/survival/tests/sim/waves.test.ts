@@ -34,7 +34,7 @@ test('wave 3 spawns 5 wolves and a pack leader on one edge', () => {
   assert.equal(waveBanner(s)!.text, 'Wave 3');
 });
 
-test('defeating waves 3 to 5 does not end the run; defeating wave 6 wins it, and a finished run stops', () => {
+test('defeating waves 3 to 7 does not end the run; defeating wave 8 wins it, and a finished run stops', () => {
   const s = newGame(1);
   s.waves[0].phase = 'defeated';
   s.waves[1].phase = 'defeated';
@@ -66,10 +66,55 @@ test('defeating waves 3 to 5 does not end the run; defeating wave 6 wins it, and
   s.enemies = [];
   step(s, 1);
   assert.equal(s.waves[5].phase, 'defeated');
+  assert.equal(s.result, null, 'waves 7 and 8 are still ahead');
+  s.tick = 24899; // wave 7 warns at 24900 and arrives at 25200
+  step(s, 301);
+  assert.equal(s.enemies.filter((e) => e.wave === 6).length, 14, '12 wolves and 2 pack leaders');
+  s.enemies = [];
+  step(s, 1);
+  assert.equal(s.waves[6].phase, 'defeated');
+  assert.equal(s.result, null, 'wave 8 is still ahead');
+  s.tick = 28499; // wave 8 warns at 28500 and arrives at 28800
+  step(s, 301);
+  assert.equal(s.enemies.filter((e) => e.wave === 7).length, 17, '14 wolves and 3 pack leaders');
+  s.enemies = [];
+  step(s, 1);
+  assert.equal(s.waves[7].phase, 'defeated');
   assert.equal(s.result, 'won');
   const tick = s.tick;
   step(s, 10);
   assert.equal(s.tick, tick);
+});
+
+test('waves 7 and 8 come from two different edges, split evenly, with the leaders alternating', () => {
+  for (const [index, wolves, leaders, at] of [[6, 12, 2, 25200], [7, 14, 3, 28800]] as const) {
+    const s = newGame(1);
+    for (let i = 0; i < index; i++) s.waves[i].phase = 'defeated';
+    s.tick = at - 301;
+    step(s, 1);
+    const run = s.waves[index];
+    assert.equal(run.phase, 'warning');
+    assert.ok(run.edge && run.edge2 && run.edge !== run.edge2, 'two different edges');
+    assert.ok(['north', 'east', 'south'].includes(run.edge) && ['north', 'east', 'south'].includes(run.edge2));
+    assert.equal(waveBanner(s)!.text, `Scouts: wolves coming from the ${run.edge} and ${run.edge2}`);
+    step(s, 300); // spawn tick: enemies have not moved yet
+    const onEdge = (e: { x: number; y: number }, edge: string): boolean => (edge === 'north' ? e.y === 0 : edge === 'south' ? e.y === 47 : e.x === 47);
+    const first = s.enemies.filter((e) => e.wave === index && onEdge(e, run.edge!));
+    const second = s.enemies.filter((e) => e.wave === index && onEdge(e, run.edge2!));
+    assert.equal(first.length + second.length, wolves + leaders, 'everyone spawns on one of the two edges');
+    assert.equal(first.filter((e) => e.kind === 'wolf').length, wolves / 2);
+    assert.equal(second.filter((e) => e.kind === 'wolf').length, wolves / 2);
+    assert.equal(first.filter((e) => e.kind === 'pack_leader').length, Math.ceil(leaders / 2));
+    assert.equal(second.filter((e) => e.kind === 'pack_leader').length, Math.floor(leaders / 2));
+  }
+});
+
+test('earlier waves still come from one edge', () => {
+  const s = newGame(1);
+  s.tick = 3298;
+  step(s, 2);
+  assert.equal(s.waves[0].edge2, null);
+  assert.equal(waveBanner(s)!.text, `Scouts: wolves coming from the ${s.waves[0].edge}`);
 });
 
 test('losing every person, or the fire, loses the run', () => {

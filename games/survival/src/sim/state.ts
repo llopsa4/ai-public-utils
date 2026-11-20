@@ -1,6 +1,7 @@
 // Game state: plain JSON-serialisable objects (PLAN.md *Fixed technical shape*). Pure TypeScript.
 import buildingsData from '../data/buildings.json';
 import mapConfig from '../data/map.json';
+import jobsData from '../data/jobs.json';
 import resourceData from '../data/resources.json';
 import wavesData from '../data/waves.json';
 import { generateMap, type GameMap, type MapConfig } from './map';
@@ -12,7 +13,7 @@ export const DAY_TICKS = 1200;
 
 export type Res = 'food' | 'wood' | 'hides' | 'pemmican';
 export type Age = 'adult' | 'elder' | 'child';
-export type JobKind = 'gather' | 'hunt' | 'dry' | 'heal' | 'scout' | 'drill' | 'chop' | 'build' | 'haul' | 'fight';
+export type JobKind = 'gather' | 'hunt' | 'dry' | 'heal' | 'scout' | 'drill' | 'tend' | 'chop' | 'build' | 'haul' | 'fight';
 export type Tile2 = [number, number];
 
 export interface Task {
@@ -46,6 +47,8 @@ export interface Person {
   carry: { res: Res; amount: number; hides?: number };
   society: string | null;
   drafted: boolean;
+  /** A drafted lancer on a horse (riders upgrade); the horse is part of `horses` and dies with them. */
+  mounted: boolean;
   stance: Stance;
   attackTarget: number | null;
   /** The tile a drafted person holds and returns to after a fight. */
@@ -65,9 +68,46 @@ export interface Enemy {
   fleeing: boolean;
   /** Index of the wave it belongs to. */
   wave: number;
+  /**
+   * Barricade pathing (`combat.ts` `moveWolf`): the A* tiles still to walk, the goal tile they lead to and the
+   * finished-barricade set they were planned for. Absent while no barricade stands in the way.
+   */
+  path?: Tile2[];
+  goal?: Tile2;
+  walls?: string;
+  /** The barricade a wolf with no way round is breaking, or null. */
+  siege?: number | null;
 }
 
-export type Edge = 'north' | 'east' | 'south';
+/** A called spirit warrior or guardian wolf (`allies.ts`): fights wolves for a while, then vanishes. Not saved on purpose. */
+export interface Ally {
+  id: number;
+  kind: 'spirit' | 'guardian';
+  x: number;
+  y: number;
+  hp: number;
+  cooldown: number;
+  /** The tick it vanishes. */
+  expires: number;
+}
+
+/** A running bison herd or storm (`effects.ts`); not saved on purpose. */
+export interface PowerEffect {
+  id: number;
+  kind: 'bison' | 'storm';
+  /** Storm: its centre. Bison: where the herd is now. */
+  x: number;
+  y: number;
+  /** Bison: the unit step direction (storms stand still). */
+  dx: number;
+  dy: number;
+  /** The tick it ends. */
+  expires: number;
+  /** Bison: ids of the wolves already hurt, so each is hit once. */
+  hit: number[];
+}
+
+export type Edge ='north' | 'east' | 'south';
 
 /** Run-time progress of one wave from `waves.json`. */
 export interface WaveRun {
@@ -75,6 +115,9 @@ export interface WaveRun {
   edge: Edge | null;
   /** Middle of the spawn segment along the chosen edge. */
   centre: number;
+  /** A second edge and segment for waves that come from two sides at once (absent in older saves). */
+  edge2?: Edge | null;
+  centre2?: number;
   /** True when a staffed scouts' lodge gave the early warning, so the banner shows the count. */
   scouted: boolean;
 }
@@ -90,6 +133,8 @@ export interface Building {
   workers: number[];
   residents: number[];
   hp: number | null;
+  /** Ticks a horse corral has been tended since its last foal (`tend` job, `stepCorrals`). */
+  tended: number;
 }
 
 export type Stance = 'hold' | 'defend' | 'chase';
@@ -106,7 +151,8 @@ export type Order =
   | { type: 'cancel'; building: number }
   | { type: 'speed'; value: 1 | 2 | 4 }
   | { type: 'pause'; on: boolean }
-  | { type: 'buy'; upgrade: string };
+  | { type: 'buy'; upgrade: string }
+  | { type: 'cast'; power: string; at?: Tile2 };
 
 export interface GameState {
   seed: number;
@@ -118,6 +164,10 @@ export interface GameState {
   people: Person[];
   buildings: Building[];
   enemies: Enemy[];
+  /** Called allies; absent in a file saved before they existed, so read it with `alliesOf`. */
+  allies: Ally[];
+  /** Running bison herds and storms; absent in an older file, so read it with `effectsOf`. */
+  effects: PowerEffect[];
   waves: WaveRun[];
   /** Set once the run ends; the tick loop stops advancing. */
   result: 'won' | 'lost' | null;
@@ -130,6 +180,10 @@ export interface GameState {
   gift: number;
   /** Ids of the bought upgrades (`upgrades.ts`). */
   upgrades: string[];
+  /** Horses in the camp (DESIGN-upgrades-3.md `## Horses and riders`): no store, capped by the corrals. */
+  horses: number;
+  /** Power upgrade ids cast since the last wave warning started (`upgrades.ts` `castPower`). */
+  powersUsed: string[];
   orders: Order[];
   /** Playback, set by the `speed` and `pause` orders; the Game scene decides how many ticks to run. */
   speed: 1 | 2 | 4;
@@ -163,7 +217,7 @@ export const footprintOf = (type: string, x: number, y: number): Tile2[] => foot
 export function addBuilding(s: GameState, type: string, x: number, y: number, done: boolean): Building {
   const b: Building = {
     id: s.nextBuildingId++, type, x, y, done, built: 0, delivered: {}, workers: [], residents: [],
-    hp: TYPES[type]?.hp ?? null,
+    tended: 0, hp: TYPES[type]?.hp ?? null,
   };
   s.buildings.push(b);
   for (const [tx, ty] of footprintOf(type, x, y)) s.blocked[ty * s.map.size + tx] = true;
@@ -182,6 +236,8 @@ export function createState(seed: number): GameState {
     people: [],
     buildings: [],
     enemies: [],
+    allies: [],
+    effects: [],
     waves: wavesData.waves.map(() => ({ phase: 'pending' as const, edge: null, centre: 0, scouted: false })),
     result: null,
     blocked: new Array(map.size * map.size).fill(false),
@@ -189,6 +245,8 @@ export function createState(seed: number): GameState {
     wotakuye: resourceData.wotakuye.start,
     gift: 0,
     upgrades: [],
+    horses: 0,
+    powersUsed: [],
     orders: [],
     speed: 1,
     paused: false,
@@ -210,4 +268,14 @@ export function addMessage(s: GameState, text: string): void {
 /** Total store capacity of a resource: the sum over completed stores. */
 export function storeCap(s: GameState, res: Res): number {
   return s.buildings.filter((b) => b.type === 'store' && b.done).length * TYPES.store.caps![res];
+}
+
+/** Horses nobody is riding: the herd minus the mounted lancers. */
+export function freeHorses(s: Pick<GameState, 'horses' | 'people'>): number {
+  return s.horses - s.people.filter((p) => p.mounted).length;
+}
+
+/** How many horses the corrals hold at most: 6 for each finished corral. */
+export function horseCap(s: Pick<GameState, 'buildings'>): number {
+  return s.buildings.filter((b) => b.type === 'horse_corral' && b.done).length * jobsData.jobs.tend.capPerCorral;
 }

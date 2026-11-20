@@ -3,11 +3,20 @@
     "bow":  { "range": 4.0, "damage": 12, "cooldown": 15, "accuracy": 0.75, "sight": 10, "society": "hunters" },
     "club": { "range": 0.8, "damage": 8,  "cooldown": 12, "accuracy": 0.8,  "sight": 10 },
     "lancer": { "range": 1.6, "damage": 14, "cooldown": 14, "accuracy": 0.8, "sight": 10, "society": "lancers" },
+    "rider": { "range": 1.8, "damage": 18, "cooldown": 14, "accuracy": 0.8, "sight": 10, "society": "lancers", "speed": 2.5 },
     "archer": { "range": 4.0, "damage": 12, "cooldown": 15, "accuracy": 0.75, "sight": 10, "society": "archers" }
   },
   "enemies": {
     "wolf":        { "hp": 40, "range": 0.7, "damage": 10, "cooldown": 10, "accuracy": 0.7,  "speed": 0.16, "sight": 8,  "fleeBelow": 0.2, "fleeSpeed": 0.2 },
     "pack_leader": { "hp": 90, "range": 0.8, "damage": 16, "cooldown": 10, "accuracy": 0.75, "speed": 0.16, "sight": 10, "fleeBelow": 0 }
+  },
+  "allies": {
+    "spirit":   { "power": "spirit_warriors", "count": 4, "ticks": 600, "hp": 80, "range": 1.2, "damage": 12, "cooldown": 12, "accuracy": 0.8, "speed": 0.12, "sight": 10 },
+    "guardian": { "power": "guardian_wolves", "count": 5, "ticks": 600, "hp": 40, "range": 0.7, "damage": 10, "cooldown": 10, "accuracy": 0.7, "speed": 0.16, "sight": 10 }
+  },
+  "powers": {
+    "bison_charge": { "speed": 0.4, "halfWidth": 1.5, "depth": 1.0, "damage": 40 },
+    "storm_caller": { "radius": 5, "ticks": 200, "speedFactor": 0.4, "damagePerTick": 0.2 }
   },
   "stances": { "defendRadius": 8, "chaseSight": 10 }
 }

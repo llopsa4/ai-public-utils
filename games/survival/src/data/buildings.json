@@ -1,17 +1,20 @@
 {
   "placement": { "tile": "grass", "maxDistFromFire": 14 },
   "types": {
-    "fire":           { "size": [2, 2], "hp": 500, "buildable": false },
-    "tipi":           { "size": [2, 2], "page": "camp", "cost": { "wood": 20, "hides": 8 }, "buildPoints": 300, "houses": 5 },
-    "gathering_spot": { "size": [2, 2], "page": "camp", "cost": { "wood": 10 }, "buildPoints": 150, "workers": 4, "job": "gather" },
-    "hunting_lodge":  { "size": [2, 2], "page": "camp", "cost": { "wood": 25, "hides": 2 }, "buildPoints": 250, "workers": 4, "job": "hunt", "society": "hunters" },
-    "store":          { "size": [2, 2], "page": "camp", "cost": { "wood": 15 }, "buildPoints": 200, "caps": { "food": 200, "wood": 150, "hides": 40, "pemmican": 100 } },
-    "drying_rack":    { "size": [2, 2], "page": "camp", "cost": { "wood": 15, "hides": 2 }, "buildPoints": 200, "workers": 2, "job": "dry" },
-    "healers_lodge":  { "size": [2, 2], "page": "camp", "cost": { "wood": 20, "hides": 3 }, "buildPoints": 220, "workers": 2, "job": "heal", "society": "healers", "requires": "healers" },
-    "scouts_lodge":   { "size": [2, 2], "page": "societies", "cost": { "wood": 15, "hides": 3 }, "buildPoints": 200, "workers": 2, "job": "scout", "society": "scouts", "requires": "scouts" },
-    "lancers_lodge":  { "size": [2, 2], "page": "societies", "cost": { "wood": 25, "hides": 4 }, "buildPoints": 220, "workers": 4, "job": "drill", "society": "lancers", "requires": "warriors" },
-    "archers_lodge":  { "size": [2, 2], "page": "societies", "cost": { "wood": 25, "hides": 4 }, "buildPoints": 220, "workers": 4, "job": "drill", "society": "archers", "requires": "warriors" },
-    "trap":           { "size": [1, 1], "page": "societies", "cost": { "wood": 3, "hides": 1 }, "buildPoints": 40, "requires": "builders", "defence": { "trapRadius": 0.6, "trapDamage": 25 } },
-    "fire_pit":       { "size": [1, 1], "page": "societies", "cost": { "wood": 5 }, "buildPoints": 60, "requires": "builders", "defence": { "slowRadius": 3, "slow": 0.5 } }
+    "fire":           { "dakota": "", "size": [2, 2], "hp": 500, "buildable": false },
+    "tipi":           { "dakota": "tipi", "size": [2, 2], "page": "camp", "cost": { "wood": 20, "hides": 8 }, "buildPoints": 300, "houses": 5 },
+    "gathering_spot": { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 10 }, "buildPoints": 150, "workers": 4, "job": "gather" },
+    "hunting_lodge":  { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 25, "hides": 2 }, "buildPoints": 250, "workers": 4, "job": "hunt", "society": "hunters" },
+    "store":          { "dakota": "wakihnakapi", "size": [2, 2], "page": "camp", "cost": { "wood": 15 }, "buildPoints": 200, "caps": { "food": 200, "wood": 150, "hides": 40, "pemmican": 100 } },
+    "drying_rack":    { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 15, "hides": 2 }, "buildPoints": 200, "workers": 2, "job": "dry" },
+    "horse_corral":   { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 20 }, "buildPoints": 220, "workers": 1, "job": "tend", "requires": "warriors" },
+    "healers_lodge":  { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 20, "hides": 3 }, "buildPoints": 220, "workers": 2, "job": "heal", "society": "healers", "requires": "healers" },
+    "scouts_lodge":   { "dakota": "", "size": [2, 2], "page": "societies", "cost": { "wood": 15, "hides": 3 }, "buildPoints": 200, "workers": 2, "job": "scout", "society": "scouts", "requires": "scouts" },
+    "lancers_lodge":  { "dakota": "", "size": [2, 2], "page": "societies", "cost": { "wood": 25, "hides": 4 }, "buildPoints": 220, "workers": 4, "job": "drill", "society": "lancers", "requires": "warriors" },
+    "archers_lodge":  { "dakota": "", "size": [2, 2], "page": "societies", "cost": { "wood": 25, "hides": 4 }, "buildPoints": 220, "workers": 4, "job": "drill", "society": "archers", "requires": "warriors" },
+    "trap":           { "dakota": "wihmuƞke", "size": [1, 1], "page": "societies", "cost": { "wood": 3, "hides": 1 }, "buildPoints": 40, "requires": "builders", "defence": { "trapRadius": 0.6, "trapDamage": 25 } },
+    "fire_pit":       { "dakota": "", "size": [1, 1], "page": "societies", "cost": { "wood": 5 }, "buildPoints": 60, "requires": "builders", "defence": { "slowRadius": 3, "slow": 0.5 } },
+    "barricade":      { "dakota": "", "size": [1, 1], "page": "societies", "cost": { "wood": 4 }, "buildPoints": 50, "hp": 60, "line": true, "requires": "barricades" },
+    "spirit_lodge":   { "dakota": "", "size": [2, 2], "page": "societies", "cost": { "wood": 25, "hides": 5 }, "buildPoints": 250, "requires": "spirits" }
   }
 }

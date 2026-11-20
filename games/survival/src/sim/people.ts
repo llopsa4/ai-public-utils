@@ -1,4 +1,5 @@
 // People: spawning, housing, pathfinding and walking (DESIGN-slice.md `## People`). No Phaser.
+import enemyData from '../data/enemies.json';
 import jobsData from '../data/jobs.json';
 import mapConfig from '../data/map.json';
 import { rngNext } from './rng';
@@ -15,6 +16,10 @@ export interface AgeDef {
 }
 
 export const ages = jobsData.ages as unknown as Record<Age, AgeDef>;
+
+/** Tiles per tick: the age's walking speed, times 2.5 for a mounted lancer. */
+export const speedOf = (p: Pick<Person, 'age' | 'mounted'>): number =>
+  ages[p.age].speed * (p.mounted ? enemyData.fighters.rider.speed : 1);
 
 const TILE = mapConfig.tiles as Record<string, { cost: number; passable: boolean }>;
 
@@ -48,11 +53,23 @@ const DIRS: [number, number][] = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, 
  * Starting on the target tile gives `[target]` so the walker still reaches its centre.
  */
 export function findPath(s: GameState, from: [number, number], to: Tile2): Tile2[] | null {
-  const n = s.map.size;
+  return findGridPath(s.map.size, (x, y) => walkable(s, x, y), (i) => TILE[s.map.tiles[i]].cost, from, to, 4000);
+}
+
+/**
+ * The A* behind `findPath`, on any n x n grid: `open(x, y)` says whether a tile can be entered (it is
+ * only asked about tiles inside the grid), `cost(i)` is the price of stepping onto tile index i.
+ * Wolves use it with only barricades as walls (`combat.ts`).
+ */
+export function findGridPath(
+  n: number, open: (x: number, y: number) => boolean, tileCost: (i: number) => number,
+  from: [number, number], to: Tile2, maxExpanded: number,
+): Tile2[] | null {
+  const ok = (x: number, y: number) => x >= 0 && y >= 0 && x < n && y < n && open(x, y);
   const sx = Math.min(n - 1, Math.max(0, Math.round(from[0])));
   const sy = Math.min(n - 1, Math.max(0, Math.round(from[1])));
   const [tx, ty] = to;
-  if (!walkable(s, tx, ty)) return null;
+  if (!ok(tx, ty)) return null;
   if (sx === tx && sy === ty) return [[tx, ty]];
 
   const g = new Float64Array(n * n).fill(Infinity);
@@ -113,18 +130,18 @@ export function findPath(s: GameState, from: [number, number], to: Tile2): Tile2
     if (closed[cur]) continue;
     closed[cur] = 1;
     if (cur === goal) break;
-    if (++expanded > 4000) return null;
+    if (++expanded > maxExpanded) return null;
     const cx = cur % n;
     const cy = (cur - cx) / n;
     for (const [dx, dy] of DIRS) {
       const nx = cx + dx;
       const ny = cy + dy;
-      if (!walkable(s, nx, ny)) continue;
+      if (!ok(nx, ny)) continue;
       const diagonal = dx !== 0 && dy !== 0;
-      if (diagonal && (!walkable(s, cx + dx, cy) || !walkable(s, cx, cy + dy))) continue;
+      if (diagonal && (!ok(cx + dx, cy) || !ok(cx, cy + dy))) continue;
       const ni = ny * n + nx;
       if (closed[ni]) continue;
-      const cost = g[cur] + TILE[s.map.tiles[ni]].cost * (diagonal ? 1.4 : 1);
+      const cost = g[cur] + tileCost(ni) * (diagonal ? 1.4 : 1);
       if (cost < g[ni]) {
         g[ni] = cost;
         parent[ni] = cur;
@@ -149,7 +166,7 @@ export function beginWalk(s: GameState, p: Person, target: Tile2, goal: Task['go
 /** Moves along the path by one tick of speed; "blocked" when the way is shut and no new path exists. */
 export function movePerson(s: GameState, p: Person): 'moving' | 'arrived' | 'blocked' {
   const t = p.task;
-  let budget = ages[p.age].speed;
+  let budget = speedOf(p);
   while (budget > 1e-9 && t.path.length > 0) {
     const [wx, wy] = t.path[0];
     if (!walkable(s, wx, wy)) {
@@ -179,7 +196,7 @@ export function movePerson(s: GameState, p: Person): 'moving' | 'arrived' | 'blo
 export function makePerson(s: GameState, family: number, age: Age, name: string, x: number, y: number): Person {
   return {
     id: s.nextPersonId++, name, family, age, x, y, health: 100, hunger: 20,
-    job: null, task: idleTask(), carry: { res: 'food', amount: 0 }, society: null, drafted: false,
+    job: null, task: idleTask(), carry: { res: 'food', amount: 0 }, society: null, drafted: false, mounted: false,
     stance: 'defend', attackTarget: null, post: null, home: null, cooldown: 0,
   };
 }
@@ -200,6 +217,7 @@ export function spawnSpots(s: GameState): Tile2[] {
 
 /** Removes a person (died or left) and frees their bed. */
 export function removePerson(s: GameState, id: number): void {
+  if (s.people.find((p) => p.id === id)?.mounted) s.horses = Math.max(0, s.horses - 1); // the horse is lost too
   s.people = s.people.filter((p) => p.id !== id);
   for (const b of s.buildings) b.residents = b.residents.filter((r) => r !== id);
 }

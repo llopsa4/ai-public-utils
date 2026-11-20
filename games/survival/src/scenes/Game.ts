@@ -1,15 +1,18 @@
 import Phaser from 'phaser';
 import mapConfig from '../data/map.json';
-import { buildingDefs, placementError } from '../sim/buildings';
+import { buildingDefs, lineSites, placementError } from '../sim/buildings';
+import { ALLIES, alliesOf } from '../sim/allies';
+import { BISON_HALF_WIDTH, bisonDirection, effectsOf, STORM_RADIUS } from '../sim/effects';
 import { flushOrders } from '../sim/orders';
 import { newGame, queueOrders, step } from '../sim/tick';
 import { loadState, serialize, type SaveFile } from '../sim/save';
-import { addMessage, DAY_TICKS, footprintOf, type GameState, type Order } from '../sim/state';
+import { addMessage, DAY_TICKS, footprintOf, type GameState, type Order, type Tile2 } from '../sim/state';
 import { browserStorage, clearSlot, writeSlot, type SlotId, type SlotStorage } from '../save/slots';
 import { TILE_H, TILE_W, tileToWorld, worldBounds, worldToTileF } from '../render/iso';
 import { entry, manifest } from '../render/manifest';
 import { EnemiesView } from '../render/enemies';
 import { PeopleView } from '../render/people';
+import { StoreHover } from '../render/stores';
 import { ENEMIES } from '../sim/combat';
 import type { BuildScene } from './Build';
 import type { HudScene } from './Hud';
@@ -32,6 +35,7 @@ export class GameScene extends Phaser.Scene {
   private pointerInside = false;
   private people!: PeopleView;
   private enemies!: EnemiesView;
+  private stores!: StoreHover;
   private ground: Phaser.GameObjects.Image[] = [];
   private trees = new Map<number, Phaser.GameObjects.Image>();
   private seenMapVersion = 0;
@@ -39,8 +43,12 @@ export class GameScene extends Phaser.Scene {
   private buildingViews = new Map<number, Phaser.GameObjects.Image>();
   /** The building type being placed (ghost under the cursor), or null. */
   placing: string | null = null;
+  /** The aimed power (bison charge, storm caller) waiting for a left-click on the map, or null. */
+  aiming: string | null = null;
   private ghost!: Phaser.GameObjects.Image;
   private ghostTiles!: Phaser.GameObjects.Graphics;
+  /** Where a line building's drag started (barricades: drag a straight line), or null. */
+  private dragStart: Tile2 | null = null;
   /** `downTime` of the last press this scene used for building placement, so selection ignores it. */
   consumedDownTime = -1;
   /** The slot this run saves into, or null when the browser cannot store (DESIGN-saves.md). */
@@ -69,6 +77,8 @@ export class GameScene extends Phaser.Scene {
     this.buildingViews.clear();
     this.acc = 0;
     this.placing = null;
+    this.aiming = null;
+    this.dragStart = null;
     this.consumedDownTime = -1;
     this.seenMapVersion = this.state.mapVersion;
     this.slot = data.slot ?? null;
@@ -88,6 +98,7 @@ export class GameScene extends Phaser.Scene {
     this.drawMap();
     this.people = new PeopleView(this, this.state.map.size);
     this.enemies = new EnemiesView(this, this.state.map.size);
+    this.stores = new StoreHover(this);
     this.setupCamera();
     this.setupPlacing();
     this.scene.launch('Build', { game: this });
@@ -100,6 +111,7 @@ export class GameScene extends Phaser.Scene {
         step: (n: number) => step(s, n),
         orders: (list: Order[]) => queueOrders(s, list),
         scene: this,
+        storeOpen: () => this.stores.shown(),
       };
     }
   }
@@ -207,12 +219,14 @@ export class GameScene extends Phaser.Scene {
   private overUi(x: number, y: number): boolean {
     const select = this.scene.get('Select') as SelectScene | undefined;
     const hud = this.scene.get('Hud') as HudScene | undefined;
-    return !!hud?.menuOpen || !!hud?.upgradesOverUi(x, y) || !!this.buildScene()?.overUi(x, y) || !!select?.overUi(x, y);
+    return !!hud?.menuOpen || !!this.buildScene()?.overUi(x, y) || !!select?.overUi(x, y);
   }
 
   /** Starts or stops placing a building (the Build scene calls this). */
   setPlacing(type: string | null): void {
     this.placing = type;
+    if (type) this.aiming = null;
+    this.dragStart = null;
     this.ghost.setVisible(false);
     this.ghostTiles.clear();
     if (type) {
@@ -221,12 +235,30 @@ export class GameScene extends Phaser.Scene {
     }
   }
 
+  /** Starts or stops aiming a power at the map (the power bar in the HUD calls this); it ends any placing. */
+  setAiming(id: string | null): void {
+    if (id) this.setPlacing(null);
+    this.aiming = id;
+    if (!id) this.ghostTiles.clear();
+  }
+
   private setupPlacing(): void {
     this.ghost = this.add.image(0, 0, 'building_tipi').setAlpha(0.6).setDepth(100000).setVisible(false);
     this.ghostTiles = this.add.graphics().setDepth(99999);
     this.input.mouse?.disableContextMenu();
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
       if (this.overUi(pointer.x, pointer.y)) return;
+      if (this.aiming) {
+        this.consumedDownTime = pointer.downTime;
+        if (pointer.rightButtonDown()) this.setAiming(null);
+        else if (pointer.leftButtonDown()) {
+          const max = this.state.map.size - 1;
+          const [x, y] = this.ghostTile(pointer);
+          queueOrders(this.state, [{ type: 'cast', power: this.aiming, at: [Math.min(max, Math.max(0, x)), Math.min(max, Math.max(0, y))] }]);
+          this.setAiming(null);
+        }
+        return;
+      }
       if (this.placing) this.consumedDownTime = pointer.downTime;
       if (pointer.rightButtonDown()) {
         if (this.placing) this.setPlacing(null);
@@ -234,6 +266,10 @@ export class GameScene extends Phaser.Scene {
       }
       if (!this.placing || !pointer.leftButtonDown()) return;
       const [x, y] = this.ghostTile(pointer);
+      if (buildingDefs[this.placing].line) {
+        this.dragStart = [x, y];
+        return;
+      }
       const error = placementError(this.state, this.placing, x, y);
       if (error) {
         this.buildScene()?.toast(error);
@@ -241,6 +277,17 @@ export class GameScene extends Phaser.Scene {
       }
       queueOrders(this.state, [{ type: 'place', building: this.placing, at: [x, y] }]);
       this.setPlacing(null);
+    });
+    // A line building is placed on release: one site per free, paid-for tile of the line. Placing goes on, so
+    // the next line can be dragged at once; right-click or Esc stops.
+    this.input.on('pointerup', (pointer: Phaser.Input.Pointer) => {
+      const start = this.dragStart;
+      this.dragStart = null;
+      if (!start || !this.placing) return;
+      const line = lineSites(this.state, this.placing, start, this.ghostTile(pointer));
+      const orders: Order[] = line.tiles.filter((_, i) => line.ok[i]).map((at) => ({ type: 'place', building: this.placing!, at }));
+      if (orders.length === 0) this.buildScene()?.toast(line.error ?? "Can't build there.");
+      else queueOrders(this.state, orders);
     });
   }
 
@@ -251,14 +298,59 @@ export class GameScene extends Phaser.Scene {
     return [Math.floor(f.x), Math.floor(f.y)];
   }
 
+  /** The aiming reticle: the storm's circle, or the bison's lane across the map, under the pointer. */
+  private drawAim(pointer: Phaser.Input.Pointer): void {
+    this.ghost.setVisible(false);
+    this.ghostTiles.clear();
+    if (!this.pointerInside || this.overUi(pointer.x, pointer.y)) return;
+    const size = this.state.map.size;
+    const max = size - 1;
+    const [px, py] = this.ghostTile(pointer);
+    const at: Tile2 = [Math.min(max, Math.max(0, px)), Math.min(max, Math.max(0, py))];
+    const [cx, cy] = at; // tile centres are whole numbers in tile space
+    this.ghostTiles.fillStyle(0x4caf50, 0.35).lineStyle(2, 0xf3e9d2, 0.9);
+    if (this.aiming === 'storm_caller') {
+      const c = tileToWorld(cx, cy, size);
+      const rx = STORM_RADIUS * TILE_W * Math.SQRT1_2;
+      const ry = STORM_RADIUS * TILE_H * Math.SQRT1_2;
+      this.ghostTiles.fillEllipse(c.x, c.y, rx * 2, ry * 2).strokeEllipse(c.x, c.y, rx * 2, ry * 2);
+      return;
+    }
+    // The lane: along the direction the herd runs, BISON_HALF_WIDTH either side, the whole way across.
+    const [dx] = bisonDirection(size, at);
+    const w = BISON_HALF_WIDTH;
+    const lo = -0.5;
+    const hi = max + 0.5;
+    const lane = dx !== 0 ? [[lo, cy - w], [hi, cy - w], [hi, cy + w], [lo, cy + w]] : [[cx - w, lo], [cx + w, lo], [cx + w, hi], [cx - w, hi]];
+    const pts = lane.map(([x, y]) => tileToWorld(x, y, size));
+    this.ghostTiles.fillPoints(pts, true).strokePoints(pts, true);
+  }
+
   private updateGhost(): void {
     const pointer = this.input.activePointer;
+    if (this.aiming) {
+      this.drawAim(pointer);
+      return;
+    }
     if (!this.placing || !this.pointerInside || this.overUi(pointer.x, pointer.y)) {
       this.ghost.setVisible(false);
       this.ghostTiles.clear();
       return;
     }
     const [x, y] = this.ghostTile(pointer);
+    if (this.dragStart) {
+      const line = lineSites(this.state, this.placing, this.dragStart, [x, y]);
+      this.ghost.setVisible(false);
+      this.ghostTiles.clear();
+      line.tiles.forEach(([tx, ty], i) => {
+        const t = tileToWorld(tx, ty, this.state.map.size);
+        this.ghostTiles.fillStyle(line.ok[i] ? 0x4caf50 : 0xd9534f, 0.45).fillPoints([
+          { x: t.x, y: t.y - TILE_H / 2 }, { x: t.x + TILE_W / 2, y: t.y },
+          { x: t.x, y: t.y + TILE_H / 2 }, { x: t.x - TILE_W / 2, y: t.y },
+        ], true);
+      });
+      return;
+    }
     const ok = placementError(this.state, this.placing, x, y) === null;
     const [w, h] = buildingDefs[this.placing].size;
     const c = tileToWorld(x + (w - 1) / 2, y + (h - 1) / 2, this.state.map.size);
@@ -271,6 +363,13 @@ export class GameScene extends Phaser.Scene {
         { x: t.x, y: t.y + TILE_H / 2 }, { x: t.x - TILE_W / 2, y: t.y },
       ], true);
     }
+  }
+
+  /** The open store: hovering a finished store (not while placing, aiming or over a panel) shows its inside. */
+  private hoverStore(): void {
+    const p = this.input.activePointer;
+    const on = this.pointerInside && !this.placing && !this.aiming && !this.overUi(p.x, p.y);
+    this.stores.update(this.state, this.buildingViews, on ? this.cameras.main.getWorldPoint(p.x, p.y) : null);
   }
 
   /** A felled forest tile loses its tree and turns to grass. */
@@ -349,8 +448,11 @@ export class GameScene extends Phaser.Scene {
       this.refreshMap();
     }
     this.syncBuildings();
+    this.hoverStore();
     this.updateGhost();
     this.people.sync(this.state.people, delta, time);
     this.enemies.sync(this.state.enemies, (kind) => ENEMIES[kind].hp);
+    this.enemies.syncAllies(alliesOf(this.state), (kind) => ALLIES[kind].hp);
+    this.enemies.syncEffects(effectsOf(this.state), time);
   }
 }

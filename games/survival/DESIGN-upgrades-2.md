@@ -91,6 +91,9 @@ save* and offer Export and Delete), as with seasons and tier 1.
 
 ## UI
 
+> Superseded in part by [DESIGN-upgrades-3.md](DESIGN-upgrades-3.md) (2026-11-20): upgrades are bought from
+> their home building; the Upgrades panel below is removed.
+
 - **Upgrades panel:** grows from three cards to seven (a two-column grid; it must still fit 1280x720).
   A card with an unmet requirement shows `Needs Hunting dogs`.
 - **Build menu:** it has six slots and tier 2 adds five (scouts', lancers' and archers' lodge, trap,

@@ -1,14 +1,17 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import upgradesData from '../../src/data/upgrades.json';
 import wavesData from '../../src/data/waves.json';
 import { assignWorkers, placeBuilding } from '../../src/sim/buildings';
 import { fighterOf } from '../../src/sim/combat';
 import { coldPerPerson } from '../../src/sim/economy';
-import { buyUpgrade, giftForBand, hasUpgrade, missingFor } from '../../src/sim/upgrades';
+import {
+  bandOf, buyUpgrade, giftForBand, hasUpgrade, homeOf, missingBand, missingFor, missingHome, upgradeNeeds, upgradesOf,
+} from '../../src/sim/upgrades';
 import { loadState, parseSave, serialize } from '../../src/sim/save';
-import type { GameState } from '../../src/sim/state';
+import { addBuilding, type GameState } from '../../src/sim/state';
 import { newGame, step } from '../../src/sim/tick';
-import { stepFed } from './helpers';
+import { addHuntingLodge, stepFed } from './helpers';
 
 /** One step across the day start at `tick` (a multiple of 1200) with the given Wotakuye. */
 function dayStartAt(tick: number, wotakuye: number): GameState {
@@ -35,6 +38,7 @@ test('gift value by band: United 2, Steady 1, Strained 0, Quarrelling 0', () => 
 
 test('buying takes the cost, refuses when short or already owned', () => {
   const s = newGame(1);
+  addHuntingLodge(s);
   assert.equal(buyUpgrade(s, 'dogs'), false, 'no gift yet');
   assert.deepEqual(missingFor(s, 'dogs'), ['gift 4']);
   s.gift = 5;
@@ -60,6 +64,7 @@ test('buying takes the cost, refuses when short or already owned', () => {
 
 test('a saved and loaded run keeps gift and upgrades and stays in step with the unsaved run', () => {
   const a = newGame(3);
+  addHuntingLodge(a);
   step(a, 1300);
   a.gift = 9;
   buyUpgrade(a, 'dogs');
@@ -187,4 +192,60 @@ test('staffed healers ease winter cold: -3 becomes -2 with one and -1 with two; 
   assert.equal(cold(10800, 2), -1);
   assert.equal(cold(3600, 2), -1);
   assert.equal(cold(3600, 0), -1);
+});
+
+test('each upgrade has a home building; buying is refused without a finished one', () => {
+  assert.deepEqual(upgradesOf('hunting_lodge'), ['dogs', 'bows', 'scouts']);
+  assert.deepEqual(upgradesOf('fire'), ['healers', 'warriors', 'builders', 'barricades', 'tools', 'spirits']);
+  assert.deepEqual(upgradesOf('tipi'), []);
+  assert.equal(homeOf('dogs'), 'hunting_lodge');
+
+  const s = newGame(1);
+  s.gift = 50;
+  s.store.food = 100;
+  assert.equal(missingHome(s, 'dogs'), true);
+  assert.equal(upgradeNeeds(s, 'dogs'), 'Needs a finished hunting lodge');
+  assert.equal(buyUpgrade(s, 'dogs'), false);
+  assert.equal(s.gift, 50, 'nothing was taken');
+
+  const lodge = addBuilding(s, 'hunting_lodge', 36, 36, false);
+  assert.equal(buyUpgrade(s, 'dogs'), false, 'an unfinished lodge does not count');
+  lodge.done = true;
+  assert.equal(missingHome(s, 'dogs'), false);
+  assert.equal(upgradeNeeds(s, 'dogs'), null);
+  assert.equal(buyUpgrade(s, 'dogs'), true);
+
+  // The council fire is finished from the start, so its upgrades never wait for a building.
+  assert.equal(missingHome(s, 'healers'), false);
+  s.store.wood = 20;
+  assert.equal(buyUpgrade(s, 'healers'), true);
+});
+
+test('a row reads Needs <upgrade label> while the tier 1 upgrade is missing', () => {
+  const s = newGame(1);
+  addHuntingLodge(s);
+  assert.equal(upgradeNeeds(s, 'scouts'), 'Needs Hunting dogs');
+  assert.equal(upgradeNeeds(s, 'tools'), 'Needs Better bows');
+  assert.equal(upgradeNeeds(s, 'dogs'), null);
+});
+
+test('an upgrade with a band is refused outside that band (Fantasy upgrades need United)', () => {
+  const dogs = upgradesData.upgrades.dogs as { band?: string };
+  dogs.band = 'United';
+  try {
+    const s = newGame(1);
+    addHuntingLodge(s);
+    s.gift = 50;
+    s.store.food = 100;
+    s.wotakuye = 55;
+    assert.equal(bandOf('dogs'), 'United');
+    assert.equal(missingBand(s, 'dogs'), 'United');
+    assert.equal(upgradeNeeds(s, 'dogs'), 'Needs United');
+    assert.equal(buyUpgrade(s, 'dogs'), false);
+    s.wotakuye = 90;
+    assert.equal(missingBand(s, 'dogs'), null);
+    assert.equal(buyUpgrade(s, 'dogs'), true);
+  } finally {
+    delete dogs.band;
+  }
 });

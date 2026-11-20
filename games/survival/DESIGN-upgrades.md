@@ -71,6 +71,9 @@ conversion.
 
 ## UI
 
+> Superseded in part by [DESIGN-upgrades-3.md](DESIGN-upgrades-3.md) (2026-11-20): upgrades are bought from
+> their home building; the Upgrades panel below is removed.
+
 - **Resource bar:** `Gift n` after Pemmican. The Wotakuye bar keeps its place; shrink the gaps if the
   bar overflows 1280 px.
 - **Upgrades panel:** a HUD button **Upgrades** (key U) beside Menu opens a panel of three cards

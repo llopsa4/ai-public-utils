@@ -23,6 +23,10 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   HUD, "Play again" returns to the menu, `npm run e2e` smoke test, `TESTING.md`, `npm run publish`
   writes `index.html` + `build/` (local only). 60 tests pass. C7 files are not committed; nothing pushed.
 
+## Parked
+- **Saving** (user, 2026-11-20, until further notice): no new save work in any task. Existing save code
+  stays untouched; new state (allies, storms, charges) is not written to saves. See [PLAN.md](PLAN.md).
+
 ## Open items
 - CULTURE.md: the user decided 2026-11-19 (keep Tiyospaye and Wotakuye, free-form camp, generic
   seasons, abstract gift value). *Akicita* approved for the scouts/warriors society (use it in C6);
@@ -103,5 +107,64 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   5 runs) pass; all uncommitted, nothing pushed. Checked by screenshot (panel, Societies page, the five new
   buildings, the fire pit ghost); not checked by hand: the real Buy button on tier 2, a scout staffing the
   lodge in the live game, wolves meeting a trap or pit, a lancer or archer drafted from their lodge.
-  **Next: V9, the user's playtest** (play to wave 6, buy at least one tier 2 upgrade, say if the pacing
-  feels right).
+  Committed (`3d92969`), not pushed. V9 passed 2026-11-20: the user played tier 2 and said it is fine
+  (no fixes raised).
+  Next item chosen 2026-11-20: **upgrade tier 3**. Grilled Q1-Q15b: the Fantasy powers plus riders/horses
+  and barricades; all upgrades (tiers 1-3) move into their home buildings (the U panel goes); waves 7-8;
+  Dakota labels "Dakota (English)" from a dictionary, approved in CULTURE.md; plus resource icons and an
+  open store on hover (the user's additions). Spec in [DESIGN-upgrades-3.md](DESIGN-upgrades-3.md), rows
+  W1-W11 + R1-R2 in [PLAN.md](PLAN.md). The plan and numbers were approved; `SAVE_VERSION` 5 breaks v4 saves.
+  W1 done 2026-11-20: waves 7-8 (12 wolves + 2 leaders, 14 + 3; `edges: 2` in `waves.json`, spread 12, the
+  second edge drawn different from the first, each group split evenly, banner `from the north and east`),
+  `winAfterWave` 8; 123 tests pass; uncommitted. W2 drafted 2026-11-20: empty `dakota` fields in `upgrades.json` and `buildings.json`, `src/sim/labels.ts` (`displayLabel`, `englishLabel`, `labelText`), `tests/sim/labels.test.ts` (126 tests pass), and a candidate table in `CULTURE.md` *Needs review* (4-5 sourced words, the rest none found). The user approved four words (tipi, wakihnakapi, wihmuƞke, akaƞyaƞka) 2026-11-20; tipi, store and trap are filled in `buildings.json`, `akaƞyaƞka` goes on `riders` when W4/W5 adds it. W2 done. W3 done 2026-11-20: `home` per upgrade in `upgrades.json` (hunting lodge: dogs, bows, scouts; council fire: healers, warriors, builders, tools), optional `band` (checked, no upgrade uses it yet), `upgradeNeeds` / `missingHome` / `missingBand` / `upgradesOf` in `upgrades.ts`, `buyUpgrade` refuses without a finished home; the selection panel of a finished building lists its upgrades (`Select.ts`: label, effect, cost or Needs, Buy, Owned); the U key, the Upgrades button and the Hud panel are gone. 129 tests and `npm run e2e` (6 tests, 4 repeats, stable) pass; checked by screenshot and a real Buy click; uncommitted. W4 done 2026-11-20: `horse_corral` (Camp page, needs warriors, 1 `tend` worker, placeholder art), `horses` upgrade (Breed horses, +2 at once), `GameState.horses`, `Building.tended`, `stepCorrals` in `jobs.ts` (a foal per 3600 tended ticks, cap 6 per finished corral), `Horses n / cap` in the HUD once there is one, Build menu key 7, `SAVE_VERSION` 5 (v4 saves unreadable); 137 tests and `npm run e2e` (6 tests) pass; `tests/sim/horses.test.ts`; uncommitted; not checked by screenshot or by hand. W5 done 2026-11-20: `riders` upgrade (lancers' lodge, needs `horses`, 8 gift + 10 hides, toast `The lancers can ride.`), `Person.mounted`, `fighters.rider` in `enemies.json` (range 1.8, damage 18, speed x2.5), `speedOf` in `people.ts`, a draft takes a free horse and an undraft gives it back (`freeHorses`), `removePerson` loses the horse; 143 tests and `npm run e2e` (6 tests) pass; `tests/sim/riders.test.ts`; uncommitted; not checked by screenshot or by hand. **Next: W6** (Spirit society, Spirit lodge, the four power upgrades, `cast` order). `icon_horses` waits for R1.
+  W6 done 2026-11-20: `spirits` (Spirit society, council fire, United, 10 gift + 20 wood) and the four power upgrades
+  (`spirit_warriors`, `guardian_wolves`, `bison_charge`, `storm_caller`, home `spirit_lodge`, United, each needs its tier 2
+  upgrade) in `upgrades.json` (`power: { key, aim }`, `castBand: "Steady"`); `spirit_lodge` in `buildings.json` (Societies page,
+  needs `spirits`, no workers, placeholder art); `GameState.powersUsed` (reset when any wave warning starts); the `cast` order
+  and `castPower` / `castError` in `upgrades.ts` (refused when unknown, spent, below Steady, or aimed without a point). The cast
+  only marks the power spent and toasts; the effects are W7 (allies) and W8 (bison, storm). 154 tests and `npm run e2e` (6
+  tests) pass; `tests/sim/powers.test.ts`; uncommitted; not checked by screenshot or by hand. **Next: W7** (allies).
+  W7 done 2026-11-20: allies. `src/sim/allies.ts` (`callAllies`, `stepAllies`, `alliesOf`, `ALLIES` from `allies` in
+  `enemies.json`): Spirit warriors call 4 spirits (hp 80, range 1.2, damage 12), Guardian wolves 5 wolves (the wolf's stats),
+  both at the fire for 600 ticks; they fight the nearest wolf in sight 10, else wait near the fire, never touch people; wolves
+  now pick the nearest person or ally in sight (`combat.ts`); `GameState.allies` (not saved on purpose, `alliesOf` tolerates an
+  older file without it); `EnemiesView.syncAllies` draws placeholder spirits and white wolves. 162 tests and `npm run e2e` (6
+  tests) pass; `tests/sim/allies.test.ts`; uncommitted; not checked by screenshot or by hand. **Next: W8** (bison lane and
+  storm; the F1-F4 power bar and aiming come in W10).
+  W8 done 2026-11-20: the bison lane and the storm. `src/sim/effects.ts` (`startEffect`, `stepEffects`, `stormSlow`,
+  `bisonDirection`; numbers in `enemies.json` `powers`): the herd starts on the edge nearest the point and runs the whole
+  way across, 3 tiles wide, speed 0.4 a tick, each wolf it touches takes 40 once; the storm (radius 5, 200 ticks) slows
+  wolves to 40% (also fleeing ones) and hurts them 0.2 a tick; neither touches people or allies. `castPower` starts them
+  (needs the clicked point), `GameState.effects` (not saved on purpose, `effectsOf` tolerates an older file), placeholder
+  bison and storm drawn by `EnemiesView.syncEffects`. 170 tests and `npm run e2e` (6 tests) pass; `tests/sim/effects.test.ts`;
+  uncommitted; not checked by screenshot or by hand (no power bar or aiming until W10). **Next: W9** (spike barricades; Opus
+  per PLAN).
+  W9 done 2026-11-20: spike barricades. `barricades` upgrade (council fire, needs builders, 6 gift + 15 wood, toast
+  `The builders can raise barricades.`) and `barricade` in `buildings.json` (Societies page key 3 with builders only,
+  1x1, 4 wood, 50 build points, hp 60, `line: true`); drag a straight line (horizontal, vertical or diagonal) and each
+  free, paid-for tile gets its own site (`lineTiles`, `lineSites` in `buildings.ts`; placing stays on after a drag).
+  People are blocked by any barricade (as by any building); wolves treat only finished barricades as walls: straight
+  when the line is clear, else A* (`findGridPath`, shared with people) replanned when barricades change or the goal moves
+  a tile; with no way round they break the first barricade on their line in (`A barricade broke.`). The panel shows
+  `Strength n / 60`. 178 tests and `npm run e2e` (6 tests) pass; `tests/sim/barricades.test.ts`; uncommitted; a drag
+  and the built line checked by screenshot (throwaway script); not checked by hand: wolves meeting a line in the live
+  game. **Next: W10** (power bar, Societies keys, placeholders, labels; Sonnet per PLAN).
+  W10 done 2026-11-20: the power bar and Dakota hovers. `Hud.ts` shows one button per bought power (`F1 Spirit warriors`, stacked
+  top left under the resource bar), greyed while spent or below Steady, gold while aiming; F1-F4 or a click casts at once
+  (spirit warriors, guardian wolves) or starts aiming (`GameScene.aiming`, `setAiming`) for the bison and the storm: the map
+  shows the storm's circle or the bison's lane, a left-click sends the `cast` order, right-click or Esc cancels, a note above
+  the selection panel says so. `src/scenes/hover.ts` (a one-tooltip-per-scene helper) shows the English when a label is
+  Dakota: on power buttons, Build slots, upgrade rows and a building's panel title (Build slots and the panel title now use
+  `displayLabel`). Menu controls text mentions 1-7, barricade drag and F1-F4. 178 tests and `npm run e2e` (7 tests, stable over
+  5 repeats) pass; checked by screenshot (power bar, storm reticle); uncommitted; not checked by hand: the bison reticle, a real
+  cast with wolves about, a Dakota hover in the live Build menu. **Next: W11** (the user plays to wave 8). R1 (resource icons)
+  and R2 (open store on hover) are still not done; they can go before or after W11.
+  R1 and R2 done 2026-11-20: the HUD bar is laid out in parts (`Hud.ts` `drawBar`): a 16 px icon (`icon_food`, `icon_wood`,
+  `icon_hides`, `icon_pemmican`, `icon_gift`, `icon_horses` once there are horses) then its text; the resource words are gone
+  from the bar (the icon stands in; hovering an icon names it), `window.camp.hudText()` still reads with the words. R2:
+  `src/render/stores.ts` (`StoreHover`, `pileSize`, `storeAt`): the pointer on a finished store (floor or roof, not while placing,
+  aiming or over a panel) swaps it for `building_store_open` and shows four piles sized `ceil(4 x amount / camp capacity)`; no sim
+  change. All placeholders drawn in code; manifest, `ASSETS.md`, `SPEC.md` and `TESTING.md` updated. 180 tests and `npm run e2e`
+  (8 tests) pass; checked by screenshot (the bar, a closed, empty, half and full store); uncommitted; not checked by hand.
+  **Next: W11** (the user plays to wave 8).
+

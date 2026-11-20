@@ -23,7 +23,9 @@ Sizes, anchors, palette and the manifest format for every sprite and tile. The p
 | Other building (lodge, store, gathering spot) | up to 128 x 128 | centre of its footprint | 1, plus a "being built" frame |
 | Tree, bush, rock | 32-64 wide | bottom centre | 1 |
 | Central fire | 48 x 48 | bottom centre | 3 (flicker) |
-| UI icon (resource, order) | 32 x 32 | centre | 1 |
+| UI icon (resource, order) | 32 x 32 (the HUD bar draws it at 16 x 16) | centre | 1 |
+| Open store (cutaway of the store, shown on hover) | 128 x 128 | centre of its footprint | 1 |
+| Resource pile (inside the open store), 1-4 per resource | 32 x 24 | bottom centre | 1 each |
 
 Building footprints (in tiles) are set by DESIGN-slice.md `## Buildings`; a sprite fills its
 footprint's diamonds.

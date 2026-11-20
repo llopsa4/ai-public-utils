@@ -6,6 +6,7 @@
     "dry":    { "take": 6, "give": 4, "ticks": 200 },
     "scout":  {},
     "drill":  {},
+    "tend":   { "ticksPerHorse": 3600, "capPerCorral": 6 },
     "heal":   { "below": 80, "ticks": 50, "amount": 15, "coldEase": 1, "reach": 2.5 },
     "build":  { "rate": 1, "maxPerSite": 3 },
     "haul":   { "carry": 5, "maxPerSite": 2 },

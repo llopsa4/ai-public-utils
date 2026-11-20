@@ -11,7 +11,7 @@ import { ages, beginWalk, canWork, idleTask, movePerson, releaseJob, walkable } 
 import { rngNext } from './rng';
 import { seasonal } from './seasons';
 import {
-  addMessage, storeCap, type Building, type GameState, type Job, type JobKind, type Person, type Res, type Tile2,
+  addMessage, horseCap, storeCap, type Building, type GameState, type Job, type JobKind, type Person, type Res, type Tile2,
 } from './state';
 import { buildSpeed, hasUpgrade } from './upgrades';
 
@@ -138,7 +138,7 @@ function validateBuildingJob(s: GameState, p: Person): void {
   const job = p.job;
   if (!job || job.building === null) return;
   const b = building(s, job.building);
-  const working = job.kind === 'gather' || job.kind === 'hunt' || job.kind === 'dry' || job.kind === 'heal' || job.kind === 'scout' || job.kind === 'drill';
+  const working = job.kind === 'gather' || job.kind === 'hunt' || job.kind === 'dry' || job.kind === 'heal' || job.kind === 'scout' || job.kind === 'drill' || job.kind === 'tend';
   if (!b || (working ? !b.done : b.done)) releaseJob(p);
 }
 
@@ -210,7 +210,7 @@ function decideHeal(s: GameState, p: Person): void {
   if (!tile || !beginWalk(s, p, tile, 'work')) p.task = idleTask(HEAL.ticks);
 }
 
-/** A scout or a drilling warrior (DESIGN-upgrades-2.md): waits on the ring of the lodge and makes nothing. */
+/** A scout, a drilling warrior or a horse tender: waits on the ring of the building and makes nothing itself. */
 function decideStation(s: GameState, p: Person, lodge: Building): void {
   if (standsAt(p, lodge)) {
     p.task = idleTask(RETRY);
@@ -234,7 +234,7 @@ function decide(s: GameState, p: Person): void {
   if (job?.kind === 'hunt') return decideHunt(s, p);
   if (job?.kind === 'dry') return decideDry(s, p, building(s, job.building)!);
   if (job?.kind === 'heal') return decideHeal(s, p);
-  if (job?.kind === 'scout' || job?.kind === 'drill') return decideStation(s, p, building(s, job.building)!);
+  if (job?.kind === 'scout' || job?.kind === 'drill' || job?.kind === 'tend') return decideStation(s, p, building(s, job.building)!);
 
   const def = job ? TILE_JOBS[job.kind] : undefined;
   if (job && def) {
@@ -280,7 +280,8 @@ function decide(s: GameState, p: Person): void {
 function finishSite(s: GameState, site: Building): void {
   site.done = true;
   site.built = buildingDefs[site.type].buildPoints ?? site.built;
-  addMessage(s, `The ${buildingName(site.type)} is finished.`);
+  // A barricade line finishes segment by segment; one toast each would bury the others.
+  if (!buildingDefs[site.type].line) addMessage(s, `The ${buildingName(site.type)} is finished.`);
 }
 
 function doWork(s: GameState, p: Person): void {
@@ -312,7 +313,7 @@ function doWork(s: GameState, p: Person): void {
     p.task = idleTask();
     return;
   }
-  if (job.kind === 'scout' || job.kind === 'drill') {
+  if (job.kind === 'scout' || job.kind === 'drill' || job.kind === 'tend') {
     p.task = idleTask(RETRY);
     return;
   }
@@ -457,5 +458,23 @@ export function stepPerson(s: GameState, p: Person): void {
     case 'deliver':
       doDeliver(s, p);
       break;
+  }
+}
+
+/**
+ * Horse breeding (DESIGN-upgrades-3.md `## Horses and riders`): a corral with a tender on its ring gathers
+ * tended time; each 3600 ticks adds a horse while the corrals have room. At the cap the time waits, full.
+ */
+export function stepCorrals(s: GameState): void {
+  const need = jobsData.jobs.tend.ticksPerHorse;
+  for (const b of s.buildings) {
+    if (b.type !== 'horse_corral' || !b.done) continue;
+    const tended = s.people.some((p) => !p.drafted && p.job?.kind === 'tend' && p.job.building === b.id && standsAt(p, b));
+    if (tended) b.tended = Math.min(need, b.tended + 1);
+    if (b.tended >= need && s.horses < horseCap(s)) {
+      b.tended -= need;
+      s.horses++;
+      addMessage(s, 'A foal was born.');
+    }
   }
 }

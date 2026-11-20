@@ -35,6 +35,10 @@ Decided by the user on 2026-11-19.
   warrior-society officers who keep order, run the hunt and move camp, a one-year duty drawn from
   the warrior societies; "guard, police" fits better than "soldier". Sources: the three above (most
   are Lakota, one Dakota).
+- **Dakota labels** (user, 2026-11-20): four dictionary words are approved for `Dakota (English)`
+  labels: **tipi** (Tipi), **wakihnakapi** (Store), **wihmuƞke** (Trap), **akaƞyaƞka** (Riders, filled
+  when the Riders upgrade is built). Source: the Dakota Online Dictionary, see *Needs review* below.
+  Every other label stays English until the user approves a word.
 - **Other societies** (hunters, healers, builders) keep their English game names. Only names with a
   source here may be used; add one when a source is found.
 
@@ -47,6 +51,55 @@ Decided by the user on 2026-11-19.
 
 ## Needs review
 
-_Nothing open._ Optional later: a sourced real name for the hunters, healers and builders
-societies (the names found so far, Kit Fox, Strong Heart and Elk, are Plains Lakota warrior
-societies and do not fit those roles).
+### Dakota labels (W2, 2026-11-20): candidates and what was approved
+
+The UI is to show `Dakota (English)` ([DESIGN-upgrades-3.md](DESIGN-upgrades-3.md) *Labels*). Every
+`dakota` field in `upgrades.json` and `buildings.json` is **empty until the user approves a word**; an
+empty field shows the English alone. Words below are **headwords copied from the dictionary, never
+composed or inflected by Claude**. Where the dictionary has no word for the thing, the row says *none
+found* and lists the nearest single words only as parts. Spellings are exactly as the dictionary prints
+them (its own letters, e.g. `ƞ` for nasal n, `ṡ`, `ḣ`, `ġ`). Words that are sacred (`wakaƞ`) or name
+spirits are not offered for the spirit items.
+
+Source for every row: the [Dakota Online Dictionary](https://dictionary.swodli.com/info.html)
+(Sisseton-Wahpeton Oyate Dakotah Language Institute and Ultralingua), which combines the 2015 SWODLI
+*English to Dakotah Dictionary* ("SWO") with Williamson's *An English-Dakota Dictionary*, 1902, public
+domain ("W"). Looked up 2026-11-20 through the dictionary's own search endpoint, English to Dakota. No
+terms of use are published there. Not checked against Riggs or a speaker; the user accepts some
+inaccuracy ([DESIGN-upgrades-3.md](DESIGN-upgrades-3.md)).
+
+| Id | English label | Candidate | Dictionary entry | Note |
+|---|---|---|---|---|
+| `tipi` | Tipi | **tipi** | SWO "house / building" | the game already uses this word |
+| `store` | Store | **wakihnakapi** | W "storage" (SWO has `wakihnakapi tipi`, "storage shed") | |
+| `trap` | Trap | **wihmuƞke** | SWO "trap, n." (W has `hmuƞ'ka`, "to trap") | |
+| `fire` (council) | Council fire | **omniciye** | W "council"; SWO "council, to council; a meeting" | names the council, not the fire |
+| `gathering_spot` | Gathering spot | none found | W "gather" is `wi'taya` (people) and `pahi` (pick) | verbs only |
+| `hunting_lodge` | Hunting lodge | none found | "hunter" is `wihnis'a` (SWO) / `wotihnisa` (W) | |
+| `drying_rack` | Drying rack | none found | "dry" is `puza`; "dried meat" is `papa` (SWO) | |
+| `healers_lodge`, `healers` | Healers' lodge, Healers' society | none found | "heal" is `asniyaƞ`, `okizi`, `wapiya` (verbs); "society" is `okodakiciye` (SWO) | no noun for "healer" |
+| `scouts_lodge`, `scouts` | Scouts' lodge, Akicita scouts | none found for "lodge" | "scout" is `toƞweya` (SWO, W); **akicita** is already approved above | keep `Akicita scouts` as is |
+| `warriors` | Akicita warriors | **akicita** (already approved) | SWO "warrior" | keep as is |
+| `lancers_lodge` | Lancers' lodge | none found | "spear" is `uḣaka` (SWO), `wahukeza` (W) | not the same as a lance |
+| `archers_lodge` | Archers' lodge | none found | "bow" is `itazipe` (SWO, W) | no noun for "archer" |
+| `bows` | Better bows | none found | "bow" is `itazipe` | "better" has no single word |
+| `dogs` | Hunting dogs | none found | "dog" is `ṡuƞka` (SWO, W) | |
+| `builders` | Builders' society | none found | "builder" is `ticaġe` (SWO, W); "society" is `okodakiciye` | two words, not combined |
+| `tools` | Better tools | none found | "tool" is `wikicaƞye` (SWO) | |
+| `fire_pit` | Fire pit | none found | "fire" is `peta` / `ide`; "pit" is `makaḣdoka` ("earth pit") | |
+| `horse_corral` (new) | Horse corral | none found | "fence; pen" is `cuƞkaṡke` (SWO, W as `coƞ'kaṡke`) | `cuƞkaṡke` is a fence, not a corral |
+| `horses` (new) | Breed horses | none found | "horse" is `ṡuƞktaƞka` (W); `ṡuƞgbdoka` is "stallion" (SWO) | `ṡuƞwakaƞ`, `ṡuƞkawakaƞ` also listed; both contain `wakaƞ`, so not offered |
+| `riders` (new) | Riders | **akaƞyaƞka** | W "rider, n." (SWO: `ṡuƞwakaƞ akan yaƞke`, "horse rider") | |
+| `barricades` (new) | Spike barricades | none found | "fence" is `cuƞkaṡke` | |
+| `spirits`, `spirit_lodge` (new) | Spirit society, Spirit lodge | none offered | "spirit" is `naġi`; "sacred" and "great spirit" use `wakaƞ` | sacred words avoided |
+| `spirit_warriors` (new) | Spirit warriors | none offered | as above, plus **akicita** | |
+| `guardian_wolves` (new) | Guardian wolves | none found | "wolf" is `ṡuƞktokeca` (SWO, W) and `ṡuƞgmanitu` (SWO, "primarily Lakotah"); "guard" is `awaƞyaka` | |
+| `bison_charge` (new) | Bison charge | none found | "buffalo" is `tataƞka` (SWO, W) | |
+| `storm_caller` (new) | Storm caller | none found | "storm" is `ibobdu`, `icamna` (SWO); "thunder" is `wakiƞyaƞ` | `wakiƞyaƞ` may name a sacred being (Claude's caution, unsourced), so not offered |
+
+Approved by the user 2026-11-20: **tipi**, **wakihnakapi**, **wihmuƞke**, **akaƞyaƞka** (see *May show*).
+**omniciye** was offered and not taken. Everything else stays English until the user names a word or
+phrase (then it needs a source here).
+
+Optional later: a sourced real name for the hunters, healers and builders societies (the names found
+so far, Kit Fox, Strong Heart and Elk, are Plains Lakota warrior societies and do not fit those roles).

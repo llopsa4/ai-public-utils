@@ -183,6 +183,32 @@ Spec: [DESIGN-upgrades-2.md](DESIGN-upgrades-2.md). Common rules as in Phase C; 
 | V8 | Sonnet | `## Tests` (smoke); `tests/smoke.spec.ts`, `TESTING.md` | `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the tier 2 case with no console errors |
 | V9 (user, gate) | Opus | `DESIGN-upgrades-2.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays to wave 6, buys at least one tier 2 upgrade, and says the pacing feels right |
 
+## Phase D: upgrades tier 3 (spec drafted 2026-11-20)
+
+**Saving is parked (user, 2026-11-20, until further notice):** no row below, and no new task, adds or
+changes save code, `SAVE_VERSION`, save fields or save tests. New state may be left out of `serialize` /
+`parseSave`; existing save code stays as it is.
+
+Spec: [DESIGN-upgrades-3.md](DESIGN-upgrades-3.md). Common rules as in Phase C; run
+`npm run typecheck && npm test` (and `npm run e2e` when a scene changes). Easiest first. Each row also reads
+its spec section.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| W1 | Sonnet | `## Waves 7 and 8`; `src/data/waves.json`, `src/sim/waves.ts`, `tests/sim/waves.test.ts` | the same files (waves 7-8, two-edge groups, `winAfterWave` 8), `DESIGN-slice.md` wave table | the wave tests pass; the run is won after wave 8 |
+| R1 | Sonnet | `## Resource icons`; `src/scenes/Hud.ts`, `src/render/placeholders.ts`, `art/ASSETS.md`, `art/SPEC.md` | `icon_food`, `icon_wood`, `icon_hides`, `icon_pemmican`, `icon_gift` placeholders drawn before each bar number; the register | a 1280x720 screenshot shows the bar with icons; `npm run e2e` passes |
+| R2 | Sonnet | `## Open store on hover`; `src/render/placeholders.ts`, `src/scenes/{Game,Select}.ts`, `src/sim/economy.ts` | `building_store_open`, `pile_<res>_<1-4>` placeholders; hover swap and piles; `art/ASSETS.md` | screenshots of a closed and an open store (empty, half, full); no sim change; e2e passes |
+| W2 | Sonnet | `## Labels (Dakota)`; `CULTURE.md`, `src/data/{upgrades,buildings}.json` | `CULTURE.md` *Needs review* (one sourced candidate per label), empty `dakota` fields, `src/sim/labels.ts` (`displayLabel`) | every label has a sourced candidate or "none found"; the user is asked |
+| W3 | Sonnet | `## Upgrade homes`; `src/sim/upgrades.ts`, `src/data/upgrades.json`, `src/scenes/{Hud,Select}.ts`, `tests/sim/upgrades*.test.ts`, `tests/smoke.spec.ts` | `home` and `band` per upgrade; `buyUpgrade` checks them; the building-panel Upgrades list; the U panel, key and button removed; tests | the tests pass; the e2e test buys from the hunting lodge |
+| W4 | Sonnet | `## Horses and riders`; `src/data/{buildings,jobs,upgrades}.json`, `src/sim/{jobs,state,save,economy}.ts` | the corral, `tend`, `horses` (+ `icon_horses`), Breed horses, `SAVE_VERSION` 5 | tests: breeding while tended, the cap, a v4 file unreadable |
+| W5 | Sonnet | `## Horses and riders`; `src/sim/{combat,orders}.ts`, `src/data/enemies.json` | mounted lancer stats, horse take/return on draft, lost on death | tests: mounted beats on foot; horse counts after draft, undraft, death |
+| W6 | Sonnet | `## Spirit lodge and powers`; `src/sim/{upgrades,state,orders}.ts`, `src/data/buildings.json` | Spirit society and lodge, the four power upgrades, `powers` state, the `cast` order | tests: United and prerequisite to buy; once per wave; refused below Steady |
+| W7 | Sonnet | `## Spirit lodge and powers`; `src/sim/{combat,state}.ts`, `src/render/enemies.ts` | allies (Spirit warriors, Guardian wolves); no save work (parked) | tests: allies fight wolves, never people, vanish after 600 ticks |
+| W8 | Sonnet | `## Spirit lodge and powers`; `src/sim/{combat,state}.ts` | the bison lane and the storm; no save work (parked) | tests for both; people unharmed |
+| W9 | Opus | `## Spike barricades`; `src/sim/{people,combat,buildings}.ts`, `src/scenes/{Build,Select}.ts` | the barricade, wolf A* (only barricades block), replan, attacking a closed line, drag placement | tests: around a gap, through a closed line by breaking it; people blocked |
+| W10 | Sonnet | `## UI`, `## Tests`; `src/scenes/{Hud,Build,Select}.ts`, `src/render/placeholders.ts`, `art/ASSETS.md`, `tests/smoke.spec.ts`, `TESTING.md` | the power bar (F1-F4, aiming, Esc), Societies keys 1-7, placeholders, Dakota labels and hovers | `npm run e2e` passes (stable over 5 runs); screenshots of the power bar and a building's Upgrades list |
+| W11 (user, gate) | Opus | `DESIGN-upgrades-3.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays to wave 8, buys from building panels, casts a power, and says it is fine |
+
 ## Phase D: Wotakuye help (done 2026-11-20, before U6)
 
 Spec: [DESIGN-upgrades.md](DESIGN-upgrades.md) `## Wotakuye help`.

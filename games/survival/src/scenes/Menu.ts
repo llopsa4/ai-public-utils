@@ -16,8 +16,9 @@ const CONTROLS = [
   'Left-click: select      Drag: box select      Shift-click: add or remove',
   'Right-click: move, gather, chop, build, assign to a building, or attack a wolf',
   'R: draft or undraft      Z X C: hold / defend / chase      Delete: cancel a site',
-  'B then 1-6: build (Tab: Camp / Societies page; left-click to place, right-click to stop)',
-  'Space: pause      1 2 3: speed 1x 2x 4x      Esc: clear the selection',
+  'B then 1-7: build (Tab: Camp / Societies page; left-click to place, drag a line of barricades, right-click to stop)',
+  'F1-F4: cast a bought spirit power, once a wave (the bison and the storm wait for a left-click on the map)',
+  'Space: pause      1 2 3: speed 1x 2x 4x      Esc: clear the selection      Click a finished building: its upgrades',
   'WASD or arrows or the screen edge: scroll      Mouse wheel: zoom',
 ];
 const REFUSED = 'That file is not a Camp Fire save, or it is from another version.';

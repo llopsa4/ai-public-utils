@@ -5,7 +5,7 @@ import mapConfig from '../data/map.json';
 import { standsAt } from './buildings';
 import { ENEMIES } from './combat';
 import { rngNext } from './rng';
-import { addMessage, type Edge, type GameState, type Tile2 } from './state';
+import { addMessage, type Edge, type GameState, type Tile2, type WaveRun } from './state';
 
 const TILE = mapConfig.tiles as Record<string, { passable: boolean }>;
 
@@ -42,22 +42,38 @@ function countText(i: number): string {
   return leaders === 0 ? `${wolves}` : leaders === 1 ? `${wolves} and a leader` : `${wolves} and ${leaders} leaders`;
 }
 
+/** "north" or "north and east": where a wave comes from. */
+function edgeText(run: WaveRun): string {
+  return run.edge2 ? `${run.edge} and ${run.edge2}` : `${run.edge}`;
+}
+
 function warn(s: GameState, i: number, scouted: boolean): void {
   const run = s.waves[i];
   run.scouted = scouted;
-  run.edge = wavesData.edges[Math.floor(rngNext(s.rng) * wavesData.edges.length)] as Edge;
   const jitter = wavesData.edgeJitter;
-  run.centre = Math.floor(s.map.size / 2) + Math.floor(rngNext(s.rng) * (2 * jitter + 1)) - jitter;
+  const pickCentre = (): number => Math.floor(s.map.size / 2) + Math.floor(rngNext(s.rng) * (2 * jitter + 1)) - jitter;
+  run.edge = wavesData.edges[Math.floor(rngNext(s.rng) * wavesData.edges.length)] as Edge;
+  run.centre = pickCentre();
+  run.edge2 = null;
+  if (((wavesData.waves[i] as { edges?: number }).edges ?? 1) >= 2) {
+    const others = wavesData.edges.filter((e) => e !== run.edge);
+    run.edge2 = others[Math.floor(rngNext(s.rng) * others.length)] as Edge;
+    run.centre2 = pickCentre();
+  }
   run.phase = 'warning';
-  addMessage(s, scouted ? `Scouts: wolves coming from the ${run.edge}: ${countText(i)}.` : `Scouts: wolves coming from the ${run.edge}.`);
+  s.powersUsed = []; // the spirit powers recharge when a wave warning starts
+  addMessage(s, scouted ? `Scouts: wolves coming from the ${edgeText(run)}: ${countText(i)}.` : `Scouts: wolves coming from the ${edgeText(run)}.`);
 }
 
 function spawn(s: GameState, i: number): void {
   const run = s.waves[i];
   const def = wavesData.waves[i];
-  const tiles = edgeTiles(s, run.edge!, run.centre, def.spread);
+  const sides = [edgeTiles(s, run.edge!, run.centre, def.spread)];
+  if (run.edge2) sides.push(edgeTiles(s, run.edge2, run.centre2 ?? run.centre, def.spread));
   for (const group of def.groups) {
     for (let k = 0; k < group.count; k++) {
+      // Each group is split evenly between the sides; with an odd count the first side gets the extra one.
+      const tiles = sides[k % sides.length];
       const [x, y] = tiles[Math.floor(rngNext(s.rng) * tiles.length)];
       s.enemies.push({
         id: s.nextEnemyId++, kind: group.enemy, x, y, hp: ENEMIES[group.enemy].hp, cooldown: 0, fleeing: false, wave: i,
@@ -90,7 +106,7 @@ export function waveBanner(s: GameState): { text: string; seconds: number | null
     const run = s.waves[i];
     if (run.phase === 'warning') {
       const seconds = Math.max(0, Math.ceil((wavesData.waves[i].at - s.tick) / 10));
-      const text = run.scouted ? `Wolves from the ${run.edge}: ${countText(i)}` : `Scouts: wolves coming from the ${run.edge}`;
+      const text = run.scouted ? `Wolves from the ${edgeText(run)}: ${countText(i)}` : `Scouts: wolves coming from the ${edgeText(run)}`;
       return { text, seconds };
     }
   }

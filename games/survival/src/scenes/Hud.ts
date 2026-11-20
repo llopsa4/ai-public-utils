@@ -1,18 +1,20 @@
 // The HUD (DESIGN-slice.md `## UI`): resource bar and Wotakuye bar, in screen space above the Game scene.
-// Also the pause/speed buttons and the wave banner; toasts and the selection panel live in Select.ts.
+// Also the pause/speed buttons and the wave banner; toasts, the selection panel and a building's upgrades live in Select.ts.
 import Phaser from 'phaser';
 import data from '../data/resources.json';
 import { unityBand } from '../sim/economy';
 import { wotakuyeHelp } from '../sim/help';
+import { displayLabel, englishLabel } from '../sim/labels';
+import { castError, hasUpgrade, POWER_IDS, powerAims, powerSpent, steadyEnough, type UpgradeId } from '../sim/upgrades';
+import upgradeData from '../data/upgrades.json';
+import { addMessage } from '../sim/state';
+import { createHover, type Hover } from './hover';
 import seasonData from '../data/seasons.json';
 import { downloadText, exportName } from '../save/files';
 import { queueOrders } from '../sim/orders';
 import { serialize } from '../sim/save';
-import {
-  hasUpgrade, missingFor, missingRequirement, requiresOf, upgradeCost, upgradeLabel, UPGRADE_IDS, type UpgradeId,
-} from '../sim/upgrades';
 import { dayInSeason, seasonLabel, seasonOf, yearOf } from '../sim/seasons';
-import { DAY_TICKS, storeCap, type GameState, type Res } from '../sim/state';
+import { DAY_TICKS, horseCap, storeCap, type GameState, type Res } from '../sim/state';
 import { waveBanner } from '../sim/waves';
 import type { GameScene } from './Game';
 
@@ -28,27 +30,29 @@ const SPEED_BUTTONS: { label: string; pause: boolean; speed?: 1 | 2 | 4 }[] = [
   { label: '2x', pause: false, speed: 2 },
   { label: '4x', pause: false, speed: 4 },
 ];
-const UPGRADES_BUTTON = { x: 1176, y: 38, w: 96, h: 26 };
-// Two columns of cards: tier 1 on the left, the tier 2 upgrades on the right (DESIGN-upgrades-2.md `## UI`).
-const UPGRADES_PANEL = { x: 160, y: 100, w: 960, h: 512 };
-const CARD = { w: 460, h: 100, gap: 8 };
-/** One line on what each upgrade does (DESIGN-upgrades.md `## Upgrades`). */
-const UPGRADE_EFFECT: Record<UpgradeId, string> = {
-  dogs: 'Hunting succeeds 15% more often, and hunters aim a little better.',
-  bows: "Hunters' bows reach 5 tiles and hit for 15.",
-  healers: "Lets you build a healers' lodge: they heal the wounded and ease winter cold.",
-  scouts: "Lets you build a scouts' lodge: staffed, it warns of a wave a minute ahead and counts the wolves.",
-  warriors: "Lets you build lancers' and archers' lodges: assigned people fight as that class.",
-  builders: 'Lets you set traps and fire pits.',
-  tools: 'All building goes 1.5 times faster.',
-};
+/** The power bar (DESIGN-upgrades-3.md `## UI`): one button per bought power, left under the resource bar. */
+const POWER_BAR = { x: 8, y: 40, w: 168, h: 28, gap: 4 };
 const TIP_W = 440;
 const INK = '#f3e9d2';
+/** A part of the resource bar: an optional icon texture key and its text. */
+interface BarPart {
+  icon?: string;
+  /** What the bar shows; an icon stands in for the resource's word. */
+  text: string;
+  /** The same with its word (`Food 12 / 100`), for the smoke test; defaults to `text`. */
+  plain?: string;
+  /** The resource's name, shown when its icon is hovered. */
+  name?: string;
+}
+/** The bar's icons are drawn 16 x 16 on screen (their art canvas is 32 x 32). */
+const ICON = 16;
 const RES: Res[] = ['food', 'wood', 'hides', 'pemmican'];
 
 export class HudScene extends Phaser.Scene {
   private game2!: GameScene;
-  private resourceText!: Phaser.GameObjects.Text;
+  private barSlots: { icon: Phaser.GameObjects.Image; name: string; text: Phaser.GameObjects.Text }[] = [];
+  /** The bar's texts joined, as the old single line read (the smoke test reads it). */
+  private barPlain = '';
   private tint!: Phaser.GameObjects.Rectangle;
   private unityFill!: Phaser.GameObjects.Rectangle;
   private unityText!: Phaser.GameObjects.Text;
@@ -58,14 +62,14 @@ export class HudScene extends Phaser.Scene {
   private endText!: Phaser.GameObjects.Text;
   private endButton!: Phaser.GameObjects.Text;
   private menuObjects: Phaser.GameObjects.GameObject[] = [];
-  private upgradesObjects: Phaser.GameObjects.GameObject[] = [];
   private tip!: { box: Phaser.GameObjects.Rectangle; text: Phaser.GameObjects.Text };
-  private upgradesOpen = false;
-  private cards: Record<string, { cost: Phaser.GameObjects.Text; buy: Phaser.GameObjects.Text }> = {};
   private menuNote!: Phaser.GameObjects.Text;
   private quitLabel!: Phaser.GameObjects.Text;
   /** After a failed save, the quit button's next click leaves without saving. */
   private quitUnsaved = false;
+  private hover!: Hover;
+  private powerButtons: { id: UpgradeId; bg: Phaser.GameObjects.Rectangle; label: Phaser.GameObjects.Text }[] = [];
+  private aimNote!: Phaser.GameObjects.Text;
   private speedButtons: { bg: Phaser.GameObjects.Rectangle; label: Phaser.GameObjects.Text; b: (typeof SPEED_BUTTONS)[number] }[] = [];
 
   constructor() {
@@ -74,6 +78,11 @@ export class HudScene extends Phaser.Scene {
 
   init(data: { game: GameScene }): void {
     this.game2 = data.game;
+  }
+
+  /** True when a screen point is on a shown power button, so the map ignores the click. */
+  overPowers(x: number, y: number): boolean {
+    return this.powerButtons.some((b) => b.bg.visible && x >= b.bg.x && x <= b.bg.x + b.bg.width && y >= b.bg.y && y <= b.bg.y + b.bg.height);
   }
 
   /** True while the menu panel is open: the map and the other panels ignore clicks. */
@@ -87,7 +96,8 @@ export class HudScene extends Phaser.Scene {
     // The season's tint over the map (presentation only; spring has none), under every bar and panel.
     this.tint = this.add.rectangle(0, 0, 1280, 720, 0xffffff, 0).setOrigin(0).setDepth(-1);
     this.add.rectangle(BAR.x, BAR.y, BAR.w, BAR.h, 0x1d1a16, 0.85).setOrigin(0);
-    this.resourceText = this.add.text(12, 8, '', { fontFamily: 'sans-serif', fontSize: '13px', color: INK });
+    this.barSlots = [];
+    this.barPlain = '';
     this.add.rectangle(UNITY.x, UNITY.y, UNITY.w, UNITY.h, 0x3a3328, 1).setOrigin(0);
     this.unityFill = this.add.rectangle(UNITY.x, UNITY.y, 0, UNITY.h, 0x6aa84f, 1).setOrigin(0);
     this.unityText = this.add
@@ -121,7 +131,9 @@ export class HudScene extends Phaser.Scene {
     const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
     if (camp) {
       camp.banner = () => (this.bannerBox.visible ? this.bannerText.text : null);
-      camp.hudText = () => this.resourceText.text;
+      camp.hudText = () => this.barPlain;
+      // The bar's laid-out parts (icon key or null, text, x of the text's right end), for the smoke test.
+      camp.hudBar = () => this.barSlots.filter((b) => b.text.text).map((b) => ({ icon: b.icon.visible ? b.icon.texture.key : null, text: b.text.text, right: b.text.x + b.text.width }));
       camp.wotakuyeTip = () => (this.tip.box.visible ? this.tip.text.text : null);
     }
 
@@ -133,7 +145,70 @@ export class HudScene extends Phaser.Scene {
       return { bg, label, b };
     });
     this.createMenu();
-    this.createUpgrades();
+    this.createPowers();
+  }
+
+  /** The power bar: F1-F4 or a click casts at once, or starts aiming (bison, storm); Esc or right-click cancels. */
+  private createPowers(): void {
+    this.hover = createHover(this);
+    this.powerButtons = POWER_IDS.map((id, i) => {
+      const bg = this.add.rectangle(POWER_BAR.x, POWER_BAR.y + i * (POWER_BAR.h + POWER_BAR.gap), POWER_BAR.w, POWER_BAR.h, 0x3a3328, 1).setOrigin(0);
+      const key = (upgradeData.upgrades[id] as { power: { key: string } }).power.key;
+      const label = this.add.text(bg.x + 8, bg.y + POWER_BAR.h / 2, `${key}  ${displayLabel(id)}`, { fontFamily: 'sans-serif', fontSize: '13px', color: INK }).setOrigin(0, 0.5);
+      bg.setVisible(false);
+      label.setVisible(false);
+      bg.setInteractive({ useHandCursor: true });
+      bg.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.usePower(id));
+      this.hover.attach(bg, () => this.powerTip(id));
+      return { id, bg, label };
+    });
+    this.aimNote = this.add
+      .text(640, 592, '', { fontFamily: 'sans-serif', fontSize: '14px', color: INK, backgroundColor: '#1d1a16' })
+      .setOrigin(0.5, 1).setPadding(8, 4).setDepth(5).setVisible(false);
+    const kb = this.input.keyboard!;
+    kb.addCapture('F1,F2,F3,F4');
+    POWER_IDS.forEach((id) => {
+      const key = (upgradeData.upgrades[id] as { power: { key: string } }).power.key;
+      kb.on(`keydown-${key}`, () => this.usePower(id));
+    });
+    kb.on('keydown-ESC', () => this.game2.aiming && this.game2.setAiming(null));
+    const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
+    if (camp) {
+      camp.powers = () => this.powerButtons.filter((b) => b.bg.visible).map((b) => b.id);
+      // The screen centre of a shown power button (1280 x 720 space), or null.
+      camp.powerButton = (id: string) => {
+        const b = this.powerButtons.find((x) => x.id === id && x.bg.visible);
+        return b ? [b.bg.x + b.bg.width / 2, b.bg.y + b.bg.height / 2] : null;
+      };
+      camp.hoverTip = () => this.hover.shown();
+    }
+  }
+
+  /** The hover for a power button: the English name when the label is Dakota, plus why it cannot be cast now. */
+  private powerTip(id: UpgradeId): string | null {
+    const lines: string[] = [];
+    if (displayLabel(id) !== englishLabel(id)) lines.push(englishLabel(id));
+    const s = this.game2.state;
+    if (powerSpent(s, id)) lines.push('Spent until the next wave warning.');
+    else if (!steadyEnough(s)) lines.push('The camp must be Steady or better.');
+    return lines.length ? lines.join('\n') : null;
+  }
+
+  /** A key or a click on a power: cast now, or aim it at the map, or toast why not. */
+  private usePower(id: UpgradeId): void {
+    const s = this.game2.state;
+    if (!hasUpgrade(s, id) || s.result || this.menuOpen) return;
+    if (this.game2.aiming === id) {
+      this.game2.setAiming(null);
+      return;
+    }
+    if (!powerAims(id)) {
+      queueOrders(s, [{ type: 'cast', power: id }]);
+      return;
+    }
+    const error = castError(s, id, [0, 0]);
+    if (error) addMessage(s, error);
+    else this.game2.setAiming(id);
   }
 
   /** The `?` on the Wotakuye bar and the hover tooltip with its rules (DESIGN-upgrades.md `## Wotakuye help`). */
@@ -161,95 +236,6 @@ export class HudScene extends Phaser.Scene {
     const lines = [`${data.labels.unity}: ${h.band}`, '', ...h.live, '', 'How it moves', ...h.rules];
     this.tip.text.setText(lines.join('\n'));
     this.tip.box.setSize(TIP_W, this.tip.text.height + 16);
-  }
-
-  /** True when a screen point is on the open Upgrades panel or its button (the map ignores the click). */
-  upgradesOverUi(x: number, y: number): boolean {
-    const r = this.upgradesOpen ? UPGRADES_PANEL : UPGRADES_BUTTON;
-    return (
-      (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) ||
-      (x >= UPGRADES_BUTTON.x && x <= UPGRADES_BUTTON.x + UPGRADES_BUTTON.w && y >= UPGRADES_BUTTON.y && y <= UPGRADES_BUTTON.y + UPGRADES_BUTTON.h)
-    );
-  }
-
-  /** The Upgrades button (key U) and its panel of cards (DESIGN-upgrades.md `## UI`). It does not pause. */
-  private createUpgrades(): void {
-    this.upgradesObjects = [];
-    this.upgradesOpen = false;
-    this.cards = {};
-    const font = (size: number, color = INK) => ({ fontFamily: 'sans-serif', fontSize: `${size}px`, color });
-    const open = this.add.rectangle(UPGRADES_BUTTON.x, UPGRADES_BUTTON.y, UPGRADES_BUTTON.w, UPGRADES_BUTTON.h, 0x1d1a16, 0.85).setOrigin(0).setInteractive({ useHandCursor: true });
-    this.add.text(open.x + open.width / 2, open.y + open.height / 2, 'Upgrades (U)', font(13)).setOrigin(0.5);
-    open.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.setUpgradesOpen(!this.upgradesOpen));
-
-    const P = UPGRADES_PANEL;
-    const objs = this.upgradesObjects;
-    objs.push(this.add.rectangle(P.x, P.y, P.w, P.h, 0x1d1a16, 0.96).setOrigin(0).setStrokeStyle(2, 0x6b5a3a).setDepth(15).setInteractive());
-    objs.push(this.add.text(P.x + 16, P.y + 10, `Upgrades  ·  Gift value earned each day from ${data.labels.unity}`, font(15)).setDepth(16));
-    const close = this.add.text(P.x + P.w - 14, P.y + 8, 'x', font(18)).setOrigin(1, 0).setDepth(16).setInteractive({ useHandCursor: true });
-    close.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.setUpgradesOpen(false));
-    objs.push(close);
-    const tier1 = UPGRADE_IDS.filter((id) => !requiresOf(id));
-    const tier2 = UPGRADE_IDS.filter((id) => requiresOf(id));
-    [tier1, tier2].forEach((ids, col) => {
-      const x = P.x + 14 + col * (CARD.w + 14);
-      objs.push(this.add.text(x, P.y + 40, col === 0 ? 'Tier 1' : 'Tier 2: needs a tier 1 upgrade', font(13, '#cdbf9c')).setDepth(16));
-      ids.forEach((id, row) => {
-        const y = P.y + 64 + row * (CARD.h + CARD.gap);
-        objs.push(this.add.rectangle(x, y, CARD.w, CARD.h, 0x3a3328, 1).setOrigin(0).setDepth(16));
-        objs.push(this.add.text(x + 10, y + 8, upgradeLabel(id), font(15)).setDepth(17));
-        objs.push(this.add.text(x + 10, y + 34, UPGRADE_EFFECT[id], font(12, '#cdbf9c')).setWordWrapWidth(CARD.w - 190).setDepth(17));
-        const costText = this.add.text(x + CARD.w - 170, y + 8, '', font(12)).setWordWrapWidth(160).setDepth(17);
-        const buy = this.add
-          .text(x + CARD.w - 170, y + 62, ' Buy ', { ...font(15, '#1d1a16'), backgroundColor: INK })
-          .setPadding(10, 4).setDepth(17).setInteractive({ useHandCursor: true });
-        buy.on('pointerdown', (p: Phaser.Input.Pointer) => {
-          if (p.leftButtonDown() && this.canBuy(id)) queueOrders(this.game2.state, [{ type: 'buy', upgrade: id }]);
-        });
-        this.cards[id] = { cost: costText, buy };
-        objs.push(costText, buy);
-      });
-    });
-    this.setUpgradesOpen(false);
-    const kb = this.input.keyboard!;
-    kb.on('keydown-U', () => this.setUpgradesOpen(!this.upgradesOpen));
-    kb.on('keydown-ESC', () => this.upgradesOpen && this.setUpgradesOpen(false));
-    const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
-    if (camp) {
-      camp.upgradesOpen = () => this.upgradesOpen;
-      camp.upgradeCard = (id: string) => this.cards[id]?.cost.text ?? null;
-    }
-  }
-
-  private canBuy(id: UpgradeId): boolean {
-    const s = this.game2.state;
-    return !hasUpgrade(s, id) && !missingRequirement(s, id) && missingFor(s, id).length === 0;
-  }
-
-  setUpgradesOpen(on: boolean): void {
-    this.upgradesOpen = on;
-    for (const o of this.upgradesObjects) {
-      (o as Phaser.GameObjects.Rectangle).setVisible(on);
-      if (o.input) o.input.enabled = on;
-    }
-    if (on) this.refreshUpgrades();
-  }
-
-  /** The cost line and Buy state of each card: Bought, buyable, or what is still missing. */
-  private refreshUpgrades(): void {
-    const s = this.game2.state;
-    for (const id of UPGRADE_IDS) {
-      const { cost, buy } = this.cards[id];
-      const owned = hasUpgrade(s, id);
-      const missing = missingFor(s, id);
-      const needs = missingRequirement(s, id);
-      const price = Object.entries(upgradeCost(id)).map(([r, n]) => `${n} ${r}`).join(', ');
-      const lines = [`Cost: ${price}`];
-      if (needs) lines.push(`Needs ${upgradeLabel(needs)}`);
-      if (missing.length) lines.push(`Missing: ${missing.join(', ')}`);
-      cost.setText(owned ? 'Bought' : lines.join('\n'));
-      buy.setText(owned ? ' Bought ' : ' Buy ').setAlpha(owned || needs || missing.length ? 0.4 : 1);
-    }
   }
 
   /** The Menu button and its panel (DESIGN-saves.md `## HUD menu`). */
@@ -330,16 +316,77 @@ export class HudScene extends Phaser.Scene {
     this.endButton.setVisible(true);
   }
 
+  /** Shows the bought powers stacked, greyed while spent or below Steady, gold while aiming. */
+  private updatePowers(s: GameState): void {
+    let row = 0;
+    const ready = steadyEnough(s);
+    for (const b of this.powerButtons) {
+      const own = hasUpgrade(s, b.id);
+      b.bg.setVisible(own && !this.menuOpen);
+      b.label.setVisible(own && !this.menuOpen);
+      if (b.bg.input) b.bg.input.enabled = own && !this.menuOpen;
+      if (!own) continue;
+      const y = POWER_BAR.y + row++ * (POWER_BAR.h + POWER_BAR.gap);
+      b.bg.setY(y);
+      b.label.setY(y + POWER_BAR.h / 2);
+      const aiming = this.game2.aiming === b.id;
+      b.bg.setFillStyle(aiming ? 0x8a6d2f : 0x3a3328, 1);
+      const alpha = powerSpent(s, b.id) || !ready ? 0.4 : 1;
+      b.bg.setAlpha(alpha);
+      b.label.setAlpha(alpha);
+    }
+    const aimed = this.game2.aiming;
+    this.aimNote.setVisible(!!aimed);
+    if (aimed) this.aimNote.setText(`${displayLabel(aimed as UpgradeId)}: left-click the map to cast, right-click or Esc to cancel`);
+    this.hover.update();
+  }
+
+  /** Lays the bar's parts out left to right: a 16 px icon (when it has one), then its text, then a gap. */
+  private drawBar(parts: BarPart[]): void {
+    let x = 12;
+    parts.forEach((part, i) => {
+      let slot = this.barSlots[i];
+      if (!slot) {
+        const icon = this.add.image(0, BAR.h / 2, 'icon_food').setDisplaySize(ICON, ICON);
+        slot = {
+          icon,
+          name: '',
+          text: this.add.text(0, BAR.h / 2, '', { fontFamily: 'sans-serif', fontSize: '13px', color: INK }).setOrigin(0, 0.5),
+        };
+        this.barSlots[i] = slot;
+        const mine = slot;
+        this.hover.attach(icon, () => mine.name || null);
+      }
+      slot.name = part.name ?? '';
+      slot.icon.setVisible(!!part.icon);
+      if (slot.icon.input) slot.icon.input.enabled = !!part.icon;
+      if (part.icon) {
+        slot.icon.setTexture(part.icon).setDisplaySize(ICON, ICON).setPosition(x + ICON / 2, BAR.h / 2);
+        x += ICON + 4;
+      }
+      slot.text.setText(part.text).setX(x);
+      x += slot.text.width + 18;
+    });
+    for (let i = parts.length; i < this.barSlots.length; i++) {
+      this.barSlots[i].icon.setVisible(false);
+      this.barSlots[i].text.setText('');
+    }
+    this.barPlain = parts.map((p) => p.plain ?? p.text).join('   ');
+  }
+
   update(): void {
     const s = this.game2.state;
-    const parts = RES.map((r) => `${data.resources[r].label} ${Math.floor(s.store[r])} / ${storeCap(s, r)}`);
-    parts.push(`Gift ${Math.floor(s.gift)}`);
+    const parts: BarPart[] = RES.map((r) => {
+      const n = `${Math.floor(s.store[r])} / ${storeCap(s, r)}`;
+      return { icon: `icon_${r}`, text: n, plain: `${data.resources[r].label} ${n}`, name: data.resources[r].label };
+    });
+    parts.push({ icon: 'icon_gift', text: `Gift ${Math.floor(s.gift)}`, name: 'Gift value' });
+    if (s.horses > 0) parts.push({ icon: 'icon_horses', text: `${s.horses} / ${horseCap(s)}`, plain: `Horses ${s.horses} / ${horseCap(s)}`, name: 'Horses' });
     const adults = s.people.filter((p) => p.age === 'adult').length;
-    parts.push(`People ${adults} / ${s.people.length}`, `${seasonLabel(seasonOf(s))}, day ${dayInSeason(s)}${yearOf(s) > 1 ? `  Year ${yearOf(s)}` : ''}`);
+    parts.push({ text: `People ${adults} / ${s.people.length}` }, { text: `${seasonLabel(seasonOf(s))}, day ${dayInSeason(s)}${yearOf(s) > 1 ? `  Year ${yearOf(s)}` : ''}` });
     const tint = seasonData.tint[seasonOf(s)];
     this.tint.setFillStyle(tint ? tint[0] : 0xffffff, tint ? tint[1] : 0);
-    this.resourceText.setText(parts.join('   '));
-    if (this.upgradesOpen) this.refreshUpgrades();
+    this.drawBar(parts);
     if (this.tip.box.visible) this.refreshTip();
 
     const w = s.wotakuye;
@@ -354,6 +401,7 @@ export class HudScene extends Phaser.Scene {
       const active = b.pause ? s.paused : !s.paused && b.speed === s.speed;
       bg.setFillStyle(active ? 0x8a6d2f : 0x3a3328, 1);
     }
+    this.updatePowers(s);
     if (this.menuOpen && !s.paused) queueOrders(s, [{ type: 'pause', on: true }]);
     if (s.result) this.showEnd(s);
   }

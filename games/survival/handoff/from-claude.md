@@ -4,11 +4,77 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 [WORKFLOW.md](../../WORKFLOW.md#handoff-files).
 
 ## Working on
-- Nothing. 2026-11-20: tier 2 V1-V8 done (next: V9, the user's playtest). 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
+- Nothing. 2026-11-20: tier 3 W1-W10 and R1-R2 done (next: W11, the user's playtest); tier 2 V1-V9 done (V9 passed; next: the user picks the next Phase D item). 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
   (`save.ts`: `serialize`, `parseSave`, `loadState`, plus `dayOf` and `SAVE_FORMAT`); DS2 done
   (`src/save/slots.ts`: `listSlots`, `readSlot`, `writeSlot`, `clearSlot`, `importSlot`, `probe`,
   `firstEmptySlot`, `browserStorage`); DS3 done (`GameScene.saveNow()` and `saveSlot` are the hooks
   for the DS4 HUD menu); DS4 done. Next: DS5 (the user's playtest).
+
+## Resource icons and open store notes (R1-R2, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/render/stores.ts` (new), `art/manifest.json` (23 keys), `tests/stores.test.ts` (new, `pileSize`, `storeAt`), `tests/smoke.spec.ts` (an 8th test), `TESTING.md`, `Game.ts` (hover each frame, `window.camp.storeOpen`); `Select.ts` and `economy.ts` were not needed.
+- Choices the spec left open: the bar shows `120 / 200` and an icon with no resource word (the words made it run into the Wotakuye bar at x 750); `Gift` keeps its word; hovering an icon names it (`Hud.ts`, the scene's hover helper); `icon_horses` is drawn and shown once there is a horse; the open store reacts to the pointer on its floor or up to 16 px above it (the roof); the piles are the camp's whole store, so every store shows the same; piles are drawn 1.3x; no open view while placing, aiming or over a panel; `building_store_open` and the piles are manifest keys but not building types.
+- Not checked by hand: the icons' look at real size, hovering a store in the live game with people about.
+
+## Tier 3 notes (W10, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/scenes/Game.ts` (`aiming`, `setAiming`, the aim click and the reticle in `updateGhost`), `src/scenes/hover.ts` (new), `Menu.ts` (controls text), `tests/smoke.spec.ts` (a 7th test with `camp.powers`, `powerButton`, `hoverTip`, `scene`). `art/ASSETS.md` needs no row (placeholders drawn in code need none).
+- Choices the spec left open: the power bar is top left under the resource bar, not bottom left (the selection panel, its upgrade list and the toasts use the bottom left); buttons show only for bought powers and stack in data order; F-key and click on an aimed power toggle aiming; an aimed power with an error (spent, below Steady) toasts the reason and does not start aiming; powers do nothing while the HUD menu is open or after a result; the storm's reticle is a circle of its radius, the bison's a lane of its width across the map; Esc is also caught by Select (`busy`) so it does not clear the selection while aiming.
+- Known Phaser behaviour: the first mouse move after leaving a HUD button only ends that button's hover; the Game scene sees the next one (a real player will not notice, the e2e test moves in steps).
+- Not checked by hand: the bison reticle, a real cast with wolves about, a Dakota hover in the live Build menu.
+
+## Tier 3 notes (W9, 2026-11-20)
+- Went past PLAN's file list on purpose: `buildings.json` / `upgrades.json` (the barricade and its upgrade), `state.ts` (optional `Enemy.path`, `goal`, `walls`, `siege`; not validated by `parseSave`, saving is parked), `jobs.ts` (no `is finished` toast for line segments), `Game.ts` (drag placement and the line ghost), `placeholders.ts` and `art/manifest.json` (barricade art), `tests/sim/{buildings,upgrades,upgrades2}.test.ts` and `tests/smoke.spec.ts` (id lists).
+- Choices the spec left open: the drag snaps to the nearest of horizontal, vertical or diagonal (2:1 rule) and starts at the pressed tile; tiles that fail placement are skipped, the store pays segments in order until short; placing stays on after a drag (right-click or Esc stops); unfinished barricades block people but not wolves; a diagonal step is shut when either side tile is a barricade, so a diagonal line is closed; wolves keep the old straight walk while their line is clear, so nothing changes without barricades; fleeing wolves path and break barricades the same way; a besieging wolf bites with its own damage, accuracy and cooldown from within range + 0.5 of the barricade's tile; the fire shows no strength line though it has hp.
+- Not checked by hand: wolves meeting a line in the live game; the Menu controls text does not mention dragging yet (W10).
+
+## Tier 3 notes (W8, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/sim/effects.ts` (new, same reason as `allies.ts`), `enemies.json` (`powers` block), `tick.ts` (`stepEffects` after `stepAllies`), `upgrades.ts` (`castPower` calls `startEffect`), `render/enemies.ts` and `Game.ts` (placeholder drawing, so a cast shows something before W10), `tests/sim/effects.test.ts`.
+- Choices the spec left open: the herd starts on the map edge nearest the point, on the line through it, and ends when it has crossed (`ceil(47 / 0.4) + 1` ticks); a wolf is touched when within 1.5 tiles of the lane's middle and within 1 tile ahead or behind the herd; the storm slows fleeing wolves too and its slow multiplies with a fire pit's; storm damage 0.2 per tick makes wolf hp fractional; effects ids come from `nextEnemyId`; `effects` is not validated by `parseSave` (saving is parked).
+- Not checked by hand: the look of the herd and the storm (placeholders), a real cast (no power bar until W10).
+
+## Tier 3 notes (W7, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/sim/allies.ts` (new, to avoid a combat <-> upgrades import cycle), `enemies.json` (`allies` block), `tick.ts` (`stepAllies` before `stepEnemies`), `upgrades.ts` (`castPower` calls `callAllies`), `Game.ts` (draws allies), `tests/sim/allies.test.ts`.
+- Choices the spec left open: allies are spawned on a ring of radius 2 around the fire centre and walk in straight lines through anything (they are spirits); a fleeing wolf is only attacked when within the ally's range; waiting spot is within 2.5 tiles of the fire; ids come from `nextEnemyId`; `allies` is not validated by `parseSave` and `alliesOf` makes the list for an older file (saving is parked); the cast toast `<label> called.` is unchanged.
+- Not checked by hand: allies in the live game (placeholder look), a real cast from the lodge (there is no power bar until a later row).
+
+## Tier 3 notes (W6, 2026-11-20)
+- Went past PLAN's file list on purpose: `waves.ts` (`warn` empties `powersUsed`), `save.ts` (`parseSave` rejects a file without `powersUsed`, still `SAVE_VERSION` 5, so a v5 file saved earlier today is unreadable), `buildings.ts` (name), `placeholders.ts` and `art/manifest.json` (lodge art), `Select.ts` (effect lines), `tests/smoke.spec.ts` and `tests/sim/{buildings,upgrades,upgrades2}.test.ts` (lists).
+- Choices the spec left open: `powersUsed` is a list of spent power ids (the plan said `powers`); the cast order is `{ type: 'cast', power, at? }`; a refused cast toasts the reason and is not spent; a successful one toasts `<label> called.` until W7/W8 add effects; `spirits` has no tier 2 prerequisite (the table says United only); the Societies page is at 6 slots, the barricade (W9) makes 7.
+- Not checked by hand: the spirit lodge in the live game and its panel; `Needs United` on the rows.
+
+## Tier 3 notes (W5, 2026-11-20)
+- Went past PLAN's file list on purpose: `people.ts` (`speedOf`, `removePerson` loses the horse), `state.ts` (`Person.mounted`, `freeHorses`), `upgrades.json` (the `riders` upgrade and toast), `Select.ts` (its effect line), `tests/sim/upgrades2.test.ts` (id list).
+- Choices the spec left open: `horses` stays the whole herd, ridden or not (free = herd - mounted, so the breeding cap is unchanged); mounting happens only at the draft order (a lancer already drafted when Riders is bought, or when a horse is born, stays on foot until redrafted); an undrafted lancer, or one with no free horse, walks; the mount multiplies walking speed in `movePerson` and `stepStraight`; older v5 files without `mounted` load as on foot.
+- Not checked by hand: a rider in the live game, the Riders row in the lancers' lodge panel.
+
+## Tier 3 notes (W4, 2026-11-20)
+- Went past PLAN's file list on purpose: `buildings.ts` (name), `Select.ts` (effect line), `Hud.ts` (a `Horses n / cap` part shown once there are horses), `Build.ts` (key 7), `placeholders.ts` and `art/manifest.json` (corral art), `tests/smoke.spec.ts` (`tended` on a hand-made building), `tests/sim/{buildings,upgrades2}.test.ts` (menu order, upgrade ids).
+- Choices the spec left open: `horses` is a plain number on the state, not a `Res` (no store, no carry); tended time is counted per corral by `stepCorrals` (a non-drafted `tend` worker standing on the ring), it waits at 3600 when the corrals are full and turns into a foal once there is room; Breed horses is clamped to the cap; the toast for a birth is `A foal was born.`; `parseSave` rejects a building without a numeric `tended` and a state without `horses`.
+- Not done: `icon_horses` (R1 draws the icons), the Camp page now holds up to 7 slots (reaches 559 px wide, unchecked on screen).
+- Not checked by hand: placing the corral, a tender breeding in the live game, the 7-slot Camp page.
+
+## Tier 3 notes (W3, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/scenes/Game.ts` (dropped the `upgradesOverUi` call), `Menu.ts` (controls
+  line: click a finished building for its upgrades), `tests/sim/helpers.ts` (`addHuntingLodge`), `TESTING.md`.
+- Choices the spec left open: the list is a panel just above the selection panel (620 px wide, 50 px a row, toasts
+  move up above it), shown only for one selected finished building and no people; the row shows the label, one line
+  of effect, then `Owned`, `Needs <label>` / `Needs United` / `Needs a finished <building>`, or `Cost: ...` with
+  `Missing: ...`, and Buy (dim while short, hidden when blocked); upgrades with a `band` in the data are refused
+  outside that band (nothing uses it until W5-W8); the effect lines moved from `Hud.ts` to `Select.ts`.
+- Debug hooks (with `?debug`): `camp.selectBuilding(id)`, `camp.upgradeRows()`, `camp.upgradeBuy(id)`.
+- Not checked by hand: the panel for the council fire in the live game, hovering the English label (W10).
+
+## Tier 3 notes (W2, 2026-11-20)
+- Words came from the Dakota Online Dictionary (SWODLI + Ultralingua; Williamson 1902 and the 2015 SWODLI
+  dictionary) through the JSON endpoint its own page calls (`https://ulod.ultralingua.com/dakota/api/`,
+  `tool=dictionary&action=results&source=en&target=dak&text=<word>`). English headwords only were sent.
+  Spellings are verbatim from it; nothing was composed. `displayLabel` shows the English until a `dakota`
+  field is filled.
+
+## Tier 3 notes (W1, 2026-11-20)
+- Went past PLAN's file list on purpose: `state.ts` (`WaveRun.edge2?`, `centre2?`, optional so a v4 file still
+  loads) and `tests/sim/waves.test.ts`. Choices the spec left open: a wave's `edges: 2` in `waves.json` (absent
+  = 1); the second edge is drawn from the other edges and has its own centre; with an odd count the first
+  edge gets the extra one (wave 8's three leaders split 2 + 1).
 
 ## Seasons notes (S1-S6, 2026-11-20)
 - Went past PLAN's file list on purpose: `waves.json` and `DESIGN-slice.md` (wave 4, the user's call),

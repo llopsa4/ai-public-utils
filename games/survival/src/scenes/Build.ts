@@ -1,8 +1,10 @@
 // The build menu (DESIGN-slice.md `## UI`, DESIGN-upgrades-2.md `## UI`): B opens it, Tab switches between
-// the Camp and Societies pages, 1-6 pick a building on the shown page, the Game scene shows the ghost and
+// the Camp and Societies pages, 1-7 pick a building on the shown page, the Game scene shows the ghost and
 // places it on a left-click; right-click or Esc cancels. Runs above the Game scene in screen space.
 import Phaser from 'phaser';
-import { BUILDABLE, buildingDefs, buildingName } from '../sim/buildings';
+import { BUILDABLE, buildingDefs } from '../sim/buildings';
+import { displayLabel, englishLabel } from '../sim/labels';
+import { createHover, type Hover } from './hover';
 import type { Res } from '../sim/state';
 import type { GameScene } from './Game';
 
@@ -40,6 +42,7 @@ export class BuildScene extends Phaser.Scene {
   private openButton!: Phaser.GameObjects.GameObject[];
   private toastText!: Phaser.GameObjects.Text;
   private toastUntil = 0;
+  private hover!: Hover;
 
   constructor() {
     super('Build');
@@ -67,6 +70,7 @@ export class BuildScene extends Phaser.Scene {
     this.panelBg = this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x1d1a16, 0.85).setOrigin(0);
     this.tabText = text(PANEL.x + 8, PANEL.y + 4, '', 13);
     this.panel.push(this.panelBg, this.tabText);
+    this.hover = createHover(this);
     BUILDABLE.forEach((type) => {
       const x = PANEL.x + 5;
       const y = PANEL.y + SLOT_TOP;
@@ -76,8 +80,9 @@ export class BuildScene extends Phaser.Scene {
       const icon = this.add.image(x + 37, y + 56, `building_${type}`).setScale(small ? 0.8 : 0.45).setOrigin(0.5, 0.75);
       const cost = buildingDefs[type].cost ?? {};
       const costText = (Object.keys(cost) as Res[]).map((r) => `${cost[r]} ${r}`).join(', ');
-      const title = text(x + 4, y + 3, buildingName(type), 10).setWordWrapWidth(68);
+      const title = text(x + 4, y + 3, displayLabel(type), 10).setWordWrapWidth(68);
       const parts = [icon, title, text(x + 4, y + 80, costText, 10, '#cdbf9c').setWordWrapWidth(68)];
+      this.hover.attach(bg,() => (displayLabel(type) !== englishLabel(type) ? englishLabel(type) : null));
       this.slots.push({ type, x, bg, title, parts });
       this.panel.push(bg, ...parts);
     });
@@ -94,7 +99,7 @@ export class BuildScene extends Phaser.Scene {
       if (this.game2.placing) this.game2.setPlacing(null);
       else this.setOpen(false);
     });
-    ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.open && this.pick(i)));
+    ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.open && this.pick(i)));
     const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
     if (camp) camp.buildMenu = () => ({ open: this.open, page: this.page, shown: [...this.shownTypes] });
   }
@@ -150,7 +155,7 @@ export class BuildScene extends Phaser.Scene {
       if (i < 0) return;
       const nx = PANEL.x + 5 + i * SLOT_W;
       const dx = nx - slot.x;
-      slot.title.setText(`${i + 1} ${buildingName(slot.type)}`);
+      slot.title.setText(`${i + 1} ${displayLabel(slot.type)}`);
       if (dx === 0) return;
       slot.x = nx;
       slot.bg.x += dx;
@@ -190,6 +195,7 @@ export class BuildScene extends Phaser.Scene {
     const now = this.typesOn(this.page).join();
     if (now !== this.shownTypes.join() || (this.typesOn(this.page).length === 0 && this.page !== 'camp')) this.setOpen(this.open);
     this.toastText.setVisible(this.time.now < this.toastUntil);
+    this.hover.update();
     const store = this.game2.state.store;
     for (const slot of this.slots) {
       const cost = buildingDefs[slot.type].cost ?? {};

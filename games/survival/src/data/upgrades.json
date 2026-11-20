@@ -1,14 +1,23 @@
 {
   "giftPerDay": { "United": 2, "Steady": 1, "Strained": 0, "Quarrelling": 0 },
   "upgrades": {
-    "dogs":    { "label": "Hunting dogs",     "cost": { "gift": 4, "food": 10 },            "huntSuccess": 1.15, "bowAccuracy": 0.05 },
-    "bows":    { "label": "Better bows",      "cost": { "gift": 6, "wood": 5, "hides": 3 }, "bowRange": 5.0, "bowDamage": 15 },
-    "healers": { "label": "Healers' society", "cost": { "gift": 8, "wood": 20 },            "unlocks": "healers_lodge" },
-    "scouts":   { "label": "Akicita scouts",   "cost": { "gift": 8, "wood": 10, "hides": 5 },  "requires": "dogs",    "unlocks": "scouts_lodge" },
-    "warriors": { "label": "Akicita warriors", "cost": { "gift": 10, "wood": 15, "hides": 5 }, "requires": "bows",    "unlocks": ["lancers_lodge", "archers_lodge"] },
-    "builders": { "label": "Builders' society", "cost": { "gift": 10, "wood": 25 },            "requires": "healers", "unlocks": ["trap", "fire_pit"] },
-    "tools":    { "label": "Better tools",     "cost": { "gift": 6, "wood": 10, "hides": 4 },  "requires": "bows",    "buildSpeed": 1.5 }
+    "dogs":    { "label": "Hunting dogs", "dakota": "", "home": "hunting_lodge",     "cost": { "gift": 4, "food": 10 },            "huntSuccess": 1.15, "bowAccuracy": 0.05 },
+    "bows":    { "label": "Better bows", "dakota": "", "home": "hunting_lodge",      "cost": { "gift": 6, "wood": 5, "hides": 3 }, "bowRange": 5.0, "bowDamage": 15 },
+    "healers": { "label": "Healers' society", "dakota": "", "home": "fire", "cost": { "gift": 8, "wood": 20 },            "unlocks": "healers_lodge" },
+    "scouts":   { "label": "Akicita scouts", "dakota": "", "home": "hunting_lodge",   "cost": { "gift": 8, "wood": 10, "hides": 5 },  "requires": "dogs",    "unlocks": "scouts_lodge" },
+    "warriors": { "label": "Akicita warriors", "dakota": "", "home": "fire", "cost": { "gift": 10, "wood": 15, "hides": 5 }, "requires": "bows",    "unlocks": ["lancers_lodge", "archers_lodge"] },
+    "builders": { "label": "Builders' society", "dakota": "", "home": "fire", "cost": { "gift": 10, "wood": 25 },            "requires": "healers", "unlocks": ["trap", "fire_pit"] },
+    "barricades": { "label": "Spike barricades", "dakota": "", "home": "fire", "cost": { "gift": 6, "wood": 15 }, "requires": "builders", "unlocks": "barricade" },
+    "horses":   { "label": "Breed horses", "dakota": "", "home": "horse_corral", "cost": { "gift": 6, "food": 20 },           "requires": "warriors", "startHorses": 2 },
+    "riders":   { "label": "Riders", "dakota": "", "home": "lancers_lodge", "cost": { "gift": 8, "hides": 10 }, "requires": "horses" },
+    "tools":    { "label": "Better tools", "dakota": "", "home": "fire",     "cost": { "gift": 6, "wood": 10, "hides": 4 },  "requires": "bows",    "buildSpeed": 1.5 },
+    "spirits":  { "label": "Spirit society", "dakota": "", "home": "fire", "band": "United", "cost": { "gift": 10, "wood": 20 }, "unlocks": "spirit_lodge" },
+    "spirit_warriors": { "label": "Spirit warriors", "dakota": "", "home": "spirit_lodge", "band": "United", "cost": { "gift": 12, "food": 10 }, "requires": "warriors", "power": { "key": "F1", "aim": false } },
+    "guardian_wolves": { "label": "Guardian wolves", "dakota": "", "home": "spirit_lodge", "band": "United", "cost": { "gift": 10, "food": 15 }, "requires": "scouts",   "power": { "key": "F2", "aim": false } },
+    "bison_charge":    { "label": "Bison charge", "dakota": "", "home": "spirit_lodge", "band": "United", "cost": { "gift": 12, "food": 20 }, "requires": "tools",    "power": { "key": "F3", "aim": true } },
+    "storm_caller":    { "label": "Storm caller", "dakota": "", "home": "spirit_lodge", "band": "United", "cost": { "gift": 10, "hides": 5 }, "requires": "builders", "power": { "key": "F4", "aim": true } }
   },
+  "castBand": "Steady",
   "toasts": {
     "dogs": "Hunting dogs joined the hunters.",
     "bows": "Hunters' bows are stronger.",
@@ -16,6 +25,14 @@
     "scouts": "The scouts can build a lodge.",
     "warriors": "The warriors can build lodges.",
     "builders": "The builders can set traps and fire pits.",
-    "tools": "Building goes faster."
+    "tools": "Building goes faster.",
+    "barricades": "The builders can raise barricades.",
+    "horses": "Horses joined the camp.",
+    "riders": "The lancers can ride.",
+    "spirits": "The spirit society can build a lodge.",
+    "spirit_warriors": "The spirit warriors will answer the call (F1).",
+    "guardian_wolves": "The guardian wolves will answer the call (F2).",
+    "bison_charge": "The bison will run at your word (F3).",
+    "storm_caller": "The storm will come at your word (F4)."
   }
 }

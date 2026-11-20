@@ -2,8 +2,8 @@
 // applied at the start of the next tick. Pure TypeScript, no Phaser.
 import { assignWorkers, cancelSite, countJobs, placeBuilding } from './buildings';
 import { ages, beginWalk, canWork, idleTask, releaseJob, walkable } from './people';
-import { buyUpgrade, UPGRADE_IDS, type UpgradeId } from './upgrades';
-import { addMessage, type GameState, type Order, type Person, type Tile2 } from './state';
+import { buyUpgrade, castPower, hasUpgrade, UPGRADE_IDS, type UpgradeId } from './upgrades';
+import { addMessage, freeHorses, type GameState, type Order, type Person, type Tile2 } from './state';
 
 /** Queues orders; they take effect at the start of the next tick (or at once while paused). */
 export function queueOrders(s: GameState, orders: Order[]): void {
@@ -110,6 +110,8 @@ function orderDraft(s: GameState, ids: number[], on: boolean): void {
     adults++;
     if (p.drafted === on) continue;
     p.drafted = on;
+    // A drafted lancer takes a free horse when the camp can ride; undrafting gives it back.
+    p.mounted = on && p.society === 'lancers' && hasUpgrade(s, 'riders') && freeHorses(s) > 0;
     // Drafting stops whatever they were doing; the job stays and resumes when undrafted.
     p.task = idleTask();
     p.attackTarget = null;
@@ -151,6 +153,9 @@ export function applyOrder(s: GameState, o: Order): void {
       return;
     case 'buy':
       if (UPGRADE_IDS.includes(o.upgrade as UpgradeId)) buyUpgrade(s, o.upgrade as UpgradeId);
+      return;
+    case 'cast':
+      castPower(s, o.power, o.at);
       return;
   }
 }

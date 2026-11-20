@@ -8,6 +8,7 @@ import { walkable } from '../../src/sim/people';
 import type { Enemy, GameState } from '../../src/sim/state';
 import { buildSpeed, buyUpgrade, missingRequirement, UPGRADE_IDS } from '../../src/sim/upgrades';
 import { newGame, step } from '../../src/sim/tick';
+import { addHuntingLodge } from './helpers';
 import { scoutsStaffed, waveBanner } from '../../src/sim/waves';
 
 const TIER2 = [
@@ -15,7 +16,8 @@ const TIER2 = [
 ] as const;
 
 test('tier 2 has four upgrades, each named for its tier 1 requirement', () => {
-  assert.deepEqual(UPGRADE_IDS, ['dogs', 'bows', 'healers', 'scouts', 'warriors', 'builders', 'tools']);
+  assert.deepEqual(UPGRADE_IDS, ['dogs', 'bows', 'healers', 'scouts', 'warriors', 'builders', 'barricades', 'horses', 'riders', 'tools',
+    'spirits', 'spirit_warriors', 'guardian_wolves', 'bison_charge', 'storm_caller']);
   const s = newGame(1);
   for (const [id, req] of TIER2) assert.equal(missingRequirement(s, id), req);
   assert.equal(missingRequirement(s, 'dogs'), null, 'tier 1 needs nothing');
@@ -24,6 +26,7 @@ test('tier 2 has four upgrades, each named for its tier 1 requirement', () => {
 test('buying a tier 2 upgrade is refused without its tier 1 upgrade and allowed with it', () => {
   for (const [id, req] of TIER2) {
     const s = newGame(1);
+    addHuntingLodge(s);
     s.gift = 50;
     s.store.wood = 100;
     s.store.hides = 50;
@@ -38,6 +41,7 @@ test('buying a tier 2 upgrade is refused without its tier 1 upgrade and allowed 
 
 test('tier 2 costs are taken from the gift and the store', () => {
   const s = newGame(1);
+  addHuntingLodge(s);
   s.upgrades.push('dogs');
   s.gift = 10;
   s.store.wood = 30;

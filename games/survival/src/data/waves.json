@@ -9,7 +9,9 @@
     { "at": 10800, "groups": [ { "enemy": "wolf", "count": 5 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
     { "at": 14400, "groups": [ { "enemy": "wolf", "count": 7 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
     { "at": 18000, "groups": [ { "enemy": "wolf", "count": 9 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
-    { "at": 21600, "groups": [ { "enemy": "wolf", "count": 10 }, { "enemy": "pack_leader", "count": 2 } ], "spread": 10 }
+    { "at": 21600, "groups": [ { "enemy": "wolf", "count": 10 }, { "enemy": "pack_leader", "count": 2 } ], "spread": 10 },
+    { "at": 25200, "groups": [ { "enemy": "wolf", "count": 12 }, { "enemy": "pack_leader", "count": 2 } ], "spread": 12, "edges": 2 },
+    { "at": 28800, "groups": [ { "enemy": "wolf", "count": 14 }, { "enemy": "pack_leader", "count": 3 } ], "spread": 12, "edges": 2 }
   ],
-  "winAfterWave": 6
+  "winAfterWave": 8
 }
