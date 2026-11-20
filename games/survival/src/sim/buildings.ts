@@ -7,6 +7,8 @@ import {
   addBuilding, addMessage, footprintOf, type Building, type GameState, type Job, type JobKind, type Person, type Res,
   type Tile2,
 } from './state';
+import { campCentre } from './map';
+import { heldTiles } from './occupancy';
 import { upgradeLabel, type UpgradeId } from './upgrades';
 
 export interface BuildingDef {
@@ -44,16 +46,12 @@ export function buildingName(type: string): string {
   return NAMES[type] ?? type;
 }
 
-function campCentre(s: GameState): Tile2 {
-  return [s.map.fire[0] + 1, s.map.fire[1] + 1];
-}
-
 /** Why a building cannot be placed there (a short sentence), or null when it can. */
 export function placementError(s: GameState, type: string, x: number, y: number): string | null {
   const def = buildingDefs[type];
   if (!def || def.buildable === false || !def.cost) return "Can't build that.";
   if (def.requires && !s.upgrades.includes(def.requires)) return `Needs the ${upgradeLabel(def.requires as UpgradeId)}.`;
-  const [cx, cy] = campCentre(s);
+  const [cx, cy] = campCentre(s.map);
   const tiles = footprintOf(type, x, y);
   if (tiles.some(([tx, ty]) => tx < 0 || ty < 0 || tx >= s.map.size || ty >= s.map.size)) return 'Outside the map.';
   for (const [tx, ty] of tiles) {
@@ -180,15 +178,22 @@ export function countJobs(s: GameState, buildingId: number, kind: JobKind, excep
   return s.people.filter((p) => p.id !== exceptId && p.job?.kind === kind && p.job.building === buildingId).length;
 }
 
-/** The free walkable tile beside a building that is closest to `from`. */
-export function ringSpot(s: GameState, from: { x: number; y: number }, b: Building): Tile2 | null {
+/**
+ * The walkable tile beside a building closest to `from`. With a person's `id`, tiles held by anyone else are
+ * skipped (`occupancy.ts`): `'full'` when the ring has walkable tiles but all are held, null when it has none.
+ */
+export function ringState(s: GameState, from: { x: number; y: number; id?: number }, b: Building): Tile2 | 'full' | null {
   let spot: Tile2 | null = null;
   let bestD = Infinity;
+  let any = false;
+  const held = from.id === undefined ? null : heldTiles(s, from.id);
   const [w, h] = buildingDefs[b.type].size;
   for (let y = b.y - 1; y <= b.y + h; y++) {
     for (let x = b.x - 1; x <= b.x + w; x++) {
       if (x >= b.x && x < b.x + w && y >= b.y && y < b.y + h) continue;
       if (!walkable(s, x, y)) continue;
+      any = true;
+      if (held?.has(y * s.map.size + x)) continue;
       const d = Math.hypot(x - from.x, y - from.y);
       if (d < bestD) {
         bestD = d;
@@ -196,7 +201,13 @@ export function ringSpot(s: GameState, from: { x: number; y: number }, b: Buildi
       }
     }
   }
-  return spot;
+  return spot ?? (any ? 'full' : null);
+}
+
+/** The free walkable tile beside a building that is closest to `from` (null when none is free). */
+export function ringSpot(s: GameState, from: { x: number; y: number; id?: number }, b: Building): Tile2 | null {
+  const r = ringState(s, from, b);
+  return r === 'full' ? null : r;
 }
 
 /** True when the person stands on the ring of tiles round a building (where a ring walk ends). */

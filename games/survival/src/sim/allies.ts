@@ -2,6 +2,7 @@
 // guardian wolves appear at the fire, fight the nearest wolf in sight for 600 ticks, then vanish. They never
 // harm people. Pure TypeScript, no Phaser. Allies are not saved (saving is parked, user 2026-11-20).
 import enemyData from '../data/enemies.json';
+import { campCentre, FIRE_HALF } from './map';
 import { rngNext } from './rng';
 import type { Ally, Enemy, GameState } from './state';
 
@@ -29,9 +30,7 @@ export const allyKindOf = (power: string): Ally['kind'] | undefined =>
 
 const dist = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
 
-function fireCentre(s: GameState): [number, number] {
-  return [s.map.fire[0] + 1, s.map.fire[1] + 1];
-}
+const fireCentre = (s: GameState): [number, number] => campCentre(s.map);
 
 /** Calls the allies of a power around the fire. Returns how many came (0 for a power with no allies). */
 export function callAllies(s: GameState, power: string): number {
@@ -43,7 +42,7 @@ export function callAllies(s: GameState, power: string): number {
   for (let i = 0; i < def.count; i++) {
     const angle = (i / def.count) * Math.PI * 2;
     list.push({
-      id: s.nextEnemyId++, kind, x: fx + Math.cos(angle) * 2, y: fy + Math.sin(angle) * 2,
+      id: s.nextEnemyId++, kind, x: fx + Math.cos(angle) * (FIRE_HALF + 1), y: fy + Math.sin(angle) * (FIRE_HALF + 1),
       hp: def.hp, cooldown: 0, expires: s.tick + def.ticks,
     });
   }
@@ -87,7 +86,7 @@ export function stepAllies(s: GameState): void {
     if (a.cooldown > 0) a.cooldown--;
     const target = pickEnemy(s, a, def);
     if (!target) {
-      if (Math.hypot(fx - a.x, fy - a.y) > 2.5) stepToward(a, def.speed, fx, fy);
+      if (Math.hypot(fx - a.x, fy - a.y) > FIRE_HALF + 1.5) stepToward(a, def.speed, fx, fy);
       continue;
     }
     if (dist(a, target) <= def.range) {

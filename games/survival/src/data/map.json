@@ -13,19 +13,27 @@
   "forest": { "clusters": 7, "minDistFromCamp": 10, "radius": [2, 4], "density": 0.75 },
   "berry": { "patches": 3, "distFromCamp": [7, 14], "tilesPerPatch": 7 },
   "camp": {
-    "fire": [23, 23],
+    "fire": [22, 22],
     "clearRadius": 7,
     "prebuilt": [
-      { "type": "tipi", "at": [20, 21] },
-      { "type": "tipi", "at": [27, 21] },
-      { "type": "store", "at": [24, 27] }
+      { "type": "tipi", "at": [18, 22] },
+      { "type": "tipi", "at": [28, 22] },
+      { "type": "store", "at": [22, 17] }
     ]
   },
   "start": {
     "seed": 1,
     "families": ["Cottonwood", "Kingfisher"],
+    "familyColors": ["#e0905a", "#7fa8d8"],
+    "names": [
+      "Wren", "Willow", "Sparrow", "Heron", "Fern", "Aspen", "Cedar", "Clover", "Otter", "Finch",
+      "Maple", "Reed", "Marsh", "Hazel", "Robin", "Birch", "Juniper", "Lark", "Moss", "Sage",
+      "Tansy", "Thistle", "Alder", "Briar", "Cricket", "Dove", "Ember", "Flint", "Gale", "Heath",
+      "Ivy", "Jay", "Kestrel", "Linden", "Marten", "Nettle", "Oriole", "Pebble", "Quill", "Rowan",
+      "Swift", "Teal", "Vale", "Yarrow", "Bramble", "Dusk", "Fennel", "Garnet", "Hollis", "Larch"
+    ],
     "perFamily": { "adult": 6, "elder": 2, "child": 2 },
-    "spawnRadius": 4
+    "spawnRadius": 5
   },
   "camera": { "edgePx": 16, "panPxPerSec": 600, "zoom": [0.5, 2.0], "zoomStep": 0.1 }
 }

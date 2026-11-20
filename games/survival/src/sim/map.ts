@@ -1,4 +1,5 @@
 // Map generation from a seed (DESIGN-slice.md `## Map`). Pure TypeScript, no Phaser.
+import buildingsData from '../data/buildings.json';
 import { makeRng, rngNext } from './rng';
 
 export type TileType = 'grass' | 'river' | 'ford' | 'forest' | 'berry';
@@ -29,9 +30,20 @@ export interface GameMap {
   tiles: TileType[];
   /** Wood left on a forest tile / food on a berry tile, same indexing. */
   amount: number[];
-  /** Top-left tile of the 2x2 central fire. */
+  /** Top-left tile of the central fire (its size is in `buildings.json`). */
   fire: [number, number];
   prebuilt: { type: string; at: [number, number] }[];
+}
+
+/** Half the side of the square council fire: 2 for the 4x4 plaza. */
+export const FIRE_HALF = buildingsData.types.fire.size[0] / 2;
+
+/**
+ * The camp centre: the fire's top-left tile plus half its side (24, 24 for the slice). Every distance
+ * "from the fire" (wolves' goal, flee, spawn, hunt spots, building range, allies) is measured from here.
+ */
+export function campCentre(map: { fire: [number, number] | number[] }): [number, number] {
+  return [map.fire[0] + FIRE_HALF, map.fire[1] + FIRE_HALF];
 }
 
 export function tileIndex(map: { size: number }, x: number, y: number): number {
@@ -53,9 +65,7 @@ export function generateMap(seed: number, cfg: MapConfig): GameMap {
   const ok = (x: number, y: number) => x >= 0 && y >= 0 && x < n && y < n;
   const water = (t: TileType) => t === 'river' || t === 'ford';
   const fire: [number, number] = [cfg.camp.fire[0], cfg.camp.fire[1]];
-  // Camp centre (24, 24 for the slice): the top-left of the 2x2 fire plus one.
-  const cx0 = fire[0] + 1;
-  const cy0 = fire[1] + 1;
+  const [cx0, cy0] = campCentre({ fire });
   const dist = (x: number, y: number) => Math.hypot(x - cx0, y - cy0);
   const cleared = (x: number, y: number) =>
     Math.max(Math.abs(x - cx0), Math.abs(y - cy0)) <= cfg.camp.clearRadius;

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import upgradesData from '../../src/data/upgrades.json';
 import { buildingDefs } from '../../src/sim/buildings';
-import { displayLabel, englishLabel, labelText } from '../../src/sim/labels';
+import { carryText, displayLabel, englishLabel, labelText } from '../../src/sim/labels';
 
 test('a label is "Dakota (English)" with a Dakota word and the English alone without one', () => {
   assert.equal(labelText('Trap', 'wihmuŋke'), 'wihmuŋke (Trap)');
@@ -30,4 +30,16 @@ test('display labels read the data files; an empty word shows the English', () =
   for (const id of ['dogs', 'tipi', 'trap']) {
     assert.equal(displayLabel(id), labelText(englishLabel(id), dakotaOf(id)));
   }
+});
+
+test('carryText names one load, totals several, counts hides and is empty for no load', () => {
+  const none = { carry: { res: 'food' as const, amount: 0 } };
+  assert.equal(carryText([none]), '');
+  assert.equal(carryText([]), '');
+  assert.equal(carryText([{ carry: { res: 'wood', amount: 5 } }]), 'Carrying: 5 wood');
+  assert.equal(carryText([{ carry: { res: 'food', amount: 10, hides: 1 } }]), 'Carrying: 10 food, 1 hide');
+  assert.equal(
+    carryText([{ carry: { res: 'wood', amount: 5 } }, { carry: { res: 'wood', amount: 3 } }, none, { carry: { res: 'food', amount: 4, hides: 2 } }]),
+    'Carrying: 8 wood, 4 food, 2 hides',
+  );
 });

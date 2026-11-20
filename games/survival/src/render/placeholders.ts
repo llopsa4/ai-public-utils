@@ -51,18 +51,28 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.lineStyle(1, 0x9c8a62, 1).lineBetween(cx, 8, cx - 18, base + 2).lineBetween(cx, 8, cx + 18, base + 2);
   },
   building_store: (g, w, h) => {
-    // A low hide-covered store: an iso box standing on the 2x2 footprint diamond.
+    // A long hide-covered store: an iso box standing on the 4x4 footprint diamond (256 x 128 at its base).
     const cx = w / 2;
     const cy = h * 0.75;
-    shadow(g, cx + 8, cy + 4, 110, 44);
-    const hw = 40;
-    const hh = 20;
-    const rise = 30;
+    shadow(g, cx + 12, cy + 6, 230, 96);
+    const hw = 100;
+    const hh = 50;
+    const rise = 50;
     g.fillStyle(0x8a6a44, 1).fillPoints([p(cx - hw, cy), p(cx, cy + hh), p(cx, cy + hh - rise), p(cx - hw, cy - rise)], true);
     g.fillStyle(0x6f5234, 1).fillPoints([p(cx + hw, cy), p(cx, cy + hh), p(cx, cy + hh - rise), p(cx + hw, cy - rise)], true);
     g.fillStyle(0xb99a6a, 1).fillPoints([p(cx, cy - hh - rise), p(cx + hw, cy - rise), p(cx, cy + hh - rise), p(cx - hw, cy - rise)], true);
+    // Stitched hide panels on the roof and a ridge pole across it.
+    g.lineStyle(1, 0x8a6f48, 1);
+    for (const k of [0.25, 0.5, 0.75]) {
+      g.lineBetween(cx + hw * k, cy - rise - hh + hh * k, cx - hw + hw * k, cy - rise + hh * k);
+    }
     g.lineStyle(1, 0x4a3624, 1).strokePoints([p(cx - hw, cy - rise), p(cx, cy + hh - rise), p(cx + hw, cy - rise)], false);
-    g.fillStyle(0x4a3624, 1).fillRect(cx - 24, cy - 14, 10, 12).fillRect(cx + 16, cy - 14, 10, 12);
+    g.lineStyle(3, 0x4a3624, 1).lineBetween(cx - hw, cy - rise, cx, cy - hh - rise).lineBetween(cx + hw, cy - rise, cx, cy - hh - rise);
+    // Two dark doorways on the left face and a rack of poles on the right face.
+    g.fillStyle(0x3a2a1c, 1).fillPoints([p(cx - 78, cy + 11), p(cx - 58, cy + 21), p(cx - 58, cy - 17), p(cx - 78, cy - 27)], true);
+    g.fillPoints([p(cx - 40, cy + 29), p(cx - 20, cy + 39), p(cx - 20, cy + 1), p(cx - 40, cy - 9)], true);
+    g.lineStyle(2, 0x4a3624, 1);
+    for (const k of [0.2, 0.4, 0.6, 0.8]) g.lineBetween(cx + hw * k, cy + hh * (1 - k), cx + hw * k, cy + hh * (1 - k) - rise);
   },
   building_gathering_spot: (g, w, h) => {
     // A woven mat with baskets of berries and a log seat on the 2x2 footprint.
@@ -232,16 +242,57 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     // The store's cutaway: bare earth floor, the two back walls seen from inside, only low rims in front.
     const cx = w / 2;
     const cy = h * 0.75;
-    shadow(g, cx + 8, cy + 4, 110, 44);
-    const hw = 40;
-    const hh = 20;
-    const rise = 30;
+    shadow(g, cx + 12, cy + 6, 230, 96);
+    const hw = 100;
+    const hh = 50;
+    const rise = 50;
+    const rim = 12;
     g.fillStyle(0x5a4630, 1).fillPoints([p(cx, cy - hh), p(cx + hw, cy), p(cx, cy + hh), p(cx - hw, cy)], true);
+    g.lineStyle(1, 0x4a3624, 0.6);
+    for (const k of [0.25, 0.5, 0.75]) {
+      g.lineBetween(cx - hw * k, cy - hh * (1 - k), cx + hw * (1 - k), cy + hh * k);
+      g.lineBetween(cx + hw * k, cy - hh * (1 - k), cx - hw * (1 - k), cy + hh * k);
+    }
     g.fillStyle(0x6f5234, 1).fillPoints([p(cx - hw, cy), p(cx, cy - hh), p(cx, cy - hh - rise), p(cx - hw, cy - rise)], true);
     g.fillStyle(0x8a6a44, 1).fillPoints([p(cx + hw, cy), p(cx, cy - hh), p(cx, cy - hh - rise), p(cx + hw, cy - rise)], true);
     g.lineStyle(1, 0x4a3624, 1).strokePoints([p(cx - hw, cy - rise), p(cx, cy - hh - rise), p(cx + hw, cy - rise)], false);
-    g.fillStyle(0x8a6a44, 1).fillPoints([p(cx - hw, cy), p(cx, cy + hh), p(cx, cy + hh - 6), p(cx - hw, cy - 6)], true);
-    g.fillStyle(0x6f5234, 1).fillPoints([p(cx + hw, cy), p(cx, cy + hh), p(cx, cy + hh - 6), p(cx + hw, cy - 6)], true);
+    g.fillStyle(0x8a6a44, 1).fillPoints([p(cx - hw, cy), p(cx, cy + hh), p(cx, cy + hh - rim), p(cx - hw, cy - rim)], true);
+    g.fillStyle(0x6f5234, 1).fillPoints([p(cx + hw, cy), p(cx, cy + hh), p(cx, cy + hh - rim), p(cx + hw, cy - rim)], true);
+  },
+  // Small isometric props for the open store (16 x 16, foot at the bottom centre), drawn in the store's 2:1 projection.
+  item_basket: (g) => {
+    // A round basket seen from above and the side, heaped with berries.
+    g.fillStyle(0x2b3a4a, 0.3).fillEllipse(8, 14, 13, 5);
+    g.fillStyle(0xb98a4e, 1).fillPoints([p(3, 7), p(13, 7), p(11.5, 14), p(4.5, 14)], true);
+    g.lineStyle(1, 0x8a6a34, 1).lineBetween(4, 10, 12, 10);
+    g.fillStyle(0x8a6a34, 1).fillEllipse(8, 7, 11, 5);
+    g.fillStyle(0xa8392f, 1).fillEllipse(8, 6.5, 9, 4);
+    g.fillStyle(0xd0574a, 1).fillCircle(6, 5.5, 1.3).fillCircle(9.5, 5, 1.3).fillCircle(8, 7, 1.2);
+  },
+  item_log: (g) => {
+    // A log lying along the grid: a brown bar running down to the right with a pale cut end.
+    g.fillStyle(0x2b3a4a, 0.3).fillEllipse(8, 14, 15, 5);
+    g.fillStyle(0x7a5a3a, 1).fillPoints([p(1, 7), p(12, 12), p(12, 15), p(1, 10)], true);
+    g.fillStyle(0x9a7650, 1).fillPoints([p(1, 7), p(12, 12), p(12, 13), p(1, 8)], true);
+    g.fillStyle(0xd9b98a, 1).fillEllipse(12.5, 13.5, 4, 3.5);
+    g.lineStyle(1, 0x7a5a3a, 1).strokeEllipse(12.5, 13.5, 1.8, 1.4);
+  },
+  item_hides: (g) => {
+    // A folded hide: a flat slab, light on top, shaded on two sides.
+    g.fillStyle(0x2b3a4a, 0.3).fillEllipse(8, 14, 15, 5);
+    g.fillStyle(0xe0c48e, 1).fillPoints([p(8, 6), p(15, 9.5), p(8, 13), p(1, 9.5)], true);
+    g.fillStyle(0xa8854f, 1).fillPoints([p(1, 9.5), p(8, 13), p(8, 15), p(1, 11.5)], true);
+    g.fillStyle(0x8a6a3e, 1).fillPoints([p(8, 13), p(15, 9.5), p(15, 11.5), p(8, 15)], true);
+    g.lineStyle(1, 0x6f5234, 1).lineBetween(3.5, 9.5, 8, 11.8).lineBetween(8, 11.8, 12.5, 9.5);
+  },
+  item_bag: (g) => {
+    // A pemmican pouch: a dark red-brown bag, tied at the neck, with pale berry flecks.
+    g.fillStyle(0x2b3a4a, 0.3).fillEllipse(8, 14, 12, 4.5);
+    g.fillStyle(0x5e3326, 1).fillEllipse(8, 10.5, 11, 8);
+    g.fillStyle(0x7e4632, 1).fillEllipse(6.5, 9, 5, 4);
+    g.fillStyle(0xe0c28a, 1).fillCircle(9, 11, 0.9).fillCircle(6, 12, 0.8);
+    g.fillStyle(0x3a2616, 1).fillTriangle(6, 4, 10, 4, 8, 7);
+    g.lineStyle(1, 0xc9a56e, 1).lineBetween(6.5, 6.5, 9.5, 6.5);
   },
   icon_food: (g) => {
     // A haunch: a red-brown joint with a pale bone sticking out.
@@ -279,6 +330,13 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.fillStyle(0xb9473c, 1).fillCircle(16, 9, 4);
     g.fillStyle(0x8a2f26, 1).fillCircle(16, 9, 1.8);
   },
+  icon_people: (g) => {
+    // A head and rounded shoulders in warm tan, with dark hair.
+    g.fillStyle(0xb9743c, 1).fillEllipse(16, 29, 24, 16);
+    g.fillStyle(0xd9a066, 1).fillCircle(16, 12, 7.5);
+    g.fillStyle(0x2e2118, 1).fillEllipse(16, 8.5, 15, 8);
+    g.fillStyle(0xd9a066, 1).fillEllipse(16, 12.5, 12, 9);
+  },
   icon_horses: (g) => {
     // A horse's head in profile: brown neck and muzzle, a dark mane and a pale eye.
     g.fillStyle(0x8a5a36, 1).fillPoints([p(8, 28), p(11, 10), p(19, 4), p(26, 10), p(29, 21), p(24, 24), p(22, 17), p(18, 28)], true);
@@ -287,18 +345,52 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.fillStyle(0xe7e1c8, 1).fillCircle(22, 11, 1.6);
   },
   fire_central: (g, w, h) => {
+    // The council plaza on the 4x4 footprint diamond (256 x 128 at its base): beaten earth, hide mats and log
+    // seats round a big fire, drying poles at the back, a drum and baskets at the sides. The ring of tiles
+    // round the footprint stays free for people to sit on (G8).
     const cx = w / 2;
-    shadow(g, cx + 2, h - 6, 40, 14);
-    g.fillStyle(0xf6a53a, 0.25).fillCircle(cx, h - 18, 18);
-    g.fillStyle(0x8c8c84, 1);
-    for (let i = 0; i < 8; i++) {
-      const a = (i / 8) * Math.PI * 2;
-      g.fillCircle(cx + Math.cos(a) * 14, h - 8 + Math.sin(a) * 6, 4);
+    const cy = h * 0.75;
+    const hw = 108;
+    const hh = 54;
+    g.fillStyle(0x9a8058, 1).fillPoints([p(cx, cy - hh), p(cx + hw, cy), p(cx, cy + hh), p(cx - hw, cy)], true);
+    g.fillStyle(0xa98e64, 1).fillEllipse(cx, cy, 150, 72);
+    g.lineStyle(1, 0x7a6444, 1).strokePoints([p(cx, cy - hh), p(cx + hw, cy), p(cx, cy + hh), p(cx - hw, cy)], true);
+    // Drying poles across the back corner, with strips of meat hanging from the crossbar.
+    g.lineStyle(3, 0x5a3b22, 1).lineBetween(cx - 40, cy - 30, cx - 40, cy - 74).lineBetween(cx + 40, cy - 30, cx + 40, cy - 74);
+    g.lineStyle(2, 0x5a3b22, 1).lineBetween(cx - 44, cy - 70, cx + 44, cy - 70);
+    g.fillStyle(0x8a3a2a, 1);
+    for (const x of [-30, -18, -6, 6, 18, 30]) g.fillRect(cx + x - 2, cy - 69, 4, 14 + ((x + 30) % 7));
+    // Four hide mats, one on each side of the fire.
+    const mat = (mx: number, my: number) => {
+      g.fillStyle(0xd8c49a, 1).fillPoints([p(mx, my - 9), p(mx + 18, my), p(mx, my + 9), p(mx - 18, my)], true);
+      g.lineStyle(1, 0x8a6f48, 1).strokePoints([p(mx, my - 9), p(mx + 18, my), p(mx, my + 9), p(mx - 18, my)], true);
+    };
+    mat(cx - 46, cy - 14);
+    mat(cx + 46, cy - 14);
+    mat(cx - 46, cy + 16);
+    mat(cx + 46, cy + 16);
+    // Log seats between the mats.
+    g.fillStyle(0x6b4a2e, 1).fillRect(cx - 14, cy - 34, 28, 7).fillRect(cx - 14, cy + 28, 28, 7);
+    g.fillStyle(0x8a6a44, 1).fillCircle(cx - 14, cy - 30.5, 3.5).fillCircle(cx - 14, cy + 31.5, 3.5);
+    // A drum on the left, baskets on the right.
+    g.fillStyle(0x6b4a2e, 1).fillRect(cx - 86, cy - 6, 18, 10);
+    g.fillStyle(0xe7dcc0, 1).fillEllipse(cx - 77, cy - 6, 18, 8);
+    g.lineStyle(1, 0x4a3624, 1).strokeEllipse(cx - 77, cy - 6, 18, 8);
+    for (const [bx, by] of [[72, -6], [82, 2]]) {
+      g.fillStyle(0x8a6a3e, 1).fillEllipse(cx + bx, cy + by, 16, 9);
+      g.fillStyle(0xb8323c, 1).fillCircle(cx + bx - 3, cy + by - 2, 2).fillCircle(cx + bx + 3, cy + by - 2, 2);
     }
-    g.fillStyle(0x5a3b22, 1).fillRect(cx - 9, h - 12, 18, 5);
-    g.fillStyle(0xe8601c, 1).fillTriangle(cx, h - 34, cx - 10, h - 9, cx + 10, h - 9);
-    g.fillStyle(0xf6a53a, 1).fillTriangle(cx + 1, h - 28, cx - 6, h - 9, cx + 7, h - 9);
-    g.fillStyle(0xfbe08a, 1).fillTriangle(cx, h - 20, cx - 3, h - 9, cx + 4, h - 9);
+    // The fire: a stone ring, logs and a tall flame with a glow.
+    g.fillStyle(0xf6a53a, 0.22).fillEllipse(cx, cy - 6, 84, 52);
+    g.fillStyle(0x8c8c84, 1);
+    for (let i = 0; i < 12; i++) {
+      const a = (i / 12) * Math.PI * 2;
+      g.fillCircle(cx + Math.cos(a) * 22, cy + 2 + Math.sin(a) * 10, 5);
+    }
+    g.fillStyle(0x5a3b22, 1).fillRect(cx - 14, cy - 2, 28, 7);
+    g.fillStyle(0xe8601c, 1).fillTriangle(cx, cy - 46, cx - 15, cy + 2, cx + 15, cy + 2);
+    g.fillStyle(0xf6a53a, 1).fillTriangle(cx + 1, cy - 36, cx - 9, cy + 2, cx + 10, cy + 2);
+    g.fillStyle(0xfbe08a, 1).fillTriangle(cx, cy - 22, cx - 4, cy + 2, cx + 5, cy + 2);
   },
 };
 
@@ -334,40 +426,6 @@ function ground(g: G, w: number, h: number, base: number, speckles: number[], ed
   spots.forEach(([x, y], i) => {
     g.fillStyle(speckles[i % speckles.length], 0.9).fillRect(x, y, 2, 1);
   });
-}
-
-/** Where the n items of a pile sit on its 32 x 24 canvas (a small heap: a row on the ground and one on top). */
-const HEAP: [number, number][][] = [
-  [],
-  [[16, 19]],
-  [[11, 19], [21, 19]],
-  [[10, 19], [22, 19], [16, 11]],
-  [[7, 19], [16, 19], [25, 19], [16, 11]],
-];
-
-/** One pile per stored resource, 1-4 items: the open store (R2) shows these inside. */
-for (const res of ['food', 'wood', 'hides', 'pemmican'] as const) {
-  for (let n = 1; n <= 4; n++) {
-    DRAW[`pile_${res}_${n}`] = (g) => {
-      if (res === 'hides') {
-        // Hides lie flat, one on another.
-        for (let i = 0; i < n; i++) {
-          g.fillStyle(i % 2 ? 0xc9a56e : 0xb8935a, 1).fillRect(7, 20 - i * 5, 18, 5);
-          g.fillStyle(0xe6d3a3, 1).fillRect(7, 20 - i * 5, 18, 1);
-        }
-        return;
-      }
-      for (const [x, y] of HEAP[n]) {
-        if (res === 'food') {
-          g.fillStyle(0xa8392f, 1).fillCircle(x, y, 5).fillStyle(0xc9594a, 1).fillCircle(x - 1.5, y - 1.5, 2);
-        } else if (res === 'wood') {
-          g.fillStyle(0x7a5a3a, 1).fillRect(x - 7, y - 3, 14, 6).fillStyle(0xd9b98a, 1).fillCircle(x + 7, y, 3);
-        } else {
-          g.fillStyle(0x5e3326, 1).fillRoundedRect(x - 5, y - 3, 10, 6, 2).fillStyle(0xe0c28a, 1).fillCircle(x - 1, y, 1);
-        }
-      }
-    };
-  }
 }
 
 /** Draws a texture for every manifest key that has none yet. */

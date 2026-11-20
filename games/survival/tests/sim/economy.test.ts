@@ -183,7 +183,7 @@ test('high Wotakuye brings a newcomer only when a bed is free and the store has 
   const newcomer = s.people[s.people.length - 1];
   assert.equal(newcomer.family, 1, 'joins the smaller family');
   assert.equal(newcomer.age, 'adult');
-  assert.ok(newcomer.name.startsWith('Kingfisher '));
+  assert.equal(s.people.filter((p) => p.name === newcomer.name).length, 1, 'with a name nobody living has');
   assert.notEqual(newcomer.home, null, 'and gets the free bed');
   assert.ok(s.messages.some((m) => m.text === `${newcomer.name} joins the camp.`));
 });

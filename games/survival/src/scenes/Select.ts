@@ -5,10 +5,11 @@ import Phaser from 'phaser';
 import mapConfig from '../data/map.json';
 import { buildingDefs, buildingName } from '../sim/buildings';
 import { HUNGRY_AT } from '../sim/economy';
-import { displayLabel, englishLabel } from '../sim/labels';
+import { carryText, displayLabel, englishLabel } from '../sim/labels';
 import { createHover, type Hover } from './hover';
 import { queueOrders } from '../sim/orders';
-import { ages } from '../sim/people';
+import { ages, canWork } from '../sim/people';
+import { addMessage } from '../sim/state';
 import type { Building, Enemy, GameState, Order, Person, Res, Stance, Tile2 } from '../sim/state';
 import {
   hasUpgrade, missingFor, upgradeCost, upgradeNeeds, upgradesOf, type UpgradeId,
@@ -47,6 +48,23 @@ const UPGRADE_EFFECT: Record<UpgradeId, string> = {
   bison_charge: 'Power (F3), once a wave: a herd runs across the map through a point you pick and hurts every wolf it touches.',
   storm_caller: 'Power (F4), once a wave: a storm over a point you pick slows and hurts wolves for 20 seconds.',
 };
+/** A right-click ping (DESIGN-hunting.md `## Right-click feedback`): green move, gold work, red attack, grey refused. */
+type PingKind = 'move' | 'work' | 'attack' | 'refuse';
+type PingTarget = 'ground' | 'tree' | 'berry' | 'building' | 'enemy';
+interface Ping {
+  kind: PingKind;
+  /** Where it was clicked, in world pixels. */
+  x: number;
+  y: number;
+  /** Scene clock (ms) at the click: pings keep fading while the game is paused. */
+  t0: number;
+  enemy?: number;
+  building?: number;
+  tile?: Tile2;
+}
+const PING_MS = 700;
+const PING_COLOR: Record<PingKind, number> = { move: 0x6fbf5f, work: 0xe0b050, attack: 0xd9534f, refuse: 0x9a9a9a };
+
 interface UpgradeRow {
   bg: Phaser.GameObjects.Rectangle;
   label: Phaser.GameObjects.Text;
@@ -66,6 +84,8 @@ export class SelectScene extends Phaser.Scene {
   private game2!: GameScene;
   private selected: number[] = [];
   private selectedBuilding: number | null = null;
+  /** A clicked berry bush, shown in the panel with how much fruit is left on it. */
+  private selectedTile: Tile2 | null = null;
   private down: { x: number; y: number; ui: boolean } | null = null;
   private shift!: Phaser.Input.Keyboard.Key;
   /** Whether placing or the build menu was active at the last frame, so Esc can leave them alone. */
@@ -73,6 +93,10 @@ export class SelectScene extends Phaser.Scene {
   private box!: Phaser.GameObjects.Graphics;
   private rings!: Phaser.GameObjects.Graphics;
   private bars!: Phaser.GameObjects.Graphics;
+  private pingGfx!: Phaser.GameObjects.Graphics;
+  private pings: Ping[] = [];
+  private pingCount = 0;
+  private lastPing: { kind: PingKind; target: PingTarget; count: number } | null = null;
   private title!: Phaser.GameObjects.Text;
   private detail!: Phaser.GameObjects.Text;
   private barGfx!: Phaser.GameObjects.Graphics;
@@ -85,6 +109,8 @@ export class SelectScene extends Phaser.Scene {
   private upHead!: Phaser.GameObjects.Text;
   private upRows: UpgradeRow[] = [];
   private hover!: Hover;
+  /** Pooled text pairs (name, family) drawn under selected people; grown on demand, hidden when unused. */
+  private labels: { name: Phaser.GameObjects.Text; family: Phaser.GameObjects.Text }[] = [];
   /** The screen rectangle of the Upgrades list while it shows, else null (the map ignores clicks on it). */
   private upRect: { x: number; y: number; w: number; h: number } | null = null;
 
@@ -101,6 +127,10 @@ export class SelectScene extends Phaser.Scene {
     this.stanceButtons = [];
     this.upRows = [];
     this.upRect = null;
+    this.labels = [];
+    this.pings = [];
+    this.pingCount = 0;
+    this.lastPing = null;
   }
 
   private get state(): GameState {
@@ -115,6 +145,7 @@ export class SelectScene extends Phaser.Scene {
     const world = this.game2;
     this.rings = world.add.graphics().setDepth(-99999);
     this.bars = world.add.graphics().setDepth(1e6);
+    this.pingGfx = world.add.graphics().setDepth(1e6 - 1);
     this.box = this.add.graphics().setDepth(10);
 
     this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x1d1a16, 0.85).setOrigin(0);
@@ -161,6 +192,7 @@ export class SelectScene extends Phaser.Scene {
       if (this.busy) return;
       this.selected = [];
       this.selectedBuilding = null;
+      this.selectedTile = null;
     });
   }
 
@@ -194,7 +226,12 @@ export class SelectScene extends Phaser.Scene {
     }
     const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
     if (camp) {
-      camp.selectBuilding = (id: number | null) => { this.selected = []; this.selectedBuilding = id; };
+      camp.selectBuilding = (id: number | null) => { this.selected = []; this.selectedBuilding = id; this.selectedTile = null; };
+      camp.selectPeople = (ids: number[]) => { this.selected = [...ids]; this.selectedBuilding = null; this.selectedTile = null; };
+      // What the bottom panel says now (title and detail), for the smoke test.
+      camp.panelText = () => ({ title: this.title.text, detail: this.detail.text });
+      // The latest right-click ping: its colour kind, what it hit, and a running count; null before the first.
+      camp.lastPing = () => this.lastPing;
       // What each shown row says (cost or Needs), by upgrade id; empty while no list shows.
       camp.upgradeRows = () => Object.fromEntries(this.upRows.filter((r) => r.id && r.bg.visible).map((r) => [r.id, r.status.text]));
       // The screen centre of a shown row's Buy button (1280 x 720 space), or null.
@@ -366,6 +403,7 @@ export class SelectScene extends Phaser.Scene {
     const person = this.personAt(sx, sy);
     if (person) {
       this.selectedBuilding = null;
+      this.selectedTile = null;
       if (!add) this.selected = [person.id];
       else this.selected = this.selected.includes(person.id) ? this.selected.filter((i) => i !== person.id) : [...this.selected, person.id];
       return;
@@ -374,11 +412,15 @@ export class SelectScene extends Phaser.Scene {
     if (b && !add) {
       this.selected = [];
       this.selectedBuilding = b.id;
+      this.selectedTile = null;
       return;
     }
     if (!add) {
+      const t = this.tileAt(sx, sy);
       this.selected = [];
       this.selectedBuilding = null;
+      // A berry bush with nothing on it: the panel says how much fruit is left.
+      this.selectedTile = !b && this.state.map.tiles[t[1] * this.state.map.size + t[0]] === 'berry' ? t : null;
     }
   }
 
@@ -393,15 +435,23 @@ export class SelectScene extends Phaser.Scene {
       })
       .map((p) => p.id);
     this.selectedBuilding = null;
+    this.selectedTile = null;
     this.selected = this.shift.isDown ? [...new Set([...this.selected, ...ids])] : ids;
   }
 
   private rightClick(sx: number, sy: number): void {
     const ids = this.selected;
     if (ids.length === 0) return;
+    const people = this.selectedPeople();
+    const w = this.game2.cameras.main.getWorldPoint(sx, sy);
     const wolf = this.enemyAt(sx, sy);
     if (wolf) {
+      if (!people.some((p) => p.drafted)) {
+        this.refuse(w.x, w.y, 'Nobody is drafted.', 'enemy');
+        return;
+      }
       this.send([{ type: 'attack', ids, enemy: wolf.id }]);
+      this.ping('attack', w.x, w.y, 'enemy', { enemy: wolf.id });
       return;
     }
     const t = this.tileAt(sx, sy);
@@ -409,12 +459,96 @@ export class SelectScene extends Phaser.Scene {
     const b = this.buildingAtTile(t);
     const tile = s.map.tiles[t[1] * s.map.size + t[0]];
     if (b && (!b.done || buildingDefs[b.type].job)) {
-      this.send([{ type: 'assign', ids, building: b.id }]);
+      const job = b.done ? buildingDefs[b.type].job! : 'build';
+      const reason = this.workRefusal(people, job);
+      if (reason) this.refuse(w.x, w.y, reason, 'building');
+      else {
+        this.send([{ type: 'assign', ids, building: b.id }]);
+        this.ping('work', w.x, w.y, 'building', { building: b.id });
+      }
     } else if (!b && (tile === 'berry' || tile === 'forest')) {
-      this.send([{ type: 'assign', ids, job: tile === 'berry' ? 'gather' : 'chop', tile: t }]);
+      const job = tile === 'berry' ? 'gather' : 'chop';
+      const reason = this.workRefusal(people, job);
+      if (reason) this.refuse(w.x, w.y, reason, tile === 'berry' ? 'berry' : 'tree');
+      else {
+        this.send([{ type: 'assign', ids, job, tile: t }]);
+        this.ping('work', w.x, w.y, tile === 'berry' ? 'berry' : 'tree', { tile: t });
+      }
     } else {
       this.send([{ type: 'move', ids, to: t }]);
+      this.ping('move', w.x, w.y, 'ground');
     }
+  }
+
+  /** Why a work order cannot start at all (known at the click), or null when somebody can take it. */
+  private workRefusal(people: Person[], job: Parameters<typeof canWork>[1]): string | null {
+    if (people.some((p) => !p.drafted && canWork(p, job))) return null;
+    return people.every((p) => p.drafted) ? "Drafted people can't take work orders." : `Nobody can ${job} there.`;
+  }
+
+  /** A grey ring and a toast for an order refused at the click; nothing is sent. */
+  private refuse(x: number, y: number, text: string, target: PingTarget): void {
+    addMessage(this.state, text);
+    this.ping('refuse', x, y, target);
+  }
+
+  private ping(kind: PingKind, x: number, y: number, target: PingTarget, follow: Partial<Ping> = {}): void {
+    this.pings.push({ kind, x, y, t0: this.time.now, ...follow });
+    this.pingCount++;
+    this.lastPing = { kind, target, count: this.pingCount };
+  }
+
+  /** Draws the pings: a ring that grows and fades where you clicked, and a pulse on what was targeted. */
+  private drawPings(): void {
+    const g = this.pingGfx;
+    g.clear();
+    const now = this.time.now;
+    this.pings = this.pings.filter((p) => now - p.t0 < PING_MS);
+    const size = this.state.map.size;
+    for (const p of this.pings) {
+      const k = (now - p.t0) / PING_MS;
+      const color = PING_COLOR[p.kind];
+      const r = 5 + 20 * k;
+      g.lineStyle(2, color, 1 - k).strokeEllipse(p.x, p.y, r * 2, r);
+      const pulse = 0.35 + 0.65 * Math.abs(Math.cos(k * Math.PI * 3)) * (1 - k);
+      g.lineStyle(2, color, pulse);
+      if (p.enemy !== undefined) {
+        const e = this.state.enemies.find((q) => q.id === p.enemy);
+        if (e) {
+          const f = tileToWorld(e.x, e.y, size);
+          g.strokeEllipse(f.x, f.y, 30, 15);
+        }
+      } else if (p.building !== undefined) {
+        const b = this.building(p.building);
+        if (b) this.outline(g, b);
+      } else if (p.tile) {
+        const f = tileToWorld(p.tile[0], p.tile[1], size);
+        g.strokePoints(
+          [
+            { x: f.x, y: f.y - TILE_H / 2 }, { x: f.x + TILE_W / 2, y: f.y },
+            { x: f.x, y: f.y + TILE_H / 2 }, { x: f.x - TILE_W / 2, y: f.y },
+          ],
+          true,
+        );
+      }
+    }
+  }
+
+  /** The diamond round a building's footprint. */
+  private outline(g: Phaser.GameObjects.Graphics, b: Building): void {
+    const size = this.state.map.size;
+    const [w, h] = buildingDefs[b.type].size;
+    const top = tileToWorld(b.x, b.y, size);
+    const right = tileToWorld(b.x + w - 1, b.y, size);
+    const bottom = tileToWorld(b.x + w - 1, b.y + h - 1, size);
+    const left = tileToWorld(b.x, b.y + h - 1, size);
+    g.strokePoints(
+      [
+        { x: top.x, y: top.y - TILE_H / 2 }, { x: right.x + TILE_W / 2, y: right.y },
+        { x: bottom.x, y: bottom.y + TILE_H / 2 }, { x: left.x - TILE_W / 2, y: left.y },
+      ],
+      true,
+    );
   }
 
   // ---- per frame ----
@@ -427,6 +561,7 @@ export class SelectScene extends Phaser.Scene {
 
     this.drawBox();
     this.drawWorld();
+    this.drawPings();
     this.drawPanel();
     const fresh = s.messages.filter((m) => s.tick - m.tick < TOAST_TICKS).slice(-3);
     this.toasts.setText(fresh.map((m) => m.text).join('\n'));
@@ -450,9 +585,11 @@ export class SelectScene extends Phaser.Scene {
     const size = this.state.map.size;
     this.rings.clear();
     this.bars.clear();
+    let used = 0;
     for (const p of this.state.people) {
       const f = tileToWorld(p.x, p.y, size);
       const sel = this.selected.includes(p.id);
+      if (sel) this.placeLabel(used++, p, f.x, f.y);
       if (p.drafted) this.rings.lineStyle(2, 0xd9534f, 0.95).strokeEllipse(f.x, f.y, sel ? 30 : 26, sel ? 14 : 12);
       if (sel) this.rings.lineStyle(2, 0xf3e9d2, 0.95).strokeEllipse(f.x, f.y, 22, 10);
       if (p.health < 100) {
@@ -461,21 +598,28 @@ export class SelectScene extends Phaser.Scene {
       }
       if (p.hunger >= HUNGRY_AT) this.bowl(f.x, f.y - (p.health < 100 ? 46 : 40));
     }
-    const b = this.building(this.selectedBuilding);
-    if (b) {
-      const [w, h] = buildingDefs[b.type].size;
-      const top = tileToWorld(b.x, b.y, size);
-      const right = tileToWorld(b.x + w - 1, b.y, size);
-      const bottom = tileToWorld(b.x + w - 1, b.y + h - 1, size);
-      const left = tileToWorld(b.x, b.y + h - 1, size);
-      this.rings.lineStyle(2, 0xf3e9d2, 0.95).strokePoints(
-        [
-          { x: top.x, y: top.y - TILE_H / 2 }, { x: right.x + TILE_W / 2, y: right.y },
-          { x: bottom.x, y: bottom.y + TILE_H / 2 }, { x: left.x - TILE_W / 2, y: left.y },
-        ],
-        true,
-      );
+    for (let i = used; i < this.labels.length; i++) {
+      this.labels[i].name.setVisible(false);
+      this.labels[i].family.setVisible(false);
     }
+    const b = this.building(this.selectedBuilding);
+    if (b) this.outline(this.rings.lineStyle(2, 0xf3e9d2, 0.95), b);
+  }
+
+  /** The name under a selected person's feet and, smaller and dimmer under it, their family in its colour. */
+  private placeLabel(i: number, p: Person, x: number, y: number): void {
+    if (!this.labels[i]) {
+      const world = this.game2;
+      const make = (size: number) =>
+        world.add.text(0, 0, '', { fontFamily: 'sans-serif', fontSize: `${size}px`, color: INK, stroke: '#000000', strokeThickness: 3 })
+          .setOrigin(0.5, 0).setDepth(1e6);
+      this.labels[i] = { name: make(12), family: make(10).setAlpha(0.8) };
+    }
+    const l = this.labels[i];
+    const families = mapConfig.start.families as string[];
+    const colors = mapConfig.start.familyColors as string[];
+    l.name.setText(p.name).setPosition(x, y + 8).setVisible(true);
+    l.family.setText(families[p.family] ?? '').setColor(colors[p.family] ?? INK).setPosition(x, y + 21).setVisible(true);
   }
 
   /** The hungry-person icon: a small empty bowl over the head. */
@@ -522,7 +666,8 @@ export class SelectScene extends Phaser.Scene {
         `${families[p.family]} family · ${p.age}`,
         `Job: ${this.jobLabel(p)}${p.drafted ? ` · drafted (${p.stance})` : ''}`,
         `Society: ${p.society ?? 'none'}`,
-      ].join('\n'));
+        carryText([p]),
+      ].filter(Boolean).join('\n'));
       this.barText.setText('Health\nHunger');
       this.bar(420, 609, p.health, p.health < 40 ? 0xc0392b : 0x6aa84f);
       this.bar(420, 637, p.hunger, p.hunger >= 70 ? 0xd9a441 : 0x8a7a55);
@@ -533,7 +678,8 @@ export class SelectScene extends Phaser.Scene {
       this.detail.setText([
         [...counts].map(([k, n]) => `${k} ${n}`).join(', '),
         `Drafted: ${drafted} of ${adults} adults`,
-      ].join('\n'));
+        carryText(people),
+      ].filter(Boolean).join('\n'));
     } else if (b) {
       const def = buildingDefs[b.type];
       this.title.setText(displayLabel(b.type));
@@ -551,6 +697,11 @@ export class SelectScene extends Phaser.Scene {
         lines.push(`Residents ${b.residents.length} / ${def.houses}`);
       }
       this.detail.setText(lines.join('\n'));
+    } else if (this.selectedTile) {
+      const [x, y] = this.selectedTile;
+      const left = Math.floor(this.state.map.amount[y * this.state.map.size + x]);
+      this.title.setText('Berry patch');
+      this.detail.setText(`${left} of ${mapConfig.tiles.berry.food} fruit left`);
     } else {
       this.title.setText('');
       this.detail.setText(HINT);

@@ -117,7 +117,9 @@ test('a group move spreads over distinct tiles', () => {
   step(s, 1);
   const targets = s.people.filter((p) => ids.includes(p.id)).map((p) => p.task.target!.join(','));
   assert.equal(new Set(targets).size, 9);
-  assert.equal(spreadTargets(s, [30, 30], 1)[0].join(','), '30,30');
+  // [30, 30] is now one walker's goal: held for anyone else, free for the movers themselves.
+  assert.equal(spreadTargets(s, [30, 30], 1, ids)[0].join(','), '30,30');
+  assert.notEqual(spreadTargets(s, [30, 30], 1)[0].join(','), '30,30');
 });
 
 test('a move onto a blocked tile goes to the nearest free one', () => {

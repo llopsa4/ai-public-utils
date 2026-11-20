@@ -1,3 +1,4 @@
+import { campCentre } from '../../src/sim/map';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { bisonDirection, effectsOf, stepEffects } from '../../src/sim/effects';
@@ -28,7 +29,7 @@ test('the bison run from the nearest edge: a point near the west edge sends them
 
 test('a bison herd hurts a wolf in its lane once, and misses one outside it', () => {
   const s = camp();
-  const fy = s.map.fire[1] + 1; // wolves walk to the fire, so the lane runs along it
+  const fy = campCentre(s.map)[1]; // wolves walk to the fire, so the lane runs along it
   const inLane = addWolf(s, 30, fy + 0.5);
   const outside = addWolf(s, 30, fy + 6);
   s.enemies.forEach((e) => (e.hp = 1000)); // survive to be counted
@@ -56,7 +57,7 @@ test('a bison herd never harms people', () => {
 
 test('a bison herd can kill a wolf (40 damage)', () => {
   const s = camp();
-  const fy = s.map.fire[1] + 1;
+  const fy = campCentre(s.map)[1];
   addWolf(s, 30, fy);
   s.enemies[0].hp = 30;
   castPower(s, 'bison_charge', [10, fy]);
@@ -66,7 +67,7 @@ test('a bison herd can kill a wolf (40 damage)', () => {
 
 test('a storm slows wolves inside it to 40% and hurts them 2 a second', () => {
   const s = camp();
-  const [fx, fy] = [s.map.fire[0] + 1, s.map.fire[1] + 1];
+  const [fx, fy] = campCentre(s.map);
   // Two wolves 12 tiles from the fire; one inside the storm, one far from it.
   const inside = addWolf(s, fx + 12, fy);
   const free = addWolf(s, fx + 12, fy + 8);

@@ -218,6 +218,41 @@ Spec: [DESIGN-upgrades.md](DESIGN-upgrades.md) `## Wotakuye help`.
 | H1 | Sonnet | `## Wotakuye help`; `src/sim/{economy,upgrades,seasons}.ts`, `src/data/resources.json` | `src/sim/help.ts`, `src/sim/economy.ts` (exports `BANDS`, `EV`), `tests/sim/help.test.ts` | the help tests pass |
 | H2 | Sonnet | `## Wotakuye help`; `src/scenes/Hud.ts`, `tests/smoke.spec.ts` | `src/scenes/Hud.ts` (`?`, tooltip, `window.camp.wotakuyeTip`), `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the hover case; a screenshot shows the tooltip fits |
 
+## Phase D: hunting and camp life (spec accepted 2026-11-20)
+
+Saving stays parked: no row adds or changes save code. Spec: [DESIGN-hunting.md](DESIGN-hunting.md). Common rules
+as in Phase C; run `npm run typecheck && npm test` (and `npm run e2e` when a scene changes). Easiest first; each
+row also reads its spec section. W11 (tier 3 playtest) was closed by the user 2026-11-20.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| G1 | Sonnet | `## Carried goods`; `src/scenes/Select.ts` (`drawPanel`) | `carryText` (pure, in `src/sim/labels.ts` or a new helper), the panel line | unit test for `carryText`; a screenshot of the line |
+| G2 | Sonnet | `## Names`; `src/scenes/Select.ts` (`drawWorld`), `src/data/map.json` (families) | pooled name + family labels under selected people | a screenshot: two selected people labelled, none for others |
+| G3 | Sonnet | `## Store`, `## Start camp`; `src/data/{buildings,map}.json`, `src/sim/map.ts`, `src/render/{placeholders,stores}.ts`, `art/manifest.json`, `tests/{stores.test.ts,smoke.spec.ts}`, `tests/sim/buildings.test.ts` | store 4x4 and caps x4, the store at its new start tile, bigger store and open-store art, `ROOF_PX` / `SPOTS` / `PILE_SCALE`, tests, `art/{ASSETS,SPEC}.md` | tests and e2e pass; screenshots of the closed and open store |
+| G4 | Opus | `## Council plaza` (footprint and art), `## Start camp`; `src/data/{buildings,map}.json`, `src/sim/{state,map,buildings,combat,waves}.ts`, `src/render/placeholders.ts`, `src/scenes/Game.ts`, `art/manifest.json`, `tests/sim/*` | fire 4x4 and the new start layout, the plaza art (fire, mats, seats, decoration), every use of the fire tile or centre checked | all tests pass; wolves still go for the fire, people flee to it; a screenshot of the plaza and the start camp |
+| G5 | Sonnet | `## Right-click feedback`; `src/scenes/Select.ts` (`rightClick`, `drawWorld`, `update`), `src/render/enemies.ts` | pings, target pulse, grey refusal ring and toast, a `window.camp` hook for the last ping | e2e right-clicks ground, a tree and a wolf and reads the hook; screenshot |
+| G6 | Sonnet | `## Work animations`; `src/render/{people,placeholders}.ts`, `src/sim/jobs.ts` (task shapes only) | hammer, axe, pick and drying overlays (the hammer only while the site has its materials) | screenshots of each; no console errors |
+| G7 | Opus | `## No shared standing tile`; `src/sim/{buildings,jobs,combat,orders}.ts`, `tests/sim/*` | the occupancy rule in every spot picker, waiting when full, `spreadTargets` without duplicates | tests: 3 builders, 4 deliverers, 4 fleeing and a group move end on distinct tiles; determinism holds |
+| G8 | Sonnet | `## Council plaza` (sitting); `src/sim/jobs.ts` (`wander`, `idleTask`), `src/render/people.ts` | idle people walk to a free ring tile of the plaza and sit (drawn seated), leave on work | tests: idle people sit on distinct tiles and leave on an order; screenshot |
+| G9 | Opus | `## Full store`; `src/sim/{jobs,orders,buildings}.ts`, `tests/sim/*` | orders override a stuck delivery, auto-switch to free work, drop at a site that needs the goods, `Store is full` toast | tests with a forced full store |
+| G10 | Opus | `## Wild game`, `## Hunting`; `src/sim/{state,tick,jobs,orders,waves,combat,help}.ts`, `src/data/{jobs,seasons,upgrades}.json`, `src/scenes/Select.ts` (effect lines), `tests/sim/{upgrades,seasons}.test.ts` | `src/data/animals.json`, `src/sim/animals.ts`, `GameState.animals`, the hunt job rewritten, the hunt and fetch orders, help and effect text, tests | the `## Tests` hunting tests pass; the rewritten upgrade and season tests pass; determinism holds |
+| G11 | Sonnet | `## Arrows`; `src/sim/combat.ts` (`stepFighter`), `src/render/{enemies,people}.ts` | arrows drawn from shots (render-side, no state), a bow on hunters | screenshots: arrows at an animal and at a wolf |
+| G12 | Sonnet | `## Hunting` (drawn, orders); `src/render/{enemies,placeholders}.ts`, `art/manifest.json`, `src/scenes/Select.ts` | placeholder deer, bison, carcass, a load on the back, right-click an animal or carcass, the panel for an animal | e2e: a right-click on an animal gives the hunters that order; screenshot |
+| G13 | Sonnet | `## Music`; `src/scenes/{Hud,Game}.ts`, `CULTURE.md`, `DEVELOPMENT.md` | `src/audio/{music,theory}.ts`, the HUD menu toggle and volume, the browser preference, `window.camp.music()` | unit tests for the pure helpers and mode switching; e2e: toggle and mode; the user listens |
+| G14 | Sonnet | `## Tests`; `tests/smoke.spec.ts`, `TESTING.md`, `src/scenes/Menu.ts` (controls text) | the remaining e2e cases, docs, WORKLOG and handoff | all unit and e2e tests pass, stable over 3 runs |
+| G15 (user, gate) | Opus | `DESIGN-hunting.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays a hunt to the store, a bison over three trips, the plaza, the feedback and the music, and says it is fine |
+
+### G16-G19: added by the user 2026-11-20, done before G7
+
+Spec: `DESIGN-hunting.md` `## Stock items`, `## People icon and berry patch panel`, `## Start camp`. Easiest first.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| G16 | Sonnet | `## People icon and berry patch panel`; `src/scenes/Hud.ts` (`update`, `drawBar`), `src/render/placeholders.ts`, `art/manifest.json` | `icon_people`, the bar's people icon and `People` hover | e2e: `hudBar()` shows `icon_people` with the head count; screenshot |
+| G17 | Sonnet | `## Start camp`; `src/data/map.json`, `tests/sim/*` that depend on distances from the store | the start store at [22, 17], behind the fire | tests and e2e pass; a screenshot shows the whole plaza uncovered |
+| G18 | Sonnet | `## People icon and berry patch panel`; `src/scenes/Select.ts` (`clickSelect`, `drawPanel`) | the berry bush panel, `window.camp.panelText()` | e2e clicks a bush and reads `17 of 40 fruit left`; Esc closes it |
+| G19 | Opus | `## Stock items`; `src/render/{stores,placeholders}.ts`, `art/manifest.json`, `tests/stores.test.ts`, `tests/smoke.spec.ts` | `itemCount`, `itemSlot`, four item props, the 0 / 20 / 40 e2e case, `art/{ASSETS,SPEC}.md`, `TESTING.md` | unit tests for counts and slots (on the floor, layered, distinct); e2e; zoomed screenshot |
+
 ## Phase D (remaining, each gets its own spec and rows)
 
 Seasons and hardships; autosave (3 slots) + export/import; eras 2-3 and bosses; upgrade tiers 1-3;

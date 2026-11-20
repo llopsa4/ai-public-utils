@@ -382,8 +382,7 @@ export class HudScene extends Phaser.Scene {
     });
     parts.push({ icon: 'icon_gift', text: `Gift ${Math.floor(s.gift)}`, name: 'Gift value' });
     if (s.horses > 0) parts.push({ icon: 'icon_horses', text: `${s.horses} / ${horseCap(s)}`, plain: `Horses ${s.horses} / ${horseCap(s)}`, name: 'Horses' });
-    const adults = s.people.filter((p) => p.age === 'adult').length;
-    parts.push({ text: `People ${adults} / ${s.people.length}` }, { text: `${seasonLabel(seasonOf(s))}, day ${dayInSeason(s)}${yearOf(s) > 1 ? `  Year ${yearOf(s)}` : ''}` });
+    parts.push({ icon: 'icon_people', text: `${s.people.length}`, plain: `People ${s.people.length}`, name: 'People' }, { text: `${seasonLabel(seasonOf(s))}, day ${dayInSeason(s)}${yearOf(s) > 1 ? `  Year ${yearOf(s)}` : ''}` });
     const tint = seasonData.tint[seasonOf(s)];
     this.tint.setFillStyle(tint ? tint[0] : 0xffffff, tint ? tint[1] : 0);
     this.drawBar(parts);

@@ -1,6 +1,7 @@
 // Orders (DESIGN-slice.md `## Orders`): the scenes and `window.camp.orders` queue them, and they are
 // applied at the start of the next tick. Pure TypeScript, no Phaser.
 import { assignWorkers, cancelSite, countJobs, placeBuilding } from './buildings';
+import { freeTileAt, heldTiles, isHeld } from './occupancy';
 import { ages, beginWalk, canWork, idleTask, releaseJob, walkable } from './people';
 import { buyUpgrade, castPower, hasUpgrade, UPGRADE_IDS, type UpgradeId } from './upgrades';
 import { addMessage, freeHorses, type GameState, type Order, type Person, type Tile2 } from './state';
@@ -29,27 +30,31 @@ function people(s: GameState, ids: number[]): Person[] {
 
 /**
  * `n` distinct walkable tiles gathered around a target, nearest first (ties: row order), so a group
- * ordered to one spot spreads out instead of stacking. With `n` = 1 it is the target itself, or the
- * nearest walkable tile when the target is blocked.
+ * ordered to one spot spreads out instead of stacking. Tiles held by anyone outside `movers` are skipped
+ * (DESIGN-hunting.md `## No shared standing tile`). With `n` = 1 it is the target itself when free, or the
+ * nearest free walkable tile. Fewer than `n` only when the map has no more free tiles.
  */
-export function spreadTargets(s: GameState, to: Tile2, n: number): Tile2[] {
-  const reach = Math.ceil(Math.sqrt(Math.max(1, n))) + 2;
-  const tiles: { t: Tile2; d: number }[] = [];
-  for (let y = to[1] - reach; y <= to[1] + reach; y++) {
-    for (let x = to[0] - reach; x <= to[0] + reach; x++) {
-      if (walkable(s, x, y)) tiles.push({ t: [x, y], d: Math.hypot(x - to[0], y - to[1]) });
+export function spreadTargets(s: GameState, to: Tile2, n: number, movers: number[] = []): Tile2[] {
+  const held = heldTiles(s, ...movers);
+  for (let reach = Math.ceil(Math.sqrt(Math.max(1, n))) + 2; ; reach *= 2) {
+    const tiles: { t: Tile2; d: number }[] = [];
+    for (let y = to[1] - reach; y <= to[1] + reach; y++) {
+      for (let x = to[0] - reach; x <= to[0] + reach; x++) {
+        if (walkable(s, x, y) && !isHeld(s, held, [x, y])) tiles.push({ t: [x, y], d: Math.hypot(x - to[0], y - to[1]) });
+      }
+    }
+    if (tiles.length >= n || reach >= s.map.size) {
+      tiles.sort((a, b) => a.d - b.d || a.t[1] - b.t[1] || a.t[0] - b.t[0]);
+      return tiles.slice(0, n).map((e) => e.t);
     }
   }
-  tiles.sort((a, b) => a.d - b.d || a.t[1] - b.t[1] || a.t[0] - b.t[0]);
-  if (tiles.length === 0) return [];
-  return Array.from({ length: n }, (_, i) => tiles[i % tiles.length].t);
 }
 
 function orderMove(s: GameState, ids: number[], at: Tile2): void {
   const n = s.map.size;
   const to: Tile2 = [Math.min(n - 1, Math.max(0, Math.round(at[0]))), Math.min(n - 1, Math.max(0, Math.round(at[1])))];
   const who = people(s, ids);
-  const targets = spreadTargets(s, to, who.length);
+  const targets = spreadTargets(s, to, who.length, who.map((p) => p.id));
   who.forEach((p, i) => {
     // A drafted person keeps the job to go back to when undrafted.
     if (!p.drafted) releaseJob(p);
@@ -115,7 +120,8 @@ function orderDraft(s: GameState, ids: number[], on: boolean): void {
     // Drafting stops whatever they were doing; the job stays and resumes when undrafted.
     p.task = idleTask();
     p.attackTarget = null;
-    p.post = on ? [Math.round(p.x), Math.round(p.y)] : null;
+    // The post is the person's own tile, or the nearest free one when someone else holds it.
+    p.post = on ? freeTileAt(s, p, [Math.round(p.x), Math.round(p.y)]) : null;
   }
   if (adults === 0) addMessage(s, 'Only adults can be drafted.');
 }

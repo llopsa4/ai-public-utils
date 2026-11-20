@@ -49,16 +49,17 @@ test('a mounted lancer has range 1.8, damage 18 and rides 2.5 times faster', () 
   assert.equal(p.mounted, true);
   assert.equal(fighterOf(s, p).range, 1.8);
   assert.equal(fighterOf(s, p).damage, 18);
-  const x = p.x;
+  const [x, y] = [p.x, p.y];
   queueOrders(s, [{ type: 'move', ids: [p.id], to: [Math.round(p.x) + 15, Math.round(p.y)] }]);
   step(s, 10);
-  const mounted = Math.abs(p.x - x);
+  // Distance covered, not the change in x: the path may bend round a building.
+  const mounted = Math.hypot(p.x - x, p.y - y);
   const foot = riderCamp(0, 1);
   draft(foot.s, [foot.lancers[0].id], true);
-  const fx = foot.lancers[0].x;
+  const [fx, fy] = [foot.lancers[0].x, foot.lancers[0].y];
   queueOrders(foot.s, [{ type: 'move', ids: [foot.lancers[0].id], to: [Math.round(fx) + 15, Math.round(foot.lancers[0].y)] }]);
   step(foot.s, 10);
-  const walked = Math.abs(foot.lancers[0].x - fx);
+  const walked = Math.hypot(foot.lancers[0].x - fx, foot.lancers[0].y - fy);
   assert.ok(walked > 0.3, `walked ${walked.toFixed(2)}`);
   assert.ok(mounted > walked * 2, `rode ${mounted.toFixed(2)} against ${walked.toFixed(2)}`);
 });

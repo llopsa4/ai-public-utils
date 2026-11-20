@@ -1,11 +1,11 @@
 {
   "placement": { "tile": "grass", "maxDistFromFire": 14 },
   "types": {
-    "fire":           { "dakota": "", "size": [2, 2], "hp": 500, "buildable": false },
+    "fire":           { "dakota": "", "size": [4, 4], "hp": 500, "buildable": false },
     "tipi":           { "dakota": "tipi", "size": [2, 2], "page": "camp", "cost": { "wood": 20, "hides": 8 }, "buildPoints": 300, "houses": 5 },
     "gathering_spot": { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 10 }, "buildPoints": 150, "workers": 4, "job": "gather" },
     "hunting_lodge":  { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 25, "hides": 2 }, "buildPoints": 250, "workers": 4, "job": "hunt", "society": "hunters" },
-    "store":          { "dakota": "wakihnakapi", "size": [2, 2], "page": "camp", "cost": { "wood": 15 }, "buildPoints": 200, "caps": { "food": 200, "wood": 150, "hides": 40, "pemmican": 100 } },
+    "store":          { "dakota": "wakihnakapi", "size": [4, 4], "page": "camp", "cost": { "wood": 15 }, "buildPoints": 200, "caps": { "food": 800, "wood": 600, "hides": 160, "pemmican": 400 } },
     "drying_rack":    { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 15, "hides": 2 }, "buildPoints": 200, "workers": 2, "job": "dry" },
     "horse_corral":   { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 20 }, "buildPoints": 220, "workers": 1, "job": "tend", "requires": "warriors" },
     "healers_lodge":  { "dakota": "", "size": [2, 2], "page": "camp", "cost": { "wood": 20, "hides": 3 }, "buildPoints": 220, "workers": 2, "job": "heal", "society": "healers", "requires": "healers" },

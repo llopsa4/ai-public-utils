@@ -30,6 +30,10 @@ the [repository instructions](../../AGENTS.md) and the shared Codex/Claude
 - **Art:** [art/PIPELINE.md](art/PIPELINE.md) (procedure) and [art/SPEC.md](art/SPEC.md) (sizes,
   anchors, palette); the register is [art/ASSETS.md](art/ASSETS.md). Claude draws placeholders in
   code; Codex generates final art later.
+- **Pages serves committed files.** The live site is the committed `index.html` and `build/`, not the
+  source. When the user asks to push and the live game should change, run `npm run publish` and commit
+  its output first (the push itself still needs the user's explicit request and branch,
+  [repository instructions](../../AGENTS.md)); otherwise production stays on the old build.
 - **Free software only;** this game keeps no LICENSES.md (user, 2026-11-19).
 - **Guides:** [DEVELOPMENT.md](DEVELOPMENT.md) (commands, layout) and [TESTING.md](TESTING.md)
   (unit and smoke tests, hand checks).

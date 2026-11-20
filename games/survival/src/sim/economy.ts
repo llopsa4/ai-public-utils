@@ -3,7 +3,7 @@
 import jobsData from '../data/jobs.json';
 import mapConfig from '../data/map.json';
 import data from '../data/resources.json';
-import { ages, assignHousing, makePerson, removePerson, spawnSpots } from './people';
+import { ages, assignHousing, makePerson, pickName, removePerson, spawnSpots } from './people';
 import { rngNext } from './rng';
 import { announceSeason, seasonal, seasonOf } from './seasons';
 import seasonData from '../data/seasons.json';
@@ -113,8 +113,7 @@ function newcomer(s: GameState, band: Band): void {
   const spots = spawnSpots(s).filter(([x, y]) => !taken.has(`${x},${y}`));
   if (spots.length === 0) return;
   const [x, y] = spots[Math.floor(rngNext(s.rng) * spots.length)];
-  const last = Math.max(0, ...s.people.filter((p) => p.family === family).map((p) => Number(p.name.split(' ').pop()) || 0));
-  const p = makePerson(s, family, 'adult', `${FAMILIES[family]} ${last + 1}`, x, y);
+  const p = makePerson(s, family, 'adult', pickName(s), x, y);
   s.people.push(p);
   assignHousing(s);
   addMessage(s, `${p.name} joins the camp.`);

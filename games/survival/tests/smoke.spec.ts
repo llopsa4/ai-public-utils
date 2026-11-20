@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 interface Camp {
   state: {
-    people: unknown[]; tick: number; result: string | null; gift: number; upgrades: string[];
+    people: { id: number; age: string; drafted: boolean }[]; tick: number; result: string | null; gift: number; upgrades: string[];
     store: Record<string, number>;
     buildings: { id: number; type: string; x: number; y: number; done: boolean }[];
   };
@@ -16,10 +16,13 @@ interface Camp {
   banner: () => string | null;
   hudText: () => string;
   hudBar: () => { icon: string | null; text: string; right: number }[];
-  storeOpen: () => { id: number; piles: Record<string, string | null> } | null;
+  storeOpen: () => { id: number; items: Record<string, number> } | null;
   powers: () => string[];
   powerButton: (id: string) => [number, number] | null;
   hoverTip: () => string | null;
+  selectPeople: (ids: number[]) => void;
+  panelText: () => { title: string; detail: string };
+  lastPing: () => { kind: string; target: string; count: number } | null;
   scene: { aiming: string | null; cameras: { main: { worldView: { x: number; y: number }; zoom: number } } };
 }
 interface MenuHook {
@@ -136,7 +139,7 @@ test('the HUD names the season: spring at the start, winter on day 10', async ({
   await clickMenu(page, 'slot1.new');
   await page.waitForFunction(() => window.camp?.hudText);
   await expect.poll(() => page.evaluate(() => window.camp.hudText())).toContain('Spring, day 1');
-  expect(await page.evaluate(() => window.camp.hudText())).toContain('Pemmican 0 / 100');
+  expect(await page.evaluate(() => window.camp.hudText())).toContain('Pemmican 0 / 400');
 
   // The first winter starts at tick 10800 (stepping that far would starve the camp, so jump the clock).
   await page.evaluate(() => { window.camp.state.tick = 10800; });
@@ -290,7 +293,7 @@ test('the power bar casts F1 at once, aims the storm at a map click, and Esc can
   expect(errors).toEqual([]);
 });
 
-test('the resource bar has an icon before each resource, and hovering a store opens it with piles', async ({ page }) => {
+test('the resource bar has an icon before each resource, and hovering a store opens it with items', async ({ page }) => {
   const errors = watchErrors(page);
 
   await page.goto('/?debug');
@@ -298,22 +301,23 @@ test('the resource bar has an icon before each resource, and hovering a store op
   await clickMenu(page, 'slot1.new');
   await page.waitForFunction(() => !!window.camp?.hudBar && !!window.camp?.storeOpen);
 
-  // R1: food, wood, hides, pemmican and gift each lead with their icon; people and the season have none, and
+  // R1: food, wood, hides, pemmican and gift each lead with their icon; the people count has the people icon, the season has none, and
   // the bar stops before the Wotakuye bar (x 750).
   await expect.poll(() => page.evaluate(() => window.camp.hudBar().length)).toBeGreaterThanOrEqual(7);
   const bar = await page.evaluate(() => window.camp.hudBar());
   expect(bar.slice(0, 5).map((b) => b.icon)).toEqual(['icon_food', 'icon_wood', 'icon_hides', 'icon_pemmican', 'icon_gift']);
-  expect(bar.slice(5).every((b) => b.icon === null)).toBe(true);
+  expect(bar[5]).toMatchObject({ icon: 'icon_people', text: '20' });
+  expect(bar.slice(6).every((b) => b.icon === null)).toBe(true);
   expect(Math.max(...bar.map((b) => b.right))).toBeLessThan(745);
   await page.screenshot({ path: 'test-results/r1-resource-bar.png', clip: { x: 0, y: 0, width: 1280, height: 40 } });
 
-  // R2: the start store. Put the pointer on its floor; its inside shows piles sized by how full the camp's store is.
+  // R2: the start store. Put the pointer on its floor; its inside shows small items, one per fortieth of what the camp's store can hold.
   const at = await page.evaluate(() => {
     const s = window.camp.state;
     const b = s.buildings.find((x) => x.type === 'store' && x.done)!;
     const size = 48;
-    const tx = b.x + 0.5;
-    const ty = b.y + 0.5;
+    const tx = b.x + 1.5; // the centre of the 4x4 footprint
+    const ty = b.y + 1.5;
     const wx = (tx - ty) * 32 + size * 32;
     const wy = (tx + ty) * 16 + 32;
     const cam = window.camp.scene.cameras.main;
@@ -323,29 +327,140 @@ test('the resource bar has an icon before each resource, and hovering a store op
   const toPage = (x: number, y: number): [number, number] => [box.x + (x / 1280) * box.width, box.y + (y / 720) * box.height];
   const shot = async (name: string) => {
     await page.waitForTimeout(250);
-    await page.screenshot({ path: `test-results/r2-store-${name}.png`, clip: { x: Math.max(0, box.x + at.x - 130), y: Math.max(0, box.y + at.y - 130), width: 260, height: 200 } });
+    await page.screenshot({ path: `test-results/r2-store-${name}.png`, clip: { x: Math.max(0, box.x + at.x - 160), y: Math.max(0, box.y + at.y - 170), width: 320, height: 260 } });
   };
   expect(await page.evaluate(() => window.camp.storeOpen())).toBeNull();
   await shot('closed');
-  await page.mouse.move(...toPage(at.x, at.y + 60));
+  await page.mouse.move(...toPage(at.x, at.y + 100));
   await page.mouse.move(...toPage(at.x, at.y), { steps: 6 });
   await expect.poll(() => page.evaluate(() => window.camp.storeOpen()?.id)).toBe(at.id);
 
   for (const [name, fill] of [['empty', 0], ['half', 0.5], ['full', 1]] as const) {
     await page.evaluate((f) => {
       const st = window.camp.state.store;
-      // One store holds 200 food, 150 wood, 40 hides, 100 pemmican.
-      for (const [r, cap] of [['food', 200], ['wood', 150], ['hides', 40], ['pemmican', 100]] as const) st[r] = f * cap;
+      // One store holds 800 food, 600 wood, 160 hides, 400 pemmican.
+      for (const [r, cap] of [['food', 800], ['wood', 600], ['hides', 160], ['pemmican', 400]] as const) st[r] = f * cap;
     }, fill);
     await shot(name);
-    const piles = (await page.evaluate(() => window.camp.storeOpen()))!.piles;
-    const sizes = Object.values(piles).map((k) => (k ? Number(k.slice(-1)) : 0));
-    expect(sizes).toEqual(fill === 0 ? [0, 0, 0, 0] : fill === 0.5 ? [2, 2, 2, 2] : [4, 4, 4, 4]);
+    const items = (await page.evaluate(() => window.camp.storeOpen()))!.items;
+    const counts = Object.values(items);
+    expect(counts).toEqual(fill === 0 ? [0, 0, 0, 0] : fill === 0.5 ? [20, 20, 20, 20] : [40, 40, 40, 40]);
   }
 
   // Leaving the store brings the roof back.
   await page.mouse.move(...toPage(at.x + 400, at.y + 150), { steps: 6 });
   await expect.poll(() => page.evaluate(() => window.camp.storeOpen())).toBeNull();
 
+  expect(errors).toEqual([]);
+});
+
+test('right-clicks ping: green ground, gold tree, red wolf, and a grey refusal with a toast', async ({ page }) => {
+  const errors = watchErrors(page);
+
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => !!window.camp?.lastPing);
+  expect(await page.evaluate(() => window.camp.lastPing())).toBeNull();
+  // Pings run on the scene clock, so pausing the sim changes nothing about them (and keeps the wolf still).
+  await page.evaluate(() => window.camp.orders([{ type: 'pause', on: true }]));
+
+  /** Centres the camera on a tile, then right-clicks it; returns the last ping. */
+  const rightClickTile = async (tx: number, ty: number, dy = 0) => {
+    // worldView is refreshed when the camera renders, so wait a frame after centring before reading it.
+    await page.evaluate(([x, y]) => {
+      const cam = window.camp.scene.cameras.main as unknown as { centerOn: (a: number, b: number) => void };
+      cam.centerOn((x - y) * 32 + 48 * 32, (x + y) * 16 + 32);
+    }, [tx, ty]);
+    await page.waitForTimeout(150);
+    const at = await page.evaluate(([x, y]) => {
+      const cam = window.camp.scene.cameras.main;
+      const wx = (x - y) * 32 + 48 * 32;
+      const wy = (x + y) * 16 + 32;
+      return { x: (wx - cam.worldView.x) * cam.zoom, y: (wy - cam.worldView.y) * cam.zoom };
+    }, [tx, ty]);
+    const box = (await page.locator('#game canvas').boundingBox())!;
+    await page.mouse.click(box.x + ((at.x) / 1280) * box.width, box.y + ((at.y + dy) / 720) * box.height, { button: 'right' });
+    await page.waitForTimeout(120);
+    return page.evaluate(() => window.camp.lastPing());
+  };
+
+  const ids = await page.evaluate(() => {
+    const p = window.camp.state.people;
+    return { adult: p.find((q) => q.age === 'adult')!.id, child: p.find((q) => q.age === 'child')!.id };
+  });
+  const tiles = await page.evaluate(() => {
+    const s = window.camp.state as unknown as { map: { size: number; tiles: string[] } };
+    const n = s.map.size;
+    const at = (x: number, y: number) => s.map.tiles[y * n + x];
+    const find = (type: string, ok: (x: number, y: number) => boolean): [number, number] => {
+      for (let r = 6; r < 24; r++) {
+        for (let y = 24 - r; y <= 24 + r; y++) {
+          for (let x = 24 - r; x <= 24 + r; x++) if (at(x, y) === type && ok(x, y)) return [x, y];
+        }
+      }
+      throw new Error(`no ${type} tile`);
+    };
+    const open = (x: number, y: number) => [-1, 0, 1].every((dy) => [-1, 0, 1].every((dx) => at(x + dx, y + dy) === 'grass'));
+    return { ground: find('grass', open), tree: find('forest', () => true) };
+  });
+
+  // Nobody selected: no order, no ping.
+  expect(await rightClickTile(...tiles.ground)).toBeNull();
+
+  // An adult: ground is a green move, a tree is a gold chop.
+  await page.evaluate((i) => window.camp.selectPeople([i]), ids.adult);
+  expect(await rightClickTile(...tiles.ground)).toMatchObject({ kind: 'move', target: 'ground', count: 1 });
+  await page.screenshot({ path: 'test-results/g5-ping-move.png' });
+  expect(await rightClickTile(...tiles.tree)).toMatchObject({ kind: 'work', target: 'tree', count: 2 });
+  await page.screenshot({ path: 'test-results/g5-ping-tree.png' });
+
+  // A child cannot chop: grey, a toast, and no order sent.
+  await page.evaluate((i) => window.camp.selectPeople([i]), ids.child);
+  expect(await rightClickTile(...tiles.tree)).toMatchObject({ kind: 'refuse', target: 'tree', count: 3 });
+  expect(await page.evaluate(() => (window.camp.state as unknown as { messages: { text: string }[] }).messages.at(-1)!.text)).toBe('Nobody can chop there.');
+
+  // A wolf (the sim is paused): an undrafted person is refused, a drafted one attacks.
+  await page.evaluate(([x, y]) => {
+    const s = window.camp.state as unknown as { enemies: unknown[] };
+    s.enemies.push({ id: 9001, kind: 'wolf', x: x + 2, y: y + 2, hp: 40, cooldown: 0, fleeing: false, wave: 0 });
+  }, tiles.ground);
+  await page.evaluate((i) => window.camp.selectPeople([i]), ids.adult);
+  expect(await rightClickTile(tiles.ground[0] + 2, tiles.ground[1] + 2)).toMatchObject({ kind: 'refuse', target: 'enemy', count: 4 });
+  expect(await page.evaluate(() => (window.camp.state as unknown as { messages: { text: string }[] }).messages.at(-1)!.text)).toBe('Nobody is drafted.');
+  await page.evaluate((i) => window.camp.orders([{ type: 'draft', ids: [i], on: true }]), ids.adult);
+  expect(await rightClickTile(tiles.ground[0] + 2, tiles.ground[1] + 2)).toMatchObject({ kind: 'attack', target: 'enemy', count: 5 });
+  await page.screenshot({ path: 'test-results/g5-ping-wolf.png' });
+
+  expect(errors).toEqual([]);
+});
+
+test('clicking a berry bush tells how much fruit is left on it; Esc closes it', async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => !!window.camp?.panelText);
+  await page.evaluate(() => window.camp.orders([{ type: 'pause', on: true }]));
+  const bush = await page.evaluate(() => {
+    const s = window.camp.state as unknown as { map: { size: number; tiles: string[]; amount: number[] } };
+    const i = s.map.tiles.indexOf('berry');
+    s.map.amount[i] = 17.6; // part eaten
+    return [i % s.map.size, Math.floor(i / s.map.size)] as [number, number];
+  });
+  await page.evaluate(([x, y]) => {
+    const cam = window.camp.scene.cameras.main as unknown as { centerOn: (a: number, b: number) => void };
+    cam.centerOn((x - y) * 32 + 48 * 32, (x + y) * 16 + 32);
+  }, bush);
+  await page.waitForTimeout(150);
+  const at = await page.evaluate(([x, y]) => {
+    const cam = window.camp.scene.cameras.main;
+    return { x: ((x - y) * 32 + 48 * 32 - cam.worldView.x) * cam.zoom, y: ((x + y) * 16 + 32 - cam.worldView.y) * cam.zoom };
+  }, bush);
+  await clickCanvas(page, [at.x, at.y]);
+  await expect.poll(() => page.evaluate(() => window.camp.panelText())).toEqual({ title: 'Berry patch', detail: '17 of 40 fruit left' });
+  await page.screenshot({ path: 'test-results/g18-berry-panel.png' });
+  await page.keyboard.press('Escape');
+  await expect.poll(() => page.evaluate(() => window.camp.panelText().title)).toBe('');
   expect(errors).toEqual([]);
 });

@@ -3,15 +3,17 @@
 import jobsData from '../data/jobs.json';
 import upgradeData from '../data/upgrades.json';
 import {
-  buildingDefs, buildingName, findAutoWork, materialsComplete, nearestBuilding, nextHaulLoad, ringSpot, standsAt,
+  buildingDefs, buildingName, findAutoWork, materialsComplete, nearestBuilding, nextHaulLoad, ringState, standsAt,
 } from './buildings';
 import { stepFighter, stepFlee } from './combat';
 import { HUNGRY_AT, HUNGRY_WORK, unityWork } from './economy';
 import { ages, beginWalk, canWork, idleTask, movePerson, releaseJob, walkable } from './people';
+import { campCentre } from './map';
+import { freeTileAt, heldTiles, isHeld, nearestFreeTile } from './occupancy';
 import { rngNext } from './rng';
 import { seasonal } from './seasons';
 import {
-  addMessage, horseCap, storeCap, type Building, type GameState, type Job, type JobKind, type Person, type Res, type Tile2,
+  addMessage, horseCap, storeCap, type Building, type GameState, type Job, type JobKind, type Person, type Res, type Task, type Tile2,
 } from './state';
 import { buildSpeed, hasUpgrade } from './upgrades';
 
@@ -93,8 +95,7 @@ function pickSpotTile(s: GameState, spot: Building): Tile2 | null {
 /** A random walkable tile 14..22 tiles from the fire where a hunt happens. */
 function pickHuntSpot(s: GameState): Tile2 | null {
   const [lo, hi] = jobsData.jobs.hunt.spotDist;
-  const cx = s.map.fire[0] + 1;
-  const cy = s.map.fire[1] + 1;
+  const [cx, cy] = campCentre(s.map);
   const spots: Tile2[] = [];
   for (let y = 0; y < s.map.size; y++) {
     for (let x = 0; x < s.map.size; x++) {
@@ -105,10 +106,37 @@ function pickHuntSpot(s: GameState): Tile2 | null {
   return spots.length === 0 ? null : spots[Math.floor(rngNext(s.rng) * spots.length)];
 }
 
+/**
+ * Waits for a free tile (DESIGN-hunting.md `## No shared standing tile`): stays put when no one else holds the
+ * person's tile, else walks to the nearest free one; tries again after RETRY. The job is kept.
+ */
+function waitNearby(s: GameState, p: Person): void {
+  const held = heldTiles(s, p.id);
+  const own: Tile2 = [Math.round(p.x), Math.round(p.y)];
+  if (walkable(s, own[0], own[1]) && !isHeld(s, held, own)) {
+    p.task = idleTask(RETRY);
+    return;
+  }
+  const t = nearestFreeTile(s, own, held);
+  if (!t || !beginWalk(s, p, t, 'idle')) p.task = idleTask(RETRY);
+}
+
+/**
+ * Walks to a free tile on a building's ring: 'walk' when on the way, 'wait' when the ring is full (the person
+ * waits nearby, job kept), 'fail' when there is no ring tile or no path.
+ */
+function goToRing(s: GameState, p: Person, b: Building, goal: Task['goal']): 'walk' | 'wait' | 'fail' {
+  const r = ringState(s, p, b);
+  if (r === 'full') {
+    waitNearby(s, p);
+    return 'wait';
+  }
+  return r && beginWalk(s, p, r, goal) ? 'walk' : 'fail';
+}
+
 function startDeliver(s: GameState, p: Person): void {
   const store = nearestBuilding(s, p, 'store');
-  const spot = store && ringSpot(s, p, store);
-  if (!spot || !beginWalk(s, p, spot, 'deliver')) p.task = idleTask(RETRY);
+  if (!store || goToRing(s, p, store, 'deliver') === 'fail') p.task = idleTask(RETRY);
 }
 
 function wanderDelay(s: GameState): number {
@@ -118,13 +146,13 @@ function wanderDelay(s: GameState): number {
 /** Elders and children stroll within 3 tiles of their tipi (or the fire). */
 function wander(s: GameState, p: Person): void {
   const home = s.buildings.find((b) => b.id === p.home) ?? s.buildings.find((b) => b.type === 'fire')!;
-  const cx = Math.round(home.x + 0.5);
-  const cy = Math.round(home.y + 0.5);
+  const [cx, cy] = home.type === 'fire' ? campCentre(s.map) : [Math.round(home.x + 0.5), Math.round(home.y + 0.5)];
   const r = jobsData.wander.radius;
+  const held = heldTiles(s, p.id);
   for (let tries = 0; tries < 6; tries++) {
     const x = cx + Math.floor(rngNext(s.rng) * (2 * r + 1)) - r;
     const y = cy + Math.floor(rngNext(s.rng) * (2 * r + 1)) - r;
-    if (Math.hypot(x - cx, y - cy) <= r && walkable(s, x, y) && beginWalk(s, p, [x, y], 'idle')) return;
+    if (Math.hypot(x - cx, y - cy) <= r && walkable(s, x, y) && !isHeld(s, held, [x, y]) && beginWalk(s, p, [x, y], 'idle')) return;
   }
   p.task = idleTask(jobsData.wander.idleMin);
 }
@@ -144,22 +172,19 @@ function validateBuildingJob(s: GameState, p: Person): void {
 
 function decideHaul(s: GameState, p: Person, site: Building): void {
   if (loaded(p)) {
-    const spot = ringSpot(s, p, site);
-    if (!spot || !beginWalk(s, p, spot, 'drop')) p.task = idleTask(RETRY);
+    if (goToRing(s, p, site, 'drop') === 'fail') p.task = idleTask(RETRY);
     return;
   }
   const load = nextHaulLoad(s, site, p.id);
   const store = nearestBuilding(s, p, 'store');
-  const spot = load && store && ringSpot(s, p, store);
-  if (!spot || !beginWalk(s, p, spot, 'pickup')) {
+  if (!load || !store || goToRing(s, p, store, 'pickup') === 'fail') {
     releaseJob(p);
     p.task = idleTask(RETRY);
   }
 }
 
 function decideBuild(s: GameState, p: Person, site: Building): void {
-  const spot = ringSpot(s, p, site);
-  if (!spot || !beginWalk(s, p, spot, 'work')) {
+  if (goToRing(s, p, site, 'work') === 'fail') {
     releaseJob(p);
     p.task = idleTask(RETRY);
   }
@@ -181,16 +206,14 @@ function decideHunt(s: GameState, p: Person): void {
 function decideDry(s: GameState, p: Person, rack: Building): void {
   if (loaded(p)) {
     if (p.carry.res === 'food' && p.carry.amount >= DRY.take - 1e-9) {
-      const spot = ringSpot(s, p, rack);
-      if (!spot || !beginWalk(s, p, spot, 'work')) p.task = idleTask(RETRY);
+      if (goToRing(s, p, rack, 'work') === 'fail') p.task = idleTask(RETRY);
     } else {
       startDeliver(s, p);
     }
     return;
   }
   const store = s.store.food >= DRY.take - 1e-9 ? nearestBuilding(s, p, 'store') : null;
-  const spot = store && ringSpot(s, p, store);
-  if (!spot || !beginWalk(s, p, spot, 'take')) p.task = idleTask(RETRY);
+  if (!store || goToRing(s, p, store, 'take') === 'fail') p.task = idleTask(RETRY);
 }
 
 /** The most wounded person below the healing line (ties to the lowest id), other than the healer. */
@@ -206,18 +229,18 @@ function mostWounded(s: GameState, healer: Person): Person | undefined {
 /** A healing trip (DESIGN-upgrades.md): walk to the most wounded person, work, treat whoever is near. */
 function decideHeal(s: GameState, p: Person): void {
   const patient = mostWounded(s, p);
-  const tile: Tile2 | null = patient ? [Math.round(patient.x), Math.round(patient.y)] : null;
+  // The patient holds their own tile, so the healer stands beside it.
+  const tile = patient ? freeTileAt(s, p, [Math.round(patient.x), Math.round(patient.y)]) : null;
   if (!tile || !beginWalk(s, p, tile, 'work')) p.task = idleTask(HEAL.ticks);
 }
 
 /** A scout, a drilling warrior or a horse tender: waits on the ring of the building and makes nothing itself. */
 function decideStation(s: GameState, p: Person, lodge: Building): void {
-  if (standsAt(p, lodge)) {
+  if (standsAt(p, lodge) && !isHeld(s, heldTiles(s, p.id), [Math.round(p.x), Math.round(p.y)])) {
     p.task = idleTask(RETRY);
     return;
   }
-  const spot = ringSpot(s, p, lodge);
-  if (!spot || !beginWalk(s, p, spot, 'work')) p.task = idleTask(RETRY);
+  if (goToRing(s, p, lodge, 'work') === 'fail') p.task = idleTask(RETRY);
 }
 
 /** Chooses the next step for an idle person. */
@@ -263,7 +286,9 @@ function decide(s: GameState, p: Person): void {
     }
   }
   if (job && job.tile && tdef) {
-    if (!beginWalk(s, p, job.tile, 'work')) {
+    // Another worker on the same tree or bush: work it from the nearest free tile beside it.
+    const stand = freeTileAt(s, p, job.tile);
+    if (!stand || !beginWalk(s, p, stand, 'work')) {
       releaseJob(p);
       addMessage(s, `${p.name} can't reach that spot.`);
     }

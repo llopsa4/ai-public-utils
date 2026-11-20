@@ -1,5 +1,6 @@
 // Spike barricades (DESIGN-upgrades-3.md `## Spike barricades`): placement, wolf A* round a gap, breaking a
 // closed line, people blocked.
+import { campCentre, FIRE_HALF } from '../../src/sim/map';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { lineSites, lineTiles, placeBuilding, placementError } from '../../src/sim/buildings';
@@ -17,7 +18,7 @@ function emptyCamp(walls: Tile2[]): { s: GameState; fc: Tile2 } {
   const s = newGame(1);
   s.people = [];
   for (const [x, y] of walls) addBuilding(s, 'barricade', x, y, true);
-  return { s, fc: [s.map.fire[0] + 1, s.map.fire[1] + 1] };
+  return { s, fc: campCentre(s.map) };
 }
 
 const onWall = (s: GameState, e: Enemy) =>
@@ -68,7 +69,7 @@ test('a line places one 1x1 site per free tile until the wood runs out', () => {
 
 test('people cannot walk through a barricade, finished or not; wolves ignore an unfinished one', () => {
   const s = newGame(1);
-  const [fx, fy] = [s.map.fire[0] + 1, s.map.fire[1] + 1];
+  const [fx, fy] = campCentre(s.map);
   const y = fy - 6;
   const site = addBuilding(s, 'barricade', fx, y, false);
   assert.equal(walkable(s, fx, y), false);
@@ -80,7 +81,7 @@ test('people cannot walk through a barricade, finished or not; wolves ignore an 
 
   // A closed ring round the fire: nobody inside can walk out.
   const ring = emptyCamp([]).s;
-  const [cx, cy] = [ring.map.fire[0] + 1, ring.map.fire[1] + 1];
+  const [cx, cy] = campCentre(ring.map);
   for (let dx = -5; dx <= 5; dx++) for (let dy = -5; dy <= 5; dy++) {
     if (Math.max(Math.abs(dx), Math.abs(dy)) === 5) addBuilding(ring, 'barricade', cx + dx, cy + dy, false);
   }
@@ -112,7 +113,7 @@ test('a wolf walks round a barricade line with open ends and never steps on it',
     const e = s.enemies[0];
     assert.equal(onWall(s, e), false, `tick ${i}: on a barricade at ${e.x},${e.y}`);
     maxSide = Math.max(maxSide, Math.abs(e.x - cx));
-    reached = Math.hypot(e.x - cx, e.y - cy) <= 2;
+    reached = Math.hypot(e.x - cx, e.y - cy) <= FIRE_HALF + 1;
   }
   assert.ok(reached, 'the wolf reached the fire');
   assert.ok(maxSide >= 3.5, 'it went round an end of the line');
@@ -143,7 +144,7 @@ test('a wolf facing a closed ring breaks the barricade on its straight line in, 
   let reached = false;
   for (let i = 0; i < 200 && !reached; i++) {
     stepEnemies(s);
-    reached = Math.hypot(s.enemies[0].x - cx, s.enemies[0].y - cy) <= 2;
+    reached = Math.hypot(s.enemies[0].x - cx, s.enemies[0].y - cy) <= FIRE_HALF + 1;
   }
   assert.ok(reached, 'then it walked in through the gap');
 });

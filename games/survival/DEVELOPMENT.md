@@ -12,7 +12,7 @@ How to run, test and extend the game. Fixed technical shape: [PLAN.md](PLAN.md);
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` | simulation and maths unit tests (`tests/**/*.test.ts`, Node's test runner via tsx) |
 | `npm run build` | Vite build into `dist/` (not committed) |
-| `npm run publish` | build, then write `index.html` and `build/` here, which GitHub Pages serves (commit them only when the user asks; pushing `main` deploys the site) |
+| `npm run publish` | build, then write `index.html` and `build/` here, which GitHub Pages serves (commit them only when the user asks; pushing `main` deploys the site as committed, so run this and commit its output before a push that should change the live game) |
 | `npm run e2e` | Playwright smoke test on its own dev server (port 5184); see [TESTING.md](TESTING.md) |
 
 Run `npm run typecheck && npm test` before finishing a task.

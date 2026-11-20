@@ -4,6 +4,7 @@ import { buildingDefs, lineSites, placementError } from '../sim/buildings';
 import { ALLIES, alliesOf } from '../sim/allies';
 import { BISON_HALF_WIDTH, bisonDirection, effectsOf, STORM_RADIUS } from '../sim/effects';
 import { flushOrders } from '../sim/orders';
+import { campCentre } from '../sim/map';
 import { newGame, queueOrders, step } from '../sim/tick';
 import { loadState, serialize, type SaveFile } from '../sim/save';
 import { addMessage, DAY_TICKS, footprintOf, type GameState, type Order, type Tile2 } from '../sim/state';
@@ -195,9 +196,8 @@ export class GameScene extends Phaser.Scene {
       alive.add(b.id);
       let img = this.buildingViews.get(b.id);
       if (!img) {
-        const fire = b.type === 'fire';
         const [w, h] = buildingDefs[b.type].size;
-        img = this.place(fire ? 'fire_central' : `building_${b.type}`, b.x + (w - 1) / 2, b.y + (h - 1) / 2, 0, fire ? 8 : 0);
+        img = this.place(b.type === 'fire' ? 'fire_central' : `building_${b.type}`, b.x + (w - 1) / 2, b.y + (h - 1) / 2);
         this.buildingViews.set(b.id, img);
       }
       const points = buildingDefs[b.type].buildPoints ?? 1;
@@ -387,7 +387,8 @@ export class GameScene extends Phaser.Scene {
   private setupCamera(): void {
     const cam = this.cameras.main;
     const bounds = worldBounds(this.state.map.size);
-    const fire = tileToWorld(this.state.map.fire[0] + 0.5, this.state.map.fire[1] + 0.5, this.state.map.size);
+    const [fx, fy] = campCentre(this.state.map);
+    const fire = tileToWorld(fx - 0.5, fy - 0.5, this.state.map.size);
     cam.setZoom(1);
     cam.centerOn(fire.x, fire.y);
 
@@ -450,7 +451,7 @@ export class GameScene extends Phaser.Scene {
     this.syncBuildings();
     this.hoverStore();
     this.updateGhost();
-    this.people.sync(this.state.people, delta, time);
+    this.people.sync(this.state.people, delta, time, this.state.buildings);
     this.enemies.sync(this.state.enemies, (kind) => ENEMIES[kind].hp);
     this.enemies.syncAllies(alliesOf(this.state), (kind) => ALLIES[kind].hp);
     this.enemies.syncEffects(effectsOf(this.state), time);

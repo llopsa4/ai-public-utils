@@ -147,7 +147,7 @@ test('spring newcomers arrive at Steady Wotakuye; summer needs United', () => {
   assert.equal(run(WINTER, 50), 0, 'winter, Steady');
 });
 
-test('pemmican: a fourth store resource (cap 100 per store) that meals use after raw food, at 1.5 each', () => {
+test('pemmican: a fourth store resource (cap 400 per store) that meals use after raw food, at 1.5 each', () => {
   const meal = (food: number, pemmican: number) => {
     const s = newGame(1);
     s.store.food = food;
@@ -156,7 +156,7 @@ test('pemmican: a fourth store resource (cap 100 per store) that meals use after
     step(s, 1); // tick 600: a meal for 18
     return s;
   };
-  assert.equal(storeCap(newGame(1), 'pemmican'), 100);
+  assert.equal(storeCap(newGame(1), 'pemmican'), 400);
   const a = meal(10, 30); // 10 food + 8 needed from pemmican = 5.333 pemmican
   assert.ok(Math.abs(a.store.pemmican - (30 - 8 / 1.5)) < 1e-9);
   assert.equal(a.store.food, 0);
@@ -203,7 +203,7 @@ test('a drying rack turns 6 food into 4 pemmican per trip (no loss of food value
   assert.ok(s.store.pemmican >= 8, `pemmican ${s.store.pemmican}`);
   assert.equal(s.store.pemmican % 4 > 1e-9 ? 1 : 0, 0, 'whole batches of 4');
   // Food left plus pemmican (x1.5) plus what is in two workers' hands is the 100 we started with.
-  const hands = [worker, second].reduce((n, w) => n + (w.carry.res === 'food' ? w.carry.amount : 0), 0);
+  const hands = [worker, second].reduce((n, w) => n + (w.carry.res === 'food' ? w.carry.amount : w.carry.res === 'pemmican' ? w.carry.amount * 1.5 : 0), 0); // a batch may be on its way to the store
   assert.ok(Math.abs(s.store.food + s.store.pemmican * 1.5 + hands - 100) < 1e-9, `food ${s.store.food} pem ${s.store.pemmican} hands ${hands} (${inHand})`);
 });
 

@@ -167,4 +167,52 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   change. All placeholders drawn in code; manifest, `ASSETS.md`, `SPEC.md` and `TESTING.md` updated. 180 tests and `npm run e2e`
   (8 tests) pass; checked by screenshot (the bar, a closed, empty, half and full store); uncommitted; not checked by hand.
   **Next: W11** (the user plays to wave 8).
-
+  Committed and pushed to `main` on the user's request (`3752a25`), then the stale Pages build was republished (`428c84d`).
+  Next item chosen 2026-11-20: **hunting and camp life**. Grilled one question at a time, plan reviewed by Opus: deer and
+  bison, carcass loads to the store, arrows, hunt orders, no shared standing tile, right-click feedback, work
+  animations, carried goods in the panel, names under selected people, store and council fire 4x4 (a plaza where idle
+  people sit), the full-store fix, original generated music (war music while wolves are out). Spec in
+  [DESIGN-hunting.md](DESIGN-hunting.md), rows G1-G15 in [PLAN.md](PLAN.md). Saves stay parked and old camps are left
+  alone (they may load with overlapping buildings). Accepted by the user 2026-11-20 (spec and proposed details). G1 done 2026-11-20: `carryText` in `src/sim/labels.ts` and a `Carrying: ...` line in the selection panel (one person or the totals for several; nothing when empty); 181 tests and `npm run e2e` (8 tests) pass; checked by screenshot; uncommitted. **Next: G2** (Sonnet); W11 is still open.
+  G2 done 2026-11-20: a selected person shows their name under their feet and the family under it in the family's colour
+  (`Select.ts` `placeLabel`, a pool of text pairs); the user chose invented names, so people now get names from a
+  pool (`start.names` in `map.json`, `pickName` in `people.ts`, also used for newcomers) instead of `Cottonwood 3`;
+  181 tests and `npm run e2e` (8 tests) pass; checked by screenshot (two labelled, others not); uncommitted.
+  W11 closed 2026-11-20 at the user's request (not played to the end; no fix list).
+  G3 done 2026-11-20: the store is 4x4 (`buildings.json`), caps x4 (food 800, wood 600, hides 160, pemmican 400), start tile
+  [22, 28] (`map.json`); new 256 x 208 art for the closed and open store (`placeholders.ts`, `manifest.json`); piles drawn 2x and
+  spread wider, `ROOF_PX` 28 (`stores.ts`); 181 tests and `npm run e2e` (8 tests) pass; checked by screenshot (closed, empty,
+  half and full); uncommitted. The fire is still 2x2 until G4.
+  G4 done 2026-11-20: the council fire is a 4x4 plaza at [22, 22] (tiles 22-25), tipis at [18, 22] and [28, 22], store
+  at [22, 28]; `spawnRadius` 5 (was 4, the plaza takes 16 tiles near the fire). One centre for every "from the fire"
+  distance: `campCentre(map)` = fire + `FIRE_HALF` in `src/sim/map.ts` (still [24, 24]), used by map generation,
+  placement range, spawn, hunt spots, wander, flee, wolves and allies; wolves with no one in sight stop
+  `FIRE_HALF + 1` from the centre (was 2), allies appear on the ring and wait within `FIRE_HALF + 1.5`. New 256 x 208
+  plaza art (`fire_central`: fire, hide mats, log seats, drying poles, a drum, baskets). 182 tests (a new layout test)
+  and `npm run e2e` (8 tests) pass; checked by screenshot (the plaza and the start camp); uncommitted. **Next: G5** (Sonnet).
+  G5 done 2026-11-20: right-click feedback in `Select.ts`. Every order draws a ring that grows and fades over 700 ms
+  on the scene clock (so it also runs while paused): green move, gold work (tree, berry, building, site), red attack;
+  the target pulses (a ring that follows the wolf, a flash outline on a building, a diamond on a tree or berry tile). A
+  grey ring and a toast, with nothing sent, when the click can tell at once: attack with nobody drafted (`Nobody is
+  drafted.`), a work order where nobody can work (`Drafted people can't take work orders.` or `Nobody can <job> there.`).
+  `window.camp.lastPing()` (`kind`, `target`, `count`) is the hook. 182 tests and `npm run e2e` (9 tests) pass; checked
+  by screenshot (move, tree, wolf); uncommitted; not checked by hand. **Next: G6** (Sonnet).
+  G6 done 2026-11-20: work animations in `src/render/people.ts` (`workTool`, `drawTool`, a Graphics overlay per person, redrawn each frame): a stone hammer
+  for a builder only while the site has all its materials, an axe for `chop`, a stooping lean plus a tuft reached from the ground for `gather`, both hands up
+  turning a strip of meat on a pole for `dry`; drafted people never show one; no sim change. The bow draw waits for G10-G12 (hunt arrows). 182 tests and `npm run e2e` (9
+  tests) pass; checked by screenshot (all four, and a builder on an unsupplied site with no hammer); uncommitted; not checked by hand. **Next: G7** (Opus).
+  The user added four items 2026-11-20 and asked to build them before G7 (grilled Q1-Q7, spec in `DESIGN-hunting.md`
+  `## Stock items` / `## People icon and berry patch panel`, rows G16-G19 in PLAN.md). **Done 2026-11-20:** the HUD shows only the
+  head count with a new `icon_people` (hover `People`; no more `12 / 20`); the start store stands at [22, 17], north behind the fire, so the plaza
+  is never covered; left-clicking a berry bush opens the panel `Berry patch` / `n of 40 fruit left` (`selectedTile` in `Select.ts`,
+  `window.camp.panelText()`); the open store shows small isometric items, `ceil(40 x amount / capacity)` of them (basket of fruit per 20 food, log per 15
+  wood, hide bundle per 4, pemmican bag per 10 with one store), each resource on its own quarter of the floor, a second layer after 20
+  (`itemCount`, `itemSlot` in `stores.ts`, `item_*` props in `placeholders.ts`; the `pile_*` art is gone). Two sim tests that depended on the old store
+  position were made layout-proof (riders: distance covered, not change in x; drying rack: pemmican in hand counts). 183 tests and `npm run e2e` (10 tests)
+  pass; checked by screenshot (people icon, berry panel, the open store at half, full and zoom 3); uncommitted; not checked by hand. **Next: G7** (Opus).
+  G7 done 2026-11-20: no shared standing tile. `src/sim/occupancy.ts` (`heldTile`: a drafted person's post, else a walk or flee
+  goal, else where they stand; `heldTiles`, `nearestFreeTile`, `freeTileAt`); `ringState` / `ringSpot` skip held tiles; `goToRing`
+  in `jobs.ts` waits on the nearest free tile with the job kept when a ring is full (store, site, rack, lodge); `spreadTargets`
+  gives distinct free tiles (no wrap); draft posts, fleeing (ring, then nearest free), wander, chop/gather and heal use free
+  tiles. 191 tests (8 new in `tests/sim/occupancy.test.ts`, which fail with the rule off) and `npm run e2e` (10) pass; checked
+  in a browser (8 moved to one point, 4 waiting at a full store: no shared tiles); uncommitted. **Next: G8** (Sonnet).

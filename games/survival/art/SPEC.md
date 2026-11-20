@@ -20,12 +20,13 @@ Sizes, anchors, palette and the manifest format for every sprite and tile. The p
 | Person | 32 x 40 | bottom centre (feet) | idle 1, walk 4, work 2, fight 2 |
 | Animal enemy (wolf) | 40 x 32 | bottom centre | walk 4, attack 2 |
 | Tipi | 96 x 96 | centre of its footprint | 1 |
-| Other building (lodge, store, gathering spot) | up to 128 x 128 | centre of its footprint | 1, plus a "being built" frame |
+| Other building (lodge, gathering spot) | up to 128 x 128 |
+| Store (4x4 footprint) | 256 x 208 | centre of its footprint | 1, plus a "being built" frame |
 | Tree, bush, rock | 32-64 wide | bottom centre | 1 |
-| Central fire | 48 x 48 | bottom centre | 3 (flicker) |
+| Council plaza (central fire, 4x4 footprint: fire, hide mats, log seats, drying poles, a drum, baskets) | 256 x 208 | centre of its footprint | 3 (fire flicker) |
 | UI icon (resource, order) | 32 x 32 (the HUD bar draws it at 16 x 16) | centre | 1 |
-| Open store (cutaway of the store, shown on hover) | 128 x 128 | centre of its footprint | 1 |
-| Resource pile (inside the open store), 1-4 per resource | 32 x 24 | bottom centre | 1 each |
+| Open store (cutaway of the store, shown on hover) | 256 x 208 | centre of its footprint | 1 |
+| Store item (inside the open store): basket, log, hides, bag; up to 40 per resource, drawn in the store's 2:1 projection | 16 x 16 | bottom centre | 1 each |
 
 Building footprints (in tiles) are set by DESIGN-slice.md `## Buildings`; a sprite fills its
 footprint's diamonds.

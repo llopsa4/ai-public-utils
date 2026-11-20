@@ -2,6 +2,7 @@
 import enemyData from '../data/enemies.json';
 import jobsData from '../data/jobs.json';
 import mapConfig from '../data/map.json';
+import { campCentre } from './map';
 import { rngNext } from './rng';
 import {
   TIPI_BEDS, type Age, type GameState, type JobKind, type Person, type Task, type Tile2,
@@ -203,8 +204,7 @@ export function makePerson(s: GameState, family: number, age: Age, name: string,
 
 /** Free tiles within `spawnRadius` of the fire, in scan order. */
 export function spawnSpots(s: GameState): Tile2[] {
-  const cx = s.map.fire[0] + 1;
-  const cy = s.map.fire[1] + 1;
+  const [cx, cy] = campCentre(s.map);
   const r = mapConfig.start.spawnRadius;
   const spots: Tile2[] = [];
   for (let y = cy - r; y <= cy + r; y++) {
@@ -222,6 +222,18 @@ export function removePerson(s: GameState, id: number): void {
   for (const b of s.buildings) b.residents = b.residents.filter((r) => r !== id);
 }
 
+/** The first pool name no living person has; once the pool is used up, a number is added ("Wren 2"). */
+export function pickName(s: GameState): string {
+  const pool = mapConfig.start.names;
+  const used = new Set(s.people.map((p) => p.name));
+  for (let round = 1; ; round++) {
+    for (const base of pool) {
+      const name = round === 1 ? base : `${base} ${round}`;
+      if (!used.has(name)) return name;
+    }
+  }
+}
+
 /** Creates the start people: per family 6 adults, 2 elders, 2 children, on free tiles near the fire. */
 export function spawnPeople(s: GameState): void {
   const start = mapConfig.start;
@@ -231,12 +243,11 @@ export function spawnPeople(s: GameState): void {
     [spots[i], spots[j]] = [spots[j], spots[i]];
   }
   let k = 0;
-  start.families.forEach((family, f) => {
-    let n = 1;
+  start.families.forEach((_family, f) => {
     for (const age of ['adult', 'elder', 'child'] as const) {
       for (let i = 0; i < start.perFamily[age]; i++) {
         const [x, y] = spots[k++ % spots.length];
-        s.people.push(makePerson(s, f, age, `${family} ${n++}`, x, y));
+        s.people.push(makePerson(s, f, age, pickName(s), x, y));
       }
     }
   });

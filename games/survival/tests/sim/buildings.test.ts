@@ -4,6 +4,7 @@ import {
   assignWorkers, buildingDefs, BUILDABLE, cancelSite, placeBuilding, placementError,
 } from '../../src/sim/buildings';
 import { workRate } from '../../src/sim/jobs';
+import { campCentre } from '../../src/sim/map';
 import { walkable } from '../../src/sim/people';
 import type { Building, GameState } from '../../src/sim/state';
 import { newGame, queueOrders, step } from '../../src/sim/tick';
@@ -257,4 +258,27 @@ test('the same seed and orders give an identical state with buildings', () => {
     return JSON.stringify(s);
   };
   assert.equal(run(), run());
+});
+
+test('the council fire is a 4x4 plaza at the camp centre, and every start building keeps a free ring row', () => {
+  const s = newGame(1);
+  const fire = s.buildings.find((b) => b.type === 'fire')!;
+  assert.deepEqual(buildingDefs.fire.size, [4, 4]);
+  assert.deepEqual([fire.x, fire.y], s.map.fire);
+  assert.deepEqual(campCentre(s.map), [fire.x + 2, fire.y + 2]);
+  for (let y = fire.y; y < fire.y + 4; y++) for (let x = fire.x; x < fire.x + 4; x++) assert.equal(walkable(s, x, y), false);
+  const inside = (b: Building, x: number, y: number) => {
+    const [w, h] = buildingDefs[b.type].size;
+    return x >= b.x && x < b.x + w && y >= b.y && y < b.y + h;
+  };
+  for (const b of s.buildings) {
+    const [w, h] = buildingDefs[b.type].size;
+    for (let y = b.y - 1; y <= b.y + h; y++) {
+      for (let x = b.x - 1; x <= b.x + w; x++) {
+        if (inside(b, x, y)) continue;
+        const other = s.buildings.find((o) => o !== b && inside(o, x, y));
+        assert.equal(other, undefined, `the ring of the ${b.type} at ${x},${y} is under the ${other?.type}`);
+      }
+    }
+  }
 });

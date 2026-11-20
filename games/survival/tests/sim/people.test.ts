@@ -1,8 +1,9 @@
+import { campCentre } from '../../src/sim/map';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { findPath, walkable } from '../../src/sim/people';
 import { canWork, workRate } from '../../src/sim/jobs';
-import { addMessage, type GameState, type Order, type Tile2 } from '../../src/sim/state';
+import { addMessage, storeCap, type GameState, type Order, type Tile2 } from '../../src/sim/state';
 import { newGame, queueOrders, step } from '../../src/sim/tick';
 import { stepFed } from './helpers';
 
@@ -60,8 +61,9 @@ test('20 people start: 12 adults, 4 elders, 4 children, 2 families, all on free 
   assert.equal(new Set(s.people.map((p) => p.id)).size, 20);
   assert.equal(new Set(s.people.map((p) => `${p.x},${p.y}`)).size, 20);
   for (const p of s.people) assert.ok(walkable(s, p.x, p.y), `${p.name} stands on a free tile`);
-  assert.equal(s.people[0].name, 'Cottonwood 1');
-  assert.equal(s.people[19].name, 'Kingfisher 10');
+  assert.equal(s.people[0].name, 'Wren');
+  assert.equal(s.people[19].name, 'Sage');
+  assert.equal(new Set(s.people.map((p) => p.name)).size, 20, 'every start name is different');
 });
 
 test('the start houses 10 of 20, five per tipi, each family in its own tipi', () => {
@@ -140,15 +142,16 @@ test('a woodcutter fells a tile, which turns to grass, and moves to the next tre
 test('a full store keeps the load: nothing is lost and nothing is added', () => {
   const s = newGame(1);
   const [gatherer] = adults(s);
-  s.store.food = 200;
+  const cap = storeCap(s, 'food');
+  s.store.food = cap;
   queueOrders(s, [{ type: 'assign', ids: [gatherer.id], job: 'gather', tile: nearest(s, 'berry') }]);
   stepFed(s, 2500);
-  assert.equal(s.store.food, 200);
+  assert.equal(s.store.food, cap);
   assert.ok(Math.abs(gatherer.carry.amount - 5) < 1e-6, `still carrying ${gatherer.carry.amount}`);
-  s.store.food = 190;
+  s.store.food = cap - 10;
   stepFed(s, 100);
-  assert.ok(Math.abs(s.store.food - 195) < 1e-6, `store ${s.store.food}`);
-  assert.equal(gatherer.carry.amount, 0);
+  assert.ok(Math.abs(s.store.food - (cap - 5)) < 1e-6, `store ${s.store.food}`);
+  assert.ok(gatherer.carry.amount < 5, `the load was delivered (now carrying ${gatherer.carry.amount})`);
 });
 
 test('orders that do not fit are dropped with a message', () => {
@@ -174,7 +177,8 @@ test('elders and children stay within 3 tiles of their tipi or the fire', () => 
   const s = newGame(1);
   step(s, 1500);
   for (const p of s.people.filter((q) => q.age !== 'adult')) {
-    const home = s.buildings.find((b) => b.id === p.home) ?? s.buildings.find((b) => b.type === 'fire')!;
-    assert.ok(Math.hypot(p.x - (home.x + 0.5), p.y - (home.y + 0.5)) <= 4.5, `${p.name} strayed`);
+    const home = s.buildings.find((b) => b.id === p.home);
+    const [hx, hy] = home ? [home.x + 0.5, home.y + 0.5] : campCentre(s.map);
+    assert.ok(Math.hypot(p.x - hx, p.y - hy) <= 4.5, `${p.name} strayed`);
   }
 });

@@ -6,7 +6,9 @@ import enemyData from '../data/enemies.json';
 import jobsData from '../data/jobs.json';
 import upgradeData from '../data/upgrades.json';
 import { removeBuilding, ringSpot } from './buildings';
+import { heldTiles, nearestFreeTile } from './occupancy';
 import { beginWalk, findGridPath, idleTask, movePerson, speedOf, walkable } from './people';
+import { campCentre, FIRE_HALF } from './map';
 import { rngNext } from './rng';
 import { alliesOf } from './allies';
 import { stormSlow } from './effects';
@@ -60,9 +62,7 @@ export function enemyById(s: GameState, id: number | null): Enemy | undefined {
   return id === null ? undefined : s.enemies.find((e) => e.id === id);
 }
 
-function fireCentre(s: GameState): Tile2 {
-  return [s.map.fire[0] + 1, s.map.fire[1] + 1];
-}
+const fireCentre = (s: GameState): Tile2 => campCentre(s.map);
 
 const dist = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
 
@@ -318,7 +318,7 @@ export function stepEnemies(s: GameState): void {
     }
     if (!target) {
       const [fx, fy] = fireCentre(s);
-      if (Math.hypot(fx - e.x, fy - e.y) > 2) moveWolf(s, walls, e, def, def.speed * slow, fx, fy);
+      if (Math.hypot(fx - e.x, fy - e.y) > FIRE_HALF + 1) moveWolf(s, walls, e, def, def.speed * slow, fx, fy);
       continue;
     }
     if (best <= def.range) {
@@ -351,7 +351,8 @@ export function stepFlee(s: GameState, p: Person): boolean {
   if (p.task.step !== 'flee') {
     if (near > FLEE.triggerDist) return false;
     const fire = s.buildings.find((b) => b.type === 'fire');
-    const spot = fire && ringSpot(s, p, fire);
+    // Each takes a free ring tile round the plaza; when the ring is full, the nearest free tile outside it.
+    const spot = fire && (ringSpot(s, p, fire) ?? nearestFreeTile(s, fireCentre(s), heldTiles(s, p.id)));
     if (!spot || !beginWalk(s, p, spot, 'idle')) return false;
     p.task.step = 'flee';
     p.task.timer = FLEE.resumeTicks;

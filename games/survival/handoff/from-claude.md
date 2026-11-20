@@ -4,11 +4,55 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 [WORKFLOW.md](../../WORKFLOW.md#handoff-files).
 
 ## Working on
-- Nothing. 2026-11-20: tier 3 W1-W10 and R1-R2 done (next: W11, the user's playtest); tier 2 V1-V9 done (V9 passed; next: the user picks the next Phase D item). 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
+- G7 done 2026-11-20, next G8 (Sonnet). G16-G19 (user's additions) done 2026-11-20, G6 done. G5 done. G4, G3 done. W11 closed by the user 2026-11-20. G2, G1 done. G0 (2026-11-20): spec `DESIGN-hunting.md` and PLAN rows G1-G15 accepted by the user; next G1. Tier 3 W1-W10 and R1-R2 done (W11, the user's playtest, still open); tier 2 V1-V9 done (V9 passed; next: the user picks the next Phase D item). 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
   (`save.ts`: `serialize`, `parseSave`, `loadState`, plus `dayOf` and `SAVE_FORMAT`); DS2 done
   (`src/save/slots.ts`: `listSlots`, `readSlot`, `writeSlot`, `clearSlot`, `importSlot`, `probe`,
   `firstEmptySlot`, `browserStorage`); DS3 done (`GameScene.saveNow()` and `saveSlot` are the hooks
   for the DS4 HUD menu); DS4 done. Next: DS5 (the user's playtest).
+
+## No shared standing tile notes (G7, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/sim/occupancy.ts` (new), `tests/sim/orders.test.ts` (a single move onto a tile
+  that is another walker's goal now lands beside it; `spreadTargets` takes the movers' ids), `TESTING.md`.
+- Choices the spec left open: a person holds their drafted post, else their walk or flee goal, else their rounded position;
+  "lowest id wins" comes from stepping people in id order (first to claim keeps it); a full ring sends the person to the
+  nearest free tile and they retry every `storeRetryTicks`, keeping the job (a ring with no walkable tile still fails as
+  before); a second woodcutter or gatherer works the same tile from the nearest free tile beside it; a healer stands beside
+  the patient; nearest-free search scans the whole map (cheap at 48 x 48, only used on overflow).
+- Not covered: fighters in combat stop off-grid in weapon range and may round onto a held tile; a walk ended as `blocked`
+  mid-path idles where it stopped. Neither is snapped back to a free tile.
+- Not checked by hand: a real raid with 20 people fleeing to the plaza, scouts or tenders sharing a lodge.
+
+## Store items, people icon, berry panel notes (G16-G19, 2026-11-20)
+- Went past the plan's file lists on purpose: `tests/sim/{riders,seasons}.test.ts` (two tests assumed the old store position and were made layout-proof), `tests/smoke.spec.ts` (an e2e case 10 and the items case), `Select.ts` (a `panelText` hook), `TESTING.md`, `art/{ASSETS,SPEC}.md`.
+- Choices the spec left open: items count `ceil(40 x amount / camp capacity)` (so a second store makes each item worth more); quarters: food back, wood right, hides left, pemmican front, 5 x 4 slots, a second layer 6 px higher; the berry panel shows the bush's own amount (floored) over `tiles.berry.food` (40), not the whole patch; the panel also closes on selecting a person, a building or box-selecting; the people count has no `/ capacity`.
+- Not checked by hand: the iso items at zoom 0.5 and 1, the store at [22, 17] with workers walking round it, clicking a bush at the edge of the map.
+
+## Work animation notes (G6, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/scenes/Game.ts` (one argument, the buildings, passed to `PeopleView.sync`); `jobs.ts` and `placeholders.ts` needed no change (overlays are drawn live, not baked into textures).
+- Choices the spec left open: the tool is a Graphics object per person at depth +0.5, anchored at the feet and drawn at the right hand; a child's tool is scaled 0.7; the hammer period is 520 ms, the axe 760 ms, the pick 700 ms, drying 600 ms, offset per person id so a crowd is not in step; the bow draw is left for the hunt rows (G10-G12); the same overlays serve both families.
+- Not checked by hand: the overlays at zoom 0.5 and 1, a real crowd at work.
+
+## Right-click feedback notes (G5, 2026-11-20)
+- Went past PLAN's file list on purpose: `tests/smoke.spec.ts` (a 9th test; the `Camp` type gained `selectPeople` and `lastPing`), `TESTING.md`; `src/render/enemies.ts` was not needed (the wolf pulse is drawn by `Select.ts`).
+- Choices the spec left open: pings use the scene clock (`this.time.now`), 700 ms; the ring grows from 5 to 25 px of radius and fades; the target pulse flashes about three times; pings draw on their own graphics layer just under the HUD-depth bars; a refusal known at the click sends no order and adds its own toast (so there is no double toast), while refusals the sim finds later (full slots, an unreachable tile, a used-up tree) keep their sim toast and the ping stays coloured; berry and tree tiles share the gold diamond; with nobody selected there is no order and no ping; an animal or carcass target is for G12 (`PingTarget` has no animal yet).
+- Not checked by hand: the look of the rings at zoom 0.5 and 2, the building flash, a berry tile.
+
+## Store notes (G3, 2026-11-20)
+- Went past PLAN's file list on purpose: `tests/sim/{people,seasons}.test.ts` (cap numbers; the full-store test now reads `storeCap`), `art/ASSETS.md`, `art/SPEC.md`, `DESIGN-slice.md` (the store row).
+- Choices the spec left open: the art canvas is 256 x 208 (anchor 0.5, 0.75) for both views; the hover roof allowance `ROOF_PX` is 28; piles are drawn 2x at offsets (-48,-2), (0,-26), (48,-2), (0,22); the e2e test aims at the 4x4 footprint centre and its tooltip clip is 320 x 260.
+- The start layout: the store now stands at [22, 28] (tiles 22-25 x 28-31) with the fire still 2x2 at [23, 23] and tipis unchanged; G4 moves the fire and tipis.
+- Not checked by hand: the store at zoom 0.5 and 2, people walking round it, the delivery spot on its ring.
+
+## Names notes (G2, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/sim/people.ts` (`pickName`), `economy.ts` (newcomers use it), `tests/sim/{people,economy}.test.ts` (the old `Cottonwood 1` / `Kingfisher ` assertions). The user chose invented names when asked, because `Cottonwood 3` plus a family line repeated itself.
+- Choices the spec left open: 50 nature-word names in `map.json` `start.names`, taken in order without the rng (so no seeded outcome changed); family colours are `start.familyColors` (orange `#e0905a`, blue `#7fa8d8`, matching the shirts); the labels sit at +8 px (name, 12 px) and +21 px (family, 10 px) under the feet, black-outlined, drawn in the world scene so they zoom with the map; the panel keeps its `<Family> family · age` line.
+- Old camps (saving is parked) keep their old names such as `Cottonwood 3`, which then show twice.
+- Not checked by hand: the labels at zoom 0.5 and 2, or on a crowd.
+
+## Carried goods notes (G1, 2026-11-20)
+- Went past PLAN's file list on purpose: `tests/sim/labels.test.ts` (the unit test) and a `camp.selectPeople(ids)` debug hook in `Select.ts` (needed for the screenshot; G2 can use it too).
+- Choices the spec left open: amounts are floored; a hunter's `hides` count as hides and merge with carried hides; one hide reads `1 hide`; the load shows as `food` until G10 renames a hunt load to meat; the panel's single-person view is now four lines and still fits above the screen edge.
+- Not checked by hand: the line while people really walk with loads.
 
 ## Resource icons and open store notes (R1-R2, 2026-11-20)
 - Went past PLAN's file list on purpose: `src/render/stores.ts` (new), `art/manifest.json` (23 keys), `tests/stores.test.ts` (new, `pileSize`, `storeAt`), `tests/smoke.spec.ts` (an 8th test), `TESTING.md`, `Game.ts` (hover each frame, `window.camp.storeOpen`); `Select.ts` and `economy.ts` were not needed.

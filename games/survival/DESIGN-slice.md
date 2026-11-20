@@ -192,7 +192,7 @@ buildings.
 | tipi | 20 wood, 8 hides | 300 | - | houses 5 people | 2 |
 | gathering spot | 10 wood | 150 | max 4 | gatherers x1.5, auto-pick berry tiles within 10 | 0 |
 | hunting lodge | 25 wood, 2 hides | 250 | max 4 | hunt job; workers join the **hunters** society | 0 |
-| store | 15 wood | 200 | - | adds caps: food 200, wood 150, hides 40 | 1 |
+| store | 15 wood | 200 | - | adds caps: food 800, wood 600, hides 160 (4x4 since 2026-11-20, [DESIGN-hunting.md](DESIGN-hunting.md) `## Store`) | 1 |
 
 The start houses 10 of 20, so a third and fourth tipi are the first build choice (unhoused people
 cost Wotakuye, see `## Wotakuye`). Housing: at day start each unhoused person is given a free bed,
