@@ -253,6 +253,19 @@ Spec: `DESIGN-hunting.md` `## Stock items`, `## People icon and berry patch pane
 | G18 | Sonnet | `## People icon and berry patch panel`; `src/scenes/Select.ts` (`clickSelect`, `drawPanel`) | the berry bush panel, `window.camp.panelText()` | e2e clicks a bush and reads `17 of 40 fruit left`; Esc closes it |
 | G19 | Opus | `## Stock items`; `src/render/{stores,placeholders}.ts`, `art/manifest.json`, `tests/stores.test.ts`, `tests/smoke.spec.ts` | `itemCount`, `itemSlot`, four item props, the 0 / 20 / 40 e2e case, `art/{ASSETS,SPEC}.md`, `TESTING.md` | unit tests for counts and slots (on the floor, layered, distinct); e2e; zoomed screenshot |
 
+### G20-G24: added by the user 2026-11-20 (villager panel builds), after G15
+
+Spec: `DESIGN-hunting.md` `## Villager panel and building`. Easiest first. Saving stays parked: no row adds or
+changes save code.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| G20 | Sonnet | `## Villager panel and building`; `src/scenes/Select.ts` (`labels`, `placeLabel`, `drawWorld`) | remove the labels under people's feet (undoes G2); rings stay | a screenshot shows no names on the map; tests pass |
+| G21 | Sonnet | same; `src/scenes/Select.ts` (`create`, `drawPanel`) | title in 20 px bold serif, gold, with a rule under it; family line in the family colour; `panelText()` unchanged | screenshots of a person, a group, a building and a berry patch; e2e passes |
+| G22 | Opus | same; `src/sim/{orders,buildings,jobs,state}.ts`, `tests/sim/*` | `place` takes `builders` (cap 3, skips drafted and non-workers, the others keep their jobs, a toast); `lineId` on line sites, and builders move on to the next unfinished site; no save code | tests: at most 3 assigned and the others unchanged; builders work a barricade line in order; determinism holds |
+| G23 | Sonnet | same; `src/scenes/{Build,Select,Game}.ts`, `src/scenes/Hud.ts` (Build references only), `tests/smoke.spec.ts` | full-width panel with the cards on its right; corner button and standalone menu removed; cards only when someone can build; B arms, then 1-7; 1-3 set speed when not armed; placement sends the selection snapshot; `HINT` text; e2e build steps select people first | e2e passes; by hand: 5 adults place a tipi, 3 build and 2 keep working; a children-only selection shows no cards |
+| G24 (user, gate) | Opus | `## Villager panel and building`, `WORKLOG.md` | `WORKLOG.md`, `TESTING.md` hand checks, a fix list in `handoff/from-claude.md` | the user builds from the panel, including a barricade line, and says it is fine |
+
 ## Phase D (remaining, each gets its own spec and rows)
 
 Seasons and hardships; autosave (3 slots) + export/import; eras 2-3 and bosses; upgrade tiers 1-3;

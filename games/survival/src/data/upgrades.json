@@ -1,7 +1,7 @@
 {
   "giftPerDay": { "United": 2, "Steady": 1, "Strained": 0, "Quarrelling": 0 },
   "upgrades": {
-    "dogs":    { "label": "Hunting dogs", "dakota": "", "home": "hunting_lodge",     "cost": { "gift": 4, "food": 10 },            "huntSuccess": 1.15, "bowAccuracy": 0.05 },
+    "dogs":    { "label": "Hunting dogs", "dakota": "", "home": "hunting_lodge",     "cost": { "gift": 4, "food": 10 },            "spotting": 26, "bowAccuracy": 0.05 },
     "bows":    { "label": "Better bows", "dakota": "", "home": "hunting_lodge",      "cost": { "gift": 6, "wood": 5, "hides": 3 }, "bowRange": 5.0, "bowDamage": 15 },
     "healers": { "label": "Healers' society", "dakota": "", "home": "fire", "cost": { "gift": 8, "wood": 20 },            "unlocks": "healers_lodge" },
     "scouts":   { "label": "Akicita scouts", "dakota": "", "home": "hunting_lodge",   "cost": { "gift": 8, "wood": 10, "hides": 5 },  "requires": "dogs",    "unlocks": "scouts_lodge" },

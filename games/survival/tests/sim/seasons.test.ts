@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import wavesData from '../../src/data/waves.json';
+import { stepAnimals } from '../../src/sim/animals';
 import { assignWorkers, placeBuilding } from '../../src/sim/buildings';
 import { mealNeed } from '../../src/sim/economy';
 import { workRate } from '../../src/sim/jobs';
@@ -70,34 +70,22 @@ test('gathering is x1.0 in spring, x1.2 in summer, x1.5 in autumn and x0.3 in wi
   assert.ok(Math.abs(workRate(s, p, 'chop') - workRate({ ...s, tick: SPRING }, p, 'chop')) < 1e-12, 'only gathering changes');
 });
 
-test('hunting succeeds more often in summer than in winter (same seed, same time)', () => {
-  const trips = (tick: number) => {
-    const s = newGame(1);
-    s.tick = tick;
-    s.store.wood = 100;
-    s.store.hides = 20;
-    s.store.food = 100;
-    const r = placeBuilding(s, 'hunting_lodge', 28, 26);
-    assert.ok(r.building, r.error ?? 'placed');
-    const lodge = r.building!;
-    lodge.done = true;
-    const [hunter] = adults(s);
-    assignWorkers(s, [hunter.id], lodge.id);
-    const before = s.store.hides;
-    stepFed(s, 3400);
-    return s.store.hides - before;
+test('more herds come in summer than in winter: the season scales the respawn chance (DESIGN-hunting.md)', () => {
+  // Every respawn day of the season, from an empty map, summed over a few seeds.
+  const herds = (start: number, seed: number) => {
+    const s = newGame(seed);
+    let n = 0;
+    for (let tick = start; tick < start + 3600; tick += 1200) {
+      s.animals = [];
+      s.tick = tick;
+      stepAnimals(s);
+      n += s.animals.length > 0 ? 1 : 0;
+    }
+    return n;
   };
-  // The wolves keep to the clock (3600, 7200, 10800, 14400), not to the season: move them out of the way.
-  const at = wavesData.waves.map((w) => w.at);
-  wavesData.waves.forEach((w) => (w.at = 1e9));
-  let summer: number;
-  let winter: number;
-  try {
-    summer = trips(SUMMER);
-    winter = trips(WINTER);
-  } finally {
-    wavesData.waves.forEach((w, i) => (w.at = at[i]));
-  }
+  const seeds = [1, 2, 3, 4, 5, 6, 7, 8];
+  const summer = seeds.reduce((n, seed) => n + herds(SUMMER, seed), 0);
+  const winter = seeds.reduce((n, seed) => n + herds(WINTER, seed), 0);
   assert.ok(summer > winter, `summer ${summer} winter ${winter}`);
 });
 

@@ -24,6 +24,8 @@ Run `npm run typecheck && npm test` before finishing a task.
   `orders.ts` applies the orders queue, `tick.ts` has `newGame` and `step`).
 - `src/render/`: projection and drawing helpers (`iso.ts`, `camera.ts` pure maths; `manifest.ts`,
   `placeholders.ts`, `people.ts` draws the people from state).
+- `src/audio/`: the music, made with Web Audio and no sound files (`theory.ts` pure rules, unit-tested; `music.ts` plays them and starts on the first click; the HUD
+  menu has the on/off toggle and volume, kept in `localStorage` under `survival.music`).
 - `src/scenes/`: Phaser scenes (`Boot.ts` loads art and starts `Menu.ts` (title, Start, Random seed, controls), which starts `Game.ts`; `Build.ts` is the build
   menu, `Hud.ts` the resource and Wotakuye bars, the pause / speed buttons, the wave banner and the end screen, and `Select.ts` selection, right-click orders, the
   selection panel and toasts, all drawn above it). Scenes draw and send

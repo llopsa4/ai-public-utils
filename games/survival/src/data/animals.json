@@ -1,0 +1,19 @@
+{
+  "kinds": {
+    "deer":  { "hp": 24, "meat": 10, "hides": 1, "wanderSpeed": 0.03, "fleeSpeed": 0.16, "herd": 3 },
+    "bison": { "hp": 72, "meat": 30, "hides": 3, "wanderSpeed": 0.05, "fleeSpeed": 0.1,  "herd": 4 }
+  },
+  "startHerds": ["deer", "deer", "bison"],
+  "startDist": [14, 22],
+  "respawnDays": 2,
+  "winterRespawnDays": 4,
+  "cap": 12,
+  "bisonChance": 0.35,
+  "fleeTicks": 60,
+  "fleeDist": 10,
+  "wanderEvery": 240,
+  "wanderRadius": 4,
+  "load": 10,
+  "spotting": 22,
+  "lookTicks": 50
+}

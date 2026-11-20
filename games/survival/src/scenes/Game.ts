@@ -1,6 +1,8 @@
 import Phaser from 'phaser';
 import mapConfig from '../data/map.json';
 import { buildingDefs, lineSites, placementError } from '../sim/buildings';
+import { music } from '../audio/music';
+import { animalsOf } from '../sim/animals';
 import { ALLIES, alliesOf } from '../sim/allies';
 import { BISON_HALF_WIDTH, bisonDirection, effectsOf, STORM_RADIUS } from '../sim/effects';
 import { flushOrders } from '../sim/orders';
@@ -11,6 +13,7 @@ import { addMessage, DAY_TICKS, footprintOf, type GameState, type Order, type Ti
 import { browserStorage, clearSlot, writeSlot, type SlotId, type SlotStorage } from '../save/slots';
 import { TILE_H, TILE_W, tileToWorld, worldBounds, worldToTileF } from '../render/iso';
 import { entry, manifest } from '../render/manifest';
+import { ArrowsView } from '../render/arrows';
 import { EnemiesView } from '../render/enemies';
 import { PeopleView } from '../render/people';
 import { StoreHover } from '../render/stores';
@@ -36,6 +39,7 @@ export class GameScene extends Phaser.Scene {
   private pointerInside = false;
   private people!: PeopleView;
   private enemies!: EnemiesView;
+  private arrows!: ArrowsView;
   private stores!: StoreHover;
   private ground: Phaser.GameObjects.Image[] = [];
   private trees = new Map<number, Phaser.GameObjects.Image>();
@@ -44,6 +48,8 @@ export class GameScene extends Phaser.Scene {
   private buildingViews = new Map<number, Phaser.GameObjects.Image>();
   /** The building type being placed (ghost under the cursor), or null. */
   placing: string | null = null;
+  /** The people selected when the building card was picked: the `place` order's builders (up to 3 of them build). */
+  placers: number[] = [];
   /** The aimed power (bison charge, storm caller) waiting for a left-click on the map, or null. */
   aiming: string | null = null;
   private ghost!: Phaser.GameObjects.Image;
@@ -78,6 +84,7 @@ export class GameScene extends Phaser.Scene {
     this.buildingViews.clear();
     this.acc = 0;
     this.placing = null;
+    this.placers = [];
     this.aiming = null;
     this.dragStart = null;
     this.consumedDownTime = -1;
@@ -89,22 +96,26 @@ export class GameScene extends Phaser.Scene {
     this.lastPaused = this.state.paused;
     this.ended = false;
     this.warned = false;
+    music.reset();
     document.addEventListener('visibilitychange', this.onHide);
     window.addEventListener('pagehide', this.onPageHide);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       document.removeEventListener('visibilitychange', this.onHide);
       window.removeEventListener('pagehide', this.onPageHide);
+      music.reset();
     });
     if (this.slot === null) this.warnAutosaveOff();
     this.drawMap();
     this.people = new PeopleView(this, this.state.map.size);
     this.enemies = new EnemiesView(this, this.state.map.size);
+    this.arrows = new ArrowsView(this, this.state.map.size);
     this.stores = new StoreHover(this);
     this.setupCamera();
     this.setupPlacing();
+    // Select first: the building cards (Build) sit on its panel, and the HUD's panels sit above both.
+    this.scene.launch('Select', { game: this });
     this.scene.launch('Build', { game: this });
     this.scene.launch('Hud', { game: this });
-    this.scene.launch('Select', { game: this });
     if (new URLSearchParams(location.search).has('debug')) {
       const s = this.state;
       (window as unknown as { camp: unknown }).camp = {
@@ -113,6 +124,7 @@ export class GameScene extends Phaser.Scene {
         orders: (list: Order[]) => queueOrders(s, list),
         scene: this,
         storeOpen: () => this.stores.shown(),
+        music: () => music.status(),
       };
     }
   }
@@ -215,16 +227,17 @@ export class GameScene extends Phaser.Scene {
     return this.scene.get('Build') as BuildScene | undefined;
   }
 
-  /** True when a screen point is on the build menu or the selection panel. */
+  /** True when a screen point is on the selection panel (the building cards are part of it) or the HUD. */
   private overUi(x: number, y: number): boolean {
     const select = this.scene.get('Select') as SelectScene | undefined;
     const hud = this.scene.get('Hud') as HudScene | undefined;
-    return !!hud?.menuOpen || !!this.buildScene()?.overUi(x, y) || !!select?.overUi(x, y);
+    return !!hud?.menuOpen || !!select?.overUi(x, y);
   }
 
-  /** Starts or stops placing a building (the Build scene calls this). */
-  setPlacing(type: string | null): void {
+  /** Starts or stops placing a building (the Build scene calls this); `builders` is the selection at the pick. */
+  setPlacing(type: string | null, builders: number[] = []): void {
     this.placing = type;
+    this.placers = type ? builders : [];
     if (type) this.aiming = null;
     this.dragStart = null;
     this.ghost.setVisible(false);
@@ -275,7 +288,7 @@ export class GameScene extends Phaser.Scene {
         this.buildScene()?.toast(error);
         return;
       }
-      queueOrders(this.state, [{ type: 'place', building: this.placing, at: [x, y] }]);
+      queueOrders(this.state, [{ type: 'place', building: this.placing, at: [x, y], builders: this.placers }]);
       this.setPlacing(null);
     });
     // A line building is placed on release: one site per free, paid-for tile of the line. Placing goes on, so
@@ -285,9 +298,10 @@ export class GameScene extends Phaser.Scene {
       this.dragStart = null;
       if (!start || !this.placing) return;
       const line = lineSites(this.state, this.placing, start, this.ghostTile(pointer));
-      const orders: Order[] = line.tiles.filter((_, i) => line.ok[i]).map((at) => ({ type: 'place', building: this.placing!, at }));
-      if (orders.length === 0) this.buildScene()?.toast(line.error ?? "Can't build there.");
-      else queueOrders(this.state, orders);
+      // One order for the whole line: the first site is `at`, the rest follow, so its builders move along it.
+      const tiles = line.tiles.filter((_, i) => line.ok[i]);
+      if (tiles.length === 0) this.buildScene()?.toast(line.error ?? "Can't build there.");
+      else queueOrders(this.state, [{ type: 'place', building: this.placing, at: tiles[0], line: tiles.slice(1), builders: this.placers }]);
     });
   }
 
@@ -453,7 +467,10 @@ export class GameScene extends Phaser.Scene {
     this.updateGhost();
     this.people.sync(this.state.people, delta, time, this.state.buildings);
     this.enemies.sync(this.state.enemies, (kind) => ENEMIES[kind].hp);
+    this.enemies.syncAnimals(animalsOf(this.state));
     this.enemies.syncAllies(alliesOf(this.state), (kind) => ALLIES[kind].hp);
     this.enemies.syncEffects(effectsOf(this.state), time);
+    this.arrows.update(this.state, time, (id) => this.people.ground(id));
+    music.update(this.state.enemies.length > 0, this.state.tick);
   }
 }

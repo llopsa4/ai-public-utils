@@ -1,7 +1,7 @@
 {
   "jobs": {
     "gather": { "res": "food", "rate": 0.01, "carry": 5, "spotBonus": 1.5, "spotRadius": 10 },
-    "hunt":   { "food": 10, "hides": 1, "huntTicks": 300, "spotDist": [14, 22], "success": 0.7 },
+    "hunt":   {},
     "chop":   { "res": "wood", "rate": 0.015, "carry": 5, "searchRadius": 4 },
     "dry":    { "take": 6, "give": 4, "ticks": 200 },
     "scout":  {},

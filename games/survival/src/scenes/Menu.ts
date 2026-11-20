@@ -14,12 +14,12 @@ const DIM = '#cdbf9c';
 const CARD = { w: 360, h: 150, y: 165, gap: 20 };
 const CONTROLS = [
   'Left-click: select      Drag: box select      Shift-click: add or remove',
-  'Right-click: move, gather, chop, build, assign to a building, or attack a wolf',
+  'Right-click: move, gather, chop, build, assign to a building, hunt a deer or bison, or attack a wolf',
   'R: draft or undraft      Z X C: hold / defend / chase      Delete: cancel a site',
-  'B then 1-7: build (Tab: Camp / Societies page; left-click to place, drag a line of barricades, right-click to stop)',
+  'Select adults, then B and 1-7 or click a card: build (Tab: page; left-click places, drag for barricades, right-click stops)',
   'F1-F4: cast a bought spirit power, once a wave (the bison and the storm wait for a left-click on the map)',
   'Space: pause      1 2 3: speed 1x 2x 4x      Esc: clear the selection      Click a finished building: its upgrades',
-  'WASD or arrows or the screen edge: scroll      Mouse wheel: zoom',
+  'WASD or arrows or the screen edge: scroll      Mouse wheel: zoom      Menu button: music on / off and volume',
 ];
 const REFUSED = 'That file is not a Camp Fire save, or it is from another version.';
 

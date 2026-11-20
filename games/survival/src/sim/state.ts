@@ -6,6 +6,7 @@ import resourceData from '../data/resources.json';
 import wavesData from '../data/waves.json';
 import { generateMap, type GameMap, type MapConfig } from './map';
 import { makeRng, type RngState } from './rng';
+import type { Animal, Wild } from './animals';
 
 export const TICKS_PER_SECOND = 10;
 /** One in-game day (DESIGN-slice.md conventions). */
@@ -30,6 +31,8 @@ export interface Job {
   kind: JobKind;
   building: number | null;
   tile: Tile2 | null;
+  /** A hunter's chosen animal or carcass (`animals.ts`), set by the hunt order or the hunter's own pick. */
+  animal?: number | null;
 }
 
 export interface Person {
@@ -43,7 +46,7 @@ export interface Person {
   hunger: number;
   job: Job | null;
   task: Task;
-  /** `hides` rides along with a successful hunt's food. */
+  /** `hides` rides along with a hunter's load of meat (Food). */
   carry: { res: Res; amount: number; hides?: number };
   society: string | null;
   drafted: boolean;
@@ -135,6 +138,11 @@ export interface Building {
   hp: number | null;
   /** Ticks a horse corral has been tended since its last foal (`tend` job, `stepCorrals`). */
   tended: number;
+  /**
+   * The id of the first site of a dragged barricade line, on every segment of it: builders finishing one segment go
+   * on to the next unfinished one (DESIGN-hunting.md `## Villager panel and building`). Not written to saves.
+   */
+  lineId?: number;
 }
 
 export type Stance = 'hold' | 'defend' | 'chase';
@@ -143,11 +151,16 @@ export type Stance = 'hold' | 'defend' | 'chase';
 export type Order =
   | { type: 'move'; ids: number[]; to: Tile2 }
   | { type: 'attack'; ids: number[]; enemy: number }
+  | { type: 'hunt'; ids: number[]; animal: number }
   | { type: 'assign'; ids: number[]; job: 'gather' | 'chop'; tile: Tile2 }
   | { type: 'assign'; ids: number[]; building: number }
   | { type: 'draft'; ids: number[]; on: boolean }
   | { type: 'stance'; ids: number[]; stance: Stance }
-  | { type: 'place'; building: string; at: Tile2 }
+  /**
+   * `builders`: the selection when the card was picked; up to 3 able ones build the (first) site at once.
+   * `line`: further segments of a dragged line after `at`, placed in order and linked by `lineId`.
+   */
+  | { type: 'place'; building: string; at: Tile2; builders?: number[]; line?: Tile2[] }
   | { type: 'cancel'; building: number }
   | { type: 'speed'; value: 1 | 2 | 4 }
   | { type: 'pause'; on: boolean }
@@ -169,6 +182,10 @@ export interface GameState {
   /** Running bison herds and storms; absent in an older file, so read it with `effectsOf`. */
   effects: PowerEffect[];
   waves: WaveRun[];
+  /** Wild game and carcasses (DESIGN-hunting.md `## Wild game`); absent in an older state, so read it with `animalsOf`. */
+  animals?: Animal[];
+  /** The herds' random stream and ids; absent in an older state, so read it with `wildOf`. */
+  wild?: Wild;
   /** Set once the run ends; the tick loop stops advancing. */
   result: 'won' | 'lost' | null;
   /** Tiles covered by a building footprint, indexed like `map.tiles`. */

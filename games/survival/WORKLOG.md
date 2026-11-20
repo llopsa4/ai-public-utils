@@ -215,4 +215,59 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   in `jobs.ts` waits on the nearest free tile with the job kept when a ring is full (store, site, rack, lodge); `spreadTargets`
   gives distinct free tiles (no wrap); draft posts, fleeing (ring, then nearest free), wander, chop/gather and heal use free
   tiles. 191 tests (8 new in `tests/sim/occupancy.test.ts`, which fail with the rule off) and `npm run e2e` (10) pass; checked
-  in a browser (8 moved to one point, 4 waiting at a full store: no shared tiles); uncommitted. **Next: G8** (Sonnet).
+  in a browser (8 moved to one point, 4 waiting at a full store: no shared tiles). **Next: G8** (Sonnet).
+  G1-G7 and G16-G19 committed with a fresh Pages build and pushed to `main` on the user's request, 2026-11-20 (`4d126fe`).
+  G8 done 2026-11-20: sitting. `goSit` in `jobs.ts` (an idle person with no work, adults after `findAutoWork` finds none, elders and children instead of
+  wandering, walks to a free tile on the finished fire's ring and stays; a full ring leaves adults standing and elders/children wandering as before);
+  `plazaOf` and `isSitting` (idle, no job, undrafted, on the ring) in `buildings.ts`; `PeopleView` draws a seated person at 0.72 of their height
+  (`SIT_SCALE`, placeholder). Idle people no longer wander, so the rng stream shifted: the summer-vs-winter hunt test now sums seeds 1-4. 196 tests
+  (`tests/sim/plaza.test.ts`) and `npm run e2e` (11 tests) pass; checked by screenshot (a ring of seated people round the plaza); uncommitted; not
+  checked by hand. **Next: G9** (Opus).
+  G9 done 2026-11-20: full store. A person whose goods no store can take is blocked (`storeBlocked` in `jobs.ts`): they never queue
+  at the store, keep the goods and get one `Store is full` toast; an order starts at once (build, move, chop...); with no job they
+  take free work (`findAutoWork` gives them a haul only to a site that needs their load); a gatherer or woodcutter with full hands
+  waits by the bush or tree and keeps the job; a builder drops wood or hides the site needs on arrival, and a hauler's drop now keeps
+  what the site does not need instead of losing it. 205 tests (`tests/sim/fullstore.test.ts`, 9 new) and `npm run e2e` (11) pass;
+  uncommitted; not checked by hand.
+  G10 done 2026-11-20: wild game and hunting. `src/data/animals.json`, `src/sim/animals.ts` (`GameState.animals` and `wild`, read
+  through `animalsOf` / `wildOf`; start herds, wander, flight, carcasses, respawn scaled by the season's `huntSuccess`); the hunt job
+  rewritten in `jobs.ts` (`stepHunter`: nearest carcass, else nearest animal within 22 / 26 tiles of the fire, bow range and rolls
+  from `fighterOf`, loads of 10 meat to the store, waits by the fire otherwise); the `hunt` order (animal or carcass) in `orders.ts`;
+  dogs now widen spotting (`upgrades.json` `spotting`), effect line in `Select.ts`. Old roll tests rewritten (buildings, seasons,
+  upgrades). 215 tests (`tests/sim/hunting.test.ts`, 10 new) and `npm run e2e` (11) pass; uncommitted. Animals are **not drawn**
+  until G12, so in the live game hunters chase unseen game.
+  G11 done 2026-11-20: arrows. `src/render/arrows.ts` (`ArrowsView`, drawn only, nothing in state): a shot is seen as a bow-holder's
+  `cooldown` going up, the target is the hunter's animal or the ordered / nearest wolf, a hit is seen as the target's hp dropping (or the
+  wolf gone); a hit arrow flies 170 ms and vanishes, a miss lands beside the target and sticks for 1.4 s. `hasBow` and a placeholder bow
+  in `render/people.ts` (hunters, archers, anyone hunting). Checked in a browser with a throwaway script (arrow at a wolf by screenshot;
+  arrow at a deer by sampling the arrow list each frame, since the deer is not drawn yet); 215 tests and `npm run e2e` (11) pass;
+  uncommitted; not checked by hand. **Next: G12** (Sonnet).
+  G20-G24 queued 2026-11-20 (villager panel builds, names off the map; spec `DESIGN-hunting.md`
+  `## Villager panel and building`); they run after G15 unless the user reorders.
+  G12 done 2026-11-20: wild game is drawn and orderable. `EnemiesView.syncAnimals` (`render/enemies.ts`, placeholders drawn in code: tan
+  deer, big dark bison, a hurt one with a health bar, a carcass lying flat that shrinks with its meat); a hunter with a load of meat has a
+  bundle on the back (`hasHuntLoad`, `drawLoad` in `render/people.ts`); `Select.ts`: right-click a live animal gives `hunt` (gold ring,
+  the animal pulses), right-click a carcass fetches its next load, refusals reuse `workRefusal`, a left-click selects an animal or carcass
+  (ring, panel `Deer` / `Bison carcass` with health or meat left; `camp.selectAnimal`). 215 tests and `npm run e2e` (12 tests) pass; a
+  new e2e case 11 and screenshots `g12-*.png`; uncommitted; not checked by hand. **Next: G13** (music; Sonnet).
+  G13 done 2026-11-20: music. `src/audio/theory.ts` (pure: D minor pentatonic, `nextNote` melody walk, `AMBIENT_BEAT` / `WAR_BEAT`,
+  `nextMode` with a 50-tick hold) and `src/audio/music.ts` (Web Audio: flute, heartbeat and wind; war drum and drone; two buses
+  crossfading over about 2 s; starts on the first click or key press; on/off and volume kept in `localStorage` `survival.music`).
+  `Game.ts` calls `music.update(wolves, tick)` each frame and `music.reset()` on a new run and on leaving; the HUD menu panel has
+  `Music: on/off` and `- 60% +`; `camp.music()` is the debug hook. 220 tests (`tests/music.test.ts`, 5 new) and `npm run e2e` (13
+  tests) pass; checked by screenshot (the menu panel); **not listened to** (no one can hear it in a test run), so the user's G15
+  listen is the first check. The CULTURE.md music wording is drafted under *Needs review* for the user. Uncommitted.
+  **Next: G14** (the remaining e2e cases, docs; Sonnet), then G15 (the user plays).
+  G14 done 2026-11-20: the menu controls text mentions hunting a deer or bison and the Menu button's music toggle; the e2e cases the spec
+  asked for already existed (store open view, pings, hunt order, music, plus berry and plaza cases). The music case was flaky (about 1 run in 4:
+  it sat on the 50-tick edge, `step(49)` then `step(2)`); it now steps 40 then 12. 220 tests and `npm run e2e` (13 tests, 3 runs; the music case
+  15 repeats) pass; uncommitted. **Next: G15** (the user plays a hunt to the store, a bison over three trips, the plaza, the feedback and the music).
+  G20 done 2026-11-20 (the user said "Continua"; G15 is still the user's to play): the names under selected people are gone from the map (`Select.ts`: the label pool and `placeLabel` removed), rings stay; 220 tests and `npm run e2e` (13 tests) pass; not checked by screenshot; uncommitted. **Next: G21** (Sonnet), then G22-G23; G15 and G24 are the user's playtests.
+  G21 done 2026-11-20: the panel title is 20 px bold serif in gold with a thin rule under it, and a person's family line is its own text in the family colour (`Select.ts`: `family`, `TITLE_GOLD`; `panelText()` still returns the same detail text). 220 tests and `npm run e2e` (13 tests) pass; checked by screenshot (person, group, building); not screenshotted: the berry patch and the animal panels. Uncommitted. **Next: G22** (Opus: builders on `place`, barricade lines).
+  G22 done 2026-11-20: the `place` order takes `builders` (the selection) and `line` (further segments after `at`). Up to 3 able
+  people (adults, not drafted), nearest the site first, build the first site at once; the rest keep their jobs; toast
+  `3 of 5 joined the build`. Line segments share `lineId` (the first segment's id, not saved); a builder whose segment is done
+  goes on to the first unfinished segment with room (`nextLineSite`), else is free. `tests/sim/placebuild.test.ts` (6 tests);
+  226 tests pass; e2e not run (sim only; `Game.ts` still sends one `place` per segment with no builders until G23). Uncommitted.
+  **Next: G23** (Sonnet: the panel build cards; send `builders` and `line` from `Game.ts`).
+  G23 done 2026-11-20: the building cards. The selection panel is 1280 px wide and the cards (`Build.ts`) fill its right part, shown only while a selected adult who is not drafted can build; the corner `Build (B)` button and the standalone menu are gone. B arms the cards (gold border), the next 1-7 picks one (1-3 set speed when not armed), clicking a card always works, Tab pages Camp / Societies, Esc disarms or cancels placing; clearing the selection (or losing every builder) cancels placing. Picking snapshots the selection into `GameScene.placers`; `place` sends it as `builders`, and a dragged barricade line is now one `place` order (`at` + `line`), so the builders go on along it. The stance buttons moved under Draft; scene drawing order is now Select, Build, Hud (`main.ts`). 226 tests and `npm run e2e` (14 tests) pass; a new e2e case 13; checked by screenshot (cards, drafted selection, the 7-card Societies page, armed border) and a scripted barricade drag (3 sites, shared `lineId`, `3 of 6 joined the build`); uncommitted; not checked by hand. G24 passed 2026-11-20: the user built from the panel by hand and marked G23 and G24 tested and done (no fix list). G15 passed 2026-11-20: the user played the hunting and camp life work (hunt to the store, bison trips, plaza, feedback, music) and said it is tested (no fix list). The hunting and camp life item (G1-G24) is finished; the music levels were judged by ear and left as they are. Next Phase D item: the user picks.

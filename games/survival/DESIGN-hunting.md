@@ -96,8 +96,8 @@ people, the totals per resource. Nothing when the load is empty.
 
 ## Names
 
-A selected person shows their name under their feet, and under it the family name (`Cottonwood`, `Kingfisher`) in
-a smaller, dimmer font tinted with the family's colour. Unselected people show no label.
+*Superseded 2026-11-20 by [Villager panel and building](#villager-panel-and-building): names and families are no
+longer drawn under people's feet, only in the details panel. The name pool below still stands.*
 People have **invented plain names** from a pool in `map.json` (`start.names`: nature words such as Wren,
 Willow, Heron), not the old `Cottonwood 3`; the user chose this 2026-11-20 (no claim about real Dakota names,
 so no CULTURE.md entry). A person gets the first pool name no living person has; after 50, a number is added.
@@ -178,3 +178,28 @@ sizes but **small counted items in the store's own isometric view**:
   `People`. The count is everyone, adults and children (the old `12 / 20` adults-over-total confused the user).
 - Left-clicking a berry bush (no building or person on it) selects it: the bottom panel reads `Berry patch` and
   `17 of 40 fruit left` (what is left on that bush, and the most it holds). Esc or another click closes it.
+
+## Villager panel and building
+
+Settled by the user 2026-11-20 (grilled). Replaces the labels in [Names](#names) and the B build menu in
+`DESIGN-slice.md` `## UI` and `DESIGN-upgrades-2.md` `## UI`.
+
+- **No labels on the map.** Selected people show only their selection ring. Name and family appear only in the
+  details panel.
+- **Title.** The panel title (a person's name, a building, `N people selected`, `Berry patch`) is 20 px bold serif
+  in warm gold, with a thin rule under it. The detail text keeps its current style. For one person, the first detail
+  line (`<Family> family · <age>`) is drawn in the family's colour.
+- **One way to build.** The standalone build menu and its `Build (B)` corner button are removed. You cannot build
+  while nothing is selected.
+- **Cards in the panel.** The details panel spans the whole bottom strip (1280 px). When at least one selected
+  person can build (an adult who is not drafted), the building cards fill the right part of the panel, with the
+  Camp / Societies pages and Tab as before. They are hidden when no selected person can build (only children, or
+  only drafted people).
+- **Keys.** B arms the cards (they highlight). The next 1-7 picks a building, and Esc disarms or cancels placing.
+  When the cards are not armed, 1-3 still set game speed. Clicking a card always works.
+- **Builders at once.** Placing a site makes up to 3 of the selected able people its builders (the existing cap).
+  The rest of the selection keeps their current jobs, and a toast says how many joined (`3 of 5 joined the build`).
+  The builders are the people selected when the card was picked. Clearing the selection cancels placing.
+- **Barricade lines.** Up to 3 selected builders build the first site of a dragged line. When it is done, they go
+  on to the next unfinished site of the same line until the line is complete. Saving stays parked: the line link is
+  not written to saves.

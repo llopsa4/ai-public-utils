@@ -4,11 +4,84 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 [WORKFLOW.md](../../WORKFLOW.md#handoff-files).
 
 ## Working on
-- G7 done 2026-11-20, next G8 (Sonnet). G16-G19 (user's additions) done 2026-11-20, G6 done. G5 done. G4, G3 done. W11 closed by the user 2026-11-20. G2, G1 done. G0 (2026-11-20): spec `DESIGN-hunting.md` and PLAN rows G1-G15 accepted by the user; next G1. Tier 3 W1-W10 and R1-R2 done (W11, the user's playtest, still open); tier 2 V1-V9 done (V9 passed; next: the user picks the next Phase D item). 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
+- G23 done and G24 passed 2026-11-20 (the user tested the building cards by hand, no fixes); G15 passed too (the user played hunting, plaza, feedback and music; no fixes), so G1-G24 are all done; the user picks the next Phase D item. G22 done. G21, G20 done. G14 done 2026-11-20, next G15 (the user's playtest). G13 done. G12, G11 done. G10, G9, G8 done. G7 done. G16-G19 (user's additions) done 2026-11-20, G6 done. G5 done. G4, G3 done. W11 closed by the user 2026-11-20. G2, G1 done. G0 (2026-11-20): spec `DESIGN-hunting.md` and PLAN rows G1-G15 accepted by the user; next G1. Tier 3 W1-W10 and R1-R2 done (W11, the user's playtest, still open); tier 2 V1-V9 done (V9 passed; next: the user picks the next Phase D item). 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
   (`save.ts`: `serialize`, `parseSave`, `loadState`, plus `dayOf` and `SAVE_FORMAT`); DS2 done
   (`src/save/slots.ts`: `listSlots`, `readSlot`, `writeSlot`, `clearSlot`, `importSlot`, `probe`,
   `firstEmptySlot`, `browserStorage`); DS3 done (`GameScene.saveNow()` and `saveSlot` are the hooks
   for the DS4 HUD menu); DS4 done. Next: DS5 (the user's playtest).
+
+## Building cards notes (G23, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/main.ts` (scene drawing order is now Select, Build, Hud, so the cards sit above the panel instead of under its translucent fill), `src/scenes/Menu.ts` (controls text), `DESIGN-slice.md` and `TESTING.md`.
+- Choices the spec left open: the stance buttons moved to a row under Draft (x 560-756) so seven cards (about 510 px, from x 770) never cover them; cards are 72 px wide with the icon fitted into a 56 x 32 box under the title; B with nobody able to build toasts `Select an adult who is not drafted to build.` (a sim message, shown in the Select toasts); the number key that picks clears `armed` one frame later so Select does not also read it as a speed key; `placers` holds every selected id (children and drafted included, as G22 counts them); placing ends when no selected person can build, not only when the selection is empty; a failed placement toast (`Not enough hides.`, placement errors) appears above the cards.
+- Debug hooks: `camp.buildMenu()` is now `{ visible, armed, page, shown, placing }` (was `open`), and `camp.buildCard(type)` gives a shown card's screen centre.
+- Checked by hand by the user (2026-11-20, G24): building from the panel, including a barricade line; no fixes raised.
+
+## Builders and lines notes (G22, 2026-11-20)
+- Choices the spec left open: the 3 builders are the able ones **nearest the site** (ties by id); the toast's "of N" counts every
+  id sent (children and drafted included), and it is shown whenever `builders` is non-empty. A line is one `place` order
+  (`at` + `line`), not one order per segment; G23 must send it that way from `Game.ts` (today it still sends one order per segment,
+  so lines placed in the game get no `lineId` yet).
+- Anyone building a line segment moves on, auto-work builders too (simpler than marking ordered builders). Builders who move on
+  wait at a segment until its wood is hauled, as at any site.
+- `lineId` sits on `Building`, so `serialize` writes it like any field; nothing reads or validates it (saving parked, no save code).
+
+## Test notes (G14, 2026-11-20)
+- Went past PLAN's file list on purpose: none beyond `Menu.ts`, `smoke.spec.ts` and `TESTING.md`; the e2e cases the spec listed were already written in G11-G13 and G16-G19.
+- Fixed a flaky music e2e case (failed about 1 run in 4): the hold of 50 ticks starts at the tick of the first frame that sees no wolf (0 or 1), and the test stepped exactly 49 then 2. It now steps 40 then 12.
+- Menu controls text: right-click now says it can hunt a deer or bison; the last line mentions the Menu button's music on / off and volume.
+
+## Music notes (G13, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/main.ts` (arms the sound), `tests/music.test.ts` (new), `tests/smoke.spec.ts` (the 12th e2e case), `TESTING.md`. The HUD menu panel grew from 300 to 340 px to hold the music row.
+- Choices the spec left open: D minor pentatonic at 72 bpm for the flute, 54 bpm heartbeat, 138 bpm war drum; the fade is a 0.7 s time constant (about 2 s), a track keeps being scheduled 3 s after its fade starts; volume is in tenths (default 60%, master gain is half the volume); the hold uses sim ticks (50), so it also waits while paused; the mode follows `state.enemies.length > 0` (allies and effects do not count); preferences are not tied to a save.
+- Nothing was listened to when written. The user played in G15 (2026-11-20) and raised no fixes, so the levels (flute 0.5, drone 0.16, wind 0.05) stand.
+- The CULTURE.md wording is a proposal under *Needs review*; nothing is shown in the game yet.
+
+## Drawn game and hunt order notes (G12, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/render/people.ts` (the load on the back), `src/scenes/Game.ts` (one call to `syncAnimals`), `tests/smoke.spec.ts` (a 10th e2e case), `TESTING.md`. `placeholders.ts` and `art/manifest.json` were not needed: animals are drawn in code like the wolves, so there are no manifest keys.
+- Choices the spec left open: animals share one Graphics layer at the lowest-row depth of the group (like wolves), a fleeing one is stretched 15%, a carcass shrinks to 35% as the meat goes; the load is a dark red bundle that grows with the carry (full at 10) with a hide on top; a left-click picks a live animal or carcass (selecting one clears people, as a building does) and the panel offers `Right-click with hunters to ...`; the hunt order is refused with the same text as other work orders (`Nobody can hunt there.`, `Drafted people can't take work orders.`).
+- Not checked by hand: the look at zoom 0.5 and 2, a real hunt (a deer fleeing, three bison trips), the load on a walking hunter.
+
+## Arrow notes (G11, 2026-11-20)
+- Arrows are found by watching state, not by a sim event: `cooldown` rising on a bow-holder is a shot. Several shots in one frame
+  (4x speed, a slow frame) can merge into one arrow; the 15-tick bow cooldown means at most one per frame at 4x.
+- Bow art is a placeholder drawn in code (stave and string on the tool layer); Codex can replace it. Mounted people and lancers
+  never hold one; a fleeing person's bow is hidden.
+- Went past the plan's file list: `src/render/arrows.ts` is new and `src/scenes/Game.ts` calls it; `PeopleView.ground(id)` gives the
+  drawn feet so the arrow leaves the smoothed sprite.
+- No e2e case (the plan asked for screenshots only); arrows are not unit-tested because the render code imports Phaser.
+
+## Wild game notes (G10, 2026-11-20)
+- Numbers the spec left open, all in `src/data/animals.json` for G15: flight 60 ticks toward a tile 10 away from the shooter,
+  the **whole herd** flees, and a miss startles it too; a calm herd wanders within 4 tiles every 240 ticks; a respawned herd is
+  bison 35% of the time (3 deer or 4 bison).
+- Herds draw from their own random stream (`GameState.wild`, seeded from the run seed), so the camp's own rolls did not shift.
+  `serialize` writes `animals` and `wild` like any field; nothing validates them (saving parked).
+- A hunter goes for a carcass with goods left before a live animal, keeps chasing a chosen animal past spotting distance, and
+  without a target walks to the plaza ring and looks again every 50 ticks. A hunter shooting from range may stop on a tile
+  someone else holds (they do not look for a free tile while shooting).
+- A non-hunter adult given the hunt order shoots with the hunter's bow (`fighterOf` as a hunter), as the spec says.
+- `jobs.json` `hunt` is now empty; the old roll, hunt spot and `huntTicks` are gone.
+- Not drawn yet (G12): animals, carcasses and the right-click hunt order; the e2e has no hunt case until then.
+
+## Full store notes (G9, 2026-11-20)
+- Read "with no order" as "with no job": an assigned job is the player's order and stands. A gatherer or woodcutter
+  with full hands keeps the job and waits by the bush or tree (not at the store) until a store has room; only jobless
+  people switch to free work. A hunter or drier with goods no store can take waits where they are (G10 rewrites hunting).
+- People check for room before walking to the store, so the toast fires when a delivery is skipped, not only after a
+  failed one; it comes once per person until they are no longer blocked. The "told" set is a `WeakSet` in `jobs.ts`,
+  outside `GameState`, because saving is parked; a loaded save may toast again.
+- Also fixed: a hauler's drop used to lose what the site did not need; it now stays carried and goes back to the store.
+- Went past the plan: `tests/sim/people.test.ts` (the full-store test now waits for the walk back from the bush),
+  `TESTING.md`. `orders.ts` needed no change (orders already reset the task; `decide` no longer sends them back).
+- Not checked by hand: a real full store in the game.
+
+## Sitting notes (G8, 2026-11-20)
+- Sitting is derived, not stored: `isSitting` = undrafted, no job, idle step, standing on the fire's ring. No new `Person` field, nothing to save.
+- Choices the spec left open: adults keep looking for work every tick while seated (timer 0), elders and children rest 50 ticks between looks; a
+  full ring leaves adults where they stand and elders and children wander as before; wandering is otherwise gone. A finished fire only.
+- The seated look is a placeholder (sprite squashed to 0.72 from the feet), not drawn art; Codex can replace it later.
+- Went past the plan's file list: `src/sim/buildings.ts`, `tests/sim/seasons.test.ts` (rng-sensitive hunt test now sums 4 seeds), `tests/smoke.spec.ts`, `TESTING.md`.
+- Not checked by hand: a real raid with people leaving the plaza to flee and returning, a seated person taking a right-click order.
 
 ## No shared standing tile notes (G7, 2026-11-20)
 - Went past PLAN's file list on purpose: `src/sim/occupancy.ts` (new), `tests/sim/orders.test.ts` (a single move onto a tile

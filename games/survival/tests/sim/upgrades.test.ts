@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
+import { spottingDistance } from '../../src/sim/animals';
 import { test } from 'node:test';
 import upgradesData from '../../src/data/upgrades.json';
-import wavesData from '../../src/data/waves.json';
 import { assignWorkers, placeBuilding } from '../../src/sim/buildings';
 import { fighterOf } from '../../src/sim/combat';
 import { coldPerPerson } from '../../src/sim/economy';
@@ -112,27 +112,11 @@ test('with bows a hunter takes a shot at a wolf 5 tiles away; without, not yet',
   assert.equal(fired(true), true, 'inside range 5');
 });
 
-test('dogs never lower a hunt: same seed, at least as many hides', () => {
-  const hides = (dogs: boolean): number => {
-    const s = newGame(1);
-    s.store.wood = 100;
-    s.store.hides = 20;
-    s.store.food = 100;
-    const lodge = placeBuilding(s, 'hunting_lodge', 28, 26).building!;
-    lodge.done = true;
-    assignWorkers(s, [s.people.find((p) => p.age === 'adult')!.id], lodge.id);
-    if (dogs) s.upgrades.push('dogs');
-    const before = s.store.hides;
-    stepFed(s, 3000);
-    return s.store.hides - before;
-  };
-  const wave = wavesData.waves.map((w) => w.at);
-  wavesData.waves.forEach((w) => (w.at = 1e9));
-  try {
-    assert.ok(hides(true) >= hides(false));
-  } finally {
-    wavesData.waves.forEach((w, i) => (w.at = wave[i]));
-  }
+test('dogs widen the spotting distance from 22 to 26 tiles', () => {
+  const s = newGame(1);
+  assert.equal(spottingDistance(s), 22);
+  s.upgrades.push('dogs');
+  assert.equal(spottingDistance(s), 26);
 });
 
 /** A camp with a finished healers' lodge staffed by `n` adults (the upgrade bought). */

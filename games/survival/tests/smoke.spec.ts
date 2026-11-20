@@ -2,7 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 
 interface Camp {
   state: {
-    people: { id: number; age: string; drafted: boolean }[]; tick: number; result: string | null; gift: number; upgrades: string[];
+    people: { id: number; age: string; drafted: boolean; job: { kind: string; building: number } | null }[]; tick: number; speed: number; messages: { text: string }[]; result: string | null; gift: number; upgrades: string[];
     store: Record<string, number>;
     buildings: { id: number; type: string; x: number; y: number; done: boolean }[];
   };
@@ -10,7 +10,8 @@ interface Camp {
   selectBuilding: (id: number | null) => void;
   upgradeRows: () => Record<string, string>;
   upgradeBuy: (id: string) => [number, number] | null;
-  buildMenu: () => { open: boolean; page: string; shown: string[] };
+  buildMenu: () => { visible: boolean; armed: boolean; page: string; shown: string[]; placing: string | null };
+  buildCard: (type: string) => [number, number] | null;
   wotakuyeTip: () => string | null;
   step: (n: number) => void;
   banner: () => string | null;
@@ -21,8 +22,11 @@ interface Camp {
   powerButton: (id: string) => [number, number] | null;
   hoverTip: () => string | null;
   selectPeople: (ids: number[]) => void;
+  selectAnimal: (id: number | null) => void;
   panelText: () => { title: string; detail: string };
   lastPing: () => { kind: string; target: string; count: number } | null;
+  music: () => { mode: string; on: boolean; volume: number; started: boolean };
+  hud: { openMenu: () => void };
   scene: { aiming: string | null; cameras: { main: { worldView: { x: number; y: number }; zoom: number } } };
 }
 interface MenuHook {
@@ -208,14 +212,75 @@ test('tier 2: a society upgrade needs its tier 1 upgrade, and Tab pages the Buil
   await page.evaluate(() => window.camp.step(2));
   expect(await page.evaluate(() => window.camp.state.upgrades)).toEqual(['dogs', 'scouts']);
 
-  // The Build menu has a Camp page; Tab switches to Societies, which shows only the unlocked entry.
+  // The building cards show only for a selected adult. They have a Camp page; Tab switches to Societies,
+  // which shows only the unlocked entry.
   const menu = () => page.evaluate(() => window.camp.buildMenu());
-  await pressUntil(page, 'b', async () => (await menu()).open);
+  expect((await menu()).visible).toBe(false);
+  await page.evaluate(() => window.camp.selectPeople(window.camp.state.people.filter((p) => p.age === 'adult').slice(0, 2).map((p) => p.id)));
+  await expect.poll(async () => (await menu()).visible).toBe(true);
+  await pressUntil(page, 'b', async () => (await menu()).armed);
   expect((await menu()).page).toBe('camp');
   await pressUntil(page, 'Tab', async () => (await menu()).page === 'societies');
   expect((await menu()).shown).toEqual(['scouts_lodge']);
   await page.screenshot({ path: 'test-results/tier2-build-societies.png' });
   await pressUntil(page, 'Tab', async () => (await menu()).page === 'camp');
+
+  expect(errors).toEqual([]);
+});
+
+test('building cards: hidden for children, B then a number picks, and placing sends the selection as builders', async ({ page }) => {
+  const errors = watchErrors(page);
+
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => !!window.camp?.selectBuilding && !!window.camp?.buildMenu);
+  const menu = () => page.evaluate(() => window.camp.buildMenu());
+
+  // Nothing selected, or only children: no cards. A drafted adult cannot build either.
+  expect((await menu()).visible).toBe(false);
+  await page.evaluate(() => window.camp.selectPeople(window.camp.state.people.filter((p) => p.age === 'child').map((p) => p.id)));
+  await page.waitForTimeout(300);
+  expect((await menu()).visible).toBe(false);
+  await pressUntil(page, 'b', async () => (await page.evaluate(() => window.camp.state.messages.map((m) => m.text))).some((m) => m.includes('Select an adult')));
+  expect((await menu()).armed).toBe(false);
+
+  // Five adults: the cards show, B arms them, the next 1 picks the first card; 1-3 would otherwise set the speed.
+  const adults = await page.evaluate(() => window.camp.state.people.filter((p) => p.age === 'adult').slice(0, 5).map((p) => p.id));
+  expect(adults).toHaveLength(5);
+  await page.evaluate((ids) => window.camp.selectPeople(ids), adults);
+  await expect.poll(async () => (await menu()).visible).toBe(true);
+  await page.screenshot({ path: 'test-results/g23-cards.png' });
+  await page.evaluate(() => { window.camp.state.store.wood = 100; window.camp.state.store.hides = 40; }); // the card is dim and refuses when short
+  const first = (await menu()).shown[0];
+  await pressUntil(page, 'b', async () => (await menu()).armed);
+  await pressUntil(page, '1', async () => (await menu()).placing === first);
+  expect((await menu()).armed).toBe(false);
+  expect(await page.evaluate(() => window.camp.state.speed)).toBe(1);
+
+  // Left-click the map: a site appears and exactly three of the five become its builders.
+  const before = await page.evaluate(() => window.camp.state.buildings.length);
+  for (const at of [[640, 250], [760, 300], [520, 300], [640, 400]] as [number, number][]) {
+    if ((await page.evaluate(() => window.camp.state.buildings.length)) > before) break;
+    await clickCanvas(page, at);
+    await page.waitForTimeout(200);
+  }
+  await page.evaluate(() => window.camp.step(1));
+  const site = await page.evaluate((b) => window.camp.state.buildings[b], before);
+  expect(site?.type).toBe(first);
+  const builders = await page.evaluate((id) => window.camp.state.people.filter((p) => p.job?.kind === 'build' && p.job.building === id).length, site.id);
+  expect(builders).toBe(3);
+  // The other two were not made builders (idle people may still fetch wood for the site on their own).
+  const others = await page.evaluate((ids) => window.camp.state.people.filter((p) => ids.includes(p.id) && p.job?.kind !== 'build').length, adults);
+  expect(others).toBe(2);
+  expect((await menu()).placing).toBeNull();
+
+  // Clearing the selection hides the cards and cancels placing.
+  await pressUntil(page, 'b', async () => (await menu()).armed);
+  await pressUntil(page, '1', async () => (await menu()).placing === first);
+  await page.evaluate(() => window.camp.selectPeople([]));
+  await expect.poll(async () => (await menu()).visible).toBe(false);
+  expect((await menu()).placing).toBeNull();
 
   expect(errors).toEqual([]);
 });
@@ -435,6 +500,118 @@ test('right-clicks ping: green ground, gold tree, red wolf, and a grey refusal w
   expect(errors).toEqual([]);
 });
 
+test('right-clicking a deer sends the hunt order, a carcass is fetched, and a click on game fills the panel', async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => !!window.camp?.lastPing);
+  await page.evaluate(() => window.camp.orders([{ type: 'pause', on: true }]));
+
+  type Beast = { id: number; kind: string; herd: number; x: number; y: number; hp: number; dead: boolean; meat: number; hides: number; fleeing: number; path: unknown[] };
+  const spot = await page.evaluate(() => {
+    const s = window.camp.state as unknown as { map: { size: number; tiles: string[] }; animals?: Beast[] };
+    const n = s.map.size;
+    const at = (x: number, y: number) => s.map.tiles[y * n + x];
+    for (let r = 8; r < 20; r++) {
+      for (let x = 24 - r; x <= 24 + r; x++) {
+        const y = 24 + r;
+        if ([-1, 0, 1].every((dy) => [-1, 0, 1, 2, 3].every((dx) => at(x + dx, y + dy) === 'grass'))) return [x, y] as [number, number];
+      }
+    }
+    throw new Error('no open grass');
+  });
+  await page.evaluate(([x, y]) => {
+    const s = window.camp.state as unknown as { animals?: Beast[] };
+    s.animals = [
+      { id: 9100, kind: 'deer', herd: 90, x, y, hp: 24, dead: false, meat: 10, hides: 1, fleeing: 0, path: [] },
+      { id: 9101, kind: 'bison', herd: 91, x: x + 3, y, hp: 20, dead: true, meat: 30, hides: 3, fleeing: 0, path: [] },
+    ];
+  }, spot);
+  await page.evaluate(([x, y]) => {
+    const cam = window.camp.scene.cameras.main as unknown as { centerOn: (a: number, b: number) => void };
+    cam.centerOn((x + 1 - y) * 32 + 48 * 32, (x + 1 + y) * 16 + 32);
+  }, spot);
+  await page.waitForTimeout(150);
+  const screenOf = (dx: number) => page.evaluate(([x, y, d]) => {
+    const cam = window.camp.scene.cameras.main;
+    return { x: (((x + d) - y) * 32 + 48 * 32 - cam.worldView.x) * cam.zoom, y: (((x + d) + y) * 16 + 32 - cam.worldView.y) * cam.zoom };
+  }, [spot[0], spot[1], dx]);
+  const ids = await page.evaluate(() => window.camp.state.people.filter((q) => q.age === 'adult').slice(0, 2).map((q) => q.id));
+  const rightClick = async (p: { x: number; y: number }, dy: number) => {
+    const box = (await page.locator('#game canvas').boundingBox())!;
+    await page.mouse.click(box.x + (p.x / 1280) * box.width, box.y + ((p.y + dy) / 720) * box.height, { button: 'right' });
+    await page.waitForTimeout(120);
+  };
+
+  // Click the deer: the panel names it.
+  const deer = await screenOf(0);
+  await clickCanvas(page, [deer.x, deer.y - 8]);
+  await expect.poll(() => page.evaluate(() => window.camp.panelText().title)).toBe('Deer');
+  await page.screenshot({ path: 'test-results/g12-deer.png' });
+
+  // Hunters selected: right-click the deer = a gold animal ping and the hunt job on that animal.
+  await page.evaluate((i) => window.camp.selectPeople(i), ids);
+  await rightClick(deer, -8);
+  expect(await page.evaluate(() => window.camp.lastPing())).toMatchObject({ kind: 'work', target: 'animal' });
+  await page.evaluate(() => window.camp.step(2));
+  const jobs = await page.evaluate((i) => window.camp.state.people.filter((q) => i.includes(q.id)).map((q) => (q as unknown as { job: { kind: string; animal: number } | null }).job), ids);
+  expect(jobs).toEqual(ids.map(() => expect.objectContaining({ kind: 'hunt', animal: 9100 })));
+
+  // The carcass: a gold carcass ping and the panel with its meat.
+  await rightClick(await screenOf(3), -4);
+  expect(await page.evaluate(() => window.camp.lastPing())).toMatchObject({ kind: 'work', target: 'carcass' });
+  await page.evaluate(() => window.camp.selectAnimal(9101));
+  await expect.poll(() => page.evaluate(() => window.camp.panelText().title)).toBe('Bison carcass');
+  expect((await page.evaluate(() => window.camp.panelText().detail))).toContain('30 meat and 3 hides left');
+  await page.screenshot({ path: 'test-results/g12-carcass.png' });
+
+  expect(errors).toEqual([]);
+});
+
+test('music: starts on the first click, goes to war while wolves are out, and the HUD menu toggles and remembers it', async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new'); // the first click starts the sound
+  await page.waitForFunction(() => !!window.camp?.music);
+  expect(await page.evaluate(() => window.camp.music())).toMatchObject({ mode: 'ambient', on: true, started: true });
+
+  await page.evaluate(() => window.camp.orders([{ type: 'pause', on: true }])); // ticks only move with step()
+  // A wolf on the map: war music. Gone: war music holds for 50 ticks (5 s), then ambient again.
+  await page.evaluate(() => {
+    const s = window.camp.state as unknown as { enemies: unknown[] };
+    s.enemies.push({ id: 9001, kind: 'wolf', x: 5, y: 5, hp: 40, cooldown: 0, fleeing: false, wave: 0 });
+  });
+  await expect.poll(() => page.evaluate(() => window.camp.music().mode)).toBe('war');
+  await page.evaluate(() => ((window.camp.state as unknown as { enemies: unknown[] }).enemies.length = 0));
+  await page.waitForTimeout(200);
+  expect(await page.evaluate(() => window.camp.music().mode)).toBe('war');
+  // The hold starts at the tick of the first frame that sees no wolf (tick 0 or 1 here), so keep clear of the 50 edge.
+  await page.evaluate(() => window.camp.step(40));
+  await page.waitForTimeout(200);
+  expect(await page.evaluate(() => window.camp.music().mode)).toBe('war');
+  await page.evaluate(() => window.camp.step(12));
+  await expect.poll(() => page.evaluate(() => window.camp.music().mode)).toBe('ambient');
+
+  // The HUD menu: Music on/off and the volume, kept in the browser.
+  await page.evaluate(() => window.camp.hud.openMenu());
+  await page.waitForTimeout(150);
+  await clickCanvas(page, [540, 434]);
+  expect(await page.evaluate(() => window.camp.music().on)).toBe(false);
+  await page.screenshot({ path: 'test-results/g13-menu.png' });
+  await clickCanvas(page, [540, 434]);
+  expect(await page.evaluate(() => window.camp.music().on)).toBe(true);
+  await clickCanvas(page, [670, 434]);
+  await clickCanvas(page, [670, 434]);
+  expect(await page.evaluate(() => window.camp.music().volume)).toBeCloseTo(0.4, 5);
+  await clickCanvas(page, [774, 434]);
+  expect(await page.evaluate(() => window.camp.music().volume)).toBeCloseTo(0.5, 5);
+  expect(JSON.parse((await page.evaluate(() => localStorage.getItem('survival.music')))!)).toEqual({ on: true, volume: 0.5 });
+
+  expect(errors).toEqual([]);
+});
+
 test('clicking a berry bush tells how much fruit is left on it; Esc closes it', async ({ page }) => {
   const errors = watchErrors(page);
   await page.goto('/?debug');
@@ -462,5 +639,31 @@ test('clicking a berry bush tells how much fruit is left on it; Esc closes it', 
   await page.screenshot({ path: 'test-results/g18-berry-panel.png' });
   await page.keyboard.press('Escape');
   await expect.poll(() => page.evaluate(() => window.camp.panelText().title)).toBe('');
+  expect(errors).toEqual([]);
+});
+
+test('idle people sit on the council plaza ring, one to a tile', async ({ page }, info) => {
+  const errors = watchErrors(page);
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  await page.evaluate(() => {
+    window.camp.orders([{ type: 'pause', on: true }]);
+    window.camp.step(700);
+  });
+  await page.waitForTimeout(600);
+  const seated = await page.evaluate(() => {
+    const s = window.camp.state as unknown as { people: { x: number; y: number; job: unknown; drafted: boolean; task: { step: string } }[]; buildings: { type: string; x: number; y: number }[] };
+    const fire = s.buildings.find((b) => b.type === 'fire')!;
+    const tiles = s.people
+      .filter((p) => !p.job && !p.drafted && p.task.step === 'idle')
+      .map((p) => [Math.round(p.x), Math.round(p.y)])
+      .filter(([x, y]) => x >= fire.x - 1 && x <= fire.x + 4 && y >= fire.y - 1 && y <= fire.y + 4);
+    return { n: tiles.length, distinct: new Set(tiles.map((t) => t.join(','))).size };
+  });
+  expect(seated.n).toBeGreaterThanOrEqual(15);
+  expect(seated.distinct).toBe(seated.n);
+  await page.locator('#game canvas').screenshot({ path: info.outputPath('plaza.png') });
   expect(errors).toEqual([]);
 });

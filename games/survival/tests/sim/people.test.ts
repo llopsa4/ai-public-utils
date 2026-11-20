@@ -149,7 +149,8 @@ test('a full store keeps the load: nothing is lost and nothing is added', () => 
   assert.equal(s.store.food, cap);
   assert.ok(Math.abs(gatherer.carry.amount - 5) < 1e-6, `still carrying ${gatherer.carry.amount}`);
   s.store.food = cap - 10;
-  stepFed(s, 100);
+  // The gatherer waits by the bush, not at the store (DESIGN-hunting.md `## Full store`), so they walk back first.
+  for (let i = 0; i < 1000 && gatherer.carry.amount >= 5 - 1e-6; i++) stepFed(s, 1);
   assert.ok(Math.abs(s.store.food - (cap - 5)) < 1e-6, `store ${s.store.food}`);
   assert.ok(gatherer.carry.amount < 5, `the load was delivered (now carrying ${gatherer.carry.amount})`);
 });

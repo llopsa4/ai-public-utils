@@ -2,6 +2,7 @@
 // Also the pause/speed buttons and the wave banner; toasts, the selection panel and a building's upgrades live in Select.ts.
 import Phaser from 'phaser';
 import data from '../data/resources.json';
+import { music } from '../audio/music';
 import { unityBand } from '../sim/economy';
 import { wotakuyeHelp } from '../sim/help';
 import { displayLabel, englishLabel } from '../sim/labels';
@@ -64,6 +65,8 @@ export class HudScene extends Phaser.Scene {
   private menuObjects: Phaser.GameObjects.GameObject[] = [];
   private tip!: { box: Phaser.GameObjects.Rectangle; text: Phaser.GameObjects.Text };
   private menuNote!: Phaser.GameObjects.Text;
+  private musicToggle!: Phaser.GameObjects.Text;
+  private musicLevel!: Phaser.GameObjects.Text;
   private quitLabel!: Phaser.GameObjects.Text;
   /** After a failed save, the quit button's next click leaves without saving. */
   private quitUnsaved = false;
@@ -245,8 +248,8 @@ export class HudScene extends Phaser.Scene {
     open.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.openMenu());
 
     const shade = this.add.rectangle(0, 0, 1280, 720, 0x000000, 0.6).setOrigin(0).setInteractive().setDepth(20);
-    const panel = this.add.rectangle(640, 360, 440, 300, 0x1d1a16, 0.96).setStrokeStyle(2, 0x6b5a3a).setDepth(21);
-    const title = this.add.text(640, 250, 'Menu', { fontFamily: 'sans-serif', fontSize: '26px', color: INK }).setOrigin(0.5).setDepth(22);
+    const panel = this.add.rectangle(640, 360, 440, 340, 0x1d1a16, 0.96).setStrokeStyle(2, 0x6b5a3a).setDepth(21);
+    const title = this.add.text(640, 222, 'Menu', { fontFamily: 'sans-serif', fontSize: '26px', color: INK }).setOrigin(0.5).setDepth(22);
     const button = (y: number, label: string, onClick: () => void): Phaser.GameObjects.Text => {
       const b = this.add
         .text(640, y, label, { fontFamily: 'sans-serif', fontSize: '20px', color: '#1d1a16', backgroundColor: INK })
@@ -256,16 +259,42 @@ export class HudScene extends Phaser.Scene {
       b.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && onClick());
       return b;
     };
-    const resume = button(310, 'Resume', () => this.closeMenu(true));
-    const exportBtn = button(365, 'Export this camp', () => this.exportCamp());
-    this.quitLabel = button(420, 'Save and quit to menu', () => this.quit());
-    this.menuNote = this.add.text(640, 468, '', { fontFamily: 'sans-serif', fontSize: '13px', color: '#ffb4a8', align: 'center', wordWrap: { width: 400 } }).setOrigin(0.5).setDepth(22);
+    const resume = button(274, 'Resume', () => this.closeMenu(true));
+    const exportBtn = button(326, 'Export this camp', () => this.exportCamp());
+    this.quitLabel = button(378, 'Save and quit to menu', () => this.quit());
+    // Music: an on/off toggle and a volume in tenths, remembered by the browser (src/audio/music.ts).
+    const small = (x: number, label: string, onClick: () => void): Phaser.GameObjects.Text => {
+      const b = this.add
+        .text(x, 434, label, { fontFamily: 'sans-serif', fontSize: '16px', color: '#1d1a16', backgroundColor: INK })
+        .setOrigin(0.5).setPadding(10, 5).setDepth(22).setInteractive({ useHandCursor: true });
+      b.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && onClick());
+      return b;
+    };
+    this.musicToggle = small(540, 'Music: on', () => {
+      music.setOn(!music.on);
+      this.refreshMusic();
+    });
+    const quieter = small(670, '-', () => {
+      music.setVolume(music.volume - 0.1);
+      this.refreshMusic();
+    });
+    this.musicLevel = this.add.text(722, 434, '', { fontFamily: 'sans-serif', fontSize: '16px', color: INK }).setOrigin(0.5).setDepth(22);
+    const louder = small(774, '+', () => {
+      music.setVolume(music.volume + 0.1);
+      this.refreshMusic();
+    });
+    this.menuNote = this.add.text(640, 484, '', { fontFamily: 'sans-serif', fontSize: '13px', color: '#ffb4a8', align: 'center', wordWrap: { width: 400 } }).setOrigin(0.5).setDepth(22);
     // The shade comes first: `menuOpen` reads it.
-    this.menuObjects = [shade, panel, title, resume, exportBtn, this.quitLabel, this.menuNote];
+    this.menuObjects = [shade, panel, title, resume, exportBtn, this.quitLabel, this.musicToggle, quieter, this.musicLevel, louder, this.menuNote];
     this.setMenuVisible(false);
     this.input.keyboard!.on('keydown-ESC', () => this.menuOpen && this.closeMenu(true));
     const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
     if (camp) camp.hud = this;
+  }
+
+  private refreshMusic(): void {
+    this.musicToggle.setText(music.on ? 'Music: on' : 'Music: off');
+    this.musicLevel.setText(`${Math.round(music.volume * 100)}%`).setAlpha(music.on ? 1 : 0.5);
   }
 
   private setMenuVisible(on: boolean): void {
@@ -281,6 +310,7 @@ export class HudScene extends Phaser.Scene {
     queueOrders(this.game2.state, [{ type: 'pause', on: true }]);
     this.quitUnsaved = false;
     this.menuNote.setText('');
+    this.refreshMusic();
     this.quitLabel.setText(this.game2.saveSlot === null ? 'Quit to menu (not saved)' : 'Save and quit to menu');
     this.setMenuVisible(true);
   }

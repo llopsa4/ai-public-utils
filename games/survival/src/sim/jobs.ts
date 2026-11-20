@@ -1,11 +1,11 @@
 // Jobs (DESIGN-slice.md `## Jobs`): a worker cycles walk -> work -> walk to the store -> deliver.
 // Implemented: gather (berry tiles and gathering spots), chop, hunt, haul, build. Fight comes with C6.
 import jobsData from '../data/jobs.json';
-import upgradeData from '../data/upgrades.json';
+import { animalById, ANIMAL_DATA, carcasses, hurtAnimal, liveAnimals, spottingDistance, takeLoad, type Animal } from './animals';
 import {
-  buildingDefs, buildingName, findAutoWork, materialsComplete, nearestBuilding, nextHaulLoad, ringState, standsAt,
+  buildingDefs, buildingName, findAutoWork, materialsComplete, nearestBuilding, nextHaulLoad, nextLineSite, plazaOf, ringState, standsAt,
 } from './buildings';
-import { stepFighter, stepFlee } from './combat';
+import { fighterOf, stepFighter, stepFlee } from './combat';
 import { HUNGRY_AT, HUNGRY_WORK, unityWork } from './economy';
 import { ages, beginWalk, canWork, idleTask, movePerson, releaseJob, walkable } from './people';
 import { campCentre } from './map';
@@ -15,7 +15,7 @@ import { seasonal } from './seasons';
 import {
   addMessage, horseCap, storeCap, type Building, type GameState, type Job, type JobKind, type Person, type Res, type Task, type Tile2,
 } from './state';
-import { buildSpeed, hasUpgrade } from './upgrades';
+import { buildSpeed } from './upgrades';
 
 export { canWork };
 
@@ -92,20 +92,6 @@ function pickSpotTile(s: GameState, spot: Building): Tile2 | null {
   return best;
 }
 
-/** A random walkable tile 14..22 tiles from the fire where a hunt happens. */
-function pickHuntSpot(s: GameState): Tile2 | null {
-  const [lo, hi] = jobsData.jobs.hunt.spotDist;
-  const [cx, cy] = campCentre(s.map);
-  const spots: Tile2[] = [];
-  for (let y = 0; y < s.map.size; y++) {
-    for (let x = 0; x < s.map.size; x++) {
-      const d = Math.hypot(x - cx, y - cy);
-      if (d >= lo && d <= hi && walkable(s, x, y)) spots.push([x, y]);
-    }
-  }
-  return spots.length === 0 ? null : spots[Math.floor(rngNext(s.rng) * spots.length)];
-}
-
 /**
  * Waits for a free tile (DESIGN-hunting.md `## No shared standing tile`): stays put when no one else holds the
  * person's tile, else walks to the nearest free one; tries again after RETRY. The job is kept.
@@ -161,18 +147,90 @@ function loaded(p: Person): boolean {
   return p.carry.amount > 1e-9 || (p.carry.hides ?? 0) > 1e-9;
 }
 
+/** True when a store has room for some of what the person carries. */
+function storeHasRoom(s: GameState, p: Person): boolean {
+  const room = (res: Res) => storeCap(s, res) - s.store[res] > 1e-9;
+  return (p.carry.amount > 1e-9 && room(p.carry.res)) || ((p.carry.hides ?? 0) > 1e-9 && room('hides'));
+}
+
+/**
+ * Holding goods that no store can take (DESIGN-hunting.md `## Full store`): the person keeps them, stops
+ * waiting at the store and delivers once there is room.
+ */
+export function storeBlocked(s: GameState, p: Person): boolean {
+  return loaded(p) && !storeHasRoom(s, p);
+}
+
+// People already told `Store is full` while still holding the goods. Kept outside GameState on purpose:
+// saving is parked (PLAN.md), and the toast is only a message.
+const toldFull = new WeakSet<Person>();
+
+function tellFull(s: GameState, p: Person): void {
+  if (toldFull.has(p)) return;
+  toldFull.add(p);
+  addMessage(s, 'Store is full');
+}
+
+/** True when the person can deliver now; otherwise they are blocked and told so once. */
+function canDeliver(s: GameState, p: Person): boolean {
+  if (storeHasRoom(s, p)) return true;
+  tellFull(s, p);
+  return false;
+}
+
+/** How much of `res` a site still needs, not counting loads already on their way. */
+function siteNeeds(site: Building, res: Res): number {
+  return Math.max(0, (buildingDefs[site.type].cost?.[res] ?? 0) - (site.delivered[res] ?? 0));
+}
+
+/** True when the site needs some of what the person carries. */
+function siteTakes(site: Building, p: Person): boolean {
+  return (p.carry.amount > 1e-9 && siteNeeds(site, p.carry.res) > 1e-9) || ((p.carry.hides ?? 0) > 1e-9 && siteNeeds(site, 'hides') > 1e-9);
+}
+
+/** Puts what the site needs from the person's load into it; the rest stays carried. */
+function dropAtSite(site: Building, p: Person): void {
+  const put = (res: Res, have: number): number => {
+    const n = Math.min(have, siteNeeds(site, res));
+    if (n > 0) site.delivered[res] = (site.delivered[res] ?? 0) + n;
+    return n;
+  };
+  if (p.carry.amount > 1e-9) p.carry.amount -= put(p.carry.res, p.carry.amount);
+  const hides = p.carry.hides ?? 0;
+  if (hides > 1e-9) p.carry.hides = hides - put('hides', hides);
+  if (p.carry.amount < 1e-9) p.carry.amount = 0;
+  if ((p.carry.hides ?? 0) < 1e-9) p.carry.hides = 0;
+}
+
 /** Drops a building job whose building is gone or in the wrong state (finished site, unfinished lodge). */
 function validateBuildingJob(s: GameState, p: Person): void {
   const job = p.job;
   if (!job || job.building === null) return;
   const b = building(s, job.building);
   const working = job.kind === 'gather' || job.kind === 'hunt' || job.kind === 'dry' || job.kind === 'heal' || job.kind === 'scout' || job.kind === 'drill' || job.kind === 'tend';
-  if (!b || (working ? !b.done : b.done)) releaseJob(p);
+  if (job.kind === 'build' && b?.done) leaveSite(s, p, b);
+  else if (!b || (working ? !b.done : b.done)) releaseJob(p);
+}
+
+/** A builder whose site is finished: on to the next segment of its barricade line, else free. */
+function leaveSite(s: GameState, p: Person, site: Building | undefined): void {
+  const next = site ? nextLineSite(s, site, p.id) : null;
+  if (next) p.job = { kind: 'build', building: next.id, tile: null };
+  else releaseJob(p);
+  p.task = idleTask();
 }
 
 function decideHaul(s: GameState, p: Person, site: Building): void {
   if (loaded(p)) {
-    if (goToRing(s, p, site, 'drop') === 'fail') p.task = idleTask(RETRY);
+    if (siteTakes(site, p)) {
+      if (goToRing(s, p, site, 'drop') === 'fail') p.task = idleTask(RETRY);
+    } else if (canDeliver(s, p)) {
+      startDeliver(s, p);
+    } else {
+      // Goods the site does not need and no store can take: leave the haul to someone with free hands.
+      releaseJob(p);
+      p.task = idleTask(RETRY);
+    }
     return;
   }
   const load = nextHaulLoad(s, site, p.id);
@@ -190,13 +248,100 @@ function decideBuild(s: GameState, p: Person, site: Building): void {
   }
 }
 
-function decideHunt(s: GameState, p: Person): void {
-  if (loaded(p)) {
-    startDeliver(s, p);
+const LOOK = ANIMAL_DATA.lookTicks;
+
+/** The hunter's bow, whatever their society (`fighterOf` for a hunter: Better bows and Hunting dogs apply). */
+function huntBow(s: GameState, p: Person) {
+  return fighterOf(s, { ...p, society: 'hunters', mounted: false });
+}
+
+const dist = (a: { x: number; y: number }, b: { x: number; y: number }) => Math.hypot(a.x - b.x, a.y - b.y);
+
+/**
+ * What a hunter goes for (DESIGN-hunting.md `## Hunting`): their chosen animal or carcass while it lasts, else the
+ * nearest carcass with meat or hides left, else the nearest live animal within spotting distance of the fire.
+ */
+function huntTarget(s: GameState, p: Person): Animal | undefined {
+  const job = p.job!;
+  const chosen = animalById(s, job.animal);
+  if (chosen && (!chosen.dead || chosen.meat > 1e-9 || chosen.hides > 0)) return chosen;
+  job.animal = null;
+  const nearest = (list: Animal[]) => {
+    let best: Animal | undefined;
+    for (const a of list) if (!best || dist(p, a) < dist(p, best) - 1e-12) best = a;
+    return best;
+  };
+  const carcass = nearest(carcasses(s));
+  if (carcass) return carcass;
+  const fire = campCentre(s.map);
+  const reach = spottingDistance(s);
+  return nearest(liveAnimals(s).filter((a) => Math.hypot(a.x - fire[0], a.y - fire[1]) <= reach));
+}
+
+/** With nothing to hunt, the hunter waits by the fire and looks again every 50 ticks. */
+function waitByFire(s: GameState, p: Person): void {
+  const plaza = plazaOf(s);
+  if (!plaza || (standsAt(p, plaza) && !isHeld(s, heldTiles(s, p.id), [Math.round(p.x), Math.round(p.y)]))) {
+    p.task = idleTask(LOOK);
     return;
   }
-  const spot = pickHuntSpot(s);
-  if (!spot || !beginWalk(s, p, spot, 'work')) p.task = idleTask(RETRY);
+  if (goToRing(s, p, plaza, 'idle') === 'fail') p.task = idleTask(LOOK);
+  else if (p.task.step === 'idle') p.task.timer = LOOK;
+}
+
+function decideHunt(s: GameState, p: Person): void {
+  if (loaded(p)) {
+    // A load of meat goes to the nearest store; a full store keeps it in the hunter's hands (`## Full store`).
+    if (canDeliver(s, p)) startDeliver(s, p);
+    else p.task = idleTask(RETRY);
+    return;
+  }
+  const a = huntTarget(s, p);
+  if (!a) {
+    waitByFire(s, p);
+    return;
+  }
+  p.job!.animal = a.id;
+  if (a.dead) {
+    // Fetch the next load: walk beside the carcass.
+    const stand = freeTileAt(s, p, [Math.round(a.x), Math.round(a.y)]);
+    if (!stand || !beginWalk(s, p, stand, 'pickup')) {
+      p.job!.animal = null;
+      p.task = idleTask(LOOK);
+    }
+  }
+  // A live animal: `stepHunter` closes in and shoots.
+}
+
+/**
+ * A hunter after a live animal: walks into bow range and shoots (one roll per shot, as in a fight). True while
+ * it handled the tick; false lets the normal job code run (no live target, a load to carry).
+ */
+function stepHunter(s: GameState, p: Person): boolean {
+  if (p.job?.kind !== 'hunt' || loaded(p) || p.task.step === 'deliver') return false;
+  if (p.task.step === 'walk' && p.task.goal !== 'idle') return false; // delivering, fetching or going to the fire
+  const a = animalById(s, p.job.animal);
+  if (!a || a.dead) return false;
+  const bow = huntBow(s, p);
+  if (dist(p, a) <= bow.range) {
+    if (p.task.step === 'walk') p.task = idleTask();
+    if (p.cooldown <= 0) {
+      if (rngNext(s.rng) < bow.accuracy) hurtAnimal(s, a, bow.damage, p);
+      else hurtAnimal(s, a, 0, p); // a miss startles the herd too
+      p.cooldown = bow.cooldown;
+    }
+    return true;
+  }
+  const tile: Tile2 = [Math.round(a.x), Math.round(a.y)];
+  const t = p.task.target;
+  const near = p.task.step === 'walk' && t && Math.hypot(t[0] - tile[0], t[1] - tile[1]) <= 1.5;
+  if (!near && !beginWalk(s, p, tile, 'idle')) {
+    p.job.animal = null;
+    p.task = idleTask(LOOK);
+    return true;
+  }
+  if (movePerson(s, p) === 'blocked') p.task = idleTask(RETRY);
+  return true;
 }
 
 /**
@@ -207,8 +352,10 @@ function decideDry(s: GameState, p: Person, rack: Building): void {
   if (loaded(p)) {
     if (p.carry.res === 'food' && p.carry.amount >= DRY.take - 1e-9) {
       if (goToRing(s, p, rack, 'work') === 'fail') p.task = idleTask(RETRY);
-    } else {
+    } else if (canDeliver(s, p)) {
       startDeliver(s, p);
+    } else {
+      p.task = idleTask(RETRY);
     }
     return;
   }
@@ -278,14 +425,27 @@ function decide(s: GameState, p: Person): void {
     }
   }
   const tdef = job ? TILE_JOBS[job.kind] : undefined;
+  let handsFull = false;
   if (loaded(p)) {
     const full = !!tdef && p.carry.amount >= tdef.carry - 1e-9;
-    if (!tdef || p.carry.res !== tdef.res || full) {
-      startDeliver(s, p);
-      return;
+    const other = !!tdef && p.carry.amount > 1e-9 && p.carry.res !== tdef.res;
+    if (!tdef || other || full) {
+      if (canDeliver(s, p)) {
+        startDeliver(s, p);
+        return;
+      }
+      // A full store (`## Full store`): no job means other free work below; a tree or bush waits until a
+      // store has room, with the person standing at it rather than at the store.
+      handsFull = !!tdef;
     }
   }
   if (job && job.tile && tdef) {
+    if (handsFull) {
+      const stand = freeTileAt(s, p, job.tile);
+      if (stand && stand[0] === Math.round(p.x) && stand[1] === Math.round(p.y)) p.task = idleTask(RETRY);
+      else if (!stand || !beginWalk(s, p, stand, 'idle')) p.task = idleTask(RETRY);
+      return;
+    }
     // Another worker on the same tree or bush: work it from the nearest free tile beside it.
     const stand = freeTileAt(s, p, job.tile);
     if (!stand || !beginWalk(s, p, stand, 'work')) {
@@ -296,10 +456,30 @@ function decide(s: GameState, p: Person): void {
   }
   if (p.age === 'adult') {
     const auto = findAutoWork(s, p);
-    if (auto) p.job = auto;
-    return;
+    if (auto) {
+      p.job = auto;
+      return;
+    }
   }
-  wander(s, p);
+  if (goSit(s, p)) return;
+  if (p.age !== 'adult') wander(s, p);
+}
+
+/**
+ * Nothing to do: sit on a free tile of the council plaza's ring (DESIGN-hunting.md `## Council plaza`). True when
+ * the person sits or is walking there; false when the ring is full or missing (they wait or wander as before).
+ */
+function goSit(s: GameState, p: Person): boolean {
+  const plaza = plazaOf(s);
+  if (!plaza) return false;
+  // Adults look for work again every tick; elders and children rest between looks.
+  const rest = p.age === 'adult' ? 0 : RETRY;
+  if (standsAt(p, plaza) && !isHeld(s, heldTiles(s, p.id), [Math.round(p.x), Math.round(p.y)])) {
+    p.task = idleTask(rest);
+    return true;
+  }
+  const r = ringState(s, p, plaza);
+  return r !== null && r !== 'full' && beginWalk(s, p, r, 'idle');
 }
 
 function finishSite(s: GameState, site: Building): void {
@@ -318,24 +498,12 @@ function doWork(s: GameState, p: Person): void {
   if (job.kind === 'build') {
     const site = building(s, job.building);
     if (!site || site.done) {
-      releaseJob(p);
-      p.task = idleTask();
+      leaveSite(s, p, site);
       return;
     }
     if (!materialsComplete(site)) return; // wait for the haulers
     site.built += workRate(s, p, 'build');
     if (site.built >= (buildingDefs[site.type].buildPoints ?? Infinity)) finishSite(s, site);
-    return;
-  }
-  if (job.kind === 'hunt') {
-    if (p.task.timer > 0) {
-      p.task.timer--;
-      return;
-    }
-    if (rngNext(s.rng) < jobsData.jobs.hunt.success * seasonal(s, 'huntSuccess') * (hasUpgrade(s, 'dogs') ? upgradeData.upgrades.dogs.huntSuccess : 1)) {
-      p.carry = { res: 'food', amount: jobsData.jobs.hunt.food, hides: jobsData.jobs.hunt.hides };
-    }
-    p.task = idleTask();
     return;
   }
   if (job.kind === 'scout' || job.kind === 'drill' || job.kind === 'tend') {
@@ -370,9 +538,13 @@ function doWork(s: GameState, p: Person): void {
     p.task = idleTask();
     return;
   }
+  if (p.carry.res !== def.res && p.carry.amount > 1e-9) {
+    p.task = idleTask(); // other goods in hand: deliver them first
+    return;
+  }
   const i = job.tile[1] * s.map.size + job.tile[0];
+  if (p.carry.res !== def.res) p.carry = { res: def.res, amount: 0, hides: p.carry.hides ?? 0 };
   const take = Math.min(workRate(s, p, job.kind), s.map.amount[i], def.carry - p.carry.amount);
-  if (p.carry.res !== def.res) p.carry = { res: def.res, amount: 0 };
   p.carry.amount += take;
   s.map.amount[i] -= take;
   if (s.map.amount[i] <= 1e-9) {
@@ -401,8 +573,8 @@ function doDeliver(s: GameState, p: Person): void {
   p.carry.hides = hides - putHides;
   if (p.carry.amount < 1e-9) p.carry.amount = 0;
   if (p.carry.hides < 1e-9) p.carry.hides = 0;
-  if (!loaded(p)) p.task = idleTask();
-  else t.timer = RETRY; // the store is full: wait here and try again; the load is not lost
+  if (loaded(p)) tellFull(s, p); // one failed delivery: stop waiting, keep the goods (`## Full store`)
+  p.task = idleTask();
 }
 
 /** What happens when a walk ends, by the walk's goal. */
@@ -412,9 +584,14 @@ function arrive(s: GameState, p: Person): void {
   const site = job && (job.kind === 'haul') ? building(s, job.building) : undefined;
   switch (goal) {
     case 'work':
+      // A builder holding goods the site still needs puts them in (`## Full store`).
+      if (job?.kind === 'build' && loaded(p)) {
+        const b = building(s, job.building);
+        if (b && !b.done) dropAtSite(b, p);
+      }
       p.task = {
         step: 'work', target: null, path: [], goal: null,
-        timer: job?.kind === 'hunt' ? jobsData.jobs.hunt.huntTicks : job?.kind === 'dry' ? DRY.ticks : job?.kind === 'heal' ? HEAL.ticks : 0,
+        timer: job?.kind === 'dry' ? DRY.ticks : job?.kind === 'heal' ? HEAL.ticks : 0,
       };
       break;
     case 'take':
@@ -429,6 +606,16 @@ function arrive(s: GameState, p: Person): void {
       p.task = { step: 'deliver', target: null, path: [], timer: 0, goal: null };
       break;
     case 'pickup': {
+      if (job?.kind === 'hunt') {
+        // Beside a carcass: lift the next load (all the hides ride on the first).
+        const a = animalById(s, job.animal);
+        if (a?.dead && dist(p, a) <= 1.6) {
+          const { meat, hides } = takeLoad(a);
+          p.carry = { res: 'food', amount: meat, hides };
+        }
+        p.task = idleTask();
+        break;
+      }
       const load = site && !site.done ? nextHaulLoad(s, site, p.id) : null;
       if (load) p.carry = { res: load.res, amount: load.amount, hides: 0 };
       else releaseJob(p);
@@ -436,12 +623,8 @@ function arrive(s: GameState, p: Person): void {
       break;
     }
     case 'drop':
-      if (site && !site.done) {
-        const cost = buildingDefs[site.type].cost ?? {};
-        const res = p.carry.res;
-        site.delivered[res] = Math.min(cost[res] ?? 0, (site.delivered[res] ?? 0) + p.carry.amount);
-      }
-      p.carry = { res: p.carry.res, amount: 0, hides: 0 };
+      // What the site does not need stays carried and goes back to the store.
+      if (site && !site.done) dropAtSite(site, p);
       p.task = idleTask();
       break;
     default:
@@ -452,12 +635,14 @@ function arrive(s: GameState, p: Person): void {
 /** Advances one person by one tick. */
 export function stepPerson(s: GameState, p: Person): void {
   if (p.cooldown > 0) p.cooldown--;
+  if (!storeBlocked(s, p)) toldFull.delete(p);
   if (p.drafted) {
     // A drafted person fights, or walks where ordered; their job waits and resumes when undrafted.
     if (stepFighter(s, p) || p.task.step !== 'walk') return;
   } else if (s.enemies.length > 0 || p.task.step === 'flee') {
     if (stepFlee(s, p)) return;
   }
+  if (!p.drafted && stepHunter(s, p)) return;
   switch (p.task.step) {
     case 'idle':
       decide(s, p);

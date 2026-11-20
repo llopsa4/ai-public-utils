@@ -231,7 +231,7 @@ test('a gathering-spot worker picks the fullest berry tile within 10 tiles and w
   assert.equal(worker.job?.building, b.id, 'keeps the spot job');
 });
 
-test('a hunter brings back 10 food and 1 hide per successful trip', () => {
+test('a lodge hunter brings meat home in loads of 10 food, and the hides with it', () => {
   const s = newGame(1);
   rich(s);
   const lodge = place(s, 'hunting_lodge');
@@ -241,9 +241,10 @@ test('a hunter brings back 10 food and 1 hide per successful trip', () => {
   const [hunter] = adults(s);
   assignWorkers(s, [hunter.id], lodge.id);
   stepFed(s, 5000);
-  const trips = s.store.hides - hidesBefore;
-  assert.ok(trips >= 2, `successful trips ${trips}`);
-  assert.equal(s.store.food - foodBefore, trips * 10);
+  const food = s.store.food - foodBefore;
+  assert.ok(food >= 20, `food ${food}`);
+  assert.ok(Math.abs(food / 10 - Math.round(food / 10)) < 1e-9, 'whole loads of 10');
+  assert.ok(s.store.hides - hidesBefore >= 1, 'hides came too');
 });
 
 test('the same seed and orders give an identical state with buildings', () => {

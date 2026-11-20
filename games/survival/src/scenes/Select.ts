@@ -3,6 +3,7 @@
 // the rules are in `src/sim/orders.ts`.
 import Phaser from 'phaser';
 import mapConfig from '../data/map.json';
+import { ANIMALS, animalsOf, type Animal } from '../sim/animals';
 import { buildingDefs, buildingName } from '../sim/buildings';
 import { HUNGRY_AT } from '../sim/economy';
 import { carryText, displayLabel, englishLabel } from '../sim/labels';
@@ -19,7 +20,7 @@ import type { BuildScene } from './Build';
 import type { GameScene } from './Game';
 import type { HudScene } from './Hud';
 
-const PANEL = { x: 0, y: 600, w: 880, h: 120 };
+const PANEL = { x: 0, y: 600, w: 1280, h: 120 };
 const BAR = { x: 0, y: 0, w: 1280, h: 32 };
 const DRAG_PX = 6;
 const CLICK_PX = 12;
@@ -27,12 +28,13 @@ const CLICK_PX = 12;
 const BODY_UP = 14;
 const TOAST_TICKS = 50;
 const INK = '#f3e9d2';
-const HINT = 'Left-click to select, right-click to order, B to build';
+const TITLE_GOLD = '#e0b85a';
+const HINT = 'Left-click to select, right-click to order. Select adults, then B to build';
 /** The Upgrades list of a selected finished building: one row per upgrade, just above the selection panel. */
 const UP = { x: 0, w: 620, head: 28, row: 50, maxRows: 8 };
 /** One line on what each upgrade does (DESIGN-upgrades.md `## Upgrades`). */
 const UPGRADE_EFFECT: Record<UpgradeId, string> = {
-  dogs: 'Hunting succeeds 15% more often, and hunters aim a little better.',
+  dogs: 'Hunters spot game 26 tiles from the fire instead of 22, and aim a little better.',
   bows: "Hunters' bows reach 5 tiles and hit for 15.",
   healers: "Lets you build a healers' lodge: they heal the wounded and ease winter cold.",
   scouts: "Lets you build a scouts' lodge: staffed, it warns of a wave a minute ahead and counts the wolves.",
@@ -50,7 +52,7 @@ const UPGRADE_EFFECT: Record<UpgradeId, string> = {
 };
 /** A right-click ping (DESIGN-hunting.md `## Right-click feedback`): green move, gold work, red attack, grey refused. */
 type PingKind = 'move' | 'work' | 'attack' | 'refuse';
-type PingTarget = 'ground' | 'tree' | 'berry' | 'building' | 'enemy';
+type PingTarget = 'ground' | 'tree' | 'berry' | 'building' | 'enemy' | 'animal' | 'carcass';
 interface Ping {
   kind: PingKind;
   /** Where it was clicked, in world pixels. */
@@ -59,6 +61,7 @@ interface Ping {
   /** Scene clock (ms) at the click: pings keep fading while the game is paused. */
   t0: number;
   enemy?: number;
+  animal?: number;
   building?: number;
   tile?: Tile2;
 }
@@ -86,9 +89,11 @@ export class SelectScene extends Phaser.Scene {
   private selectedBuilding: number | null = null;
   /** A clicked berry bush, shown in the panel with how much fruit is left on it. */
   private selectedTile: Tile2 | null = null;
+  /** A clicked animal or carcass, shown in the panel. */
+  private selectedAnimal: number | null = null;
   private down: { x: number; y: number; ui: boolean } | null = null;
   private shift!: Phaser.Input.Keyboard.Key;
-  /** Whether placing or the build menu was active at the last frame, so Esc can leave them alone. */
+  /** Whether placing, aiming or armed building cards were active at the last frame, so Esc can leave them alone. */
   private busy = false;
   private box!: Phaser.GameObjects.Graphics;
   private rings!: Phaser.GameObjects.Graphics;
@@ -98,6 +103,7 @@ export class SelectScene extends Phaser.Scene {
   private pingCount = 0;
   private lastPing: { kind: PingKind; target: PingTarget; count: number } | null = null;
   private title!: Phaser.GameObjects.Text;
+  private family!: Phaser.GameObjects.Text;
   private detail!: Phaser.GameObjects.Text;
   private barGfx!: Phaser.GameObjects.Graphics;
   private barText!: Phaser.GameObjects.Text;
@@ -109,8 +115,6 @@ export class SelectScene extends Phaser.Scene {
   private upHead!: Phaser.GameObjects.Text;
   private upRows: UpgradeRow[] = [];
   private hover!: Hover;
-  /** Pooled text pairs (name, family) drawn under selected people; grown on demand, hidden when unused. */
-  private labels: { name: Phaser.GameObjects.Text; family: Phaser.GameObjects.Text }[] = [];
   /** The screen rectangle of the Upgrades list while it shows, else null (the map ignores clicks on it). */
   private upRect: { x: number; y: number; w: number; h: number } | null = null;
 
@@ -127,7 +131,6 @@ export class SelectScene extends Phaser.Scene {
     this.stanceButtons = [];
     this.upRows = [];
     this.upRect = null;
-    this.labels = [];
     this.pings = [];
     this.pingCount = 0;
     this.lastPing = null;
@@ -151,17 +154,19 @@ export class SelectScene extends Phaser.Scene {
     this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x1d1a16, 0.85).setOrigin(0);
     const text = (x: number, y: number, size: number, color = INK) =>
       this.add.text(x, y, '', { fontFamily: 'sans-serif', fontSize: `${size}px`, color });
-    this.title = text(12, 608, 16);
+    this.title = this.add.text(12, 603, '', { fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '20px', fontStyle: 'bold', color: TITLE_GOLD });
+    this.family = text(12, 636, 13);
     this.detail = text(12, 636, 13).setLineSpacing(4);
     this.barGfx = this.add.graphics();
     this.barText = text(360, 608, 12, '#cdbf9c').setLineSpacing(14);
     this.toasts = text(16, 520, 14, '#ffb4a8').setLineSpacing(4);
 
     this.draftButton = this.button(560, 608, 110, 28, 'Draft (R)', () => this.toggleDraft());
+    // The stances sit under the Draft button: the building cards take the right part of the panel.
     (['hold', 'defend', 'chase'] as Stance[]).forEach((st, i) => {
       const key = 'ZXC'[i];
       this.stanceButtons.push(
-        this.button(680 + i * 66, 608, 62, 28, `${st[0].toUpperCase()}${st.slice(1)} (${key})`, () => this.setStance(st)),
+        this.button(560 + i * 66, 648, 62, 28, `${st[0].toUpperCase()}${st.slice(1)} (${key})`, () => this.setStance(st)),
       );
     });
     this.cancelButton = this.button(560, 648, 110, 28, 'Cancel (Del)', () => this.cancelSite());
@@ -184,15 +189,15 @@ export class SelectScene extends Phaser.Scene {
     kb.on('keydown-C', () => this.setStance('chase'));
     kb.on('keydown-DELETE', () => this.cancelSite());
     kb.on('keydown-SPACE', () => this.send([{ type: 'pause', on: !this.state.paused }]));
-    // 1-5 belong to the build menu while it is open.
+    // 1-7 belong to the building cards after B.
     ([['ONE', 1], ['TWO', 2], ['THREE', 4]] as const).forEach(([k, value]) =>
-      kb.on(`keydown-${k}`, () => !this.buildScene()?.isOpen() && this.send([{ type: 'speed', value }])),
+      kb.on(`keydown-${k}`, () => !this.buildScene()?.isArmed() && this.send([{ type: 'speed', value }])),
     );
     kb.on('keydown-ESC', () => {
       if (this.busy) return;
       this.selected = [];
       this.selectedBuilding = null;
-      this.selectedTile = null;
+      this.selectedTile = null; this.selectedAnimal = null;
     });
   }
 
@@ -226,10 +231,11 @@ export class SelectScene extends Phaser.Scene {
     }
     const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
     if (camp) {
-      camp.selectBuilding = (id: number | null) => { this.selected = []; this.selectedBuilding = id; this.selectedTile = null; };
-      camp.selectPeople = (ids: number[]) => { this.selected = [...ids]; this.selectedBuilding = null; this.selectedTile = null; };
+      camp.selectBuilding = (id: number | null) => { this.selected = []; this.selectedBuilding = id; this.selectedTile = null; this.selectedAnimal = null; };
+      camp.selectPeople = (ids: number[]) => { this.selected = [...ids]; this.selectedBuilding = null; this.selectedTile = null; this.selectedAnimal = null; };
       // What the bottom panel says now (title and detail), for the smoke test.
-      camp.panelText = () => ({ title: this.title.text, detail: this.detail.text });
+      camp.selectAnimal = (id: number | null) => { this.selected = []; this.selectedBuilding = null; this.selectedTile = null; this.selectedAnimal = id; };
+      camp.panelText = () => ({ title: this.title.text, detail: [this.family.text, this.detail.text].filter(Boolean).join('\n') });
       // The latest right-click ping: its colour kind, what it hit, and a running count; null before the first.
       camp.lastPing = () => this.lastPing;
       // What each shown row says (cost or Needs), by upgrade id; empty while no list shows.
@@ -292,12 +298,22 @@ export class SelectScene extends Phaser.Scene {
     else b.bg.disableInteractive();
   }
 
-  /** True when a screen point is on the selection panel, the top bar or the build menu. */
+  /** The people selected now (the `place` order's builders when a building card is picked). */
+  selection(): number[] {
+    return [...this.selected];
+  }
+
+  /** True when somebody selected can build now: an adult who is not drafted (the building cards show then). */
+  canBuild(): boolean {
+    return this.selectedPeople().some((p) => !p.drafted && canWork(p, 'build'));
+  }
+
+  /** True when a screen point is on the selection panel (with the building cards) or the top bar. */
   overUi(x: number, y: number): boolean {
     const inside = (r: { x: number; y: number; w: number; h: number }) =>
       x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
     const hud = this.scene.get('Hud') as HudScene | undefined;
-    return !!hud?.menuOpen || !!hud?.overPowers(x, y) || inside(PANEL) || inside(BAR) || (!!this.upRect && inside(this.upRect)) || !!this.buildScene()?.overUi(x, y);
+    return !!hud?.menuOpen || !!hud?.overPowers(x, y) || inside(PANEL) || inside(BAR) || (!!this.upRect && inside(this.upRect));
   }
 
   private send(orders: Order[]): void {
@@ -385,6 +401,25 @@ export class SelectScene extends Phaser.Scene {
     return best;
   }
 
+  /** The animal or carcass nearest a screen point within the click radius (a live animal wins a tie), or null. */
+  private animalAt(sx: number, sy: number): Animal | null {
+    const cam = this.game2.cameras.main;
+    const w = cam.getWorldPoint(sx, sy);
+    const reach = (CLICK_PX + 6) / cam.zoom;
+    let best: Animal | null = null;
+    let bestD = reach;
+    for (const a of animalsOf(this.state)) {
+      if (a.dead && a.meat <= 1e-9 && a.hides <= 0) continue;
+      const f = tileToWorld(a.x, a.y, this.state.map.size);
+      const d = Math.min(Math.hypot(w.x - f.x, w.y - f.y), Math.hypot(w.x - f.x, w.y - (f.y - BODY_UP / 2))) + (a.dead ? 0.5 : 0);
+      if (d <= bestD) {
+        bestD = d;
+        best = a;
+      }
+    }
+    return best;
+  }
+
   private onUp(p: Phaser.Input.Pointer): void {
     const d = this.down;
     this.down = null;
@@ -403,16 +438,24 @@ export class SelectScene extends Phaser.Scene {
     const person = this.personAt(sx, sy);
     if (person) {
       this.selectedBuilding = null;
-      this.selectedTile = null;
+      this.selectedTile = null; this.selectedAnimal = null;
       if (!add) this.selected = [person.id];
       else this.selected = this.selected.includes(person.id) ? this.selected.filter((i) => i !== person.id) : [...this.selected, person.id];
+      return;
+    }
+    const animal = add ? null : this.animalAt(sx, sy);
+    if (animal) {
+      this.selected = [];
+      this.selectedBuilding = null;
+      this.selectedTile = null;
+      this.selectedAnimal = animal.id;
       return;
     }
     const b = this.buildingAtTile(this.tileAt(sx, sy));
     if (b && !add) {
       this.selected = [];
       this.selectedBuilding = b.id;
-      this.selectedTile = null;
+      this.selectedTile = null; this.selectedAnimal = null;
       return;
     }
     if (!add) {
@@ -421,6 +464,7 @@ export class SelectScene extends Phaser.Scene {
       this.selectedBuilding = null;
       // A berry bush with nothing on it: the panel says how much fruit is left.
       this.selectedTile = !b && this.state.map.tiles[t[1] * this.state.map.size + t[0]] === 'berry' ? t : null;
+      this.selectedAnimal = null;
     }
   }
 
@@ -435,7 +479,7 @@ export class SelectScene extends Phaser.Scene {
       })
       .map((p) => p.id);
     this.selectedBuilding = null;
-    this.selectedTile = null;
+    this.selectedTile = null; this.selectedAnimal = null;
     this.selected = this.shift.isDown ? [...new Set([...this.selected, ...ids])] : ids;
   }
 
@@ -452,6 +496,17 @@ export class SelectScene extends Phaser.Scene {
       }
       this.send([{ type: 'attack', ids, enemy: wolf.id }]);
       this.ping('attack', w.x, w.y, 'enemy', { enemy: wolf.id });
+      return;
+    }
+    const animal = this.animalAt(sx, sy);
+    if (animal) {
+      const target = animal.dead ? 'carcass' : 'animal';
+      const reason = this.workRefusal(people, 'hunt');
+      if (reason) this.refuse(w.x, w.y, reason, target);
+      else {
+        this.send([{ type: 'hunt', ids, animal: animal.id }]);
+        this.ping('work', w.x, w.y, target, { animal: animal.id });
+      }
       return;
     }
     const t = this.tileAt(sx, sy);
@@ -518,6 +573,12 @@ export class SelectScene extends Phaser.Scene {
           const f = tileToWorld(e.x, e.y, size);
           g.strokeEllipse(f.x, f.y, 30, 15);
         }
+      } else if (p.animal !== undefined) {
+        const a = animalsOf(this.state).find((q) => q.id === p.animal);
+        if (a) {
+          const f = tileToWorld(a.x, a.y, size);
+          g.strokeEllipse(f.x, f.y, a.kind === 'bison' ? 40 : 30, a.kind === 'bison' ? 20 : 15);
+        }
       } else if (p.building !== undefined) {
         const b = this.building(p.building);
         if (b) this.outline(g, b);
@@ -557,7 +618,7 @@ export class SelectScene extends Phaser.Scene {
     const s = this.state;
     this.selected = this.selected.filter((id) => s.people.some((p) => p.id === id));
     if (this.selectedBuilding !== null && !this.building(this.selectedBuilding)) this.selectedBuilding = null;
-    this.busy = this.game2.placing !== null || this.game2.aiming !== null || !!this.buildScene()?.isOpen();
+    this.busy = this.game2.placing !== null || this.game2.aiming !== null || !!this.buildScene()?.isArmed();
 
     this.drawBox();
     this.drawWorld();
@@ -585,11 +646,9 @@ export class SelectScene extends Phaser.Scene {
     const size = this.state.map.size;
     this.rings.clear();
     this.bars.clear();
-    let used = 0;
     for (const p of this.state.people) {
       const f = tileToWorld(p.x, p.y, size);
       const sel = this.selected.includes(p.id);
-      if (sel) this.placeLabel(used++, p, f.x, f.y);
       if (p.drafted) this.rings.lineStyle(2, 0xd9534f, 0.95).strokeEllipse(f.x, f.y, sel ? 30 : 26, sel ? 14 : 12);
       if (sel) this.rings.lineStyle(2, 0xf3e9d2, 0.95).strokeEllipse(f.x, f.y, 22, 10);
       if (p.health < 100) {
@@ -598,28 +657,20 @@ export class SelectScene extends Phaser.Scene {
       }
       if (p.hunger >= HUNGRY_AT) this.bowl(f.x, f.y - (p.health < 100 ? 46 : 40));
     }
-    for (let i = used; i < this.labels.length; i++) {
-      this.labels[i].name.setVisible(false);
-      this.labels[i].family.setVisible(false);
-    }
     const b = this.building(this.selectedBuilding);
     if (b) this.outline(this.rings.lineStyle(2, 0xf3e9d2, 0.95), b);
+    const an = this.selectedAnimalNow();
+    if (an) {
+      const f = tileToWorld(an.x, an.y, size);
+      this.rings.lineStyle(2, 0xf3e9d2, 0.95).strokeEllipse(f.x, f.y, an.kind === 'bison' ? 38 : 28, an.kind === 'bison' ? 17 : 12);
+    }
   }
 
-  /** The name under a selected person's feet and, smaller and dimmer under it, their family in its colour. */
-  private placeLabel(i: number, p: Person, x: number, y: number): void {
-    if (!this.labels[i]) {
-      const world = this.game2;
-      const make = (size: number) =>
-        world.add.text(0, 0, '', { fontFamily: 'sans-serif', fontSize: `${size}px`, color: INK, stroke: '#000000', strokeThickness: 3 })
-          .setOrigin(0.5, 0).setDepth(1e6);
-      this.labels[i] = { name: make(12), family: make(10).setAlpha(0.8) };
-    }
-    const l = this.labels[i];
-    const families = mapConfig.start.families as string[];
-    const colors = mapConfig.start.familyColors as string[];
-    l.name.setText(p.name).setPosition(x, y + 8).setVisible(true);
-    l.family.setText(families[p.family] ?? '').setColor(colors[p.family] ?? INK).setPosition(x, y + 21).setVisible(true);
+  /** The selected animal or carcass if it is still there (a carried-off carcass is gone). */
+  private selectedAnimalNow(): Animal | null {
+    if (this.selectedAnimal === null) return null;
+    const a = animalsOf(this.state).find((q) => q.id === this.selectedAnimal);
+    return a && (!a.dead || a.meat > 1e-9 || a.hides > 0) ? a : null;
   }
 
   /** The hungry-person icon: a small empty bowl over the head. */
@@ -642,6 +693,7 @@ export class SelectScene extends Phaser.Scene {
   private drawPanel(): void {
     this.barGfx.clear();
     this.barText.setText('');
+    this.family.setText('');
     const people = this.selectedPeople();
     const b = this.building(this.selectedBuilding);
     const drafted = people.filter((p) => p.drafted).length;
@@ -661,9 +713,10 @@ export class SelectScene extends Phaser.Scene {
     if (people.length === 1) {
       const p = people[0];
       const families = mapConfig.start.families as string[];
+      const colors = mapConfig.start.familyColors as string[];
       this.title.setText(p.name);
+      this.family.setText(`${families[p.family]} family · ${p.age}`).setColor(colors[p.family] ?? INK);
       this.detail.setText([
-        `${families[p.family]} family · ${p.age}`,
         `Job: ${this.jobLabel(p)}${p.drafted ? ` · drafted (${p.stance})` : ''}`,
         `Society: ${p.society ?? 'none'}`,
         carryText([p]),
@@ -697,6 +750,20 @@ export class SelectScene extends Phaser.Scene {
         lines.push(`Residents ${b.residents.length} / ${def.houses}`);
       }
       this.detail.setText(lines.join('\n'));
+    } else if (this.selectedAnimalNow()) {
+      const a = this.selectedAnimalNow()!;
+      const def = ANIMALS[a.kind];
+      const name = a.kind === 'bison' ? 'Bison' : 'Deer';
+      if (a.dead) {
+        this.title.setText(`${name} carcass`);
+        this.detail.setText(`${Math.ceil(a.meat)} meat and ${a.hides} ${a.hides === 1 ? 'hide' : 'hides'} left
+Right-click with hunters to carry it to the store`);
+      } else {
+        this.title.setText(name);
+        this.detail.setText(`Health ${Math.ceil(a.hp)} / ${def.hp}${a.fleeing > 0 ? ' · running' : ''}
+${def.meat} meat and ${def.hides} ${def.hides === 1 ? 'hide' : 'hides'} when killed
+Right-click with hunters to hunt it`);
+      }
     } else if (this.selectedTile) {
       const [x, y] = this.selectedTile;
       const left = Math.floor(this.state.map.amount[y * this.state.map.size + x]);
@@ -706,5 +773,7 @@ export class SelectScene extends Phaser.Scene {
       this.title.setText('');
       this.detail.setText(HINT);
     }
+    this.detail.setY(this.family.text ? 655 : 636);
+    if (this.title.text) this.barGfx.fillStyle(0xe0b85a, 0.55).fillRect(12, 630, 330, 1);
   }
 }

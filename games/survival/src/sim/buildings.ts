@@ -124,6 +124,18 @@ export function placeBuilding(s: GameState, type: string, x: number, y: number):
   return { building: addBuilding(s, type, x, y, false) };
 }
 
+/**
+ * The next site of a barricade line for one of its builders (DESIGN-hunting.md `## Villager panel and building`): the
+ * first unfinished segment of the same line, in placing order, that has room for another builder; null when none.
+ */
+export function nextLineSite(s: GameState, site: Building, selfId: number): Building | null {
+  if (site.lineId === undefined) return null;
+  return s.buildings
+    .filter((b) => b.lineId === site.lineId && !b.done && b.id !== site.id)
+    .sort((a, b) => a.id - b.id)
+    .find((b) => countJobs(s, b.id, 'build', selfId) < jobsData.jobs.build.maxPerSite) ?? null;
+}
+
 /** Cancels a construction site: the full cost is refunded and the tiles are freed. */
 export function cancelSite(s: GameState, id: number): boolean {
   const i = s.buildings.findIndex((b) => b.id === id);
@@ -173,6 +185,11 @@ export function nextHaulLoad(s: GameState, site: Building, selfId: number): { re
   return null;
 }
 
+/** True when a site still needs some of `res` (loads on their way not counted). */
+function hauls(site: Building, res: Res): boolean {
+  return (buildingDefs[site.type].cost?.[res] ?? 0) - (site.delivered[res] ?? 0) > 1e-9;
+}
+
 /** How many people hold a job of this kind on a building (not counting `exceptId`). */
 export function countJobs(s: GameState, buildingId: number, kind: JobKind, exceptId = -1): number {
   return s.people.filter((p) => p.id !== exceptId && p.job?.kind === kind && p.job.building === buildingId).length;
@@ -218,6 +235,17 @@ export function standsAt(p: { x: number; y: number }, b: Building): boolean {
   return x >= b.x - 1 && x <= b.x + w && y >= b.y - 1 && y <= b.y + h;
 }
 
+/** The council plaza (the fire), where idle people sit (DESIGN-hunting.md `## Council plaza`). */
+export function plazaOf(s: { buildings: Building[] }): Building | undefined {
+  return s.buildings.find((b) => b.type === 'fire' && b.done);
+}
+
+/** True when an undrafted person with no job stands still on the ring of the plaza: they sit. */
+export function isSitting(p: Person, buildings: Building[]): boolean {
+  if (p.drafted || p.job || p.task.step !== 'idle') return false;
+  return buildings.some((b) => b.type === 'fire' && b.done && standsAt(p, b));
+}
+
 /** The nearest completed building of a type. */
 export function nearestBuilding(s: GameState, from: { x: number; y: number }, type: string): Building | null {
   let best: Building | null = null;
@@ -242,8 +270,11 @@ export function findAutoWork(s: GameState, p: Person): Job | null {
   const sites = s.buildings
     .filter((b) => !b.done)
     .sort((a, b) => Math.hypot(a.x - p.x, a.y - p.y) - Math.hypot(b.x - p.x, b.y - p.y) || a.id - b.id);
+  // Hands already full (a full store, DESIGN-hunting.md `## Full store`): haul only to a site that needs that load.
+  const holding = p.carry.amount > 1e-9 ? p.carry.res : (p.carry.hides ?? 0) > 1e-9 ? 'hides' : null;
   for (const site of sites) {
-    if (countJobs(s, site.id, 'haul') < jobsData.jobs.haul.maxPerSite && nextHaulLoad(s, site, p.id)) {
+    const load = nextHaulLoad(s, site, p.id);
+    if (countJobs(s, site.id, 'haul') < jobsData.jobs.haul.maxPerSite && load && (holding === null || hauls(site, holding))) {
       return { kind: 'haul', building: site.id, tile: null };
     }
   }

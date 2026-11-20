@@ -1,7 +1,7 @@
 // Draws the people from the simulation state. Reads state, never changes it.
 import Phaser from 'phaser';
 import type { Building, Person } from '../sim/state';
-import { materialsComplete } from '../sim/buildings';
+import { isSitting, materialsComplete } from '../sim/buildings';
 import { entry } from './manifest';
 import { tileToWorld } from './iso';
 
@@ -39,7 +39,20 @@ export function workTool(p: Person, buildings: Building[]): WorkTool | null {
   }
 }
 
+/** Holds a bow (DESIGN-hunting.md `## Arrows`): hunters and archers, and anyone sent to hunt. Lancers never do. */
+export function hasBow(p: Person): boolean {
+  if (p.mounted || p.society === 'lancers') return false;
+  return p.society === 'hunters' || p.society === 'archers' || (!p.drafted && p.job?.kind === 'hunt');
+}
+
+/** A hunter carrying a load of meat (DESIGN-hunting.md `## Hunting`): it rides on their back. */
+export function hasHuntLoad(p: Person): boolean {
+  return p.job?.kind === 'hunt' && p.carry.res === 'food' && p.carry.amount > 0;
+}
+
 const DEG = Math.PI / 180;
+/** Height of a seated person against a standing one. */
+const SIT_SCALE = 0.72;
 
 /** A stroke that comes down fast and goes back up slowly: 0 raised, 1 struck. */
 function strike(phase: number): number {
@@ -97,10 +110,38 @@ function drawTool(g: Phaser.GameObjects.Graphics, tool: WorkTool, timeMs: number
   g.fillStyle(0x8a3b2a, 1).fillRect(mx - 3 - w * 1.5, my + 1, 4, 7 * k + 2);
 }
 
+/** A bow in the hand: a curved stave and a straight string, drawn with the feet at (0, 0); `k` scales a child. */
+function drawBow(g: Phaser.GameObjects.Graphics, k: number): void {
+  const cx = 9 * k;
+  const cy = -21 * k;
+  const r = 9 * k;
+  g.lineStyle(2, 0x6b4a2e, 1).beginPath().arc(cx - r * 0.55, cy, r, -70 * DEG, 70 * DEG, false).strokePath();
+  const sx = cx - r * 0.55 + Math.cos(70 * DEG) * r;
+  const sy = Math.sin(70 * DEG) * r;
+  g.lineStyle(1, 0xe8e0c8, 0.9).lineBetween(sx, cy - sy, sx, cy + sy);
+}
+
+/** Meat on the back (placeholder): a dark red bundle behind the shoulders, bigger with the load, a hide on top when there is one. */
+function drawLoad(g: Phaser.GameObjects.Graphics, p: Person, k: number): void {
+  const size = (4 + 5 * Math.min(1, p.carry.amount / 10)) * k;
+  const x = -7 * k;
+  const y = -22 * k;
+  g.fillStyle(0x8a3b2a, 1).fillEllipse(x, y, size * 1.5, size);
+  g.lineStyle(1, 0x4a1f16, 1).strokeEllipse(x, y, size * 1.5, size);
+  g.lineStyle(1, 0x6b4a2e, 1).lineBetween(x, y - size / 2, 0, -29 * k);
+  if ((p.carry.hides ?? 0) > 0) g.fillStyle(0xc49a6a, 1).fillEllipse(x - 1, y - size / 2, size * 1.1, size * 0.45);
+}
+
 export class PeopleView {
   private views = new Map<number, View>();
 
   constructor(private scene: Phaser.Scene, private size: number) {}
+
+  /** Where a person's feet are drawn now (smoothed), in world pixels; undefined for someone not shown. */
+  ground(id: number): { x: number; y: number } | undefined {
+    const v = this.views.get(id);
+    return v ? { x: v.bx, y: v.by } : undefined;
+  }
 
   /** Creates, moves and removes sprites to match `people`. */
   sync(people: Person[], dtMs: number, timeMs: number, buildings: Building[] = []): void {
@@ -129,10 +170,19 @@ export class PeopleView {
       const tool = workTool(p, buildings);
       // Gatherers stoop: the sprite leans forward from the feet.
       v.img.setAngle(tool === 'pick' ? 12 + Math.sin(timeMs / 350 + p.id) * 3 : 0);
+      // Sitting on the plaza (placeholder): the body is shortened from the feet up, as if folded down.
+      v.img.setScale(1, isSitting(p, buildings) ? SIT_SCALE : 1);
       v.tool.clear();
       if (tool) {
         v.tool.setPosition(v.bx, v.by).setDepth(v.by + 0.5);
         drawTool(v.tool, tool, timeMs, p.id, p.age === 'child' ? 0.7 : 1);
+      } else if (hasBow(p) && p.task.step !== 'flee') {
+        v.tool.setPosition(v.bx, v.by + bob).setDepth(v.by + 0.5);
+        drawBow(v.tool, p.age === 'child' ? 0.7 : 1);
+      }
+      if (hasHuntLoad(p)) {
+        v.tool.setPosition(v.bx, v.by + bob).setDepth(v.by + 0.5);
+        drawLoad(v.tool, p, p.age === 'child' ? 0.7 : 1);
       }
     }
     for (const [id, v] of this.views) {

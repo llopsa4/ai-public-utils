@@ -1,5 +1,6 @@
 // Draws the wolves as placeholder shapes (final art comes later, art/PIPELINE.md). Reads state only.
 import Phaser from 'phaser';
+import { ANIMALS, type Animal } from '../sim/animals';
 import { BISON_HALF_WIDTH, STORM_RADIUS } from '../sim/effects';
 import type { Ally, Enemy, PowerEffect } from '../sim/state';
 import { tileToWorld } from './iso';
@@ -8,11 +9,59 @@ export class EnemiesView {
   private gfx: Phaser.GameObjects.Graphics;
   private allyGfx: Phaser.GameObjects.Graphics;
   private fxGfx: Phaser.GameObjects.Graphics;
+  private gameGfx: Phaser.GameObjects.Graphics;
 
   constructor(scene: Phaser.Scene, private size: number) {
     this.gfx = scene.add.graphics();
+    this.gameGfx = scene.add.graphics();
     this.allyGfx = scene.add.graphics();
     this.fxGfx = scene.add.graphics().setDepth(100000);
+  }
+
+  /**
+   * Redraws the wild game (placeholders): tan deer and big dark bison, a hurt one with a health bar, a calm one standing
+   * still and a fleeing one stretched out; a carcass lies flat and shrinks as its meat is carried off.
+   */
+  syncAnimals(animals: Animal[]): void {
+    const g = this.gameGfx.clear();
+    for (const a of animals) {
+      const w = tileToWorld(a.x, a.y, this.size);
+      const bison = a.kind === 'bison';
+      const k = bison ? 1.45 : 1;
+      const def = ANIMALS[a.kind];
+      if (a.dead) {
+        if (a.meat <= 1e-9 && a.hides <= 0) continue;
+        const left = Math.max(0.35, a.meat / def.meat);
+        g.fillStyle(0x000000, 0.25).fillEllipse(w.x, w.y, 26 * k, 10 * k);
+        g.fillStyle(bison ? 0x3a2819 : 0x9b7a52, 1).fillEllipse(w.x, w.y - 3 * k, 24 * k * left, 9 * k * left + 3);
+        g.fillStyle(0x8a3b2a, 1).fillEllipse(w.x + 2, w.y - 4 * k, 11 * k * left, 4 * k * left + 1);
+        g.lineStyle(1.5, 0x6b4a2e, 1).lineBetween(w.x - 10 * k * left, w.y - 2, w.x - 14 * k * left, w.y + 3);
+        g.lineBetween(w.x + 10 * k * left, w.y - 2, w.x + 14 * k * left, w.y + 3);
+        continue;
+      }
+      const run = a.fleeing > 0 ? 1.15 : 1;
+      g.fillStyle(0x000000, 0.25).fillEllipse(w.x, w.y, 26 * k * run, 10 * k);
+      if (bison) {
+        g.fillStyle(0x4a3322, 1).fillEllipse(w.x, w.y - 11, 30 * run, 16);
+        g.fillStyle(0x2f2015, 1).fillEllipse(w.x + 9 * run, w.y - 14, 15, 14);
+        g.fillStyle(0x4a3322, 1).fillCircle(w.x - 4, w.y - 19, 6);
+        g.fillStyle(0xe8e0c8, 1).fillTriangle(w.x + 15 * run, w.y - 19, w.x + 18 * run, w.y - 23, w.x + 13 * run, w.y - 15);
+      } else {
+        g.fillStyle(0xb98d5c, 1).fillEllipse(w.x, w.y - 9, 20 * run, 9);
+        g.lineStyle(2, 0xb98d5c, 1).lineBetween(w.x - 6, w.y - 6, w.x - 7, w.y).lineBetween(w.x + 6, w.y - 6, w.x + 7, w.y);
+        g.lineBetween(w.x + 8 * run, w.y - 11, w.x + 11 * run, w.y - 17);
+        g.fillStyle(0xa57b4c, 1).fillCircle(w.x + 12 * run, w.y - 18, 3);
+        g.lineStyle(1, 0x6b4a2e, 1).lineBetween(w.x + 11 * run, w.y - 21, w.x + 9 * run, w.y - 26).lineBetween(w.x + 13 * run, w.y - 21, w.x + 15 * run, w.y - 26);
+      }
+      const hp = a.hp / def.hp;
+      if (hp < 1) {
+        const top = w.y - (bison ? 30 : 29);
+        g.fillStyle(0x000000, 0.6).fillRect(w.x - 11, top, 22, 4);
+        g.fillStyle(0xc0392b, 1).fillRect(w.x - 10, top + 1, 20 * Math.max(0, hp), 2);
+      }
+    }
+    // One layer for all game, like the wolves: sorting each among the people is not worth a sprite.
+    g.setDepth(animals.length > 0 ? Math.max(...animals.map((a) => tileToWorld(a.x, a.y, this.size).y)) : 0);
   }
 
   /** Redraws the running storms (a dark blue ring and swirl) and bison herds (a row of brown bison). Placeholders. */

@@ -1,12 +1,16 @@
-// The build menu (DESIGN-slice.md `## UI`, DESIGN-upgrades-2.md `## UI`): B opens it, Tab switches between
-// the Camp and Societies pages, 1-7 pick a building on the shown page, the Game scene shows the ghost and
-// places it on a left-click; right-click or Esc cancels. Runs above the Game scene in screen space.
+// The building cards (DESIGN-hunting.md `## Villager panel and building`): they fill the right part of the
+// selection panel while at least one selected person can build (an adult who is not drafted), and are hidden
+// otherwise. B arms them (they highlight), then 1-7 picks a building; clicking a card always works. Tab switches
+// between the Camp and Societies pages. The Game scene shows the ghost and places on a left-click; right-click or
+// Esc cancels. Placing remembers the people selected when the card was picked (`GameScene.placers`) and ends
+// when nobody selected can build any more. Runs above the Select scene in screen space.
 import Phaser from 'phaser';
 import { BUILDABLE, buildingDefs } from '../sim/buildings';
 import { displayLabel, englishLabel } from '../sim/labels';
+import { addMessage, type Res } from '../sim/state';
 import { createHover, type Hover } from './hover';
-import type { Res } from '../sim/state';
 import type { GameScene } from './Game';
+import type { SelectScene } from './Select';
 
 type Page = 'camp' | 'societies';
 const PAGES: { id: Page; label: string }[] = [
@@ -14,12 +18,13 @@ const PAGES: { id: Page; label: string }[] = [
   { id: 'societies', label: 'Societies' },
 ];
 
-const SLOT_W = 79;
-const SLOT_TOP = 26;
-const PANEL = { x: 880, y: 580, w: 400, h: 140 };
+const SLOT_W = 72;
+const SLOT_TOP = 22;
+/** The cards' strip: the right part of the 120 px high selection panel; `w` and `x` follow the card count. */
+const PANEL = { x: 880, y: 600, w: 400, h: 120 };
 const MIN_W = 250;
-const OPEN_BUTTON = { x: 1176, y: 684, w: 96, h: 28 };
 const INK = '#f3e9d2';
+const GOLD = 0xe0b85a;
 
 interface Slot {
   type: string;
@@ -31,15 +36,19 @@ interface Slot {
 
 export class BuildScene extends Phaser.Scene {
   private game2!: GameScene;
-  private open = false;
+  /** True while the cards show (someone selected can build). */
+  private visible = false;
+  /** B was pressed: the next 1-7 picks a building. */
+  private armed = false;
+  /** Cleared on the next frame, so a number key that picked is not also read as a speed key by Select. */
+  private disarmNext = false;
   private page: Page = 'camp';
   private slots: Slot[] = [];
   private panel: Phaser.GameObjects.GameObject[] = [];
   private panelBg!: Phaser.GameObjects.Rectangle;
-  /** The types the panel shows now, in order: this page's, minus those still waiting for an upgrade. */
+  /** The types the strip shows now, in order: this page's, minus those still waiting for an upgrade. */
   private shownTypes: string[] = [];
   private tabText!: Phaser.GameObjects.Text;
-  private openButton!: Phaser.GameObjects.GameObject[];
   private toastText!: Phaser.GameObjects.Text;
   private toastUntil = 0;
   private hover!: Hover;
@@ -50,58 +59,70 @@ export class BuildScene extends Phaser.Scene {
 
   init(data: { game: GameScene }): void {
     this.game2 = data.game;
-    this.open = false;
+    this.visible = false;
+    this.armed = false;
+    this.disarmNext = false;
     this.page = 'camp';
     this.slots = [];
     this.panel = [];
     this.shownTypes = [];
   }
 
+  private select(): SelectScene | undefined {
+    return this.scene.get('Select') as SelectScene | undefined;
+  }
+
   create(): void {
     const text = (x: number, y: number, s: string, size = 14, color = INK) =>
       this.add.text(x, y, s, { fontFamily: 'sans-serif', fontSize: `${size}px`, color });
 
-    // The small "Build (B)" button shown while the menu is closed.
-    const ob = this.add.rectangle(OPEN_BUTTON.x, OPEN_BUTTON.y, OPEN_BUTTON.w, OPEN_BUTTON.h, 0x1d1a16, 0.85).setOrigin(0).setInteractive();
-    ob.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.setOpen(true));
-    this.openButton = [ob, text(OPEN_BUTTON.x + 14, OPEN_BUTTON.y + 6, 'Build (B)')];
-
-    // The menu panel: a page strip, then one button per building (positions set by `layout`).
-    this.panelBg = this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x1d1a16, 0.85).setOrigin(0);
-    this.tabText = text(PANEL.x + 8, PANEL.y + 4, '', 13);
+    // The strip: a page line, then one card per building (positions set by `layout`).
+    this.panelBg = this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x2a251d, 0.9).setOrigin(0).setStrokeStyle(1, 0x6b5a3a);
+    this.tabText = text(PANEL.x + 8, PANEL.y + 3, '', 12);
     this.panel.push(this.panelBg, this.tabText);
     this.hover = createHover(this);
     BUILDABLE.forEach((type) => {
       const x = PANEL.x + 5;
       const y = PANEL.y + SLOT_TOP;
-      const bg = this.add.rectangle(x, y, 75, 108, 0x3a3328, 1).setOrigin(0).setInteractive();
+      const bg = this.add.rectangle(x, y, SLOT_W - 4, 94, 0x3a3328, 1).setOrigin(0).setInteractive();
       bg.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.pick(this.shownTypes.indexOf(type)));
-      const small = (buildingDefs[type].size[0] === 1);
-      const icon = this.add.image(x + 37, y + 56, `building_${type}`).setScale(small ? 0.8 : 0.45).setOrigin(0.5, 0.75);
+      // The art is fitted into a 56 x 32 box under the title, so a 4x4 store and a 1x1 trap both fit their card.
+      const frame = this.textures.getFrame(`building_${type}`);
+      const fit = Math.min(0.7, 56 / frame.width, 32 / frame.height);
+      const icon = this.add.image(x + 34, y + 54, `building_${type}`).setScale(fit).setOrigin(0.5, 0.5);
       const cost = buildingDefs[type].cost ?? {};
       const costText = (Object.keys(cost) as Res[]).map((r) => `${cost[r]} ${r}`).join(', ');
-      const title = text(x + 4, y + 3, displayLabel(type), 10).setWordWrapWidth(68);
-      const parts = [icon, title, text(x + 4, y + 80, costText, 10, '#cdbf9c').setWordWrapWidth(68)];
-      this.hover.attach(bg,() => (displayLabel(type) !== englishLabel(type) ? englishLabel(type) : null));
+      const title = text(x + 3, y + 2, displayLabel(type), 10).setWordWrapWidth(SLOT_W - 10);
+      const parts = [icon, title, text(x + 3, y + 70, costText, 10, '#cdbf9c').setWordWrapWidth(SLOT_W - 10)];
+      this.hover.attach(bg, () => (displayLabel(type) !== englishLabel(type) ? englishLabel(type) : null));
       this.slots.push({ type, x, bg, title, parts });
       this.panel.push(bg, ...parts);
     });
 
     this.toastText = text(PANEL.x, PANEL.y - 24, '', 14, '#ffb4a8');
     this.layout();
-    this.setOpen(false);
+    this.applyVisible();
 
     const kb = this.input.keyboard!;
     kb.addCapture('TAB');
-    kb.on('keydown-B', () => this.setOpen(!this.open));
-    kb.on('keydown-TAB', () => this.open && this.nextPage());
+    kb.on('keydown-B', () => this.toggleArmed());
+    kb.on('keydown-TAB', () => this.visible && this.nextPage());
     kb.on('keydown-ESC', () => {
       if (this.game2.placing) this.game2.setPlacing(null);
-      else this.setOpen(false);
+      else this.armed = false;
     });
-    ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.open && this.pick(i)));
+    ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX', 'SEVEN'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.armed && this.pick(i)));
     const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
-    if (camp) camp.buildMenu = () => ({ open: this.open, page: this.page, shown: [...this.shownTypes] });
+    if (camp) {
+      camp.buildMenu = () => ({
+        visible: this.visible, armed: this.armed, page: this.page, shown: [...this.shownTypes], placing: this.game2.placing,
+      });
+      // The screen centre of a shown card (1280 x 720 space), or null.
+      camp.buildCard = (type: string) => {
+        const slot = this.slots.find((s) => s.type === type && s.bg.visible);
+        return slot ? [slot.bg.x + slot.bg.width / 2, slot.bg.y + slot.bg.height / 2] : null;
+      };
+    }
   }
 
   /** Types whose upgrade (if any) has been bought; they keep BUILDABLE's order. */
@@ -114,16 +135,26 @@ export class BuildScene extends Phaser.Scene {
     return BUILDABLE.filter((t) => (buildingDefs[t].page ?? 'camp') === page && this.unlocked(t));
   }
 
+  /** B: arm the cards (the next number picks), or disarm. Nothing to arm when nobody selected can build. */
+  private toggleArmed(): void {
+    if (!this.visible) {
+      addMessage(this.game2.state, 'Select an adult who is not drafted to build.');
+      return;
+    }
+    this.armed = !this.armed;
+  }
+
   /** Tab: the other page, if it has anything unlocked to show. */
   private nextPage(): void {
     const other = PAGES.find((p) => p.id !== this.page)!;
     if (this.typesOn(other.id).length === 0) return;
     this.page = other.id;
-    this.setOpen(true);
+    this.applyVisible();
   }
 
-  private setOpen(open: boolean): void {
-    this.open = open;
+  /** Lays the strip out for the current page and shows or hides every part of it. */
+  private applyVisible(): void {
+    const open = this.visible;
     this.layout();
     for (const o of this.panel) (o as unknown as Phaser.GameObjects.Components.Visible).setVisible(open);
     this.slots.forEach((slot) => {
@@ -133,12 +164,13 @@ export class BuildScene extends Phaser.Scene {
       else slot.bg.disableInteractive();
       slot.parts.forEach((o) => (o as unknown as Phaser.GameObjects.Components.Visible).setVisible(on));
     });
-    this.tabText.setVisible(open);
-    for (const o of this.openButton) (o as unknown as Phaser.GameObjects.Components.Visible).setVisible(!open);
-    if (!open && this.game2.placing) this.game2.setPlacing(null);
+    if (!open) {
+      this.armed = false;
+      if (this.game2.placing) this.game2.setPlacing(null);
+    }
   }
 
-  /** Shows this page's unlocked types left to right and resizes the panel, keeping its right edge at the screen edge. */
+  /** Shows this page's unlocked types left to right and resizes the strip, keeping its right edge at the screen edge. */
   private layout(): void {
     if (this.typesOn(this.page).length === 0) this.page = 'camp';
     this.shownTypes = this.typesOn(this.page);
@@ -147,9 +179,9 @@ export class BuildScene extends Phaser.Scene {
     PANEL.x = 1280 - PANEL.w;
     this.panelBg.setPosition(PANEL.x, PANEL.y).setSize(PANEL.w, PANEL.h);
     this.toastText.setX(PANEL.x);
-    this.tabText.setPosition(PANEL.x + 8, PANEL.y + 4);
+    this.tabText.setPosition(PANEL.x + 8, PANEL.y + 3);
     const hasOther = PAGES.some((p) => p.id !== this.page && this.typesOn(p.id).length > 0);
-    this.tabText.setText(PAGES.map((p) => (p.id === this.page ? `[${p.label}]` : p.label)).join('  ') + (hasOther ? '   Tab: switch' : ''));
+    this.tabText.setText(PAGES.map((p) => (p.id === this.page ? `[${p.label}]` : p.label)).join('  ') + (hasOther ? '  Tab' : ''));
     this.slots.forEach((slot) => {
       const i = this.shownTypes.indexOf(slot.type);
       if (i < 0) return;
@@ -164,6 +196,7 @@ export class BuildScene extends Phaser.Scene {
   }
 
   private pick(i: number): void {
+    this.disarmNext = true;
     const type = this.shownTypes[i];
     if (!type) return;
     const cost = buildingDefs[type].cost ?? {};
@@ -172,29 +205,35 @@ export class BuildScene extends Phaser.Scene {
       this.toast(`Not enough ${short}.`);
       return;
     }
-    this.game2.setPlacing(this.game2.placing === type ? null : type);
+    if (this.game2.placing === type) this.game2.setPlacing(null);
+    else this.game2.setPlacing(type, this.select()?.selection() ?? []);
   }
 
-  /** A short red message above the menu. */
+  /** A short red message above the cards. */
   toast(message: string): void {
     this.toastText.setText(message);
     this.toastUntil = this.time.now + 2500;
   }
 
-  isOpen(): boolean {
-    return this.open;
-  }
-
-  /** True when a screen point is on the menu or its button, so the world should ignore the click. */
-  overUi(x: number, y: number): boolean {
-    const r = this.open ? PANEL : OPEN_BUTTON;
-    return x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
+  /** True after B, until a number key (or the next frame after one) picks: Select leaves 1-3 to the cards then. */
+  isArmed(): boolean {
+    return this.armed;
   }
 
   update(): void {
-    const now = this.typesOn(this.page).join();
-    if (now !== this.shownTypes.join() || (this.typesOn(this.page).length === 0 && this.page !== 'camp')) this.setOpen(this.open);
-    this.toastText.setVisible(this.time.now < this.toastUntil);
+    if (this.disarmNext) {
+      this.disarmNext = false;
+      this.armed = false;
+    }
+    const show = this.select()?.canBuild() ?? false;
+    const types = this.typesOn(this.page).join();
+    if (show !== this.visible || types !== this.shownTypes.join() || (this.typesOn(this.page).length === 0 && this.page !== 'camp')) {
+      this.visible = show;
+      this.applyVisible();
+    }
+    this.panelBg.setStrokeStyle(this.armed ? 2 : 1, this.armed ? GOLD : 0x6b5a3a);
+    this.tabText.setText(this.tabText.text.replace(/\s+· press a number$/, '') + (this.armed ? '  · press a number' : ''));
+    this.toastText.setVisible(this.visible && this.time.now < this.toastUntil);
     this.hover.update();
     const store = this.game2.state.store;
     for (const slot of this.slots) {

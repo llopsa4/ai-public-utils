@@ -324,7 +324,7 @@ tick (so `window.camp.orders(...)` and the mouse behave the same).
 | right-click a wolf | `attack` (drafted only; undrafted selected people ignore it) |
 | R | `draft` toggle for the selection (adults only) |
 | Z / X / C | stance `hold` / `defend` / `chase` for drafted selected |
-| B | open build menu; 1-6 in the menu (5 = drying rack, 6 = healers' lodge once its upgrade is bought) pick a building; left-click places; right-click/Esc cancels |
+| B | arm the building cards (shown in the panel while an adult who is not drafted is selected); the next 1-7 picks a building; left-click places; right-click/Esc cancels (see DESIGN-hunting.md `## Villager panel and building`) |
 | Delete | cancel the selected construction site (refund) |
 | Space | pause toggle; `1` / `2` / `3` = speed 1x / 2x / 4x |
 
@@ -448,14 +448,14 @@ text 14 px sans-serif, warm off-white.
 | pause / speed | 1016, 4, 256, 24 | four buttons: pause, 1x, 2x, 4x (active one highlighted) |
 | wave banner | 400, 44, 480, 40 | warning text + countdown seconds; "Wave n" while enemies remain; hidden otherwise |
 | toasts | 16, 520, 400, 72 | last 3 `state.messages`, fade after 5 s |
-| selection panel | 0, 600, 880, 120 | see below |
-| build menu | 880, 600, 400, 120 | 5 buttons (tipi, gathering spot, hunting lodge, store, drying rack), each with icon, cost and hotkey 1-5; greyed if unaffordable |
+| selection panel | 0, 600, 1280, 120 | see below |
+| building cards | right part of the panel | one card per unlocked building (icon, cost, hotkey), shown only while a selected adult can build; greyed if unaffordable |
 
 **Selection panel:** one person -> name, family, age, job, health bar, hunger bar, society. Several ->
 count, counts by job, and how many drafted. Buttons: **Draft / Undraft** (R), **Hold / Defend /
 Chase** (Z / X / C, shown when any selected is drafted). A selected building -> type, build progress
 or workers `n / max`, **Cancel** for a site. Nothing selected -> hint line "Left-click to select,
-right-click to order, B to build".
+right-click to order. Select adults, then B to build".
 
 **In the world:** selected people get a pale ring under the feet; drafted people a red ring; hungry
 people a small bowl icon; health bar above anyone hurt. Build placement shows a ghost footprint,

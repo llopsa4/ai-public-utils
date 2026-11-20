@@ -2,6 +2,7 @@
 // Pure TypeScript, no Phaser. Order handling is in `orders.ts`.
 import mapConfig from '../data/map.json';
 import { stepAllies } from './allies';
+import { spawnStartHerds, stepAnimals } from './animals';
 import { stepEffects } from './effects';
 import { stepEnemies } from './combat';
 import { stepEconomy } from './economy';
@@ -19,6 +20,7 @@ export function newGame(seed: number): GameState {
   const s = createState(seed);
   spawnPeople(s);
   assignHousing(s);
+  spawnStartHerds(s);
   return s;
 }
 
@@ -34,6 +36,7 @@ function stepOnce(s: GameState): void {
   for (const p of s.people) stepPerson(s, p);
   syncWorkers(s);
   stepCorrals(s);
+  stepAnimals(s);
   stepAllies(s);
   stepEffects(s);
   stepEnemies(s);
