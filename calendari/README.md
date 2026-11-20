@@ -31,7 +31,7 @@ Moves stay within the displayed month and preserve the original shift type. High
 
 **Green means fully covered, yellow means missing coverage, and red means overstaffed / overlapping coverage**, including incompatible overlaps in older backups. Red takes priority over yellow, but missing-coverage text and holiday badges remain visible. The global PDF uses these coverage colours too. Three or four people covering separate holiday shifts are valid and do not make a day red. Ordinary availability and monthly-limit conflicts retain their individual warnings. Moves cannot add extra people to occupied coverage places.
 
-The current month opens on each visit. Previously saved months remain available through navigation. Each holiday is independently flexible; new participants default to 24-hour duties and have no blocked dates. The popup separates 24-hour and 12-hour duties with a divider. Selecting 24 hours disables both 12-hour options; selecting either 12-hour option disables 24 hours. Uncheck the active choice (both day and night if both are selected) before switching groups. Day and night are vertically aligned and may both be selected. Confirm participant changes to apply the choice. Existing mixed 24/12-hour permissions default to 24 hours on load/import; assignments remain intact and any new conflicts are flagged for review.
+The current month opens on each visit. Previously saved months remain available through navigation. Each holiday is independently flexible; new participants default to 24-hour duties and have no blocked dates. The popup separates 24-hour and 12-hour duties with a divider. Selecting 24 hours disables both 12-hour options; selecting either 12-hour option disables 24 hours. Uncheck the active choice (both day and night if both are selected) before switching groups. Day and night are vertically aligned and may both be selected. At least one shift type is required before confirming. Confirm participant changes to apply the choice. Existing mixed 24/12-hour permissions default to 24 hours on load/import; assignments remain intact and any new conflicts are flagged for review.
 
 In the date popup, selecting a participant or **Unfilled** is a pending choice. Press **Confirm assignment** for that spot to apply it, or **Cancel selection** to restore its current assignment. Closing the popup also discards pending choices. Confirmation rechecks the scheduling rules; rule exceptions still require their explicit confirmation, and structural conflicts cannot be overridden. Drag-and-drop moves, holiday marking, and split/merge controls retain their existing behavior.
 
@@ -76,7 +76,7 @@ Deleting a participant, after confirmation, deletes their assignments from every
 Run core tests with Node.js 20 or later:
 
 ```powershell
-node --test tests/core.test.mjs tests/flexible.test.mjs tests/holidays.test.mjs tests/moves.test.mjs tests/encoding.test.mjs
+node --test tests/core.test.mjs tests/flexible.test.mjs tests/holidays.test.mjs tests/moves.test.mjs tests/encoding.test.mjs tests/assets.test.mjs
 ```
 
 Optional browser tests require Playwright, a headless Edge installation (or set `BROWSER_CHANNEL`), and `pdf-lib` for PDF page checks. They use synthetic names only, run their own local server under a nested URL, and place screenshots/PDFs in the operating system's temporary folder:

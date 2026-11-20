@@ -28,6 +28,12 @@ export function slotsForDate(date, config) {
 export const slotKey = s => `${s.date}/${s.kind}/${s.seat}`;
 export function slotsForMonth(month, config) { return monthDates(month).flatMap(d => slotsForDate(d, config)); }
 export function allAssignments(state) { return Object.values(state.months).flatMap(m => m.assignments); }
+// Rules reach at most the adjacent date and Fridays in adjacent months, so checks for
+// `month` only need the previous, current, and next saved months. Scanning every saved
+// month made generation slow down as history grew.
+export function nearbyAssignments(state, month) {
+  return [shiftMonth(month, -1), month, shiftMonth(month, 1)].flatMap(m => state.months[m]?.assignments ?? []);
+}
 export function participantCode(p) { return `P${String(p.code).padStart(3, '0')}`; }
 export function totals(state, month, assignments = state.months[month]?.assignments ?? []) {
   const config = state.months[month] ?? newMonth();
@@ -75,7 +81,7 @@ export function structuralIssues(state, month, assignment, others) {
 }
 export function audit(state, month) {
   const assignments = state.months[month]?.assignments ?? [];
-  const outside = allAssignments(state).filter(a => !a.date.startsWith(month));
+  const outside = nearbyAssignments(state, month).filter(a => !a.date.startsWith(month));
   return assignments.flatMap((a, i) => {
     const others = [...outside, ...assignments.filter((_, j) => j !== i)];
     return [...structuralIssues(state, month, a, others), ...ruleIssues(state, month, a, others)].map(message => ({ assignment: a, message }));
@@ -89,7 +95,7 @@ export function coverageStatus(date, assignments) {
     duties.filter(a => a.seat === seat && (a.kind === '24' || a.kind === kind)).length));
   return {
     missing: periods.some(seats => seats.some(count => count === 0)),
-    overstaffed: periods.some(seats => seats.some(count => count > 1) || seats.reduce((a, b) => a + b, 0) > 2)
+    overstaffed: periods.some(seats => seats.some(count => count > 1))
   };
 }
 
@@ -102,7 +108,7 @@ export function movedAssignments(state, month, sourceKey, target) {
     throw new Error('Choose another date in this month.');
   if (target.kind !== source.kind) throw new Error('Keep the original shift type.');
   const candidate = { date: target.date, kind: target.kind, seat: target.seat, participantId: source.participantId, fixed: false, override: false };
-  const others = allAssignments(state).filter(a => a !== source);
+  const others = nearbyAssignments(state, month).filter(a => a !== source);
   const issues = [...structuralIssues(state, month, candidate, others), ...ruleIssues(state, month, candidate, others)];
   if (issues.length) throw new Error([...new Set(issues)].join('. '));
   return [...config.assignments.filter(a => a !== source), candidate];
@@ -160,7 +166,15 @@ export function anonymousState(input) {
   }
   return result;
 }
-export function serialize(state) { return JSON.stringify(anonymousState(state), null, 2); }
+// Visiting a month creates an empty entry; saving those would grow storage without bound
+// and eventually exceed the import limit. Empty months carry no scheduling data, so only
+// the displayed month (`keepMonth`) is kept when empty.
+export function serialize(state, keepMonth = null) {
+  const clean = anonymousState(state);
+  for (const [m, config] of Object.entries(clean.months))
+    if (m !== keepMonth && !config.holidays.length && !config.assignments.length) delete clean.months[m];
+  return JSON.stringify(clean, null, 2);
+}
 export function parseBackup(text) { try { return anonymousState(JSON.parse(text)); } catch { throw new Error('Backup format is invalid or unsupported. Existing data was kept.'); } }
 
 // Greedy restarts with repair. Every candidate is validated; time exhaustion is not an infeasibility proof.
@@ -174,7 +188,7 @@ export function generate(state, month, { timeMs = 10000, random = Math.random, o
   const covers = (a, unit) => a.date === unit.date && a.seat === unit.seat && (a.kind === '24' || a.kind === unit.kind);
   const hours = assignments => assignments.reduce((sum, a) => sum + HOURS[a.kind], 0);
   const proposal = (assignments, iterations) => ({ assignments, iterations, coveredHours: hours(assignments), requiredHours, complete: hours(assignments) === requiredHours });
-  const outside = allAssignments(state).filter(a => !a.date.startsWith(month));
+  const outside = nearbyAssignments(state, month).filter(a => !a.date.startsWith(month));
   const score = assignments => {
     const t = Object.values(totals(state, month, assignments));
     const variance = key => t.reduce((sum, v) => sum + v[key] ** 2, 0);
@@ -192,11 +206,11 @@ export function generate(state, month, { timeMs = 10000, random = Math.random, o
     let remaining = units.filter(unit => !assignments.some(a => covers(a, unit)));
     while (remaining.length) {
       let choice, candidates, choiceIndex;
+      const others = [...outside, ...assignments];
       // Minimum remaining values: fill the most constrained seats first.
       for (let i = 0; i < remaining.length; i++) {
         const unit = remaining[i];
         const kinds = unit.kind === '24' ? ['24'] : ['24', unit.kind];
-        const others = [...outside, ...assignments];
         const eligible = kinds.flatMap(kind => state.participants.flatMap(p => {
           const a = { date: unit.date, seat: unit.seat, kind, participantId: p.id, fixed: false, override: false };
           return !structuralIssues(state, month, a, others).length && !ruleIssues(state, month, a, others).length ? [a] : [];

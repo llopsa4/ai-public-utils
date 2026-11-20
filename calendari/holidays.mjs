@@ -11,7 +11,9 @@ const generalDates = new Set(HOLIDAY_DATA.general);
 // All settlements sharing these INE municipality prefixes are in Aran.
 // Generalitat's 2026 calendar replaces St Stephen's Day with Aran Day there.
 const ARAN = new Set(['25025', '25031', '25045', '25057', '25059', '25063', '25121', '25243', '25247']);
-const PUBLIC_NAMES = {
+// Keyed by MM-DD for the bundled snapshot year only: Good Friday and Easter Monday move
+// every year. Update these when refreshing another year; a test checks every general date has a name.
+export const PUBLIC_NAMES = {
   '01-01': "New Year's Day", '01-06': 'Epiphany', '04-03': 'Good Friday',
   '04-06': 'Easter Monday', '05-01': 'Labour Day', '06-17': 'Aran Day',
   '06-24': "Saint John's Day", '08-15': 'Assumption Day', '09-11': 'National Day of Catalonia',

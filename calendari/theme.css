@@ -77,18 +77,14 @@ main { gap: 25px; }
 .month-navigation #today { border-radius: 99px; background: #edf2f5; border-color: transparent; }
 .month-jump { width: 160px; }
 .city-panel { background: #f0f4f6; border: 0; border-radius: 21px; padding: 20px; margin-top: 24px; }
-.city-heading h3 { font-size: 18px; }
 .city-highlight { border: 0; border-radius: 99px; background: #ffffff; font-size: 13px; }
 .city-highlight.selected { border-radius: 99px; font-size: 16px; }
 .city-controls { margin: 17px 0 10px; gap: 10px; }
 .city-controls input { background: white; border-color: #d8e2e8; }
 .city-controls button { background: #ffffff; }
 .city-source { line-height: 1.65; }
-.settings-row { align-items: center; gap: 18px; margin: 24px 0; }
-.shift-hours { padding: 0; gap: 20px; }
 .generate-actions #generate { border-radius: 99px; padding: 13px 22px; font-size: 13px; }
-.calendar-hint, .move-instructions { line-height: 1.65; }
-.calendar-hint span { float: none; margin-left: 8px; }
+.move-instructions { line-height: 1.65; }
 .move-instructions { margin-bottom: 20px; }
 .weekdays { padding: 0 0 12px; text-transform: none; letter-spacing: .2px; font-size: 11px; }
 .calendar-board { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); column-gap: 8px; position: relative; }
@@ -155,7 +151,6 @@ dialog::backdrop { background: #263d344d; backdrop-filter: blur(5px); }
   .month-navigation h2 { font-size: 24px; min-width: 170px; }
   .calendar-toolbar { flex-wrap: wrap; }
   .month-navigation #today { display: none; }
-  .shift-hours { display: none; }
   .day-cell, .empty-cell { padding: 7px; }
   .move-entry { flex-wrap: wrap; }
   .move-entry .slot-name { flex-basis: 100%; order: -1; white-space: normal; overflow-wrap: anywhere; }
@@ -179,7 +174,6 @@ dialog::backdrop { background: #263d344d; backdrop-filter: blur(5px); }
   .calendar-section, .summary-section, .issues-section, .sidebar details { border-radius: 22px; }
   .city-panel { padding: 17px; border-radius: 18px; }
   .city-controls label { min-width: 150px; }
-  .calendar-hint span { display: block; margin-left: 0; }
   .day-cell, .empty-cell { min-height: 129px; }
   .summary-section, .issues-section { padding: 22px 19px; }
   dialog { padding: 20px; border-radius: 23px; max-height: 88vh; }
@@ -192,7 +186,6 @@ dialog::backdrop { background: #263d344d; backdrop-filter: blur(5px); }
   .calendar-toolbar { gap: 17px; }
   .city-controls label { flex-basis: 100%; min-width: 0; }
   .city-controls button { flex: 1; }
-  .settings-row { gap: 14px; }
   .generate-actions { margin-left: 0; }
   .generate-actions #generate { padding: 13px 16px; }
   .weekdays, .month-grid { min-width: 650px; }

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { emptyState, newMonth, monthDates, shiftDate, shiftMonth, slotsForDate, slotsForMonth, holiday, ruleIssues, structuralIssues, audit, totals, serialize, parseBackup, generate, exclusiveKinds, holidayDutyLimit } from '../core.mjs';
+import { emptyState, newMonth, monthDates, shiftDate, shiftMonth, slotsForDate, slotsForMonth, holiday, ruleIssues, structuralIssues, audit, totals, serialize, parseBackup, generate, exclusiveKinds, holidayDutyLimit, nearbyAssignments, allAssignments } from '../core.mjs';
 
 const month = '2026-10';
 function fixture(count = 20) {
@@ -259,4 +259,40 @@ test('generation respects Friday limits within the month and both saved neighbou
   assert.equal(new Set(fridays.map(a => a.participantId)).size, fridays.length);
   s.months[month].assignments = result.assignments;
   assert.deepEqual(audit(s, month), []);
+});
+
+// Audit A1: rule checks once scanned every saved month, so a year of history left
+// a 20-person month mostly empty within the real search budget.
+test('rule checks only read the previous, current, and next saved months', () => {
+  const s = fixture(2);
+  for (const m of ['2026-08', '2026-09', '2026-11', '2026-12']) s.months[m] = { ...newMonth(), assignments: [assignment(s, `${m}-02`)] };
+  assert.deepEqual(nearbyAssignments(s, month).map(a => a.date.slice(0, 7)).sort(), ['2026-09', '2026-11']);
+  assert.equal(allAssignments(s).length, 4);
+});
+// Deterministic: distant months must never be read, whatever the machine speed.
+test('20 participants with two years of saved history: generation and audit never read distant months', () => {
+  const s = fixture(20);
+  const distantReads = [];
+  for (let k = 1; k <= 24; k++) {
+    const m = shiftMonth(month, -k);
+    const config = { ...newMonth(), assignments: monthDates(m).flatMap((date, d) => [0, 1].map(seat => assignment(s, date, '24', seat, (d * 2 + seat + k) % 20))) };
+    s.months[m] = k === 1 ? config : new Proxy(config, { get(target, key) { if (key === 'assignments') distantReads.push(m); return target[key]; } });
+  }
+  const result = generate(s, month, searchOptions());
+  assert.equal(result.complete, true, `covered ${result.coveredHours}/${result.requiredHours} hours`);
+  s.months[month].assignments = result.assignments;
+  assert.deepEqual(audit(s, month), []);
+  assert.deepEqual(distantReads, []);
+});
+
+// Audit A3: visited-but-empty months must not accumulate in storage or backups.
+test('serialization drops empty months except the displayed one', () => {
+  const s = fixture(1);
+  s.months['2026-01'] = newMonth();
+  s.months['2026-02'] = { ...newMonth(), holidays: ['2026-02-10'] };
+  s.months['2026-03'] = { ...newMonth(), assignments: [assignment(s, '2026-03-02')] };
+  const saved = JSON.parse(serialize(s, month));
+  assert.deepEqual(Object.keys(saved.months).sort(), ['2026-02', '2026-03', month]);
+  assert.deepEqual(Object.keys(JSON.parse(serialize(s)).months).sort(), ['2026-02', '2026-03']);
+  assert.deepEqual(parseBackup(serialize(s, month)).months['2026-03'].assignments, s.months['2026-03'].assignments);
 });

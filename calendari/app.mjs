@@ -1,6 +1,8 @@
-import { STORAGE_KEY, KINDS, WEEKDAYS, HOURS, pad, todayMonth, emptyState, newMonth, monthDates, weekday, shiftMonth, holiday, slotsForDate, slotsForMonth, slotKey, participantCode, totals, allAssignments, ruleIssues, structuralIssues, audit, serialize, parseBackup, anonymousState } from './core.mjs';
+import { STORAGE_KEY, WEEKDAYS, HOURS, pad, todayMonth, emptyState, newMonth, monthDates, weekday, shiftMonth, holiday, slotsForDate, slotsForMonth, slotKey, participantCode, totals, nearbyAssignments, ruleIssues, structuralIssues, audit, serialize, parseBackup, anonymousState,
+  coverageStatus, movedAssignments, moveTargets, exclusiveKinds, holidayDutyLimit } from './core.mjs';
 import { CITIES, HOLIDAY_DATA, cityById, findCity, cityYearAvailable, holidayDetails } from './holidays.mjs';
-import { coverageStatus, movedAssignments, moveTargets, exclusiveKinds, holidayDutyLimit } from './core.mjs';
+
+const SEARCH_MS = 10000; // Generation budget; the status text is derived from it.
 
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
@@ -77,7 +79,7 @@ function personLabel(id) {
 function save() {
   if (storageBlocked) { $('#save-status').textContent = 'Not saved · export a backup'; return; }
   try {
-    localStorage.setItem(STORAGE_KEY, serialize(state));
+    localStorage.setItem(STORAGE_KEY, serialize(state, month));
     saveFailed = false;
     $('#save-status').textContent = 'Anonymous data saved';
   } catch {
@@ -215,7 +217,8 @@ function renderIssues() {
   $('#issues').innerHTML = lines.length ? `<ul class="issue-list">${lines.join('')}</ul>` : '<p class="muted">All seats are covered. No scheduling conflicts found.</p>';
 }
 function changed() { save(); render(); if (openDate && $('#day-dialog').open) renderDay(); }
-function otherAssignments(slot) { return allAssignments(state).filter(a => !(a.date === slot.date && a.kind === slot.kind && a.seat === slot.seat)); }
+// Rules only reach adjacent months (see nearbyAssignments in core.mjs).
+function otherAssignments(slot) { return nearbyAssignments(state, month).filter(a => !(a.date === slot.date && a.kind === slot.kind && a.seat === slot.seat)); }
 function showDay(date) { assignmentDrafts.clear(); openDate = date; renderDay(); $('#day-dialog').showModal(); }
 function renderDay() {
   const config = state.months[month];
@@ -230,10 +233,11 @@ function renderDay() {
     const pending = assignmentDrafts.has(slotKey(s));
     const selected = pending ? assignmentDrafts.get(slotKey(s)) : a?.participantId ?? '';
     const warnings = issues.filter(i => slotKey(i.assignment) === slotKey(s));
+    const others = otherAssignments(s);
     return `<div class="assignment-editor"><div class="assignment-row"><label>${kindLabel(s.kind)} · Seat ${s.seat + 1}<select data-assign="${s.kind}/${s.seat}"><option value="" ${selected ? '' : 'selected'}>Unfilled</option>${state.participants.map(p => {
       const candidate = { ...s, participantId: p.id };
-      const structural = structuralIssues(state, month, candidate, otherAssignments(s));
-      const rules = ruleIssues(state, month, candidate, otherAssignments(s));
+      const structural = structuralIssues(state, month, candidate, others);
+      const rules = ruleIssues(state, month, candidate, others);
       return `<option value="${p.id}" ${p.id === selected ? 'selected' : ''} ${structural.length ? 'disabled' : ''}>${escape(personLabel(p.id))} (${participantCode(p)})${structural.length ? ' · already on this date' : rules.length ? ` · ${rules.length} restriction(s)` : ''}</option>`;
     }).join('')}</select></label></div><p class="assignment-pending muted" role="status">${pending ? 'Pending selection. Confirm to apply.' : 'Select a participant, then confirm.'}</p><div class="assignment-actions"><button type="button" class="primary" data-confirm-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Confirm assignment</button><button type="button" data-cancel-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Cancel selection</button></div><div class="assignment-meta"><span>${timeLabel(s.kind)}</span></div>${holiday(openDate, config) && s.kind !== 'night' ? `<button class="small" data-${s.kind === '24' ? 'split' : 'merge'}="${s.seat}">${s.kind === '24' ? 'Split into day and night shifts' : 'Use one 24-hour duty'}</button>` : ''}${warnings.length ? `<p class="assignment-warnings">${warnings.map(i => escape(i.message)).join(' · ')}${a?.override ? ' · confirmed manual exception' : ''}</p>` : ''}</div>`;
   }).join('') + config.assignments.filter(a => a.date === openDate && !slots.some(s => slotKey(s) === slotKey(a))).map(a => `<div class="assignment-editor stale-assignment"><p>Incompatible ${kindLabel(a.kind)} assignment: ${escape(personLabel(a.participantId))}. The date’s shift mode has changed.</p><button class="danger" data-stale="${a.kind}/${a.seat}">Remove incompatible assignment</button></div>`).join('');
@@ -291,8 +295,10 @@ function updateParticipantDraft(event) {
   }
   participantDraft.blockedWeekdays = [...$('#participant-editor').querySelectorAll('[data-weekday]:checked')].map(el => Number(el.dataset.weekday));
   participantDirty = true;
-  $('#confirm-participant').disabled = false; $('#cancel-participant').disabled = false;
-  $('#participant-edit-status').textContent = 'Unconfirmed changes. Confirm to apply them.';
+  // A participant with no shift type could never be assigned, so confirmation needs at least one.
+  const noShift = !participantDraft.allowedKinds.length;
+  $('#confirm-participant').disabled = noShift; $('#cancel-participant').disabled = false;
+  $('#participant-edit-status').textContent = noShift ? 'Choose at least one shift type before confirming.' : 'Unconfirmed changes. Confirm to apply them.';
 }
 $('#participant-editor').addEventListener('input', updateParticipantDraft);
 $('#participant-editor').addEventListener('change', updateParticipantDraft);
@@ -300,6 +306,10 @@ $('#participant-editor').addEventListener('submit', event => {
   event.preventDefault();
   const p = state.participants.find(p => p.id === selectedId);
   if (!p || !participantDraft || (!participantDirty && !setupPeople.length) || worker) return;
+  if (!exclusiveKinds(participantDraft.allowedKinds).length) {
+    $('#participant-edit-status').textContent = 'Choose at least one shift type. No participant changes were applied.';
+    $('#participant-editor [data-kind]:not(:disabled)')?.focus(); return;
+  }
   if (participantDraft.blockedDates.some(date => !monthDates(month).includes(date))) {
     $('#participant-edit-status').textContent = 'Choose dates within the displayed month. No participant changes were applied.';
     $('.blocked-date-grid button').focus(); return;
@@ -353,7 +363,14 @@ $('#participant-editor').addEventListener('keydown', event => {
   for (const button of buttons) button.tabIndex = button === next ? 0 : -1;
   next.focus();
 });
-function navigate(next) { if (moving || worker) return; if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(next) || Number(next.slice(0, 4)) < 1900 || Number(next.slice(0, 4)) > 2200) return notify('Choose a month between January 1900 and December 2200.', true); if (next === month) return; if (!discardParticipantDraft()) { $('#month-input').value = month; return; } month = next; ensureMonth(); save(); render(); }
+function navigate(next) {
+  if (moving || worker) return;
+  const year = Number(next.slice(0, 4));
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(next) || year < 1900 || year > 2200) return notify('Choose a month between January 1900 and December 2200.', true);
+  if (next === month) return;
+  if (!discardParticipantDraft()) { $('#month-input').value = month; return; }
+  month = next; ensureMonth(); save(); render();
+}
 $('#participant-view').addEventListener('change', event => {
   if (worker || moving) return;
   calendarParticipantId = event.target.value || null; renderCalendar();
@@ -537,10 +554,14 @@ $('#day-content').addEventListener('change', event => {
   editor.querySelector('[data-cancel-assign]').disabled = false;
   editor.querySelector('.assignment-pending').textContent = 'Pending selection. Confirm to apply.';
 });
+// One click handler for the date editor: pending assignment actions, then place actions.
 $('#day-content').addEventListener('click', event => {
   const confirmButton = event.target.closest('[data-confirm-assign]');
   const cancelButton = event.target.closest('[data-cancel-assign]');
-  if (!confirmButton && !cancelButton) return;
+  if (confirmButton || cancelButton) handleAssignmentAction(confirmButton, cancelButton);
+  else handlePlaceAction(event);
+});
+function handleAssignmentAction(confirmButton, cancelButton) {
   const value = confirmButton?.dataset.confirmAssign ?? cancelButton.dataset.cancelAssign;
   const [kind, seatString] = value.split('/');
   const slot = { date: openDate, kind, seat: Number(seatString) };
@@ -561,9 +582,10 @@ $('#day-content').addEventListener('click', event => {
   assignmentDrafts.delete(key);
   config.assignments = [...config.assignments.filter(a => slotKey(a) !== slotKey(slot)), candidate]; changed();
   focusSelection();
-});
-$('#day-content').addEventListener('click', event => {
-  const split = event.target.closest('[data-split]'), merge = event.target.closest('[data-merge]');
+}
+// Split/merge a holiday place, or remove an incompatible (stale) assignment.
+function handlePlaceAction(event) {
+  const split =event.target.closest('[data-split]'), merge = event.target.closest('[data-merge]');
   if (split || merge) {
     const seat = Number(split?.dataset.split ?? merge.dataset.merge);
     const config = state.months[month];
@@ -584,7 +606,7 @@ $('#day-content').addEventListener('click', event => {
   if (!a) return;
   config.assignments = config.assignments.filter(other => other !== a);
   changed();
-});
+}
 
 function busy(on) {
   for (const el of document.querySelectorAll('.app-shell button, .app-shell input, .app-shell select')) {
@@ -611,18 +633,19 @@ function startSearch() {
   try {
     worker = new Worker(new URL('./scheduler.worker.mjs', import.meta.url), { type: 'module' });
     worker.onmessage = ({ data }) => {
-      if (data.type === 'error') { worker.terminate(); worker = null; busy(false); notify(data.message, true); $('#search-status').hidden = true; return; }
+      // Error paths re-render so the unsaved preview and busy-state controls are replaced.
+      if (data.type === 'error') { worker.terminate(); worker = null; busy(false); render(); notify(data.message, true); $('#search-status').hidden = true; return; }
       latestProposal = data;
       const coveredHours = data.assignments.reduce((sum, a) => sum + HOURS[a.kind], 0);
-      $('#search-status').textContent = `Searching for up to 10 seconds… Best coverage: ${coveredHours}/${monthDates(month).length * 48} hours. Yellow dates need coverage. You can stop and keep this proposal.`;
+      $('#search-status').textContent = `Searching for up to ${SEARCH_MS / 1000} seconds… Best coverage: ${coveredHours}/${monthDates(month).length * 48} hours. Yellow dates need coverage. You can stop and keep this proposal.`;
       renderCalendar(data.assignments);
       if (data.type === 'done') finishSearch();
     };
-    worker.onerror = () => { worker?.terminate(); worker = null; busy(false); $('#search-status').hidden = true; notify('Search could not run. Serve this folder over HTTP and try again. Existing assignments were kept.', true); };
+    worker.onerror = () => { worker?.terminate(); worker = null; busy(false); render(); $('#search-status').hidden = true; notify('Search could not run. Serve this folder over HTTP and try again. Existing assignments were kept.', true); };
     busy(true); $('#search-status').hidden = false; $('#search-status').textContent = 'Starting anonymous scheduling search…';
-    worker.postMessage({ state: anonymousState(state), month, timeMs: 10000 });
+    worker.postMessage({ state: anonymousState(state), month, timeMs: SEARCH_MS });
   } catch {
-    worker?.terminate(); worker = null; busy(false);
+    worker?.terminate(); worker = null; busy(false); render();
     notify('Your browser could not start the scheduling worker. Serve this folder over HTTP and use a current browser.', true);
   }
 }
@@ -657,7 +680,7 @@ $('#restart').addEventListener('click', () => {
   setupReviewPending = false; checkSetup();
 });
 $('#backup').addEventListener('click', () => {
-  const blob = new Blob([serialize(state)], { type: 'application/json' });
+  const blob = new Blob([serialize(state, month)], { type: 'application/json' });
   const url = URL.createObjectURL(blob), a = document.createElement('a');
   a.href = url; a.download = 'duty-calendar-anonymous-backup.json'; a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);

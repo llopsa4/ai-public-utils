@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
-import { CITIES, HOLIDAY_DATA, findCity, cityById, cityYearAvailable, holidayDetails, isOfficialHoliday, isGeneralHoliday } from '../holidays.mjs';
+import { CITIES, HOLIDAY_DATA, PUBLIC_NAMES, findCity, cityById, cityYearAvailable, holidayDetails, isOfficialHoliday, isGeneralHoliday } from '../holidays.mjs';
 import { emptyState, newMonth, holiday, slotsForDate, ruleIssues, structuralIssues, serialize, parseBackup } from '../core.mjs';
 
 test('official snapshot has known Catalan municipal and general dates', () => {
@@ -62,9 +62,15 @@ test('city codes round-trip through anonymous backups; no city free text survive
   const s = emptyState(); s.cityId = findCity('Girona').id;
   s.months['2026-10'] = { ...newMonth(), cityId: s.cityId };
   s.cityInput = 'PRIVATE_TEST_SENTINEL'; s.cityName = 'PRIVATE_TEST_SENTINEL';
-  const text = serialize(s);
+  const text = serialize(s, '2026-10'); // the app always keeps the displayed month
   assert.ok(!text.includes('PRIVATE_TEST_SENTINEL'));
   const restored = parseBackup(text);
   assert.equal(restored.cityId, s.cityId);
   assert.equal(restored.months['2026-10'].cityId, s.cityId);
+});
+
+// Audit A6: the name map is year-specific (Easter moves), so a refreshed snapshot must update it.
+test('every general holiday in the snapshot has an English name', () => {
+  for (const date of HOLIDAY_DATA.general) assert.ok(PUBLIC_NAMES[date.slice(5)], `missing name for ${date}`);
+  assert.equal(PUBLIC_NAMES['06-17'], 'Aran Day');
 });
