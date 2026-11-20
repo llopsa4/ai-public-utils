@@ -20,13 +20,16 @@ identical, so a failing test can be replayed exactly. New rules get a test here,
 It starts its own Vite dev server on port 5184 (not the dev port 5174, so a running `npm run dev`
 does not get in the way). It:
 
-1. opens `/?debug` (the debug hook `window.camp`) and waits for the canvas;
-2. clicks **Start** on the menu (the canvas is scaled to fit, so the click is computed from the
-   canvas box);
-3. checks `window.camp.state.people.length === 20`;
-4. runs `window.camp.step(3300)` and waits until the HUD shows the scouts' warning
-   (`window.camp.banner()`, set by `Hud.ts`);
-5. fails on any `pageerror` or console error.
+Three tests. All open `/?debug` (the hooks `window.camp` in a run and `window.menu` on the menu: button
+centres by name such as `slot1.new`, and the card texts; the canvas is scaled to fit, so clicks are
+computed from the canvas box) and fail on any `pageerror` or console error.
+
+1. **Menu to a run:** clicks **New camp** on slot 1, checks 20 people, runs `window.camp.step(3300)`
+   and waits until the HUD shows the scouts' warning (`window.camp.banner()`, set by `Hud.ts`).
+2. **Season:** the HUD text reads `Spring, day 1` and `Pemmican 0 / 100` at the start, and
+   `Winter, day 1` after the test sets `window.camp.state.tick = 10800` (stepping that far would starve the camp).
+3. **Saves:** new camp in slot 1, `step(1200)`, waits for `campfire.slot.1` in localStorage, reloads,
+   checks the card shows `Day 2`, clicks **Continue**, checks the run is paused with 20 people.
 
 On Windows the config passes ANGLE/Direct3D flags so headless Chromium uses the GPU; elsewhere the
 defaults apply. The first run may need `npx playwright install chromium`.
@@ -35,7 +38,9 @@ defaults apply. The first run may need `npx playwright install chromium`.
 
 Not covered by tests, so check in the browser (`npm run dev`) when touching them: mouse-edge and WASD
 pan, shift-click, Delete on a site, 1-3 and Space, the pause / speed buttons, wolves and fighting, the
-end screen and **Play again** (returns to the menu).
+end screen and **Play again** (returns to the menu), and the file pickers: **Export** and **Import** on
+the slot cards (downloads and the picker are not in the smoke test), the HUD **Menu** panel, and **Delete**'s
+Yes / No. A throwaway Playwright script with `acceptDownloads` and `filechooser` checked these on 2026-11-19.
 
 ## Publish check
 

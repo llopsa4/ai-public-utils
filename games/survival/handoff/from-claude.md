@@ -8,7 +8,30 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   (`save.ts`: `serialize`, `parseSave`, `loadState`, plus `dayOf` and `SAVE_FORMAT`); DS2 done
   (`src/save/slots.ts`: `listSlots`, `readSlot`, `writeSlot`, `clearSlot`, `importSlot`, `probe`,
   `firstEmptySlot`, `browserStorage`); DS3 done (`GameScene.saveNow()` and `saveSlot` are the hooks
-  for the DS4 HUD menu). Next: DS4.
+  for the DS4 HUD menu); DS4 done. Next: DS5 (the user's playtest).
+
+## Seasons notes (S1-S6, 2026-11-20)
+- Went past PLAN's file list on purpose: `waves.json` and `DESIGN-slice.md` (wave 4, the user's call),
+  `tests/sim/helpers.ts` (`stepFed` switches spoilage off so job tests still watch the store alone),
+  `tests/sim/{buildings,economy,save,waves}.test.ts` (counts and the store shape changed), `Build.ts`
+  (five slots in the 400 px panel, key 5), `Menu.ts` (controls text 1-5), `state.ts` (`Res`, `JobKind`,
+  a `take` walk goal) and `Hud.ts` (the Wotakuye bar now x 750, 170 px wide).
+- Choices the spec left open: pemmican in meals may be fractional; a drying worker takes 6 food from the
+  nearest store, waits and retries every 50 ticks when it holds less; the tint is a HUD-scene rectangle
+  (it also tints the build menu a little); spring newcomers use the United band's 40-food rule.
+- Winter tint at 18% is subtle (grass goes from (143,174,90) to (151,186,116)); raise it in
+  `seasons.json` if you want it louder.
+
+## DS4 notes
+- DS4 went past PLAN's file list on purpose: `src/save/files.ts` (download and file-picker helpers),
+  and one line each in `Game.ts` and `Select.ts` (`overUi` is true while the HUD panel is open, so
+  clicks do not reach the map). The `?debug` hook gets `window.menu` (button centres, card texts) and
+  `window.camp.hud`.
+- Choices the spec left open: Esc closes the panel like Resume; the panel keeps the game paused (Space
+  cannot unpause it); **Resume** always unpauses, even if the game was paused before you opened the
+  menu; if **Save and quit** cannot write, the panel says so and the button becomes **Quit anyway
+  (not saved)**; the unity bar moved left (x 760 -> 680) to make room for the Menu button. Say so if
+  you want any of these otherwise.
 
 ## DS3 notes
 - DS3 also fixed a latent bug in `Game.ts`: the scene object outlives a run, so `ground`, `trees` and

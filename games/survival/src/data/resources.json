@@ -2,7 +2,8 @@
   "resources": {
     "food":  { "start": 120, "label": "Food" },
     "wood":  { "start": 40,  "label": "Wood" },
-    "hides": { "start": 6,   "label": "Hides" }
+    "hides": { "start": 6,   "label": "Hides" },
+    "pemmican": { "start": 0, "label": "Pemmican", "foodValue": 1.5 }
   },
   "labels": { "unity": "Wotakuye", "family": "family" },
   "economy": {

@@ -3,14 +3,19 @@
 import Phaser from 'phaser';
 import data from '../data/resources.json';
 import { unityBand } from '../sim/economy';
+import seasonData from '../data/seasons.json';
+import { downloadText, exportName } from '../save/files';
 import { queueOrders } from '../sim/orders';
+import { serialize } from '../sim/save';
+import { dayInSeason, seasonLabel, seasonOf, yearOf } from '../sim/seasons';
 import { DAY_TICKS, storeCap, type GameState, type Res } from '../sim/state';
 import { waveBanner } from '../sim/waves';
 import type { GameScene } from './Game';
 
 const BAR = { x: 0, y: 0, w: 1280, h: 32 };
 const BANNER = { x: 400, y: 44, w: 480, h: 40 };
-const UNITY = { x: 760, y: 6, w: 240, h: 20 };
+const UNITY = { x: 750, y: 6, w: 170, h: 20 };
+const MENU_BUTTON = { x: 930, y: 4, w: 76, h: 24 };
 const SPEED = { x: 1016, y: 4, w: 256, h: 24 };
 // A speed button also resumes a paused game; the number keys only change the speed.
 const SPEED_BUTTONS: { label: string; pause: boolean; speed?: 1 | 2 | 4 }[] = [
@@ -20,11 +25,12 @@ const SPEED_BUTTONS: { label: string; pause: boolean; speed?: 1 | 2 | 4 }[] = [
   { label: '4x', pause: false, speed: 4 },
 ];
 const INK = '#f3e9d2';
-const RES: Res[] = ['food', 'wood', 'hides'];
+const RES: Res[] = ['food', 'wood', 'hides', 'pemmican'];
 
 export class HudScene extends Phaser.Scene {
   private game2!: GameScene;
   private resourceText!: Phaser.GameObjects.Text;
+  private tint!: Phaser.GameObjects.Rectangle;
   private unityFill!: Phaser.GameObjects.Rectangle;
   private unityText!: Phaser.GameObjects.Text;
   private bannerBox!: Phaser.GameObjects.Rectangle;
@@ -32,6 +38,11 @@ export class HudScene extends Phaser.Scene {
   private endBox!: Phaser.GameObjects.Rectangle;
   private endText!: Phaser.GameObjects.Text;
   private endButton!: Phaser.GameObjects.Text;
+  private menuObjects: Phaser.GameObjects.GameObject[] = [];
+  private menuNote!: Phaser.GameObjects.Text;
+  private quitLabel!: Phaser.GameObjects.Text;
+  /** After a failed save, the quit button's next click leaves without saving. */
+  private quitUnsaved = false;
   private speedButtons: { bg: Phaser.GameObjects.Rectangle; label: Phaser.GameObjects.Text; b: (typeof SPEED_BUTTONS)[number] }[] = [];
 
   constructor() {
@@ -42,7 +53,16 @@ export class HudScene extends Phaser.Scene {
     this.game2 = data.game;
   }
 
+  /** True while the menu panel is open: the map and the other panels ignore clicks. */
+  get menuOpen(): boolean {
+    return this.menuObjects.length > 0 && this.menuObjects[0].active && (this.menuObjects[0] as Phaser.GameObjects.Rectangle).visible;
+  }
+
   create(): void {
+    this.menuObjects = [];
+    this.quitUnsaved = false;
+    // The season's tint over the map (presentation only; spring has none), under every bar and panel.
+    this.tint = this.add.rectangle(0, 0, 1280, 720, 0xffffff, 0).setOrigin(0).setDepth(-1);
     this.add.rectangle(BAR.x, BAR.y, BAR.w, BAR.h, 0x1d1a16, 0.85).setOrigin(0);
     this.resourceText = this.add.text(12, 8, '', { fontFamily: 'sans-serif', fontSize: '14px', color: INK });
     this.add.rectangle(UNITY.x, UNITY.y, UNITY.w, UNITY.h, 0x3a3328, 1).setOrigin(0);
@@ -75,7 +95,10 @@ export class HudScene extends Phaser.Scene {
 
     // With `?debug`, the smoke test reads the banner as drawn.
     const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
-    if (camp) camp.banner = () => (this.bannerBox.visible ? this.bannerText.text : null);
+    if (camp) {
+      camp.banner = () => (this.bannerBox.visible ? this.bannerText.text : null);
+      camp.hudText = () => this.resourceText.text;
+    }
 
     // Pause / 1x / 2x / 4x: the buttons only send orders, like the keys in Select.ts.
     this.speedButtons = SPEED_BUTTONS.map((b, i) => {
@@ -84,6 +107,75 @@ export class HudScene extends Phaser.Scene {
       bg.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && queueOrders(this.game2.state, [...(b.speed ? [{ type: 'speed', value: b.speed } as const] : []), { type: 'pause', on: b.pause }]));
       return { bg, label, b };
     });
+    this.createMenu();
+  }
+
+  /** The Menu button and its panel (DESIGN-saves.md `## HUD menu`). */
+  private createMenu(): void {
+    const open = this.add.rectangle(MENU_BUTTON.x, MENU_BUTTON.y, MENU_BUTTON.w, MENU_BUTTON.h, 0x3a3328, 1).setOrigin(0).setInteractive({ useHandCursor: true });
+    this.add.text(open.x + MENU_BUTTON.w / 2, open.y + MENU_BUTTON.h / 2, 'Menu', { fontFamily: 'sans-serif', fontSize: '13px', color: INK }).setOrigin(0.5);
+    open.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.openMenu());
+
+    const shade = this.add.rectangle(0, 0, 1280, 720, 0x000000, 0.6).setOrigin(0).setInteractive().setDepth(20);
+    const panel = this.add.rectangle(640, 360, 440, 300, 0x1d1a16, 0.96).setStrokeStyle(2, 0x6b5a3a).setDepth(21);
+    const title = this.add.text(640, 250, 'Menu', { fontFamily: 'sans-serif', fontSize: '26px', color: INK }).setOrigin(0.5).setDepth(22);
+    const button = (y: number, label: string, onClick: () => void): Phaser.GameObjects.Text => {
+      const b = this.add
+        .text(640, y, label, { fontFamily: 'sans-serif', fontSize: '20px', color: '#1d1a16', backgroundColor: INK })
+        .setOrigin(0.5).setPadding(12, 7).setDepth(22).setInteractive({ useHandCursor: true });
+      b.on('pointerover', () => b.setBackgroundColor('#ffffff'));
+      b.on('pointerout', () => b.setBackgroundColor(INK));
+      b.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && onClick());
+      return b;
+    };
+    const resume = button(310, 'Resume', () => this.closeMenu(true));
+    const exportBtn = button(365, 'Export this camp', () => this.exportCamp());
+    this.quitLabel = button(420, 'Save and quit to menu', () => this.quit());
+    this.menuNote = this.add.text(640, 468, '', { fontFamily: 'sans-serif', fontSize: '13px', color: '#ffb4a8', align: 'center', wordWrap: { width: 400 } }).setOrigin(0.5).setDepth(22);
+    // The shade comes first: `menuOpen` reads it.
+    this.menuObjects = [shade, panel, title, resume, exportBtn, this.quitLabel, this.menuNote];
+    this.setMenuVisible(false);
+    this.input.keyboard!.on('keydown-ESC', () => this.menuOpen && this.closeMenu(true));
+    const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
+    if (camp) camp.hud = this;
+  }
+
+  private setMenuVisible(on: boolean): void {
+    for (const o of this.menuObjects) {
+      (o as Phaser.GameObjects.Rectangle).setVisible(on);
+      if (o.input) o.input.enabled = on;
+    }
+  }
+
+  /** Pauses (the Game scene saves on that) and shows the panel. */
+  openMenu(): void {
+    if (this.menuOpen) return;
+    queueOrders(this.game2.state, [{ type: 'pause', on: true }]);
+    this.quitUnsaved = false;
+    this.menuNote.setText('');
+    this.quitLabel.setText(this.game2.saveSlot === null ? 'Quit to menu (not saved)' : 'Save and quit to menu');
+    this.setMenuVisible(true);
+  }
+
+  private closeMenu(resume: boolean): void {
+    this.setMenuVisible(false);
+    if (resume) queueOrders(this.game2.state, [{ type: 'pause', on: false }]);
+  }
+
+  private exportCamp(): void {
+    const s = this.game2.state;
+    downloadText(exportName(this.game2.saveSlot, Math.floor(s.tick / DAY_TICKS) + 1), serialize(s));
+  }
+
+  private quit(): void {
+    if (this.game2.saveSlot !== null && !this.quitUnsaved && !this.game2.saveNow()) {
+      this.quitUnsaved = true;
+      this.menuNote.setText("The browser can't store this camp. Export it first, or quit anyway.");
+      this.quitLabel.setText('Quit anyway (not saved)');
+      return;
+    }
+    for (const key of ['Game', 'Build', 'Select']) this.scene.stop(key);
+    this.scene.start('Menu'); // also stops this scene
   }
 
   private showEnd(s: GameState): void {
@@ -100,8 +192,10 @@ export class HudScene extends Phaser.Scene {
     const s = this.game2.state;
     const parts = RES.map((r) => `${data.resources[r].label} ${Math.floor(s.store[r])} / ${storeCap(s, r)}`);
     const adults = s.people.filter((p) => p.age === 'adult').length;
-    parts.push(`People ${adults} / ${s.people.length}`, `Day ${Math.floor(s.tick / DAY_TICKS) + 1}`);
-    this.resourceText.setText(parts.join('     '));
+    parts.push(`People ${adults} / ${s.people.length}`, `${seasonLabel(seasonOf(s))}, day ${dayInSeason(s)}${yearOf(s) > 1 ? `  Year ${yearOf(s)}` : ''}`);
+    const tint = seasonData.tint[seasonOf(s)];
+    this.tint.setFillStyle(tint ? tint[0] : 0xffffff, tint ? tint[1] : 0);
+    this.resourceText.setText(parts.join('    '));
 
     const w = s.wotakuye;
     this.unityFill.setSize((UNITY.w * w) / 100, UNITY.h).setFillStyle(w < 20 ? 0xc0392b : w < 40 ? 0xd9a441 : 0x6aa84f, 1);
@@ -115,6 +209,7 @@ export class HudScene extends Phaser.Scene {
       const active = b.pause ? s.paused : !s.paused && b.speed === s.speed;
       bg.setFillStyle(active ? 0x8a6d2f : 0x3a3328, 1);
     }
+    if (this.menuOpen && !s.paused) queueOrders(s, [{ type: 'pause', on: true }]);
     if (s.result) this.showEnd(s);
   }
 }

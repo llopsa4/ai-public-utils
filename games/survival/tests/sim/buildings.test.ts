@@ -43,8 +43,8 @@ const adults = (s: GameState) => s.people.filter((p) => p.age === 'adult');
 const tilesOf = (s: GameState, type: string) =>
   s.map.tiles.map((t, i) => [t, i] as const).filter(([t]) => t === type).map(([, i]) => [i % 48, Math.floor(i / 48)] as [number, number]);
 
-test('the four buildings are the buildable types, in menu order', () => {
-  assert.deepEqual(BUILDABLE, ['tipi', 'gathering_spot', 'hunting_lodge', 'store']);
+test('the five buildings are the buildable types, in menu order', () => {
+  assert.deepEqual(BUILDABLE, ['tipi', 'gathering_spot', 'hunting_lodge', 'store', 'drying_rack']);
 });
 
 test('placement is refused off grass, out of range, overlapping, off the map or short of cost', () => {
@@ -98,7 +98,7 @@ test('a valid placement takes the whole cost at once and makes an unfinished sit
     assert.equal(walkable(s, b.x, b.y), false, 'the footprint is blocked');
     assert.equal(placementError(s, type, b.x, b.y), 'Something is in the way.');
   }
-  assert.equal(s.buildings.length, 1 + 3 + 4); // fire, 2 tipis, store, then the new four
+  assert.equal(s.buildings.length, 1 + 3 + 5); // fire, 2 tipis, store, then the new five
 });
 
 test('a place order is applied at the start of the next tick', () => {

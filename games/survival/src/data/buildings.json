@@ -5,6 +5,7 @@
     "tipi":           { "size": [2, 2], "cost": { "wood": 20, "hides": 8 }, "buildPoints": 300, "houses": 5 },
     "gathering_spot": { "size": [2, 2], "cost": { "wood": 10 }, "buildPoints": 150, "workers": 4, "job": "gather" },
     "hunting_lodge":  { "size": [2, 2], "cost": { "wood": 25, "hides": 2 }, "buildPoints": 250, "workers": 4, "job": "hunt", "society": "hunters" },
-    "store":          { "size": [2, 2], "cost": { "wood": 15 }, "buildPoints": 200, "caps": { "food": 200, "wood": 150, "hides": 40 } }
+    "store":          { "size": [2, 2], "cost": { "wood": 15 }, "buildPoints": 200, "caps": { "food": 200, "wood": 150, "hides": 40, "pemmican": 100 } },
+    "drying_rack":    { "size": [2, 2], "cost": { "wood": 15, "hides": 2 }, "buildPoints": 200, "workers": 2, "job": "dry" }
   }
 }

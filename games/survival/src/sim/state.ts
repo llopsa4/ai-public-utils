@@ -10,9 +10,9 @@ export const TICKS_PER_SECOND = 10;
 /** One in-game day (DESIGN-slice.md conventions). */
 export const DAY_TICKS = 1200;
 
-export type Res = 'food' | 'wood' | 'hides';
+export type Res = 'food' | 'wood' | 'hides' | 'pemmican';
 export type Age = 'adult' | 'elder' | 'child';
-export type JobKind = 'gather' | 'hunt' | 'chop' | 'build' | 'haul' | 'fight';
+export type JobKind = 'gather' | 'hunt' | 'dry' | 'chop' | 'build' | 'haul' | 'fight';
 export type Tile2 = [number, number];
 
 export interface Task {
@@ -22,7 +22,7 @@ export interface Task {
   /** Idle: ticks to wait before deciding again. Deliver: ticks until the next retry. */
   timer: number;
   /** What to do on arrival at the end of a walk. */
-  goal: 'work' | 'deliver' | 'idle' | 'pickup' | 'drop' | null;
+  goal: 'work' | 'deliver' | 'idle' | 'pickup' | 'drop' | 'take' | null;
 }
 
 export interface Job {
@@ -138,6 +138,7 @@ export const START_STORE: Record<Res, number> = {
   food: resourceData.resources.food.start,
   wood: resourceData.resources.wood.start,
   hides: resourceData.resources.hides.start,
+  pemmican: resourceData.resources.pemmican.start,
 };
 const TYPES = buildingsData.types as unknown as Record<string, { hp?: number; houses?: number; caps?: Record<Res, number> }>;
 export const TIPI_BEDS = TYPES.tipi.houses!;

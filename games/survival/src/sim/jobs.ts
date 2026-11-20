@@ -8,6 +8,7 @@ import { stepFighter, stepFlee } from './combat';
 import { HUNGRY_AT, HUNGRY_WORK, unityWork } from './economy';
 import { ages, beginWalk, canWork, idleTask, movePerson, releaseJob, walkable } from './people';
 import { rngNext } from './rng';
+import { seasonal } from './seasons';
 import {
   addMessage, storeCap, type Building, type GameState, type Job, type JobKind, type Person, type Res, type Tile2,
 } from './state';
@@ -19,13 +20,17 @@ const TILE_JOBS: Partial<Record<JobKind, { res: Res; tile: 'berry' | 'forest'; r
   chop: { res: 'wood', tile: 'forest', rate: jobsData.jobs.chop.rate, carry: jobsData.jobs.chop.carry },
 };
 const RETRY = jobsData.storeRetryTicks;
+const DRY = jobsData.jobs.dry;
 
-/** Work units per tick: base rate x age x Wotakuye x hunger (x1.5 at a gathering spot). */
+/** Work units per tick: base rate x age x Wotakuye x hunger (x1.5 at a gathering spot; gathering x the season). */
 export function workRate(s: GameState, p: Person, kind: JobKind): number {
   const base = kind === 'build' ? jobsData.jobs.build.rate : TILE_JOBS[kind]?.rate;
   if (base === undefined || !canWork(p, kind)) return 0;
   let rate = base * ages[p.age].rate * unityWork(s) * (p.hunger >= HUNGRY_AT ? HUNGRY_WORK : 1);
-  if (kind === 'gather' && p.job?.building != null) rate *= jobsData.jobs.gather.spotBonus;
+  if (kind === 'gather') {
+    rate *= seasonal(s, 'gatherRate');
+    if (p.job?.building != null) rate *= jobsData.jobs.gather.spotBonus;
+  }
   return rate;
 }
 
@@ -129,7 +134,7 @@ function validateBuildingJob(s: GameState, p: Person): void {
   const job = p.job;
   if (!job || job.building === null) return;
   const b = building(s, job.building);
-  const working = job.kind === 'gather' || job.kind === 'hunt';
+  const working = job.kind === 'gather' || job.kind === 'hunt' || job.kind === 'dry';
   if (!b || (working ? !b.done : b.done)) releaseJob(p);
 }
 
@@ -165,6 +170,25 @@ function decideHunt(s: GameState, p: Person): void {
   if (!spot || !beginWalk(s, p, spot, 'work')) p.task = idleTask(RETRY);
 }
 
+/**
+ * A drying trip (DESIGN-seasons.md): take 6 food from the nearest store, carry it to the rack, work 200
+ * ticks, bring 4 pemmican back. Anything else carried is just delivered.
+ */
+function decideDry(s: GameState, p: Person, rack: Building): void {
+  if (loaded(p)) {
+    if (p.carry.res === 'food' && p.carry.amount >= DRY.take - 1e-9) {
+      const spot = ringSpot(s, p, rack);
+      if (!spot || !beginWalk(s, p, spot, 'work')) p.task = idleTask(RETRY);
+    } else {
+      startDeliver(s, p);
+    }
+    return;
+  }
+  const store = s.store.food >= DRY.take - 1e-9 ? nearestBuilding(s, p, 'store') : null;
+  const spot = store && ringSpot(s, p, store);
+  if (!spot || !beginWalk(s, p, spot, 'take')) p.task = idleTask(RETRY);
+}
+
 /** Chooses the next step for an idle person. */
 function decide(s: GameState, p: Person): void {
   const t = p.task;
@@ -177,6 +201,7 @@ function decide(s: GameState, p: Person): void {
   if (job?.kind === 'haul') return decideHaul(s, p, building(s, job.building)!);
   if (job?.kind === 'build') return decideBuild(s, p, building(s, job.building)!);
   if (job?.kind === 'hunt') return decideHunt(s, p);
+  if (job?.kind === 'dry') return decideDry(s, p, building(s, job.building)!);
 
   const def = job ? TILE_JOBS[job.kind] : undefined;
   if (job && def) {
@@ -248,9 +273,18 @@ function doWork(s: GameState, p: Person): void {
       p.task.timer--;
       return;
     }
-    if (rngNext(s.rng) < jobsData.jobs.hunt.success) {
+    if (rngNext(s.rng) < jobsData.jobs.hunt.success * seasonal(s, 'huntSuccess')) {
       p.carry = { res: 'food', amount: jobsData.jobs.hunt.food, hides: jobsData.jobs.hunt.hides };
     }
+    p.task = idleTask();
+    return;
+  }
+  if (job.kind === 'dry') {
+    if (p.task.timer > 0) {
+      p.task.timer--;
+      return;
+    }
+    if (p.carry.res === 'food' && p.carry.amount >= DRY.take - 1e-9) p.carry = { res: 'pemmican', amount: DRY.give, hides: 0 };
     p.task = idleTask();
     return;
   }
@@ -303,8 +337,16 @@ function arrive(s: GameState, p: Person): void {
     case 'work':
       p.task = {
         step: 'work', target: null, path: [], goal: null,
-        timer: job?.kind === 'hunt' ? jobsData.jobs.hunt.huntTicks : 0,
+        timer: job?.kind === 'hunt' ? jobsData.jobs.hunt.huntTicks : job?.kind === 'dry' ? DRY.ticks : 0,
       };
+      break;
+    case 'take':
+      // At the store: the food for one batch, if it is still there.
+      if (job?.kind === 'dry' && s.store.food >= DRY.take - 1e-9) {
+        s.store.food -= DRY.take;
+        p.carry = { res: 'food', amount: DRY.take, hides: 0 };
+      }
+      p.task = idleTask();
       break;
     case 'deliver':
       p.task = { step: 'deliver', target: null, path: [], timer: 0, goal: null };

@@ -324,7 +324,7 @@ tick (so `window.camp.orders(...)` and the mouse behave the same).
 | right-click a wolf | `attack` (drafted only; undrafted selected people ignore it) |
 | R | `draft` toggle for the selection (adults only) |
 | Z / X / C | stance `hold` / `defend` / `chase` for drafted selected |
-| B | open build menu; 1-4 in the menu pick a building; left-click places; right-click/Esc cancels |
+| B | open build menu; 1-5 in the menu (5 = drying rack, seasons) pick a building; left-click places; right-click/Esc cancels |
 | Delete | cancel the selected construction site (refund) |
 | Space | pause toggle; `1` / `2` / `3` = speed 1x / 2x / 4x |
 
@@ -396,6 +396,7 @@ people never attack; they flee (`## Jobs`).
 | 1 | 3600 (start of day 4) | 1 wolf | - |
 | 2 | 7200 (day 7) | 3 wolves | 6-tile segment |
 | 3 | 10800 (day 10) | 5 wolves + 1 pack leader | 8-tile segment |
+| 4 | 14400 (day 13) | 7 wolves + 1 pack leader | 8-tile segment |
 
 - **Warning:** at arrival - 300 ticks (30 s at 1x) the wave banner shows "Scouts: wolves coming from
   the <north|east|south>" with a countdown.
@@ -404,7 +405,7 @@ people never attack; they flee (`## Jobs`).
   tiles (rng); spawns land on passable tiles of that edge.
 - A wave is **defeated** when every enemy is dead or has fled. Waves do not wait for each other: a
   wave still alive when the next arrives just adds to it.
-- **End of slice:** wave 3 defeated -> "The camp held" screen with day, people left and Wotakuye,
+- **End of slice:** wave 4 defeated (added 2026-11-20 so the first winter, days 10-12, is played) -> "The camp held" screen with day, people left and Wotakuye,
   and a "Play again" button.
 - **Lose:** no living people, or fire HP 0 -> "The camp is lost" screen, same summary and button.
 - Not in the slice: calling a wave early (needs gift value), difficulty, waves scaling with strength.
@@ -419,9 +420,10 @@ people never attack; they flee (`## Jobs`).
   "waves": [
     { "at": 3600,  "groups": [ { "enemy": "wolf", "count": 1 } ], "spread": 1 },
     { "at": 7200,  "groups": [ { "enemy": "wolf", "count": 3 } ], "spread": 6 },
-    { "at": 10800, "groups": [ { "enemy": "wolf", "count": 5 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 }
+    { "at": 10800, "groups": [ { "enemy": "wolf", "count": 5 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
+    { "at": 14400, "groups": [ { "enemy": "wolf", "count": 7 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 }
   ],
-  "winAfterWave": 3
+  "winAfterWave": 4
 }
 ```
 
@@ -439,7 +441,7 @@ text 14 px sans-serif, warm off-white.
 | wave banner | 400, 44, 480, 40 | warning text + countdown seconds; "Wave n" while enemies remain; hidden otherwise |
 | toasts | 16, 520, 400, 72 | last 3 `state.messages`, fade after 5 s |
 | selection panel | 0, 600, 880, 120 | see below |
-| build menu | 880, 600, 400, 120 | 4 buttons (tipi, gathering spot, hunting lodge, store), each with icon, cost and hotkey 1-4; greyed if unaffordable |
+| build menu | 880, 600, 400, 120 | 5 buttons (tipi, gathering spot, hunting lodge, store, drying rack), each with icon, cost and hotkey 1-5; greyed if unaffordable |
 
 **Selection panel:** one person -> name, family, age, job, health bar, hunger bar, society. Several ->
 count, counts by job, and how many drafted. Buttons: **Draft / Undraft** (R), **Hold / Defend /
@@ -474,7 +476,7 @@ Simulation tests (`node --import tsx --test`), no Phaser:
 - `tests/sim/combat.test.ts`: a drafted hunter at range 4 hits a wolf with a fixed seed; a club
   fighter must close in; a wolf below 20% flees; the pack leader does not.
 - `tests/sim/waves.test.ts`: the warning starts at tick 3300 with an allowed edge; wave 3 spawns 6
-  enemies; defeating wave 3 sets `state.result = "won"`; killing every person sets `"lost"`.
+  enemies; defeating wave 4 sets `state.result = "won"` (wave 3 no longer does); killing every person sets `"lost"`.
 
 Browser smoke test (`tests/smoke.spec.ts`, Playwright, C7): open the dev server with `?debug`,
 click **Start**, check the canvas renders and `window.camp.state.people.length === 20`, call

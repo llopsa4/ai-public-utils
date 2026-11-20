@@ -1,4 +1,4 @@
-// The build menu (DESIGN-slice.md `## UI`): B opens it, 1-4 pick a building, the Game scene shows the
+// The build menu (DESIGN-slice.md `## UI`): B opens it, 1-5 pick a building, the Game scene shows the
 // ghost and places it on a left-click; right-click or Esc cancels. Runs above the Game scene in screen space.
 import Phaser from 'phaser';
 import { BUILDABLE, buildingDefs, buildingName } from '../sim/buildings';
@@ -47,17 +47,17 @@ export class BuildScene extends Phaser.Scene {
     // The menu panel with one button per building.
     this.panel.push(this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x1d1a16, 0.85).setOrigin(0));
     BUILDABLE.forEach((type, i) => {
-      const x = PANEL.x + 6 + i * 98;
+      const x = PANEL.x + 5 + i * 79;
       const y = PANEL.y + 6;
-      const bg = this.add.rectangle(x, y, 92, 108, 0x3a3328, 1).setOrigin(0).setInteractive();
+      const bg = this.add.rectangle(x, y, 75, 108, 0x3a3328, 1).setOrigin(0).setInteractive();
       bg.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.pick(i));
-      const icon = this.add.image(x + 46, y + 56, `building_${type}`).setScale(0.5).setOrigin(0.5, 0.75);
+      const icon = this.add.image(x + 37, y + 56, `building_${type}`).setScale(0.45).setOrigin(0.5, 0.75);
       const cost = buildingDefs[type].cost ?? {};
       const costText = (Object.keys(cost) as Res[]).map((r) => `${cost[r]} ${r}`).join(', ');
       const parts = [
         icon,
-        text(x + 5, y + 4, `${i + 1} ${buildingName(type)}`, 11),
-        text(x + 5, y + 90, costText, 11, '#cdbf9c'),
+        text(x + 4, y + 3, `${i + 1} ${buildingName(type)}`, 10).setWordWrapWidth(68),
+        text(x + 4, y + 80, costText, 10, '#cdbf9c').setWordWrapWidth(68),
       ];
       this.slots.push({ type, bg, parts });
       this.panel.push(bg, ...parts);
@@ -72,7 +72,7 @@ export class BuildScene extends Phaser.Scene {
       if (this.game2.placing) this.game2.setPlacing(null);
       else this.setOpen(false);
     });
-    ['ONE', 'TWO', 'THREE', 'FOUR'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.open && this.pick(i)));
+    ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.open && this.pick(i)));
   }
 
   private setOpen(open: boolean): void {

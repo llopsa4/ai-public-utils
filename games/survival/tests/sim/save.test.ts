@@ -79,6 +79,10 @@ test('unreadable saves are refused', () => {
   delete noRng.state.rng;
   assert.equal(parseSave(JSON.stringify(noRng)).ok, false);
 
+  const noPemmican = structuredClone(good);
+  delete (noPemmican.state.store as Partial<typeof noPemmican.state.store>).pemmican;
+  assert.equal(parseSave(JSON.stringify(noPemmican)).ok, false, 'a version 1 style store');
+
   const noStore = structuredClone(good);
   noStore.state.store.hides = 'lots';
   assert.equal(parseSave(JSON.stringify(noStore)).ok, false);

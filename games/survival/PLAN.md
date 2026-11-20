@@ -137,6 +137,21 @@ Spec: [DESIGN-saves.md](DESIGN-saves.md). Common rules as in Phase C; run
 | DS4 | Sonnet | `## Menu`, `## HUD menu`, `## Storage failure`, `## Tests`; `src/scenes/{Menu,Hud}.ts`, `tests/smoke.spec.ts`, `TESTING.md` | `src/scenes/Menu.ts` (slot cards, inline delete, export, import, Enter), `src/scenes/Hud.ts` (Menu button + panel), `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the new smoke test (new camp -> day 2 save -> reload -> Continue, paused) with no console errors |
 | DS5 (user, gate) | Opus | `DESIGN-saves.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays: starts camps in two slots, quits, continues, exports, imports, deletes, and says it works |
 
+## Phase D: seasons (spec approved 2026-11-19; S1-S6 done 2026-11-20, S7 is the user's playtest)
+
+Spec: [DESIGN-seasons.md](DESIGN-seasons.md). Common rules as in Phase C; run
+`npm run typecheck && npm test` (and `npm run e2e` when a scene changes). Easiest first.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| S1 | Sonnet | `DESIGN-seasons.md` `## Calendar`, `## Seasonal numbers`, `## Text`; `src/sim/tick.ts` | `src/data/seasons.json`, `src/sim/seasons.ts` (`season`, `seasonLabel`, the day-start season toast), `tests/sim/seasons.test.ts` | the calendar and toast tests pass |
+| S2 | Sonnet | `## Seasonal numbers` (gather, hunt, meals, cold, spring newcomers); `src/sim/{jobs,economy}.ts`, `src/data/{jobs,resources}.json` | `src/sim/{jobs,economy}.ts` (multipliers from `seasons.ts`), tests in `tests/sim/seasons.test.ts` | the rate, hunt-chance, meal-need, cold and spring-newcomer tests pass; the other 73 tests still pass |
+| S3 | Sonnet | `## Seasonal numbers` (spoilage); `src/sim/economy.ts` | `src/sim/economy.ts` (day-start spoilage and its toast), tests | the spoilage tests pass |
+| S4 | Sonnet | `## Pemmican and the drying rack` (resource and meals), `## Save format`; `src/sim/{state,economy,buildings,save}.ts`, `src/data/{resources,buildings}.json`, `tests/sim/save.test.ts` | the same files (`store.pemmican`, caps, meals eat food then pemmican, `SAVE_VERSION = 2`), `src/scenes/Hud.ts` (Pemmican in the bar) | the pemmican and save tests pass; a v1 file is unreadable |
+| S5 | Sonnet | `## Pemmican and the drying rack` (rack and job), `## UI` (Build menu); `src/sim/{jobs,buildings,tick}.ts`, `src/scenes/Build.ts`, `src/render/placeholders.ts`, `art/manifest.json`, `art/ASSETS.md` | the same files (`drying_rack`, the `dry` job, a Build menu entry on key 5, placeholder art) | the drying test passes; by hand: a rack is built, a worker dries 6 food into 4 pemmican |
+| S6 | Sonnet | `## UI` (resource bar, tint), `## Tests` (smoke); `src/scenes/Hud.ts`, `tests/smoke.spec.ts` | `src/scenes/Hud.ts` (`Spring, day 2` text, tint rectangle), `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the winter check with no console errors |
+| S7 (user, gate) | Opus | `DESIGN-seasons.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays through the first winter (day 10+) and says it is painful but survivable |
+
 ## Phase D (planned after C8 is approved)
 
 Seasons and hardships; autosave (3 slots) + export/import; eras 2-3 and bosses; upgrade tiers 1-3;

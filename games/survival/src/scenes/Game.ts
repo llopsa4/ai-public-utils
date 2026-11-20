@@ -12,6 +12,7 @@ import { EnemiesView } from '../render/enemies';
 import { PeopleView } from '../render/people';
 import { ENEMIES } from '../sim/combat';
 import type { BuildScene } from './Build';
+import type { HudScene } from './Hud';
 import type { SelectScene } from './Select';
 import { clampCenter, clampZoom, edgeDirection, panVector, zoomAtCursor, zoomStep } from '../render/camera';
 
@@ -204,7 +205,8 @@ export class GameScene extends Phaser.Scene {
   /** True when a screen point is on the build menu or the selection panel. */
   private overUi(x: number, y: number): boolean {
     const select = this.scene.get('Select') as SelectScene | undefined;
-    return !!this.buildScene()?.overUi(x, y) || !!select?.overUi(x, y);
+    const hud = this.scene.get('Hud') as HudScene | undefined;
+    return !!hud?.menuOpen || !!this.buildScene()?.overUi(x, y) || !!select?.overUi(x, y);
   }
 
   /** Starts or stops placing a building (the Build scene calls this). */

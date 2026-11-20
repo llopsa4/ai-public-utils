@@ -1,0 +1,19 @@
+{
+  "ticksPerSeason": 3600,
+  "order": ["spring", "summer", "autumn", "winter"],
+  "labels": { "spring": "Spring", "summer": "Summer", "autumn": "Autumn", "winter": "Winter" },
+  "toasts": {
+    "spring": "Spring: newcomers may arrive.",
+    "summer": "Summer: good hunting, food spoils fast.",
+    "autumn": "Autumn: gather and dry what you can.",
+    "winter": "Winter: gathering nearly stops, and the cold bites."
+  },
+  "gatherRate":  { "spring": 1.0, "summer": 1.2, "autumn": 1.5, "winter": 0.3 },
+  "huntSuccess": { "spring": 0.9, "summer": 1.15, "autumn": 1.0, "winter": 0.7 },
+  "mealNeed":    { "spring": 1.0, "summer": 1.0, "autumn": 1.0, "winter": 1.25 },
+  "unhousedPerDay": { "spring": -1, "summer": -1, "autumn": -1, "winter": -3 },
+  "spoilPerDay": { "spring": 0.03, "summer": 0.1, "autumn": 0.03, "winter": 0 },
+  "spoilToastMin": 5,
+  "newcomerMinWotakuye": { "spring": 40 },
+  "tint": { "spring": null, "summer": [16771488, 0.05], "autumn": [14256698, 0.1], "winter": [12383472, 0.18] }
+}

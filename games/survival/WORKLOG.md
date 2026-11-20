@@ -47,5 +47,28 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   DS3 done 2026-11-19 (`Game.ts`: create from `{ slot, seed }` or `{ slot, save }`, the 4 save
   triggers via `saveNow()`, slot cleared on a result, once-per-run toast; checked in a browser with a
   throwaway Playwright script, since the menu cannot pick a slot until DS4; uncommitted).
-  Next: DS4 (Sonnet) in [PLAN.md](PLAN.md) *Phase D: saves*, then the DS5 playtest.
+  DS4 done 2026-11-19 (`Menu.ts` slot cards with Continue / Export / Delete (inline Yes / No) /
+  Import and Enter; `Hud.ts` Menu button and panel; `src/save/files.ts`; the smoke test has a saves
+  case; 73 tests and `npm run e2e` pass; Export, Import, Delete, Save and quit and Resume checked in
+  a browser with a throwaway script; uncommitted).
+  DS5 passed 2026-11-19: the user played the saves ("Done", no fixes raised). DS1-DS5 are uncommitted.
+  Next item chosen 2026-11-19: **seasons**. Grilled Q1-Q4 (3-day seasons, start in spring, four
+  effects, painful-but-survivable winter); spec drafted in [DESIGN-seasons.md](DESIGN-seasons.md) with
+  proposed numbers, plan rows S1-S7 in [PLAN.md](PLAN.md). Waiting for the user to approve the numbers
+  (and to accept that v1 saves become unreadable once `SAVE_VERSION` is 2).
+  Approved by the user 2026-11-19. S1-S3 done 2026-11-19 (`src/data/seasons.json`, `src/sim/seasons.ts`;
+  gather and hunt rates, winter meal need and cold, spring newcomers and spoilage in `jobs.ts` and
+  `economy.ts`; `tests/sim/seasons.test.ts`; 81 tests pass; uncommitted). `stepFed` in
+  `tests/sim/helpers.ts` now also switches spoilage off.
+  **Problem found:** the slice is won by defeating wave 3, which arrives at tick 10800 = the first
+  winter day, so a player never sees winter. Waiting for the user's call on how to lengthen the run.
+  S4 (pemmican, save v2) and S5 (drying rack) do not depend on it.
+  2026-11-20: the user chose **wave 4** (tick 14400, 7 wolves + a pack leader; the run is won after it),
+  so the first winter is played. S4-S6 done 2026-11-20: pemmican (`store.pemmican`, cap 100 a store,
+  meals eat food then pemmican at 1.5, `SAVE_VERSION` 2, so old camps read as Unreadable), the drying
+  rack (build menu key 5, `dry` job: 6 food -> 4 pemmican, placeholder art), the HUD text
+  `Spring, day 1` + Pemmican + a season tint, and a smoke test. 85 tests and `npm run e2e` (3 tests)
+  pass; all uncommitted. Checked by screenshot (HUD, tint, five-slot build menu); not checked by hand:
+  placing a rack with key 5 and watching a worker dry.
+  Next: S7, the user plays through the first winter (day 10 on) and judges the balance.
   Other Phase D items (seasons, eras, upgrades, moving camp, art) wait until saves are done.

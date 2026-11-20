@@ -34,7 +34,7 @@ test('wave 3 spawns 5 wolves and a pack leader on one edge', () => {
   assert.equal(waveBanner(s)!.text, 'Wave 3');
 });
 
-test('defeating wave 3 wins the run and a finished run stops', () => {
+test('defeating wave 3 does not end the run; defeating wave 4 wins it, and a finished run stops', () => {
   const s = newGame(1);
   s.waves[0].phase = 'defeated';
   s.waves[1].phase = 'defeated';
@@ -43,6 +43,13 @@ test('defeating wave 3 wins the run and a finished run stops', () => {
   s.enemies = [];
   step(s, 1);
   assert.equal(s.waves[2].phase, 'defeated');
+  assert.equal(s.result, null, 'the first winter is still ahead');
+  s.tick = 14099; // wave 4 warns at 14100 and arrives at 14400
+  step(s, 301);
+  assert.equal(s.enemies.filter((e) => e.wave === 3).length, 8, '7 wolves and a pack leader');
+  s.enemies = [];
+  step(s, 1);
+  assert.equal(s.waves[3].phase, 'defeated');
   assert.equal(s.result, 'won');
   const tick = s.tick;
   step(s, 10);

@@ -11,6 +11,7 @@ import type { Building, Enemy, GameState, Order, Person, Res, Stance, Tile2 } fr
 import { TILE_H, TILE_W, tileToWorld, worldToTile } from '../render/iso';
 import type { BuildScene } from './Build';
 import type { GameScene } from './Game';
+import type { HudScene } from './Hud';
 
 const PANEL = { x: 0, y: 600, w: 880, h: 120 };
 const BAR = { x: 0, y: 0, w: 1280, h: 32 };
@@ -106,7 +107,7 @@ export class SelectScene extends Phaser.Scene {
     kb.on('keydown-C', () => this.setStance('chase'));
     kb.on('keydown-DELETE', () => this.cancelSite());
     kb.on('keydown-SPACE', () => this.send([{ type: 'pause', on: !this.state.paused }]));
-    // 1-4 belong to the build menu while it is open.
+    // 1-5 belong to the build menu while it is open.
     ([['ONE', 1], ['TWO', 2], ['THREE', 4]] as const).forEach(([k, value]) =>
       kb.on(`keydown-${k}`, () => !this.buildScene()?.isOpen() && this.send([{ type: 'speed', value }])),
     );
@@ -135,7 +136,8 @@ export class SelectScene extends Phaser.Scene {
   overUi(x: number, y: number): boolean {
     const inside = (r: { x: number; y: number; w: number; h: number }) =>
       x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
-    return inside(PANEL) || inside(BAR) || !!this.buildScene()?.overUi(x, y);
+    const hud = this.scene.get('Hud') as HudScene | undefined;
+    return !!hud?.menuOpen || inside(PANEL) || inside(BAR) || !!this.buildScene()?.overUi(x, y);
   }
 
   private send(orders: Order[]): void {

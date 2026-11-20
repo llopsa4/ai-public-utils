@@ -3,7 +3,7 @@
 import { DAY_TICKS, type GameState } from './state';
 
 /** Raise whenever `GameState` changes shape. Older versions are not migrated: they are unreadable. */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2; // 2: `store.pemmican` (seasons)
 export const SAVE_FORMAT = 'camp-fire-save';
 
 export interface SaveSummary {
@@ -68,7 +68,7 @@ export function parseSave(text: string): ParsedSave {
     if (!Array.isArray(s[key])) return { ok: false, reason: `bad ${key}` };
   }
   const store = s.store;
-  if (!isObject(store) || !isNum(store.food) || !isNum(store.wood) || !isNum(store.hides)) {
+  if (!isObject(store) || !isNum(store.food) || !isNum(store.wood) || !isNum(store.hides) || !isNum(store.pemmican)) {
     return { ok: false, reason: 'bad store' };
   }
   const map = s.map;

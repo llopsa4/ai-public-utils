@@ -5,7 +5,8 @@
   "waves": [
     { "at": 3600,  "groups": [ { "enemy": "wolf", "count": 1 } ], "spread": 1 },
     { "at": 7200,  "groups": [ { "enemy": "wolf", "count": 3 } ], "spread": 6 },
-    { "at": 10800, "groups": [ { "enemy": "wolf", "count": 5 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 }
+    { "at": 10800, "groups": [ { "enemy": "wolf", "count": 5 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 },
+    { "at": 14400, "groups": [ { "enemy": "wolf", "count": 7 }, { "enemy": "pack_leader", "count": 1 } ], "spread": 8 }
   ],
-  "winAfterWave": 3
+  "winAfterWave": 4
 }

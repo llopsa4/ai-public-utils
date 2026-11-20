@@ -1,28 +1,44 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type Page } from '@playwright/test';
 
 interface Camp {
   state: { people: unknown[]; tick: number; result: string | null };
   step: (n: number) => void;
   banner: () => string | null;
+  hudText: () => string;
+}
+interface MenuHook {
+  buttons: () => Record<string, [number, number]>;
+  cards: () => string[];
 }
 declare global {
   interface Window {
     camp: Camp;
+    menu: MenuHook;
   }
 }
 
-test('menu to a run: 20 people, then the wave 1 warning, with no console errors', async ({ page }) => {
+/** Clicks a menu button by name; the canvas is drawn at 1280 x 720 and scaled to fit. */
+async function clickMenu(page: Page, name: string): Promise<void> {
+  const box = (await page.locator('#game canvas').boundingBox())!;
+  const [x, y] = await page.evaluate((n) => window.menu.buttons()[n], name);
+  await page.mouse.click(box.x + (x / 1280) * box.width, box.y + (y / 720) * box.height);
+}
+
+function watchErrors(page: Page): string[] {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
   page.on('console', (m) => m.type() === 'error' && errors.push(`console: ${m.text()}`));
+  return errors;
+}
+
+test('menu to a run: 20 people, then the wave 1 warning, with no console errors', async ({ page }) => {
+  const errors = watchErrors(page);
 
   await page.goto('/?debug');
   const canvas = page.locator('#game canvas');
   await expect(canvas).toBeVisible();
-
-  // The game is drawn at 1280 x 720 and scaled to fit; click Start at (640, 300) in game coordinates.
-  const box = (await canvas.boundingBox())!;
-  await page.mouse.click(box.x + (640 / 1280) * box.width, box.y + (300 / 720) * box.height);
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
 
   await page.waitForFunction(() => window.camp?.state.people.length === 20);
   expect(await page.evaluate(() => window.camp.state.people.length)).toBe(20);
@@ -35,6 +51,49 @@ test('menu to a run: 20 people, then the wave 1 warning, with no console errors'
 
   // The HUD draws the scouts' warning with a countdown.
   await expect.poll(() => page.evaluate(() => window.camp.banner())).toMatch(/Scouts: wolves coming/);
+
+  expect(errors).toEqual([]);
+});
+
+test('a camp saved at day 2 comes back paused from its slot card', async ({ page }) => {
+  const errors = watchErrors(page);
+
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  expect(await page.evaluate(() => window.menu.cards()[0])).toContain('Empty');
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+
+  // One day of ticks; the Game scene saves on the next frame (day start).
+  await page.evaluate(() => window.camp.step(1200));
+  await expect
+    .poll(() => page.evaluate(() => localStorage.getItem('campfire.slot.1') !== null))
+    .toBe(true);
+
+  await page.reload();
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.continue']);
+  expect(await page.evaluate(() => window.menu.cards()[0])).toContain('Day 2');
+  await clickMenu(page, 'slot1.continue');
+
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  expect(await page.evaluate(() => (window.camp.state as unknown as { paused: boolean }).paused)).toBe(true);
+
+  expect(errors).toEqual([]);
+});
+
+test('the HUD names the season: spring at the start, winter on day 10', async ({ page }) => {
+  const errors = watchErrors(page);
+
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.hudText);
+  await expect.poll(() => page.evaluate(() => window.camp.hudText())).toContain('Spring, day 1');
+  expect(await page.evaluate(() => window.camp.hudText())).toContain('Pemmican 0 / 100');
+
+  // The first winter starts at tick 10800 (stepping that far would starve the camp, so jump the clock).
+  await page.evaluate(() => { window.camp.state.tick = 10800; });
+  await expect.poll(() => page.evaluate(() => window.camp.hudText())).toContain('Winter, day 1');
 
   expect(errors).toEqual([]);
 });

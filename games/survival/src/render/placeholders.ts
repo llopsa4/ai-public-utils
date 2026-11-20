@@ -94,6 +94,22 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.fillStyle(0x5a3b22, 1).fillRect(cx + 46, cy - 30, 3, 34).fillRect(cx + 76, cy - 30, 3, 34).fillRect(cx + 46, cy - 30, 33, 3);
     g.fillStyle(0xb9473c, 1).fillRect(cx + 52, cy - 27, 4, 14).fillRect(cx + 60, cy - 27, 4, 16).fillRect(cx + 68, cy - 27, 4, 12);
   },
+  building_drying_rack: (g, w, h) => {
+    // Two A-frames of poles with a crossbar of red meat strips, on the 2x2 footprint.
+    const cx = w / 2;
+    const cy = h * 0.75;
+    shadow(g, cx + 4, cy + 2, 96, 34);
+    g.fillStyle(0xa98f62, 1).fillPoints([p(cx, cy - 22), p(cx + 46, cy), p(cx, cy + 22), p(cx - 46, cy)], true);
+    g.lineStyle(1, 0x8a6f48, 1).strokePoints([p(cx, cy - 22), p(cx + 46, cy), p(cx, cy + 22), p(cx - 46, cy)], true);
+    g.lineStyle(3, 0x5a3b22, 1);
+    for (const x of [-30, 30]) {
+      g.lineBetween(cx + x - 8, cy + 6, cx + x, cy - 38).lineBetween(cx + x + 8, cy + 6, cx + x, cy - 38);
+    }
+    g.lineBetween(cx - 30, cy - 36, cx + 30, cy - 36);
+    for (let i = 0; i < 6; i++) {
+      g.fillStyle(i % 2 ? 0xb9473c : 0x9c3a31, 1).fillRect(cx - 26 + i * 10, cy - 35, 5, 12 + (i % 3) * 3);
+    }
+  },
   fire_central: (g, w, h) => {
     const cx = w / 2;
     shadow(g, cx + 2, h - 6, 40, 14);

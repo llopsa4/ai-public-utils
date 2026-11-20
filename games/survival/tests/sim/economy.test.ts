@@ -24,9 +24,9 @@ function nearestBerry(s: GameState): Tile2 {
   return best;
 }
 
-test('the start store and meter match the data: 120 food, 40 wood, 6 hides, Wotakuye 60 (Steady)', () => {
+test('the start store and meter match the data: 120 food, 40 wood, 6 hides, 0 pemmican, Wotakuye 60 (Steady)', () => {
   const s = newGame(1);
-  assert.deepEqual(s.store, { food: 120, wood: 40, hides: 6 });
+  assert.deepEqual(s.store, { food: 120, wood: 40, hides: 6, pemmican: 0 });
   assert.equal(s.wotakuye, 60);
   assert.equal(unityBand(s).name, 'Steady');
   assert.equal(mealNeed(s), 18);

@@ -27,6 +27,7 @@ export const BUILDABLE = Object.keys(buildingDefs).filter((k) => buildingDefs[k]
 
 const NAMES: Record<string, string> = {
   tipi: 'tipi', gathering_spot: 'gathering spot', hunting_lodge: 'hunting lodge', store: 'store', fire: 'fire',
+  drying_rack: 'drying rack',
 };
 export function buildingName(type: string): string {
   return NAMES[type] ?? type;
