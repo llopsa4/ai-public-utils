@@ -12,7 +12,7 @@ export const DAY_TICKS = 1200;
 
 export type Res = 'food' | 'wood' | 'hides' | 'pemmican';
 export type Age = 'adult' | 'elder' | 'child';
-export type JobKind = 'gather' | 'hunt' | 'dry' | 'chop' | 'build' | 'haul' | 'fight';
+export type JobKind = 'gather' | 'hunt' | 'dry' | 'heal' | 'chop' | 'build' | 'haul' | 'fight';
 export type Tile2 = [number, number];
 
 export interface Task {
@@ -103,7 +103,8 @@ export type Order =
   | { type: 'place'; building: string; at: Tile2 }
   | { type: 'cancel'; building: number }
   | { type: 'speed'; value: 1 | 2 | 4 }
-  | { type: 'pause'; on: boolean };
+  | { type: 'pause'; on: boolean }
+  | { type: 'buy'; upgrade: string };
 
 export interface GameState {
   seed: number;
@@ -123,6 +124,10 @@ export interface GameState {
   store: Record<Res, number>;
   /** The camp's unity meter, 0..100 (`## Wotakuye`). */
   wotakuye: number;
+  /** Gift value, earned daily from Wotakuye and spent on upgrades (`DESIGN-upgrades.md`). */
+  gift: number;
+  /** Ids of the bought upgrades (`upgrades.ts`). */
+  upgrades: string[];
   orders: Order[];
   /** Playback, set by the `speed` and `pause` orders; the Game scene decides how many ticks to run. */
   speed: 1 | 2 | 4;
@@ -175,6 +180,8 @@ export function createState(seed: number): GameState {
     blocked: new Array(map.size * map.size).fill(false),
     store: { ...START_STORE },
     wotakuye: resourceData.wotakuye.start,
+    gift: 0,
+    upgrades: [],
     orders: [],
     speed: 1,
     paused: false,

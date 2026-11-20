@@ -137,7 +137,7 @@ Spec: [DESIGN-saves.md](DESIGN-saves.md). Common rules as in Phase C; run
 | DS4 | Sonnet | `## Menu`, `## HUD menu`, `## Storage failure`, `## Tests`; `src/scenes/{Menu,Hud}.ts`, `tests/smoke.spec.ts`, `TESTING.md` | `src/scenes/Menu.ts` (slot cards, inline delete, export, import, Enter), `src/scenes/Hud.ts` (Menu button + panel), `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the new smoke test (new camp -> day 2 save -> reload -> Continue, paused) with no console errors |
 | DS5 (user, gate) | Opus | `DESIGN-saves.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays: starts camps in two slots, quits, continues, exports, imports, deletes, and says it works |
 
-## Phase D: seasons (spec approved 2026-11-19; S1-S6 done 2026-11-20, S7 is the user's playtest)
+## Phase D: seasons (spec approved 2026-11-19; S1-S7 done 2026-11-20, S7 passed by the user's playtest)
 
 Spec: [DESIGN-seasons.md](DESIGN-seasons.md). Common rules as in Phase C; run
 `npm run typecheck && npm test` (and `npm run e2e` when a scene changes). Easiest first.
@@ -152,7 +152,21 @@ Spec: [DESIGN-seasons.md](DESIGN-seasons.md). Common rules as in Phase C; run
 | S6 | Sonnet | `## UI` (resource bar, tint), `## Tests` (smoke); `src/scenes/Hud.ts`, `tests/smoke.spec.ts` | `src/scenes/Hud.ts` (`Spring, day 2` text, tint rectangle), `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the winter check with no console errors |
 | S7 (user, gate) | Opus | `DESIGN-seasons.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays through the first winter (day 10+) and says it is painful but survivable |
 
-## Phase D (planned after C8 is approved)
+## Phase D: upgrades (tier 1; spec approved 2026-11-20)
+
+Spec: [DESIGN-upgrades.md](DESIGN-upgrades.md). Common rules as in Phase C; run
+`npm run typecheck && npm test` (and `npm run e2e` when a scene changes). Easiest first.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| U1 | Sonnet | `## Gift value`, `## Upgrades` (table), `## Data`, `## Save format`; `src/sim/{state,economy,save}.ts`, `src/data/resources.json` | `src/data/upgrades.json`, `src/sim/upgrades.ts` (`buyUpgrade`, `hasUpgrade`), `src/sim/{state,economy,save}.ts` (`gift`, `upgrades`, daily gift, `SAVE_VERSION = 3`), `tests/sim/{upgrades,save}.test.ts` | the gift, buying and save tests pass; a v2 file is unreadable |
+| U2 | Sonnet | `## Upgrades` (dogs, bows); `src/sim/{jobs,combat}.ts`, `src/data/enemies.json` | `src/sim/{jobs,combat}.ts`, tests in `tests/sim/upgrades.test.ts` | the dogs and bows tests pass; the other tests still pass |
+| U3 | Sonnet | `## Upgrades` (healers' lodge, `heal`, cold), `## Data`; `src/sim/{jobs,buildings,economy}.ts`, `src/data/{buildings,jobs}.json` | the same files (`healers_lodge` with `requires`, the `heal` job, the cold ease), tests | the lodge, heal and cold tests pass |
+| U4 | Sonnet | `## UI`; `src/scenes/{Hud,Build}.ts`, `src/render/placeholders.ts`, `art/manifest.json`, `art/ASSETS.md` | the same files (Gift in the bar, Upgrades panel and key U, Build entry on key 6, placeholder art, toasts) | by hand: a panel buy takes gift and goods; the lodge appears in the Build menu only after `healers` |
+| U5 | Sonnet | `## Tests` (smoke); `tests/smoke.spec.ts`, `TESTING.md` | `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the upgrades case with no console errors |
+| U6 (user, gate) | Opus | `DESIGN-upgrades.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays a run, buys at least one upgrade, and says the gift pacing feels right |
+
+## Phase D (remaining, each gets its own spec and rows)
 
 Seasons and hardships; autosave (3 slots) + export/import; eras 2-3 and bosses; upgrade tiers 1-3;
 moving camp (travois); art batches (Claude writes prompts per [art/PIPELINE.md](art/PIPELINE.md),

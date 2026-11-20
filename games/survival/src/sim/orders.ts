@@ -2,6 +2,7 @@
 // applied at the start of the next tick. Pure TypeScript, no Phaser.
 import { assignWorkers, cancelSite, countJobs, placeBuilding } from './buildings';
 import { ages, beginWalk, canWork, idleTask, releaseJob, walkable } from './people';
+import { buyUpgrade, UPGRADE_IDS, type UpgradeId } from './upgrades';
 import { addMessage, type GameState, type Order, type Person, type Tile2 } from './state';
 
 /** Queues orders; they take effect at the start of the next tick (or at once while paused). */
@@ -147,6 +148,9 @@ export function applyOrder(s: GameState, o: Order): void {
       return;
     case 'pause':
       s.paused = o.on;
+      return;
+    case 'buy':
+      if (UPGRADE_IDS.includes(o.upgrade as UpgradeId)) buyUpgrade(s, o.upgrade as UpgradeId);
       return;
   }
 }

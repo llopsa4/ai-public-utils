@@ -22,6 +22,19 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 - Winter tint at 18% is subtle (grass goes from (143,174,90) to (151,186,116)); raise it in
   `seasons.json` if you want it louder.
 
+## Upgrades notes (U1-U5, 2026-11-20)
+- Went past PLAN's file list on purpose: `state.ts` (`gift`, `upgrades`, the `buy` order), `orders.ts`,
+  `Game.ts` and `Select.ts` (`overUi` also checks the Upgrades panel), `Build.ts` (six slots, right-aligned,
+  hidden until unlocked), `tests/sim/buildings.test.ts` (six buildable types; the lodge needs the upgrade),
+  `DESIGN-slice.md` and `TESTING.md` (small text updates).
+- Choices the spec left open: the Upgrades button is at the top right under the speed buttons (the bar
+  had no room); the bar font is 13 px so `Gift n` fits; the panel does not pause and Esc or U closes it;
+  buying is a `buy` order (so it works while paused); a healer treats whoever is within 2.5 tiles when the
+  50 ticks end (the patient may have walked off, then nothing happens); a healer never treats themself;
+  gift is added at the end of the day-start step from the band the camp is in then.
+- Windows pitfall met this session: Python `open()` without `encoding='utf-8'` wrote a lone cp1252 byte into
+  `Hud.ts`; fixed. Use `encoding='utf-8', newline=''` for scripted edits.
+
 ## DS4 notes
 - DS4 went past PLAN's file list on purpose: `src/save/files.ts` (download and file-picker helpers),
   and one line each in `Game.ts` and `Select.ts` (`overUi` is true while the HUD panel is open, so

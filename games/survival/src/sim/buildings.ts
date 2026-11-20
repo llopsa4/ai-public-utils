@@ -18,6 +18,8 @@ export interface BuildingDef {
   workers?: number;
   job?: JobKind;
   society?: string;
+  /** An upgrade id that must be bought before this can be placed. */
+  requires?: string;
   caps?: Record<Res, number>;
 }
 
@@ -27,7 +29,7 @@ export const BUILDABLE = Object.keys(buildingDefs).filter((k) => buildingDefs[k]
 
 const NAMES: Record<string, string> = {
   tipi: 'tipi', gathering_spot: 'gathering spot', hunting_lodge: 'hunting lodge', store: 'store', fire: 'fire',
-  drying_rack: 'drying rack',
+  drying_rack: 'drying rack', healers_lodge: "healers' lodge",
 };
 export function buildingName(type: string): string {
   return NAMES[type] ?? type;
@@ -41,6 +43,7 @@ function campCentre(s: GameState): Tile2 {
 export function placementError(s: GameState, type: string, x: number, y: number): string | null {
   const def = buildingDefs[type];
   if (!def || def.buildable === false || !def.cost) return "Can't build that.";
+  if (def.requires && !s.upgrades.includes(def.requires)) return "Needs the healers' society.";
   const [cx, cy] = campCentre(s);
   const tiles = footprint(x, y);
   if (tiles.some(([tx, ty]) => tx < 0 || ty < 0 || tx >= s.map.size || ty >= s.map.size)) return 'Outside the map.';

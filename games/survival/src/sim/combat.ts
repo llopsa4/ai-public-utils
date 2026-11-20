@@ -2,10 +2,12 @@
 // everyone else flees to the fire. Pure TypeScript, no Phaser. Wolves walk in straight lines.
 import enemyData from '../data/enemies.json';
 import jobsData from '../data/jobs.json';
+import upgradeData from '../data/upgrades.json';
 import { ringSpot } from './buildings';
 import { ages, beginWalk, idleTask, movePerson, walkable } from './people';
 import { rngNext } from './rng';
 import type { Enemy, GameState, Person, Tile2 } from './state';
+import { hasUpgrade } from './upgrades';
 
 export interface Fighter {
   range: number;
@@ -34,8 +36,15 @@ const FLEE = jobsData.flee;
 const FLEE_SPEED = 0.2;
 
 /** A drafted hunter shoots a bow, any other drafted adult swings a club. */
-export function fighterOf(p: Person): Fighter {
-  return p.society === FIGHTERS.bow.society ? FIGHTERS.bow : FIGHTERS.club;
+export function fighterOf(s: GameState, p: Person): Fighter {
+  if (p.society !== FIGHTERS.bow.society) return FIGHTERS.club;
+  const bow = { ...FIGHTERS.bow };
+  if (hasUpgrade(s, 'bows')) {
+    bow.range = upgradeData.upgrades.bows.bowRange;
+    bow.damage = upgradeData.upgrades.bows.bowDamage;
+  }
+  if (hasUpgrade(s, 'dogs')) bow.accuracy += upgradeData.upgrades.dogs.bowAccuracy;
+  return bow;
 }
 
 export function enemyById(s: GameState, id: number | null): Enemy | undefined {
@@ -94,7 +103,7 @@ function sameTile(a: Tile2 | null, b: Tile2): boolean {
  * normal walk/idle code run (walking to a `move` order, or back to their post).
  */
 export function stepFighter(s: GameState, p: Person): boolean {
-  const f = fighterOf(p);
+  const f = fighterOf(s, p);
   const target = pickTarget(s, p, f);
   if (!target) {
     const post = p.post;

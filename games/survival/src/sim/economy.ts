@@ -8,6 +8,7 @@ import { rngNext } from './rng';
 import { announceSeason, seasonal, seasonOf } from './seasons';
 import seasonData from '../data/seasons.json';
 import { addMessage, TIPI_BEDS, type GameState } from './state';
+import { giftForBand } from './upgrades';
 
 export interface Band {
   name: string;
@@ -127,18 +128,28 @@ function spoil(s: GameState): void {
   if (seasonOf(s) === 'summer' && lost >= seasonData.spoilToastMin) addMessage(s, 'Some food spoiled in the heat.');
 }
 
+/** Unity lost per unhoused person at day start; each staffed healer eases the cold by 1, down to -1. */
+export function coldPerPerson(s: GameState): number {
+  const cold = seasonal(s, 'unhousedPerDay');
+  if (cold >= -1) return cold;
+  const healers = s.people.filter((p) => p.job?.kind === 'heal').length;
+  return Math.min(-1, cold + healers * jobsData.jobs.heal.coldEase);
+}
+
 /** At the start of a day: the season, spoilage, beds, the unhoused cost unity, then the band's effect. */
 function dayStart(s: GameState): void {
   announceSeason(s);
   spoil(s);
   assignHousing(s);
-  changeUnity(s, seasonal(s, 'unhousedPerDay') * s.people.filter((p) => p.home === null).length);
+  changeUnity(s, coldPerPerson(s) * s.people.filter((p) => p.home === null).length);
   const band = unityBand(s);
   // Spring newcomers also come at Steady, not only at United.
   const springWelcome = seasonOf(s) === 'spring' && s.wotakuye >= seasonData.newcomerMinWotakuye.spring;
   if (band.dayEffect === 'leave') leave(s);
   else if (band.dayEffect === 'newcomer') newcomer(s, band);
   else if (springWelcome) newcomer(s, UNITED);
+  // Gift value comes last, from the band the camp ends the morning in.
+  s.gift += giftForBand(unityBand(s).name);
 }
 
 /** One economy tick; call after `s.tick` has advanced, so `tick % 600 === 0` is a meal time. */

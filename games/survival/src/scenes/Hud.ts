@@ -7,6 +7,7 @@ import seasonData from '../data/seasons.json';
 import { downloadText, exportName } from '../save/files';
 import { queueOrders } from '../sim/orders';
 import { serialize } from '../sim/save';
+import { missingFor, upgradeCost, upgradeLabel, UPGRADE_IDS, hasUpgrade, type UpgradeId } from '../sim/upgrades';
 import { dayInSeason, seasonLabel, seasonOf, yearOf } from '../sim/seasons';
 import { DAY_TICKS, storeCap, type GameState, type Res } from '../sim/state';
 import { waveBanner } from '../sim/waves';
@@ -24,6 +25,15 @@ const SPEED_BUTTONS: { label: string; pause: boolean; speed?: 1 | 2 | 4 }[] = [
   { label: '2x', pause: false, speed: 2 },
   { label: '4x', pause: false, speed: 4 },
 ];
+const UPGRADES_BUTTON = { x: 1176, y: 38, w: 96, h: 26 };
+const UPGRADES_PANEL = { x: 320, y: 190, w: 640, h: 250 };
+const CARD_W = 200;
+/** One line on what each upgrade does (DESIGN-upgrades.md `## Upgrades`). */
+const UPGRADE_EFFECT: Record<UpgradeId, string> = {
+  dogs: 'Hunting succeeds 15% more often, and hunters aim a little better.',
+  bows: "Hunters' bows reach 5 tiles and hit for 15.",
+  healers: "Lets you build a healers' lodge: they heal the wounded and ease winter cold.",
+};
 const INK = '#f3e9d2';
 const RES: Res[] = ['food', 'wood', 'hides', 'pemmican'];
 
@@ -39,6 +49,9 @@ export class HudScene extends Phaser.Scene {
   private endText!: Phaser.GameObjects.Text;
   private endButton!: Phaser.GameObjects.Text;
   private menuObjects: Phaser.GameObjects.GameObject[] = [];
+  private upgradesObjects: Phaser.GameObjects.GameObject[] = [];
+  private upgradesOpen = false;
+  private cards: Record<string, { cost: Phaser.GameObjects.Text; buy: Phaser.GameObjects.Text }> = {};
   private menuNote!: Phaser.GameObjects.Text;
   private quitLabel!: Phaser.GameObjects.Text;
   /** After a failed save, the quit button's next click leaves without saving. */
@@ -64,7 +77,7 @@ export class HudScene extends Phaser.Scene {
     // The season's tint over the map (presentation only; spring has none), under every bar and panel.
     this.tint = this.add.rectangle(0, 0, 1280, 720, 0xffffff, 0).setOrigin(0).setDepth(-1);
     this.add.rectangle(BAR.x, BAR.y, BAR.w, BAR.h, 0x1d1a16, 0.85).setOrigin(0);
-    this.resourceText = this.add.text(12, 8, '', { fontFamily: 'sans-serif', fontSize: '14px', color: INK });
+    this.resourceText = this.add.text(12, 8, '', { fontFamily: 'sans-serif', fontSize: '13px', color: INK });
     this.add.rectangle(UNITY.x, UNITY.y, UNITY.w, UNITY.h, 0x3a3328, 1).setOrigin(0);
     this.unityFill = this.add.rectangle(UNITY.x, UNITY.y, 0, UNITY.h, 0x6aa84f, 1).setOrigin(0);
     this.unityText = this.add
@@ -108,6 +121,87 @@ export class HudScene extends Phaser.Scene {
       return { bg, label, b };
     });
     this.createMenu();
+    this.createUpgrades();
+  }
+
+  /** True when a screen point is on the open Upgrades panel or its button (the map ignores the click). */
+  upgradesOverUi(x: number, y: number): boolean {
+    const r = this.upgradesOpen ? UPGRADES_PANEL : UPGRADES_BUTTON;
+    return (
+      (x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h) ||
+      (x >= UPGRADES_BUTTON.x && x <= UPGRADES_BUTTON.x + UPGRADES_BUTTON.w && y >= UPGRADES_BUTTON.y && y <= UPGRADES_BUTTON.y + UPGRADES_BUTTON.h)
+    );
+  }
+
+  /** The Upgrades button (key U) and its panel of cards (DESIGN-upgrades.md `## UI`). It does not pause. */
+  private createUpgrades(): void {
+    this.upgradesObjects = [];
+    this.upgradesOpen = false;
+    this.cards = {};
+    const font = (size: number, color = INK) => ({ fontFamily: 'sans-serif', fontSize: `${size}px`, color });
+    const open = this.add.rectangle(UPGRADES_BUTTON.x, UPGRADES_BUTTON.y, UPGRADES_BUTTON.w, UPGRADES_BUTTON.h, 0x1d1a16, 0.85).setOrigin(0).setInteractive({ useHandCursor: true });
+    this.add.text(open.x + open.width / 2, open.y + open.height / 2, 'Upgrades (U)', font(13)).setOrigin(0.5);
+    open.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.setUpgradesOpen(!this.upgradesOpen));
+
+    const P = UPGRADES_PANEL;
+    const objs = this.upgradesObjects;
+    objs.push(this.add.rectangle(P.x, P.y, P.w, P.h, 0x1d1a16, 0.96).setOrigin(0).setStrokeStyle(2, 0x6b5a3a).setDepth(15).setInteractive());
+    objs.push(this.add.text(P.x + 16, P.y + 10, `Upgrades  ·  Gift value earned each day from ${data.labels.unity}`, font(15)).setDepth(16));
+    const close = this.add.text(P.x + P.w - 14, P.y + 8, 'x', font(18)).setOrigin(1, 0).setDepth(16).setInteractive({ useHandCursor: true });
+    close.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.setUpgradesOpen(false));
+    objs.push(close);
+    UPGRADE_IDS.forEach((id, i) => {
+      const x = P.x + 14 + i * (CARD_W + 8);
+      const y = P.y + 44;
+      objs.push(this.add.rectangle(x, y, CARD_W, 192, 0x3a3328, 1).setOrigin(0).setDepth(16));
+      objs.push(this.add.text(x + 10, y + 8, upgradeLabel(id), font(15)).setDepth(17));
+      objs.push(this.add.text(x + 10, y + 36, UPGRADE_EFFECT[id], font(12, '#cdbf9c')).setWordWrapWidth(CARD_W - 20).setDepth(17));
+      const costText = this.add.text(x + 10, y + 100, '', font(12)).setWordWrapWidth(CARD_W - 20).setDepth(17);
+      const buy = this.add
+        .text(x + 10, y + 150, ' Buy ', { ...font(15, '#1d1a16'), backgroundColor: INK })
+        .setPadding(10, 5).setDepth(17).setInteractive({ useHandCursor: true });
+      buy.on('pointerdown', (p: Phaser.Input.Pointer) => {
+        if (p.leftButtonDown() && this.canBuy(id)) queueOrders(this.game2.state, [{ type: 'buy', upgrade: id }]);
+      });
+      this.cards[id] = { cost: costText, buy };
+      objs.push(costText, buy);
+    });
+    this.setUpgradesOpen(false);
+    const kb = this.input.keyboard!;
+    kb.on('keydown-U', () => this.setUpgradesOpen(!this.upgradesOpen));
+    kb.on('keydown-ESC', () => this.upgradesOpen && this.setUpgradesOpen(false));
+    const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
+    if (camp) {
+      camp.upgradesOpen = () => this.upgradesOpen;
+      camp.upgradeCard = (id: string) => this.cards[id]?.cost.text ?? null;
+    }
+  }
+
+  private canBuy(id: UpgradeId): boolean {
+    const s = this.game2.state;
+    return !hasUpgrade(s, id) && missingFor(s, id).length === 0;
+  }
+
+  setUpgradesOpen(on: boolean): void {
+    this.upgradesOpen = on;
+    for (const o of this.upgradesObjects) {
+      (o as Phaser.GameObjects.Rectangle).setVisible(on);
+      if (o.input) o.input.enabled = on;
+    }
+    if (on) this.refreshUpgrades();
+  }
+
+  /** The cost line and Buy state of each card: Bought, buyable, or what is still missing. */
+  private refreshUpgrades(): void {
+    const s = this.game2.state;
+    for (const id of UPGRADE_IDS) {
+      const { cost, buy } = this.cards[id];
+      const owned = hasUpgrade(s, id);
+      const missing = missingFor(s, id);
+      const price = Object.entries(upgradeCost(id)).map(([r, n]) => `${n} ${r}`).join(', ');
+      cost.setText(owned ? 'Bought' : missing.length ? `Cost: ${price}\nMissing: ${missing.join(', ')}` : `Cost: ${price}`);
+      buy.setText(owned ? ' Bought ' : ' Buy ').setAlpha(owned || missing.length ? 0.4 : 1);
+    }
   }
 
   /** The Menu button and its panel (DESIGN-saves.md `## HUD menu`). */
@@ -191,11 +285,13 @@ export class HudScene extends Phaser.Scene {
   update(): void {
     const s = this.game2.state;
     const parts = RES.map((r) => `${data.resources[r].label} ${Math.floor(s.store[r])} / ${storeCap(s, r)}`);
+    parts.push(`Gift ${Math.floor(s.gift)}`);
     const adults = s.people.filter((p) => p.age === 'adult').length;
     parts.push(`People ${adults} / ${s.people.length}`, `${seasonLabel(seasonOf(s))}, day ${dayInSeason(s)}${yearOf(s) > 1 ? `  Year ${yearOf(s)}` : ''}`);
     const tint = seasonData.tint[seasonOf(s)];
     this.tint.setFillStyle(tint ? tint[0] : 0xffffff, tint ? tint[1] : 0);
-    this.resourceText.setText(parts.join('    '));
+    this.resourceText.setText(parts.join('   '));
+    if (this.upgradesOpen) this.refreshUpgrades();
 
     const w = s.wotakuye;
     this.unityFill.setSize((UNITY.w * w) / 100, UNITY.h).setFillStyle(w < 20 ? 0xc0392b : w < 40 ? 0xd9a441 : 0x6aa84f, 1);

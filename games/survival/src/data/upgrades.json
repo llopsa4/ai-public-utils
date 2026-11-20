@@ -1,0 +1,13 @@
+{
+  "giftPerDay": { "United": 2, "Steady": 1, "Strained": 0, "Quarrelling": 0 },
+  "upgrades": {
+    "dogs":    { "label": "Hunting dogs",     "cost": { "gift": 4, "food": 10 },            "huntSuccess": 1.15, "bowAccuracy": 0.05 },
+    "bows":    { "label": "Better bows",      "cost": { "gift": 6, "wood": 5, "hides": 3 }, "bowRange": 5.0, "bowDamage": 15 },
+    "healers": { "label": "Healers' society", "cost": { "gift": 8, "wood": 20 },            "unlocks": "healers_lodge" }
+  },
+  "toasts": {
+    "dogs": "Hunting dogs joined the hunters.",
+    "bows": "Hunters' bows are stronger.",
+    "healers": "The healers can build a lodge."
+  }
+}

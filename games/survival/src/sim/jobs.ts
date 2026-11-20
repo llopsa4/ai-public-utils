@@ -1,6 +1,7 @@
 // Jobs (DESIGN-slice.md `## Jobs`): a worker cycles walk -> work -> walk to the store -> deliver.
 // Implemented: gather (berry tiles and gathering spots), chop, hunt, haul, build. Fight comes with C6.
 import jobsData from '../data/jobs.json';
+import upgradeData from '../data/upgrades.json';
 import {
   buildingDefs, buildingName, findAutoWork, materialsComplete, nearestBuilding, nextHaulLoad, ringSpot,
 } from './buildings';
@@ -12,6 +13,7 @@ import { seasonal } from './seasons';
 import {
   addMessage, storeCap, type Building, type GameState, type Job, type JobKind, type Person, type Res, type Tile2,
 } from './state';
+import { hasUpgrade } from './upgrades';
 
 export { canWork };
 
@@ -21,6 +23,7 @@ const TILE_JOBS: Partial<Record<JobKind, { res: Res; tile: 'berry' | 'forest'; r
 };
 const RETRY = jobsData.storeRetryTicks;
 const DRY = jobsData.jobs.dry;
+const HEAL = jobsData.jobs.heal;
 
 /** Work units per tick: base rate x age x Wotakuye x hunger (x1.5 at a gathering spot; gathering x the season). */
 export function workRate(s: GameState, p: Person, kind: JobKind): number {
@@ -134,7 +137,7 @@ function validateBuildingJob(s: GameState, p: Person): void {
   const job = p.job;
   if (!job || job.building === null) return;
   const b = building(s, job.building);
-  const working = job.kind === 'gather' || job.kind === 'hunt' || job.kind === 'dry';
+  const working = job.kind === 'gather' || job.kind === 'hunt' || job.kind === 'dry' || job.kind === 'heal';
   if (!b || (working ? !b.done : b.done)) releaseJob(p);
 }
 
@@ -189,6 +192,23 @@ function decideDry(s: GameState, p: Person, rack: Building): void {
   if (!spot || !beginWalk(s, p, spot, 'take')) p.task = idleTask(RETRY);
 }
 
+/** The most wounded person below the healing line (ties to the lowest id), other than the healer. */
+function mostWounded(s: GameState, healer: Person): Person | undefined {
+  let best: Person | undefined;
+  for (const q of s.people) {
+    if (q.id === healer.id || q.health >= HEAL.below) continue;
+    if (!best || q.health < best.health) best = q;
+  }
+  return best;
+}
+
+/** A healing trip (DESIGN-upgrades.md): walk to the most wounded person, work, treat whoever is near. */
+function decideHeal(s: GameState, p: Person): void {
+  const patient = mostWounded(s, p);
+  const tile: Tile2 | null = patient ? [Math.round(patient.x), Math.round(patient.y)] : null;
+  if (!tile || !beginWalk(s, p, tile, 'work')) p.task = idleTask(HEAL.ticks);
+}
+
 /** Chooses the next step for an idle person. */
 function decide(s: GameState, p: Person): void {
   const t = p.task;
@@ -202,6 +222,7 @@ function decide(s: GameState, p: Person): void {
   if (job?.kind === 'build') return decideBuild(s, p, building(s, job.building)!);
   if (job?.kind === 'hunt') return decideHunt(s, p);
   if (job?.kind === 'dry') return decideDry(s, p, building(s, job.building)!);
+  if (job?.kind === 'heal') return decideHeal(s, p);
 
   const def = job ? TILE_JOBS[job.kind] : undefined;
   if (job && def) {
@@ -273,9 +294,23 @@ function doWork(s: GameState, p: Person): void {
       p.task.timer--;
       return;
     }
-    if (rngNext(s.rng) < jobsData.jobs.hunt.success * seasonal(s, 'huntSuccess')) {
+    if (rngNext(s.rng) < jobsData.jobs.hunt.success * seasonal(s, 'huntSuccess') * (hasUpgrade(s, 'dogs') ? upgradeData.upgrades.dogs.huntSuccess : 1)) {
       p.carry = { res: 'food', amount: jobsData.jobs.hunt.food, hides: jobsData.jobs.hunt.hides };
     }
+    p.task = idleTask();
+    return;
+  }
+  if (job.kind === 'heal') {
+    if (p.task.timer > 0) {
+      p.task.timer--;
+      return;
+    }
+    let best: Person | undefined;
+    for (const q of s.people) {
+      if (q.id === p.id || q.health >= HEAL.below || Math.hypot(q.x - p.x, q.y - p.y) > HEAL.reach) continue;
+      if (!best || q.health < best.health) best = q;
+    }
+    if (best) best.health = Math.min(jobsData.health.max, best.health + HEAL.amount);
     p.task = idleTask();
     return;
   }
@@ -337,7 +372,7 @@ function arrive(s: GameState, p: Person): void {
     case 'work':
       p.task = {
         step: 'work', target: null, path: [], goal: null,
-        timer: job?.kind === 'hunt' ? jobsData.jobs.hunt.huntTicks : job?.kind === 'dry' ? DRY.ticks : 0,
+        timer: job?.kind === 'hunt' ? jobsData.jobs.hunt.huntTicks : job?.kind === 'dry' ? DRY.ticks : job?.kind === 'heal' ? HEAL.ticks : 0,
       };
       break;
     case 'take':

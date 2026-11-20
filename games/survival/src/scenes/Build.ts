@@ -1,16 +1,18 @@
-// The build menu (DESIGN-slice.md `## UI`): B opens it, 1-5 pick a building, the Game scene shows the
+// The build menu (DESIGN-slice.md `## UI`): B opens it, 1-6 pick a building, the Game scene shows the
 // ghost and places it on a left-click; right-click or Esc cancels. Runs above the Game scene in screen space.
 import Phaser from 'phaser';
 import { BUILDABLE, buildingDefs, buildingName } from '../sim/buildings';
 import type { Res } from '../sim/state';
 import type { GameScene } from './Game';
 
+const SLOT_W = 79;
 const PANEL = { x: 880, y: 600, w: 400, h: 120 };
 const OPEN_BUTTON = { x: 1176, y: 684, w: 96, h: 28 };
 const INK = '#f3e9d2';
 
 interface Slot {
   type: string;
+  x: number;
   bg: Phaser.GameObjects.Rectangle;
   parts: Phaser.GameObjects.GameObject[];
 }
@@ -20,6 +22,9 @@ export class BuildScene extends Phaser.Scene {
   private open = false;
   private slots: Slot[] = [];
   private panel: Phaser.GameObjects.GameObject[] = [];
+  private panelBg!: Phaser.GameObjects.Rectangle;
+  /** How many buildings the panel shows now (the healers' lodge waits for its upgrade). */
+  private shown = 0;
   private openButton!: Phaser.GameObjects.GameObject[];
   private toastText!: Phaser.GameObjects.Text;
   private toastUntil = 0;
@@ -45,9 +50,10 @@ export class BuildScene extends Phaser.Scene {
     this.openButton = [ob, text(OPEN_BUTTON.x + 14, OPEN_BUTTON.y + 6, 'Build (B)')];
 
     // The menu panel with one button per building.
-    this.panel.push(this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x1d1a16, 0.85).setOrigin(0));
+    this.panelBg = this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x1d1a16, 0.85).setOrigin(0);
+    this.panel.push(this.panelBg);
     BUILDABLE.forEach((type, i) => {
-      const x = PANEL.x + 5 + i * 79;
+      const x = PANEL.x + 5 + i * SLOT_W;
       const y = PANEL.y + 6;
       const bg = this.add.rectangle(x, y, 75, 108, 0x3a3328, 1).setOrigin(0).setInteractive();
       bg.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.pick(i));
@@ -59,11 +65,12 @@ export class BuildScene extends Phaser.Scene {
         text(x + 4, y + 3, `${i + 1} ${buildingName(type)}`, 10).setWordWrapWidth(68),
         text(x + 4, y + 80, costText, 10, '#cdbf9c').setWordWrapWidth(68),
       ];
-      this.slots.push({ type, bg, parts });
+      this.slots.push({ type, x, bg, parts });
       this.panel.push(bg, ...parts);
     });
 
     this.toastText = text(PANEL.x, PANEL.y - 24, '', 14, '#ffb4a8');
+    this.layout();
     this.setOpen(false);
 
     const kb = this.input.keyboard!;
@@ -72,19 +79,51 @@ export class BuildScene extends Phaser.Scene {
       if (this.game2.placing) this.game2.setPlacing(null);
       else this.setOpen(false);
     });
-    ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.open && this.pick(i)));
+    ['ONE', 'TWO', 'THREE', 'FOUR', 'FIVE', 'SIX'].forEach((k, i) => kb.on(`keydown-${k}`, () => this.open && this.pick(i)));
   }
 
   private setOpen(open: boolean): void {
     this.open = open;
+    this.layout();
     for (const o of this.panel) (o as unknown as Phaser.GameObjects.Components.Visible).setVisible(open);
+    this.slots.forEach((slot, i) => {
+      const on = open && i < this.shown;
+      slot.bg.setVisible(on);
+      if (on) slot.bg.setInteractive();
+      else slot.bg.disableInteractive();
+      slot.parts.forEach((o) => (o as unknown as Phaser.GameObjects.Components.Visible).setVisible(on));
+    });
     for (const o of this.openButton) (o as unknown as Phaser.GameObjects.Components.Visible).setVisible(!open);
     if (!open && this.game2.placing) this.game2.setPlacing(null);
   }
 
+  /** Types shown in the menu: those whose upgrade (if any) has been bought; they keep BUILDABLE's order. */
+  private unlocked(type: string): boolean {
+    const req = buildingDefs[type].requires;
+    return !req || this.game2.state.upgrades.includes(req);
+  }
+
+  /** Resizes the panel to the shown slots, keeping its right edge at the screen edge. */
+  private layout(): void {
+    const n = BUILDABLE.filter((t) => this.unlocked(t)).length;
+    this.shown = n;
+    PANEL.w = 5 + n * SLOT_W + 1;
+    PANEL.x = 1280 - PANEL.w;
+    this.panelBg.setPosition(PANEL.x, PANEL.y).setSize(PANEL.w, PANEL.h);
+    this.toastText.setX(PANEL.x);
+    this.slots.forEach((slot, i) => {
+      const nx = PANEL.x + 5 + i * SLOT_W;
+      const dx = nx - slot.x;
+      if (dx === 0) return;
+      slot.x = nx;
+      slot.bg.x += dx;
+      for (const o of slot.parts) (o as unknown as Phaser.GameObjects.Components.Transform).x += dx;
+    });
+  }
+
   private pick(i: number): void {
     const type = BUILDABLE[i];
-    if (!type) return;
+    if (!type || i >= this.shown) return;
     const cost = buildingDefs[type].cost ?? {};
     const short = (Object.keys(cost) as Res[]).find((r) => this.game2.state.store[r] < (cost[r] ?? 0));
     if (short) {
@@ -111,6 +150,8 @@ export class BuildScene extends Phaser.Scene {
   }
 
   update(): void {
+    const n = BUILDABLE.filter((t) => this.unlocked(t)).length;
+    if (n !== this.shown) this.setOpen(this.open);
     this.toastText.setVisible(this.time.now < this.toastUntil);
     const store = this.game2.state.store;
     for (const slot of this.slots) {

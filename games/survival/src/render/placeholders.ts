@@ -110,6 +110,23 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
       g.fillStyle(i % 2 ? 0xb9473c : 0x9c3a31, 1).fillRect(cx - 26 + i * 10, cy - 35, 5, 12 + (i % 3) * 3);
     }
   },
+  building_healers_lodge: (g, w, h) => {
+    // A low round-roofed lodge with a green herb bundle hanging by the door.
+    const cx = w / 2;
+    const cy = h * 0.75;
+    shadow(g, cx + 6, cy + 4, 104, 40);
+    const hw = 34;
+    const hh = 17;
+    const rise = 24;
+    g.fillStyle(0x8a6a44, 1).fillPoints([p(cx - hw, cy), p(cx, cy + hh), p(cx, cy + hh - rise), p(cx - hw, cy - rise)], true);
+    g.fillStyle(0x6f5234, 1).fillPoints([p(cx + hw, cy), p(cx, cy + hh), p(cx, cy + hh - rise), p(cx + hw, cy - rise)], true);
+    g.fillStyle(0x7fa05a, 1).fillPoints([p(cx, cy - hh - rise - 8), p(cx + hw + 4, cy - rise), p(cx, cy + hh - rise + 4), p(cx - hw - 4, cy - rise)], true);
+    g.lineStyle(1, 0x4f6e38, 1).strokePoints([p(cx - hw - 4, cy - rise), p(cx, cy + hh - rise + 4), p(cx + hw + 4, cy - rise)], false);
+    g.fillStyle(0x4a3624, 1).fillRect(cx + 6, cy - 4, 10, 12);
+    g.lineStyle(2, 0x5a3b22, 1).lineBetween(cx + 22, cy - 22, cx + 22, cy - 12);
+    g.fillStyle(0x4f8a3a, 1).fillEllipse(cx + 22, cy - 8, 8, 12);
+    g.fillStyle(0xe7e1c8, 1).fillCircle(cx + 22, cy - 22, 2);
+  },
   fire_central: (g, w, h) => {
     const cx = w / 2;
     shadow(g, cx + 2, h - 6, 40, 14);

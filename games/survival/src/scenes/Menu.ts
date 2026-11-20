@@ -16,7 +16,7 @@ const CONTROLS = [
   'Left-click: select      Drag: box select      Shift-click: add or remove',
   'Right-click: move, gather, chop, build, assign to a building, or attack a wolf',
   'R: draft or undraft      Z X C: hold / defend / chase      Delete: cancel a site',
-  'B then 1-5: build (left-click to place, right-click to stop)',
+  'B then 1-6: build (left-click to place, right-click to stop)',
   'Space: pause      1 2 3: speed 1x 2x 4x      Esc: clear the selection',
   'WASD or arrows or the screen edge: scroll      Mouse wheel: zoom',
 ];

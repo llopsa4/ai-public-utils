@@ -324,7 +324,7 @@ tick (so `window.camp.orders(...)` and the mouse behave the same).
 | right-click a wolf | `attack` (drafted only; undrafted selected people ignore it) |
 | R | `draft` toggle for the selection (adults only) |
 | Z / X / C | stance `hold` / `defend` / `chase` for drafted selected |
-| B | open build menu; 1-5 in the menu (5 = drying rack, seasons) pick a building; left-click places; right-click/Esc cancels |
+| B | open build menu; 1-6 in the menu (5 = drying rack, 6 = healers' lodge once its upgrade is bought) pick a building; left-click places; right-click/Esc cancels |
 | Delete | cancel the selected construction site (refund) |
 | Space | pause toggle; `1` / `2` / `3` = speed 1x / 2x / 4x |
 

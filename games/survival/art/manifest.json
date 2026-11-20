@@ -13,5 +13,6 @@
   "person_child": { "file": "person_child.png", "size": [32, 40], "anchor": [0.5, 1.0], "frames": { "idle": 1 }, "status": "placeholder" },
   "building_gathering_spot": { "file": "building_gathering_spot.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
   "building_hunting_lodge": { "file": "building_hunting_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_drying_rack": { "file": "building_drying_rack.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" }
+  "building_drying_rack": { "file": "building_drying_rack.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
+  "building_healers_lodge": { "file": "building_healers_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" }
 }

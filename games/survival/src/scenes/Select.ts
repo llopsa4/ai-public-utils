@@ -137,7 +137,7 @@ export class SelectScene extends Phaser.Scene {
     const inside = (r: { x: number; y: number; w: number; h: number }) =>
       x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
     const hud = this.scene.get('Hud') as HudScene | undefined;
-    return !!hud?.menuOpen || inside(PANEL) || inside(BAR) || !!this.buildScene()?.overUi(x, y);
+    return !!hud?.menuOpen || !!hud?.upgradesOverUi(x, y) || inside(PANEL) || inside(BAR) || !!this.buildScene()?.overUi(x, y);
   }
 
   private send(orders: Order[]): void {

@@ -70,5 +70,17 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   `Spring, day 1` + Pemmican + a season tint, and a smoke test. 85 tests and `npm run e2e` (3 tests)
   pass; all uncommitted. Checked by screenshot (HUD, tint, five-slot build menu); not checked by hand:
   placing a rack with key 5 and watching a worker dry.
-  Next: S7, the user plays through the first winter (day 10 on) and judges the balance.
-  Other Phase D items (seasons, eras, upgrades, moving camp, art) wait until saves are done.
+  S7 passed 2026-11-20: the user played and said "it looks good" (no fixes raised). DS1-DS5 and
+  S1-S7 are all uncommitted; nothing pushed.
+  Next item chosen 2026-11-20: **upgrade tiers, tier 1 only**. Grilled (gift value comes daily from
+  Wotakuye; dogs, better bows and a healers' society that heals wounds and eases winter cold; an
+  upgrade panel costing gift value + goods). Spec drafted in [DESIGN-upgrades.md](DESIGN-upgrades.md)
+  with numbers, plan rows U1-U6 in [PLAN.md](PLAN.md). Approved by the user 2026-11-20 (numbers and
+  the v2 -> v3 save break). U1-U5 done 2026-11-20: `src/data/upgrades.json`, `src/sim/upgrades.ts`
+  (gift value daily by band, `buyUpgrade`, a `buy` order), dogs and bows in `jobs.ts` / `combat.ts`
+  (`fighterOf(s, p)`), the healers' lodge and `heal` job, winter cold eased per staffed healer
+  (`coldPerPerson`), `SAVE_VERSION` 3; the HUD shows `Gift n` and has an Upgrades panel (key U, button
+  under the speed buttons); the Build menu grows to six with the lodge (key 6) after the upgrade.
+  94 tests and `npm run e2e` (4 tests) pass; checked by screenshot (panel, 5- and 6-slot build menu);
+  not checked by hand: the real Buy button, placing a lodge, a healer treating someone.
+  Next: U6, the user plays a run, buys an upgrade and judges the gift pacing. Uncommitted; nothing pushed.

@@ -1,7 +1,10 @@
 import { expect, test, type Page } from '@playwright/test';
 
 interface Camp {
-  state: { people: unknown[]; tick: number; result: string | null };
+  state: { people: unknown[]; tick: number; result: string | null; gift: number; upgrades: string[] };
+  orders: (list: unknown[]) => void;
+  upgradesOpen: () => boolean;
+  upgradeCard: (id: string) => string | null;
   step: (n: number) => void;
   banner: () => string | null;
   hudText: () => string;
@@ -94,6 +97,32 @@ test('the HUD names the season: spring at the start, winter on day 10', async ({
   // The first winter starts at tick 10800 (stepping that far would starve the camp, so jump the clock).
   await page.evaluate(() => { window.camp.state.tick = 10800; });
   await expect.poll(() => page.evaluate(() => window.camp.hudText())).toContain('Winter, day 1');
+
+  expect(errors).toEqual([]);
+});
+
+test('the Upgrades panel opens with U, buys dogs with gift value, and shows the Gift', async ({ page }) => {
+  const errors = watchErrors(page);
+
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.upgradesOpen);
+  expect(await page.evaluate(() => window.camp.hudText())).toContain('Gift 0');
+
+  await page.keyboard.press('u');
+  await expect.poll(() => page.evaluate(() => window.camp.upgradesOpen())).toBe(true);
+  await expect.poll(() => page.evaluate(() => window.camp.upgradeCard('dogs'))).toContain('Missing: gift 4');
+
+  // Give the camp gift value through the debug state, then buy through the panel's order.
+  await page.evaluate(() => {
+    window.camp.state.gift = 5;
+    window.camp.orders([{ type: 'buy', upgrade: 'dogs' }]);
+  });
+  await page.evaluate(() => window.camp.step(2));
+  await expect.poll(() => page.evaluate(() => window.camp.upgradeCard('dogs'))).toBe('Bought');
+  expect(await page.evaluate(() => window.camp.state.upgrades)).toEqual(['dogs']);
+  expect(await page.evaluate(() => window.camp.hudText())).toContain('Gift 1');
 
   expect(errors).toEqual([]);
 });

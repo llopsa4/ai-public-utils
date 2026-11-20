@@ -206,7 +206,7 @@ export class GameScene extends Phaser.Scene {
   private overUi(x: number, y: number): boolean {
     const select = this.scene.get('Select') as SelectScene | undefined;
     const hud = this.scene.get('Hud') as HudScene | undefined;
-    return !!hud?.menuOpen || !!this.buildScene()?.overUi(x, y) || !!select?.overUi(x, y);
+    return !!hud?.menuOpen || !!hud?.upgradesOverUi(x, y) || !!this.buildScene()?.overUi(x, y) || !!select?.overUi(x, y);
   }
 
   /** Starts or stops placing a building (the Build scene calls this). */
