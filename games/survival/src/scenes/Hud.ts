@@ -3,6 +3,7 @@
 import Phaser from 'phaser';
 import data from '../data/resources.json';
 import { unityBand } from '../sim/economy';
+import { wotakuyeHelp } from '../sim/help';
 import seasonData from '../data/seasons.json';
 import { downloadText, exportName } from '../save/files';
 import { queueOrders } from '../sim/orders';
@@ -34,6 +35,7 @@ const UPGRADE_EFFECT: Record<UpgradeId, string> = {
   bows: "Hunters' bows reach 5 tiles and hit for 15.",
   healers: "Lets you build a healers' lodge: they heal the wounded and ease winter cold.",
 };
+const TIP_W = 440;
 const INK = '#f3e9d2';
 const RES: Res[] = ['food', 'wood', 'hides', 'pemmican'];
 
@@ -50,6 +52,7 @@ export class HudScene extends Phaser.Scene {
   private endButton!: Phaser.GameObjects.Text;
   private menuObjects: Phaser.GameObjects.GameObject[] = [];
   private upgradesObjects: Phaser.GameObjects.GameObject[] = [];
+  private tip!: { box: Phaser.GameObjects.Rectangle; text: Phaser.GameObjects.Text };
   private upgradesOpen = false;
   private cards: Record<string, { cost: Phaser.GameObjects.Text; buy: Phaser.GameObjects.Text }> = {};
   private menuNote!: Phaser.GameObjects.Text;
@@ -83,6 +86,7 @@ export class HudScene extends Phaser.Scene {
     this.unityText = this.add
       .text(UNITY.x + UNITY.w / 2, UNITY.y + UNITY.h / 2, '', { fontFamily: 'sans-serif', fontSize: '13px', color: '#ffffff' })
       .setOrigin(0.5);
+    this.createUnityTip();
     this.bannerBox = this.add.rectangle(BANNER.x, BANNER.y, BANNER.w, BANNER.h, 0x6b1f1a, 0.9).setOrigin(0).setVisible(false);
     this.bannerText = this.add
       .text(BANNER.x + BANNER.w / 2, BANNER.y + BANNER.h / 2, '', { fontFamily: 'sans-serif', fontSize: '16px', color: INK })
@@ -111,6 +115,7 @@ export class HudScene extends Phaser.Scene {
     if (camp) {
       camp.banner = () => (this.bannerBox.visible ? this.bannerText.text : null);
       camp.hudText = () => this.resourceText.text;
+      camp.wotakuyeTip = () => (this.tip.box.visible ? this.tip.text.text : null);
     }
 
     // Pause / 1x / 2x / 4x: the buttons only send orders, like the keys in Select.ts.
@@ -122,6 +127,33 @@ export class HudScene extends Phaser.Scene {
     });
     this.createMenu();
     this.createUpgrades();
+  }
+
+  /** The `?` on the Wotakuye bar and the hover tooltip with its rules (DESIGN-upgrades.md `## Wotakuye help`). */
+  private createUnityTip(): void {
+    this.add.text(UNITY.x + UNITY.w - 10, UNITY.y + UNITY.h / 2, '?', { fontFamily: 'sans-serif', fontSize: '13px', color: INK }).setOrigin(0.5);
+    const box = this.add.rectangle(1280 - 8 - TIP_W, BAR.h + 4, TIP_W, 40, 0x1d1a16, 0.96).setOrigin(0).setStrokeStyle(2, 0x6b5a3a).setDepth(18).setVisible(false);
+    const text = this.add
+      .text(box.x + 10, box.y + 8, '', { fontFamily: 'monospace', fontSize: '12px', color: INK, lineSpacing: 3, wordWrap: { width: TIP_W - 20 } })
+      .setDepth(19)
+      .setVisible(false);
+    this.tip = { box, text };
+    const hover = this.add.rectangle(UNITY.x, UNITY.y, UNITY.w, UNITY.h, 0xffffff, 0.001).setOrigin(0).setInteractive();
+    const show = (on: boolean) => {
+      box.setVisible(on);
+      text.setVisible(on);
+      if (on) this.refreshTip();
+    };
+    hover.on('pointerover', () => show(true));
+    hover.on('pointerout', () => show(false));
+  }
+
+  /** Redraws the tooltip text from the camp as it is now, and fits the box to it. */
+  private refreshTip(): void {
+    const h = wotakuyeHelp(this.game2.state);
+    const lines = [`${data.labels.unity}: ${h.band}`, '', ...h.live, '', 'How it moves', ...h.rules];
+    this.tip.text.setText(lines.join('\n'));
+    this.tip.box.setSize(TIP_W, this.tip.text.height + 16);
   }
 
   /** True when a screen point is on the open Upgrades panel or its button (the map ignores the click). */
@@ -292,6 +324,7 @@ export class HudScene extends Phaser.Scene {
     this.tint.setFillStyle(tint ? tint[0] : 0xffffff, tint ? tint[1] : 0);
     this.resourceText.setText(parts.join('   '));
     if (this.upgradesOpen) this.refreshUpgrades();
+    if (this.tip.box.visible) this.refreshTip();
 
     const w = s.wotakuye;
     this.unityFill.setSize((UNITY.w * w) / 100, UNITY.h).setFillStyle(w < 20 ? 0xc0392b : w < 40 ? 0xd9a441 : 0x6aa84f, 1);

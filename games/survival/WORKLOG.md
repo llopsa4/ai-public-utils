@@ -83,4 +83,8 @@ Finished tasks and their details are in Git history (`git log -- games/survival`
   under the speed buttons); the Build menu grows to six with the lodge (key 6) after the upgrade.
   94 tests and `npm run e2e` (4 tests) pass; checked by screenshot (panel, 5- and 6-slot build menu);
   not checked by hand: the real Buy button, placing a lodge, a healer treating someone.
-  Next: U6, the user plays a run, buys an upgrade and judges the gift pacing. Uncommitted; nothing pushed.
+  Committed and pushed to `main` on the user's request, 2026-11-20 (`b47d7f3`).
+  Wotakuye help done 2026-11-20 (the user asked for the rules to be shown in the game): a hover tooltip on
+  the Wotakuye bar with a `?` hint (`src/sim/help.ts`, `Hud.ts`; live numbers and rules read from the data;
+  101 tests and 5 e2e tests pass; checked by screenshot, not by hand). Uncommitted.
+  Next: U6, the user plays a run, buys an upgrade and judges the gift pacing (and the tooltip).

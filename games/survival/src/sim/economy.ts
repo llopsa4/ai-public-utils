@@ -18,8 +18,8 @@ export interface Band {
   newcomerMinFood?: number;
 }
 
-const BANDS = data.wotakuye.bands as Band[];
-const EV = data.wotakuye.events;
+export const BANDS = data.wotakuye.bands as Band[];
+export const EV = data.wotakuye.events;
 export const HUNGRY_AT = data.economy.hungryAt;
 export const HUNGRY_WORK = data.economy.hungryWork;
 /** Food units one pemmican feeds. */

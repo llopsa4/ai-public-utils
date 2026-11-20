@@ -166,6 +166,15 @@ Spec: [DESIGN-upgrades.md](DESIGN-upgrades.md). Common rules as in Phase C; run
 | U5 | Sonnet | `## Tests` (smoke); `tests/smoke.spec.ts`, `TESTING.md` | `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the upgrades case with no console errors |
 | U6 (user, gate) | Opus | `DESIGN-upgrades.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays a run, buys at least one upgrade, and says the gift pacing feels right |
 
+## Phase D: Wotakuye help (done 2026-11-20, before U6)
+
+Spec: [DESIGN-upgrades.md](DESIGN-upgrades.md) `## Wotakuye help`.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| H1 | Sonnet | `## Wotakuye help`; `src/sim/{economy,upgrades,seasons}.ts`, `src/data/resources.json` | `src/sim/help.ts`, `src/sim/economy.ts` (exports `BANDS`, `EV`), `tests/sim/help.test.ts` | the help tests pass |
+| H2 | Sonnet | `## Wotakuye help`; `src/scenes/Hud.ts`, `tests/smoke.spec.ts` | `src/scenes/Hud.ts` (`?`, tooltip, `window.camp.wotakuyeTip`), `tests/smoke.spec.ts`, `TESTING.md` | `npm run e2e` passes the hover case; a screenshot shows the tooltip fits |
+
 ## Phase D (remaining, each gets its own spec and rows)
 
 Seasons and hardships; autosave (3 slots) + export/import; eras 2-3 and bosses; upgrade tiers 1-3;

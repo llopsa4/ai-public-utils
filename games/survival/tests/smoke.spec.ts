@@ -5,6 +5,7 @@ interface Camp {
   orders: (list: unknown[]) => void;
   upgradesOpen: () => boolean;
   upgradeCard: (id: string) => string | null;
+  wotakuyeTip: () => string | null;
   step: (n: number) => void;
   banner: () => string | null;
   hudText: () => string;
@@ -123,6 +124,30 @@ test('the Upgrades panel opens with U, buys dogs with gift value, and shows the 
   await expect.poll(() => page.evaluate(() => window.camp.upgradeCard('dogs'))).toBe('Bought');
   expect(await page.evaluate(() => window.camp.state.upgrades)).toEqual(['dogs']);
   expect(await page.evaluate(() => window.camp.hudText())).toContain('Gift 1');
+
+  expect(errors).toEqual([]);
+});
+
+test('hovering the Wotakuye bar shows the rules tooltip, even while paused', async ({ page }) => {
+  const errors = watchErrors(page);
+
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.wotakuyeTip);
+  expect(await page.evaluate(() => window.camp.wotakuyeTip())).toBeNull();
+
+  const box = (await page.locator('#game canvas').boundingBox())!;
+  const at = (x: number, y: number) => page.mouse.move(box.x + (x / 1280) * box.width, box.y + (y / 720) * box.height);
+  await page.keyboard.press('Space'); // paused: the tooltip still works
+  await at(830, 16);
+  await expect.poll(() => page.evaluate(() => window.camp.wotakuyeTip())).toContain('no bed');
+  const tip = (await page.evaluate(() => window.camp.wotakuyeTip()))!;
+  expect(tip).toContain('Gift tomorrow');
+  expect(tip).toContain('Full meal');
+
+  await at(400, 400);
+  await expect.poll(() => page.evaluate(() => window.camp.wotakuyeTip())).toBeNull();
 
   expect(errors).toEqual([]);
 });

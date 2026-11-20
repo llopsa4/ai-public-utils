@@ -20,7 +20,7 @@ identical, so a failing test can be replayed exactly. New rules get a test here,
 It starts its own Vite dev server on port 5184 (not the dev port 5174, so a running `npm run dev`
 does not get in the way). It:
 
-Four tests. All open `/?debug` (the hooks `window.camp` in a run and `window.menu` on the menu: button
+Five tests. All open `/?debug` (the hooks `window.camp` in a run and `window.menu` on the menu: button
 centres by name such as `slot1.new`, and the card texts; the canvas is scaled to fit, so clicks are
 computed from the canvas box) and fail on any `pageerror` or console error.
 
@@ -33,6 +33,8 @@ computed from the canvas box) and fail on any `pageerror` or console error.
 4. **Upgrades:** the HUD reads `Gift 0`; key U opens the panel (`window.camp.upgradesOpen()`), the dogs
    card says `Missing: gift 4` (`window.camp.upgradeCard('dogs')`); the test sets `state.gift = 5`, queues a
    `buy` order and sees `Bought`, `upgrades = ['dogs']` and `Gift 1`.
+5. **Wotakuye tooltip:** pauses with Space, hovers the Wotakuye bar and reads `window.camp.wotakuyeTip()`
+   (`no bed`, `Gift tomorrow`, `Full meal`); moving away makes it `null`.
 
 On Windows the config passes ANGLE/Direct3D flags so headless Chromium uses the GPU; elsewhere the
 defaults apply. The first run may need `npx playwright install chromium`.

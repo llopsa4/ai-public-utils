@@ -82,6 +82,25 @@ conversion.
 - **Toasts:** `Hunting dogs joined the hunters.`, `Hunters' bows are stronger.`, `The healers can build
   a lodge.` on purchase; `<name> was treated.` is not shown (too chatty).
 
+## Wotakuye help
+
+Added 2026-11-20 by grilling (the user asked for the Wotakuye rules to be shown in the game).
+
+- **Where:** a hover tooltip on the HUD Wotakuye bar, hinted by a small `?` at the bar's right end. It
+  opens at once, hangs below the bar (right-aligned, 440 px wide), updates live, works while paused and
+  closes when the pointer leaves. It is hover-only: clicks pass through.
+- **Content:** `src/sim/help.ts` `wotakuyeHelp(state)` returns the band, the **live** lines and the
+  **rule** lines; the HUD only draws them. All numbers are read from `resources.json`, `seasons.json` and
+  `upgrades.json`, so a rebalance changes the tooltip.
+  - Live: the unhoused cost at the next day start (`N people have no bed: -X`, using the season's rate
+    and any staffed healers' ease), the next meal (`+2` when the store, food plus pemmican x1.5, covers
+    the need, else `F food short, about D`), `Gift tomorrow`, and the gap up to the next band plus the
+    floor of the current one. The figures are approximate: meals and the day start interact.
+  - Rules: the events (full meal, short meal, a death, no bed, a wave beaten) and the four bands with
+    work multiplier, newcomer or leave effect and gift per day; the current band's line starts with `>`.
+- **Tests:** `tests/sim/help.test.ts` (live lines, band edges, the rules, and that a changed data value
+  changes the text); smoke test 5 hovers the bar.
+
 ## Tests
 
 `tests/sim/upgrades.test.ts`: gift per day by band (United 2, Steady 1, Strained 0); buying takes the

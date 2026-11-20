@@ -35,6 +35,12 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 - Windows pitfall met this session: Python `open()` without `encoding='utf-8'` wrote a lone cp1252 byte into
   `Hud.ts`; fixed. Use `encoding='utf-8', newline=''` for scripted edits.
 
+## Wotakuye help notes (H1-H2, 2026-11-20)
+- Went past the plan on purpose: `economy.ts` now exports `BANDS` and `EV`. Choices the plan left open:
+  the "K above <lower band>" line became `<Band> holds down to <from>` (exact, since Wotakuye can be
+  fractional); a zero gift reads `Gift tomorrow: 0`; the tooltip is monospace 12 px and covers the
+  Upgrades button while open (hover-only, so clicks pass through).
+
 ## DS4 notes
 - DS4 went past PLAN's file list on purpose: `src/save/files.ts` (download and file-picker helpers),
   and one line each in `Game.ts` and `Select.ts` (`overUi` is true while the HUD panel is open, so
