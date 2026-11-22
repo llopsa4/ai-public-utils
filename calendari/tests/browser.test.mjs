@@ -40,8 +40,8 @@ try {
   assert.equal(await page.locator('#participant-dialog').isVisible(), false);
   assert.equal(await page.locator('.sidebar #participant-editor').count(), 0);
   assert.deepEqual(await page.locator('.sidebar').evaluate(el => [...el.children].map(child => child.id || child.className)), ['participant-panel', 'issues-section', 'rules-card']);
-  assert.equal(await page.locator('.weekend-heading').textContent(), 'Weekend');
-  assert.equal(await page.locator('.day-cell.weekend .holiday-tag').filter({ hasText: /^Weekend$/ }).count(), 0);
+  assert.equal(await page.locator('.weekend-heading').textContent(), 'Cap de setmana');
+  assert.equal(await page.locator('.day-cell.weekend .holiday-tag').filter({ hasText: /^Cap de setmana$/ }).count(), 0);
   assert.equal(await page.locator('.day-cell.weekend').count(), 9);
   assert.equal(await page.locator('#holiday-mode').count(), 0, 'Holiday coverage must not require a filter');
   await page.locator('#setup-city').fill('Girona');
@@ -49,7 +49,7 @@ try {
   await page.locator('#setup-count').fill('20');
   await page.locator('#setup-next').click();
   await page.locator('#setup-generate').click();
-  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Best coverage:'));
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Millor cobertura:'));
   await page.locator('#cancel').click();
   // The remainder exercises manual planning without official city dates.
   await page.locator('#clear-city').click();
@@ -100,7 +100,7 @@ try {
   await page.locator('[data-person]').first().click();
   assert.equal(await page.locator('#person-name').inputValue(), '');
   await page.locator('#person-name').fill(secret);
-  await page.getByRole('button', { name: 'Close participant settings' }).click();
+  await page.getByRole('button', { name: 'Tanca els paràmetres del participant' }).click();
   assert.equal(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY), initialParticipantData);
   await page.locator('[data-person]').first().click();
   await page.locator('#person-name').fill(secret);
@@ -136,10 +136,10 @@ try {
   assert.equal(await page.locator('[data-assign="24/0"]').inputValue(), '');
   await page.locator('[data-assign="24/0"]').selectOption(firstId);
   await page.locator('[data-confirm-assign="24/0"]').click();
-  assert.ok((await page.locator('#day-content').textContent()).includes('confirmed manual exception'));
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  assert.ok((await page.locator('#day-content').textContent()).includes('excepció manual confirmada'));
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
   await page.locator('#generate').click();
-  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Best coverage:'));
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Millor cobertura:'));
   assert.ok(await page.locator('.day-cell.unfilled').count() > 0, 'Incomplete dates must be marked during the search');
   const yellow = await page.locator('.day-cell.unfilled').first().evaluate(el => getComputedStyle(el).backgroundColor);
   assert.equal(yellow, 'rgb(255, 243, 184)');
@@ -162,8 +162,8 @@ try {
 
   await page.emulateMedia({ media: 'print' });
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
-  assert.equal(await page.locator('.print-page').first().locator('.print-weekend-heading').textContent(), 'Weekend');
-  assert.equal(await page.locator('.print-page').first().locator('.print-day strong').filter({ hasText: /Weekend/ }).count(), 0);
+  assert.equal(await page.locator('.print-page').first().locator('.print-weekend-heading').textContent(), 'Cap de setmana');
+  assert.equal(await page.locator('.print-page').first().locator('.print-day strong').filter({ hasText: /Cap de setmana/ }).count(), 0);
   assert.equal(await page.locator('.print-page').count(), 1);
   assert.ok((await page.locator('.print-calendar').textContent()).includes('QA_PRIVATE_SENTINEL'), 'Printed slots must show the same participant names as the screen');
   const overflow = await page.locator('.print-page').evaluateAll(pages => pages.filter(p => p.scrollHeight > p.clientHeight + 1).length);
@@ -202,7 +202,7 @@ try {
   await page.locator('[data-confirm-assign="day/1"]').click();
   await page.locator('[data-assign="night/1"]').selectOption(saved.participants[2].id);
   await page.locator('[data-confirm-assign="night/1"]').click();
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
   const mixedStored = JSON.parse(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY));
   assert.equal(mixedStored.months['2026-08'].holidayMode, undefined);
   assert.equal(mixedStored.months['2026-08'].assignments.length, 3);
@@ -220,11 +220,11 @@ try {
     await page.locator(`[data-assign="${key}"]`).selectOption(saved.participants[i + 3].id);
     await page.locator(`[data-confirm-assign="${key}"]`).click();
   }
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
   await page.screenshot({ path: path.join(output, 'mixed-mode.png'), fullPage: true });
   await page.emulateMedia({ media: 'print' });
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
-  assert.ok((await page.locator('.print-header').first().textContent()).includes('All participants'));
+  assert.ok((await page.locator('.print-header').first().textContent()).includes('Tots els participants'));
   assert.equal(await page.locator('.print-page').evaluateAll(pages => pages.filter(p => p.scrollHeight > p.clientHeight + 1).length), 0);
   assert.equal(await page.locator('.print-day').evaluateAll(cells => cells.filter(c => c.scrollHeight > c.clientHeight + 1).length), 0, 'Mixed holiday shifts must fit within dates');
   const mixedPdf = await page.pdf({ path: path.join(output, 'mixed-calendar.pdf'), preferCSSPageSize: true, printBackground: true });
@@ -247,10 +247,10 @@ try {
   await page.locator('[data-assign="day/0"]').selectOption(firstId);
   await page.locator('[data-confirm-assign="day/0"]').click();
   await page.locator('#mark-holiday').uncheck();
-  assert.ok((await page.locator('#day-content').textContent()).includes('Incompatible'));
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  assert.ok((await page.locator('#day-content').textContent()).includes('incompatible'));
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
   await page.locator('#generate').click();
-  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Best coverage:'));
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Millor cobertura:'));
   await page.locator('#cancel').click();
   const regenerated = JSON.parse(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY));
   assert.ok(!regenerated.months['2026-10'].assignments.some(a => a.date === '2026-10-06' && a.kind !== '24'));
@@ -281,11 +281,11 @@ try {
   if (mobileOverflow) console.log(await mobile.evaluate(() => [...document.querySelectorAll('body *')].filter(el => el.getBoundingClientRect().right > innerWidth + 1 && getComputedStyle(el).display !== 'none').map(el => `${el.tagName}.${el.className}: ${Math.round(el.getBoundingClientRect().right)}`).slice(0, 20)));
   assert.equal(mobileOverflow, false, 'Mobile page should not overflow horizontally');
   await page.locator('#import-file').setInputFiles({ name: 'invalid.json', mimeType: 'application/json', buffer: Buffer.from('{"version":99}') });
-  await page.waitForFunction(() => document.querySelector('#message').textContent.includes('invalid or unsupported'));
+  await page.waitForFunction(() => document.querySelector('#message').textContent.includes('no és vàlid o no és compatible'));
   assert.equal(await page.locator('[data-person]').count(), 20);
   page.once('dialog', dialog => dialog.accept());
   await page.locator('#import-file').setInputFiles({ name: 'anonymous.json', mimeType: 'application/json', buffer: Buffer.from(backup) });
-  await page.waitForFunction(() => document.querySelector('#message').textContent.includes('backup restored'));
+  await page.waitForFunction(() => document.querySelector('#message').textContent.includes('Còpia anònima restaurada'));
   await page.locator('#setup-city').fill('Girona'); await page.locator('#setup-next').click();
   await page.locator('#clear-city').click();
   assert.equal(await page.locator('#person-name').inputValue(), '');
@@ -297,8 +297,8 @@ try {
   await page.locator('#city-input').fill('Girona');
   await page.locator('#city-input').press('Enter');
   assert.ok((await page.locator('#city-highlight').textContent()).includes('Girona'));
-  assert.equal(await page.locator('[data-date="2026-10-29"] .holiday-tag').textContent(), 'Local holiday');
-  assert.equal(await page.locator('[data-date="2026-10-12"] .holiday-tag').textContent(), 'Public holiday');
+  assert.equal(await page.locator('[data-date="2026-10-29"] .holiday-tag').textContent(), 'Festa local');
+  assert.equal(await page.locator('[data-date="2026-10-12"] .holiday-tag').textContent(), 'Festa oficial');
   const citySaved = JSON.parse(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY));
   assert.equal(citySaved.cityId, '17079000');
   assert.equal(citySaved.months['2026-10'].cityId, '17079000');
@@ -306,9 +306,9 @@ try {
   assert.equal(await page.locator('#mark-holiday').isDisabled(), true);
   await page.locator('[data-assign="24/0"]').selectOption('');
   await page.locator('[data-confirm-assign="24/0"]').click();
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
   assert.equal(await page.locator('[data-date="2026-10-29"]').evaluate(el => el.classList.contains('unfilled')), true);
-  assert.equal(await page.locator('[data-date="2026-10-29"] .holiday-tag').textContent(), 'Local holiday');
+  assert.equal(await page.locator('[data-date="2026-10-29"] .holiday-tag').textContent(), 'Festa local');
   await page.screenshot({ path: path.join(output, 'city-desktop.png'), fullPage: true });
   await mobile.reload();
   await mobile.locator('#month-input').fill('2026-10');
@@ -319,7 +319,7 @@ try {
   await page.emulateMedia({ media: 'print' });
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
   assert.ok((await page.locator('.print-header').first().textContent()).includes('Girona'));
-  assert.ok((await page.locator('.print-page').first().textContent()).includes('Local holiday'));
+  assert.ok((await page.locator('.print-page').first().textContent()).includes('Festa local'));
   assert.equal(await page.locator('.print-page').evaluateAll(pages => pages.filter(p => p.scrollHeight > p.clientHeight + 1).length), 0);
   const cityPdf = await page.pdf({ path: path.join(output, 'city-calendar.pdf'), preferCSSPageSize: true, printBackground: true });
   assert.equal((await PDFDocument.load(cityPdf)).getPageCount(), 1);
@@ -328,24 +328,24 @@ try {
   // Manual dates are independent of automatic municipal dates.
   await page.locator('[data-date="2026-10-20"] .date-open').click();
   await page.locator('#mark-holiday').check();
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
   await page.locator('#city-input').fill('Barcelona');
   await page.locator('#apply-city').click();
   assert.equal(await page.locator('[data-date="2026-10-29"] .holiday-tag').count(), 0);
-  assert.equal(await page.locator('[data-date="2026-10-20"] .holiday-tag').textContent(), 'Added holiday');
+  assert.equal(await page.locator('[data-date="2026-10-20"] .holiday-tag').textContent(), 'Festiu afegit');
   await page.locator('#city-input').fill('QA_PRIVATE_SENTINEL');
   await page.locator('#apply-city').click();
   assert.equal(JSON.parse(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY)).cityId, '08019000');
   assert.ok(!(await page.evaluate(key => localStorage.getItem(key), STORAGE_KEY)).includes('QA_PRIVATE_SENTINEL'));
   await page.locator('#month-input').fill('2027-10');
   await page.locator('#month-input').dispatchEvent('change');
-  assert.ok((await page.locator('#city-status').textContent()).includes('not available'));
-  assert.ok((await page.locator('#issues').textContent()).includes('unavailable'));
+  assert.ok((await page.locator('#city-status').textContent()).includes('no estan disponibles'));
+  assert.ok((await page.locator('#issues').textContent()).includes('no estan disponibles'));
   await page.locator('#month-input').fill('2026-10');
   await page.locator('#month-input').dispatchEvent('change');
   await page.locator('#clear-city').click();
   assert.equal(await page.locator('[data-date="2026-10-12"] .holiday-tag').count(), 0);
-  assert.equal(await page.locator('[data-date="2026-10-20"] .holiday-tag').textContent(), 'Added holiday');
+  assert.equal(await page.locator('[data-date="2026-10-20"] .holiday-tag').textContent(), 'Festiu afegit');
   await page.locator('[data-person]').first().click();
   page.once('dialog', dialog => dialog.dismiss());
   await page.locator('#remove-person').click();

@@ -5,9 +5,11 @@
 // Esc cancels. Placing remembers the people selected when the card was picked (`GameScene.placers`) and ends
 // when nobody selected can build any more. Runs above the Select scene in screen space.
 import Phaser from 'phaser';
+import { applyArt } from '../render/art';
 import { BUILDABLE, buildingDefs } from '../sim/buildings';
 import { displayLabel, englishLabel } from '../sim/labels';
 import { addMessage, type Res } from '../sim/state';
+import { makeSurface, palette, setLook, setStroke, UI_FONT, type Palette } from '../render/ui';
 import { createHover, type Hover } from './hover';
 import type { GameScene } from './Game';
 import type { SelectScene } from './Select';
@@ -23,7 +25,6 @@ const SLOT_TOP = 22;
 /** The cards' strip: the right part of the 120 px high selection panel; `w` and `x` follow the card count. */
 const PANEL = { x: 880, y: 600, w: 400, h: 120 };
 const MIN_W = 250;
-const INK = '#f3e9d2';
 const GOLD = 0xe0b85a;
 
 interface Slot {
@@ -36,6 +37,7 @@ interface Slot {
 
 export class BuildScene extends Phaser.Scene {
   private game2!: GameScene;
+  private pal!: Palette;
   /** True while the cards show (someone selected can build). */
   private visible = false;
   /** B was pressed: the next 1-7 picks a building. */
@@ -73,27 +75,27 @@ export class BuildScene extends Phaser.Scene {
   }
 
   create(): void {
-    const text = (x: number, y: number, s: string, size = 14, color = INK) =>
-      this.add.text(x, y, s, { fontFamily: 'sans-serif', fontSize: `${size}px`, color });
+    this.pal = palette(this);
+    const text = (x: number, y: number, s: string, size = 14, color = this.pal.ink) =>
+      this.add.text(x, y, s, { fontFamily: UI_FONT, fontSize: `${size}px`, color });
 
     // The strip: a page line, then one card per building (positions set by `layout`).
-    this.panelBg = this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x2a251d, 0.9).setOrigin(0).setStrokeStyle(1, 0x6b5a3a);
-    this.tabText = text(PANEL.x + 8, PANEL.y + 3, '', 12);
+    this.panelBg = makeSurface(this, 'panel', PANEL.x, PANEL.y, PANEL.w, PANEL.h, { fill: 0x2a251d, alpha: 0.9, stroke: [0x6b5a3a, 1] });
+    this.tabText = text(PANEL.x + 8, PANEL.y + 3, '', 13);
     this.panel.push(this.panelBg, this.tabText);
     this.hover = createHover(this);
     BUILDABLE.forEach((type) => {
       const x = PANEL.x + 5;
       const y = PANEL.y + SLOT_TOP;
-      const bg = this.add.rectangle(x, y, SLOT_W - 4, 94, 0x3a3328, 1).setOrigin(0).setInteractive();
+      const bg = makeSurface(this, 'button', x, y, SLOT_W - 4, 94, { activeFill: 0x6b5a2e }).setInteractive();
       bg.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && this.pick(this.shownTypes.indexOf(type)));
       // The art is fitted into a 56 x 32 box under the title, so a 4x4 store and a 1x1 trap both fit their card.
-      const frame = this.textures.getFrame(`building_${type}`);
-      const fit = Math.min(0.7, 56 / frame.width, 32 / frame.height);
-      const icon = this.add.image(x + 34, y + 54, `building_${type}`).setScale(fit).setOrigin(0.5, 0.5);
+      const icon = applyArt(this.add.image(x + 34, y + 54, '__DEFAULT'), `building_${type}`).setOrigin(0.5, 0.5);
+      icon.setScale(icon.scaleX * Math.min(0.7, 56 / icon.displayWidth, 32 / icon.displayHeight));
       const cost = buildingDefs[type].cost ?? {};
       const costText = (Object.keys(cost) as Res[]).map((r) => `${cost[r]} ${r}`).join(', ');
-      const title = text(x + 3, y + 2, displayLabel(type), 10).setWordWrapWidth(SLOT_W - 10);
-      const parts = [icon, title, text(x + 3, y + 70, costText, 10, '#cdbf9c').setWordWrapWidth(SLOT_W - 10)];
+      const title = text(x + 3, y + 2, displayLabel(type), 11).setWordWrapWidth(SLOT_W - 10);
+      const parts = [icon, title, text(x + 3, y + 70, costText, 11, this.pal.dim).setWordWrapWidth(SLOT_W - 10)];
       this.hover.attach(bg, () => (displayLabel(type) !== englishLabel(type) ? englishLabel(type) : null));
       this.slots.push({ type, x, bg, title, parts });
       this.panel.push(bg, ...parts);
@@ -231,7 +233,7 @@ export class BuildScene extends Phaser.Scene {
       this.visible = show;
       this.applyVisible();
     }
-    this.panelBg.setStrokeStyle(this.armed ? 2 : 1, this.armed ? GOLD : 0x6b5a3a);
+    setStroke(this.panelBg, this.armed ? 2 : 1, this.armed ? GOLD : 0x6b5a3a, this.armed);
     this.tabText.setText(this.tabText.text.replace(/\s+· press a number$/, '') + (this.armed ? '  · press a number' : ''));
     this.toastText.setVisible(this.visible && this.time.now < this.toastUntil);
     this.hover.update();
@@ -239,7 +241,7 @@ export class BuildScene extends Phaser.Scene {
     for (const slot of this.slots) {
       const cost = buildingDefs[slot.type].cost ?? {};
       const ok = (Object.keys(cost) as Res[]).every((r) => store[r] >= (cost[r] ?? 0));
-      slot.bg.setFillStyle(this.game2.placing === slot.type ? 0x6b5a2e : 0x3a3328, 1);
+      setLook(slot.bg, this.game2.placing === slot.type ? 'active' : 'normal');
       slot.parts.forEach((o) => (o as unknown as Phaser.GameObjects.Components.Alpha).setAlpha(ok ? 1 : 0.45));
     }
   }

@@ -9,7 +9,7 @@ import { dayInSeason, seasonAt, seasonLabel, seasonOf, yearOf } from '../../src/
 import { loadState, serialize, type SaveFile } from '../../src/sim/save';
 import { storeCap, type GameState } from '../../src/sim/state';
 import { newGame, step } from '../../src/sim/tick';
-import { stepFed } from './helpers';
+import { stepFed, o } from './helpers';
 
 const SPRING = 0;
 const SUMMER = 3600;
@@ -178,7 +178,7 @@ test('a drying rack turns 6 food into 4 pemmican per trip (no loss of food value
   s.store.wood = 100;
   s.store.hides = 20;
   s.store.food = 100;
-  const placed = placeBuilding(s, 'drying_rack', 28, 26);
+  const placed = placeBuilding(s, 'drying_rack', o(28), o(26));
   assert.ok(placed.building, placed.error ?? 'placed');
   const rack = placed.building!;
   assert.equal(assignWorkers(s, [adults(s)[0].id], rack.id), 0, 'an unfinished rack takes nobody');
@@ -200,7 +200,7 @@ test('a worker waits at an empty store for the 6 food of a batch, and the camp k
   s.store.wood = 100;
   s.store.hides = 20;
   s.store.food = 5;
-  const rack = placeBuilding(s, 'drying_rack', 28, 26).building!;
+  const rack = placeBuilding(s, 'drying_rack', o(28), o(26)).building!;
   rack.done = true;
   assignWorkers(s, [adults(s)[0].id], rack.id);
   stepFed(s, 599); // short of the meal at tick 600, which would take the 5 food itself

@@ -1,0 +1,9 @@
+Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
+soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
+soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
+no text.
+Seamless square top-down hand-painted ground texture of summer woodland floor: dark loam with tiny brown oak leaf litter, scattered small ferns and fine roots under the canopy, rich oak woodland greens, ground material only; NO trees, trunks or large objects in autumn,
+flat even light, no perspective, no large objects, tiles on every side, 1024x1024.
+EDIT the supplied summer texture into autumn. Preserve exact composition, surface layout, scale, object positions, top-down projection and seamless edge arrangement. Change only seasonal appearance. copper and russet grasses, rust-red oak leaves, yellow leaf litter. Autumn grass light #D8A060 mid #B06A3A dark #6E3E26. Oak leaves rust-red #A0522A; small berry foliage has subdued autumn tones. Water subdued blue-green.
+Keep every root, leaf cluster and ground detail in the same position. Winter adds snow over the same shapes.
+Entire square filled edge to edge, no diamond shape, no blank margin, no text or symbols.

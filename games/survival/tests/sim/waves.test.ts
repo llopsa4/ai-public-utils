@@ -98,7 +98,7 @@ test('waves 7 and 8 come from two different edges, split evenly, with the leader
     assert.ok(['north', 'east', 'south'].includes(run.edge) && ['north', 'east', 'south'].includes(run.edge2));
     assert.equal(waveBanner(s)!.text, `Scouts: wolves coming from the ${run.edge} and ${run.edge2}`);
     step(s, 300); // spawn tick: enemies have not moved yet
-    const onEdge = (e: { x: number; y: number }, edge: string): boolean => (edge === 'north' ? e.y === 0 : edge === 'south' ? e.y === 47 : e.x === 47);
+    const onEdge = (e: { x: number; y: number }, edge: string): boolean => (edge === 'north' ? e.y === 0 : edge === 'south' ? e.y === s.map.size - 1 : e.x === s.map.size - 1);
     const first = s.enemies.filter((e) => e.wave === index && onEdge(e, run.edge!));
     const second = s.enemies.filter((e) => e.wave === index && onEdge(e, run.edge2!));
     assert.equal(first.length + second.length, wolves + leaders, 'everyone spawns on one of the two edges');

@@ -1,0 +1,7 @@
+Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
+soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
+soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
+no text.
+A single painted game effect sprite: A small low tan foot-dust puff, soft-edged warm prairie-soil dust curling just above the ground. No foot or person, no tracks, no scene, no fire or explosion. Muted tan #9C7A58 #B0A28E #D9BC8C.
+Puff's contact position fixed at image x=50 percent, y=75 percent. First frame of four: small compact low puff, 24 percent of square width, beginning to spread. Generous empty margin for expansion.
+Plain flat #00FF00 background everywhere except the effect, including any holes inside it. Single frame only, never a sprite sheet. No labels, text, numbers, logos, borders, frame, pure black, additional subjects or surrounding scenery. Keep the full sprite inside the image. Fine painterly shading with a clear readable silhouette at small display size.

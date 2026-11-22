@@ -25,9 +25,9 @@ test('local holidays change scheduling rules but do not pollute manual holiday d
   assert.ok(holiday('2026-10-29', config));
   config.assignments = [{ date: '2026-10-29', seat: 0, kind: 'day' }];
   assert.equal(slotsForDate('2026-10-29', config).length, 3);
-  assert.equal(holidayDetails('2026-10-29', config).label, 'Local holiday');
-  assert.equal(holidayDetails('2026-10-12', config).label, 'Public holiday');
-  assert.equal(holidayDetails('2026-10-03', config).label, 'Weekend');
+  assert.equal(holidayDetails('2026-10-29', config).label, 'Festa local');
+  assert.equal(holidayDetails('2026-10-12', config).label, 'Festa oficial');
+  assert.equal(holidayDetails('2026-10-03', config).label, 'Cap de setmana');
   config.cityId = findCity('Barcelona').id;
   assert.equal(holiday('2026-10-29', config), false);
   assert.deepEqual(config.holidays, []);
@@ -45,12 +45,12 @@ test('official local/public dates count toward the holiday cap and permit 12-hou
   s.months['2026-10'] = { ...newMonth(), cityId: s.cityId };
   const first = { date: '2026-10-12', kind: '24', seat: 0, participantId: id, fixed: true, override: false };
   const next = { ...first, date: '2026-10-29', kind: 'day' };
-  assert.ok(ruleIssues(s, '2026-10', next, [first]).includes('Monthly holiday limit exceeded'));
+  assert.ok(ruleIssues(s, '2026-10', next, [first]).includes('Límit mensual de festius superat'));
   assert.deepEqual(structuralIssues(s, '2026-10', next, []), []);
   s.participants[0].allowedKinds = ['day', 'night'];
   const shortFirst = { ...first, kind: 'day' };
   assert.deepEqual(ruleIssues(s, '2026-10', next, [shortFirst]), []);
-  assert(ruleIssues(s, '2026-10', { ...next, date: '2026-10-31' }, [shortFirst, next]).includes('Monthly holiday limit exceeded'));
+  assert(ruleIssues(s, '2026-10', { ...next, date: '2026-10-31' }, [shortFirst, next]).includes('Límit mensual de festius superat'));
 });
 test('missing years never reuse or predict the available municipal dates', () => {
   const id = findCity('Girona').id;
@@ -70,7 +70,7 @@ test('city codes round-trip through anonymous backups; no city free text survive
 });
 
 // Audit A6: the name map is year-specific (Easter moves), so a refreshed snapshot must update it.
-test('every general holiday in the snapshot has an English name', () => {
+test('every general holiday in the snapshot has a Catalan name', () => {
   for (const date of HOLIDAY_DATA.general) assert.ok(PUBLIC_NAMES[date.slice(5)], `missing name for ${date}`);
-  assert.equal(PUBLIC_NAMES['06-17'], 'Aran Day');
+  assert.equal(PUBLIC_NAMES['06-17'], 'Festa d’Aran');
 });

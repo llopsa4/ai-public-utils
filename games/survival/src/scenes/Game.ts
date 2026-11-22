@@ -2,9 +2,7 @@ import Phaser from 'phaser';
 import mapConfig from '../data/map.json';
 import { buildingDefs, lineSites, placementError } from '../sim/buildings';
 import { music } from '../audio/music';
-import { animalsOf } from '../sim/animals';
-import { ALLIES, alliesOf } from '../sim/allies';
-import { BISON_HALF_WIDTH, bisonDirection, effectsOf, STORM_RADIUS } from '../sim/effects';
+import { BISON_HALF_WIDTH, bisonLane, STORM_RADIUS } from '../sim/effects';
 import { flushOrders } from '../sim/orders';
 import { campCentre } from '../sim/map';
 import { newGame, queueOrders, step } from '../sim/tick';
@@ -12,26 +10,21 @@ import { loadState, serialize, type SaveFile } from '../sim/save';
 import { addMessage, DAY_TICKS, footprintOf, type GameState, type Order, type Tile2 } from '../sim/state';
 import { browserStorage, clearSlot, writeSlot, type SlotId, type SlotStorage } from '../save/slots';
 import { TILE_H, TILE_W, tileToWorld, worldBounds, worldToTileF } from '../render/iso';
-import { entry, manifest } from '../render/manifest';
+import { applyArt, fromAtlas, spriteFor } from '../render/art';
+import { barricadeMask, buildingFrame, buildingState, flameFrame, FLAMES } from '../render/buildingArt';
+import { seasonAt } from '../sim/seasons';
+import { TerrainView } from '../render/terrainView';
 import { ArrowsView } from '../render/arrows';
 import { EnemiesView } from '../render/enemies';
+import { FxView } from '../render/fx';
 import { PeopleView } from '../render/people';
 import { StoreHover } from '../render/stores';
-import { ENEMIES } from '../sim/combat';
 import type { BuildScene } from './Build';
 import type { HudScene } from './Hud';
 import type { SelectScene } from './Select';
 import { clampCenter, clampZoom, edgeDirection, panVector, zoomAtCursor, zoomStep } from '../render/camera';
 
-const GROUND_DEPTH = -100000;
 const TICK_MS = 100;
-
-/** Small deterministic hash in [0, 1) so tiles vary without touching the sim RNG. */
-function hash(x: number, y: number, k: number): number {
-  let h = Math.imul(x * 374761393 + y * 668265263 + k * 2246822519, 1274126177);
-  h = Math.imul(h ^ (h >>> 13), 1103515245);
-  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
-}
 
 export class GameScene extends Phaser.Scene {
   state!: GameState;
@@ -40,14 +33,19 @@ export class GameScene extends Phaser.Scene {
   private people!: PeopleView;
   private enemies!: EnemiesView;
   private arrows!: ArrowsView;
+  private fx!: FxView;
   private stores!: StoreHover;
-  private ground: Phaser.GameObjects.Image[] = [];
-  private trees = new Map<number, Phaser.GameObjects.Image>();
+  private terrain!: TerrainView;
   private seenMapVersion = 0;
   private acc = 0;
   private buildingViews = new Map<number, Phaser.GameObjects.Image>();
+  /** The frame each building sprite shows now, so a texture is set only when the frame changes. */
+  private buildingFrames = new Map<number, string>();
+  private flames = new Map<number, Phaser.GameObjects.Image>();
   /** The building type being placed (ghost under the cursor), or null. */
   placing: string | null = null;
+  /** Whether the ghost's tile is valid now (the cursor turns to `invalid` when it is not). */
+  ghostOk = true;
   /** The people selected when the building card was picked: the `place` order's builders (up to 3 of them build). */
   placers: number[] = [];
   /** The aimed power (bison charge, storm caller) waiting for a left-click on the map, or null. */
@@ -79,9 +77,9 @@ export class GameScene extends Phaser.Scene {
   create(data: { slot?: SlotId | null; seed?: number; save?: SaveFile }): void {
     this.state = data.save ? loadState(data.save) : newGame(data.seed ?? mapConfig.start.seed);
     // The scene object outlives a run: forget the last run's views and save bookkeeping.
-    this.ground = [];
-    this.trees.clear();
     this.buildingViews.clear();
+    this.buildingFrames.clear();
+    this.flames.clear();
     this.acc = 0;
     this.placing = null;
     this.placers = [];
@@ -105,10 +103,11 @@ export class GameScene extends Phaser.Scene {
       music.reset();
     });
     if (this.slot === null) this.warnAutosaveOff();
-    this.drawMap();
+    this.terrain = new TerrainView(this, this.state);
     this.people = new PeopleView(this, this.state.map.size);
     this.enemies = new EnemiesView(this, this.state.map.size);
     this.arrows = new ArrowsView(this, this.state.map.size);
+    this.fx = new FxView(this, this.state.map.size);
     this.stores = new StoreHover(this);
     this.setupCamera();
     this.setupPlacing();
@@ -124,7 +123,19 @@ export class GameScene extends Phaser.Scene {
         orders: (list: Order[]) => queueOrders(s, list),
         scene: this,
         storeOpen: () => this.stores.shown(),
+        terrain: () => ({ ...this.terrain.counts(), frame: (x: number, y: number) => this.terrain.groundFrame(x, y) }),
         music: () => music.status(),
+        creatures: () => ({
+          ...this.enemies.shown(),
+          arrows: this.arrows.shown(),
+          fx: { ...this.fx.counts },
+          playing: this.fx.playing(),
+          person: (id: number) => this.people.shown(id),
+        }),
+        buildings: () => ({
+          frames: Object.fromEntries(this.buildingFrames),
+          flames: [...this.flames].filter(([, f]) => f.visible).map(([id]) => id),
+        }),
       };
     }
   }
@@ -170,57 +181,76 @@ export class GameScene extends Phaser.Scene {
   }
 
   private place(key: string, tx: number, ty: number, dx = 0, dy = 0): Phaser.GameObjects.Image {
-    const e = entry(key);
     const w = tileToWorld(tx, ty, this.state.map.size);
-    const img = this.add.image(w.x + dx, w.y + dy, key).setOrigin(e.anchor[0], e.anchor[1]);
+    const img = spriteFor(this, key, w.x + dx, w.y + dy);
     img.setDepth(w.y + dy);
     return img;
   }
 
-  private drawMap(): void {
-    const { size, tiles } = this.state.map;
-    for (let y = 0; y < size; y++) {
-      for (let x = 0; x < size; x++) {
-        const type = tiles[y * size + x];
-        const key = `tile_${type}`;
-        const e = manifest[key];
-        const w = tileToWorld(x, y, size);
-        const ground = this.add.image(w.x, w.y, key).setOrigin(e.anchor[0], e.anchor[1]).setDepth(GROUND_DEPTH);
-        if (e.status === 'placeholder') {
-          const v = 0xff - Math.floor(hash(x, y, 1) * 22);
-          ground.setTint((v << 16) | (v << 8) | v);
-        }
-        this.ground[y * size + x] = ground;
-        if (type === 'forest') {
-          // Upright tree standing near the tile centre, jittered a little, depth-sorted by its base.
-          const jx = (hash(x, y, 2) - 0.5) * 16;
-          const jy = (hash(x, y, 3) - 0.5) * 6;
-          this.trees.set(y * size + x, this.place('object_tree', x, y, jx, 8 + jy));
-        }
-      }
-    }
-  }
-
-  /** The sprite of a building follows the state: a site is faint and firms up as it is built. */
-  private syncBuildings(): void {
+  /**
+   * The sprite of a building follows the state: the frame of its build stage, then finished or winter (a barricade by its
+   * neighbours, the drying rack looping). Without final art a site is faint and firms up as it is built. A finished fire or
+   * fire pit carries a flame when `fx_flame` has art.
+   */
+  private syncBuildings(time: number): void {
     const alive = new Set<number>();
+    const winter = seasonAt(this.state.tick) === 'winter';
+    const open = this.stores.shown()?.id ?? null;
+    const walls = new Set<string>();
+    for (const b of this.state.buildings) if (b.type === 'barricade') walls.add(`${b.x},${b.y}`);
     for (const b of this.state.buildings) {
       alive.add(b.id);
+      const key = b.type === 'fire' ? 'fire_central' : `building_${b.type}`;
       let img = this.buildingViews.get(b.id);
       if (!img) {
         const [w, h] = buildingDefs[b.type].size;
-        img = this.place(b.type === 'fire' ? 'fire_central' : `building_${b.type}`, b.x + (w - 1) / 2, b.y + (h - 1) / 2);
+        img = this.place(key, b.x + (w - 1) / 2, b.y + (h - 1) / 2);
         this.buildingViews.set(b.id, img);
       }
       const points = buildingDefs[b.type].buildPoints ?? 1;
-      img.setAlpha(b.done ? 1 : 0.35 + 0.5 * Math.min(1, b.built / points));
+      if (b.id === open) {
+        // The open store shows its inside (StoreHover owns the sprite); the frame is picked again when it closes.
+        this.buildingFrames.delete(b.id);
+        img.setAlpha(1);
+      } else {
+        const state = buildingState(b.built, points, b.done, winter);
+        const mask = b.type === 'barricade' ? barricadeMask((x, y) => walls.has(`${x},${y}`), b.x, b.y) : 0;
+        const frame = buildingFrame(key, state, mask, time, b.id * 0.37);
+        if (this.buildingFrames.get(b.id) !== frame) {
+          applyArt(img, key, frame);
+          this.buildingFrames.set(b.id, frame);
+        }
+        img.setAlpha(b.done || fromAtlas(this, key, frame) ? 1 : 0.35 + 0.5 * Math.min(1, b.built / points));
+      }
+      this.syncFlame(b.id, b.type, b.done, img, time);
     }
     for (const [id, img] of this.buildingViews) {
       if (!alive.has(id)) {
         img.destroy();
         this.buildingViews.delete(id);
+        this.buildingFrames.delete(id);
+        this.flames.get(id)?.destroy();
+        this.flames.delete(id);
       }
     }
+  }
+
+  /** The flame loop on a finished fire or fire pit, anchored on the footprint centre (the hearth); none without art. */
+  private syncFlame(id: number, type: string, done: boolean, base: Phaser.GameObjects.Image, time: number): void {
+    const scale = FLAMES[type];
+    if (scale === undefined) return;
+    const frame = flameFrame(time, id * 0.37);
+    const show = done && fromAtlas(this, 'fx_flame', frame);
+    let flame = this.flames.get(id);
+    if (!show) {
+      flame?.setVisible(false);
+      return;
+    }
+    if (!flame) {
+      flame = spriteFor(this, 'fx_flame', base.x, base.y, frame);
+      this.flames.set(id, flame);
+    }
+    applyArt(flame, 'fx_flame', frame).setScale(0.5 * scale).setPosition(base.x, base.y).setDepth(base.depth + 0.5).setVisible(true);
   }
 
   private buildScene(): BuildScene | undefined {
@@ -243,8 +273,7 @@ export class GameScene extends Phaser.Scene {
     this.ghost.setVisible(false);
     this.ghostTiles.clear();
     if (type) {
-      const a = entry(`building_${type}`).anchor;
-      this.ghost.setTexture(`building_${type}`).setOrigin(a[0], a[1]);
+      applyArt(this.ghost, `building_${type}`);
     }
   }
 
@@ -256,7 +285,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private setupPlacing(): void {
-    this.ghost = this.add.image(0, 0, 'building_tipi').setAlpha(0.6).setDepth(100000).setVisible(false);
+    this.ghost = spriteFor(this, 'building_tipi', 0, 0).setAlpha(0.6).setDepth(100000).setVisible(false);
     this.ghostTiles = this.add.graphics().setDepth(99999);
     this.input.mouse?.disableContextMenu();
     this.input.on('pointerdown', (pointer: Phaser.Input.Pointer) => {
@@ -330,12 +359,14 @@ export class GameScene extends Phaser.Scene {
       this.ghostTiles.fillEllipse(c.x, c.y, rx * 2, ry * 2).strokeEllipse(c.x, c.y, rx * 2, ry * 2);
       return;
     }
-    // The lane: along the direction the herd runs, BISON_HALF_WIDTH either side, the whole way across.
-    const [dx] = bisonDirection(size, at);
+    // The lane: from where the herd starts, along the direction it runs, BISON_HALF_WIDTH either side, for its run (kept on the map).
+    const { start, dir, run } = bisonLane(size, at);
     const w = BISON_HALF_WIDTH;
-    const lo = -0.5;
-    const hi = max + 0.5;
-    const lane = dx !== 0 ? [[lo, cy - w], [hi, cy - w], [hi, cy + w], [lo, cy + w]] : [[cx - w, lo], [cx + w, lo], [cx + w, hi], [cx - w, hi]];
+    const clip = (v: number) => Math.min(max + 0.5, Math.max(-0.5, v));
+    const ex = clip(start[0] + dir[0] * run);
+    const ey = clip(start[1] + dir[1] * run);
+    const [sx, sy] = [clip(start[0] - dir[0] * 0.5), clip(start[1] - dir[1] * 0.5)];
+    const lane = dir[0] !== 0 ? [[sx, cy - w], [ex, cy - w], [ex, cy + w], [sx, cy + w]] : [[cx - w, sy], [cx + w, sy], [cx + w, ey], [cx - w, ey]];
     const pts = lane.map(([x, y]) => tileToWorld(x, y, size));
     this.ghostTiles.fillPoints(pts, true).strokePoints(pts, true);
   }
@@ -346,6 +377,7 @@ export class GameScene extends Phaser.Scene {
       this.drawAim(pointer);
       return;
     }
+    this.ghostOk = true;
     if (!this.placing || !this.pointerInside || this.overUi(pointer.x, pointer.y)) {
       this.ghost.setVisible(false);
       this.ghostTiles.clear();
@@ -366,6 +398,7 @@ export class GameScene extends Phaser.Scene {
       return;
     }
     const ok = placementError(this.state, this.placing, x, y) === null;
+    this.ghostOk = ok;
     const [w, h] = buildingDefs[this.placing].size;
     const c = tileToWorld(x + (w - 1) / 2, y + (h - 1) / 2, this.state.map.size);
     this.ghost.setPosition(c.x, c.y).setVisible(true).setTint(ok ? 0xffffff : 0xff8080);
@@ -386,16 +419,12 @@ export class GameScene extends Phaser.Scene {
     this.stores.update(this.state, this.buildingViews, on ? this.cameras.main.getWorldPoint(p.x, p.y) : null);
   }
 
-  /** A felled forest tile loses its tree and turns to grass. */
-  private refreshMap(): void {
-    const { tiles } = this.state.map;
-    for (const [i, tree] of this.trees) {
-      if (tiles[i] !== 'forest') {
-        tree.destroy();
-        this.trees.delete(i);
-        this.ground[i].setTexture('tile_grass');
-      }
-    }
+  /** The world rectangle the camera shows now (`worldView` is only refreshed at render time, a frame late). */
+  private cameraView(): { x: number; y: number; width: number; height: number } {
+    const cam = this.cameras.main;
+    const width = cam.width / cam.zoom;
+    const height = cam.height / cam.zoom;
+    return { x: cam.scrollX + cam.width / 2 - width / 2, y: cam.scrollY + cam.height / 2 - height / 2, width, height };
   }
 
   private setupCamera(): void {
@@ -422,6 +451,12 @@ export class GameScene extends Phaser.Scene {
       const [px, py] = clampCenter(cx, cy, bounds);
       cam.centerOn(px, py);
     });
+  }
+
+  /** Centres the camera on a world point, kept on the map (the minimap's left-click and drag). */
+  centerOnWorld(x: number, y: number): void {
+    const [cx, cy] = clampCenter(x, y, worldBounds(this.state.map.size));
+    this.cameras.main.centerOn(cx, cy);
   }
 
   private panCamera(delta: number): void {
@@ -460,17 +495,17 @@ export class GameScene extends Phaser.Scene {
     this.autosave();
     if (this.state.mapVersion !== this.seenMapVersion) {
       this.seenMapVersion = this.state.mapVersion;
-      this.refreshMap();
+      this.terrain.refresh(this.state);
     }
-    this.syncBuildings();
+    this.terrain.update(this.state);
+    this.terrain.cull(this.cameraView());
     this.hoverStore();
+    this.syncBuildings(time);
     this.updateGhost();
-    this.people.sync(this.state.people, delta, time, this.state.buildings);
-    this.enemies.sync(this.state.enemies, (kind) => ENEMIES[kind].hp);
-    this.enemies.syncAnimals(animalsOf(this.state));
-    this.enemies.syncAllies(alliesOf(this.state), (kind) => ALLIES[kind].hp);
-    this.enemies.syncEffects(effectsOf(this.state), time);
+    this.people.sync(this.state, delta, time);
+    this.enemies.sync(this.state, delta, time);
     this.arrows.update(this.state, time, (id) => this.people.ground(id));
+    this.fx.update(this.state, time);
     music.update(this.state.enemies.length > 0, this.state.tick);
   }
 }

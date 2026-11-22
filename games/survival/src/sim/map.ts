@@ -19,7 +19,7 @@ export interface MapConfig {
   tiles: Record<string, TileDef>;
   river: { startMin: number; startSpan: number; width: number; clamp: number[]; fordRows: number[][] };
   forest: { clusters: number; minDistFromCamp: number; radius: number[]; density: number };
-  berry: { patches: number; distFromCamp: number[]; tilesPerPatch: number };
+  berry: { patches: number; distFromCamp: number[]; tilesPerPatch: number; outer?: { patches: number; distFromCamp: number[] } };
   camp: { fire: number[]; clearRadius: number; prebuilt: { type: string; at: number[] }[] };
 }
 
@@ -121,10 +121,13 @@ export function generateMap(seed: number, cfg: MapConfig): GameMap {
 
   // 6. Berry patches: centre, 4 orthogonal neighbours and (tilesPerPatch - 5) random diagonals.
   const berryAmount = cfg.tiles.berry?.food ?? 40;
-  const [dMin, dMax] = cfg.berry.distFromCamp;
   const orth = [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1]];
   const diag = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
-  for (let p = 0; p < cfg.berry.patches; p++) {
+  // The near ring first (as on the small map), then the outer ring.
+  const rings = [{ patches: cfg.berry.patches, distFromCamp: cfg.berry.distFromCamp }];
+  if (cfg.berry.outer) rings.push(cfg.berry.outer);
+  for (const ring of rings) for (let p = 0; p < ring.patches; p++) {
+    const [dMin, dMax] = ring.distFromCamp;
     for (let tries = 0; tries < 400; tries++) {
       const px = 1 + int(n - 2);
       const py = 1 + int(n - 2);

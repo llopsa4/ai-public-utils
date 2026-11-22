@@ -1,6 +1,7 @@
 // A small hover tooltip for labels (DESIGN-upgrades-3.md `## Labels (Dakota)`): when a label shows a Dakota
 // word, hovering it shows the English. One tooltip per scene, drawn above its other objects.
 import Phaser from 'phaser';
+import { UI_FONT } from '../render/ui';
 
 export interface Hover {
   /** Shows `text` next to the pointer while `target` is hovered; `text()` may return null for no tip. */
@@ -13,7 +14,7 @@ export interface Hover {
 
 export function createHover(scene: Phaser.Scene): Hover {
   const box = scene.add.rectangle(0, 0, 10, 10, 0x1d1a16, 0.96).setOrigin(0).setStrokeStyle(1, 0x6b5a3a).setDepth(30).setVisible(false);
-  const label = scene.add.text(0, 0, '', { fontFamily: 'sans-serif', fontSize: '12px', color: '#f3e9d2' }).setDepth(31).setVisible(false);
+  const label = scene.add.text(0, 0, '', { fontFamily: UI_FONT, fontSize: '12px', color: '#f3e9d2' }).setDepth(31).setVisible(false);
   let owner: Phaser.GameObjects.GameObject | null = null;
   const hide = (): void => {
     owner = null;

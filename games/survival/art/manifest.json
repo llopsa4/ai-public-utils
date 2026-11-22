@@ -1,38 +1,4074 @@
 {
-  "tile_grass":     { "file": "tile_grass.png",     "size": [64, 32],   "anchor": [0.5, 0.5],  "frames": { "idle": 1 }, "status": "placeholder" },
-  "tile_river":     { "file": "tile_river.png",     "size": [64, 32],   "anchor": [0.5, 0.5],  "frames": { "idle": 1 }, "status": "placeholder" },
-  "tile_ford":      { "file": "tile_ford.png",      "size": [64, 32],   "anchor": [0.5, 0.5],  "frames": { "idle": 1 }, "status": "placeholder" },
-  "tile_forest":    { "file": "tile_forest.png",    "size": [64, 32],   "anchor": [0.5, 0.5],  "frames": { "idle": 1 }, "status": "placeholder" },
-  "tile_berry":     { "file": "tile_berry.png",     "size": [64, 32],   "anchor": [0.5, 0.5],  "frames": { "idle": 1 }, "status": "placeholder" },
-  "object_tree":    { "file": "object_tree.png",    "size": [48, 64],   "anchor": [0.5, 1.0],  "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_tipi":  { "file": "building_tipi.png",  "size": [96, 96],   "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_store": { "file": "building_store.png", "size": [256, 208], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "fire_central":   { "file": "fire_central.png",   "size": [256, 208], "anchor": [0.5, 0.75],  "frames": { "idle": 1 }, "status": "placeholder" },
-  "person_adult": { "file": "person_adult.png", "size": [32, 40], "anchor": [0.5, 1.0], "frames": { "idle": 1 }, "status": "placeholder" },
-  "person_elder": { "file": "person_elder.png", "size": [32, 40], "anchor": [0.5, 1.0], "frames": { "idle": 1 }, "status": "placeholder" },
-  "person_child": { "file": "person_child.png", "size": [32, 40], "anchor": [0.5, 1.0], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_gathering_spot": { "file": "building_gathering_spot.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_hunting_lodge": { "file": "building_hunting_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_drying_rack": { "file": "building_drying_rack.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_horse_corral": { "file": "building_horse_corral.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_healers_lodge": { "file": "building_healers_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_scouts_lodge": { "file": "building_scouts_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_lancers_lodge": { "file": "building_lancers_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_spirit_lodge": { "file": "building_spirit_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_archers_lodge": { "file": "building_archers_lodge.png", "size": [128, 128], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_trap": { "file": "building_trap.png", "size": [64, 64], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_fire_pit": { "file": "building_fire_pit.png", "size": [64, 64], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_barricade": { "file": "building_barricade.png", "size": [64, 64], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "icon_food": { "file": "icon_food.png", "size": [32, 32], "anchor": [0.5, 0.5], "frames": { "idle": 1 }, "status": "placeholder" },
-  "icon_wood": { "file": "icon_wood.png", "size": [32, 32], "anchor": [0.5, 0.5], "frames": { "idle": 1 }, "status": "placeholder" },
-  "icon_hides": { "file": "icon_hides.png", "size": [32, 32], "anchor": [0.5, 0.5], "frames": { "idle": 1 }, "status": "placeholder" },
-  "icon_pemmican": { "file": "icon_pemmican.png", "size": [32, 32], "anchor": [0.5, 0.5], "frames": { "idle": 1 }, "status": "placeholder" },
-  "icon_gift": { "file": "icon_gift.png", "size": [32, 32], "anchor": [0.5, 0.5], "frames": { "idle": 1 }, "status": "placeholder" },
-  "icon_people": { "file": "icon_people.png", "size": [32, 32], "anchor": [0.5, 0.5], "frames": { "idle": 1 }, "status": "placeholder" },
-  "icon_horses": { "file": "icon_horses.png", "size": [32, 32], "anchor": [0.5, 0.5], "frames": { "idle": 1 }, "status": "placeholder" },
-  "building_store_open": { "file": "building_store_open.png", "size": [256, 208], "anchor": [0.5, 0.75], "frames": { "idle": 1 }, "status": "placeholder" },
-  "item_basket": { "file": "item_basket.png", "size": [16, 16], "anchor": [0.5, 1.0], "frames": { "idle": 1 }, "status": "placeholder" },
-  "item_log": { "file": "item_log.png", "size": [16, 16], "anchor": [0.5, 1.0], "frames": { "idle": 1 }, "status": "placeholder" },
-  "item_hides": { "file": "item_hides.png", "size": [16, 16], "anchor": [0.5, 1.0], "frames": { "idle": 1 }, "status": "placeholder" },
-  "item_bag": { "file": "item_bag.png", "size": [16, 16], "anchor": [0.5, 1.0], "frames": { "idle": 1 }, "status": "placeholder" }
+  "person_man": {
+    "atlas": "man",
+    "cell": [
+      192,
+      160
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base",
+      "cloth"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "carry_walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "chop": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "build": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "gather": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "scrape": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "shoot": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "thrust": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "strike": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "tend": {
+        "frames": 4,
+        "fps": 10,
+        "loop": true
+      },
+      "fish": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "dance": {
+        "frames": 8,
+        "fps": 8,
+        "loop": true
+      },
+      "sit": {
+        "frames": 2,
+        "fps": 2,
+        "loop": true
+      },
+      "die": {
+        "frames": 6,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        40
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "person_woman": {
+    "atlas": "woman",
+    "cell": [
+      192,
+      160
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base",
+      "cloth"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "carry_walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "chop": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "build": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "gather": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "scrape": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "shoot": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "thrust": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "strike": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "tend": {
+        "frames": 4,
+        "fps": 10,
+        "loop": true
+      },
+      "fish": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "dance": {
+        "frames": 8,
+        "fps": 8,
+        "loop": true
+      },
+      "sit": {
+        "frames": 2,
+        "fps": 2,
+        "loop": true
+      },
+      "die": {
+        "frames": 6,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        40
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "person_elder_man": {
+    "atlas": "elder_man",
+    "cell": [
+      192,
+      160
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base",
+      "cloth"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "carry_walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "gather": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "scrape": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "tend": {
+        "frames": 4,
+        "fps": 10,
+        "loop": true
+      },
+      "fish": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "dance": {
+        "frames": 8,
+        "fps": 8,
+        "loop": true
+      },
+      "sit": {
+        "frames": 2,
+        "fps": 2,
+        "loop": true
+      },
+      "die": {
+        "frames": 6,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        40
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "person_elder_woman": {
+    "atlas": "elder_woman",
+    "cell": [
+      192,
+      160
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base",
+      "cloth"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "carry_walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "gather": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "scrape": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "tend": {
+        "frames": 4,
+        "fps": 10,
+        "loop": true
+      },
+      "fish": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "dance": {
+        "frames": 8,
+        "fps": 8,
+        "loop": true
+      },
+      "sit": {
+        "frames": 2,
+        "fps": 2,
+        "loop": true
+      },
+      "die": {
+        "frames": 6,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        40
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "person_child": {
+    "atlas": "child",
+    "cell": [
+      192,
+      160
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base",
+      "cloth"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "carry_walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "gather": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "dance": {
+        "frames": 8,
+        "fps": 8,
+        "loop": true
+      },
+      "sit": {
+        "frames": 2,
+        "fps": 2,
+        "loop": true
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        40
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "person_rider": {
+    "atlas": "rider",
+    "cell": [
+      256,
+      240
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base",
+      "cloth"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "gallop": {
+        "frames": 6,
+        "fps": 14,
+        "loop": true
+      },
+      "thrust": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "die": {
+        "frames": 6,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "animal_wolf": {
+    "atlas": "animals",
+    "cell": [
+      160,
+      120
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "run": {
+        "frames": 6,
+        "fps": 14,
+        "loop": true
+      },
+      "attack": {
+        "frames": 6,
+        "fps": 10,
+        "loop": true
+      },
+      "die": {
+        "frames": 6,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "animal_deer": {
+    "atlas": "animals",
+    "cell": [
+      192,
+      160
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "graze": {
+        "frames": 6,
+        "fps": 6,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "run": {
+        "frames": 6,
+        "fps": 14,
+        "loop": true
+      },
+      "die": {
+        "frames": 6,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "animal_bison": {
+    "atlas": "animals",
+    "cell": [
+      224,
+      200
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "graze": {
+        "frames": 6,
+        "fps": 6,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "run": {
+        "frames": 6,
+        "fps": 14,
+        "loop": true
+      },
+      "die": {
+        "frames": 6,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "animal_horse": {
+    "atlas": "animals",
+    "cell": [
+      224,
+      200
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 8,
+    "anims": {
+      "idle": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "graze": {
+        "frames": 6,
+        "fps": 6,
+        "loop": true
+      },
+      "walk": {
+        "frames": 8,
+        "fps": 12,
+        "loop": true
+      },
+      "run": {
+        "frames": 6,
+        "fps": 14,
+        "loop": true
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "animal_fish": {
+    "atlas": "animals",
+    "cell": [
+      64,
+      80
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": {
+      "jump": {
+        "frames": 4,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "carcass_deer": {
+    "atlas": "animals",
+    "cell": [
+      192,
+      160
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "carcass_bison": {
+    "atlas": "animals",
+    "cell": [
+      224,
+      200
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "carcass_wolf": {
+    "atlas": "animals",
+    "cell": [
+      160,
+      120
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "ally_spirit": {
+    "atlas": "fx",
+    "cell": [
+      128,
+      160
+    ],
+    "anchor": [
+      0.5,
+      0.8
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": {
+      "float": {
+        "frames": 6,
+        "fps": 8,
+        "loop": true
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB6",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "fx_storm": {
+    "atlas": "fx",
+    "cell": [
+      384,
+      384
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": {
+      "loop": {
+        "frames": 8,
+        "fps": 10,
+        "loop": true
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB6",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "fx_hit": {
+    "atlas": "fx",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": {
+      "burst": {
+        "frames": 4,
+        "fps": 14,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB6",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "fx_dust": {
+    "atlas": "fx",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": {
+      "puff": {
+        "frames": 4,
+        "fps": 12,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB6",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "fx_sparkle": {
+    "atlas": "fx",
+    "cell": [
+      128,
+      128
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": {
+      "rise": {
+        "frames": 6,
+        "fps": 10,
+        "loop": false
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB6",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "fx_flame": {
+    "atlas": "fx",
+    "cell": [
+      128,
+      192
+    ],
+    "anchor": [
+      0.5,
+      0.875
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": {
+      "loop": {
+        "frames": 8,
+        "fps": 10,
+        "loop": true
+      }
+    },
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB6",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "fx_arrow": {
+    "atlas": "fx",
+    "cell": [
+      64,
+      16
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB6",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "fx_arrow_stuck": {
+    "atlas": "fx",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB6",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "fire_central": {
+    "atlas": "buildings",
+    "cell": [
+      640,
+      768
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        256,
+        208
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_store": {
+    "atlas": "buildings",
+    "cell": [
+      640,
+      768
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        256,
+        208
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_store_open": {
+    "atlas": "buildings",
+    "cell": [
+      640,
+      768
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "finished"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        256,
+        208
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_tipi": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB0",
+    "revision": 1,
+    "approvedBy": "user",
+    "placeholder": {
+      "size": [
+        96,
+        96
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_gathering_spot": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        128,
+        128
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_hunting_lodge": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        128,
+        128
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_horse_corral": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        128,
+        128
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_healers_lodge": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        128,
+        128
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_scouts_lodge": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        128,
+        128
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_lancers_lodge": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        128,
+        128
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_archers_lodge": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        128,
+        128
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_spirit_lodge": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        128,
+        128
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_drying_rack": {
+    "atlas": "buildings",
+    "cell": [
+      384,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": {
+      "finished": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      },
+      "winter": {
+        "frames": 4,
+        "fps": 4,
+        "loop": true
+      }
+    },
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        128,
+        128
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_trap": {
+    "atlas": "buildings",
+    "cell": [
+      256,
+      256
+    ],
+    "anchor": [
+      0.5,
+      0.625
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        64,
+        64
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_fire_pit": {
+    "atlas": "buildings",
+    "cell": [
+      256,
+      256
+    ],
+    "anchor": [
+      0.5,
+      0.625
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        64,
+        64
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "building_barricade": {
+    "atlas": "buildings",
+    "cell": [
+      256,
+      256
+    ],
+    "anchor": [
+      0.5,
+      0.625
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ],
+    "variants": 16,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        64,
+        64
+      ],
+      "anchor": [
+        0.5,
+        0.75
+      ]
+    }
+  },
+  "tile_grass": {
+    "atlas": "ground",
+    "cell": [
+      128,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 4,
+    "border": 0,
+    "ground": false,
+    "status": "final",
+    "batch": "AB0",
+    "revision": 1,
+    "approvedBy": "user",
+    "placeholder": {
+      "size": [
+        64,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "tile_forest": {
+    "atlas": "ground",
+    "cell": [
+      128,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 4,
+    "border": 0,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        64,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "tile_berry": {
+    "atlas": "ground",
+    "cell": [
+      128,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 4,
+    "border": 0,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        64,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "tile_river": {
+    "atlas": "ground",
+    "cell": [
+      128,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 4,
+    "border": 0,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        64,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "tile_ford": {
+    "atlas": "ground",
+    "cell": [
+      128,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 4,
+    "border": 0,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        64,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "bank_river": {
+    "atlas": "ground",
+    "cell": [
+      128,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 15,
+    "border": 0,
+    "ground": false,
+    "indices": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+      "12",
+      "13",
+      "14",
+      "15"
+    ],
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "spill_forest": {
+    "atlas": "ground",
+    "cell": [
+      128,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 4,
+    "border": 0,
+    "ground": false,
+    "indices": [
+      "ne",
+      "se",
+      "sw",
+      "nw"
+    ],
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "spill_berry": {
+    "atlas": "ground",
+    "cell": [
+      128,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 4,
+    "border": 0,
+    "ground": false,
+    "indices": [
+      "ne",
+      "se",
+      "sw",
+      "nw"
+    ],
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "tree_bur_oak": {
+    "atlas": "plants",
+    "cell": [
+      256,
+      320
+    ],
+    "anchor": [
+      0.375,
+      0.9
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 2,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        48,
+        64
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "tree_basswood": {
+    "atlas": "plants",
+    "cell": [
+      256,
+      320
+    ],
+    "anchor": [
+      0.375,
+      0.9
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 2,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        48,
+        64
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "tree_cottonwood": {
+    "atlas": "plants",
+    "cell": [
+      256,
+      320
+    ],
+    "anchor": [
+      0.375,
+      0.9
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 2,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        48,
+        64
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "tree_willow": {
+    "atlas": "plants",
+    "cell": [
+      256,
+      320
+    ],
+    "anchor": [
+      0.375,
+      0.9
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 2,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        48,
+        64
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "bush_chokecherry": {
+    "atlas": "plants",
+    "cell": [
+      128,
+      128
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 2,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "bush_plum": {
+    "atlas": "plants",
+    "cell": [
+      128,
+      128
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 2,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "rock_boulder": {
+    "atlas": "plants",
+    "cell": [
+      128,
+      128
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 3,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "tuft_grass": {
+    "atlas": "plants",
+    "cell": [
+      128,
+      128
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 3,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "stump_tree": {
+    "atlas": "plants",
+    "cell": [
+      128,
+      128
+    ],
+    "anchor": [
+      0.5,
+      0.75
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": true,
+    "states": null,
+    "variants": 1,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "item_basket": {
+    "atlas": "plants",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.5,
+      1
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        16,
+        16
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "item_log": {
+    "atlas": "plants",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.5,
+      1
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        16,
+        16
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "item_hides": {
+    "atlas": "plants",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.5,
+      1
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        16,
+        16
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "item_bag": {
+    "atlas": "plants",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.5,
+      1
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        16,
+        16
+      ],
+      "anchor": [
+        0.5,
+        1
+      ]
+    }
+  },
+  "ui_panel": {
+    "atlas": "ui",
+    "cell": [
+      96,
+      96
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 0,
+    "ground": false,
+    "slice": 32,
+    "status": "final",
+    "batch": "AB1",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "ui_button": {
+    "atlas": "ui",
+    "cell": [
+      96,
+      48
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": [
+      "normal",
+      "hover",
+      "pressed",
+      "disabled"
+    ],
+    "variants": null,
+    "border": 0,
+    "ground": false,
+    "slice": 16,
+    "status": "final",
+    "batch": "AB1",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "ui_bar_frame": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      24
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 0,
+    "ground": false,
+    "slice": 8,
+    "status": "final",
+    "batch": "AB1",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "ui_bar_fill": {
+    "atlas": "ui",
+    "cell": [
+      8,
+      16
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 0,
+    "ground": false,
+    "status": "final",
+    "batch": "AB1",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "ui_emblem": {
+    "atlas": "ui",
+    "cell": [
+      512,
+      512
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB1",
+    "revision": 1,
+    "approvedBy": "claude"
+  },
+  "cursor_pointer": {
+    "atlas": "ui",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.0625,
+      0.0625
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "retina": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "cursor_move": {
+    "atlas": "ui",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.5,
+      0.875
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "retina": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "cursor_attack": {
+    "atlas": "ui",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "retina": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "cursor_build": {
+    "atlas": "ui",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.1875,
+      0.875
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "retina": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "cursor_invalid": {
+    "atlas": "ui",
+    "cell": [
+      32,
+      32
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "retina": true,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_food": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "final",
+    "batch": "AB0",
+    "revision": 1,
+    "approvedBy": "user",
+    "placeholder": {
+      "size": [
+        32,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "icon_wood": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "icon_hides": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "icon_pemmican": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "icon_gift": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "icon_people": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "icon_horses": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null,
+    "placeholder": {
+      "size": [
+        32,
+        32
+      ],
+      "anchor": [
+        0.5,
+        0.5
+      ]
+    }
+  },
+  "icon_wotakuye": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_hungry": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_gather": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_hunt": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_chop": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_dry": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_scout": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_drill": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_tend": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_heal": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_build": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_haul": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_fight": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_fish": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_job_dance": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_order_move": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_order_attack": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_order_draft": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_order_undraft": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_order_hold": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_order_defend": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_order_chase": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_order_delete": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_dogs": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_bows": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_healers": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_scouts": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_warriors": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_builders": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_barricades": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_horses": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_riders": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_tools": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_spirits": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_spirit_warriors": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_guardian_wolves": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_bison_charge": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_upgrade_storm_caller": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_season_spring": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_season_summer": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_season_autumn": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_season_winter": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_speed_pause": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_speed_1x": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_speed_2x": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  },
+  "icon_speed_4x": {
+    "atlas": "ui",
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      0.5,
+      0.5
+    ],
+    "layers": [
+      "base"
+    ],
+    "facings": 1,
+    "anims": null,
+    "seasons": false,
+    "states": null,
+    "variants": null,
+    "border": 2,
+    "ground": false,
+    "status": "placeholder",
+    "batch": null,
+    "revision": 0,
+    "approvedBy": null
+  }
 }

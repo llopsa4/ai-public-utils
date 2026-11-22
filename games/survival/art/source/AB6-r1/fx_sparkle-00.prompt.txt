@@ -1,0 +1,7 @@
+Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
+soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
+soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
+no text.
+A single painted game effect sprite: A few small warm gold glints rising to mark a building's completion: three or four tiny painterly pinpoints of golden light, a subtle soft glow, sparse airy composition. No stars as symbols, no decorative shape, no object, no building, no text.
+Effect's ground origin fixed at image x=50 percent, y=75 percent. First frame of six: glints just emerging near the origin in a small 20 percent width region, enough empty room above for rising motion.
+Plain flat #00FF00 background everywhere except the effect, including any holes inside it. Single frame only, never a sprite sheet. No labels, text, numbers, logos, borders, frame, pure black, additional subjects or surrounding scenery. Keep the full sprite inside the image. Fine painterly shading with a clear readable silhouette at small display size.

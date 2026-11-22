@@ -1,9 +1,29 @@
-# Kota pivot plan: Brotato-style 2D arena survivor (PROPOSED, waiting for the user's approval)
+# Kota task plan: playable 2D milestone; review and art remain
 
 Written by Claude (Opus) on 2026-11-18 from a grilling session with the user (18 decisions, all
 confirmed). It replaces [PLAN-dakota.md](PLAN-dakota.md), [SLICE.md](SLICE.md) and the hero art
 plan T1–T7. Commit and push only when the user asks, with the branch confirmed (`main` deploys the
 whole site).
+
+## Execution status — reconciled 2026-11-22
+
+- A1–A5: recorded complete. Retired 3D files and plans are not work to repeat; retained legacy
+  documents are marked historical. No LICENSES.md register is required (user, 2026-11-20).
+- B1: approved on 2026-11-18 (“Continue”), as recorded by Claude; DESIGN-m1.md is the baseline.
+- C1–C7: implemented. C8: bot tuning done; user phone playtest and milestone acceptance remain open.
+  Historical bot results are in WORKLOG.md; they are not a fresh test of this checkout.
+- D1: partial 2D notes exist, but the full style rewrite and its approval gate remain open.
+- D2–D4: Ash Wolf only has generated sources and four processed walk frames. Installation awaits
+  user approval. No painted sprite is loaded by BootScene or RunScene. Other batch-1 art is not
+  recorded as delivered. Do not regenerate Ash Wolf merely because old handoff K1 says open.
+- D5 and version 1: future scope, after the relevant approvals; not current implementation tasks.
+- Active split: Claude owns design, prompts and new/tricky runtime work; Codex generates, prepares
+  and installs approved art. This supersedes the older ownership labels in the task table below.
+
+Next: user phone playtest (C8) and review of the existing Ash Wolf strip. Claude's next design
+unit is D1 before expanding art production. No new generation or installation is authorized by
+this documentation reconciliation. Task descriptions below retain their original IDs and scope;
+use this status section and WORKLOG.md to determine what remains.
 
 ## Settled decisions (user, 2026-11-18)
 
@@ -33,8 +53,8 @@ whole site).
     confirmation that lists the exact paths.
 14. **Single painted stills animated in code** (bob, squash, flip, hit flash, orbiting weapons);
     bosses get 2–3 poses.
-15. **Art production:** Claude writes the prompts, the user (or Codex when it's back) generates, and
-    Claude processes and installs. Gameplay is built on placeholders first.
+15. **Art production:** Claude writes the prompts, Codex generates, and
+    Codex processes and installs after approval. Gameplay is built on placeholders first.
 16. **Each run is in one place** picked from the unlocked ones (painted ground, props, a mild
     twist); prairie and lakeshore come first.
 17. **Milestone 1:** Ash Wolf, 6 weapons, ~15 items, 5 threats, Double-Face, Iya, 2 arenas, shop,
@@ -47,9 +67,9 @@ whole site).
 - One task per session. Read only the files listed, plus [WORKLOG.md](WORKLOG.md). At the end,
   update WORKLOG *Next action* (≤ 3 lines) and your handoff file.
 - **Test recipe:** serve `game/` on port 8765 (`python -m http.server 8765 --directory game`); open
-  `index.html?debug` in Chrome at 844 × 390. The automation browser renders only about 2 fps, so
+  `index.html?debug` in Chrome at 844 × 390. Earlier automation ran at about 2 fps; if that recurs,
   step the game through the `?debug` hook rather than waiting, and clear `kota.*` localStorage keys
-  afterwards. Real feel and fps are checked on the phone (`http://192.168.4.92:8765/` on the home
+  afterwards. Real feel and fps are checked on the phone (`http://<your PC's current LAN IP>:8765/` on the home
   wifi).
 - Gates (the user approves): **B1 spec**, **D1 art style**, each **art batch**, **C8 milestone 1**.
 
@@ -61,7 +81,7 @@ whole site).
 | A2 | Haiku | **Work log:** add the pivot to WORKLOG *State* and *Next action*; mark PLAN-dakota.md, SLICE.md and the hero art plan as superseded by PLAN.md; update the Claude handoff. | WORKLOG.md, handoff/from-claude.md | WORKLOG points to PLAN.md |
 | A3 | Sonnet | **DESIGN.md rewrite** from the 18 decisions above (settled decisions only). Delete SLICE.md and PLAN-dakota.md. Keep DESIGN-dakota-content.md until B1 has taken its threats, bosses, helpers and places, then delete it in B1. | DESIGN.md, this plan | DESIGN.md describes the Brotato-style game, with no doors, rooms or 3D left |
 | A4 | Haiku | **Delete the old 3D game.** First show the user the exact list and get a yes (and offer the Recycle Bin instead of permanent deletion). Delete: `game/src/` **except** `audio/audio.js`, `settings.js`, `input/touch.js`, `ui/hints.js` (moved to `game/carry/`); `game/src/vendor/` (Three.js, GLTFLoader); `game/assets/models/`; `art/models/`; 3D briefs in `art/briefs/`; the Three.js and Blender rows in LICENSES.md. Keep `game/data/*.json` for B1 to read. | the paths above | `git status` and a directory listing show only the kept files |
-| A5 | Sonnet | **2D art pipeline:** rewrite art/PIPELINE.md for painted stills: prompt template, sizes (heroes about 256 px tall source, threats 128–512 px, weapons 128 px), transparent PNG, free background-removal tool (choose one and record it in LICENSES.md), naming `game/assets/sprites/<id>.png`, atlas packing (free tool or a Phaser-friendly script), approval steps; rewrite art/ASSETS.md as an empty 2D register. | art/PIPELINE.md, art/ASSETS.md, LICENSES.md | the pipeline names every step and tool, all free |
+| A5 | Sonnet | **2D art pipeline:** rewrite art/PIPELINE.md for painted stills: prompt template, sizes (heroes about 256 px tall source, threats 128–512 px, weapons 128 px), transparent PNG, free background-removal tool (choose one and document it in PIPELINE.md), naming `game/assets/sprites/<id>.png`, atlas packing (free tool or a Phaser-friendly script), approval steps; rewrite art/ASSETS.md as an empty 2D register. | art/PIPELINE.md, art/ASSETS.md | the pipeline names every step and tool, all free |
 
 ## Phase B: design (Opus, one pass)
 
@@ -73,7 +93,7 @@ whole site).
 
 | # | Model | Task | Reads → writes | Done when |
 |---|---|---|---|---|
-| C1 | Sonnet | **Phaser skeleton:** vendor Phaser 3 (an exact version, ESM build) in `game/vendor/`, with a LICENSES row; `index.html`; scenes Boot, Camp, Run, Between (level-up and shop); bounded top-down arena with camera follow; the touch stick plus dash and ability buttons (ported from `carry/touch.js`, left-handed swap); settings, sound and hints ported from `carry/`. | DESIGN-m1 (controls), `carry/*` → `game/src/*` | the hero moves and dashes in an empty arena with no console errors; fps shown in debug |
+| C1 | Sonnet | **Phaser skeleton:** vendor Phaser 3 (an exact version, ESM build) in `game/vendor/`, with its vendored licence text; `index.html`; scenes Boot, Camp, Run, Between (level-up and shop); bounded top-down arena with camera follow; the touch stick plus dash and ability buttons (ported from `carry/touch.js`, left-handed swap); settings, sound and hints ported from `carry/`. | DESIGN-m1 (controls), `carry/*` → `game/src/*` | the hero moves and dashes in an empty arena with no console errors; fps shown in debug |
 | C2 | Sonnet | **Waves, threats, pickups:** wave timer and spawner from the wave table; the 5 threat behaviours; dual pickups (magnet radius), food; HUD (health, experience bar, money, wave and timer). | DESIGN-m1 → `game/data/waves.json`, `threats.json`, `src/run/*` | a scripted run reaches wave 5 with the right counts |
 | C3 | Sonnet | **Weapons:** 6 slots orbiting the hero, auto-aim at the nearest threat, the 6 weapons, tier merging, damage numbers and hit flash. | DESIGN-m1 → `data/weapons.json`, `src/combat/*` | every weapon fires and merges; stats match the data |
 | C4 | Sonnet | **Between waves:** helper level-up picks, then the shop (4 offers, lock, reroll, sell), items stacking stats. | DESIGN-m1 → `data/items.json`, `data/helpers.json`, `src/between/*` | buying, locking, rerolling and stacking all work across waves |
@@ -86,11 +106,11 @@ whole site).
 
 | # | Model | Task | Writes | Done when |
 |---|---|---|---|---|
-| D1 | Opus | **2D style guide:** rewrite art/STYLE.md for hand-painted top-down stills (view angle, light direction, palette, outline-free readability at phone size, serious-warm tone); rewrite Ash Wolf's brief for a 2D still. | art/STYLE.md, art/briefs/hero_dakota_woman.md | [gate: the user approves the style] |
+| D1 | Opus | **2D style guide:** rewrite art/STYLE.md for hand-painted top-down stills (view angle, light direction, palette, readability at phone size (retain Ash Wolf's thin-outline choice; settle other families), serious-warm tone); rewrite Ash Wolf's brief for a 2D still. | art/STYLE.md, art/briefs/hero_dakota_woman.md | [gate: the user approves the style] |
 | D2 | Sonnet | **Prompt batch 1:** Ash Wolf, the 5 threats, Double-Face (3 poses), Iya (3 poses). | `art/refs/<id>/README.md` prompts | the prompts follow STYLE.md |
-| D3 | user / Codex | **Generate batch 1** from the prompts. | `art/refs/<id>/` images | the images are saved |
-| D4 | Sonnet | **Process and install batch 1:** remove backgrounds, crop, scale, pack, swap out the placeholders. | `game/assets/sprites/`, ASSETS.md | they show in the game [gate: the user approves the batch] |
-| D5 | Sonnet → user → Sonnet | **Batches 2 and 3:** weapons and items, then arenas and props, using the same steps D2–D4. | as D2–D4 | all milestone 1 art is painted |
+| D3 | Codex | **Generate batch 1** from the prompts. | `art/refs/<id>/` images | the images are saved |
+| D4 | Codex | **Process and install batch 1:** remove backgrounds, crop, scale, pack, swap out the placeholders. | `game/assets/sprites/`, ASSETS.md | they show in the game [gate: the user approves the batch] |
+| D5 | Claude → Codex → user | **Batches 2 and 3:** weapons and items, then arenas and props, using the same steps D2–D4. | as D2–D4 | all milestone 1 art is painted |
 
 ## Afterwards: version 1 (planned once milestone 1 is approved)
 

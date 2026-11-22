@@ -1,0 +1,162 @@
+{
+  "building_gathering_spot": {
+    "anchorPx": [
+      192.0,
+      384.0
+    ],
+    "footprintSpanPx": [
+      255.9726619720459,
+      127.98632049560547
+    ],
+    "footprintCornersPx": [
+      [
+        64.0136661529541,
+        384.0
+      ],
+      [
+        192.0,
+        447.99315643310547
+      ],
+      [
+        319.986328125,
+        384.0
+      ],
+      [
+        192.0,
+        320.0068359375
+      ]
+    ],
+    "metres": [
+      4,
+      4
+    ],
+    "sensorFit": "HORIZONTAL",
+    "statesVerified": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ]
+  },
+  "building_hunting_lodge": {
+    "anchorPx": [
+      192.0,
+      384.0
+    ],
+    "footprintSpanPx": [
+      255.9726619720459,
+      127.98632049560547
+    ],
+    "footprintCornersPx": [
+      [
+        64.0136661529541,
+        384.0
+      ],
+      [
+        192.0,
+        447.99315643310547
+      ],
+      [
+        319.986328125,
+        384.0
+      ],
+      [
+        192.0,
+        320.0068359375
+      ]
+    ],
+    "metres": [
+      4,
+      4
+    ],
+    "sensorFit": "HORIZONTAL",
+    "statesVerified": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ]
+  },
+  "building_drying_rack": {
+    "anchorPx": [
+      192.0,
+      384.0
+    ],
+    "footprintSpanPx": [
+      255.9726619720459,
+      127.98632049560547
+    ],
+    "footprintCornersPx": [
+      [
+        64.0136661529541,
+        384.0
+      ],
+      [
+        192.0,
+        447.99315643310547
+      ],
+      [
+        319.986328125,
+        384.0
+      ],
+      [
+        192.0,
+        320.0068359375
+      ]
+    ],
+    "metres": [
+      4,
+      4
+    ],
+    "sensorFit": "HORIZONTAL",
+    "statesVerified": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ]
+  },
+  "building_horse_corral": {
+    "anchorPx": [
+      192.0,
+      384.0
+    ],
+    "footprintSpanPx": [
+      255.9726619720459,
+      127.98632049560547
+    ],
+    "footprintCornersPx": [
+      [
+        64.0136661529541,
+        384.0
+      ],
+      [
+        192.0,
+        447.99315643310547
+      ],
+      [
+        319.986328125,
+        384.0
+      ],
+      [
+        192.0,
+        320.0068359375
+      ]
+    ],
+    "metres": [
+      4,
+      4
+    ],
+    "sensorFit": "HORIZONTAL",
+    "statesVerified": [
+      "stage1",
+      "stage2",
+      "stage3",
+      "finished",
+      "winter"
+    ]
+  }
+}

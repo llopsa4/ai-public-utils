@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { expect, test, type Page } from '@playwright/test';
 
 interface Camp {
@@ -5,6 +6,7 @@ interface Camp {
     people: { id: number; age: string; drafted: boolean; job: { kind: string; building: number } | null }[]; tick: number; speed: number; messages: { text: string }[]; result: string | null; gift: number; upgrades: string[];
     store: Record<string, number>;
     buildings: { id: number; type: string; x: number; y: number; done: boolean }[];
+    map: { size: number; tiles: string[]; fire: number[] };
   };
   orders: (list: unknown[]) => void;
   selectBuilding: (id: number | null) => void;
@@ -18,16 +20,27 @@ interface Camp {
   hudText: () => string;
   hudBar: () => { icon: string | null; text: string; right: number }[];
   storeOpen: () => { id: number; items: Record<string, number> } | null;
+  terrain: () => { ground: number; spills: number; trees: number; stumps: number; bushes: number; props: number; chunks: number; chunksShown: number; frame: (x: number, y: number) => string | null };
   powers: () => string[];
   powerButton: (id: string) => [number, number] | null;
   hoverTip: () => string | null;
   selectPeople: (ids: number[]) => void;
   selectAnimal: (id: number | null) => void;
   panelText: () => { title: string; detail: string };
+  speedFrames: () => (string | null)[];
+  cursor: () => { installed: string[]; shown: string | null; css: string };
   lastPing: () => { kind: string; target: string; count: number } | null;
   music: () => { mode: string; on: boolean; volume: number; started: boolean };
+  buildings: () => { frames: Record<string, string>; flames: number[] };
+  creatures: () => {
+    wolves: Record<string, string>; animals: Record<string, string>; allies: Record<string, string>;
+    horses: string[]; herds: string[]; storms: string[]; falls: string[]; art: Record<string, boolean>;
+    arrows: string[]; fx: Record<string, number>; playing: Record<string, number>;
+    person: (id: number) => { key: string; anim: string; frame: string; art: boolean } | undefined;
+  };
   hud: { openMenu: () => void };
-  scene: { aiming: string | null; cameras: { main: { worldView: { x: number; y: number }; zoom: number } } };
+  minimap: () => { rect: number[]; view: number[]; counts: { people: number; wolves: number } };
+  scene: { aiming: string | null; setPlacing: (t: string | null, b?: number[]) => void; placing: string | null; cameras: { main: { worldView: { x: number; y: number }; zoom: number } } };
 }
 interface MenuHook {
   buttons: () => Record<string, [number, number]>;
@@ -380,7 +393,7 @@ test('the resource bar has an icon before each resource, and hovering a store op
   const at = await page.evaluate(() => {
     const s = window.camp.state;
     const b = s.buildings.find((x) => x.type === 'store' && x.done)!;
-    const size = 48;
+    const size = window.camp.state.map.size;
     const tx = b.x + 1.5; // the centre of the 4x4 footprint
     const ty = b.y + 1.5;
     const wx = (tx - ty) * 32 + size * 32;
@@ -435,12 +448,12 @@ test('right-clicks ping: green ground, gold tree, red wolf, and a grey refusal w
     // worldView is refreshed when the camera renders, so wait a frame after centring before reading it.
     await page.evaluate(([x, y]) => {
       const cam = window.camp.scene.cameras.main as unknown as { centerOn: (a: number, b: number) => void };
-      cam.centerOn((x - y) * 32 + 48 * 32, (x + y) * 16 + 32);
+      cam.centerOn((x - y) * 32 + window.camp.state.map.size * 32, (x + y) * 16 + 32);
     }, [tx, ty]);
     await page.waitForTimeout(150);
     const at = await page.evaluate(([x, y]) => {
       const cam = window.camp.scene.cameras.main;
-      const wx = (x - y) * 32 + 48 * 32;
+      const wx = (x - y) * 32 + window.camp.state.map.size * 32;
       const wy = (x + y) * 16 + 32;
       return { x: (wx - cam.worldView.x) * cam.zoom, y: (wy - cam.worldView.y) * cam.zoom };
     }, [tx, ty]);
@@ -455,13 +468,14 @@ test('right-clicks ping: green ground, gold tree, red wolf, and a grey refusal w
     return { adult: p.find((q) => q.age === 'adult')!.id, child: p.find((q) => q.age === 'child')!.id };
   });
   const tiles = await page.evaluate(() => {
-    const s = window.camp.state as unknown as { map: { size: number; tiles: string[] } };
+    const s = window.camp.state as unknown as { map: { size: number; tiles: string[]; fire: number[] } };
     const n = s.map.size;
     const at = (x: number, y: number) => s.map.tiles[y * n + x];
     const find = (type: string, ok: (x: number, y: number) => boolean): [number, number] => {
+      const [mx, my] = [s.map.fire[0] + 2, s.map.fire[1] + 2];
       for (let r = 6; r < 24; r++) {
-        for (let y = 24 - r; y <= 24 + r; y++) {
-          for (let x = 24 - r; x <= 24 + r; x++) if (at(x, y) === type && ok(x, y)) return [x, y];
+        for (let y = my - r; y <= my + r; y++) {
+          for (let x = mx - r; x <= mx + r; x++) if (at(x, y) === type && ok(x, y)) return [x, y];
         }
       }
       throw new Error(`no ${type} tile`);
@@ -510,12 +524,13 @@ test('right-clicking a deer sends the hunt order, a carcass is fetched, and a cl
 
   type Beast = { id: number; kind: string; herd: number; x: number; y: number; hp: number; dead: boolean; meat: number; hides: number; fleeing: number; path: unknown[] };
   const spot = await page.evaluate(() => {
-    const s = window.camp.state as unknown as { map: { size: number; tiles: string[] }; animals?: Beast[] };
+    const s = window.camp.state as unknown as { map: { size: number; tiles: string[]; fire: number[] }; animals?: Beast[] };
     const n = s.map.size;
     const at = (x: number, y: number) => s.map.tiles[y * n + x];
+    const [mx, my] = [s.map.fire[0] + 2, s.map.fire[1] + 2];
     for (let r = 8; r < 20; r++) {
-      for (let x = 24 - r; x <= 24 + r; x++) {
-        const y = 24 + r;
+      for (let x = mx - r; x <= mx + r; x++) {
+        const y = my + r;
         if ([-1, 0, 1].every((dy) => [-1, 0, 1, 2, 3].every((dx) => at(x + dx, y + dy) === 'grass'))) return [x, y] as [number, number];
       }
     }
@@ -530,12 +545,12 @@ test('right-clicking a deer sends the hunt order, a carcass is fetched, and a cl
   }, spot);
   await page.evaluate(([x, y]) => {
     const cam = window.camp.scene.cameras.main as unknown as { centerOn: (a: number, b: number) => void };
-    cam.centerOn((x + 1 - y) * 32 + 48 * 32, (x + 1 + y) * 16 + 32);
+    cam.centerOn((x + 1 - y) * 32 + window.camp.state.map.size * 32, (x + 1 + y) * 16 + 32);
   }, spot);
   await page.waitForTimeout(150);
   const screenOf = (dx: number) => page.evaluate(([x, y, d]) => {
     const cam = window.camp.scene.cameras.main;
-    return { x: (((x + d) - y) * 32 + 48 * 32 - cam.worldView.x) * cam.zoom, y: (((x + d) + y) * 16 + 32 - cam.worldView.y) * cam.zoom };
+    return { x: (((x + d) - y) * 32 + window.camp.state.map.size * 32 - cam.worldView.x) * cam.zoom, y: (((x + d) + y) * 16 + 32 - cam.worldView.y) * cam.zoom };
   }, [spot[0], spot[1], dx]);
   const ids = await page.evaluate(() => window.camp.state.people.filter((q) => q.age === 'adult').slice(0, 2).map((q) => q.id));
   const rightClick = async (p: { x: number; y: number }, dy: number) => {
@@ -627,12 +642,12 @@ test('clicking a berry bush tells how much fruit is left on it; Esc closes it', 
   });
   await page.evaluate(([x, y]) => {
     const cam = window.camp.scene.cameras.main as unknown as { centerOn: (a: number, b: number) => void };
-    cam.centerOn((x - y) * 32 + 48 * 32, (x + y) * 16 + 32);
+    cam.centerOn((x - y) * 32 + window.camp.state.map.size * 32, (x + y) * 16 + 32);
   }, bush);
   await page.waitForTimeout(150);
   const at = await page.evaluate(([x, y]) => {
     const cam = window.camp.scene.cameras.main;
-    return { x: ((x - y) * 32 + 48 * 32 - cam.worldView.x) * cam.zoom, y: ((x + y) * 16 + 32 - cam.worldView.y) * cam.zoom };
+    return { x: ((x - y) * 32 + window.camp.state.map.size * 32 - cam.worldView.x) * cam.zoom, y: ((x + y) * 16 + 32 - cam.worldView.y) * cam.zoom };
   }, bush);
   await clickCanvas(page, [at.x, at.y]);
   await expect.poll(() => page.evaluate(() => window.camp.panelText())).toEqual({ title: 'Berry patch', detail: '17 of 40 fruit left' });
@@ -665,5 +680,389 @@ test('idle people sit on the council plaza ring, one to a tile', async ({ page }
   expect(seated.n).toBeGreaterThanOrEqual(15);
   expect(seated.distinct).toBe(seated.n);
   await page.locator('#game canvas').screenshot({ path: info.outputPath('plaza.png') });
+  expect(errors).toEqual([]);
+});
+
+test('the minimap: left-click and drag pan the camera, right-click moves the selection, and no click reaches the world', async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => !!window.camp?.minimap);
+  await page.evaluate(() => window.camp.orders([{ type: 'pause', on: true }]));
+  const mini = await page.evaluate(() => window.camp.minimap());
+  const [rx, ry, rw, rh] = mini.rect;
+  expect(rw).toBe(192);
+  expect(rh).toBe(96);
+  expect(mini.counts.people).toBe(20);
+  const view = () => page.evaluate(() => window.camp.minimap().view);
+  const at = (fx: number, fy: number): [number, number] => [rx + rw * fx, ry + rh * fy];
+  const start = await view();
+
+  // Two people selected: a left-click on the minimap moves the camera and keeps the selection.
+  const ids = await page.evaluate(() => window.camp.state.people.slice(0, 2).map((p) => p.id));
+  await page.evaluate((i) => window.camp.selectPeople(i), ids);
+  await clickCanvas(page, at(0.5, 0.2));
+  await expect.poll(view).not.toEqual(start);
+  const north = await view();
+  expect(north[1]).toBeLessThan(start[1]);
+  expect((await page.evaluate(() => window.camp.panelText())).title).toBe('2 people selected');
+
+  // A drag follows the pointer: the outline ends where the drag ends.
+  const box = (await page.locator('#game canvas').boundingBox())!;
+  const px = (c: [number, number]): [number, number] => [box.x + (c[0] / 1280) * box.width, box.y + (c[1] / 720) * box.height];
+  const [a, b] = [px(at(0.3, 0.5)), px(at(0.7, 0.6))];
+  await page.mouse.move(a[0], a[1]);
+  await page.mouse.down();
+  await page.mouse.move((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, { steps: 4 });
+  await page.mouse.move(b[0], b[1], { steps: 4 });
+  await page.mouse.up();
+  await expect.poll(async () => (await view())[0]).toBeGreaterThan(north[0] + 30);
+  expect((await page.evaluate(() => window.camp.panelText())).title).toBe('2 people selected');
+
+  // Right-click sends the selected people a move order to that tile.
+  const pings = await page.evaluate(() => window.camp.lastPing()?.count ?? 0);
+  await page.mouse.click(...px(at(0.5, 0.5)), { button: 'right' });
+  await expect.poll(() => page.evaluate(() => window.camp.lastPing()?.kind)).toBe('move');
+  expect(await page.evaluate(() => window.camp.lastPing()!.count)).toBe(pings + 1);
+  expect(
+    await page.evaluate((i) => window.camp.state.people.filter((p) => i.includes(p.id)).every((p) => (p as unknown as { task: { step: string } }).task.step === 'walk'), ids),
+  ).toBe(true);
+
+  // While placing, a click only moves the camera: no building, still placing, no order from the right-click.
+  const buildings = await page.evaluate(() => window.camp.state.buildings.length);
+  await page.evaluate(() => window.camp.scene.setPlacing('tipi', []));
+  const before = await view();
+  await clickCanvas(page, at(0.2, 0.5));
+  await expect.poll(view).not.toEqual(before);
+  const count = await page.evaluate(() => window.camp.lastPing()!.count);
+  await page.mouse.click(...px(at(0.5, 0.5)), { button: 'right' });
+  await page.waitForTimeout(200);
+  expect(await page.evaluate(() => window.camp.lastPing()!.count)).toBe(count);
+  expect(await page.evaluate(() => window.camp.scene.placing)).toBe('tipi');
+  expect(await page.evaluate(() => window.camp.state.buildings.length)).toBe(buildings);
+
+  await page.screenshot({ path: 'test-results/m5-minimap.png' });
+  expect(errors).toEqual([]);
+});
+
+// AC3: `?standins` loads the grey stand-in atlases (git-ignored; made by `npm run art:standins`) and starts a run.
+test('?standins starts the game from the grey stand-in atlases, with no console errors', async ({ page }) => {
+  test.skip(!fs.existsSync('art/standins/atlas/ground.json'), 'run `npm run art:standins` first');
+  const errors = watchErrors(page);
+  await page.goto('/?debug&standins');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  const loaded = await page.evaluate(() => {
+    const t = (window.camp.scene as unknown as { textures: { exists: (k: string) => boolean; get: (k: string) => { has: (f: string) => boolean } } }).textures;
+    return t.exists('ground') && t.exists('buildings') && t.get('ground').has('tile_grass/summer/0');
+  });
+  expect(loaded).toBe(true);
+  await page.evaluate(() => window.camp.step(20));
+  expect(errors).toEqual([]);
+});
+
+// AC5: terrain art. Without art the ground keeps its code drawings; with `?standins` the banks, spills and props appear,
+// banks name their mask, and a season change swaps every frame.
+test('terrain: without art the ground keeps its code drawings (trees, no spills or props)', async ({ page }) => {
+  test.skip(!fs.existsSync('art/standins/atlas/ground.json'), 'run `npm run art:standins` first');
+  const errors = watchErrors(page);
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  const plain = await page.evaluate(() => window.camp.terrain());
+  expect(plain.trees).toBeGreaterThan(100);
+  expect([plain.spills, plain.stumps, plain.bushes, plain.props]).toEqual([0, 0, 0, 0]);
+  // AC9: the 96 x 96 ground is baked into 6 x 6 chunk textures, and only the chunks near the camera are drawn.
+  expect(plain.chunks).toBe(36);
+  await page.evaluate(() => {
+    const c = window.camp.scene as unknown as { cameras: { main: { setZoom: (z: number) => void; centerOn: (x: number, y: number) => void } } };
+    c.cameras.main.setZoom(2);
+    c.cameras.main.centerOn(window.camp.state.map.size * 32, window.camp.state.map.size * 16 + 32);
+  });
+  await expect.poll(() => page.evaluate(() => window.camp.terrain().chunksShown)).toBeLessThan(20);
+  const near = await page.evaluate(() => window.camp.terrain().chunksShown);
+  expect(near).toBeGreaterThan(0);
+  await page.evaluate(() => { (window.camp.scene as unknown as { cameras: { main: { setZoom: (z: number) => void } } }).cameras.main.setZoom(0.5); }); // no return: a Camera cannot be serialised
+  await page.waitForFunction((n) => window.camp.terrain().chunksShown > n, near);
+  expect(errors).toEqual([]);
+});
+
+test('terrain: stand-ins show banks, spills, props and the season swap', async ({ page }) => {
+  test.skip(!fs.existsSync('art/standins/atlas/ground.json'), 'run `npm run art:standins` first');
+  const errors = watchErrors(page);
+  await page.goto('/?debug&standins');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  const t = await page.evaluate(() => window.camp.terrain());
+  expect(t.spills).toBeGreaterThan(100);
+  expect(t.bushes).toBeGreaterThan(20);
+  expect(t.props).toBeGreaterThan(200);
+  // A grass tile beside the river draws its bank, labelled with the mask; the start season is spring.
+  const bank = await page.evaluate(() => {
+    const { size, tiles } = window.camp.state.map;
+    const water = (x: number, y: number) => x >= 0 && y >= 0 && x < size && y < size && ['river', 'ford'].includes(tiles[y * size + x]);
+    for (let y = 1; y < size - 1; y++) for (let x = 1; x < size - 1; x++) {
+      if (tiles[y * size + x] === 'grass' && (water(x + 1, y) || water(x - 1, y))) return { x, y, frame: window.camp.terrain().frame(x, y) };
+    }
+    return null;
+  });
+  expect(bank?.frame).toMatch(/^bank_river\/spring\/(2|8|10)$/);
+  // A felled tree leaves a stump (and the tile is redrawn as grass).
+  const trees = t.trees;
+  await page.evaluate(() => {
+    const s = window.camp.state as unknown as { map: { size: number; tiles: string[] }; mapVersion: number };
+    s.map.tiles[s.map.tiles.indexOf('forest')] = 'grass';
+    s.mapVersion++;
+  });
+  await expect.poll(() => page.evaluate(() => window.camp.terrain().stumps)).toBe(1);
+  expect((await page.evaluate(() => window.camp.terrain())).trees).toBe(trees - 1);
+  // A season on: summer frames everywhere.
+  await page.evaluate(() => window.camp.step(3600));
+  await expect.poll(() => page.evaluate((b) => window.camp.terrain().frame(b!.x, b!.y), bank)).toMatch(/^bank_river\/summer\//);
+  // Look at the river bank (isometric 64 x 32 tiles: world x = (x - y) * 32 + size * 32, y = (x + y) * 16 + 32).
+  await page.evaluate((b) => {
+    const size = window.camp.state.map.size;
+    const c = window.camp.scene as unknown as { cameras: { main: { centerOn: (x: number, y: number) => void; setZoom: (z: number) => void } } };
+    c.cameras.main.setZoom(1.5);
+    c.cameras.main.centerOn((b!.x - b!.y) * 32 + size * 32, (b!.x + b!.y) * 16 + 32);
+  }, bank);
+  await page.screenshot({ path: 'test-results/ac5-standins.png' });
+  expect(errors).toEqual([]);
+});
+
+// AC6: buildings show the frame of their stage, a barricade its mask, the fire its winter frame; no flame without art.
+test('buildings: stand-ins show stage, barricade mask and winter frames, and the flames', async ({ page }) => {
+  test.skip(!fs.existsSync('art/standins/atlas/ground.json'), 'run `npm run art:standins` first');
+  const errors = watchErrors(page);
+  await page.goto('/?debug&standins');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  const ids = await page.evaluate(() => {
+    const s = window.camp.state as unknown as { nextBuildingId: number; buildings: Record<string, unknown>[]; map: { fire: number[] } };
+    const [fx, fy] = s.map.fire;
+    const add = (type: string, dx: number, dy: number, done: boolean, built: number): number => {
+      const id = s.nextBuildingId++;
+      s.buildings.push({ id, type, x: fx + dx, y: fy + dy, done, built, delivered: {}, workers: [], residents: [], tended: 0, hp: null });
+      return id;
+    };
+    return {
+      early: add('hunting_lodge', 10, -6, false, 5),
+      mid: add('healers_lodge', 10, -3, false, 110),
+      late: add('scouts_lodge', 10, -9, false, 190),
+      rack: add('drying_rack', 10, 0, true, 0),
+      pit: add('fire_pit', 10, 3, true, 0),
+      wall: [add('barricade', 14, 0, true, 0), add('barricade', 14, 1, true, 0), add('barricade', 14, 2, true, 0)],
+    };
+  });
+  const frames = async () => (await page.evaluate(() => window.camp.buildings())).frames;
+  await expect.poll(async () => Object.keys(await frames()).length).toBeGreaterThan(8);
+  let f = await frames();
+  expect(f[ids.early]).toBe('building_hunting_lodge/stage1/00');
+  expect(f[ids.mid]).toBe('building_healers_lodge/stage2/00');
+  expect(f[ids.late]).toBe('building_scouts_lodge/stage3/00');
+  expect(f[ids.rack]).toMatch(/^building_drying_rack\/finished\/0[0-3]$/);
+  expect(f[ids.pit]).toBe('building_fire_pit/finished/00');
+  expect(ids.wall.map((id) => f[id].split('/').pop())).toEqual(['4', '5', '1']);
+  const fire = await page.evaluate(() => window.camp.state.buildings.find((b) => b.type === 'fire')!.id);
+  expect(f[fire]).toBe('fire_central/finished/00');
+  // Stand-ins include fx_flame, so the fire and the pit carry a flame.
+  expect((await page.evaluate(() => window.camp.buildings())).flames.sort()).toEqual([fire, ids.pit].sort());
+  // Winter: the first winter day is tick 10800.
+  await page.evaluate(() => { (window.camp.state as unknown as { tick: number }).tick = 10800; });
+  await expect.poll(async () => (await frames())[fire]).toBe('fire_central/winter/00');
+  f = await frames();
+  expect(f[ids.early]).toBe('building_hunting_lodge/stage1/00');
+  expect(f[ids.pit]).toBe('building_fire_pit/winter/00');
+  expect(f[ids.wall[1]]).toBe('building_barricade/winter/5');
+  expect(f[ids.rack]).toMatch(/^building_drying_rack\/winter\/0[0-3]$/);
+  await page.screenshot({ path: 'test-results/ac6-standins.png' });
+  expect(errors).toEqual([]);
+});
+
+test('buildings: normal mode draws the installed flame on the council fire', async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  await expect.poll(async () => Object.keys((await page.evaluate(() => window.camp.buildings())).frames).length).toBeGreaterThan(2);
+  const fire = await page.evaluate(() => window.camp.state.buildings.find(b => b.type === 'fire')!.id);
+  await expect.poll(async () => (await page.evaluate(() => window.camp.buildings())).flames).toContain(fire);
+  expect(errors).toEqual([]);
+});
+
+// AC8: final button art and stand-ins use nine-slices, with the active speed using the pressed frame.
+test('interface: normal mode uses installed button art and keeps the browser cursor', async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  const manifest = JSON.parse(fs.readFileSync(new URL('../art/manifest.json', import.meta.url), 'utf8'));
+  const speedFrames = manifest.ui_button.status === 'final'
+    ? ['ui_button/normal', 'ui_button/pressed', 'ui_button/normal', 'ui_button/normal']
+    : [null, null, null, null];
+  await expect.poll(() => page.evaluate(() => window.camp.speedFrames())).toEqual(speedFrames);
+  const c = await page.evaluate(() => window.camp.cursor());
+  expect(c.installed).toEqual([]);
+  expect(c.css).not.toContain('image-set');
+  expect(errors).toEqual([]);
+});
+
+test('interface: stand-ins draw nine-slice surfaces and install the cursors, which follow the selection', async ({ page }) => {
+  test.skip(!fs.existsSync('art/standins/atlas/ui.json'), 'run `npm run art:standins` first');
+  const errors = watchErrors(page);
+  await page.goto('/?debug&standins');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  await page.waitForTimeout(300);
+  // 1x is the active speed: pressed; the others normal.
+  expect(await page.evaluate(() => window.camp.speedFrames())).toEqual(['ui_button/normal', 'ui_button/pressed', 'ui_button/normal', 'ui_button/normal']);
+  const before = await page.evaluate(() => window.camp.cursor());
+  expect(before.installed.sort()).toEqual(['attack', 'build', 'invalid', 'move', 'pointer']);
+  expect(before.shown).toBe('pointer');
+  await page.evaluate(() => window.camp.selectPeople([window.camp.state.people[0].id]));
+  await page.mouse.move(640, 360);
+  await page.mouse.move(650, 370);
+  await expect.poll(() => page.evaluate(() => window.camp.cursor().shown)).toBe('move');
+  expect(await page.evaluate(() => window.camp.cursor().css)).toContain('image-set');
+  expect(errors).toEqual([]);
+});
+
+// AC7: creatures and effects. Without art the wolves, game and allies keep their code drawings and no horse, rider or
+// effect sprite appears; with `?standins` each is a sprite showing the frame its state asks for.
+test('creatures: normal mode uses installed effects and keeps unfinished animal art as code', async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.goto('/?debug');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  await page.evaluate(() => {
+    const s = window.camp.state as unknown as { nextEnemyId: number; enemies: Record<string, unknown>[]; map: { fire: number[] } };
+    s.enemies.push({ id: s.nextEnemyId++, kind: 'wolf', x: s.map.fire[0] + 12, y: s.map.fire[1], hp: 40, cooldown: 0, fleeing: false, wave: 0 });
+  });
+  await page.waitForTimeout(300);
+  const c = await page.evaluate(() => window.camp.creatures());
+  expect(Object.entries(c.art).filter(([key]) => key !== 'ally_spirit' && key !== 'fx_storm').every(([, a]) => !a)).toBe(true);
+  expect(c.art.ally_spirit).toBe(true);
+  expect(c.art.fx_storm).toBe(true);
+  expect([Object.keys(c.wolves).length, Object.keys(c.animals).length, c.horses.length, c.arrows.length]).toEqual([0, 0, 0, 0]);
+  expect(c.fx.fish).toBe(0); // Fish art is still unfinished; installed dust may be raised by runners.
+  expect(errors).toEqual([]);
+});
+
+test('creatures: stand-ins show a wave, a hunt, a storm, a stampede, a rider, horses, allies and effects', async ({ page }) => {
+  test.skip(!fs.existsSync('art/standins/atlas/animals.json'), 'run `npm run art:standins` first');
+  const errors = watchErrors(page);
+  await page.goto('/?debug&standins');
+  await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
+  await clickMenu(page, 'slot1.new');
+  await page.waitForFunction(() => window.camp?.state.people.length === 20);
+  const cr = () => page.evaluate(() => window.camp.creatures());
+  expect(Object.values((await cr()).art).every((a) => a)).toBe(true);
+  // The wild game: every live animal is a sprite grazing, standing or walking.
+  await expect.poll(async () => Object.keys((await cr()).animals).length).toBeGreaterThan(20);
+  for (const f of Object.values((await cr()).animals)) expect(f).toMatch(/^animal_(deer|bison)\/base\/(idle|graze|walk|run)\/(s|sw|w|nw|n|ne|e|se)\/\d\d$/);
+
+  // A wave: a wolf and the pack leader run in; a hit raises dust; a killed wolf plays `die`.
+  const wolves = await page.evaluate(() => {
+    const s = window.camp.state as unknown as { nextEnemyId: number; enemies: Record<string, unknown>[]; map: { fire: number[] } };
+    const [fx, fy] = s.map.fire;
+    const add = (kind: string, dx: number, hp: number) => {
+      const id = s.nextEnemyId++;
+      s.enemies.push({ id, kind, x: fx + dx, y: fy - 14, hp, cooldown: 0, fleeing: false, wave: 0 });
+      return id;
+    };
+    return { wolf: add('wolf', 0, 40), leader: add('pack_leader', 3, 90) };
+  });
+  await expect.poll(async () => (await cr()).wolves[wolves.leader] ?? '').toMatch(/^animal_wolf\/base\/run\//);
+  expect((await cr()).wolves[wolves.wolf]).toMatch(/^animal_wolf\/base\/(run|walk)\//);
+  await page.evaluate((id) => { (window.camp.state as unknown as { enemies: { id: number; hp: number }[] }).enemies.find((e) => e.id === id)!.hp = 25; }, wolves.wolf);
+  await expect.poll(async () => (await cr()).fx.hit).toBeGreaterThan(0);
+  await page.evaluate((id) => { (window.camp.state as unknown as { enemies: { id: number; hp: number }[] }).enemies.find((e) => e.id === id)!.hp = 0; }, wolves.wolf);
+  await expect.poll(async () => (await cr()).falls.some((f) => /^animal_wolf\/base\/die\//.test(f))).toBe(true);
+  expect((await cr()).fx.dust).toBeGreaterThan(0); // the running wolves kick up dust
+
+  // A hunt: a deer dies, plays `die`, then lies as a whole carcass; once emptied its bones stay a while.
+  const deer = await page.evaluate(() => {
+    const a = (window.camp.state as unknown as { animals: { id: number; kind: string; dead: boolean; hp: number; fleeing: number; path: unknown[] }[] }).animals.find((x) => x.kind === 'deer' && !x.dead)!;
+    Object.assign(a, { dead: true, hp: 0, fleeing: 0, path: [] });
+    return a.id;
+  });
+  await expect.poll(async () => (await cr()).animals[deer] ?? '').toMatch(/^animal_deer\/base\/die\//);
+  await expect.poll(async () => (await cr()).animals[deer]).toBe('carcass_deer/stage1/00');
+  await page.evaluate((id) => {
+    const a = (window.camp.state as unknown as { animals: { id: number; meat: number; hides: number }[] }).animals.find((x) => x.id === id)!;
+    a.meat = 0;
+    a.hides = 0;
+  }, deer);
+  await expect.poll(async () => (await cr()).falls).toContain('carcass_deer/stage3/00');
+
+  // A storm and a stampede (as a cast starts them), and the two allies.
+  await page.evaluate(() => {
+    const s = window.camp.state as unknown as { tick: number; nextEnemyId: number; effects?: unknown[]; allies?: unknown[]; map: { fire: number[] } };
+    const [fx, fy] = s.map.fire;
+    s.effects ??= [];
+    s.effects.push({ id: s.nextEnemyId++, kind: 'storm', x: fx + 2, y: fy - 10, dx: 0, dy: 0, expires: s.tick + 2000, hit: [] });
+    s.effects.push({ id: s.nextEnemyId++, kind: 'bison', x: 5, y: fy + 8, dx: 1, dy: 0, expires: s.tick + 2000, hit: [] });
+    s.allies ??= [];
+    s.allies.push({ id: s.nextEnemyId++, kind: 'spirit', x: fx + 3, y: fy + 1, hp: 80, cooldown: 0, expires: s.tick + 2000 });
+    s.allies.push({ id: s.nextEnemyId++, kind: 'guardian', x: fx + 4, y: fy + 1, hp: 40, cooldown: 0, expires: s.tick + 2000 });
+  });
+  await expect.poll(async () => (await cr()).herds.length).toBe(7);
+  let c = await cr();
+  expect(c.storms[0]).toMatch(/^fx_storm\/loop\/0\d$/);
+  for (const f of c.herds) expect(f).toMatch(/^animal_bison\/base\/run\/se\/\d\d$/);
+  expect(Object.values(c.allies).sort()[0]).toMatch(/^ally_spirit\/float\/0\d$/);
+  expect(Object.values(c.allies).some((f) => /^animal_wolf\/base\//.test(f))).toBe(true);
+
+  // A rider: a drafted, mounted lancer is drawn as the rider and gallops to a move order.
+  const rider = await page.evaluate(() => {
+    const s = window.camp.state as unknown as { people: { id: number; age: string; society: string | null; drafted: boolean; mounted?: boolean }[]; map: { fire: number[] } };
+    const p = s.people.find((x) => x.age === 'adult')!;
+    Object.assign(p, { society: 'lancers', drafted: true, mounted: true });
+    window.camp.orders([{ type: 'move', ids: [p.id], to: [s.map.fire[0] - 12, s.map.fire[1] + 2] } as never]);
+    return p.id;
+  });
+  const shown = (id: number) => page.evaluate((i) => window.camp.creatures().person(i), id);
+  await expect.poll(async () => (await shown(rider))?.key).toBe('person_rider');
+  await expect.poll(async () => (await shown(rider))?.anim).toBe('gallop');
+  expect((await shown(rider))?.frame).toMatch(/^person_rider\/base\/gallop\//);
+
+  // Horses: two free horses stand in a finished corral (the rider's is out).
+  await page.evaluate(() => {
+    const s = window.camp.state as unknown as { horses: number; nextBuildingId: number; buildings: Record<string, unknown>[]; map: { fire: number[] } };
+    s.horses = 3;
+    s.buildings.push({ id: s.nextBuildingId++, type: 'horse_corral', x: s.map.fire[0] - 8, y: s.map.fire[1] - 6, done: true, built: 220, delivered: {}, workers: [], residents: [], tended: 0, hp: null });
+  });
+  await expect.poll(async () => (await cr()).horses.length).toBe(2);
+  for (const f of (await cr()).horses) expect(f).toMatch(/^animal_horse\/base\/(idle|graze)\//);
+
+  // A building finished: a sparkle.
+  await page.evaluate(() => {
+    const s = window.camp.state as unknown as { nextBuildingId: number; buildings: Record<string, unknown>[]; map: { fire: number[] } };
+    s.buildings.push({ id: s.nextBuildingId++, type: 'trap', x: s.map.fire[0] + 8, y: s.map.fire[1] + 8, done: false, built: 0, delivered: {}, workers: [], residents: [], tended: 0, hp: null });
+  });
+  await page.waitForTimeout(100);
+  await page.evaluate(() => { (window.camp.state as unknown as { buildings: { type: string; done: boolean }[] }).buildings.find((b) => b.type === 'trap')!.done = true; });
+  await expect.poll(async () => (await cr()).fx.sparkle).toBeGreaterThan(0);
+
+  // Look at the storm and the allies.
+  await page.evaluate(() => {
+    const s = window.camp.state;
+    const [fx, fy] = (s as unknown as { map: { fire: number[] } }).map.fire;
+    const size = (s as unknown as { map: { size: number } }).map.size;
+    const c = window.camp.scene as unknown as { cameras: { main: { centerOn: (x: number, y: number) => void; setZoom: (z: number) => void } } };
+    c.cameras.main.setZoom(1);
+    c.cameras.main.centerOn((fx - fy) * 32 + size * 32, (fx + fy) * 16 + 32 - 80);
+  });
+  c = await cr();
+  await page.screenshot({ path: 'test-results/ac7-standins.png' });
   expect(errors).toEqual([]);
 });

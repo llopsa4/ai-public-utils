@@ -40,11 +40,11 @@ choices (stylised proportions, thin outline, palette, empty hands) are in *Gener
 Decisions (grilled with the user, 2026-11-18): same Ash Wolf design as a 2D sprite; **stylised heroic
 proportions** (head about 1/5 of her height, chunky shapes, bold colour blocks, not cute or chibi); facing the
 viewer from slightly above and in front, grounded ready stance, **both hands empty** (weapons are separate
-stills); the user **attaches `art/refs/hero_dakota_woman/sheet.jpg`** as the reference; a **thin dark painted
+stills); Codex **attaches `art/refs/hero_dakota_woman/sheet.jpg`** as the reference; a **thin dark painted
 outline** with soft shading inside and light from the upper left; palette charcoal, dark hide brown, rust, bone,
-blue/white/rust bead bands, **no green anywhere** (the flat green background is keyed out). Run it in Gemini
-with the sheet attached, ask for a 1:1 image, generate a few, and save them as `art/refs/ash_wolf/raw_01.png`,
-`raw_02.png`, ... then pick one in chat.
+blue/white/rust bead bands, **no green anywhere** (the flat green background is keyed out). Codex runs it
+with the sheet attached, as a 1:1 image, generates a few, and saves them as `art/refs/ash_wolf/raw_01.png`,
+`raw_02.png`, ... the user picks one in chat.
 
 ```text
 Attached is my character sheet for "Ash Wolf". Redraw this exact same character (same face, scar, war paint,

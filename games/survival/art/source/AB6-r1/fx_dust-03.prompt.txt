@@ -1,0 +1,2 @@
+Edit the supplied base painting into frame 4 of 4 of the SAME game-effect animation. Last frame: only a very thin low haze remains, 180 percent original width, original ground contact fixed.
+Preserve the exact original canvas dimensions, framing, palette, painterly texture, lighting and subject identity. Make only a SMALL consecutive animation step. No camera motion, cropping, reframing, zoom or added objects. Maintain the same plain flat #00FF00 backing including interior holes. No text, labels, sheet, border, symbols or scene.  

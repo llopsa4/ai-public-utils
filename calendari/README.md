@@ -1,6 +1,6 @@
 # Duty calendar
 
-A personal monthly duty planner. This folder is a complete static website: no build step, accounts, backend, or external scripts are needed. All interface and report content is in English.
+A personal monthly duty planner. This folder is a complete static website: no build step, accounts, backend, or external scripts are needed. The interface and printed reports are in Catalan; this documentation stays in English.
 
 ## Run locally
 

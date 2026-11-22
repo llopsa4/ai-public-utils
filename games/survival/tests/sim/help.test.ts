@@ -5,6 +5,7 @@ import { assignWorkers, placeBuilding } from '../../src/sim/buildings';
 import { wotakuyeHelp } from '../../src/sim/help';
 import type { GameState } from '../../src/sim/state';
 import { newGame } from '../../src/sim/tick';
+import { o } from './helpers';
 
 const WINTER = 10800;
 const has = (lines: string[], text: string): boolean => lines.some((l) => l.includes(text));
@@ -24,7 +25,7 @@ test('winter costs 3 a person, and a staffed healer eases it', () => {
   s.upgrades.push('healers');
   s.store.wood = 100;
   s.store.hides = 20;
-  const lodge = placeBuilding(s, 'healers_lodge', 28, 26).building!;
+  const lodge = placeBuilding(s, 'healers_lodge', o(28), o(26)).building!;
   lodge.done = true;
   assignWorkers(s, [s.people.find((p) => p.age === 'adult')!.id], lodge.id);
   assert.ok(has(wotakuyeHelp(s).live, 'no bed: -20 '), wotakuyeHelp(s).live.join(' | '));

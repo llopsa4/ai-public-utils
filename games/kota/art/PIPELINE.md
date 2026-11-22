@@ -9,37 +9,38 @@ rewrites it; follow this file and DESIGN.md where they disagree. Request wording
 
 ## How art is made
 
-Every asset is **one hand-painted still image** (decision 14, DESIGN.md): the hero, each threat, each
+The baseline is **one hand-painted still image per asset** (decision 14, DESIGN.md): the hero, each threat, each
 weapon, each item icon, each prop and the pickups. The code animates it (bob, squash, flip, hit flash,
 orbiting weapons); bosses get 2–3 pose stills (idle, wind-up, helpless). Weapons and equipment are
 separate stills drawn over or around the hero in code. The game is built on placeholder shapes first
-and each approved batch replaces them.
+and each approved batch replaces them. Ash Wolf already has a four-frame walk candidate;
+this specific exception awaits user approval and is not a rule for all assets.
 
 1. **Claude writes a prompt** in the asset's brief (*Generation prompt*), from the template below.
-2. **The user generates the image in Gemini** (or Codex when it is back) and saves each result in
-   `art/refs/<id>/` as `raw_01.png`, `raw_02.png`, …; the user picks the best one in chat.
-3. **Claude processes it** into a game sprite with `art/tools/process_sprite.py` (written in D4):
+2. **Codex generates the image** from that prompt (a request in Claude's handoff file *Requests for
+   Codex*) and delivers each result in `art/refs/<id>/` as `raw_01.png`, `raw_02.png`, …; the user
+   picks the best one in chat.
+3. **Codex processes it** into a game sprite with `art/tools/process_sprite.py` (already present):
    removes the flat background, trims, scales and saves `game/assets/sprites/<id>.png`.
-4. **Claude checks it** (below), installs it in the game's data, and the user approves the batch.
+4. **Codex checks it** (below) and, once the user approves the batch, installs it in the game's data.
 
 ## Tools (free software only)
 
 - **Python 3.12 with Pillow** (HPND licence, already installed here): chroma-key background removal,
   despill, trim, scale, padding, atlas packing. No model downloads.
 - **Fallback, only when an image will not key cleanly:** `rembg` (MIT) for ML background removal.
-  Adopt it per asset only after telling the user (its model download is about 170 MB), and add its row
-  to [LICENSES.md](../LICENSES.md) in the same change.
-- **Phaser 3** loads the sprites in the game (row added to LICENSES.md in plan task C1).
-- Images come from the user's Gemini or from Codex (see *Images* below). Any third-party asset must be
-  CC0, CC-BY or OFL and recorded in LICENSES.md.
+  Adopt it per asset only after telling the user (its model download is about 170 MB).
+- **Phaser 3** loads the sprites in the game.
+- Images come from Codex (see *Images* below). Any third-party asset must be CC0, CC-BY or OFL.
+- Free software only; this game keeps no LICENSES.md (user, 2026-11-20).
 
 ## Files
 
 | What | Where |
 |---|---|
 | Asset brief (purpose, design, sizes, poses, prompt, approval authority) | `art/briefs/<asset>.md` |
-| Raw generated images (the user's saves) | `art/refs/<asset>/raw_NN.png` (+ the chosen one named in the brief) |
-| Processing scripts | `art/tools/process_sprite.py`, `art/tools/pack_atlas.py` |
+| Raw generated images (Codex deliveries or existing user saves) | `art/refs/<asset>/raw_NN.png` (+ the chosen one named in the brief) |
+| Processing scripts | `art/tools/process_sprite.py` (present); `art/tools/pack_atlas.py` (planned, not present) |
 | Game sprite | `game/assets/sprites/<asset>.png` (poses: `<asset>_<pose>.png`) |
 | Atlas (optional, built when the sprite count calls for it) | `game/assets/atlas/<name>.png` + `.json` |
 | Asset register (status, brief, approval) | `art/ASSETS.md` |
@@ -48,6 +49,10 @@ Asset ids are lowercase with underscores and match `game/data/*.json` ids where 
 (`ash_wolf`, `stone_axe`, `iya`, `frost_wisp`). Pose suffixes: `idle`, `windup`, `helpless`.
 
 ## Prompt template
+
+The generic outline-free wording below remains a D1 reconciliation item: Ash Wolf's current
+2D brief explicitly uses a thin painted outline. Follow that brief for her; do not resolve the
+style for other families by copying the old template. No new batch is started by this note.
 
 Every Generation prompt follows this shape (one image per prompt; the style words come from
 STYLE.md once D1 rewrites it):
@@ -88,7 +93,7 @@ fixed in plan task C1; these sizes allow 2–3× phone screens.
   atlases of at most **2048 × 2048** (phone texture limits) once the count passes about 40.
 - **Anchor:** the origin is the bottom centre (the feet or footprint); weapons are anchored at the grip.
 - Heroes and threats face the viewer; code flips them to match movement. Do not paint a left/right
-  facing.
+  facing unless a later approved brief requests it. The existing Ash Wolf strip uses four front-facing frames.
 
 ## Check before asking for approval
 
@@ -110,13 +115,10 @@ fixed in plan task C1; these sizes allow 2–3× phone screens.
 
 ## Images (generation and rights)
 
-The **user generates in Gemini** (or **Codex** does when it is back; those requests go in
-[handoff/from-claude.md](../handoff/from-claude.md) *Requests for Codex* and wait while Codex is paused,
-see [WORKLOG.md](../WORKLOG.md)). Each raw image is recorded in [LICENSES.md](../LICENSES.md) (a row per
-asset folder is enough). Gemini output is the source of the final sprite, so the user confirms they hold
-the rights to use it in Kota. Any real-world symbol, feather or regalia that appears in an image against
+**Codex generates** every image from Claude's prompt; the requests go in
+[handoff/from-claude.md](../handoff/from-claude.md) *Requests for Codex*. Any real-world symbol, feather or regalia that appears in an image against
 the brief is regenerated or painted over before install.
 
 ## Briefs
 
-The 3D-era briefs were moved to the Recycle Bin on 2026-11-19. New 2D briefs are written when their batch is prompted (plan tasks D1 and D2), with *Used as*, *CULTURE.md relied on* (reference entries, invention noted), *Design*, *Sizes and poses*, *Generation prompt*, *Approval authority*, taking the design from DESIGN-dakota-content.md.
+The 3D-era briefs were moved to the Recycle Bin on 2026-11-19. New 2D briefs are written when their batch is prompted (plan tasks D1 and D2), with *Used as*, *CULTURE.md relied on* (reference entries, invention noted), *Design*, *Sizes and poses*, *Generation prompt*, *Approval authority*, taking the design from DESIGN.md and DESIGN-m1.md. DESIGN-dakota-content.md is historical only.

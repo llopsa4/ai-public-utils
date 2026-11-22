@@ -17,11 +17,12 @@ const rich = (s: GameState) => {
 };
 
 /** The valid top-left tile for a type nearest to `near` (default: the fire). */
-function spot(s: GameState, type: string, near: [number, number] = [24, 24]): [number, number] {
+function spot(s: GameState, type: string, near: [number, number] = campCentre(s.map)): [number, number] {
   let best: [number, number] | null = null;
   let bestD = Infinity;
-  for (let y = 10; y <= 38; y++) {
-    for (let x = 10; x <= 38; x++) {
+  const [mx, my] = campCentre(s.map);
+  for (let y = my - 14; y <= my + 14; y++) {
+    for (let x = mx - 14; x <= mx + 14; x++) {
       if (placementError(s, type, x, y) !== null) continue;
       const d = Math.hypot(x + 0.5 - near[0], y + 0.5 - near[1]);
       if (d < bestD) {
@@ -43,7 +44,7 @@ function place(s: GameState, type: string, near?: [number, number]): Building {
 
 const adults = (s: GameState) => s.people.filter((p) => p.age === 'adult');
 const tilesOf = (s: GameState, type: string) =>
-  s.map.tiles.map((t, i) => [t, i] as const).filter(([t]) => t === type).map(([, i]) => [i % 48, Math.floor(i / 48)] as [number, number]);
+  s.map.tiles.map((t, i) => [t, i] as const).filter(([t]) => t === type).map(([, i]) => [i % s.map.size, Math.floor(i / s.map.size)] as [number, number]);
 
 test('the buildable types are in menu order', () => {
   assert.deepEqual(BUILDABLE, [
@@ -59,17 +60,18 @@ test('placement is refused off grass, out of range, overlapping, off the map or 
     ['store', tilesOf(s, 'forest')[0][0], tilesOf(s, 'forest')[0][1], 'Needs open grass.'],
     ['store', tilesOf(s, 'river')[0][0], tilesOf(s, 'river')[0][1], 'Needs open grass.'],
     ['store', tilesOf(s, 'berry')[0][0], tilesOf(s, 'berry')[0][1], 'Needs open grass.'],
-    ['store', 21, 22, 'Something is in the way.'], // overlaps a tipi
-    ['store', 22, 22, 'Something is in the way.'], // overlaps the fire
-    ['store', 47, 47, 'Outside the map.'],
+    ['store', s.map.prebuilt[0].at[0] - 1, s.map.prebuilt[0].at[1], 'Something is in the way.'], // overlaps a tipi
+    ['store', s.map.fire[0], s.map.fire[1], 'Something is in the way.'], // overlaps the fire
+    ['store', s.map.size - 1, s.map.size - 1, 'Outside the map.'],
     ['store', -1, 5, 'Outside the map.'],
-    ['fire', 30, 30, "Can't build that."],
+    ['fire', s.map.fire[0] + 8, s.map.fire[1] + 8, "Can't build that."],
   ];
   // A grass block more than 14 tiles from the fire.
-  for (let y = 0; y < 47; y++) {
-    for (let x = 0; x < 47; x++) {
-      const far = Math.max(Math.abs(x - 24), Math.abs(y - 24)) > 15;
-      const grass = [[0, 0], [1, 0], [0, 1], [1, 1]].every(([dx, dy]) => s.map.tiles[(y + dy) * 48 + x + dx] === 'grass');
+  const [fcx, fcy] = campCentre(s.map);
+  for (let y = 0; y < s.map.size - 1; y++) {
+    for (let x = 0; x < s.map.size - 1; x++) {
+      const far = Math.max(Math.abs(x - fcx), Math.abs(y - fcy)) > 15;
+      const grass = [[0, 0], [1, 0], [0, 1], [1, 1]].every(([dx, dy]) => s.map.tiles[(y + dy) * s.map.size + x + dx] === 'grass');
       if (far && grass && !cases.some((c) => c[3] === 'Too far from the fire.')) cases.push(['store', x, y, 'Too far from the fire.']);
     }
   }
@@ -190,7 +192,7 @@ test('workers: limit 4, adults only for the lodge, elders may gather, unfinished
   assert.equal(assignWorkers(s, [elder.id], spotB.id), 1);
 
   // Moving a worker elsewhere frees the place.
-  queueOrders(s, [{ type: 'move', ids: [lodge.workers[0]], to: [30, 30] }]);
+  queueOrders(s, [{ type: 'move', ids: [lodge.workers[0]], to: [campCentre(s.map)[0] + 6, campCentre(s.map)[1] + 6] }]);
   step(s, 1);
   assert.equal(lodge.workers.length, 3);
 });
@@ -224,7 +226,7 @@ test('a gathering-spot worker picks the fullest berry tile within 10 tiles and w
   assert.ok(Math.abs(workRate(s, worker, 'gather') - 0.015) < 1e-12);
   step(s, 2);
   const tile = worker.job!.tile!;
-  assert.equal(s.map.tiles[tile[1] * 48 + tile[0]], 'berry');
+  assert.equal(s.map.tiles[tile[1] * s.map.size + tile[0]], 'berry');
   assert.ok(Math.hypot(tile[0] - (b.x + 0.5), tile[1] - (b.y + 0.5)) <= 10);
   stepFed(s, 2500);
   assert.ok(s.store.food >= before + 5, `food ${s.store.food}`);

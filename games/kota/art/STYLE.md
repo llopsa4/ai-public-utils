@@ -1,6 +1,12 @@
 # Kota art style
 
-**Approved by the user, 2026-11-18.**
+**Mixed-era reference; full 2D rewrite D1 remains open (reconciled 2026-11-22).**
+
+The approval below belongs to earlier decisions, not a completed D1 rewrite or approval of new art.
+Use DESIGN.md, PIPELINE.md and the asset's current 2D brief for the playable game.
+The 3D camera, meshes, rigs and budgets below are retired reference only. Cultural reference
+lists do not override the invention rule in AGENTS.md. Ash Wolf's recorded thin-outline
+choice is specific to that hero; resolve the wider style in D1 before prompting more families.
 
 How Kota looks. Written 2026-11-18 from the user's decisions in [DESIGN.md](../DESIGN.md#art) and
 the approved entries in [CULTURE.md](../CULTURE.md). How assets are made, named and approved is in

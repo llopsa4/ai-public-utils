@@ -1,0 +1,26 @@
+{
+  "adjacent": 1.5,
+  "moveNoise": { "run": 6, "walk": 2, "crouch": 0, "crawl": 0 },
+  "weapons": {
+    "knife": { "range": 1.5, "damage": 40, "noise": 0, "cooldown": 1 },
+    "pistol": { "range": 6, "damage": 25, "noise": 12, "cooldown": 1 },
+    "bow": { "range": 7, "damage": 30, "noise": 2, "cooldown": 1.5 }
+  },
+  "fighter": {
+    "hp": 100,
+    "vision": { "range": 6, "angle": 90 },
+    "speed": { "run": 5, "walk": 3, "crouch": 1.5, "crawl": 0.8 },
+    "primary": "knife",
+    "weapons": ["knife", "pistol"],
+    "takedown": { "time": 1 },
+    "carrySpeed": 0.6
+  },
+  "scout": {
+    "hp": 100,
+    "vision": { "range": 8, "angle": 90 },
+    "speed": { "run": 5, "walk": 3, "crouch": 2.2, "crawl": 0.8 },
+    "primary": "bow",
+    "weapons": ["bow"],
+    "lure": { "range": 8, "radius": 6, "cooldown": 10 }
+  }
+}

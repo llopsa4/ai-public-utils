@@ -10,7 +10,7 @@ import { campCentre } from '../../src/sim/map';
 import { walkable } from '../../src/sim/people';
 import { addBuilding, type GameState, type Person, type Tile2 } from '../../src/sim/state';
 import { newGame, queueOrders, step } from '../../src/sim/tick';
-import { stepFed } from './helpers';
+import { o, stepFed } from './helpers';
 
 // Wolves keep to the clock; move them out of the way of long hunts.
 const waveAt = wavesData.waves.map((w) => w.at);
@@ -39,22 +39,30 @@ function lone(s: GameState, kind: 'deer' | 'bison', at: Tile2): Animal {
   return a;
 }
 
-test('the start herds: 2 herds of 3 deer and 1 herd of 4 bison, 14-22 tiles from the fire', () => {
+test('the start herds: 3 near the camp (14-22 tiles), 9 more further out (23-44), 12 in all', () => {
   for (const seed of [1, 2, 3]) {
     const s = newGame(seed);
     const list = animalsOf(s);
-    assert.equal(list.filter((a) => a.kind === 'deer').length, 6, `seed ${seed}`);
-    assert.equal(list.filter((a) => a.kind === 'bison').length, 4, `seed ${seed}`);
-    assert.equal(new Set(list.map((a) => a.herd)).size, 3);
+    const herds = new Map<number, typeof list>();
+    for (const a of list) herds.set(a.herd, [...(herds.get(a.herd) ?? []), a]);
+    assert.equal(herds.size, 12, `seed ${seed}`);
     const [cx, cy] = campCentre(s.map);
-    for (const a of list) {
-      const d = Math.hypot(a.x - cx, a.y - cy);
-      assert.ok(d >= 12 && d <= 24, `${a.kind} at ${d.toFixed(1)}`); // herd centre 14-22, members a tile or two round it
+    let near = 0;
+    for (const members of herds.values()) {
+      const mx = members.reduce((t, a) => t + a.x, 0) / members.length;
+      const my = members.reduce((t, a) => t + a.y, 0) / members.length;
+      const d = Math.hypot(mx - cx, my - cy);
+      assert.ok(d >= 12 && d <= 46, `herd at ${d.toFixed(1)}`); // a herd centre is 14-44 out, members a tile or two round it
+      if (d <= 24) near++;
     }
+    assert.ok(near >= 3, `seed ${seed}: ${near} herds near`);
+    const kinds = (k: string) => new Set(list.filter((a) => a.kind === k).map((a) => a.herd)).size;
+    assert.equal(kinds('deer'), 8, `seed ${seed}`);
+    assert.equal(kinds('bison'), 4, `seed ${seed}`);
   }
 });
 
-test('herds respawn at a map edge on respawn days, only while fewer than 12 animals live', () => {
+test('herds respawn at a map edge on respawn days, only while fewer than the cap of animals live', () => {
   const s = newGame(1);
   s.animals = [];
   let spawned = 0;
@@ -114,7 +122,7 @@ test('a bison carcass is three loads of 10 meat, all 3 hides on the first; then 
 test('a lodge hunter shoots a deer and carries its meat and hide to the store', () => {
   const s = newGame(1);
   lone(s, 'deer', tileFromFire(s, 12));
-  const lodge = addBuilding(s, 'hunting_lodge', 36, 36, true);
+  const lodge = addBuilding(s, 'hunting_lodge', o(36), o(36), true);
   const p = adult(s);
   assignWorkers(s, [p.id], lodge.id);
   const food = s.store.food;
@@ -139,7 +147,7 @@ test('a bison takes three trips to the store', () => {
     if (carrying && !was) trips++;
     was = carrying;
   }
-  stepFed(s, 400);
+  for (let i = 0; i < 3000 && s.store.food - food < 30; i++) stepFed(s, 1); // the last load may be a long walk home, wherever the bison fell
   assert.equal(trips, 3);
   assert.equal(s.store.food - food, 30);
 });
@@ -153,7 +161,7 @@ test('spotting distance: an animal 24 tiles out is hunted only with dogs', () =>
     const [cx, cy] = campCentre(s.map);
     const d = Math.hypot(a.x - cx, a.y - cy);
     assert.ok(d > 22 && d <= 26, `at ${d}`);
-    const lodge = addBuilding(s, 'hunting_lodge', 36, 36, true);
+    const lodge = addBuilding(s, 'hunting_lodge', o(36), o(36), true);
     const p = adult(s);
     assignWorkers(s, [p.id], lodge.id);
     step(s, 3);
@@ -195,7 +203,7 @@ test('a fetch order on a carcass: the person brings its next load home', () => {
 test('wild game is deterministic: same seed and orders, identical state', () => {
   const run = () => {
     const s = newGame(5);
-    const lodge = addBuilding(s, 'hunting_lodge', 36, 36, true);
+    const lodge = addBuilding(s, 'hunting_lodge', o(36), o(36), true);
     assignWorkers(s, [adult(s, 0).id, adult(s, 1).id], lodge.id);
     stepFed(s, 4000);
     return JSON.stringify(s);

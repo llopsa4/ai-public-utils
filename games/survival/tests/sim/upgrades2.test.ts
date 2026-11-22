@@ -8,7 +8,7 @@ import { walkable } from '../../src/sim/people';
 import type { Enemy, GameState } from '../../src/sim/state';
 import { buildSpeed, buyUpgrade, missingRequirement, UPGRADE_IDS } from '../../src/sim/upgrades';
 import { newGame, step } from '../../src/sim/tick';
-import { addHuntingLodge } from './helpers';
+import { addHuntingLodge, o } from './helpers';
 import { scoutsStaffed, waveBanner } from '../../src/sim/waves';
 
 const TIER2 = [
@@ -70,7 +70,7 @@ test('a site finishes sooner with tools', () => {
     s.store.hides = 20;
     s.store.food = 1000;
     if (tools) s.upgrades.push('tools');
-    const site = placeBuilding(s, 'gathering_spot', 28, 26).building!;
+    const site = placeBuilding(s, 'gathering_spot', o(28), o(26)).building!;
     site.delivered = { wood: 10 };
     for (let i = 0; i < 4000; i++) {
       step(s, 1);
@@ -92,13 +92,13 @@ function campWithScouts(staffed: boolean): GameState {
   s.store.wood = 100;
   s.store.hides = 20;
   s.store.food = 5000;
-  const lodge = placeBuilding(s, 'scouts_lodge', 28, 26).building!;
+  const lodge = placeBuilding(s, 'scouts_lodge', o(28), o(26)).building!;
   lodge.done = true;
   if (staffed) {
     const scout = s.people.find((p) => p.age === 'adult')!;
     assert.equal(assignWorkers(s, [scout.id], lodge.id), 1);
     assert.equal(scout.society, 'scouts');
-    Object.assign(scout, { x: 27, y: 26 }); // a ring tile
+    Object.assign(scout, { x: o(27), y: o(26) }); // a ring tile
   }
   return s;
 }
@@ -107,7 +107,7 @@ test('the scouts lodge needs the scouts upgrade, and an unstaffed one does not c
   const s = newGame(1);
   s.store.wood = 100;
   s.store.hides = 20;
-  assert.equal(placementError(s, 'scouts_lodge', 28, 26), 'Needs the Akicita scouts.');
+  assert.equal(placementError(s, 'scouts_lodge', o(28), o(26)), 'Needs the Akicita scouts.');
   const bare = campWithScouts(false);
   assert.equal(scoutsStaffed(bare), false);
   assert.equal(scoutsStaffed(campWithScouts(true)), true);
@@ -155,7 +155,7 @@ test('a scout walks to the lodge and stays; the lodge holds two', () => {
   step(s, 600);
   assert.equal(scoutsStaffed(s), true, 'they arrived');
   const before = JSON.stringify(s.store);
-  assert.ok(Math.abs(Math.round(a.x) - 28) <= 2 && Math.abs(Math.round(a.y) - 26) <= 2);
+  assert.ok(Math.abs(Math.round(a.x) - o(28)) <= 2 && Math.abs(Math.round(a.y) - o(26)) <= 2);
   assert.equal(a.job?.kind, 'scout');
   assert.ok(before.length > 0);
 });
@@ -172,8 +172,8 @@ function campWithBuilders(): GameState {
 
 /** The first tile in the north of the camp where `type` can be placed. */
 function northSpot(s: GameState, type: string): [number, number] {
-  for (let y = 10; y <= 13; y++) {
-    for (let x = 14; x <= 34; x++) {
+  for (let y = o(10); y <= o(13); y++) {
+    for (let x = o(14); x <= o(34); x++) {
       if (placementError(s, type, x, y) === null && placementError(s, type, x + 6, y) === null) return [x, y];
     }
   }
@@ -186,16 +186,16 @@ test('traps and fire pits need the builders upgrade and are 1x1 sites that worke
   const plain = newGame(1);
   plain.store.wood = 100;
   plain.store.hides = 20;
-  assert.equal(placementError(plain, 'trap', 28, 28), "Needs the Builders' society.");
-  assert.equal(placementError(plain, 'fire_pit', 28, 28), "Needs the Builders' society.");
+  assert.equal(placementError(plain, 'trap', o(28), o(28)), "Needs the Builders' society.");
+  assert.equal(placementError(plain, 'fire_pit', o(28), o(28)), "Needs the Builders' society.");
 
   const s = campWithBuilders();
-  const trap = placeBuilding(s, 'trap', 28, 28).building!;
+  const trap = placeBuilding(s, 'trap', o(28), o(28)).building!;
   assert.deepEqual([s.store.wood, s.store.hides], [197, 49]);
-  assert.equal(s.blocked[28 * s.map.size + 28], true);
-  assert.equal(s.blocked[28 * s.map.size + 29], false, 'only one tile');
-  assert.equal(placementError(s, 'fire_pit', 28, 28), 'Something is in the way.');
-  const pit = placeBuilding(s, 'fire_pit', 30, 28).building!;
+  assert.equal(s.blocked[o(28) * s.map.size + o(28)], true);
+  assert.equal(s.blocked[o(28) * s.map.size + o(29)], false, 'only one tile');
+  assert.equal(placementError(s, 'fire_pit', o(28), o(28)), 'Something is in the way.');
+  const pit = placeBuilding(s, 'fire_pit', o(30), o(28)).building!;
   assert.equal(s.store.wood, 192);
   for (let i = 0; i < 3000 && !(trap.done && pit.done); i++) step(s, 1);
   assert.ok(trap.done && pit.done, 'both finished');
@@ -277,15 +277,15 @@ test('the warriors lodges need the warriors upgrade; assignment gives the societ
   const plain = newGame(1);
   plain.store.wood = 100;
   plain.store.hides = 20;
-  assert.equal(placementError(plain, 'lancers_lodge', 28, 26), 'Needs the Akicita warriors.');
-  assert.equal(placementError(plain, 'archers_lodge', 28, 26), 'Needs the Akicita warriors.');
+  assert.equal(placementError(plain, 'lancers_lodge', o(28), o(26)), 'Needs the Akicita warriors.');
+  assert.equal(placementError(plain, 'archers_lodge', o(28), o(26)), 'Needs the Akicita warriors.');
 
   const s = newGame(1);
   s.upgrades.push('bows', 'warriors');
   s.store.wood = 100;
   s.store.hides = 20;
-  const lancers = placeBuilding(s, 'lancers_lodge', 28, 26).building!;
-  const archers = placeBuilding(s, 'archers_lodge', 28, 30).building!;
+  const lancers = placeBuilding(s, 'lancers_lodge', o(28), o(26)).building!;
+  const archers = placeBuilding(s, 'archers_lodge', o(28), o(30)).building!;
   lancers.done = true;
   archers.done = true;
   const [a, b, c, d, e] = s.people.filter((p) => p.age === 'adult');
@@ -307,7 +307,7 @@ test('a lodge holds four drillers', () => {
   s.upgrades.push('warriors');
   s.store.wood = 100;
   s.store.hides = 20;
-  const lodge = placeBuilding(s, 'lancers_lodge', 28, 26).building!;
+  const lodge = placeBuilding(s, 'lancers_lodge', o(28), o(26)).building!;
   lodge.done = true;
   const ids = s.people.filter((p) => p.age === 'adult').slice(0, 6).map((p) => p.id);
   assert.equal(assignWorkers(s, ids, lodge.id), 4);
@@ -345,8 +345,8 @@ test('a lancer outdamages a club fighter in a duel', () => {
       const s = newGame(seed);
       const p = s.people.find((q) => q.age === 'adult')!;
       s.people = [p];
-      Object.assign(p, { x: 24, y: 28, drafted: true, post: [24, 28], stance: 'hold', society });
-      s.enemies.push({ id: 1, kind: 'wolf', x: 24.0, y: 28.6, hp: 1000, cooldown: 0, fleeing: false, wave: 0 });
+      Object.assign(p, { x: o(24), y: o(28), drafted: true, post: [o(24), o(28)], stance: 'hold', society });
+      s.enemies.push({ id: 1, kind: 'wolf', x: o(24), y: o(28) + 0.6, hp: 1000, cooldown: 0, fleeing: false, wave: 0 });
       s.nextEnemyId = 2;
       step(s, 80);
       total += 1000 - s.enemies[0].hp;
@@ -364,8 +364,8 @@ test('an archer drafted next to a wolf 4 tiles away fires, like a hunter', () =>
     const s = newGame(2);
     const p = s.people.find((q) => q.age === 'adult')!;
     s.people = [p];
-    Object.assign(p, { x: 24, y: 28, drafted: true, post: [24, 28], stance: 'hold', society });
-    s.enemies.push({ id: 1, kind: 'wolf', x: 24, y: 24, hp: 40, cooldown: 0, fleeing: false, wave: 0 });
+    Object.assign(p, { x: o(24), y: o(28), drafted: true, post: [o(24), o(28)], stance: 'hold', society });
+    s.enemies.push({ id: 1, kind: 'wolf', x: o(24), y: o(24), hp: 40, cooldown: 0, fleeing: false, wave: 0 });
     s.nextEnemyId = 2;
     step(s, 1);
     return p.cooldown > 0;

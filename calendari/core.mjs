@@ -1,7 +1,7 @@
 import { cityById, isOfficialHoliday } from './holidays.mjs';
 export const STORAGE_KEY = 'calendari.anonymous.v1';
 export const KINDS = ['24', 'day', 'night'];
-export const WEEKDAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+export const WEEKDAYS = ['Diumenge', 'Dilluns', 'Dimarts', 'Dimecres', 'Dijous', 'Divendres', 'Dissabte'];
 export const HOURS = { '24': 24, day: 12, night: 12 };
 // Legacy mixed permissions default to 24 hours. Short shifts remain independently selectable.
 export const exclusiveKinds = kinds => kinds.includes('24') ? ['24'] : ['day', 'night'].filter(kind => kinds.includes(kind));
@@ -50,33 +50,33 @@ export function totals(state, month, assignments = state.months[month]?.assignme
 }
 export function ruleIssues(state, month, assignment, others) {
   const p = state.participants.find(p => p.id === assignment.participantId);
-  if (!p) return ['Participant no longer exists'];
+  if (!p) return ['El participant ja no existeix'];
   const config = state.months[month] ?? newMonth();
   const issues = [];
-  if (!exclusiveKinds(p.allowedKinds).includes(assignment.kind)) issues.push('Shift type is not allowed');
-  if (p.blockedWeekdays.includes(weekday(assignment.date))) issues.push('Weekday is blocked');
-  if (p.blockedDates.includes(assignment.date)) issues.push('Date is blocked');
+  if (!exclusiveKinds(p.allowedKinds).includes(assignment.kind)) issues.push('Tipus de torn no permès');
+  if (p.blockedWeekdays.includes(weekday(assignment.date))) issues.push('Dia de la setmana bloquejat');
+  if (p.blockedDates.includes(assignment.date)) issues.push('Data bloquejada');
   const own = others.filter(a => a.participantId === p.id);
-  if (own.some(a => a.date === shiftDate(assignment.date, -1) || a.date === shiftDate(assignment.date, 1))) issues.push('Consecutive work dates');
+  if (own.some(a => a.date === shiftDate(assignment.date, -1) || a.date === shiftDate(assignment.date, 1))) issues.push('Dies de treball consecutius');
   // A Friday start reserves that participant's Friday allowance in this and both adjacent months.
   if (weekday(assignment.date) === 5) {
     const fridayMonths = [shiftMonth(month, -1), month, shiftMonth(month, 1)];
     if (own.some(a => weekday(a.date) === 5 && fridayMonths.includes(a.date.slice(0, 7))))
-      issues.push('Only one Friday duty per person across two consecutive months');
+      issues.push('Només una guàrdia en divendres per persona cada dos mesos consecutius');
   }
   const isHoliday = holiday(assignment.date, config);
   const count = own.filter(a => a.date.startsWith(month) && holiday(a.date, config) === isHoliday).length;
   const holidayHours = own.filter(a => a.date.startsWith(month) && holiday(a.date, config)).reduce((sum, a) => sum + HOURS[a.kind], 0);
-  if (isHoliday ? holidayHours + HOURS[assignment.kind] > 24 : count >= 3) issues.push(isHoliday ? 'Monthly holiday limit exceeded' : 'Monthly non-holiday limit exceeded');
+  if (isHoliday ? holidayHours + HOURS[assignment.kind] > 24 : count >= 3) issues.push(isHoliday ? 'Límit mensual de festius superat' : 'Límit mensual de dies laborables superat');
   return issues;
 }
 export function structuralIssues(state, month, assignment, others) {
   const config = state.months[month] ?? newMonth();
   const issues = [];
-  if (!KINDS.includes(assignment.kind) || ![0, 1].includes(assignment.seat)) issues.push('Invalid shift structure');
-  if (assignment.kind !== '24' && !holiday(assignment.date, config)) issues.push('Non-holidays require 24-hour duties');
-  if (others.some(a => a.date === assignment.date && a.seat === assignment.seat && (a.kind === assignment.kind || a.kind === '24' || assignment.kind === '24'))) issues.push('Seat already occupied');
-  if (others.some(a => a.participantId === assignment.participantId && a.date === assignment.date)) issues.push('A person cannot work two shifts on one date');
+  if (!KINDS.includes(assignment.kind) || ![0, 1].includes(assignment.seat)) issues.push('Estructura de torn no vàlida');
+  if (assignment.kind !== '24' && !holiday(assignment.date, config)) issues.push('Els dies laborables requereixen guàrdies de 24 hores');
+  if (others.some(a => a.date === assignment.date && a.seat === assignment.seat && (a.kind === assignment.kind || a.kind === '24' || assignment.kind === '24'))) issues.push('Plaça ja ocupada');
+  if (others.some(a => a.participantId === assignment.participantId && a.date === assignment.date)) issues.push('Una persona no pot fer dos torns el mateix dia');
   return issues;
 }
 export function audit(state, month) {
@@ -103,10 +103,10 @@ export function coverageStatus(date, assignments) {
 export function movedAssignments(state, month, sourceKey, target) {
   const config = state.months[month];
   const source = config?.assignments.find(a => slotKey(a) === sourceKey);
-  if (!source) throw new Error('The original assignment no longer exists.');
+  if (!source) throw new Error('L’assignació original ja no existeix.');
   if (!target || !monthDates(month).includes(target.date) || target.date === source.date)
-    throw new Error('Choose another date in this month.');
-  if (target.kind !== source.kind) throw new Error('Keep the original shift type.');
+    throw new Error('Tria un altre dia d’aquest mes.');
+  if (target.kind !== source.kind) throw new Error('Mantén el tipus de torn original.');
   const candidate = { date: target.date, kind: target.kind, seat: target.seat, participantId: source.participantId, fixed: false, override: false };
   const others = nearbyAssignments(state, month).filter(a => a !== source);
   const issues = [...structuralIssues(state, month, candidate, others), ...ruleIssues(state, month, candidate, others)];
@@ -126,7 +126,7 @@ export function moveTargets(state, month, sourceKey) {
 
 // Every persisted field is explicitly selected and validated. Names never enter this model.
 export function anonymousState(input) {
-  const fail = () => { throw new Error('Backup format is invalid or unsupported. Existing data was kept.'); };
+  const fail = () => { throw new Error('El format de la còpia no és vàlid o no és compatible. S’han conservat les dades existents.'); };
   const integer = (v, min, max) => Number.isInteger(v) && v >= min && v <= max;
   const dateOK = d => typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d) && !Number.isNaN(Date.parse(d)) && new Date(`${d}T12:00:00Z`).toISOString().slice(0, 10) === d;
   const monthOK = m => /^\d{4}-(0[1-9]|1[0-2])$/.test(m) && Number(m.slice(0, 4)) >= 1900 && Number(m.slice(0, 4)) <= 2200;
@@ -175,7 +175,7 @@ export function serialize(state, keepMonth = null) {
     if (m !== keepMonth && !config.holidays.length && !config.assignments.length) delete clean.months[m];
   return JSON.stringify(clean, null, 2);
 }
-export function parseBackup(text) { try { return anonymousState(JSON.parse(text)); } catch { throw new Error('Backup format is invalid or unsupported. Existing data was kept.'); } }
+export function parseBackup(text) { try { return anonymousState(JSON.parse(text)); } catch { throw new Error('El format de la còpia no és vàlid o no és compatible. S’han conservat les dades existents.'); } }
 
 // Greedy restarts with repair. Every candidate is validated; time exhaustion is not an infeasibility proof.
 export function generate(state, month, { timeMs = 10000, random = Math.random, onProgress = () => {}, now = () => performance.now() } = {}) {

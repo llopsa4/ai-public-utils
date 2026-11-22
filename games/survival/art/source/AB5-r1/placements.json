@@ -1,0 +1,2002 @@
+{
+  "tree_bur_oak/spring/0": {
+    "scale": 0.15196078431372548,
+    "sourceFoot": [
+      611,
+      1182
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      108
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_bur_oak/summer/0": {
+    "scale": 0.15196078431372548,
+    "sourceFoot": [
+      612,
+      1183
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      108
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_bur_oak/autumn/0": {
+    "scale": 0.15196078431372548,
+    "sourceFoot": [
+      612,
+      1183
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      108
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_bur_oak/winter/0": {
+    "scale": 0.15196078431372548,
+    "sourceFoot": [
+      611,
+      1182
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      108
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_bur_oak/spring/1": {
+    "scale": 0.15789473684210525,
+    "sourceFoot": [
+      587,
+      1229
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      94
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_bur_oak/summer/1": {
+    "scale": 0.15789473684210525,
+    "sourceFoot": [
+      583,
+      1228
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      4,
+      94
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_bur_oak/autumn/1": {
+    "scale": 0.15789473684210525,
+    "sourceFoot": [
+      588,
+      1229
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      94
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_bur_oak/winter/1": {
+    "scale": 0.15789473684210525,
+    "sourceFoot": [
+      589,
+      1228
+    ],
+    "sourceBox": [
+      0,
+      52,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      102
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_basswood/spring/0": {
+    "scale": 0.1485623003194888,
+    "sourceFoot": [
+      613,
+      1244
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      5,
+      103
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_basswood/summer/0": {
+    "scale": 0.1485623003194888,
+    "sourceFoot": [
+      611,
+      1244
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      5,
+      103
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_basswood/autumn/0": {
+    "scale": 0.1485623003194888,
+    "sourceFoot": [
+      614,
+      1244
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      5,
+      103
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_basswood/winter/0": {
+    "scale": 0.1485623003194888,
+    "sourceFoot": [
+      626,
+      1244
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      3,
+      103
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_basswood/spring/1": {
+    "scale": 0.20357142857142857,
+    "sourceFoot": [
+      429,
+      1399
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1024,
+      1536
+    ],
+    "offset": [
+      9,
+      3
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_basswood/summer/1": {
+    "scale": 0.20357142857142857,
+    "sourceFoot": [
+      428,
+      1400
+    ],
+    "sourceBox": [
+      0,
+      35,
+      1024,
+      1536
+    ],
+    "offset": [
+      9,
+      10
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_basswood/autumn/1": {
+    "scale": 0.20357142857142857,
+    "sourceFoot": [
+      428,
+      1400
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1024,
+      1536
+    ],
+    "offset": [
+      9,
+      3
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_basswood/winter/1": {
+    "scale": 0.20357142857142857,
+    "sourceFoot": [
+      428,
+      1400
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1024,
+      1536
+    ],
+    "offset": [
+      9,
+      3
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_cottonwood/spring/0": {
+    "scale": 0.17714285714285713,
+    "sourceFoot": [
+      525,
+      1279
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      3,
+      61
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_cottonwood/summer/0": {
+    "scale": 0.17714285714285713,
+    "sourceFoot": [
+      524,
+      1280
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      3,
+      61
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_cottonwood/autumn/0": {
+    "scale": 0.17714285714285713,
+    "sourceFoot": [
+      525,
+      1279
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      3,
+      61
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_cottonwood/winter/0": {
+    "scale": 0.17714285714285713,
+    "sourceFoot": [
+      524,
+      1279
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      3,
+      61
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_cottonwood/spring/1": {
+    "scale": 0.16666666666666666,
+    "sourceFoot": [
+      558,
+      1378
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1024,
+      1536
+    ],
+    "offset": [
+      3,
+      58
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_cottonwood/summer/1": {
+    "scale": 0.16666666666666666,
+    "sourceFoot": [
+      552,
+      1377
+    ],
+    "sourceBox": [
+      0,
+      78,
+      1024,
+      1536
+    ],
+    "offset": [
+      4,
+      72
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_cottonwood/autumn/1": {
+    "scale": 0.16666666666666666,
+    "sourceFoot": [
+      556,
+      1378
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1024,
+      1536
+    ],
+    "offset": [
+      3,
+      58
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_cottonwood/winter/1": {
+    "scale": 0.16666666666666666,
+    "sourceFoot": [
+      557,
+      1378
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1024,
+      1536
+    ],
+    "offset": [
+      3,
+      58
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_willow/spring/0": {
+    "scale": 0.12931034482758622,
+    "sourceFoot": [
+      567,
+      1142
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      23,
+      140
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_willow/summer/0": {
+    "scale": 0.12931034482758622,
+    "sourceFoot": [
+      567,
+      1142
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      23,
+      140
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_willow/autumn/0": {
+    "scale": 0.12931034482758622,
+    "sourceFoot": [
+      560,
+      1142
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      24,
+      140
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_willow/winter/0": {
+    "scale": 0.12931034482758622,
+    "sourceFoot": [
+      536,
+      1144
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1145,
+      1374
+    ],
+    "offset": [
+      27,
+      140
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_willow/spring/1": {
+    "scale": 0.1725417439703154,
+    "sourceFoot": [
+      539,
+      1194
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      82
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_willow/summer/1": {
+    "scale": 0.1725417439703154,
+    "sourceFoot": [
+      539,
+      1194
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      82
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_willow/autumn/1": {
+    "scale": 0.1725417439703154,
+    "sourceFoot": [
+      538,
+      1194
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      82
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "tree_willow/winter/1": {
+    "scale": 0.1725417439703154,
+    "sourceFoot": [
+      538,
+      1195
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      3,
+      82
+    ],
+    "manifestAnchor": [
+      96,
+      288
+    ],
+    "contactPixel": [
+      96,
+      288
+    ]
+  },
+  "bush_chokecherry/spring/0": {
+    "scale": 0.0759651307596513,
+    "sourceFoot": [
+      754,
+      912
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      7,
+      27
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_chokecherry/summer/0": {
+    "scale": 0.0759651307596513,
+    "sourceFoot": [
+      754,
+      912
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      7,
+      27
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_chokecherry/autumn/0": {
+    "scale": 0.0759651307596513,
+    "sourceFoot": [
+      746,
+      915
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      7,
+      26
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_chokecherry/winter/0": {
+    "scale": 0.0759651307596513,
+    "sourceFoot": [
+      733,
+      915
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      8,
+      26
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_chokecherry/spring/1": {
+    "scale": 0.08402203856749312,
+    "sourceFoot": [
+      619,
+      1012
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      12,
+      11
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_chokecherry/summer/1": {
+    "scale": 0.08402203856749312,
+    "sourceFoot": [
+      623,
+      1013
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      12,
+      11
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_chokecherry/autumn/1": {
+    "scale": 0.08402203856749312,
+    "sourceFoot": [
+      586,
+      1025
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      15,
+      10
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_chokecherry/winter/1": {
+    "scale": 0.08402203856749312,
+    "sourceFoot": [
+      640,
+      1031
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      10,
+      9
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_plum/spring/0": {
+    "scale": 0.0782051282051282,
+    "sourceFoot": [
+      758,
+      906
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      5,
+      25
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_plum/summer/0": {
+    "scale": 0.0782051282051282,
+    "sourceFoot": [
+      757,
+      906
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      5,
+      25
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_plum/autumn/0": {
+    "scale": 0.0782051282051282,
+    "sourceFoot": [
+      759,
+      909
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      5,
+      25
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_plum/winter/0": {
+    "scale": 0.0782051282051282,
+    "sourceFoot": [
+      756,
+      909
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      5,
+      25
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_plum/spring/1": {
+    "scale": 0.07227488151658767,
+    "sourceFoot": [
+      707,
+      871
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      13,
+      33
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_plum/summer/1": {
+    "scale": 0.07227488151658767,
+    "sourceFoot": [
+      705,
+      873
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      13,
+      33
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_plum/autumn/1": {
+    "scale": 0.07227488151658767,
+    "sourceFoot": [
+      692,
+      874
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      14,
+      33
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "bush_plum/winter/1": {
+    "scale": 0.07227488151658767,
+    "sourceFoot": [
+      694,
+      886
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      14,
+      32
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/spring/0": {
+    "scale": 0.07043879907621248,
+    "sourceFoot": [
+      679,
+      900
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      16,
+      33
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/summer/0": {
+    "scale": 0.07043879907621248,
+    "sourceFoot": [
+      688,
+      904
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      16,
+      32
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/autumn/0": {
+    "scale": 0.07043879907621248,
+    "sourceFoot": [
+      671,
+      905
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      17,
+      32
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/winter/0": {
+    "scale": 0.07043879907621248,
+    "sourceFoot": [
+      670,
+      906
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      17,
+      32
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/spring/1": {
+    "scale": 0.08751793400286945,
+    "sourceFoot": [
+      628,
+      1019
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      9,
+      7
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/summer/1": {
+    "scale": 0.08751793400286945,
+    "sourceFoot": [
+      686,
+      1023
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      4,
+      6
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/autumn/1": {
+    "scale": 0.08751793400286945,
+    "sourceFoot": [
+      697,
+      1023
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      3,
+      6
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/winter/1": {
+    "scale": 0.08751793400286945,
+    "sourceFoot": [
+      668,
+      1024
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      6,
+      6
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/spring/2": {
+    "scale": 0.07227488151658767,
+    "sourceFoot": [
+      709,
+      900
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      13,
+      31
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/summer/2": {
+    "scale": 0.07227488151658767,
+    "sourceFoot": [
+      692,
+      903
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      14,
+      31
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/autumn/2": {
+    "scale": 0.07227488151658767,
+    "sourceFoot": [
+      693,
+      902
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      14,
+      31
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "rock_boulder/winter/2": {
+    "scale": 0.07227488151658767,
+    "sourceFoot": [
+      714,
+      902
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      12,
+      31
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/spring/0": {
+    "scale": 0.04524886877828054,
+    "sourceFoot": [
+      587,
+      1102
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "offset": [
+      37,
+      46
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/summer/0": {
+    "scale": 0.04524886877828054,
+    "sourceFoot": [
+      546,
+      1105
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "offset": [
+      39,
+      46
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/autumn/0": {
+    "scale": 0.04524886877828054,
+    "sourceFoot": [
+      570,
+      1105
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "offset": [
+      38,
+      46
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/winter/0": {
+    "scale": 0.04524886877828054,
+    "sourceFoot": [
+      548,
+      1105
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "offset": [
+      39,
+      46
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/spring/1": {
+    "scale": 0.045188284518828455,
+    "sourceFoot": [
+      553,
+      1187
+    ],
+    "sourceBox": [
+      0,
+      417,
+      1199,
+      1312
+    ],
+    "offset": [
+      39,
+      61
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/summer/1": {
+    "scale": 0.045188284518828455,
+    "sourceFoot": [
+      552,
+      1187
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      39,
+      42
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/autumn/1": {
+    "scale": 0.045188284518828455,
+    "sourceFoot": [
+      560,
+      1195
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      39,
+      42
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/winter/1": {
+    "scale": 0.045188284518828455,
+    "sourceFoot": [
+      559,
+      1188
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1199,
+      1312
+    ],
+    "offset": [
+      39,
+      42
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/spring/2": {
+    "scale": 0.044579533941236066,
+    "sourceFoot": [
+      662,
+      978
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      34,
+      52
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/summer/2": {
+    "scale": 0.044579533941236066,
+    "sourceFoot": [
+      843,
+      981
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      26,
+      52
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/autumn/2": {
+    "scale": 0.044579533941236066,
+    "sourceFoot": [
+      686,
+      979
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      33,
+      52
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "tuft_grass/winter/2": {
+    "scale": 0.044579533941236066,
+    "sourceFoot": [
+      633,
+      987
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1312,
+      1199
+    ],
+    "offset": [
+      36,
+      52
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "stump_tree/spring/0": {
+    "scale": 0.06149193548387097,
+    "sourceFoot": [
+      991,
+      890
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      3,
+      41
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "stump_tree/summer/0": {
+    "scale": 0.06149193548387097,
+    "sourceFoot": [
+      992,
+      891
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      3,
+      41
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "stump_tree/autumn/0": {
+    "scale": 0.06149193548387097,
+    "sourceFoot": [
+      991,
+      890
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      3,
+      41
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "stump_tree/winter/0": {
+    "scale": 0.06149193548387097,
+    "sourceFoot": [
+      991,
+      890
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1536,
+      1024
+    ],
+    "offset": [
+      3,
+      41
+    ],
+    "manifestAnchor": [
+      64,
+      96
+    ],
+    "contactPixel": [
+      64,
+      96
+    ]
+  },
+  "item_basket/still/0": {
+    "scale": 0.02009273570324575,
+    "sourceFoot": [
+      607,
+      1253
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "offset": [
+      4,
+      4
+    ],
+    "manifestAnchor": [
+      16,
+      32
+    ],
+    "contactPixel": [
+      16,
+      29
+    ]
+  },
+  "item_log/still/0": {
+    "scale": 0.015990159901599015,
+    "sourceFoot": [
+      441,
+      1253
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "offset": [
+      9,
+      9
+    ],
+    "manifestAnchor": [
+      16,
+      32
+    ],
+    "contactPixel": [
+      16,
+      29
+    ]
+  },
+  "item_hides/still/0": {
+    "scale": 0.02047244094488189,
+    "sourceFoot": [
+      619,
+      1253
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "offset": [
+      3,
+      3
+    ],
+    "manifestAnchor": [
+      16,
+      32
+    ],
+    "contactPixel": [
+      16,
+      29
+    ]
+  },
+  "item_bag/still/0": {
+    "scale": 0.019005847953216373,
+    "sourceFoot": [
+      570,
+      1253
+    ],
+    "sourceBox": [
+      0,
+      0,
+      1254,
+      1254
+    ],
+    "offset": [
+      5,
+      5
+    ],
+    "manifestAnchor": [
+      16,
+      32
+    ],
+    "contactPixel": [
+      16,
+      29
+    ]
+  }
+}

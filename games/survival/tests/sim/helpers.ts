@@ -1,11 +1,17 @@
+import mapData from '../../src/data/map.json';
 import seasons from '../../src/data/seasons.json';
 import { mealNeed } from '../../src/sim/economy';
 import { addBuilding, type GameState } from '../../src/sim/state';
 import { step } from '../../src/sim/tick';
 
+/** Tests were written on the 48 x 48 map with the fire at 22: `o(n)` moves such a tile number to the camp's place now. */
+export function o(n: number): number {
+  return n + (mapData.camp.fire[0] - 22);
+}
+
 /** Adds a finished hunting lodge, the home of Hunting dogs, Better bows and Akicita scouts. */
 export function addHuntingLodge(s: GameState): void {
-  addBuilding(s, 'hunting_lodge', 36, 36, true);
+  addBuilding(s, 'hunting_lodge', o(36), o(36), true);
 }
 
 /**

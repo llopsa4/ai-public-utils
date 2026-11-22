@@ -13,7 +13,7 @@ game and its guides. Examples are hypothetical requests, not approved content.
 
 Begin each request with its stage. If unclear, assume the smallest stage that answers it (an idea →
 DESIGN; "what's wrong" → REVIEW; "find out about" → RESEARCH) and say which one you assumed. Never
-move to a later stage (spec, code, finished models) uninvited.
+move to a later stage (spec, code, finished artwork) uninvited.
 
 - **RESEARCH:** gather cultural facts for one named topic and one nation (Lakota, Dakota or
   Nakota). Nation-authored sources first; museum and academic sources only to corroborate. One
@@ -21,7 +21,7 @@ move to a later stage (spec, code, finished models) uninvited.
   `research/<nation>.md` and proposals to CULTURE.md *Needs review*; nothing is used until the user
   approves it.
 - **DESIGN:** propose a room, enemy, boss, gift, item, ability, camp feature or system; no code or
-  finished models. One recommended option (two only when asked for ideas), short outline, required
+  finished artwork. One recommended option (two only when asked for ideas), short outline, required
   vs optional content, art needs listed but not produced. Every real-culture element cites its
   CULTURE.md entry; a gap goes to *Needs review*. Game content may be invented (see Standing rules).
 - **WRITE:** expand an approved design into player-facing text (elder stories, helper lines, item
@@ -50,14 +50,14 @@ move to a later stage (spec, code, finished models) uninvited.
   foes, no trophies, no eagle feathers or headdresses as loot or tiers, no real historical people,
   no stereotypes or war-whoops, no mixing one nation's dress with another's.
 - **Rewards are never taken from the fallen.** Hoarding monsters *release* what they took; winter,
-  hunger and sickness threats make the *land renew*. Helper gifts come between rooms.
-- **Equipment is visible only when equipped.** An item mesh is attached to the hero when it is
-  equipped and removed when it is unequipped, never shown otherwise.
-- **Free software only.** Use open-source tools and libraries and CC0, CC-BY or OFL assets. Record
-  each third-party library or asset (version, licence, URL) in `LICENSES.md` in the same change. No
+  hunger and sickness threats make the *land renew*. Helpers present level-up choices between waves.
+- **Equipment is visible only when equipped.** An equipped weapon sprite is drawn over or around the hero and removed when unequipped.
+  Stat items need no held sprite unless their approved design calls for one.
+- **Free software only.** Use open-source tools and libraries and CC0, CC-BY or OFL assets. This
+  game keeps no LICENSES.md (user, 2026-11-20). No
   paid tools, services or asset stores.
-- **Touch first.** Behavior is specified for the touch controls (floating left stick; attack, dash
-  and abilities on the right; auto-aim; drag-aim; left-hand swap) in landscape on phones and tablets.
+- **Touch first.** Behavior is specified for the touch controls (floating stick; dash
+  and one ability button; automatic weapon aim/fire; left-handed swap) in landscape on phones and tablets.
 - **Missing fields.** Fill them from the existing game and guides. Ask only one blocking question
   when the answer would change the result; otherwise state the assumption and proceed. Substantial
   unsettled ideas are grilled one question at a time, as the
@@ -72,7 +72,7 @@ move to a later stage (spec, code, finished models) uninvited.
   `research/<nation>.md` over re-reading sources or code another unit already summarised.
 - **Bound research:** one nation and one topic per request, about ten searches at most, with
   standard-mode web search unless the results are thin.
-- **Data over code:** gifts, items, enemies and rooms live in JSON files under `game/data/`, so
+- **Data over code:** helpers, items, threats and arenas live in JSON files under `game/data/`, so
   content changes edit data, not systems.
 - **Stop at approval gates** (research entries, slice spec, art look) instead of building ahead.
 - **Leave the next session cheap:** finish by updating WORKLOG.md's *Next action* in three lines or
@@ -106,7 +106,7 @@ Sources I already trust: [optional].
 ```text
 DESIGN [room / enemy / boss / gift / item / ability / camp feature] for [nation or shared].
 Player experience: [what it feels like to meet or use it].
-Run position: [early rooms / late rooms / boss / camp].
+Run position: [early waves / late waves / boss / camp].
 Reward framing: [released / land renews / helper gift / none].
 Must include: [...]. Must preserve: [existing balance, items, stories].
 ```
@@ -161,7 +161,7 @@ touch controls / balance / clarity / performance on phones].
 ## Example: a hoarding monster
 
 ```text
-DESIGN one enemy for the Dakota late rooms: a monster from an approved story that
+DESIGN one enemy for the Dakota late waves: a monster from an approved story that
 hoards what it took from the people. When it is defeated, what it held is released and
 returned to the camp. Use only CULTURE.md entries; list any gaps under Needs review.
 Grey-box art only. No new systems.

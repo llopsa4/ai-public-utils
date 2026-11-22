@@ -8,6 +8,8 @@ import { buildingDefs, buildingName } from '../sim/buildings';
 import { HUNGRY_AT } from '../sim/economy';
 import { carryText, displayLabel, englishLabel } from '../sim/labels';
 import { createHover, type Hover } from './hover';
+import { installedCursors, pickCursor, shownCursor, showCursor } from '../render/cursors';
+import { makeSurface, palette, setButtonVisible, setLook, showIcon, textButton, UI_FONT, type Palette, type TextButton } from '../render/ui';
 import { queueOrders } from '../sim/orders';
 import { ages, canWork } from '../sim/people';
 import { addMessage } from '../sim/state';
@@ -27,10 +29,10 @@ const CLICK_PX = 12;
 /** World pixels from a person's feet up to the middle of the body (the click target). */
 const BODY_UP = 14;
 const TOAST_TICKS = 50;
-const INK = '#f3e9d2';
-const TITLE_GOLD = '#e0b85a';
 const HINT = 'Left-click to select, right-click to order. Select adults, then B to build';
 /** The Upgrades list of a selected finished building: one row per upgrade, just above the selection panel. */
+/** The upgrade icon's side in px. */
+const ICON = 28;
 const UP = { x: 0, w: 620, head: 28, row: 50, maxRows: 8 };
 /** One line on what each upgrade does (DESIGN-upgrades.md `## Upgrades`). */
 const UPGRADE_EFFECT: Record<UpgradeId, string> = {
@@ -70,10 +72,11 @@ const PING_COLOR: Record<PingKind, number> = { move: 0x6fbf5f, work: 0xe0b050, a
 
 interface UpgradeRow {
   bg: Phaser.GameObjects.Rectangle;
+  icon: Phaser.GameObjects.Image;
   label: Phaser.GameObjects.Text;
   effect: Phaser.GameObjects.Text;
   status: Phaser.GameObjects.Text;
-  buy: Phaser.GameObjects.Text;
+  buy: TextButton;
   id: UpgradeId | null;
 }
 
@@ -81,10 +84,17 @@ interface Button {
   bg: Phaser.GameObjects.Rectangle;
   label: Phaser.GameObjects.Text;
   onClick: () => void;
+  /** Order icons by name (`draft`, `undraft`, ...), only the keys that have art; one shows at a time. */
+  icons: Record<string, Phaser.GameObjects.Image>;
+  /** The icon shown now (a key of `icons`), or null. */
+  icon: string | null;
+  /** Only the icon shows (its label is the hover text). */
+  iconOnly: boolean;
 }
 
 export class SelectScene extends Phaser.Scene {
   private game2!: GameScene;
+  private pal!: Palette;
   private selected: number[] = [];
   private selectedBuilding: number | null = null;
   /** A clicked berry bush, shown in the panel with how much fruit is left on it. */
@@ -151,25 +161,27 @@ export class SelectScene extends Phaser.Scene {
     this.pingGfx = world.add.graphics().setDepth(1e6 - 1);
     this.box = this.add.graphics().setDepth(10);
 
-    this.add.rectangle(PANEL.x, PANEL.y, PANEL.w, PANEL.h, 0x1d1a16, 0.85).setOrigin(0);
-    const text = (x: number, y: number, size: number, color = INK) =>
-      this.add.text(x, y, '', { fontFamily: 'sans-serif', fontSize: `${size}px`, color });
-    this.title = this.add.text(12, 603, '', { fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '20px', fontStyle: 'bold', color: TITLE_GOLD });
-    this.family = text(12, 636, 13);
-    this.detail = text(12, 636, 13).setLineSpacing(4);
+    this.pal = palette(this);
+    this.hover = createHover(this);
+    makeSurface(this, 'panel', PANEL.x, PANEL.y, PANEL.w, PANEL.h, { fill: 0x1d1a16, alpha: 0.85 });
+    const text = (x: number, y: number, size: number, color = this.pal.ink) =>
+      this.add.text(x, y, '', { fontFamily: UI_FONT, fontSize: `${size}px`, color });
+    this.title = this.add.text(12, 603, '', { fontFamily: UI_FONT, fontSize: '22px', fontStyle: 'bold', color: this.pal.gold });
+    this.family = text(12, 636, 14);
+    this.detail = text(12, 636, 14).setLineSpacing(3);
     this.barGfx = this.add.graphics();
-    this.barText = text(360, 608, 12, '#cdbf9c').setLineSpacing(14);
+    this.barText = text(360, 608, 13, this.pal.dim).setLineSpacing(14);
     this.toasts = text(16, 520, 14, '#ffb4a8').setLineSpacing(4);
 
-    this.draftButton = this.button(560, 608, 110, 28, 'Draft (R)', () => this.toggleDraft());
+    this.draftButton = this.button(560, 608, 110, 28, 'Draft (R)', () => this.toggleDraft(), ['draft', 'undraft']);
     // The stances sit under the Draft button: the building cards take the right part of the panel.
     (['hold', 'defend', 'chase'] as Stance[]).forEach((st, i) => {
       const key = 'ZXC'[i];
       this.stanceButtons.push(
-        this.button(560 + i * 66, 648, 62, 28, `${st[0].toUpperCase()}${st.slice(1)} (${key})`, () => this.setStance(st)),
+        this.button(560 + i * 66, 648, 62, 28, `${st[0].toUpperCase()}${st.slice(1)} (${key})`, () => this.setStance(st), [st], true),
       );
     });
-    this.cancelButton = this.button(560, 648, 110, 28, 'Cancel (Del)', () => this.cancelSite());
+    this.cancelButton = this.button(560, 648, 110, 28, 'Cancel (Del)', () => this.cancelSite(), ['delete']);
     this.createUpgrades();
     this.hover.attach(this.title, () => {
       const t = this.building(this.selectedBuilding)?.type;
@@ -201,32 +213,43 @@ export class SelectScene extends Phaser.Scene {
     });
   }
 
-  private button(x: number, y: number, w: number, h: number, label: string, onClick: () => void): Button {
-    const bg = this.add.rectangle(x, y, w, h, 0x3a3328, 1).setOrigin(0).setInteractive();
+  /**
+   * A panel button. `icons` names the order icons it can show (`icon_order_<name>`); a button with `iconOnly` shows just
+   * the icon when it has one (the narrow stance buttons), and the label as their hover text otherwise.
+   */
+  private button(x: number, y: number, w: number, h: number, label: string, onClick: () => void, icons: string[] = [], iconOnly = false): Button {
+    const bg = makeSurface(this, 'button', x, y, w, h, { activeFill: 0x6b5a2e }).setInteractive();
     bg.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && onClick());
-    const t = this.add.text(x + w / 2, y + h / 2, label, { fontFamily: 'sans-serif', fontSize: '13px', color: INK }).setOrigin(0.5);
-    return { bg, label: t, onClick };
+    const imgs: Record<string, Phaser.GameObjects.Image> = {};
+    for (const name of icons) {
+      const img = this.add.image(x + (iconOnly ? w / 2 : 16), y + h / 2, '__DEFAULT').setVisible(false);
+      if (showIcon(img, `icon_order_${name}`, h - 6)) imgs[name] = img;
+      else img.destroy();
+    }
+    const hasIcon = Object.keys(imgs).length > 0;
+    const t = this.add
+      .text(x + (hasIcon && !iconOnly ? w / 2 + 10 : w / 2), y + h / 2, label, { fontFamily: UI_FONT, fontSize: '14px', color: this.pal.ink })
+      .setOrigin(0.5)
+      .setVisible(!(hasIcon && iconOnly));
+    if (hasIcon && iconOnly) this.hover.attach(bg, () => label);
+    return { bg, label: t, onClick, icons: imgs, icon: icons[0] ?? null, iconOnly: hasIcon && iconOnly };
   }
 
   /** The pooled rows of the Upgrades list (DESIGN-upgrades-3.md `## Upgrade homes`); `drawUpgrades` fills them. */
   private createUpgrades(): void {
-    const font = (size: number, color = INK) => ({ fontFamily: 'sans-serif', fontSize: `${size}px`, color });
-    this.hover = createHover(this);
-    this.upBg = this.add.rectangle(UP.x, 0, UP.w, 10, 0x1d1a16, 0.92).setOrigin(0).setStrokeStyle(1, 0x6b5a3a).setVisible(false);
+    const font = (size: number, color = this.pal.ink) => ({ fontFamily: UI_FONT, fontSize: `${size}px`, color });
+    this.upBg = makeSurface(this, 'panel', UP.x, 0, UP.w, 10, { fill: 0x1d1a16, alpha: 0.92, stroke: [0x6b5a3a, 1] }).setVisible(false);
     this.upHead = this.add.text(UP.x + 10, 0, '', font(14)).setVisible(false);
     for (let i = 0; i < UP.maxRows; i++) {
-      const bg = this.add.rectangle(UP.x + 4, 0, UP.w - 8, UP.row - 4, 0x3a3328, 1).setOrigin(0).setVisible(false);
-      const label = this.add.text(UP.x + 12, 0, '', font(14)).setVisible(false);
-      const effect = this.add.text(UP.x + 12, 0, '', font(11, '#cdbf9c')).setWordWrapWidth(UP.w - 250).setVisible(false);
-      const status = this.add.text(UP.x + UP.w - 232, 0, '', font(12)).setWordWrapWidth(130).setVisible(false);
-      const buy = this.add
-        .text(UP.x + UP.w - 84, 0, ' Buy ', { ...font(14, '#1d1a16'), backgroundColor: INK })
-        .setPadding(10, 4).setVisible(false).setInteractive({ useHandCursor: true });
-      const row: UpgradeRow = { bg, label, effect, status, buy, id: null };
+      const bg = makeSurface(this, 'panel', UP.x + 4, 0, UP.w - 8, UP.row - 4, { fill: 0x3a3328 }).setVisible(false);
+      const icon = this.add.image(UP.x + 12 + ICON / 2, 0, '__DEFAULT').setVisible(false);
+      const label = this.add.text(UP.x + 12, 0, '', font(15)).setVisible(false);
+      const effect = this.add.text(UP.x + 12, 0, '', font(11, this.pal.dim)).setWordWrapWidth(UP.w - 250).setVisible(false);
+      const status = this.add.text(UP.x + UP.w - 232, 0, '', font(13)).setWordWrapWidth(130).setVisible(false);
+      const buy = textButton(this, UP.x + UP.w - 50, 0, 'Buy', 15, [14, 3], () => row.id && this.canBuy(row.id) && this.send([{ type: 'buy', upgrade: row.id }]));
+      setButtonVisible(buy, false);
+      const row: UpgradeRow = { bg, icon, label, effect, status, buy, id: null };
       this.hover.attach(label, () => (row.id && displayLabel(row.id) !== englishLabel(row.id) ? englishLabel(row.id) : null));
-      buy.on('pointerdown', (p: Phaser.Input.Pointer) => {
-        if (p.leftButtonDown() && row.id && this.canBuy(row.id)) this.send([{ type: 'buy', upgrade: row.id }]);
-      });
       this.upRows.push(row);
     }
     const camp = (window as unknown as { camp?: Record<string, unknown> }).camp;
@@ -238,12 +261,14 @@ export class SelectScene extends Phaser.Scene {
       camp.panelText = () => ({ title: this.title.text, detail: [this.family.text, this.detail.text].filter(Boolean).join('\n') });
       // The latest right-click ping: its colour kind, what it hit, and a running count; null before the first.
       camp.lastPing = () => this.lastPing;
+      // The cursor kinds with art, the one shown now, and the canvas's CSS cursor.
+      camp.cursor = () => ({ installed: installedCursors(), shown: shownCursor(), css: this.game.canvas.style.cursor });
       // What each shown row says (cost or Needs), by upgrade id; empty while no list shows.
       camp.upgradeRows = () => Object.fromEntries(this.upRows.filter((r) => r.id && r.bg.visible).map((r) => [r.id, r.status.text]));
       // The screen centre of a shown row's Buy button (1280 x 720 space), or null.
       camp.upgradeBuy = (id: string) => {
-        const r = this.upRows.find((row) => row.id === id && row.buy.visible);
-        return r ? [r.buy.x + r.buy.displayWidth / 2, r.buy.y + r.buy.displayHeight / 2] : null;
+        const r = this.upRows.find((row) => row.id === id && row.buy.bg.visible);
+        return r ? [r.buy.bg.x, r.buy.bg.y] : null;
       };
     }
   }
@@ -268,9 +293,10 @@ export class SelectScene extends Phaser.Scene {
     this.upRows.forEach((r, i) => {
       const id = ids[i] ?? null;
       r.id = id;
-      for (const o of [r.bg, r.label, r.effect, r.status, r.buy]) o.setVisible(id !== null);
+      for (const o of [r.bg, r.label, r.effect, r.status]) o.setVisible(id !== null);
+      r.icon.setVisible(false);
       if (!id) {
-        r.buy.disableInteractive();
+        setButtonVisible(r.buy, false);
         return;
       }
       const s = this.state;
@@ -279,21 +305,28 @@ export class SelectScene extends Phaser.Scene {
       const needs = upgradeNeeds(s, id);
       const missing = missingFor(s, id);
       const price = Object.entries(upgradeCost(id)).map(([res, n]) => `${n} ${res}`).join(', ');
+      // The upgrade's icon, when it has art, pushes the text right.
+      const art = showIcon(r.icon, `icon_upgrade_${id}`, ICON);
+      const tx = UP.x + 12 + (art ? ICON + 6 : 0);
+      if (art) r.icon.setPosition(UP.x + 12 + ICON / 2, y + (UP.row - 4) / 2).setVisible(true);
       r.bg.setPosition(UP.x + 4, y);
-      r.label.setPosition(UP.x + 12, y + 4).setText(displayLabel(id));
-      r.effect.setPosition(UP.x + 12, y + 23).setText(UPGRADE_EFFECT[id]);
+      r.label.setPosition(tx, y + 3).setText(displayLabel(id));
+      r.effect.setPosition(tx, y + 22).setText(UPGRADE_EFFECT[id]).setWordWrapWidth(UP.w - 250 - (tx - UP.x - 12));
       const lines = [`Cost: ${price}`, ...(missing.length ? [`Missing: ${missing.join(', ')}`] : [])];
       r.status.setPosition(UP.x + UP.w - 232, y + 4).setText(owned ? 'Owned' : needs ?? lines.join('\n'));
       const buyable = !owned && !needs;
-      r.buy.setPosition(UP.x + UP.w - 84, y + 8).setVisible(buyable).setAlpha(missing.length ? 0.4 : 1);
-      if (buyable) r.buy.setInteractive({ useHandCursor: true });
-      else r.buy.disableInteractive();
+      setButtonVisible(r.buy, buyable);
+      r.buy.bg.setPosition(UP.x + UP.w - 50, y + 22);
+      r.buy.text.setPosition(UP.x + UP.w - 50, y + 22);
+      r.buy.bg.setAlpha(missing.length ? 0.4 : 1);
+      r.buy.text.setAlpha(missing.length ? 0.4 : 1);
     });
   }
 
   private setVisible(b: Button, on: boolean): void {
     b.bg.setVisible(on);
-    b.label.setVisible(on);
+    b.label.setVisible(on && !b.iconOnly);
+    for (const [name, img] of Object.entries(b.icons)) img.setVisible(on && name === b.icon);
     if (on) b.bg.setInteractive();
     else b.bg.disableInteractive();
   }
@@ -313,7 +346,7 @@ export class SelectScene extends Phaser.Scene {
     const inside = (r: { x: number; y: number; w: number; h: number }) =>
       x >= r.x && x <= r.x + r.w && y >= r.y && y <= r.y + r.h;
     const hud = this.scene.get('Hud') as HudScene | undefined;
-    return !!hud?.menuOpen || !!hud?.overPowers(x, y) || inside(PANEL) || inside(BAR) || (!!this.upRect && inside(this.upRect));
+    return !!hud?.menuOpen || !!hud?.overPowers(x, y) || !!hud?.overMinimap(x, y) || inside(PANEL) || inside(BAR) || (!!this.upRect && inside(this.upRect));
   }
 
   private send(orders: Order[]): void {
@@ -535,6 +568,14 @@ export class SelectScene extends Phaser.Scene {
     }
   }
 
+  /** The minimap's right-click: the same `move` order (and ping) as a right-click on the ground there. */
+  moveSelectionTo(t: [number, number]): void {
+    if (this.selected.length === 0) return;
+    const w = tileToWorld(t[0], t[1], this.state.map.size);
+    this.send([{ type: 'move', ids: this.selected, to: t }]);
+    this.ping('move', w.x, w.y, 'ground');
+  }
+
   /** Why a work order cannot start at all (known at the click), or null when somebody can take it. */
   private workRefusal(people: Person[], job: Parameters<typeof canWork>[1]): string | null {
     if (people.some((p) => !p.drafted && canWork(p, job))) return null;
@@ -624,8 +665,24 @@ export class SelectScene extends Phaser.Scene {
     this.drawWorld();
     this.drawPings();
     this.drawPanel();
+    this.updateCursor();
     const fresh = s.messages.filter((m) => s.tick - m.tick < TOAST_TICKS).slice(-3);
     this.toasts.setText(fresh.map((m) => m.text).join('\n'));
+  }
+
+  /** The mouse cursor for what a click would do here (cursors.ts); the browser's own when there is no cursor art. */
+  private updateCursor(): void {
+    const p = this.input.activePointer;
+    const overUi = this.overUi(p.x, p.y);
+    showCursor(this, pickCursor({
+      overUi,
+      placing: this.game2.placing !== null,
+      placeOk: this.game2.ghostOk,
+      aiming: this.game2.aiming !== null,
+      hasSelection: this.selected.length > 0,
+      hasDrafted: this.selectedPeople().some((q) => q.drafted),
+      overEnemy: !overUi && this.enemyAt(p.x, p.y) !== null,
+    }));
   }
 
   private drawBox(): void {
@@ -686,8 +743,8 @@ export class SelectScene extends Phaser.Scene {
   }
 
   private bar(x: number, y: number, value: number, color: number): void {
-    this.barGfx.fillStyle(0x3a3328, 1).fillRect(x, y, 160, 12);
-    this.barGfx.fillStyle(color, 1).fillRect(x, y, 160 * Math.min(1, Math.max(0, value / 100)), 12);
+    this.barGfx.fillStyle(0x3a3328, 1).fillRect(x, y, 130, 12);
+    this.barGfx.fillStyle(color, 1).fillRect(x, y, 130 * Math.min(1, Math.max(0, value / 100)), 12);
   }
 
   private drawPanel(): void {
@@ -699,12 +756,14 @@ export class SelectScene extends Phaser.Scene {
     const drafted = people.filter((p) => p.drafted).length;
     const adults = people.filter((p) => ages[p.age].draft).length;
 
+    const undraft = adults > 0 && drafted === adults;
+    this.draftButton.label.setText(undraft ? 'Undraft (R)' : 'Draft (R)');
+    this.draftButton.icon = undraft ? 'undraft' : 'draft';
     this.setVisible(this.draftButton, people.length > 0);
-    this.draftButton.label.setText(adults > 0 && drafted === adults ? 'Undraft (R)' : 'Draft (R)');
     this.stanceButtons.forEach((sb, i) => {
       this.setVisible(sb, drafted > 0);
       const stance = (['hold', 'defend', 'chase'] as Stance[])[i];
-      sb.bg.setFillStyle(people.some((p) => p.drafted && p.stance === stance) ? 0x6b5a2e : 0x3a3328, 1);
+      setLook(sb.bg, people.some((p) => p.drafted && p.stance === stance) ? 'active' : 'normal');
     });
     this.setVisible(this.cancelButton, !!b && !b.done);
     this.drawUpgrades(b, people.length === 0);
@@ -715,7 +774,7 @@ export class SelectScene extends Phaser.Scene {
       const families = mapConfig.start.families as string[];
       const colors = mapConfig.start.familyColors as string[];
       this.title.setText(p.name);
-      this.family.setText(`${families[p.family]} family · ${p.age}`).setColor(colors[p.family] ?? INK);
+      this.family.setText(`${families[p.family]} family · ${p.age}`).setColor(colors[p.family] ?? this.pal.ink);
       this.detail.setText([
         `Job: ${this.jobLabel(p)}${p.drafted ? ` · drafted (${p.stance})` : ''}`,
         `Society: ${p.society ?? 'none'}`,

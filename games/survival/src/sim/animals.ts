@@ -102,16 +102,21 @@ function randomTile(s: GameState, ok: (x: number, y: number) => boolean): Tile2 
   return null;
 }
 
-/** The start herds: 2 of deer and 1 of bison, 14-22 tiles from the fire. */
+/** The start herds: 2 of deer and 1 of bison 14-22 tiles from the fire, then 9 more 23-44 tiles out. */
 export function spawnStartHerds(s: GameState): void {
   const [cx, cy] = campCentre(s.map);
-  const [lo, hi] = data.startDist;
-  for (const kind of data.startHerds as AnimalKind[]) {
-    const c = randomTile(s, (x, y) => {
-      const d = Math.hypot(x - cx, y - cy);
-      return d >= lo && d <= hi;
-    });
-    if (c) addHerd(s, kind, c);
+  const rings: [AnimalKind[], number[]][] = [
+    [data.startHerds as AnimalKind[], data.startDist],
+    [data.outerHerds as AnimalKind[], data.outerDist],
+  ];
+  for (const [kinds, [lo, hi]] of rings) {
+    for (const kind of kinds) {
+      const c = randomTile(s, (x, y) => {
+        const d = Math.hypot(x - cx, y - cy);
+        return d >= lo && d <= hi;
+      });
+      if (c) addHerd(s, kind, c);
+    }
   }
 }
 
@@ -122,7 +127,7 @@ function edgeTile(s: GameState): Tile2 | null {
 }
 
 /**
- * At a day start: every 2 days (4 in winter), while fewer than 12 animals live, a new herd comes in at a map edge
+ * At a day start: every 2 days (4 in winter), while fewer than `cap` animals live, a new herd comes in at a map edge
  * with the season's `huntSuccess` as its chance (capped at 1).
  */
 function respawn(s: GameState): void {

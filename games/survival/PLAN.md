@@ -41,9 +41,11 @@ The same list, worded as the design record, is in [DESIGN.md](DESIGN.md).
    harvest/drying, winter hunger/cold); camp does not move in early versions (travois move later);
    autosave to localStorage, 3 slots, file export/import; difficulty Gentle/Standard/Hard.
 8. **Look:** isometric 2:1, 64x32 diamond tiles, depth-sorted upright sprites (~32 px people, ~96 px
-   tipis), warm hand-painted look; camera pan (edge/WASD) + wheel zoom. Claude's **placeholders are
-   drawn in code**; one **asset manifest** (key, size, anchor, frames, status placeholder|final): the
-   game loads an `art/` PNG when present, else the placeholder, so Codex swaps art per asset.
+   tipis), warm hand-painted look; camera pan (edge/WASD) + wheel zoom. One **asset manifest** (key,
+   size, anchor, frames, status placeholder|final): the game loads final art when present, else the
+   placeholder, so Codex swaps art per asset. *Amended 2026-11-20 (user):* **Codex draws, Claude never
+   does**; the existing code placeholders stay until replaced, new keys use grey stand-ins; art
+   direction in [DESIGN-art.md](DESIGN-art.md).
 9. **Content rules:** fiction, free invention; own short `CULTURE.md` (a real-culture claim needs a
    sourced note, gaps go under *Needs review*); Claude's own limits stay (no real historical
    people, no hateful caricature/slurs/mock war cries, no real named sacred ceremonies/objects as
@@ -57,7 +59,7 @@ The same list, worded as the design record, is in [DESIGN.md](DESIGN.md).
     saves, eras 2-3, upgrade tiers, moving camp, audio. All text in English.
 11. **Docs:** Kota's set adapted; folder `games/survival/`; working title "Camp Fire" (named in
     `README.md` and `DESIGN.md` only); mode Claude only (Codex paused), art requests queued in
-    handoff; development/testing guides written by C1/C7; nothing pushed.
+    handoff (mode Codex + Claude from 2026-11-20, user); development/testing guides written by C1/C7; nothing pushed.
 
 ## Fixed technical shape (so C tasks never re-decide it)
 
@@ -91,7 +93,8 @@ The same list, worded as the design record, is in [DESIGN.md](DESIGN.md).
 - Link check (doc tasks): for each `](target)` in the written files, `test -e` the target relative
   to the file; report missing ones.
 - Never commit or push unless asked; never add LICENSES.md.
-- Gates (the user approves): **B1 slice spec**, **C8 slice playtest**, each **art batch**.
+- Gates (the user approves): **B1 slice spec**, **C8 slice playtest**, the art style keys **AB0** and
+  **AB12** (Claude approves the other art batches, [art/PIPELINE.md](art/PIPELINE.md) *Approval*).
 
 ## Phase A: documents (done 2026-11-19)
 
@@ -266,9 +269,87 @@ changes save code.
 | G23 | Sonnet | same; `src/scenes/{Build,Select,Game}.ts`, `src/scenes/Hud.ts` (Build references only), `tests/smoke.spec.ts` | full-width panel with the cards on its right; corner button and standalone menu removed; cards only when someone can build; B arms, then 1-7; 1-3 set speed when not armed; placement sends the selection snapshot; `HINT` text; e2e build steps select people first | e2e passes; by hand: 5 adults place a tipi, 3 build and 2 keep working; a children-only selection shows no cards |
 | G24 (user, gate) | Opus | `## Villager panel and building`, `WORKLOG.md` | `WORKLOG.md`, `TESTING.md` hand checks, a fix list in `handoff/from-claude.md` | the user builds from the panel, including a barricade line, and says it is fine |
 
+## Phase D: bigger map and minimap (spec settled 2026-11-20)
+
+Spec: [DESIGN-map.md](DESIGN-map.md) (grilled with the user, Q1-Q9). Saving stays parked: no row adds or
+changes save code. Common rules as in Phase C; run `npm run typecheck && npm test` (and `npm run e2e` when a
+scene changes). Easiest first; each row also reads its spec section.
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| M1 | Sonnet | `## Size`, `## Generation`, `## Start camp`; `src/data/{map,animals}.json`, `src/sim/{map,animals,people}.ts`, `tests/iso.test.ts` | the new numbers in `map.json` / `animals.json`, generation for a 4-wide river, 2 fords, 12 patches and 12 herds in two rings, the path cap, the moved camp; the map test | the `## Tests` map test passes; same seed, same map |
+| M2 | Sonnet | `## Size`, `## Wolves and powers`, `## Camera`; `src/sim/{effects,waves}.ts`, `src/render/iso.ts`, `src/scenes/Game.ts` (camera), `tests/sim/*`, `tests/smoke.spec.ts` | every hard-coded 48 / 47 / 24 reads `map.size`; the 48-tile stampede; pan 900 px/s; tests made layout-proof | all unit and e2e tests pass; wolves reach the fire from an edge; a screenshot of the start camp at map centre |
+| M3 | Sonnet | `## Drawing`; `src/scenes/Game.ts` (ground drawing, the felled-tree swap) | chunked ground only if the fps check fails; a note of the fps in the handoff | fps at zoom 0.5 measured and noted (>= 55, or chunking added and re-measured); no console errors |
+| M4 | Sonnet | `## Minimap` (place, layers); `src/scenes/Hud.ts`, `src/render/iso.ts` | `src/render/minimap.ts` (pure tile <-> minimap maths), the minimap in the HUD with its six layers, a `window.camp.minimap()` hook | unit test for the maths; screenshot of the minimap at game start and during a wave |
+| M5 | Sonnet | `## Minimap` (mouse), `## Tests`; `src/scenes/{Hud,Select,Game}.ts`, `tests/smoke.spec.ts`, `TESTING.md`, `src/scenes/Menu.ts` (controls text) | left-click / drag pans, right-click moves the selection, clicks never reach the world, works while placing or aiming; e2e case; docs | e2e passes (stable over 3 runs); controls text mentions the minimap |
+| M6 (user, gate) | Opus | `DESIGN-map.md`, `WORKLOG.md` | `WORKLOG.md`, a fix list in `handoff/from-claude.md` | the user plays a run on the big map with the minimap and says it is fine (balance judged here) |
+
+## Phase D: art (spec settled 2026-11-20)
+
+Spec: [DESIGN-art.md](DESIGN-art.md) (grilled with the user, 2026-11-20); the bible
+[art/STYLE.md](art/STYLE.md), numbers [art/SPEC.md](art/SPEC.md), procedure
+[art/PIPELINE.md](art/PIPELINE.md), batch briefs [art/BATCHES.md](art/BATCHES.md). **Codex draws,
+Claude never does:** every AC row below is code only, draws no art, and new keys use the grey
+stand-ins of AC2. No row adds or changes save code (saving is parked). Common rules as in Phase C;
+run `npm run typecheck && npm test` (and `npm run e2e` when a scene changes). Each AC row also reads
+its SPEC.md sections and `WORKLOG.md`.
+
+### Claude: support code first (easiest first)
+
+| # | Model | Reads | Writes | Done when |
+|---|---|---|---|---|
+| AC1 | Sonnet | SPEC.md 3, 4, 5, 8, 9; `art/manifest.json`, `src/render/manifest.ts`, `src/scenes/Boot.ts` | `art/manifest.json` v2 with every key of SPEC.md (status kept), `src/render/manifest.ts` types, `scripts/art/validate.mjs` (`npm run art:validate [-- --inbox ABn]`), `tests/art/validate.test.ts` | the test passes on a good and on a broken sample inbox (size, border, count, name, layer alignment); the current manifest validates |
+| AC2 | Sonnet | SPEC.md 3, 8; `scripts/publish.mjs`, `package.json` | `scripts/art/pack.mjs` (`npm run art:pack -- ABn`; maxrects-packer + pngjs, MIT), `scripts/art/standins.mjs` (`npm run art:standins`: plain grey boxes with the key and frame name, exact cells, into git-ignored `art/standins/`), `package.json` scripts and devDependencies | stand-ins for every key pack into atlases within the 16-page budget; the packed JSON is in Phaser's multiatlas format (unit test) |
+| AC3 | Sonnet | SPEC.md 1, 8, 9; `src/scenes/Boot.ts`, `src/render/placeholders.ts`, `src/main.ts`, `vite.config.ts` | Boot loads `art/atlas/*.json` multiatlases for `final` keys (and `art/standins/` only with `?standins`), a loading bar, a `spriteFor(key)` helper drawing at scale 0.5 with the manifest anchor; placeholders kept as fallback | with `?standins` the game starts with grey boxes and no console errors; without it the game looks as today; e2e passes |
+| AC5 | Sonnet | SPEC.md 6, 7; `src/scenes/Game.ts` (ground), `src/sim/map.ts`, `src/data/seasons.json` | seeded variant pick per tile, bank masks, spills, season swap of tiles and plants, trees and stump from `tree_*` / `stump_*` | unit test for the mask maths; with `?standins` banks and spills show their mask labels along the river |
+| AC6 (done 2026-11-20) | Sonnet | SPEC.md 5; `src/scenes/Game.ts` (`syncBuildings`), `src/render/stores.ts` | stage by build progress, winter state, drying-rack loop, barricade masks from neighbours, `fx_flame` on the fire and fire pits | unit test for the stage and mask picks; stand-ins show the right state label while building |
+| AC8 (done 2026-11-20) | Sonnet | SPEC.md 10; `src/scenes/{Hud,Select,Build,Menu,MinimapView}.ts`, `tests/smoke.spec.ts` | Phaser NineSlice panels and buttons with 4 states, icons by key, CSS cursors with `image-set`, Alegreya (OFL) woff2 bundled, title screen with `art/title.jpg` and a code-drawn title; smoke-test icon keys updated | e2e passes; with stand-ins the UI shows labelled boxes in every slot; no text overlaps at 1280x720 |
+| AC4 | Opus | SPEC.md 4; `src/sim/{state,people,tick}.ts`, `src/render/people.ts`, `tests/sim/people.test.ts` | sex field assigned deterministically at spawn (no save code), facing from screen-space velocity (8 sectors), the state/job-to-animation map (STYLE.md section 5), stacked base + cloth sprites with the family tint, child fade on death | tests: same seed, same sexes; the facing maths; with stand-ins every job shows its animation label in both family tints |
+| AC7 (done 2026-11-21) | Opus | SPEC.md 3, 4; `src/render/{enemies,arrows}.ts`, `src/scenes/Game.ts`, `src/sim/{animals,combat,effects}.ts` | wolves (pack leader and guardian by scale and tint), deer, bison, corral and herd horses, mounted riders, carcass stages, fish, arrows, spirit ally, storm, hit and foot dust, build sparkle as sprites | with stand-ins a wave, a hunt, a storm cast and a rider charge show the right labels; e2e passes |
+| AC9 (done 2026-11-21; result is under the target at zoom 0.5, see the handoff) | Sonnet | `DESIGN-art.md` *Budget*; `src/scenes/Game.ts` | a note in `handoff/from-claude.md` (fps and GPU memory) | with full stand-in atlases, >= 55 fps with 200 people at zoom 0.5, or the 1.5x fallback is proposed to the user |
+
+### Codex: art batches (Codex generates and, after approval, installs)
+
+Every row reads `art/STYLE.md`, `art/PIPELINE.md`, its SPEC.md rows and its
+[BATCHES.md](art/BATCHES.md) section; writes `art/source/**` and `art/inbox/ABn/**`, then on install
+`art/atlas/**`, `art/manifest.json`, `art/ASSETS.md`, `art/inbox/done/**`. Done when: the validator
+passes, the batch is approved (authority below), it is installed, the tests pass and the screenshots
+are in `handoff/from-codex.md`. Model: Codex (not Claude).
+
+| # | Batch | Needs | Approval |
+|---|---|---|---|
+| AB0 | style keys: summer grass, tipi + `render.py`, panel and button, food icon, man concept sheet | none to generate; AC1-AC3 to install | user |
+| AB1 | interface pieces, emblem | AC1-AC3, AC8 | Claude |
+| AB2 | icons and cursors | AC1-AC3, AC8 | Claude |
+| AB3 | ground, 5 types x 4 variants x 4 seasons | AC1-AC3, AC5 | Claude |
+| AB4 | river banks and spills | AB3 | Claude |
+| AB5 | plants, rocks, stump, store items | AC1-AC3, AC5 | Claude |
+| AB6 | effects and flame | AC6, AC7 | Claude |
+| AB7 | title picture | AC8 | Claude |
+| AB8 | trap, fire pit, barricade pieces | AB0, AC6 | Claude |
+| AB9 | gathering spot, hunting lodge, drying rack, corral | AB0, AC6 | Claude |
+| AB10 | society lodges | AB9 | Claude |
+| AB11 | fire plaza, store, open store | AB9 | Claude |
+| AB12 | human rig, `render.py` for figures, man walk x 8 facings | AC4 | user |
+| AB13 | man | AB12 | Claude |
+| AB14 | woman | AB13 | Claude |
+| AB15 | elder man | AB13 | Claude |
+| AB16 | elder woman | AB14 | Claude |
+| AB17 | child | AB12 | Claude |
+| AB18 | wolf | AC7 | Claude |
+| AB19 | deer | AC7 | Claude |
+| AB20 | bison | AC7 | Claude |
+| AB21 | horse | AC7 | Claude |
+| AB22 | mounted rider | AB13, AB21 | Claude |
+| AB23 | carcasses and fish | AB18-AB20 | Claude |
+
+Claude's part in an AB row is only the review: check the contact sheet and screenshots against
+STYLE.md and the approved keys, then write the approval or a fix list in `handoff/from-claude.md`
+(Sonnet; Opus for the AB0 and AB12 reviews before the user decides).
+
 ## Phase D (remaining, each gets its own spec and rows)
 
 Seasons and hardships; autosave (3 slots) + export/import; eras 2-3 and bosses; upgrade tiers 1-3;
-moving camp (travois); art batches (Claude writes prompts per [art/PIPELINE.md](art/PIPELINE.md),
-Codex generates, the user approves, the manifest flips placeholder -> final). Each phase D item gets
-its own B-style spec task (Opus) and C-style build rows, written into this file when D starts.
+moving camp (travois); fishing and dancing as activities (their art comes in AB13-AB17 and AB23); a
+woman rider model (optional; riders use the man model until then). Each phase D item gets its own
+B-style spec task (Opus) and C-style build rows, written into this file when D starts.

@@ -1,4 +1,8 @@
-# Dakota content pack (B1): DRAFT, waiting for the user's review
+# Dakota content pack — superseded reference
+
+Superseded by [DESIGN-m1.md](DESIGN-m1.md) after the 2D pivot. Retained for historical
+research references; this is not an active spec-approval gate or implementation queue.
+Unresolved cultural entries remain in CULTURE.md.
 
 > **Status note (2026-11-19):** the 3D parts of this record are retired. The 3D briefs were removed,
 > and the 3D model `iya.glb` is no longer used. Art follows [art/PIPELINE.md](art/PIPELINE.md) (2D).

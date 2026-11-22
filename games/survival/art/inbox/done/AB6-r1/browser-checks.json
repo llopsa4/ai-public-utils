@@ -1,0 +1,88 @@
+[
+  {
+    "width": 1280,
+    "height": 720,
+    "creatures": {
+      "wolves": {},
+      "animals": {},
+      "allies": {
+        "2": "ally_spirit/float/00"
+      },
+      "horses": [],
+      "herds": [],
+      "storms": [
+        "fx_storm/loop/07"
+      ],
+      "falls": [],
+      "art": {
+        "animal_wolf": false,
+        "animal_deer": false,
+        "animal_bison": false,
+        "animal_horse": false,
+        "carcass_wolf": false,
+        "carcass_deer": false,
+        "carcass_bison": false,
+        "ally_spirit": true,
+        "fx_storm": true
+      },
+      "arrows": [
+        "fx_arrow_stuck"
+      ],
+      "fx": {
+        "hit": 1,
+        "dust": 1,
+        "sparkle": 1,
+        "fish": 0
+      },
+      "playing": {
+        "fx_hit": 1,
+        "fx_dust": 1,
+        "fx_sparkle": 1
+      }
+    },
+    "browserErrors": []
+  },
+  {
+    "width": 2560,
+    "height": 1440,
+    "creatures": {
+      "wolves": {},
+      "animals": {},
+      "allies": {
+        "2": "ally_spirit/float/00"
+      },
+      "horses": [],
+      "herds": [],
+      "storms": [
+        "fx_storm/loop/07"
+      ],
+      "falls": [],
+      "art": {
+        "animal_wolf": false,
+        "animal_deer": false,
+        "animal_bison": false,
+        "animal_horse": false,
+        "carcass_wolf": false,
+        "carcass_deer": false,
+        "carcass_bison": false,
+        "ally_spirit": true,
+        "fx_storm": true
+      },
+      "arrows": [
+        "fx_arrow_stuck"
+      ],
+      "fx": {
+        "hit": 1,
+        "dust": 1,
+        "sparkle": 1,
+        "fish": 0
+      },
+      "playing": {
+        "fx_hit": 1,
+        "fx_dust": 1,
+        "fx_sparkle": 1
+      }
+    },
+    "browserErrors": []
+  }
+]

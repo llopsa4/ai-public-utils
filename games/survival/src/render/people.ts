@@ -1,15 +1,34 @@
-// Draws the people from the simulation state. Reads state, never changes it.
+// Draws the people from the simulation state. Reads state, never changes it. With art in the atlas (final, or a
+// stand-in with `?standins`) each person is a base and a family-tinted cloth sprite playing the animation
+// `personArt.ts` picks; otherwise the code placeholder with its tool overlays.
 import Phaser from 'phaser';
-import type { Building, Person } from '../sim/state';
+import mapConfig from '../data/map.json';
+import type { Building, GameState, Person } from '../sim/state';
 import { isSitting, materialsComplete } from '../sim/buildings';
-import { entry } from './manifest';
+import { anchorOf } from './manifest';
+import { applyArt, fromAtlas, spriteFor } from './art';
 import { tileToWorld } from './iso';
+import { riderAnim } from './creatureArt';
+import { animFor, animLength, facingFrom, frameAt, personFrame, personKey, playable, tintOf, type Facing } from './personArt';
 
 /** The work overlays drawn on a person while they work (DESIGN-hunting.md `## Work animations`). */
 export type WorkTool = 'hammer' | 'axe' | 'pick' | 'dry';
 
 interface View {
+  /** The base layer (or the whole placeholder picture). */
   img: Phaser.GameObjects.Image;
+  /** The cloth layer tinted with the family colour; null for a placeholder. */
+  cloth: Phaser.GameObjects.Image | null;
+  key: string;
+  /** True when drawn from an atlas (final art, or a stand-in with `?standins`). */
+  art: boolean;
+  facing: Facing;
+  anim: string;
+  rate: number;
+  /** When the current animation started, in scene ms. */
+  animStart: number;
+  /** The base frame name shown now (pattern A), kept for checks even while a placeholder is drawn. */
+  frame: string;
   /** The tool overlay, redrawn every frame (placeholder art drawn in code, the same for both families). */
   tool: Phaser.GameObjects.Graphics;
   /** Smoothed ground position (the sim moves at 10 ticks per second, the screen at 60 frames). */
@@ -132,8 +151,27 @@ function drawLoad(g: Phaser.GameObjects.Graphics, p: Person, k: number): void {
   if ((p.carry.hides ?? 0) > 0) g.fillStyle(0xc49a6a, 1).fillEllipse(x - 1, y - size / 2, size * 1.1, size * 0.45);
 }
 
+/** How long a death lies still before it fades, and how long the fade takes, in ms. */
+const LIE_MS = 1500;
+const FADE_MS = 1000;
+
+/** A person who died: their last picture plays `die` (adults and elders drawn from an atlas) and fades out. */
+interface Fall {
+  view: View;
+  start: number;
+  /** Plays `die` first; a child, or anyone drawn as a placeholder, only fades. */
+  dies: boolean;
+}
+
+const FAMILY_TINTS = (mapConfig.start.familyColors as string[]).map(tintOf);
+
+/** The mounted lancer model (art/SPEC.md section 4): the man on the horse, family-tinted cloth. */
+const RIDER = 'person_rider';
+
 export class PeopleView {
   private views = new Map<number, View>();
+  private falls: Fall[] = [];
+  private riderArt: boolean | undefined;
 
   constructor(private scene: Phaser.Scene, private size: number) {}
 
@@ -143,28 +181,96 @@ export class PeopleView {
     return v ? { x: v.bx, y: v.by } : undefined;
   }
 
-  /** Creates, moves and removes sprites to match `people`. */
-  sync(people: Person[], dtMs: number, timeMs: number, buildings: Building[] = []): void {
+  /** The model, animation, facing and base frame a person shows now (for checks); undefined for someone not shown. */
+  shown(id: number): { key: string; anim: string; facing: Facing; frame: string; art: boolean } | undefined {
+    const v = this.views.get(id);
+    return v && { key: v.key, anim: v.anim, facing: v.facing, frame: v.frame, art: v.art };
+  }
+
+  /** The model a person shows: a mounted lancer rides (`person_rider`) when that model has art, else the person on foot. */
+  private keyFor(p: Person): string {
+    this.riderArt ??= fromAtlas(this.scene, RIDER, personFrame(RIDER, 'base', 'idle', 's', 0));
+    return p.mounted && this.riderArt ? RIDER : personKey(p);
+  }
+
+  private make(p: Person, x: number, y: number, key = this.keyFor(p)): View {
+    const first = (layer: string) => personFrame(key, layer, 'idle', 's', 0);
+    const art = fromAtlas(this.scene, key, first('base'));
+    let img: Phaser.GameObjects.Image;
+    let cloth: Phaser.GameObjects.Image | null = null;
+    if (art) {
+      img = spriteFor(this.scene, key, x, y, first('base'));
+      if (fromAtlas(this.scene, key, first('cloth'))) {
+        cloth = spriteFor(this.scene, key, x, y, first('cloth')).setTint(FAMILY_TINTS[p.family] ?? 0xffffff);
+      }
+    } else {
+      // The code placeholder: one picture per family (the `__b` texture has the second family's shirt).
+      const tex = p.family === 1 && this.scene.textures.exists(`${key}__b`) ? `${key}__b` : key;
+      const a = anchorOf(key);
+      img = this.scene.add.image(x, y, tex).setOrigin(a[0], a[1]);
+    }
+    // The tool overlay is for placeholders only (art has its tools in the frames): hidden, it costs the renderer nothing.
+    const tool = this.scene.add.graphics().setVisible(!art);
+    return { img, cloth, tool, bx: x, by: y, key, art, facing: 's', anim: 'idle', rate: 1, animStart: 0, frame: '' };
+  }
+
+  /** Shows frame `n` of an animation on the base and cloth layers (a placeholder only notes the frame name). */
+  private showFrame(v: View, anim: string, n: number): void {
+    const frame = personFrame(v.key, 'base', anim, v.facing, n);
+    if (frame === v.frame) return;
+    v.frame = frame;
+    if (!v.art) return;
+    applyArt(v.img, v.key, frame);
+    if (v.cloth) applyArt(v.cloth, v.key, personFrame(v.key, 'cloth', anim, v.facing, n));
+  }
+
+  private destroy(v: View): void {
+    v.img.destroy();
+    v.cloth?.destroy();
+    v.tool.destroy();
+  }
+
+  /** Creates, moves, animates and removes sprites to match the state's people; a death plays out before it goes. */
+  sync(s: GameState, dtMs: number, timeMs: number): void {
+    const { people, buildings } = s;
     const k = 1 - Math.exp(-dtMs / 60);
     const alive = new Set<number>();
     for (const p of people) {
       alive.add(p.id);
       const w = tileToWorld(p.x, p.y, this.size);
       let v = this.views.get(p.id);
-      if (!v) {
-        const base = `person_${p.age}`;
-        const key = p.family === 1 && this.scene.textures.exists(`${base}__b`) ? `${base}__b` : base;
-        const a = entry(base).anchor;
-        v = {
-          img: this.scene.add.image(w.x, w.y, key).setOrigin(a[0], a[1]),
-          tool: this.scene.add.graphics(),
-          bx: w.x,
-          by: w.y,
-        };
+      const key = this.keyFor(p);
+      if (v && v.key !== key) {
+        // Mounting or dismounting swaps the model; the drawn spot and facing carry over.
+        const old = v;
+        this.destroy(old);
+        v = this.make(p, old.bx, old.by, key);
+        v.facing = old.facing;
         this.views.set(p.id, v);
       }
+      if (!v) {
+        v = this.make(p, w.x, w.y, key);
+        this.views.set(p.id, v);
+      }
+      // Facing from the screen-space way the drawn person still has to go (the sim position leads the smoothed one).
+      v.facing = facingFrom(w.x - v.bx, w.y - v.by, v.facing);
       v.bx += (w.x - v.bx) * k;
       v.by += (w.y - v.by) * k;
+      const pick = key === RIDER ? riderAnim(animFor(p, buildings)) : animFor(p, buildings);
+      const anim = playable(v.key, pick.anim);
+      if (anim !== v.anim) {
+        v.anim = anim;
+        v.animStart = timeMs;
+      }
+      v.rate = pick.rate;
+      this.showFrame(v, anim, frameAt(v.key, anim, timeMs - v.animStart, v.rate));
+      v.tool.clear();
+      if (v.art) {
+        // Atlas art: the tools, the load and the poses are in the frames.
+        v.img.setPosition(v.bx, v.by).setDepth(v.by);
+        v.cloth?.setPosition(v.bx, v.by).setDepth(v.by + 0.01);
+        continue;
+      }
       const bob = p.task.step === 'walk' ? -Math.abs(Math.sin(timeMs / 110 + p.id)) * 2 : 0;
       v.img.setPosition(v.bx, v.by + bob).setDepth(v.by);
       const tool = workTool(p, buildings);
@@ -172,7 +278,6 @@ export class PeopleView {
       v.img.setAngle(tool === 'pick' ? 12 + Math.sin(timeMs / 350 + p.id) * 3 : 0);
       // Sitting on the plaza (placeholder): the body is shortened from the feet up, as if folded down.
       v.img.setScale(1, isSitting(p, buildings) ? SIT_SCALE : 1);
-      v.tool.clear();
       if (tool) {
         v.tool.setPosition(v.bx, v.by).setDepth(v.by + 0.5);
         drawTool(v.tool, tool, timeMs, p.id, p.age === 'child' ? 0.7 : 1);
@@ -185,12 +290,30 @@ export class PeopleView {
         drawLoad(v.tool, p, p.age === 'child' ? 0.7 : 1);
       }
     }
+    const died = new Set((s.fallen ?? []).map((f) => f.id));
     for (const [id, v] of this.views) {
-      if (!alive.has(id)) {
-        v.img.destroy();
-        v.tool.destroy();
-        this.views.delete(id);
+      if (alive.has(id)) continue;
+      this.views.delete(id);
+      if (!died.has(id)) {
+        this.destroy(v); // left the camp
+        continue;
       }
+      v.tool.clear();
+      this.falls.push({ view: v, start: timeMs, dies: v.art && playable(v.key, 'die') === 'die' });
     }
+    this.falls = this.falls.filter((f) => {
+      const v = f.view;
+      const t = timeMs - f.start;
+      if (f.dies) this.showFrame(v, 'die', frameAt(v.key, 'die', t));
+      const still = f.dies ? animLength(v.key, 'die') + LIE_MS : 0;
+      const alpha = 1 - Math.max(0, t - still) / FADE_MS;
+      if (alpha <= 0) {
+        this.destroy(v);
+        return false;
+      }
+      v.img.setAlpha(alpha);
+      v.cloth?.setAlpha(alpha);
+      return true;
+    });
   }
 }

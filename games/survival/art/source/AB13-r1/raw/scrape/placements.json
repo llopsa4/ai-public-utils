@@ -1,0 +1,722 @@
+[
+  {
+    "anim": "scrape",
+    "facing": "s",
+    "frame": 0,
+    "cell": [
+      0,
+      0,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "s",
+    "frame": 1,
+    "cell": [
+      99,
+      0,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "s",
+    "frame": 2,
+    "cell": [
+      198,
+      0,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "s",
+    "frame": 3,
+    "cell": [
+      297,
+      0,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "s",
+    "frame": 4,
+    "cell": [
+      396,
+      0,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "s",
+    "frame": 5,
+    "cell": [
+      495,
+      0,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "sw",
+    "frame": 0,
+    "cell": [
+      0,
+      86,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "sw",
+    "frame": 1,
+    "cell": [
+      99,
+      86,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "sw",
+    "frame": 2,
+    "cell": [
+      198,
+      86,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "sw",
+    "frame": 3,
+    "cell": [
+      297,
+      86,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "sw",
+    "frame": 4,
+    "cell": [
+      396,
+      86,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "sw",
+    "frame": 5,
+    "cell": [
+      495,
+      86,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "w",
+    "frame": 0,
+    "cell": [
+      0,
+      172,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "w",
+    "frame": 1,
+    "cell": [
+      99,
+      172,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "w",
+    "frame": 2,
+    "cell": [
+      198,
+      172,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "w",
+    "frame": 3,
+    "cell": [
+      297,
+      172,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "w",
+    "frame": 4,
+    "cell": [
+      396,
+      172,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "w",
+    "frame": 5,
+    "cell": [
+      495,
+      172,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "nw",
+    "frame": 0,
+    "cell": [
+      0,
+      258,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "nw",
+    "frame": 1,
+    "cell": [
+      99,
+      258,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "nw",
+    "frame": 2,
+    "cell": [
+      198,
+      258,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "nw",
+    "frame": 3,
+    "cell": [
+      297,
+      258,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "nw",
+    "frame": 4,
+    "cell": [
+      396,
+      258,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "nw",
+    "frame": 5,
+    "cell": [
+      495,
+      258,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "n",
+    "frame": 0,
+    "cell": [
+      0,
+      344,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "n",
+    "frame": 1,
+    "cell": [
+      99,
+      344,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "n",
+    "frame": 2,
+    "cell": [
+      198,
+      344,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "n",
+    "frame": 3,
+    "cell": [
+      297,
+      344,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "n",
+    "frame": 4,
+    "cell": [
+      396,
+      344,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "n",
+    "frame": 5,
+    "cell": [
+      495,
+      344,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "ne",
+    "frame": 0,
+    "cell": [
+      0,
+      430,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "ne",
+    "frame": 1,
+    "cell": [
+      99,
+      430,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "ne",
+    "frame": 2,
+    "cell": [
+      198,
+      430,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "ne",
+    "frame": 3,
+    "cell": [
+      297,
+      430,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "ne",
+    "frame": 4,
+    "cell": [
+      396,
+      430,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "ne",
+    "frame": 5,
+    "cell": [
+      495,
+      430,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "e",
+    "frame": 0,
+    "cell": [
+      0,
+      516,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "e",
+    "frame": 1,
+    "cell": [
+      99,
+      516,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "e",
+    "frame": 2,
+    "cell": [
+      198,
+      516,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "e",
+    "frame": 3,
+    "cell": [
+      297,
+      516,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "e",
+    "frame": 4,
+    "cell": [
+      396,
+      516,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "e",
+    "frame": 5,
+    "cell": [
+      495,
+      516,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "se",
+    "frame": 0,
+    "cell": [
+      0,
+      602,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "se",
+    "frame": 1,
+    "cell": [
+      99,
+      602,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "se",
+    "frame": 2,
+    "cell": [
+      198,
+      602,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "se",
+    "frame": 3,
+    "cell": [
+      297,
+      602,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "se",
+    "frame": 4,
+    "cell": [
+      396,
+      602,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  },
+  {
+    "anim": "scrape",
+    "facing": "se",
+    "frame": 5,
+    "cell": [
+      495,
+      602,
+      99,
+      86
+    ],
+    "offset": [
+      54,
+      67
+    ]
+  }
+]

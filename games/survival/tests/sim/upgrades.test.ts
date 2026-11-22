@@ -11,7 +11,7 @@ import {
 import { loadState, parseSave, serialize } from '../../src/sim/save';
 import { addBuilding, type GameState } from '../../src/sim/state';
 import { newGame, step } from '../../src/sim/tick';
-import { addHuntingLodge, stepFed } from './helpers';
+import { addHuntingLodge, stepFed, o } from './helpers';
 
 /** One step across the day start at `tick` (a multiple of 1200) with the given Wotakuye. */
 function dayStartAt(tick: number, wotakuye: number): GameState {
@@ -101,9 +101,9 @@ test('with bows a hunter takes a shot at a wolf 5 tiles away; without, not yet',
     const s = newGame(2);
     const p = s.people.find((q) => q.age === 'adult')!;
     s.people = [p];
-    Object.assign(p, { x: 24, y: 29, drafted: true, post: [24, 29], stance: 'hold', society: 'hunters' });
+    Object.assign(p, { x: o(24), y: o(29), drafted: true, post: [o(24), o(29)], stance: 'hold', society: 'hunters' });
     if (bows) s.upgrades.push('bows');
-    s.enemies.push({ id: 1, kind: 'wolf', x: 24, y: 24, hp: 40, cooldown: 0, fleeing: false, wave: 0 });
+    s.enemies.push({ id: 1, kind: 'wolf', x: o(24), y: o(24), hp: 40, cooldown: 0, fleeing: false, wave: 0 });
     s.nextEnemyId = 2;
     step(s, 1);
     return p.cooldown > 0;
@@ -126,7 +126,7 @@ function campWithLodge(n: number): { s: GameState; healers: GameState['people'] 
   s.store.wood = 100;
   s.store.hides = 20;
   s.store.food = 1000;
-  const lodge = placeBuilding(s, 'healers_lodge', 28, 26).building!;
+  const lodge = placeBuilding(s, 'healers_lodge', o(28), o(26)).building!;
   lodge.done = true;
   const healers = s.people.filter((p) => p.age === 'adult').slice(0, n);
   assert.equal(assignWorkers(s, healers.map((p) => p.id), lodge.id), n);
@@ -137,9 +137,9 @@ test("the healers' lodge needs the society first", () => {
   const s = newGame(1);
   s.store.wood = 100;
   s.store.hides = 20;
-  assert.equal(placeBuilding(s, 'healers_lodge', 28, 26).error, "Needs the Healers' society.");
+  assert.equal(placeBuilding(s, 'healers_lodge', o(28), o(26)).error, "Needs the Healers' society.");
   s.upgrades.push('healers');
-  const r = placeBuilding(s, 'healers_lodge', 28, 26);
+  const r = placeBuilding(s, 'healers_lodge', o(28), o(26));
   assert.ok(r.building, r.error ?? 'placed');
   assert.equal(s.store.wood, 80);
   assert.equal(s.store.hides, 17);
@@ -192,7 +192,7 @@ test('each upgrade has a home building; buying is refused without a finished one
   assert.equal(buyUpgrade(s, 'dogs'), false);
   assert.equal(s.gift, 50, 'nothing was taken');
 
-  const lodge = addBuilding(s, 'hunting_lodge', 36, 36, false);
+  const lodge = addBuilding(s, 'hunting_lodge', o(36), o(36), false);
   assert.equal(buyUpgrade(s, 'dogs'), false, 'an unfinished lodge does not count');
   lodge.done = true;
   assert.equal(missingHome(s, 'dogs'), false);

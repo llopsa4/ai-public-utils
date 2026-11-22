@@ -24,20 +24,29 @@ export function bisonDirection(size: number, at: Tile2): Tile2 {
   return opts.reduce((a, b) => (b[0] < a[0] ? b : a))[1];
 }
 
+/**
+ * Where a herd aimed at `at` starts and how far it runs: `startBefore` tiles before the point (on the run's axis, clamped
+ * inside the map), then `run` tiles in `dir`. Both the sim and the aiming lane read this.
+ */
+export function bisonLane(size: number, at: Tile2): { start: Tile2; dir: Tile2; run: number } {
+  const n = size - 1;
+  const dir = bisonDirection(size, at);
+  const clamp = (v: number) => Math.min(n, Math.max(0, v));
+  const start: Tile2 = [clamp(at[0] - dir[0] * BISON.startBefore), clamp(at[1] - dir[1] * BISON.startBefore)];
+  return { start, dir, run: BISON.run };
+}
+
 /** Starts the effect of a power at a point. Returns true when the power makes one (false for the ally powers). */
 export function startEffect(s: GameState, power: string, at: Tile2 | undefined): boolean {
   if (!at || !isEffectPower(power)) return false;
-  const n = s.map.size - 1;
   if (power === 'storm_caller') {
     effectsOf(s).push({ id: s.nextEnemyId++, kind: 'storm', x: at[0], y: at[1], dx: 0, dy: 0, expires: s.tick + STORM.ticks, hit: [] });
     return true;
   }
-  const [dx, dy] = bisonDirection(s.map.size, at);
-  // The herd starts on the edge, on the line through the point, and runs the whole way across.
-  const x = dx > 0 ? 0 : dx < 0 ? n : at[0];
-  const y = dy > 0 ? 0 : dy < 0 ? n : at[1];
+  const { start, dir, run } = bisonLane(s.map.size, at);
+  // The herd starts 24 tiles before the point, on the line through it, and runs 48 tiles.
   effectsOf(s).push({
-    id: s.nextEnemyId++, kind: 'bison', x, y, dx, dy, expires: s.tick + Math.ceil(n / BISON.speed) + 1, hit: [],
+    id: s.nextEnemyId++, kind: 'bison', x: start[0], y: start[1], dx: dir[0], dy: dir[1], expires: s.tick + Math.ceil(run / BISON.speed) + 1, hit: [],
   });
   return true;
 }

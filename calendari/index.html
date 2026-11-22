@@ -1,75 +1,75 @@
 <!doctype html>
-<html lang="en">
+<html lang="ca">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; worker-src 'self'; connect-src 'none'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>Duty calendar</title>
+  <title>Calendari de guàrdies</title>
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./styles.css?v=9ba43d122dcb">
   <link rel="stylesheet" href="./theme.css?v=32f8b5698167" media="screen">
-  <script type="module" src="./app.mjs?v=c37c153da4fb"></script>
+  <script type="module" src="./app.mjs?v=262bfac887a4"></script>
 </head>
 <body>
-  <a class="skip-link" href="#calendar">Skip to calendar</a>
+  <a class="skip-link" href="#calendar">Vés al calendari</a>
   <div class="app-shell">
     <header class="topbar">
-      <div class="brand"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="9" y="12" width="30" height="28" rx="9" stroke="currentColor" stroke-width="2.5"/><path d="M17 8v8m14-8v8M10 22h28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="m19 30 4 4 8-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><p class="eyebrow">Monthly duty planning</p><h1>Duty calendar<span class="brand-dot" aria-hidden="true">.</span></h1><p class="brand-subtitle">Clear schedules. Balanced teams.</p></div></div>
-      <div class="header-actions"><span id="save-status" role="status">Loading…</span><button id="backup">Export backup</button><button id="restore">Import backup</button><button id="print" class="primary">Print / save PDF</button><button id="restart" class="danger">Restart planner</button><input id="import-file" type="file" accept=".json,application/json" hidden></div>
+      <div class="brand"><span class="brand-icon" aria-hidden="true"><svg viewBox="0 0 48 48" fill="none"><rect x="9" y="12" width="30" height="28" rx="9" stroke="currentColor" stroke-width="2.5"/><path d="M17 8v8m14-8v8M10 22h28" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/><path d="m19 30 4 4 8-8" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></span><div><p class="eyebrow">Planificació mensual de guàrdies</p><h1>Calendari de guàrdies<span class="brand-dot" aria-hidden="true">.</span></h1><p class="brand-subtitle">Horaris clars. Equips equilibrats.</p></div></div>
+      <div class="header-actions"><span id="save-status" role="status">Carregant…</span><button id="backup">Exporta còpia</button><button id="restore">Importa còpia</button><button id="print" class="primary">Imprimeix / desa PDF</button><button id="restart" class="danger">Reinicia el planificador</button><input id="import-file" type="file" accept=".json,application/json" hidden></div>
     </header>
-    <p class="privacy-note"><strong>Names stay in this session.</strong> Only anonymous codes and scheduling data are saved. Reloading clears names. Names may appear in PDFs you explicitly export.</p>
+    <p class="privacy-note"><strong>Els noms només es mantenen en aquesta sessió.</strong> Només es desen codis anònims i dades de planificació. En recarregar la pàgina s’esborren els noms. Els noms poden aparèixer als PDF que exportis explícitament.</p>
     <div id="message" class="message" role="status" aria-live="polite" hidden></div>
     <div class="workspace">
-      <aside class="sidebar" aria-label="Participants and restrictions">
+      <aside class="sidebar" aria-label="Participants i restriccions">
         <details id="participant-panel" open>
           <summary>Participants <span id="participant-count" class="pill">0</span></summary>
-          <div class="sidebar-body"><p class="muted">Select a person to edit availability.</p><div class="add-row"><label for="add-count">Add people</label><input id="add-count" type="number" min="1" max="100" value="1"><button id="add-participant" class="primary">Add</button></div>
+          <div class="sidebar-body"><p class="muted">Selecciona una persona per editar-ne la disponibilitat.</p><div class="add-row"><label for="add-count">Afegeix persones</label><input id="add-count" type="number" min="1" max="100" value="1"><button id="add-participant" class="primary">Afegeix</button></div>
           <div id="participants" class="participants"></div>
           </div>
         </details>
-        <section class="issues-section" aria-labelledby="issues-title"><h2 id="issues-title">Coverage & checks</h2><div id="issues"></div></section>
-        <section class="rules-card"><p class="eyebrow">The ground rules</p><h2>Two people. Every hour.</h2><p>48 hours of cover per date.</p><ul><li>No consecutive work dates.</li><li>Only one Friday per person across two consecutive months.</li><li>Holidays: one 24h duty or two 12h duties per person/month.</li><li>Up to 3 non-holidays per person/month.</li><li>One shift per person per date.</li></ul><p class="muted">Manual exceptions need confirmation. Adjacent saved months count toward rest and Friday limits.</p></section>
+        <section class="issues-section" aria-labelledby="issues-title"><h2 id="issues-title">Cobertura i comprovacions</h2><div id="issues"></div></section>
+        <section class="rules-card"><p class="eyebrow">Les normes bàsiques</p><h2>Dues persones. Cada hora.</h2><p>48 hores de cobertura per dia.</p><ul><li>Cap dia de treball consecutiu.</li><li>Només un divendres per persona cada dos mesos consecutius.</li><li>Festius: una guàrdia de 24 h o dues de 12 h per persona i mes.</li><li>Fins a 3 dies laborables per persona i mes.</li><li>Un torn per persona i dia.</li></ul><p class="muted">Les excepcions manuals requereixen confirmació. Els mesos adjacents desats compten per als límits de descans i de divendres.</p></section>
       </aside>
       <main id="calendar" tabindex="-1">
         <section class="calendar-section" aria-labelledby="month-title">
-          <div class="calendar-toolbar"><div><p class="eyebrow">Monthly rota</p><div class="month-navigation"><button id="previous" aria-label="Previous month">‹</button><h2 id="month-title"></h2><button id="next" aria-label="Next month">›</button><button id="today">Current month</button></div></div><label class="month-jump">Jump to month<input id="month-input" type="month" min="1900-01" max="2200-12"></label></div>
-          <section class="city-panel" aria-label="City holiday settings">
-            <div class="city-controls"><label for="city-input">City<input id="city-input" type="text" list="city-options" autocomplete="off" spellcheck="false" maxlength="120" placeholder="Search a Catalan city" aria-describedby="city-status"></label><datalist id="city-options"></datalist><button id="apply-city">Apply</button><button id="clear-city">Clear</button><span id="city-highlight" class="city-highlight" aria-live="polite">No city selected</span></div>
-            <p id="city-status" class="muted" role="status">Choose a listed city to mark its official holidays.</p>
-            <details class="city-source"><summary>Holiday data &amp; sources</summary><p>Official sources: <a href="https://analisi.transparenciacatalunya.cat/d/b4eh-r8up" target="_blank" rel="noopener noreferrer">Municipal holidays</a> · <a href="https://analisi.transparenciacatalunya.cat/d/yf2b-mjr6" target="_blank" rel="noopener noreferrer">Catalonia-wide holidays</a>. Data is bundled locally; no city search is sent online.</p></details>
+          <div class="calendar-toolbar"><div><p class="eyebrow">Torns mensuals</p><div class="month-navigation"><button id="previous" aria-label="Mes anterior">‹</button><h2 id="month-title"></h2><button id="next" aria-label="Mes següent">›</button><button id="today">Mes actual</button></div></div><label class="month-jump">Vés al mes<input id="month-input" type="month" min="1900-01" max="2200-12"></label></div>
+          <section class="city-panel" aria-label="Festius del municipi">
+            <div class="city-controls"><label for="city-input">Municipi<input id="city-input" type="text" list="city-options" autocomplete="off" spellcheck="false" maxlength="120" placeholder="Cerca un municipi català" aria-describedby="city-status"></label><datalist id="city-options"></datalist><button id="apply-city">Aplica</button><button id="clear-city">Esborra</button><span id="city-highlight" class="city-highlight" aria-live="polite">Cap municipi seleccionat</span></div>
+            <p id="city-status" class="muted" role="status">Tria un municipi de la llista per marcar-ne els festius oficials.</p>
+            <details class="city-source"><summary>Dades i fonts dels festius</summary><p>Fonts oficials: <a href="https://analisi.transparenciacatalunya.cat/d/b4eh-r8up" target="_blank" rel="noopener noreferrer">Festes locals</a> · <a href="https://analisi.transparenciacatalunya.cat/d/yf2b-mjr6" target="_blank" rel="noopener noreferrer">Festes generals de Catalunya</a>. Les dades s’inclouen localment; cap cerca de municipi s’envia per internet.</p></details>
           </section>
-          <div class="calendar-actions"><label class="calendar-view-control" for="participant-view">View<select id="participant-view"><option value="">All participants</option></select></label><ul id="coverage-legend" class="coverage-legend" aria-label="Calendar colour legend"><li><span class="legend-swatch legend-covered" aria-hidden="true"></span>Covered</li><li><span class="legend-swatch legend-missing" aria-hidden="true"></span>Needs cover</li><li><span class="legend-swatch legend-overlap" aria-hidden="true"></span>Overlapping</li></ul><div id="participant-view-legend" class="participant-view-legend" hidden><span class="legend-swatch legend-duty" aria-hidden="true"></span>On duty<span class="muted">Other dates: no duty</span></div><div class="generate-actions"><button id="generate" class="primary">Generate month</button><button id="cancel" hidden>Stop search</button></div></div>
+          <div class="calendar-actions"><label class="calendar-view-control" for="participant-view">Vista<select id="participant-view"><option value="">Tots els participants</option></select></label><ul id="coverage-legend" class="coverage-legend" aria-label="Llegenda de colors del calendari"><li><span class="legend-swatch legend-covered" aria-hidden="true"></span>Cobert</li><li><span class="legend-swatch legend-missing" aria-hidden="true"></span>Cal cobrir</li><li><span class="legend-swatch legend-overlap" aria-hidden="true"></span>Solapament</li></ul><div id="participant-view-legend" class="participant-view-legend" hidden><span class="legend-swatch legend-duty" aria-hidden="true"></span>De guàrdia<span class="muted">Altres dies: sense guàrdia</span></div><div class="generate-actions"><button id="generate" class="primary">Genera el mes</button><button id="cancel" hidden>Atura la cerca</button></div></div>
           <p id="participant-view-status" class="participant-view-status" role="status" hidden></p>
           <div id="search-status" class="search-status" role="status" aria-live="polite" hidden></div>
-          <p class="move-instructions">Click a duty for move/cancel options, or drag it to move. Touch: hold to drag. Generate month replaces all assignments in the displayed month.</p>
-          <div id="move-controls" class="move-controls" hidden><p id="move-status" role="status" aria-live="polite"></p><button type="button" id="cancel-move">Cancel move</button></div>
+          <p class="move-instructions">Fes clic en una guàrdia per moure-la o cancel·lar-la, o arrossega-la per moure-la. En pantalla tàctil, mantén premut per arrossegar. «Genera el mes» substitueix totes les assignacions del mes mostrat.</p>
+          <div id="move-controls" class="move-controls" hidden><p id="move-status" role="status" aria-live="polite"></p><button type="button" id="cancel-move">Cancel·la el moviment</button></div>
           <div id="move-cursor" class="move-cursor" hidden aria-hidden="true"></div>
-          <div class="calendar-scroll"><div class="calendar-board"><div class="weekend-heading" aria-hidden="true">Weekend</div><div class="weekdays" aria-hidden="true"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div><div id="month-grid" class="month-grid" aria-label="Monthly duty calendar"></div></div></div>
+          <div class="calendar-scroll"><div class="calendar-board"><div class="weekend-heading" aria-hidden="true">Cap de setmana</div><div class="weekdays" aria-hidden="true"><span>Dl</span><span>Dt</span><span>Dc</span><span>Dj</span><span>Dv</span><span>Ds</span><span>Dg</span></div><div id="month-grid" class="month-grid" aria-label="Calendari mensual de guàrdies"></div></div></div>
         </section>
-        <section class="summary-section" aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">Shared fairly</p><h2 id="summary-title">Workload overview</h2></div><p id="balance-note" class="muted"></p></div><div class="table-scroll"><table><thead><tr><th scope="col">Participant</th><th scope="col">Hours</th><th scope="col">Holiday duties / limit</th><th scope="col">Non-holidays / 3</th><th scope="col">Weekend dates</th></tr></thead><tbody id="workloads"></tbody></table></div></section>
+        <section class="summary-section" aria-labelledby="summary-title"><div class="section-heading"><div><p class="eyebrow">Repartiment equitatiu</p><h2 id="summary-title">Resum de la càrrega de treball</h2></div><p id="balance-note" class="muted"></p></div><div class="table-scroll"><table><thead><tr><th scope="col">Participant</th><th scope="col">Hores</th><th scope="col">Guàrdies en festiu / límit</th><th scope="col">Laborables / 3</th><th scope="col">Dies de cap de setmana</th></tr></thead><tbody id="workloads"></tbody></table></div></section>
       </main>
     </div>
   </div>
   <dialog id="setup-dialog" aria-labelledby="setup-title" aria-describedby="setup-description">
-    <p class="eyebrow" id="setup-progress">Step 1 of 2</p>
-    <h2 id="setup-title">Choose your city</h2>
-    <p id="setup-description">Start with your city so local and public holidays are included.</p>
+    <p class="eyebrow" id="setup-progress">Pas 1 de 2</p>
+    <h2 id="setup-title">Tria el teu municipi</h2>
+    <p id="setup-description">Comença pel teu municipi perquè s’hi incloguin les festes locals i oficials.</p>
     <p id="setup-error" class="setup-error" role="alert" hidden></p>
     <p id="setup-data-warning" class="setup-error" role="status" hidden></p>
-    <div id="setup-recovery" hidden><p>Saved data could not be read. Import a valid backup or restart the planner to continue. Your saved data has not been overwritten.</p></div>
+    <div id="setup-recovery" hidden><p>No s’han pogut llegir les dades desades. Importa una còpia vàlida o reinicia el planificador per continuar. Les dades desades no s’han sobreescrit.</p></div>
     <form id="setup-form" novalidate>
-      <div id="setup-city-step"><label for="setup-city">City<input id="setup-city" type="text" list="city-options" autocomplete="off" spellcheck="false" maxlength="120" placeholder="Search a Catalan city" aria-describedby="setup-city-help"></label><p id="setup-city-help" class="muted">Choose a recognised city from the list. Search stays on this device.</p></div>
-      <div id="setup-team-step" hidden><label for="setup-count">How many participants?<input id="setup-count" type="number" min="1" max="100" step="1" value="1" inputmode="numeric" aria-describedby="setup-team-help"></label><p id="setup-team-help" class="muted">Add 1 to 100 people. Everyone starts with 24-hour duties and no blocked dates. Next, choose whether to fill in their information or generate with these defaults.</p><p id="setup-month" class="setup-month"></p></div>
-      <div id="setup-choice-step" hidden><p id="setup-choice-description"></p><button id="setup-edit-people" type="button">Fill participant information</button><button id="setup-generate" type="button" class="primary">Generate calendar</button></div>
-      <div class="setup-actions"><button id="setup-back" type="button" hidden>Back</button><button id="setup-next" type="submit" class="primary">Confirm city</button></div>
+      <div id="setup-city-step"><label for="setup-city">Municipi<input id="setup-city" type="text" list="city-options" autocomplete="off" spellcheck="false" maxlength="120" placeholder="Cerca un municipi català" aria-describedby="setup-city-help"></label><p id="setup-city-help" class="muted">Tria un municipi reconegut de la llista. La cerca no surt d’aquest dispositiu.</p></div>
+      <div id="setup-team-step" hidden><label for="setup-count">Quants participants?<input id="setup-count" type="number" min="1" max="100" step="1" value="1" inputmode="numeric" aria-describedby="setup-team-help"></label><p id="setup-team-help" class="muted">Afegeix d’1 a 100 persones. Tothom comença amb guàrdies de 24 hores i sense dates bloquejades. Després, tria si vols omplir-ne la informació o generar amb aquests valors per defecte.</p><p id="setup-month" class="setup-month"></p></div>
+      <div id="setup-choice-step" hidden><p id="setup-choice-description"></p><button id="setup-edit-people" type="button">Omple la informació dels participants</button><button id="setup-generate" type="button" class="primary">Genera el calendari</button></div>
+      <div class="setup-actions"><button id="setup-back" type="button" hidden>Enrere</button><button id="setup-next" type="submit" class="primary">Confirma el municipi</button></div>
     </form>
-    <div class="setup-tools"><button id="setup-import" type="button">Import backup</button><button id="setup-restart" type="button" class="danger" hidden>Restart planner</button></div>
-    <p class="setup-privacy muted">Names are optional and stay in this session. Only anonymous planning data is saved.</p>
+    <div class="setup-tools"><button id="setup-import" type="button">Importa còpia</button><button id="setup-restart" type="button" class="danger" hidden>Reinicia el planificador</button></div>
+    <p class="setup-privacy muted">Els noms són opcionals i només es mantenen en aquesta sessió. Només es desen dades de planificació anònimes.</p>
   </dialog>
-  <dialog id="participant-dialog" aria-labelledby="participant-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Participant configuration</p><h2 id="participant-title">Participant settings</h2></div><button type="submit" aria-label="Close participant settings">✕</button></form><p id="participant-setup-progress" class="muted" role="status" hidden></p><div id="participant-editor"></div></dialog>
-  <dialog id="assignment-dialog" aria-labelledby="assignment-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Assigned duty</p><h2 id="assignment-title">Assignment options</h2></div><button type="submit" aria-label="Close assignment options">✕</button></form><p id="assignment-context"></p><p class="muted assignment-options-hint">Move this duty to another date, or cancel the assignment to leave the spot unfilled.</p><div class="assignment-options-actions"><button type="button" class="primary" id="choose-move">Move assignment</button><button type="button" class="danger" id="cancel-assignment">Cancel assignment</button></div></dialog>
-  <dialog id="day-dialog" aria-labelledby="day-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Daily assignments</p><h2 id="day-title"></h2></div><button aria-label="Close date editor">✕</button></form><div id="day-content"></div></dialog>
+  <dialog id="participant-dialog" aria-labelledby="participant-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Configuració del participant</p><h2 id="participant-title">Paràmetres del participant</h2></div><button type="submit" aria-label="Tanca els paràmetres del participant">✕</button></form><p id="participant-setup-progress" class="muted" role="status" hidden></p><div id="participant-editor"></div></dialog>
+  <dialog id="assignment-dialog" aria-labelledby="assignment-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Guàrdia assignada</p><h2 id="assignment-title">Opcions de l’assignació</h2></div><button type="submit" aria-label="Tanca les opcions de l’assignació">✕</button></form><p id="assignment-context"></p><p class="muted assignment-options-hint">Mou aquesta guàrdia a un altre dia o cancel·la l’assignació per deixar la plaça sense cobrir.</p><div class="assignment-options-actions"><button type="button" class="primary" id="choose-move">Mou l’assignació</button><button type="button" class="danger" id="cancel-assignment">Cancel·la l’assignació</button></div></dialog>
+  <dialog id="day-dialog" aria-labelledby="day-title"><form method="dialog" class="dialog-header"><div><p class="eyebrow">Assignacions del dia</p><h2 id="day-title"></h2></div><button aria-label="Tanca l’editor del dia">✕</button></form><div id="day-content"></div></dialog>
   <div id="print-report" aria-hidden="true"></div>
 </body>
 </html>

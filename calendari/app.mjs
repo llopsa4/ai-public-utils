@@ -7,12 +7,12 @@ const SEARCH_MS = 10000; // Generation budget; the status text is derived from i
 const $ = selector => document.querySelector(selector);
 const escape = value => String(value).replace(/[&<>"']/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[ch]));
 const names = new Map(); // Never include this map in persistence, backups, worker messages, or URLs.
-const kindLabel = kind => ({ '24': '24 hours', day: 'Day · 12 hours', night: 'Night · 12 hours' }[kind]);
-const shortKind = kind => ({ '24': '24h', day: 'Day', night: 'Night' }[kind]);
+const kindLabel = kind => ({ '24': '24 hores', day: 'Dia · 12 hores', night: 'Nit · 12 hores' }[kind]);
+const shortKind = kind => ({ '24': '24h', day: 'Dia', night: 'Nit' }[kind]);
 const timeLabel = kind => ({ '24': '09:00–09:00 +1', day: '09:00–21:00', night: '21:00–09:00 +1' }[kind]);
 const splitChoices = new Set(); // Temporary choices for editing an otherwise empty holiday place.
-const monthTitle = month => new Date(`${month}-01T12:00:00Z`).toLocaleDateString('en-GB', { month: 'long', year: 'numeric', timeZone: 'UTC' });
-const dateTitle = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
+const monthTitle = month => new Date(`${month}-01T12:00:00Z`).toLocaleDateString('ca-ES', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+const dateTitle = date => new Date(`${date}T12:00:00Z`).toLocaleDateString('ca-ES', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' });
 let state = emptyState(), month = todayMonth(), selectedId = null, openDate = null;
 let storageBlocked = false, worker = null, latestProposal = null;
 let migratedShiftPermissions = false;
@@ -38,12 +38,12 @@ try {
     const mixed = oldParticipants.filter(p => p.allowedKinds.includes('24') && p.allowedKinds.some(kind => kind !== '24')).length;
     if (mixed) {
       migratedShiftPermissions = true;
-      notify(`${mixed} participant(s) with mixed shift permissions now default to 24 hours. Choose 12-hour day/night duties in their settings if needed. Existing assignments were kept; review any permission warnings.`);
+      notify(`${mixed} participant(s) amb permisos de torn mixtos ara tenen guàrdies de 24 hores per defecte. Si cal, tria guàrdies de dia/nit de 12 hores als seus paràmetres. S’han conservat les assignacions existents; revisa els avisos de permisos.`);
     }
   }
 } catch {
   storageBlocked = true;
-  notify('Saved data could not be read. It has not been overwritten. Export this session as a backup, or import a valid backup to resume saving.', true);
+  notify('No s’han pogut llegir les dades desades. No s’han sobreescrit. Exporta aquesta sessió com a còpia o importa una còpia vàlida per tornar a desar.', true);
 }
 function ensureMonth() {
   state.months[month] ??= newMonth();
@@ -52,16 +52,16 @@ function ensureMonth() {
 function renderCity() {
   const city = cityById(state.cityId);
   $('#city-input').value = city?.label ?? '';
-  $('#city-highlight').textContent = city ? `${city.name} · Catalonia` : 'No city selected';
+  $('#city-highlight').textContent = city ? `${city.name} · Catalunya` : 'Cap municipi seleccionat';
   $('#city-highlight').classList.toggle('selected', Boolean(city));
   $('#clear-city').disabled = !city;
   const available = city && cityYearAvailable(city.id, month.slice(0, 4));
   $('#city-status').classList.toggle('unavailable', Boolean(city && !available));
-  if (!city) $('#city-status').textContent = `Choose a listed city to mark local and public holidays. Official snapshot available for ${HOLIDAY_DATA.year}; weekends and manual dates work in every year.`;
-  else if (!available) $('#city-status').textContent = `Official dates for ${month.slice(0, 4)} are not available in the bundled snapshot. Mark dates manually; no dates are copied from ${HOLIDAY_DATA.year}.`;
+  if (!city) $('#city-status').textContent = `Tria un municipi de la llista per marcar les festes locals i oficials. Dades oficials disponibles per al ${HOLIDAY_DATA.year}; els caps de setmana i les dates manuals funcionen tots els anys.`;
+  else if (!available) $('#city-status').textContent = `Les dates oficials del ${month.slice(0, 4)} no estan disponibles a les dades incloses. Marca les dates manualment; no es copien dates del ${HOLIDAY_DATA.year}.`;
   else {
     const count = HOLIDAY_DATA.cities[city.id].dates.length;
-    $('#city-status').textContent = `${HOLIDAY_DATA.year} official snapshot: ${count} local holiday date${count === 1 ? '' : 's'} plus Catalonia-wide public holidays. ${count < 2 ? 'Only one municipal date was published in this snapshot; verify the other with the council.' : 'Existing assignments are kept and rechecked against these dates.'}`;
+    $('#city-status').textContent = `Dades oficials del ${HOLIDAY_DATA.year}: ${count} ${count === 1 ? 'festa local' : 'festes locals'} més les festes generals de Catalunya. ${count < 2 ? 'En aquestes dades només s’ha publicat una data municipal; verifica l’altra amb l’ajuntament.' : 'Les assignacions existents es conserven i es tornen a comprovar amb aquestes dates.'}`;
   }
 }
 function setCity(city) {
@@ -70,22 +70,22 @@ function setCity(city) {
     if (city) config.cityId = city.id; else delete config.cityId;
   }
   changed();
-  notify(city ? `City set to ${city.name}. Official holidays now apply to scheduling and workload checks. Review any new warnings before regenerating.` : 'City cleared. Official city/public dates were removed; weekends and manually added holidays were kept.');
+  notify(city ? `Municipi establert: ${city.name}. Els festius oficials ja s’apliquen a la planificació i a les comprovacions de càrrega. Revisa els avisos nous abans de tornar a generar.` : 'Municipi esborrat. S’han tret les festes locals i oficials; s’han mantingut els caps de setmana i els festius afegits manualment.');
 }
 function personLabel(id) {
   const p = state.participants.find(p => p.id === id);
-  return names.get(id)?.trim() || (p ? `Participant ${p.code}` : 'Unknown participant');
+  return names.get(id)?.trim() || (p ? `Participant ${p.code}` : 'Participant desconegut');
 }
 function save() {
-  if (storageBlocked) { $('#save-status').textContent = 'Not saved · export a backup'; return; }
+  if (storageBlocked) { $('#save-status').textContent = 'No desat · exporta una còpia'; return; }
   try {
     localStorage.setItem(STORAGE_KEY, serialize(state, month));
     saveFailed = false;
-    $('#save-status').textContent = 'Anonymous data saved';
+    $('#save-status').textContent = 'Dades anònimes desades';
   } catch {
     saveFailed = true;
-    $('#save-status').textContent = 'Not saved · export a backup';
-    notify('Browser storage is unavailable or full. Export an anonymous backup before closing this page.', true);
+    $('#save-status').textContent = 'No desat · exporta una còpia';
+    notify('L’emmagatzematge del navegador no està disponible o és ple. Exporta una còpia anònima abans de tancar aquesta pàgina.', true);
   }
 }
 function render() {
@@ -97,12 +97,12 @@ function render() {
 }
 function renderParticipants() {
   $('#participant-count').textContent = state.participants.length;
-  $('#participants').innerHTML = state.participants.length ? state.participants.map(p => `<button class="participant-button ${p.id === selectedId ? 'active' : ''}" data-person="${p.id}" aria-haspopup="dialog" aria-controls="participant-dialog"><span>${escape(personLabel(p.id))}</span><small>${participantCode(p)}</small></button>`).join('') : '<p class="empty-state">Start with your team.<br>Add participants, then set availability.</p>';
+  $('#participants').innerHTML = state.participants.length ? state.participants.map(p => `<button class="participant-button ${p.id === selectedId ? 'active' : ''}" data-person="${p.id}" aria-haspopup="dialog" aria-controls="participant-dialog"><span>${escape(personLabel(p.id))}</span><small>${participantCode(p)}</small></button>`).join('') : '<p class="empty-state">Comença pel teu equip.<br>Afegeix participants i després defineix-ne la disponibilitat.</p>';
 }
 function renderEditor() {
   const p = state.participants.find(p => p.id === selectedId);
   if (!p) { participantDraft = null; participantDirty = false; $('#participant-editor').innerHTML = ''; return; }
-  $('#participant-title').textContent = `${participantCode(p)} · Participant settings`;
+  $('#participant-title').textContent = `${participantCode(p)} · Paràmetres del participant`;
   if (!participantDraft || participantDraft.id !== p.id || participantDraft.month !== month) {
     participantDraft = { id: p.id, month, name: names.get(p.id) || '', allowedKinds: [...p.allowedKinds], blockedWeekdays: [...p.blockedWeekdays],
       blockedDates: p.blockedDates.filter(d => d.startsWith(month)).sort() };
@@ -110,18 +110,18 @@ function renderEditor() {
   }
   const guided = setupPeople.length > 0;
   $('#participant-setup-progress').hidden = !guided;
-  $('#participant-setup-progress').textContent = guided ? `Participant ${setupPersonIndex + 1} of ${setupPeople.length}. Confirm to continue, or skip this person for now.` : '';
+  $('#participant-setup-progress').textContent = guided ? `Participant ${setupPersonIndex + 1} de ${setupPeople.length}. Confirma per continuar o omet aquesta persona de moment.` : '';
   const draft = participantDraft;
   const shiftChoice = kind => `<label class="checkbox-label"><input type="checkbox" data-kind="${kind}" ${draft.allowedKinds.includes(kind) ? 'checked' : ''} ${(kind === '24' ? draft.allowedKinds.some(k => k !== '24') : draft.allowedKinds.includes('24')) ? 'disabled' : ''}>${kindLabel(kind)}</label>`;
   $('#participant-editor').innerHTML = `<form class="participant-editor" id="participant-form">
-    <h3>${participantCode(p)} · Availability</h3>
-    <label>Name · session only<input id="person-name" type="text" maxlength="80" autocomplete="off" spellcheck="false" value="${escape(draft.name)}" placeholder="Participant ${p.code}"></label>
-    <fieldset><legend>Allowed shift types</legend><div class="shift-families" aria-describedby="shift-choice-hint"><div class="shift-family"><p class="shift-family-title">24-hour duty</p><div class="checkbox-list">${shiftChoice('24')}</div></div><div class="shift-family"><p class="shift-family-title">12-hour duties</p><div class="checkbox-list">${shiftChoice('day')}${shiftChoice('night')}</div></div></div><p class="muted" id="shift-choice-hint">Uncheck the current choice to switch between 24h and 12h. Day and night may both be selected. Monthly holiday allowance: one 24h duty or two 12h duties on separate dates.</p></fieldset>
-    <fieldset><legend>Blocked weekdays · every month</legend><div class="checkbox-list weekday-choices">${[1, 2, 3, 4, 5, 6, 0].map(d => `<label class="checkbox-label"><input type="checkbox" data-weekday="${d}" ${draft.blockedWeekdays.includes(d) ? 'checked' : ''}>${WEEKDAYS[d]}</label>`).join('')}</div></fieldset>
+    <h3>${participantCode(p)} · Disponibilitat</h3>
+    <label>Nom · només en aquesta sessió<input id="person-name" type="text" maxlength="80" autocomplete="off" spellcheck="false" value="${escape(draft.name)}" placeholder="Participant ${p.code}"></label>
+    <fieldset><legend>Tipus de torn permesos</legend><div class="shift-families" aria-describedby="shift-choice-hint"><div class="shift-family"><p class="shift-family-title">Guàrdia de 24 hores</p><div class="checkbox-list">${shiftChoice('24')}</div></div><div class="shift-family"><p class="shift-family-title">Guàrdies de 12 hores</p><div class="checkbox-list">${shiftChoice('day')}${shiftChoice('night')}</div></div></div><p class="muted" id="shift-choice-hint">Desmarca l’opció actual per canviar entre 24 h i 12 h. Es poden seleccionar dia i nit alhora. Límit mensual en festius: una guàrdia de 24 h o dues de 12 h en dies diferents.</p></fieldset>
+    <fieldset><legend>Dies de la setmana bloquejats · cada mes</legend><div class="checkbox-list weekday-choices">${[1, 2, 3, 4, 5, 6, 0].map(d => `<label class="checkbox-label"><input type="checkbox" data-weekday="${d}" ${draft.blockedWeekdays.includes(d) ? 'checked' : ''}>${WEEKDAYS[d]}</label>`).join('')}</div></fieldset>
     ${blockedDatePicker(draft)}
-    <p id="participant-edit-status" class="muted" role="status">${participantDirty ? 'Unconfirmed changes. Confirm to apply them.' : 'Changes apply only after confirmation. Names stay in this session.'}</p>
-    <div class="participant-edit-actions"><button type="submit" class="primary" id="confirm-participant" ${participantDirty || guided ? '' : 'disabled'}>${guided ? 'Confirm and continue' : 'Confirm participant changes'}</button><button type="button" id="cancel-participant">${guided ? 'Skip for now' : 'Cancel changes'}</button></div>
-    <button type="button" class="danger remove-person" id="remove-person" ${guided ? 'hidden' : ''}>Delete participant</button>
+    <p id="participant-edit-status" class="muted" role="status">${participantDirty ? 'Canvis sense confirmar. Confirma’ls per aplicar-los.' : 'Els canvis només s’apliquen després de confirmar-los. Els noms només es mantenen en aquesta sessió.'}</p>
+    <div class="participant-edit-actions"><button type="submit" class="primary" id="confirm-participant" ${participantDirty || guided ? '' : 'disabled'}>${guided ? 'Confirma i continua' : 'Confirma els canvis del participant'}</button><button type="button" id="cancel-participant">${guided ? 'Omet de moment' : 'Cancel·la els canvis'}</button></div>
+    <button type="button" class="danger remove-person" id="remove-person" ${guided ? 'hidden' : ''}>Elimina el participant</button>
   </form>`;
 }
 
@@ -129,11 +129,11 @@ function blockedDatePicker(draft) {
   const dates = monthDates(draft.month), selected = new Set(draft.blockedDates);
   const offset = (weekday(dates[0]) + 6) % 7;
   const first = draft.blockedDates[0] ?? dates[0];
-  return `<fieldset class="blocked-date-picker"><legend>Blocked dates · ${escape(monthTitle(draft.month))}</legend><div class="blocked-date-weekdays" aria-hidden="true">${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => `<span>${d}</span>`).join('')}</div><div class="blocked-date-grid" role="group" aria-label="Choose blocked dates for ${escape(monthTitle(draft.month))}">${'<span aria-hidden="true"></span>'.repeat(offset)}${dates.map(date => `<button type="button" class="blocked-date ${selected.has(date) ? 'selected' : ''} ${[0, 6].includes(weekday(date)) ? 'weekend' : ''}" data-block-date="${date}" aria-pressed="${selected.has(date)}" aria-label="${escape(dateTitle(date))}, ${selected.has(date) ? 'blocked' : 'not selected'}" tabindex="${date === first ? 0 : -1}">${Number(date.slice(-2))}</button>`).join('')}</div><p class="muted" id="blocked-date-count">${selected.size} date${selected.size === 1 ? '' : 's'} selected</p><p id="blocked-hint" class="muted">Select dates to block for this month. Select again to unblock. Weekday restrictions above apply separately.</p></fieldset>`;
+  return `<fieldset class="blocked-date-picker"><legend>Dates bloquejades · ${escape(monthTitle(draft.month))}</legend><div class="blocked-date-weekdays" aria-hidden="true">${['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'].map(d => `<span>${d}</span>`).join('')}</div><div class="blocked-date-grid" role="group" aria-label="Tria les dates bloquejades de ${escape(monthTitle(draft.month))}">${'<span aria-hidden="true"></span>'.repeat(offset)}${dates.map(date => `<button type="button" class="blocked-date ${selected.has(date) ? 'selected' : ''} ${[0, 6].includes(weekday(date)) ? 'weekend' : ''}" data-block-date="${date}" aria-pressed="${selected.has(date)}" aria-label="${escape(dateTitle(date))}, ${selected.has(date) ? 'bloquejada' : 'no seleccionada'}" tabindex="${date === first ? 0 : -1}">${Number(date.slice(-2))}</button>`).join('')}</div><p class="muted" id="blocked-date-count">${selected.size} ${selected.size === 1 ? 'data seleccionada' : 'dates seleccionades'}</p><p id="blocked-hint" class="muted">Selecciona les dates que vols bloquejar aquest mes. Torna-les a seleccionar per desbloquejar-les. Les restriccions per dia de la setmana s’apliquen per separat.</p></fieldset>`;
 }
 
 function discardParticipantDraft() {
-  if (participantDirty && !confirm('Discard unconfirmed participant changes? Confirm them first to keep them.')) {
+  if (participantDirty && !confirm('Vols descartar els canvis sense confirmar del participant? Confirma’ls primer per conservar-los.')) {
     $('#confirm-participant').focus(); return false;
   }
   participantDraft = null; participantDirty = false; return true;
@@ -142,7 +142,7 @@ function currentToday() { const d = new Date(); return `${d.getFullYear()}-${pad
 function renderCalendar(proposal = null) {
   if (!state.participants.some(p => p.id === calendarParticipantId)) calendarParticipantId = null;
   const individual = Boolean(calendarParticipantId);
-  $('#participant-view').innerHTML = '<option value="">All participants</option>' + state.participants.map(p => `<option value="${p.id}">${escape(personLabel(p.id))} · ${participantCode(p)}</option>`).join('');
+  $('#participant-view').innerHTML = '<option value="">Tots els participants</option>' + state.participants.map(p => `<option value="${p.id}">${escape(personLabel(p.id))} · ${participantCode(p)}</option>`).join('');
   $('#participant-view').value = calendarParticipantId ?? '';
   const config = proposal ? { ...state.months[month], assignments: proposal } : state.months[month];
   const view = { ...state, months: { ...state.months, [month]: config } };
@@ -154,7 +154,7 @@ function renderCalendar(proposal = null) {
   const cells = Array.from({ length: offset }, () => '<div class="empty-cell" aria-hidden="true"></div>');
   for (const date of dates) {
     const holidayInfo = holidayDetails(date, config);
-    const holidayBadge = holidayInfo.label && holidayInfo.label !== 'Weekend' ? `<span class="holiday-tag ${holidayInfo.local ? 'local' : holidayInfo.general ? 'public' : 'other'}">${escape(holidayInfo.label)}</span>` : '';
+    const holidayBadge = holidayInfo.label && holidayInfo.label !== 'Cap de setmana' ? `<span class="holiday-tag ${holidayInfo.local ? 'local' : holidayInfo.general ? 'public' : 'other'}">${escape(holidayInfo.label)}</span>` : '';
     const daySlots = slotsForDate(date, config).flatMap(s =>
       moving && s.kind === '24' && targets.some(t => t.date === date && t.seat === s.seat && t.kind !== '24')
         ? ['day', 'night'].map(kind => ({ ...s, kind })) : [s]);
@@ -166,16 +166,16 @@ function renderCalendar(proposal = null) {
       const a = assigned.find(a => slotKey(a) === slotKey(s));
       const key = slotKey(s), target = targetKeys.has(key);
       if (individual && !target && (!a || a.participantId !== calendarParticipantId)) return '';
-      const content = `<span class="slot-kind">${shortKind(s.kind)}</span><span class="slot-name">${a ? escape(personLabel(a.participantId)) : target ? 'Move here' : 'Unfilled'}</span>`;
-      const label = `${dateTitle(date)}, ${kindLabel(s.kind)}, place ${s.seat + 1}`;
-      if (a) return `<button type="button" class="slot-line move-entry ${issueKeys.has(key) ? 'conflict' : ''} ${moving?.key === key ? 'move-source' : ''}" data-move="${key}" ${worker || moving ? 'disabled' : ''} aria-haspopup="dialog" aria-controls="assignment-dialog" aria-label="${escape(`Assignment options: ${personLabel(a.participantId)}, ${label}`)}">${content}<span class="move-hint" aria-hidden="true">↔</span></button>`;
-      if (target) return `<button type="button" class="slot-line pending drop-target" data-drop="${key}" aria-label="${escape(`Move here: ${label}`)}">${content}</button>`;
+      const content = `<span class="slot-kind">${shortKind(s.kind)}</span><span class="slot-name">${a ? escape(personLabel(a.participantId)) : target ? 'Mou aquí' : 'Sense cobrir'}</span>`;
+      const label = `${dateTitle(date)}, ${kindLabel(s.kind)}, plaça ${s.seat + 1}`;
+      if (a) return `<button type="button" class="slot-line move-entry ${issueKeys.has(key) ? 'conflict' : ''} ${moving?.key === key ? 'move-source' : ''}" data-move="${key}" ${worker || moving ? 'disabled' : ''} aria-haspopup="dialog" aria-controls="assignment-dialog" aria-label="${escape(`Opcions de l’assignació: ${personLabel(a.participantId)}, ${label}`)}">${content}<span class="move-hint" aria-hidden="true">↔</span></button>`;
+      if (target) return `<button type="button" class="slot-line pending drop-target" data-drop="${key}" aria-label="${escape(`Mou aquí: ${label}`)}">${content}</button>`;
       return `<span class="slot-line pending">${content}</span>`;
     }).join('');
-    const dayCovered = daySlots.filter(s => assigned.some(a => slotKey(a) === slotKey(s))).length;
-    const staleLines = stale.map(a => `<button type="button" class="slot-line move-entry conflict" data-move="${slotKey(a)}" ${worker || moving ? 'disabled' : ''} aria-haspopup="dialog" aria-controls="assignment-dialog" aria-label="${escape(`Assignment options: ${personLabel(a.participantId)}, incompatible ${kindLabel(a.kind)}, ${dateTitle(date)}`)}"><span class="slot-kind">${shortKind(a.kind)}</span><span class="slot-name">${escape(personLabel(a.participantId))}</span><span class="move-hint" aria-hidden="true">↔</span></button>`).join('');
+    const dayCobert = daySlots.filter(s => assigned.some(a => slotKey(a) === slotKey(s))).length;
+    const staleLines = stale.map(a => `<button type="button" class="slot-line move-entry conflict" data-move="${slotKey(a)}" ${worker || moving ? 'disabled' : ''} aria-haspopup="dialog" aria-controls="assignment-dialog" aria-label="${escape(`Opcions de l’assignació: ${personLabel(a.participantId)}, ${kindLabel(a.kind)} incompatible, ${dateTitle(date)}`)}"><span class="slot-kind">${shortKind(a.kind)}</span><span class="slot-name">${escape(personLabel(a.participantId))}</span><span class="move-hint" aria-hidden="true">↔</span></button>`).join('');
     const { missing: unfilled, overstaffed } = coverageStatus(date, assigned);
-    cells.push(`<div class="day-cell ${holidayInfo.weekend ? 'weekend' : ''} ${holiday(date, config) ? 'holiday' : ''} ${holidayInfo.local ? 'local-holiday' : ''} ${holidayInfo.general ? 'public-holiday' : ''} ${individual ? `participant-day ${workday ? 'participant-workday' : ''}` : `${unfilled ? 'unfilled' : overstaffed ? '' : 'covered'} ${overstaffed ? 'overstaffed' : ''}`} ${date === currentToday() ? 'today' : ''}" data-date="${date}"><button type="button" class="date-row date-open" ${worker || moving ? 'disabled' : ''} aria-label="${escape(`Open ${dateTitle(date)}`)}, ${escape(holidayInfo.name || 'non-holiday')}, ${individual ? `${visibleAssigned.length} duties for ${escape(personLabel(calendarParticipantId))}` : `${dayCovered} of ${daySlots.length} seats filled${unfilled ? ', missing coverage' : ''}${overstaffed ? ', overstaffed or overlapping coverage' : ''}`}${stale.length ? ', incompatible assignments need attention' : ''}"><span class="date-number">${Number(date.slice(-2))}</span><span class="date-mode">${individual ? workday ? 'On duty' : 'No duty' : unfilled ? 'Needs cover' : 'Covered'}</span></button>${holidayBadge}${!individual && overstaffed ? '<span class="coverage-warning">Overstaffed / overlapping coverage</span>' : ''}${lines}${stale.length ? `<span class="slot-line conflict">${stale.length} incompatible</span>${staleLines}` : ''}</div>`);
+    cells.push(`<div class="day-cell ${holidayInfo.weekend ? 'weekend' : ''} ${holiday(date, config) ? 'holiday' : ''} ${holidayInfo.local ? 'local-holiday' : ''} ${holidayInfo.general ? 'public-holiday' : ''} ${individual ? `participant-day ${workday ? 'participant-workday' : ''}` : `${unfilled ? 'unfilled' : overstaffed ? '' : 'covered'} ${overstaffed ? 'overstaffed' : ''}`} ${date === currentToday() ? 'today' : ''}" data-date="${date}"><button type="button" class="date-row date-open" ${worker || moving ? 'disabled' : ''} aria-label="${escape(`Obre ${dateTitle(date)}`)}, ${escape(holidayInfo.name || 'dia laborable')}, ${individual ? `${visibleAssigned.length} guàrdies de ${escape(personLabel(calendarParticipantId))}` : `${dayCobert} de ${daySlots.length} places cobertes${unfilled ? ', falta cobertura' : ''}${overstaffed ? ', excés de personal o cobertura solapada' : ''}`}${stale.length ? ', cal revisar assignacions incompatibles' : ''}"><span class="date-number">${Number(date.slice(-2))}</span><span class="date-mode">${individual ? workday ? 'De guàrdia' : 'Sense guàrdia' : unfilled ? 'Cal cobrir' : 'Cobert'}</span></button>${holidayBadge}${!individual && overstaffed ? '<span class="coverage-warning">Excés de personal / cobertura solapada</span>' : ''}${lines}${stale.length ? `<span class="slot-line conflict">${stale.length} ${stale.length === 1 ? 'incompatible' : 'incompatibles'}</span>${staleLines}` : ''}</div>`);
   }
   while (cells.length % 7) cells.push('<div class="empty-cell" aria-hidden="true"></div>');
   $('#month-grid').innerHTML = cells.join('');
@@ -183,9 +183,9 @@ function renderCalendar(proposal = null) {
   $('#coverage-legend').hidden = individual; $('#participant-view-legend').hidden = !individual;
   const duties = config.assignments.filter(a => a.participantId === calendarParticipantId);
   $('#participant-view-status').hidden = !individual;
-  $('#participant-view-status').textContent = individual ? `${personLabel(calendarParticipantId)} · ${new Set(duties.map(a => a.date)).size} workdays in ${monthTitle(month)}. Only this participant’s duties are shown.` : '';
+  $('#participant-view-status').textContent = individual ? `${personLabel(calendarParticipantId)} · ${new Set(duties.map(a => a.date)).size} dies de guàrdia (${monthTitle(month)}). Només es mostren les guàrdies d’aquest participant.` : '';
   $('#move-controls').hidden = !moving;
-  $('#move-status').textContent = moving ? `Moving ${kindLabel(moving.kind)} duty. Choose a highlighted spot. ${targets.length} valid spots. Escape cancels.` : '';
+  $('#move-status').textContent = moving ? `Movent una guàrdia (${kindLabel(moving.kind)}). Tria una plaça destacada. ${targets.length} places vàlides. Escape cancel·la.` : '';
   for (const id of ['previous', 'next', 'today', 'month-input', 'generate', 'apply-city', 'clear-city', 'city-input', 'restore', 'add-participant', 'print', 'participant-view']) {
     const el = $(`#${id}`);
     el.disabled = Boolean(worker || moving) || (id === 'clear-city' && !state.cityId);
@@ -194,8 +194,8 @@ function renderCalendar(proposal = null) {
 }
 function renderTotals() {
   const t = totals(state, month), values = Object.values(t), hours = values.map(v => v.hours);
-  $('#balance-note').textContent = values.length ? `${Math.min(...hours)}–${Math.max(...hours)} hours per person` : 'No participants yet';
-  $('#workloads').innerHTML = state.participants.map(p => `<tr><td>${escape(personLabel(p.id))} <small class="muted">${participantCode(p)}</small></td><td><strong>${t[p.id].hours}</strong></td><td class="${t[p.id].holidayHours > 24 ? 'over-limit' : ''}">${t[p.id].holidays} / ${holidayDutyLimit(p)}<br><small>${t[p.id].holidayHours} / 24h</small></td><td class="${t[p.id].ordinary > 3 ? 'over-limit' : ''}">${t[p.id].ordinary}</td><td>${t[p.id].weekends}</td></tr>`).join('') || '<tr><td colspan="5">Add participants to see the workload.</td></tr>';
+  $('#balance-note').textContent = values.length ? `${Math.min(...hours)}–${Math.max(...hours)} hores per persona` : 'Encara no hi ha participants';
+  $('#workloads').innerHTML = state.participants.map(p => `<tr><td>${escape(personLabel(p.id))} <small class="muted">${participantCode(p)}</small></td><td><strong>${t[p.id].hours}</strong></td><td class="${t[p.id].holidayHours > 24 ? 'over-limit' : ''}">${t[p.id].holidays} / ${holidayDutyLimit(p)}<br><small>${t[p.id].holidayHours} / 24h</small></td><td class="${t[p.id].ordinary > 3 ? 'over-limit' : ''}">${t[p.id].ordinary}</td><td>${t[p.id].weekends}</td></tr>`).join('') || '<tr><td colspan="5">Afegeix participants per veure la càrrega de treball.</td></tr>';
 }
 function renderIssues() {
   const config = state.months[month], assignments = config.assignments;
@@ -204,17 +204,17 @@ function renderIssues() {
   const dates = monthDates(month), holidayDates = dates.filter(d => holiday(d, config)).length;
   const holidaySeats = holidayDates * 2;
   const lines = [];
-  if (state.cityId && !cityYearAvailable(state.cityId, month.slice(0, 4))) lines.push(`<li class="warning">Official city/public holiday data for ${month.slice(0, 4)} is unavailable. Add holidays manually before generating.</li>`);
+  if (state.cityId && !cityYearAvailable(state.cityId, month.slice(0, 4))) lines.push(`<li class="warning">Les dades oficials de festius locals i generals del ${month.slice(0, 4)} no estan disponibles. Afegeix els festius manualment abans de generar.</li>`);
   const eligible = state.participants.filter(p => exclusiveKinds(p.allowedKinds).length).length;
-  if (eligible < holidaySeats) lines.push(`<li class="warning">${holidayDates} holidays require at least ${holidaySeats} participants with a 24-hour holiday allowance each (one 24-hour duty or two 12-hour duties on separate dates). Current team with shift permissions: ${eligible}. Availability and day/night permissions may require more participants.</li>`);
-  if (missing.length) lines.push(`<li>${missing.length} shift seats remain unfilled across ${new Set(missing.map(s => s.date)).size} dates. Open a date to review available people.</li>`);
+  if (eligible < holidaySeats) lines.push(`<li class="warning">${holidayDates} festius requereixen almenys ${holidaySeats} participants amb un límit de 24 hores en festius cadascun (una guàrdia de 24 hores o dues de 12 hores en dies diferents). Equip actual amb permisos de torn: ${eligible}. La disponibilitat i els permisos de dia/nit poden requerir més participants.</li>`);
+  if (missing.length) lines.push(`<li>Queden ${missing.length} places de torn sense cobrir en ${new Set(missing.map(s => s.date)).size} dies. Obre un dia per revisar les persones disponibles.</li>`);
   for (const date of monthDates(month)) if (coverageStatus(date, assignments).overstaffed)
-    lines.push(`<li class="warning">${escape(date)} · Overstaffed / overlapping coverage. Open the date and remove overlapping or incompatible duties.</li>`);
-  if (issues.length) lines.push(...issues.map(i => `<li class="warning">${escape(i.assignment.date)} · ${escape(personLabel(i.assignment.participantId))}: ${escape(i.message)}${i.assignment.override ? ' · confirmed manual exception' : ''}.</li>`));
+    lines.push(`<li class="warning">${escape(date)} · Excés de personal / cobertura solapada. Obre el dia i elimina les guàrdies solapades o incompatibles.</li>`);
+  if (issues.length) lines.push(...issues.map(i => `<li class="warning">${escape(i.assignment.date)} · ${escape(personLabel(i.assignment.participantId))}: ${escape(i.message)}${i.assignment.override ? ' · excepció manual confirmada' : ''}.</li>`));
   const hours = Object.values(totals(state, month)).map(t => t.hours);
-  if (hours.length && Math.max(...hours) - Math.min(...hours) > 24) lines.push('<li class="warning">Workloads differ by more than 24 hours. Review availability or generate another proposal to improve balance.</li>');
-  if (!state.months[shiftMonth(month, -1)] || !state.months[shiftMonth(month, 1)]) lines.push('<li>Rest checks include all saved adjacent months. Unsaved months have no known assignments.</li>');
-  $('#issues').innerHTML = lines.length ? `<ul class="issue-list">${lines.join('')}</ul>` : '<p class="muted">All seats are covered. No scheduling conflicts found.</p>';
+  if (hours.length && Math.max(...hours) - Math.min(...hours) > 24) lines.push('<li class="warning">Les càrregues de treball difereixen més de 24 hores. Revisa la disponibilitat o genera una altra proposta per equilibrar-les.</li>');
+  if (!state.months[shiftMonth(month, -1)] || !state.months[shiftMonth(month, 1)]) lines.push('<li>Les comprovacions de descans inclouen tots els mesos adjacents desats. Els mesos no desats no tenen assignacions conegudes.</li>');
+  $('#issues').innerHTML = lines.length ? `<ul class="issue-list">${lines.join('')}</ul>` : '<p class="muted">Totes les places estan cobertes. No s’ha trobat cap conflicte.</p>';
 }
 function changed() { save(); render(); if (openDate && $('#day-dialog').open) renderDay(); }
 // Rules only reach adjacent months (see nearbyAssignments in core.mjs).
@@ -228,19 +228,19 @@ function renderDay() {
   const official = info.local || info.general;
   const slots = slotsForDate(openDate, config).flatMap(s => holiday(openDate, config) && s.kind === '24' && splitChoices.has(`${openDate}/${s.seat}`) && !config.assignments.some(a => a.date === openDate && a.seat === s.seat) ? [{ ...s, kind: 'day' }, { ...s, kind: 'night' }] : [s]);
   const issues = audit(state, month);
-  $('#day-content').innerHTML = `<label class="checkbox-label holiday-toggle"><input id="mark-holiday" type="checkbox" ${holiday(openDate, config) ? 'checked' : ''} ${weekend || official ? 'disabled' : ''}>${official ? escape(`${info.label} · ${info.name}`) : weekend ? 'Weekend · always a holiday' : 'Mark as an additional holiday'}</label><p class="dialog-note">${holiday(openDate, config) ? 'Holiday · any combination of 24-hour and separate 12-hour duties is allowed' : 'Non-holiday · 24-hour shifts'}. Two people are required at all times. Select a participant, then confirm to apply that assignment. Cancel or close to discard pending selections.</p>` + slots.map(s => {
+  $('#day-content').innerHTML = `<label class="checkbox-label holiday-toggle"><input id="mark-holiday" type="checkbox" ${holiday(openDate, config) ? 'checked' : ''} ${weekend || official ? 'disabled' : ''}>${official ? escape(`${info.label} · ${info.name}`) : weekend ? 'Cap de setmana · sempre festiu' : 'Marca com a festiu addicional'}</label><p class="dialog-note">${holiday(openDate, config) ? 'Festiu · es permet qualsevol combinació de guàrdies de 24 hores i de 12 hores separades' : 'Dia laborable · torns de 24 hores'}. Calen dues persones en tot moment. Selecciona un participant i confirma per aplicar l’assignació. Cancel·la o tanca per descartar les seleccions pendents.</p>` + slots.map(s => {
     const a = config.assignments.find(a => slotKey(a) === slotKey(s));
     const pending = assignmentDrafts.has(slotKey(s));
     const selected = pending ? assignmentDrafts.get(slotKey(s)) : a?.participantId ?? '';
     const warnings = issues.filter(i => slotKey(i.assignment) === slotKey(s));
     const others = otherAssignments(s);
-    return `<div class="assignment-editor"><div class="assignment-row"><label>${kindLabel(s.kind)} · Seat ${s.seat + 1}<select data-assign="${s.kind}/${s.seat}"><option value="" ${selected ? '' : 'selected'}>Unfilled</option>${state.participants.map(p => {
+    return `<div class="assignment-editor"><div class="assignment-row"><label>${kindLabel(s.kind)} · Plaça ${s.seat + 1}<select data-assign="${s.kind}/${s.seat}"><option value="" ${selected ? '' : 'selected'}>Sense cobrir</option>${state.participants.map(p => {
       const candidate = { ...s, participantId: p.id };
       const structural = structuralIssues(state, month, candidate, others);
       const rules = ruleIssues(state, month, candidate, others);
-      return `<option value="${p.id}" ${p.id === selected ? 'selected' : ''} ${structural.length ? 'disabled' : ''}>${escape(personLabel(p.id))} (${participantCode(p)})${structural.length ? ' · already on this date' : rules.length ? ` · ${rules.length} restriction(s)` : ''}</option>`;
-    }).join('')}</select></label></div><p class="assignment-pending muted" role="status">${pending ? 'Pending selection. Confirm to apply.' : 'Select a participant, then confirm.'}</p><div class="assignment-actions"><button type="button" class="primary" data-confirm-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Confirm assignment</button><button type="button" data-cancel-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Cancel selection</button></div><div class="assignment-meta"><span>${timeLabel(s.kind)}</span></div>${holiday(openDate, config) && s.kind !== 'night' ? `<button class="small" data-${s.kind === '24' ? 'split' : 'merge'}="${s.seat}">${s.kind === '24' ? 'Split into day and night shifts' : 'Use one 24-hour duty'}</button>` : ''}${warnings.length ? `<p class="assignment-warnings">${warnings.map(i => escape(i.message)).join(' · ')}${a?.override ? ' · confirmed manual exception' : ''}</p>` : ''}</div>`;
-  }).join('') + config.assignments.filter(a => a.date === openDate && !slots.some(s => slotKey(s) === slotKey(a))).map(a => `<div class="assignment-editor stale-assignment"><p>Incompatible ${kindLabel(a.kind)} assignment: ${escape(personLabel(a.participantId))}. The date’s shift mode has changed.</p><button class="danger" data-stale="${a.kind}/${a.seat}">Remove incompatible assignment</button></div>`).join('');
+      return `<option value="${p.id}" ${p.id === selected ? 'selected' : ''} ${structural.length ? 'disabled' : ''}>${escape(personLabel(p.id))} (${participantCode(p)})${structural.length ? ' · ja treballa aquest dia' : rules.length ? ` · ${rules.length} restricció(ns)` : ''}</option>`;
+    }).join('')}</select></label></div><p class="assignment-pending muted" role="status">${pending ? 'Selecció pendent. Confirma per aplicar-la.' : 'Selecciona un participant i confirma.'}</p><div class="assignment-actions"><button type="button" class="primary" data-confirm-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Confirma l’assignació</button><button type="button" data-cancel-assign="${s.kind}/${s.seat}" ${pending ? '' : 'disabled'}>Cancel·la la selecció</button></div><div class="assignment-meta"><span>${timeLabel(s.kind)}</span></div>${holiday(openDate, config) && s.kind !== 'night' ? `<button class="small" data-${s.kind === '24' ? 'split' : 'merge'}="${s.seat}">${s.kind === '24' ? 'Divideix en torns de dia i de nit' : 'Usa una guàrdia de 24 hores'}</button>` : ''}${warnings.length ? `<p class="assignment-warnings">${warnings.map(i => escape(i.message)).join(' · ')}${a?.override ? ' · excepció manual confirmada' : ''}</p>` : ''}</div>`;
+  }).join('') + config.assignments.filter(a => a.date === openDate && !slots.some(s => slotKey(s) === slotKey(a))).map(a => `<div class="assignment-editor stale-assignment"><p>Assignació incompatible (${kindLabel(a.kind)}): ${escape(personLabel(a.participantId))}. El tipus de torn d’aquest dia ha canviat.</p><button class="danger" data-stale="${a.kind}/${a.seat}">Elimina l’assignació incompatible</button></div>`).join('');
 }
 
 function addParticipants(count) {
@@ -252,7 +252,7 @@ function addParticipants(count) {
 }
 $('#add-participant').addEventListener('click', () => {
   const count = Number($('#add-count').value);
-  if (!Number.isInteger(count) || count < 1 || count > 100 || state.participants.length + count > 500) return notify('Add between 1 and 100 people at once, up to 500 total.', true);
+  if (!Number.isInteger(count) || count < 1 || count > 100 || state.participants.length + count > 500) return notify('Afegeix entre 1 i 100 persones alhora, fins a 500 en total.', true);
   if (!discardParticipantDraft()) return;
   addParticipants(count);
 });
@@ -298,7 +298,7 @@ function updateParticipantDraft(event) {
   // A participant with no shift type could never be assigned, so confirmation needs at least one.
   const noShift = !participantDraft.allowedKinds.length;
   $('#confirm-participant').disabled = noShift; $('#cancel-participant').disabled = false;
-  $('#participant-edit-status').textContent = noShift ? 'Choose at least one shift type before confirming.' : 'Unconfirmed changes. Confirm to apply them.';
+  $('#participant-edit-status').textContent = noShift ? 'Tria almenys un tipus de torn abans de confirmar.' : 'Canvis sense confirmar. Confirma’ls per aplicar-los.';
 }
 $('#participant-editor').addEventListener('input', updateParticipantDraft);
 $('#participant-editor').addEventListener('change', updateParticipantDraft);
@@ -307,11 +307,11 @@ $('#participant-editor').addEventListener('submit', event => {
   const p = state.participants.find(p => p.id === selectedId);
   if (!p || !participantDraft || (!participantDirty && !setupPeople.length) || worker) return;
   if (!exclusiveKinds(participantDraft.allowedKinds).length) {
-    $('#participant-edit-status').textContent = 'Choose at least one shift type. No participant changes were applied.';
+    $('#participant-edit-status').textContent = 'Tria almenys un tipus de torn. No s’ha aplicat cap canvi al participant.';
     $('#participant-editor [data-kind]:not(:disabled)')?.focus(); return;
   }
   if (participantDraft.blockedDates.some(date => !monthDates(month).includes(date))) {
-    $('#participant-edit-status').textContent = 'Choose dates within the displayed month. No participant changes were applied.';
+    $('#participant-edit-status').textContent = 'Tria dates del mes mostrat. No s’ha aplicat cap canvi al participant.';
     $('.blocked-date-grid button').focus(); return;
   }
   names.set(p.id, participantDraft.name);
@@ -322,7 +322,7 @@ $('#participant-editor').addEventListener('submit', event => {
   changed();
   if (setupPeople.length) { advanceSetupPerson(); return; }
   $('#participant-dialog').close();
-  notify('Participant changes confirmed. Names stay in this session.');
+  notify('Canvis del participant confirmats. Els noms només es mantenen en aquesta sessió.');
 });
 $('#participant-editor').addEventListener('click', event => {
   const dateButton = event.target.closest('[data-block-date]');
@@ -334,9 +334,9 @@ $('#participant-editor').addEventListener('click', event => {
     const selected = dates.has(date);
     dateButton.classList.toggle('selected', selected);
     dateButton.setAttribute('aria-pressed', String(selected));
-    dateButton.setAttribute('aria-label', `${dateTitle(date)}, ${selected ? 'blocked' : 'not selected'}`);
+    dateButton.setAttribute('aria-label', `${dateTitle(date)}, ${selected ? 'bloquejada' : 'no seleccionada'}`);
     for (const button of $('#participant-editor').querySelectorAll('[data-block-date]')) button.tabIndex = button === dateButton ? 0 : -1;
-    $('#blocked-date-count').textContent = `${dates.size} date${dates.size === 1 ? '' : 's'} selected`;
+    $('#blocked-date-count').textContent = `${dates.size} ${dates.size === 1 ? 'data seleccionada' : 'dates seleccionades'}`;
     updateParticipantDraft(event); return;
   }
   if (event.target.id === 'cancel-participant') {
@@ -345,7 +345,7 @@ $('#participant-editor').addEventListener('click', event => {
     renderEditor(); $('#participant-dialog').close(); return;
   }
   if (event.target.id !== 'remove-person') return;
-  if (!confirm('Delete this participant and all their assignments in every saved month? This cannot be undone. Export an anonymous backup first if needed.')) return;
+  if (!confirm('Vols eliminar aquest participant i totes les seves assignacions de tots els mesos desats? No es pot desfer. Si cal, exporta abans una còpia anònima.')) return;
   state.participants = state.participants.filter(p => p.id !== selectedId);
   for (const config of Object.values(state.months)) config.assignments = config.assignments.filter(a => a.participantId !== selectedId);
   names.delete(selectedId); participantDraft = null; participantDirty = false; selectedId = state.participants[0]?.id ?? null; changed();
@@ -366,7 +366,7 @@ $('#participant-editor').addEventListener('keydown', event => {
 function navigate(next) {
   if (moving || worker) return;
   const year = Number(next.slice(0, 4));
-  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(next) || year < 1900 || year > 2200) return notify('Choose a month between January 1900 and December 2200.', true);
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(next) || year < 1900 || year > 2200) return notify('Tria un mes entre gener de 1900 i desembre de 2200.', true);
   if (next === month) return;
   if (!discardParticipantDraft()) { $('#month-input').value = month; return; }
   month = next; ensureMonth(); save(); render();
@@ -384,7 +384,7 @@ $('#apply-city').addEventListener('click', () => {
   const city = findCity($('#city-input').value);
   if (!city) {
     $('#city-input').setAttribute('aria-invalid', 'true');
-    return notify('Choose a city or settlement from the list. No matching official municipal record was found; the previous city was kept.', true);
+    return notify('Tria un municipi o nucli de la llista. No s’ha trobat cap registre municipal oficial coincident; s’ha mantingut el municipi anterior.', true);
   }
   $('#city-input').removeAttribute('aria-invalid'); setCity(city);
 });
@@ -400,7 +400,7 @@ function showAssignmentOptions(key) {
   const assignment = state.months[month].assignments.find(a => slotKey(a) === key);
   if (!assignment) return;
   selectedAssignmentKey = key;
-  $('#assignment-context').textContent = `${personLabel(assignment.participantId)} · ${dateTitle(assignment.date)} · ${kindLabel(assignment.kind)} · Place ${assignment.seat + 1}`;
+  $('#assignment-context').textContent = `${personLabel(assignment.participantId)} · ${dateTitle(assignment.date)} · ${kindLabel(assignment.kind)} · Plaça ${assignment.seat + 1}`;
   $('#assignment-dialog').showModal();
   $('#choose-move').focus({ preventScroll: true });
 }
@@ -427,7 +427,7 @@ $('#cancel-assignment').addEventListener('click', () => {
   config.assignments = config.assignments.filter(a => slotKey(a) !== selectedAssignmentKey);
   $('#assignment-dialog').close();
   changed();
-  notify('Assignment cancelled. The spot is now unfilled.');
+  notify('Assignació cancel·lada. La plaça ara està sense cobrir.');
 });
 function beginMove(key, keyboard = false) {
   if (worker || moving) return false;
@@ -444,7 +444,7 @@ function clearPointer() {
   $('#move-cursor').hidden = true;
   document.querySelector('.drop-hover')?.classList.remove('drop-hover');
 }
-function cancelMove(message = 'Move cancelled. Original assignment kept.') {
+function cancelMove(message = 'Moviment cancel·lat. Es manté l’assignació original.') {
   const key = moving?.key;
   clearPointer();
   if (!moving) return;
@@ -458,8 +458,8 @@ function completeMove(key) {
     const assignments = movedAssignments(state, month, original, readSlot(key));
     clearPointer(); moving = null;
     state.months[month].assignments = assignments;
-    changed(); notify('Assignment moved.'); focusEntry(key);
-  } catch (error) { cancelMove(`Move rejected: ${error.message} Original assignment kept.`); }
+    changed(); notify('Assignació moguda.'); focusEntry(key);
+  } catch (error) { cancelMove(`Moviment rebutjat: ${error.message} Es manté l’assignació original.`); }
 }
 $('#cancel-move').addEventListener('click', () => cancelMove());
 document.addEventListener('keydown', event => {
@@ -494,7 +494,7 @@ function activatePointer() {
   if (!pointer || pointer.scrolling || !beginMove(pointer.key)) return;
   pointer.active = true;
   // Release touch's implicit capture before replacing/targeting individual spots.
-  $('#move-cursor').textContent = `${shortKind(moving.kind)} · moving duty`;
+  $('#move-cursor').textContent = `${shortKind(moving.kind)} · movent la guàrdia`;
   $('#move-cursor').hidden = false;
   updateDrag();
 }
@@ -533,7 +533,7 @@ document.addEventListener('pointerup', event => {
   if (!active) { clearPointer(); return; }
   const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-drop]');
   if (target) completeMove(target.dataset.drop);
-  else cancelMove('No valid spot selected. Original assignment kept.');
+  else cancelMove('No s’ha seleccionat cap plaça vàlida. Es manté l’assignació original.');
 });
 document.addEventListener('pointercancel', () => { if (pointer?.active) cancelMove(); else clearPointer(); });
 window.addEventListener('blur', () => { if (pointer?.active) cancelMove(); else clearPointer(); });
@@ -552,7 +552,7 @@ $('#day-content').addEventListener('change', event => {
   const editor = event.target.closest('.assignment-editor');
   editor.querySelector('[data-confirm-assign]').disabled = false;
   editor.querySelector('[data-cancel-assign]').disabled = false;
-  editor.querySelector('.assignment-pending').textContent = 'Pending selection. Confirm to apply.';
+  editor.querySelector('.assignment-pending').textContent = 'Selecció pendent. Confirma per aplicar-la.';
 });
 // One click handler for the date editor: pending assignment actions, then place actions.
 $('#day-content').addEventListener('click', event => {
@@ -575,9 +575,9 @@ function handleAssignmentAction(confirmButton, cancelButton) {
   const candidate = { ...slot, participantId, fixed: false, override: false };
   const others = otherAssignments(slot);
   const structural = structuralIssues(state, month, candidate, others);
-  if (structural.length) { status.textContent = `Not applied: ${structural.join('. ')}.`; return; }
+  if (structural.length) { status.textContent = `No aplicat: ${structural.join('. ')}.`; return; }
   const issues = ruleIssues(state, month, candidate, others);
-  if (issues.length && !confirm(`This assignment breaks scheduling rules:\n\n${issues.join('\n')}\n\nKeep it as an explicit manual exception?`)) { status.textContent = 'Exception declined. Change or cancel this pending selection.'; return; }
+  if (issues.length && !confirm(`Aquesta assignació incompleix normes de planificació:\n\n${issues.join('\n')}\n\nVols mantenir-la com a excepció manual explícita?`)) { status.textContent = 'Excepció rebutjada. Canvia o cancel·la aquesta selecció pendent.'; return; }
   candidate.override = issues.length > 0;
   assignmentDrafts.delete(key);
   config.assignments = [...config.assignments.filter(a => slotKey(a) !== slotKey(slot)), candidate]; changed();
@@ -590,7 +590,7 @@ function handlePlaceAction(event) {
     const seat = Number(split?.dataset.split ?? merge.dataset.merge);
     const config = state.months[month];
     const assigned = config.assignments.filter(a => a.date === openDate && a.seat === seat);
-    if (assigned.length && !confirm('Replace the assignments for this place? Existing duties on this date and place will be cleared.')) return;
+    if (assigned.length && !confirm('Vols substituir les assignacions d’aquesta plaça? S’esborraran les guàrdies existents d’aquest dia i plaça.')) return;
     assignmentDrafts.clear();
     config.assignments = config.assignments.filter(a => a.date !== openDate || a.seat !== seat);
     const key = `${openDate}/${seat}`;
@@ -613,22 +613,22 @@ function busy(on) {
     if (el.id !== 'cancel' && el.id !== 'restart') el.disabled = on;
   }
   $('#cancel').hidden = !on;
-  $('#generate').textContent = on ? 'Searching…' : 'Generate month';
+  $('#generate').textContent = on ? 'Cercant…' : 'Genera el mes';
 }
 function finishSearch(stopped = false) {
   worker?.terminate(); worker = null;
   if (latestProposal) state.months[month].assignments = latestProposal.assignments;
   busy(false); changed();
-  $('#search-status').textContent = `${stopped ? 'Search stopped.' : 'Search finished.'} ${latestProposal?.complete ? 'All seats covered.' : 'Best proposal kept; unfilled seats remain.'} Review workload and restrictions. A time-limited search does not prove that a better proposal is impossible.`;
+  $('#search-status').textContent = `${stopped ? 'Cerca aturada.' : 'Cerca finalitzada.'} ${latestProposal?.complete ? 'Totes les places cobertes.' : 'S’ha conservat la millor proposta; queden places sense cobrir.'} Revisa la càrrega de treball i les restriccions. Una cerca amb límit de temps no demostra que no hi hagi una proposta millor.`;
   if (setupReviewPending) {
     setupReviewPending = false;
-    notify('Next: review the highlighted dates. Select a participant to edit their name, shift preferences, or availability. Generate month again after making changes.');
+    notify('Següent pas: revisa els dies destacats. Selecciona un participant per editar-ne el nom, les preferències de torn o la disponibilitat. Torna a generar el mes després de fer canvis.');
   }
 }
 function startSearch() {
   if (moving || worker) return;
-  if (participantDirty) { notify('Confirm or cancel participant changes before generating.', true); $('#confirm-participant').focus(); return; }
-  if (!state.participants.length) return notify('Add participants before generating a month.', true);
+  if (participantDirty) { notify('Confirma o cancel·la els canvis del participant abans de generar.', true); $('#confirm-participant').focus(); return; }
+  if (!state.participants.length) return notify('Afegeix participants abans de generar un mes.', true);
   latestProposal = null;
   try {
     worker = new Worker(new URL('./scheduler.worker.mjs', import.meta.url), { type: 'module' });
@@ -637,24 +637,24 @@ function startSearch() {
       if (data.type === 'error') { worker.terminate(); worker = null; busy(false); render(); notify(data.message, true); $('#search-status').hidden = true; return; }
       latestProposal = data;
       const coveredHours = data.assignments.reduce((sum, a) => sum + HOURS[a.kind], 0);
-      $('#search-status').textContent = `Searching for up to ${SEARCH_MS / 1000} seconds… Best coverage: ${coveredHours}/${monthDates(month).length * 48} hours. Yellow dates need coverage. You can stop and keep this proposal.`;
+      $('#search-status').textContent = `Cercant durant un màxim de ${SEARCH_MS / 1000} segons… Millor cobertura: ${coveredHours}/${monthDates(month).length * 48} hores. Els dies grocs necessiten cobertura. Pots aturar la cerca i conservar aquesta proposta.`;
       renderCalendar(data.assignments);
       if (data.type === 'done') finishSearch();
     };
-    worker.onerror = () => { worker?.terminate(); worker = null; busy(false); render(); $('#search-status').hidden = true; notify('Search could not run. Serve this folder over HTTP and try again. Existing assignments were kept.', true); };
-    busy(true); $('#search-status').hidden = false; $('#search-status').textContent = 'Starting anonymous scheduling search…';
+    worker.onerror = () => { worker?.terminate(); worker = null; busy(false); render(); $('#search-status').hidden = true; notify('No s’ha pogut executar la cerca. Serveix aquesta carpeta per HTTP i torna-ho a provar. S’han conservat les assignacions existents.', true); };
+    busy(true); $('#search-status').hidden = false; $('#search-status').textContent = 'Iniciant la cerca anònima de planificació…';
     worker.postMessage({ state: anonymousState(state), month, timeMs: SEARCH_MS });
   } catch {
     worker?.terminate(); worker = null; busy(false); render();
-    notify('Your browser could not start the scheduling worker. Serve this folder over HTTP and use a current browser.', true);
+    notify('El navegador no ha pogut iniciar el procés de planificació. Serveix aquesta carpeta per HTTP i fes servir un navegador actual.', true);
   }
 }
 $('#generate').addEventListener('click', startSearch);
 $('#cancel').addEventListener('click', () => finishSearch(true));
 $('#restart').addEventListener('click', () => {
-  if (!confirm('Restart the planner? This deletes all participants, assignments, restrictions, added holidays, and the selected city for every saved month in this browser. Export a backup first if you want to keep them. This cannot be undone.')) return;
+  if (!confirm('Vols reiniciar el planificador? S’eliminaran tots els participants, assignacions, restriccions, festius afegits i el municipi seleccionat de tots els mesos desats en aquest navegador. Si els vols conservar, exporta abans una còpia. No es pot desfer.')) return;
   try { localStorage.removeItem(STORAGE_KEY); }
-  catch { notify('Saved planner data could not be cleared. Nothing was reset. Please try again.', true); return; }
+  catch { notify('No s’han pogut esborrar les dades desades del planificador. No s’ha reiniciat res. Torna-ho a provar.', true); return; }
   if (worker) { worker.onmessage = null; worker.onerror = null; worker.terminate(); worker = null; }
   clearPointer(); moving = null; suppressClickUntil = 0; latestProposal = null;
   state = emptyState(); calendarParticipantId = null; month = todayMonth(); selectedId = null; openDate = null;
@@ -664,7 +664,7 @@ $('#restart').addEventListener('click', () => {
   setupPeople = []; setupCreatedIds = []; setupPersonIndex = 0; setupCount = 0;
   for (const dialog of document.querySelectorAll('dialog[open]')) dialog.close();
   $('#assignment-context').textContent = '';
-  $('#participant-title').textContent = 'Participant settings';
+  $('#participant-title').textContent = 'Paràmetres del participant';
   $('#day-content').replaceChildren(); $('#day-title').textContent = '';
   $('#move-cursor').textContent = '';
   $('#print-report').replaceChildren(); $('#print-report').setAttribute('aria-hidden', 'true');
@@ -673,8 +673,8 @@ $('#restart').addEventListener('click', () => {
   $('.city-source').open = false;
   $('#participant-panel').open = !window.matchMedia('(max-width: 800px)').matches;
   busy(false); render();
-  $('#save-status').textContent = 'Anonymous data only';
-  notify('Planner restarted. All saved planning data has been cleared.');
+  $('#save-status').textContent = 'Només dades anònimes';
+  notify('Planificador reiniciat. S’han esborrat totes les dades de planificació desades.');
   window.scrollTo(0, 0);
   ($('#participant-panel').open ? $('#add-count') : $('#participant-panel summary')).focus({ preventScroll: true });
   setupReviewPending = false; checkSetup();
@@ -682,24 +682,24 @@ $('#restart').addEventListener('click', () => {
 $('#backup').addEventListener('click', () => {
   const blob = new Blob([serialize(state, month)], { type: 'application/json' });
   const url = URL.createObjectURL(blob), a = document.createElement('a');
-  a.href = url; a.download = 'duty-calendar-anonymous-backup.json'; a.click();
+  a.href = url; a.download = 'calendari-guardies-copia-anonima.json'; a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
-  notify('Anonymous backup exported. Names are intentionally excluded.');
+  notify('Còpia anònima exportada. Els noms s’exclouen expressament.');
 });
 $('#restore').addEventListener('click', () => $('#import-file').click());
 $('#import-file').addEventListener('change', async event => {
   const file = event.target.files[0];
   if (!file) return;
   try {
-    if (file.size > 5_000_000) throw new Error('Backup is too large. Choose a JSON backup smaller than 5 MB.');
+    if (file.size > 5_000_000) throw new Error('La còpia és massa gran. Tria una còpia JSON de menys de 5 MB.');
     const restored = parseBackup(await file.text());
-    if (!confirm('Replace all saved participants, restrictions, and months with this anonymous backup? Current session names will also be cleared.')) return;
+    if (!confirm('Vols substituir tots els participants, restriccions i mesos desats per aquesta còpia anònima? També s’esborraran els noms de la sessió actual.')) return;
     state = restored; calendarParticipantId = null; names.clear(); splitChoices.clear(); participantDraft = null; participantDirty = false; selectedId = state.participants[0]?.id ?? null;
     storageBlocked = false; setupPeople = []; setupCreatedIds = []; setupPersonIndex = 0; setupCount = 0;
     for (const dialog of document.querySelectorAll('dialog[open]')) if (dialog.id !== 'setup-dialog') dialog.close();
     assignmentDrafts.clear(); selectedAssignmentKey = null;
     changed(); checkSetup();
-    notify('Anonymous backup restored. Re-enter participant names for this session. Any mixed shift permissions default to 24 hours; existing assignments are kept.');
+    notify('Còpia anònima restaurada. Torna a introduir els noms dels participants per a aquesta sessió. Els permisos de torn mixtos passen a 24 hores per defecte; es conserven les assignacions existents.');
   } catch (error) { notify(error.message, true); }
   finally { event.target.value = ''; }
 });
@@ -707,26 +707,26 @@ $('#import-file').addEventListener('change', async event => {
 function renderSetup(step) {
   setupStep = step;
   const team = step === 'team', choice = step === 'choice' || step === 'ready';
-  $('#setup-progress').textContent = storageBlocked ? 'Recover your planner' : choice ? 'Choose your next step' : state.participants.length ? 'Finish setup - your team is already saved' : `Step ${team ? 2 : 1} of 2`;
-  $('#setup-title').textContent = storageBlocked ? 'Your saved planner needs attention' : step === 'ready' ? 'Your participants are ready' : choice ? 'What would you like to do?' : team ? 'Add your participants' : 'Choose your city';
-  $('#setup-description').textContent = storageBlocked ? 'Recover access without overwriting unreadable saved data.' : choice ? 'Fill participant information first, or generate the calendar now.' : team ? 'Enter your team size. Next, choose how to continue.' : state.participants.length ? 'Choose a city to finish setup. Your existing participants and assignments will be kept.' : 'Start with your city so local and public holidays are included.';
+  $('#setup-progress').textContent = storageBlocked ? 'Recupera el planificador' : choice ? 'Tria el pas següent' : state.participants.length ? 'Acaba la configuració: el teu equip ja està desat' : `Pas ${team ? 2 : 1} de 2`;
+  $('#setup-title').textContent = storageBlocked ? 'El planificador desat requereix atenció' : step === 'ready' ? 'Els participants estan a punt' : choice ? 'Què vols fer?' : team ? 'Afegeix els participants' : 'Tria el teu municipi';
+  $('#setup-description').textContent = storageBlocked ? 'Recupera l’accés sense sobreescriure les dades desades il·legibles.' : choice ? 'Omple primer la informació dels participants o genera el calendari ara.' : team ? 'Indica la mida de l’equip. Després, tria com vols continuar.' : state.participants.length ? 'Tria un municipi per acabar la configuració. Es conservaran els participants i les assignacions existents.' : 'Comença pel teu municipi perquè s’hi incloguin les festes locals i oficials.';
   $('#setup-form').hidden = storageBlocked;
   $('#setup-recovery').hidden = !storageBlocked;
   $('#setup-restart').hidden = !storageBlocked;
   $('#setup-city-step').hidden = team || choice;
   $('#setup-team-step').hidden = !team;
   $('#setup-choice-step').hidden = !choice;
-  $('#setup-choice-description').textContent = `${setupCreatedIds.length || setupCount} participants. ${step === 'ready' ? 'Confirmed settings will be used for generation.' : 'You can enter names, shift preferences, and availability one participant at a time. Names are optional.'}`;
-  $('#setup-edit-people').textContent = setupPeople.length ? 'Continue participant information' : step === 'ready' ? 'Review participant information' : 'Fill participant information';
+  $('#setup-choice-description').textContent = `${setupCreatedIds.length || setupCount} participants. ${step === 'ready' ? 'Es faran servir els paràmetres confirmats per generar.' : 'Pots introduir noms, preferències de torn i disponibilitat d’un en un. Els noms són opcionals.'}`;
+  $('#setup-edit-people').textContent = setupPeople.length ? 'Continua amb la informació dels participants' : step === 'ready' ? 'Revisa la informació dels participants' : 'Omple la informació dels participants';
   $('#setup-back').hidden = !team && !(choice && !setupCreatedIds.length);
   $('#setup-next').hidden = choice;
-  $('#setup-next').textContent = team ? 'Continue' : state.participants.length ? 'Confirm city and open planner' : 'Confirm city';
-  $('#setup-month').textContent = `Planning ${monthTitle(month)}. You can review information before generating.`;
-  $('#setup-error').textContent = saveFailed ? 'Saving is unavailable. You can continue in this session; export a backup before leaving.' : '';
+  $('#setup-next').textContent = team ? 'Continua' : state.participants.length ? 'Confirma el municipi i obre el planificador' : 'Confirma el municipi';
+  $('#setup-month').textContent = `Mes de planificació: ${monthTitle(month)}. Pots revisar la informació abans de generar.`;
+  $('#setup-error').textContent = saveFailed ? 'No es pot desar. Pots continuar en aquesta sessió; exporta una còpia abans de sortir.' : '';
   $('#setup-error').hidden = !saveFailed;
   const city = cityById(state.cityId);
   $('#setup-data-warning').hidden = !city || cityYearAvailable(city.id, month.slice(0, 4));
-  $('#setup-data-warning').textContent = `Official holiday dates for ${month.slice(0, 4)} are unavailable. You can continue and mark holidays manually in the planner.`;
+  $('#setup-data-warning').textContent = `Les dates oficials de festius del ${month.slice(0, 4)} no estan disponibles. Pots continuar i marcar els festius manualment al planificador.`;
   $('#setup-city').removeAttribute('aria-invalid'); $('#setup-count').removeAttribute('aria-invalid');
   if (!team && !choice) $('#setup-city').value = cityById(state.cityId)?.label ?? '';
 }
@@ -804,7 +804,7 @@ $('#setup-form').addEventListener('submit', event => {
     const city = findCity($('#setup-city').value);
     if (!city) {
       $('#setup-city').setAttribute('aria-invalid', 'true');
-      notify('Choose a recognised city from the list before continuing.', true); $('#setup-city').focus(); return;
+      notify('Tria un municipi reconegut de la llista abans de continuar.', true); $('#setup-city').focus(); return;
     }
     setCity(city);
     if (state.participants.length) { closeSetup(); return; }
@@ -815,7 +815,7 @@ $('#setup-form').addEventListener('submit', event => {
   const count = Number($('#setup-count').value);
   if (!Number.isInteger(count) || count < 1 || count > 100 || state.participants.length + count > 500) {
     $('#setup-count').setAttribute('aria-invalid', 'true');
-    notify('Enter a whole number from 1 to 100 participants, up to 500 total.', true); $('#setup-count').focus(); return;
+    notify('Introdueix un nombre enter d’1 a 100 participants, fins a 500 en total.', true); $('#setup-count').focus(); return;
   }
   setupCount = count;
   renderSetup('choice'); $('#setup-edit-people').focus();
@@ -833,33 +833,33 @@ function printCalendar(participantId = null) {
     const relevant = participantId ? own : [...slots, ...stale];
     const lines = relevant.map(s => {
       const a = participantId || stale.includes(s) ? s : assigned.find(a => slotKey(a) === slotKey(s));
-      return `<div class="print-shift ${a ? '' : 'pending'} ${a && issueKeys.has(slotKey(a)) ? 'conflict' : ''}"><span class="print-kind">${shortKind(s.kind)}</span><span class="print-name">${a ? escape(personLabel(a.participantId)) : 'Unfilled'}</span>${a?.override ? '<span class="print-exception">!</span>' : ''}</div>`;
+      return `<div class="print-shift ${a ? '' : 'pending'} ${a && issueKeys.has(slotKey(a)) ? 'conflict' : ''}"><span class="print-kind">${shortKind(s.kind)}</span><span class="print-name">${a ? escape(personLabel(a.participantId)) : 'Sense cobrir'}</span>${a?.override ? '<span class="print-exception">!</span>' : ''}</div>`;
     }).join('');
     const { missing, overstaffed } = coverageStatus(date, assigned);
-    const status = participantId ? own.length ? 'On duty' : 'No duty' : missing ? 'Needs cover' : 'Covered';
+    const status = participantId ? own.length ? 'De guàrdia' : 'Sense guàrdia' : missing ? 'Cal cobrir' : 'Cobert';
     const colour = participantId ? `participant-day ${own.length ? 'participant-workday' : ''}` : overstaffed ? 'overstaffed' : missing ? 'unfilled' : 'covered';
-    const badge = info.label && info.label !== 'Weekend' ? `<span class="print-holiday">${escape(info.label)}</span>` : '';
-    cells.push(`<div class="print-day ${info.weekend ? 'weekend' : ''} ${info.local ? 'local-holiday' : ''} ${info.general ? 'public-holiday' : ''} ${colour} ${relevant.length >= 4 ? 'busy-day' : ''}" data-print-date="${date}"><div class="print-date"><strong>${Number(date.slice(-2))}</strong><span>${status}</span></div>${badge}${!participantId && overstaffed ? '<div class="print-coverage-warning">Overstaffed / overlapping coverage</div>' : ''}${!participantId && overstaffed && missing ? '<div class="print-coverage-warning">Missing coverage</div>' : ''}${lines}</div>`);
+    const badge = info.label && info.label !== 'Cap de setmana' ? `<span class="print-holiday">${escape(info.label)}</span>` : '';
+    cells.push(`<div class="print-day ${info.weekend ? 'weekend' : ''} ${info.local ? 'local-holiday' : ''} ${info.general ? 'public-holiday' : ''} ${colour} ${relevant.length >= 4 ? 'busy-day' : ''}" data-print-date="${date}"><div class="print-date"><strong>${Number(date.slice(-2))}</strong><span>${status}</span></div>${badge}${!participantId && overstaffed ? '<div class="print-coverage-warning">Excés de personal / cobertura solapada</div>' : ''}${!participantId && overstaffed && missing ? '<div class="print-coverage-warning">Falta cobertura</div>' : ''}${lines}</div>`);
   }
   while (cells.length % 7) cells.push('<div class="print-day empty"></div>');
-  return `<div class="print-weekdays"><span class="print-weekend-heading">Weekend</span>${['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((d, i) => `<span class="print-weekday-name ${i >= 5 ? 'weekend' : ''}">${d}</span>`).join('')}</div><div class="print-calendar">${cells.join('')}</div>`;
+  return `<div class="print-weekdays"><span class="print-weekend-heading">Cap de setmana</span>${['Dl', 'Dt', 'Dc', 'Dj', 'Dv', 'Ds', 'Dg'].map((d, i) => `<span class="print-weekday-name ${i >= 5 ? 'weekend' : ''}">${d}</span>`).join('')}</div><div class="print-calendar">${cells.join('')}</div>`;
 }
 function buildPrintReport() {
   const participantId = state.participants.some(p => p.id === calendarParticipantId) ? calendarParticipantId : null;
-  const city = cityById(state.cityId), location = city ? `${city.name}, Catalonia` : 'No city selected';
+  const city = cityById(state.cityId), location = city ? `${city.name}, Catalunya` : 'Cap municipi seleccionat';
   const issues = audit(state, month).filter(i => !participantId || i.assignment.participantId === participantId);
-  const dataWarning = city && !cityYearAvailable(city.id, month.slice(0, 4)) ? ' Official holidays unavailable for this year; verify manual dates.' : '';
-  const heading = participantId ? personLabel(participantId) : 'All participants';
-  const legend = participantId ? '<span class="print-key on-duty">On duty</span><span class="print-key no-duty">No duty</span>' : '<span class="print-key covered">Covered</span><span class="print-key unfilled">Needs cover</span><span class="print-key overstaffed">Overstaffed / overlapping coverage</span>';
-  $('#print-report').innerHTML = `<section class="print-page"><header class="print-header"><div><h1>Duty calendar</h1><p>${escape(location)} | ${escape(heading)}</p></div><h2>${escape(monthTitle(month))}</h2></header><div class="print-legend">${legend}</div>${printCalendar(participantId)}<footer class="print-footer"><span>24h 09:00-09:00 next day | Day 09:00-21:00 | Night 21:00-09:00 next day | Europe/Madrid</span><span>${issues.length} rule warning(s).${issues.length ? ' Flagged duties need review in the planner.' : ''}${escape(dataWarning)}</span></footer></section>`;
+  const dataWarning = city && !cityYearAvailable(city.id, month.slice(0, 4)) ? ' No hi ha festius oficials disponibles per a aquest any; verifica les dates manuals.' : '';
+  const heading = participantId ? personLabel(participantId) : 'Tots els participants';
+  const legend = participantId ? '<span class="print-key on-duty">De guàrdia</span><span class="print-key no-duty">Sense guàrdia</span>' : '<span class="print-key covered">Cobert</span><span class="print-key unfilled">Cal cobrir</span><span class="print-key overstaffed">Excés de personal / cobertura solapada</span>';
+  $('#print-report').innerHTML = `<section class="print-page"><header class="print-header"><div><h1>Calendari de guàrdies</h1><p>${escape(location)} | ${escape(heading)}</p></div><h2>${escape(monthTitle(month))}</h2></header><div class="print-legend">${legend}</div>${printCalendar(participantId)}<footer class="print-footer"><span>24h 09:00-09:00 l’endemà | Dia 09:00-21:00 | Nit 21:00-09:00 l’endemà | Europa/Madrid</span><span>${issues.length} avís(os) de normes.${issues.length ? ' Cal revisar les guàrdies marcades al planificador.' : ''}${escape(dataWarning)}</span></footer></section>`;
   $('#print-report').removeAttribute('aria-hidden');
 }
 $('#print').addEventListener('click', () => window.print());
 window.addEventListener('beforeprint', buildPrintReport);
 window.addEventListener('afterprint', () => { $('#print-report').replaceChildren(); $('#print-report').setAttribute('aria-hidden', 'true'); });
 ensureMonth(); selectedId = state.participants[0]?.id ?? null; render();
-if (storageBlocked) $('#save-status').textContent = 'Not saved · storage read failed';
-else $('#save-status').textContent = 'Anonymous data only';
+if (storageBlocked) $('#save-status').textContent = 'No desat · error en llegir l’emmagatzematge';
+else $('#save-status').textContent = 'Només dades anònimes';
 if (migratedShiftPermissions) save();
 if (window.matchMedia('(max-width: 800px)').matches) $('#participant-panel').open = false;
 

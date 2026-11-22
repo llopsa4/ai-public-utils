@@ -5,12 +5,13 @@ import { loadState, parseSave, serialize } from '../../src/sim/save';
 import { addBuilding, horseCap, type Building, type GameState } from '../../src/sim/state';
 import { buyUpgrade, upgradeNeeds } from '../../src/sim/upgrades';
 import { newGame, step } from '../../src/sim/tick';
+import { o } from './helpers';
 
 /** A camp with the warriors upgrade, a finished corral beside the fire, and one person tending it. */
 function corralCamp(): { s: GameState; corral: Building; tender: GameState['people'][number] } {
   const s = newGame(1);
   s.upgrades.push('warriors');
-  const corral = addBuilding(s, 'horse_corral', 28, 26, true);
+  const corral = addBuilding(s, 'horse_corral', o(28), o(26), true);
   const tender = s.people.find((p) => p.age === 'adult')!;
   assert.equal(assignWorkers(s, [tender.id], corral.id), 1);
   tender.x = corral.x - 1;
@@ -21,9 +22,9 @@ function corralCamp(): { s: GameState; corral: Building; tender: GameState['peop
 test('the corral needs the warriors upgrade to be placed', () => {
   const s = newGame(1);
   s.store.wood = 100;
-  assert.equal(placementError(s, 'horse_corral', 28, 26), 'Needs the Akicita warriors.');
+  assert.equal(placementError(s, 'horse_corral', o(28), o(26)), 'Needs the Akicita warriors.');
   s.upgrades.push('warriors');
-  assert.equal(placementError(s, 'horse_corral', 28, 26), null);
+  assert.equal(placementError(s, 'horse_corral', o(28), o(26)), null);
 });
 
 test('Breed horses needs warriors and a finished corral, then brings two horses at once', () => {
@@ -34,7 +35,7 @@ test('Breed horses needs warriors and a finished corral, then brings two horses 
   assert.equal(buyUpgrade(s, 'horses'), false);
   s.upgrades.push('warriors');
   assert.equal(upgradeNeeds(s, 'horses'), 'Needs a finished horse corral');
-  const corral = addBuilding(s, 'horse_corral', 28, 26, false);
+  const corral = addBuilding(s, 'horse_corral', o(28), o(26), false);
   assert.equal(buyUpgrade(s, 'horses'), false, 'an unfinished corral is not a home');
   corral.done = true;
   assert.equal(upgradeNeeds(s, 'horses'), null);
@@ -70,8 +71,8 @@ test('an untended corral, or one whose tender is drafted, breeds nothing', () =>
 
 test('a tender who walks to the corral starts the clock', () => {
   const { s, corral, tender } = corralCamp();
-  tender.x = 36;
-  tender.y = 36;
+  tender.x = o(36);
+  tender.y = o(36);
   step(s, 400);
   assert.ok(corral.tended > 0, `tended ${corral.tended}`);
   assert.ok(corral.tended < 400);
@@ -85,7 +86,7 @@ test('horses stop at six per finished corral and the tending time waits full', (
   step(s, 50);
   assert.equal(s.horses, 6);
   assert.equal(corral.tended, 3600, 'time waits at the cap');
-  const second = addBuilding(s, 'horse_corral', 28, 30, true);
+  const second = addBuilding(s, 'horse_corral', o(28), o(30), true);
   assert.equal(horseCap(s), 12);
   step(s, 1);
   assert.equal(s.horses, 7, 'room again: the waiting time becomes a foal');
@@ -95,7 +96,7 @@ test('horses stop at six per finished corral and the tending time waits full', (
 test('Breed horses never goes past the cap', () => {
   const s = newGame(1);
   s.upgrades.push('warriors');
-  addBuilding(s, 'horse_corral', 28, 26, true);
+  addBuilding(s, 'horse_corral', o(28), o(26), true);
   s.horses = 5;
   s.gift = 10;
   s.store.food = 50;

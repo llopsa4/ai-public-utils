@@ -4,7 +4,7 @@ This is a personal, static scheduling application. Keep implementation readable 
 
 ## Mandatory privacy requirements
 
-- All application text, instructions, documentation, and PDF content must be in English.
+- All application interface text, messages, and PDF/print content must be in Catalan (`lang="ca"`, `ca-ES` date formatting). Documentation, agent instructions, code identifiers, and comments stay in English.
 - Participant names must exist only in session memory and the live document. Never save names in browser storage, JSON backups, URLs, logs, worker messages, source files, analytics, or servers.
 - Persist participants and assignments using randomly generated anonymous identifiers and numeric participant codes only. Use an explicit allowlist when serializing or importing data; never serialize UI state or name maps.
 - Reloading the page must discard names. Ask users to re-enter them; never offer name persistence.

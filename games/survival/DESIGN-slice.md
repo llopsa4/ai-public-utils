@@ -21,7 +21,7 @@ Conventions used everywhere below:
 
 ## Map
 
-**Size:** 48 x 48 tiles. **Projection:** screen `sx = (x - y) * 32`, `sy = (x + y) * 16` (tile
+**Size:** 48 x 48 tiles (96 x 96 since [DESIGN-map.md](DESIGN-map.md)). **Projection:** screen `sx = (x - y) * 32`, `sy = (x + y) * 16` (tile
 centre); inverse `x = sy / 32 + sx / 64`, `y = sy / 32 - sx / 64`, tile = `floor(v + 0.5)`. The whole
 map spans 3072 x 1536 px; world origin offset so tile (0, 0) centre is at world (1536, 32).
 

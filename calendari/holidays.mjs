@@ -4,7 +4,7 @@ export { HOLIDAY_DATA };
 const normalize = value => String(value).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, ' ');
 const nameCounts = new Map();
 for (const entry of Object.values(HOLIDAY_DATA.cities)) nameCounts.set(entry.name, (nameCounts.get(entry.name) ?? 0) + 1);
-export const CITIES = Object.entries(HOLIDAY_DATA.cities).map(([id, entry]) => ({ id, name: entry.name, label: nameCounts.get(entry.name) > 1 ? `${entry.name} (${id})` : entry.name })).sort((a, b) => a.name.localeCompare(b.name, 'en'));
+export const CITIES = Object.entries(HOLIDAY_DATA.cities).map(([id, entry]) => ({ id, name: entry.name, label: nameCounts.get(entry.name) > 1 ? `${entry.name} (${id})` : entry.name })).sort((a, b) => a.name.localeCompare(b.name, 'ca'));
 const cityMap = new Map(CITIES.map(city => [city.id, city]));
 const localDates = new Map(Object.entries(HOLIDAY_DATA.cities).map(([id, city]) => [id, new Set(city.dates)]));
 const generalDates = new Set(HOLIDAY_DATA.general);
@@ -14,10 +14,10 @@ const ARAN = new Set(['25025', '25031', '25045', '25057', '25059', '25063', '251
 // Keyed by MM-DD for the bundled snapshot year only: Good Friday and Easter Monday move
 // every year. Update these when refreshing another year; a test checks every general date has a name.
 export const PUBLIC_NAMES = {
-  '01-01': "New Year's Day", '01-06': 'Epiphany', '04-03': 'Good Friday',
-  '04-06': 'Easter Monday', '05-01': 'Labour Day', '06-17': 'Aran Day',
-  '06-24': "Saint John's Day", '08-15': 'Assumption Day', '09-11': 'National Day of Catalonia',
-  '10-12': 'National Day of Spain', '12-08': 'Immaculate Conception', '12-25': 'Christmas Day', '12-26': "Saint Stephen's Day",
+  '01-01': 'Cap d’Any', '01-06': 'Reis', '04-03': 'Divendres Sant',
+  '04-06': 'Dilluns de Pasqua Florida', '05-01': 'Festa del Treball', '06-17': 'Festa d’Aran',
+  '06-24': 'Sant Joan', '08-15': 'L’Assumpció', '09-11': 'Diada Nacional de Catalunya',
+  '10-12': 'Festa Nacional d’Espanya', '12-08': 'La Immaculada', '12-25': 'Nadal', '12-26': 'Sant Esteve',
 };
 export function cityById(id) { return cityMap.get(id) ?? null; }
 export function findCity(text) {
@@ -43,7 +43,7 @@ export function holidayDetails(date, config) {
   const manual = config.holidays.includes(date);
   const weekend = [0, 6].includes(new Date(`${date}T12:00:00Z`).getUTCDay());
   return { local, general, manual, weekend,
-    label: local ? 'Local holiday' : general ? 'Public holiday' : manual ? 'Added holiday' : weekend ? 'Weekend' : '',
-    name: local ? `Local holiday in ${cityById(config.cityId).name}` : general ? PUBLIC_NAMES[date.slice(5)] ?? 'Public holiday' : manual ? 'Manually added holiday' : weekend ? 'Weekend' : '',
+    label: local ? 'Festa local' : general ? 'Festa oficial' : manual ? 'Festiu afegit' : weekend ? 'Cap de setmana' : '',
+    name: local ? `Festa local · ${cityById(config.cityId).name}` : general ? PUBLIC_NAMES[date.slice(5)] ?? 'Festa oficial' : manual ? 'Festiu afegit manualment' : weekend ? 'Cap de setmana' : '',
   };
 }

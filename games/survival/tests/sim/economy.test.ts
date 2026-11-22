@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { mealNeed, unityBand, unityWork } from '../../src/sim/economy';
 import { workRate } from '../../src/sim/jobs';
+import { campCentre } from '../../src/sim/map';
 import { removePerson } from '../../src/sim/people';
 import { type GameState, type Tile2 } from '../../src/sim/state';
 import { newGame, queueOrders, step } from '../../src/sim/tick';
@@ -15,10 +16,11 @@ function nearestBerry(s: GameState): Tile2 {
   let bestD = Infinity;
   s.map.tiles.forEach((t, i) => {
     if (t !== 'berry') return;
-    const d = Math.hypot((i % 48) - 24, Math.floor(i / 48) - 24);
+    const [cx, cy] = campCentre(s.map);
+    const d = Math.hypot((i % s.map.size) - cx, Math.floor(i / s.map.size) - cy);
     if (d < bestD) {
       bestD = d;
-      best = [i % 48, Math.floor(i / 48)];
+      best = [i % s.map.size, Math.floor(i / s.map.size)];
     }
   });
   return best;

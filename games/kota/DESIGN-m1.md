@@ -1,4 +1,4 @@
-# Kota milestone 1 spec (B1): DRAFT, waiting for the user's approval
+# Kota milestone 1 spec (B1): approved baseline
 
 Written by Claude (Opus) on 2026-11-18 for [PLAN.md](PLAN.md) task B1, from the settled decisions in
 [DESIGN.md](DESIGN.md). Every C task builds from this file without new design questions. Numbers are
@@ -6,8 +6,12 @@ starting values for C8 to tune. Tags: **📖** a real-culture element with its [
 entry (reference, not binding) · **🎮** invented game content. Claude's limits (PROMPTING.md
 *Standing rules*) apply throughout.
 
-**Your decisions in this review:** approve the spec (or edit any section). Also, the two elder texts
-in §13 are still DRAFT (CULTURE.md *Needs review* 25); they stay unpublished until you approve them.
+**Status reconciled 2026-11-22:** Claude recorded B1 approved by the user's “Continue” on
+2026-11-18; C1–C7 are implemented. This is the baseline spec, not a fresh verification of the game.
+C8 tuning changed some numbers; current `game/data/` and WORKLOG.md record the implementation.
+Elder-text approval is separate: CULTURE.md records item 16 approved, while item 25 remains
+unresolved. The runtime currently exposes the Double-Face draft after meeting that boss; this
+approval mismatch remains open and is not resolved by B1 approval.
 
 ## 1. World, camera and units
 

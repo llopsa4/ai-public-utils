@@ -112,3 +112,19 @@ phrase (then it needs a source here).
 
 Optional later: a sourced real name for the hunters, healers and builders societies (the names found
 so far, Kit Fox, Strong Heart and Elk, are Plains Lakota warrior societies and do not fit those roles).
+
+### Art (2026-11-20): drawn as generic until sourced
+
+The art bible ([art/STYLE.md](art/STYLE.md)) draws these as plain, generic and invented. Each needs a
+source here before it is presented as Dakota; until then nothing in the game claims it is.
+
+- **Landscape:** the camp's land is drawn as the eastern Dakota homeland (user, 2026-11-20):
+  tallgrass prairie, lakes and woodland (bur oak, basswood; cottonwood and willow by the water) in
+  a river valley with low wooded bluffs (Minnesota River valley and the eastern Dakotas). No
+  source linked yet.
+- **Everyday clothing:** hide shirt (man), hide dress (woman), leggings, moccasins, dyed garments,
+  plain bead bands, braided hair. No source linked; no real bead patterns are drawn.
+- **Spear fishing** and **social dancing** (a plain step, no named dance or ceremony). No source.
+- **Horses and riders** (bareback, a plain rope bridle). No source.
+- **Tipi, drying rack, lodges:** plain shapes as in STYLE.md section 8; the society lodges are
+  invented. No source.

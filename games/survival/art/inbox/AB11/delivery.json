@@ -1,0 +1,44 @@
+{
+  "batch": "AB11",
+  "revision": 1,
+  "brief": "BATCHES.md AB11 rev 1",
+  "keys": [
+    "fire_central",
+    "building_store",
+    "building_store_open"
+  ],
+  "approvalAuthority": "claude",
+  "tools": {
+    "blender": "5.1.2",
+    "renderPy": "019192a993e16f7abd7f287fdb25d845c2c6ec2266fa9fb680b0698652b441cf",
+    "imageGen": "image_gen.imagegen",
+    "post": "Pillow"
+  },
+  "prompts": {
+    "fire_central/concept": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:\nsoft painterly shading, rich natural material texture, warm late-summer light from the upper left,\nsoft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,\nno text.\nArchitectural model concept sheet of an invented everyday camp fire plaza: an eight metre square footprint with a beaten-earth circle, a ring of exactly 12 rounded grey stones round a central EMPTY hearth (flames are a separate game sprite), four plain tanned-hide mats, two low log seats, simple drying poles with brown dried meat strips, one plain unpainted hand drum on a mat, a few woven baskets. Three consistent views, front, side and isometric, same scale, plain flat light grey background. All objects stay inside the footprint; central hearth at the origin. Generic practical construction only. No people, no flames, no symbols, no feathers, no regalia, no ceremonial objects, no blood, no text, no pure black.",
+    "building_store/concept": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:\nsoft painterly shading, rich natural material texture, warm late-summer light from the upper left,\nsoft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,\nno text.\nArchitectural model sheet of a fictional everyday long low camp storehouse, front, side and isometric cutaway views, plain flat light grey background, same scale in every view. Eight metre square footprint; long low pole frame with rough tanned-hide roof panels and overlapping grey-brown bark-slab sides, TWO doorways on the front long side, stacked tied bundles and woven baskets under the eaves. Natural lashings and plain seams, warm dark brown interior. One cutaway view shows THE EXACT SAME structure with roof removed and low front walls, an EMPTY flat beaten-earth floor for separately drawn game resource items. Keep the centre open and unobstructed. No people, no painted symbols, no sacred objects, no metal, no text, no pure black.",
+    "building_store/bark_texture": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:\nsoft painterly shading, rich natural material texture, warm late-summer light from the upper left,\nsoft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,\nno text.\nSeamless square hand-painted texture of rough weathered grey-brown bark slabs, fine vertical furrows and irregular natural grain, muted bark palette #9A8A76 #6E6254 #463E36. Flat even light, no shadows, no perspective, fills the whole square, tiles on every side. 1024x1024. No objects, no text, no pure black."
+  },
+  "sourceSha256": {
+    "source/AB11-r1/build.py": "79a2f8a75297a2f88fcd6d97c1c91894b8b61e792d93ccdc9eacede2ca248e1b",
+    "source/AB11-r1/check_models.py": "ecdc311dcc838d4f6cdc3bf15f1bb1d64d399ce861a6598a1b94b3b1e376f552",
+    "source/AB11-r1/prepare.py": "5e40ae3e18f76f608dff44ff761b4e793a2319b5589a9bdab88d2a30d0dfcebe",
+    "source/AB11-r1/render_batch.py": "57665adbb19a945002bf68ade199197d6fbdaea3c154286d2681c63fbb7c7ab8",
+    "source/AB11-r1/preview.mjs": "0ab433283cf663c2f3649df95d6b2d139c35a2a8cdd5dcdd32b50de0069acbab",
+    "source/AB11-r1/bark-source.png": "bc489d28bb606975a6f4f15961f9ffc781d3a00734c92f77078a26c06cc0186c",
+    "source/AB11-r1/bark.png": "2d4c0a8b87316bb413d622e2039d785100d1f8cb39678cb8d121af8516fdcf31",
+    "source/AB11-r1/concept-fire_central.png": "d249b1399f3d9acc6b4d35a8833cf5266380bc02384364a14d9b167acbfde53c",
+    "source/AB11-r1/concept-store.png": "fdfb90c12569522a147067a0947dd81a2e359d1e2ad8abb4858b0b2cc562a8cd",
+    "source/AB11-r1/README.md": "b4928cfc44fb6e819f474ee5ecbb0dc73df94d94f51aa4fb46bc96db29de5875",
+    "source/AB11-r1/prompts.json": "1d9c1cf6e926b5827038ad2a420be642904969c3227a27f12c286f93a5c2a435",
+    "source/fire_central.blend": "c1ea1400769672194dc439416c8aa0645bc1fb675586a647a34d8b7a0d3be2b4",
+    "source/building_store.blend": "44031da073a4bfc2fbe8c77058580e1c943e0e8bf5ea04de31ba7dd5074da00f",
+    "source/building_store_open.blend": "dfa3938dcecc40c37222090e09f793f986862409c55afbc932eba0ba9d95652c",
+    "source/AB9-r1/build.py": "42ff547682e4e65ac39458defa8fe5dec553b89486a7274b6a5c24bef72c2351",
+    "source/finish_render.py": "da979e5eb13ef753c45d4b7d6191e3966f3e72fd796bcc09131fa356f5d88a9e",
+    "source/textures/wood_pole.png": "f870265b04ad5a091acd91f215aa05fe1747363c39c9c690eac914d187a91660",
+    "source/textures/hide_tanned.png": "f4ae72e99f776493c32851196386354946a6d0dafde9da0826f2fe9c37040c79",
+    "source/textures/mat_woven.png": "e9a909046380061ef4d17accc1c4a462a3b926c22c5ad82d9137f3c1c72bbf64"
+  },
+  "notes": "Eight Blender frames, three packed editable models. AB0 renderer and shadow post, AB9 explicit horizontal sensor fit. All eight metre footprints and (320,576) anchors checked numerically. Store/open store share one geometry constructor: roof and overhead beams are removed, front walls lowered, eaves supplies omitted for an empty floor. Fixed items are outside the usable floor in the closed view only. Fire hearth is centred at runtime flame origin with exactly twelve stones, four mats, two log seats, drying poles, baskets and a plain everyday hand drum. Winter adds surface snow. Generated concept sheets and bark texture; AB0 painted hide/wood and AB9 mat reused. Bark source resized with Lanczos to 1024 square. No installation."
+}

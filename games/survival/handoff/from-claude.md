@@ -4,11 +4,315 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 [WORKFLOW.md](../../WORKFLOW.md#handoff-files).
 
 ## Working on
-- G23 done and G24 passed 2026-11-20 (the user tested the building cards by hand, no fixes); G15 passed too (the user played hunting, plaza, feedback and music; no fixes), so G1-G24 are all done; the user picks the next Phase D item. G22 done. G21, G20 done. G14 done 2026-11-20, next G15 (the user's playtest). G13 done. G12, G11 done. G10, G9, G8 done. G7 done. G16-G19 (user's additions) done 2026-11-20, G6 done. G5 done. G4, G3 done. W11 closed by the user 2026-11-20. G2, G1 done. G0 (2026-11-20): spec `DESIGN-hunting.md` and PLAN rows G1-G15 accepted by the user; next G1. Tier 3 W1-W10 and R1-R2 done (W11, the user's playtest, still open); tier 2 V1-V9 done (V9 passed; next: the user picks the next Phase D item). 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
+- Art reviews C2-C11 and C13 done 2026-11-22 (see *Art reviews* below): approved AB1, AB7, AB6, AB8; approved with fixes AB2,
+  AB5, AB9; revisions needed AB3, AB10 (three lodges), AB11, AB13. AB1, AB6, AB7 and AB8 can be installed now; the others wait for their revision 2 (AB4 still waits for AB3).
+- Art spec (2026-11-20): DESIGN-art.md, art/STYLE.md, art/SPEC.md, art/PIPELINE.md,
+  art/BATCHES.md, PLAN.md *Phase D: art* (AC1-AC9, AB0-AB23). AC1 (manifest v2 and the
+  validator), AC2 (pack and stand-ins scripts), AC3 (atlas loader, `spriteFor`), AC4 (people), AC5 (terrain) AC6 (buildings) and AC8 (interface) done 2026-11-20; AC7 (creatures and effects) and AC9 (performance) done 2026-11-21; the Claude art code rows are finished, so the next art step is Codex's AB0 once the user says go.
+
+## Art reviews (Claude's approval authority)
+- **C2, AB1 revision 1: APPROVED 2026-11-22.** Reviewed contact sheet, menu 1280 and camp 1280 / 2560. Panel and button
+  corners hold at both sizes; the hide / lashed-pole look matches AB0; the emblem (tipi, fire, crescent, dusk prairie, rope-twist rim)
+  fits STYLE section 10 and reads at the menu's small size. One non-blocking check for install: in the camp captures the Wotakuye bar
+  frame is hard to see around the green fill; confirm at install that the `ui_bar_frame` 9-slice shows its carved edge in the live HUD.
+  Install with AB0's other UI frames.
+
+- **C3, AB2 revision 1: APPROVED WITH 3 SMALL FIXES, 2026-11-22.** Reviewed the contact sheet, the 16 px strip and the camp /
+  upgrades captures. All 52 icons and 5 cursors match the AB0 style and the light (upper left), read on both grounds, and the
+  upgrade rows and speed buttons look right in the live HUD. Spirits are pale-blue translucent with no face (good), the rider
+  icon is the brief's galloping horse with a lance, and the shared scout pole is accepted. Fix these three in revision 2 (the
+  other 59 frames stay byte-identical, so the batch can be installed once these are redone):
+  1. `icon_upgrade_dogs`: reads as a golden retriever, a modern breed. Redo as a lean, pointed-ear, mixed camp dog (wolfish,
+     grey-brown to tan), still sitting.
+  2. `icon_order_draft` / `icon_order_undraft`: at 16 px they are the same club at the same angle. Keep the draft club raised
+     in a hand; lay the undraft club flat on the ground (near-horizontal, a grass tuft under it) so the two differ in silhouette.
+  3. `icon_order_hold`: the planted lance is a hairline at 16 px and nearly vanishes. Thicken the shaft and spear point (about
+     2 px at 16 px) and keep the planted grass base.
+  Optional, not a fix: `icon_job_hunt` (thin bow) is the faintest of the job icons at 16 px; a slightly heavier bow would help.
+
+- **C4, AB3 revision 1: NOT APPROVED, revise (2026-11-22).** Reviewed the contact sheet, the summer water-join, summer forest,
+  ford and spring berry fields, and the spring and winter camp captures. Seasonal colour steps are right (spring fresh, autumn
+  copper, winter snow) and no seams show, but several keys miss STYLE section 7 because the flattening left almost no detail:
+  1. `tile_ford` is indistinguishable from `tile_river` (same blue, same flat noise). Spec: ford shallows #9DBDB2 / #7FA59C over
+     pale stones and gravel, visibly lighter than the river. Redo all four seasons with pale pebbles and a lighter, greener-grey
+     water; keep the shared 4 px edge band so it still meets the river without a line.
+  2. `tile_river`: no gentle current lines and no darker middle (STYLE: "darker in the middle of the diamond"). Add soft flow
+     streaks and a deeper centre, edge band unchanged.
+  3. `tile_forest` is a flat brown fill. Spec: dark loam with oak leaf litter, ferns and roots. It needs visible leaf litter and
+     some fern / root texture in all seasons (winter: litter under a snow dusting, not a flat blue-grey).
+  4. `tile_berry` reads as plain grass (spring and summer especially). Spec: a woodland-edge thicket of low shrubs with small dark
+     red berries (#8E2A30) among the tall grass. The tile itself needs shrubs and a few berries; the bush sprites alone are not enough.
+  5. `tile_grass` spring, autumn and winter are near-flat colour. Summer (AB0, user-approved) has fine strand texture; the other
+     seasons should carry the same strand scale and the section 7 cues (spring: early flowers; autumn: seedheads and russet
+     stems; winter: grass tips poking through the snow). Do not flatten lighting so far that the tile loses its texture.
+  Passed: invariant 8 px band and 4 px water band (no grid in the camp captures), summer grass unchanged from AB0, winter snow
+  grounding. After the revision re-send the 12 x 12 fields at 1x and the camp captures; also include a river-ford-river strip.
+  Note: the faint diagonal lines Codex saw at summer 2x are not visible at 1x; check them again once the textures have detail.
+
+- **C5, AB7 revision 1: APPROVED 2026-11-22.** Reviewed `title.jpg` and the 1280 menu. Dusk camp on a lakeshore with oak woodland,
+  cottonwoods, wooded bluffs and tallgrass with wildflowers; tipis glow from within round a small fire; no people, text, feathers
+  or regalia; the top-centre sky is calm and the code-drawn title reads cleanly. The emblem is byte-identical to AB1's (approved in
+  C2). Install as `art/title.jpg`. Cosmetic only, no change asked: the camp sits low-left, so the two lower panels hide the tipis'
+  lower halves in the menu; if the user wants the camp more visible, a later revision could lift it, but the menu is fine as is.
+
+- **C6, AB5 revision 1: APPROVED WITH 1 FIX, 2026-11-22.** Reviewed the contact sheet, groves, summer camp and full store. The four
+  tree species are distinct and read as the same trees changing across the seasons (oak rust-red, basswood and cottonwood yellow,
+  willow half bare, bare snowy winter branches); sizes, grounding, shadows and alpha are fine; chokecherry / plum, stumps, tufts and
+  the store items all read in the live camp, and the full store reads as four separate goods (logs, hides, baskets, bags). Fix for
+  revision 2 (everything else stays byte-identical):
+  1. `rock_boulder` variant 1 is a tall, upright, pink-tan rock that reads as a standing stone or monument, and all three variants
+     lean pink-brown. STYLE section 7 wants grey glacial boulders half sunk in the grass, palette stone #B8B0A2 / #8F877A / #5E584F.
+     Redo variant 1 as a low, rounded boulder sunk into the ground like variants 0 and 2 (height no more than about 1.5x theirs),
+     and shift all three to the neutral warm grey of the palette (snow caps in winter stay).
+  Not asked, for later: summer oak and basswood lean yellow-olive (mid #66803A in the bible is a cooler green); acceptable now, but
+  check them against the real AB3 ground at install. The dark diamond under each grove in the camp captures is the AB3 forest tile
+  (see C4), not an AB5 problem.
+
+- **C7, AB6 revision 1: APPROVED 2026-11-22.** Reviewed the contact sheet and the camp, arrow, completion / hit / dust captures.
+  The flame (yellow core, orange body, red tips, fixed base, no smoke) is the strongest piece and sits well on the hearth; the
+  storm is a soft grey-blue swirl with rain streaks that reads over buildings and people at both screen sizes; the spirit is
+  pale-blue, translucent and faceless; arrows are plain with grey fletching and visible at 1x; hit and dust are small tan bursts
+  with no blood; sparkle is a few gold glints. No loop jump is visible in the sheet. Install as delivered. For the install check
+  only: remove the old static code flame under the new sprite, as Codex noted, and confirm hit / dust stay readable at zoom 0.5.
+
+- **C8, AB8 revision 1: APPROVED 2026-11-22.** Reviewed the contact sheet (90 frames), the finished joins (L, T, cross) and the
+  summer camp with traps, pits and two dragged barricade lines. Barricade masks join with no gaps or doubled posts at corners and
+  branches, the stakes are outward-sharpened with plain lashings, the construction stages progress clearly, and the winter state
+  adds snow without changing the silhouette. The trap (crossed sticks and grass cover with marker stakes) is deliberately subtle
+  but still findable at 1x; the fire pit has a stone hearth, charred logs and takes the shared flame well. Palette and light match
+  AB0. Install as delivered. Install check only: the barricade stakes are dark and thin at zoom 0.5, so look at a long line there.
+
+- **C9, AB9 revision 1: APPROVED WITH 1 FIX, 2026-11-22.** Reviewed the contact sheet, the 0.5x summer camp and the 1x winter camp.
+  Footprint, anchor and scale are right next to the tipis and the store; the construction progression follows STYLE section 8 (cleared
+  earth with stakes, bare frame, half covered, finished, snow); the gathering shade, the hide-covered hunting lodge with its side
+  rack, and the open-gated round corral with a trough read clearly at every zoom and in winter; the horizontal-fit camera correction
+  gives the right diamonds. Fix for revision 2 (only `drying_rack` finished 00-03 and winter 00-03 change; every other frame stays
+  byte-identical):
+  1. The hanging strips are pale cream and read as fence rails or planks, not as meat. Paint them dark red-brown (drying meat,
+     about #8A3A2E to #5E2A22, darker in the winter frames than the snow) so they separate from the poles and match the red
+     strips the plaza's drying poles already show. Keep the four-frame sway and the fixed attachment points.
+  Not blocking: the hunting lodge's smooth barrel-vault dome reads a little like a modern hut at 1x; a few visible hide seams or
+  lashed rib lines on the cover would help, but it is acceptable as it is.
+
+- **C10, AB10 revision 1: HEALERS AND SCOUTS APPROVED; LANCERS, ARCHERS AND SPIRIT NEED A REVISION, 2026-11-22.** Reviewed the contact
+  sheet, the 0.5x summer camp and the 2560 winter camp. The healers' herb-hung dome is distinct and good; the scouts' lodge is
+  clear thanks to the tall pole and pennant; construction stages, anchors and snow match AB9 and the bible. The problems are
+  differentiation, which the brief asks for ("1x distinction"):
+  1. `lancers_lodge` and `archers_lodge` are the same barrel-vault as the scouts' lodge; their only differences (three lances,
+     a straw target and bows) are small and vanish at zoom 0.5, so the three lodges read as one building. Make the signature prop
+     larger and taller than the roofline: lances clearly rising above the dome in a visible rack, and a big round straw target on
+     its frame (about a third of the lodge's width) with the bow rack beside it. Keep the same body and footprint.
+  2. `spirit_lodge`: the "faint cool glow at the door" is not visible; the doorway is plain dark and in winter the lodge is white
+     like every other winter lodge. Give the doorway a soft pale-blue interior light (#BFE3F2 into #7FB2CC, no symbols) that also
+     shows in the winter frame, so the spirit lodge is the one that reads differently in all five states.
+  Redo only these three keys (15 frames); healers and scouts stay byte-identical. Not a fix: the structures stand on a hard-edged
+  brown diamond of cleared earth, like AB9's; it matches STYLE section 8 stage 1 and is accepted, but watch it at install.
+
+- **C11, AB11 revision 1: NOT APPROVED, small revision (2026-11-22).** Reviewed the contact sheet, the full open store and the
+  winter plaza. Footprints and anchors are right, the 12-stone hearth, four mats, log seats and the drum read well, the flame
+  sits on the hearth, the construction stages and the half-covered stage 3 are clear, winter snow is fine, and the cutaway is
+  consistent with the closed store. Fixes:
+  1. Near-black surfaces: the store's shadowed side wall and doorways, and the cutaway's inner wall faces, are close to pure
+     black. STYLE section 2 and 1: interiors are warm dark brown #3B2A1E and shadowed sides are blue-grey (#3A4660 fill), never
+     black. Re-light so no large area goes below about #2A2018; the open floor must stay clearly visible for the items.
+  2. `fire_central`: the two drying-pole frames hold no meat strips (STYLE table: "drying poles with meat strips"). Add dark
+     red-brown strips (same colour as the AB9 drying rack fix, C9) and keep them still, since the plaza has no sway loop. Also
+     keep the beaten-earth circle readable: it is nearly the same brown as the cleared-earth diamond.
+  Everything else (store stages 1-3, finished and winter shapes) stays; a re-light changes pixels, so send the whole batch again
+  and note which frames changed. Not blocking: the store roof thatch is the brightest orange in the camp; check it against the
+  tipis at install.
+
+- **C13, AB13 revision 1: NOT APPROVED YET, one revision (2026-11-22).** Reviewed the overview, the per-action contact sheets for
+  chop and die, and the 1x / 2x game captures for build, chop and thrust (I could not play the GIFs, so loop seams and planted
+  feet are unchecked by me; Codex's numeric checks stand). What works: the body, braids and headband match the user-approved AB12;
+  all 15 actions exist in 8 facings with aligned base and cloth; walk, carry_walk, shoot, thrust and sit read at 1x; the fall in
+  `die` folds and lies still with no wound; there are no feathers or regalia. Fix:
+  1. Tools are unreadable at 1x. In the 1x build and chop captures the eight men look the same: the axe, maul and club are thin
+     sticks about 2 px wide and the swing is a small arm movement, so chop, build and strike cannot be told apart. STYLE section
+     4 allows tools up to 20% oversize and section 5 asks for an overhead axe swing (chop) and a two-handed maul driving a stake
+     (build). Enlarge the stone heads and haft width (up to +20%), raise the chop arm to a real overhead peak on frame 4, show the
+     stake under the maul in build, and make the strike club swing overhand. Check scrape, tend and fish the same way (hide
+     frame, spear and splash must be visible at 1x). Only these action keys change; walk, idle, carry_walk, shoot, thrust,
+     sit, die, dance stay byte-identical.
+  **Decided by the user 2026-11-22: no cloth change.** The men read dark brown and navy at 1x, but the two families can already
+  be told apart, so the `cloth` greys stay as in the approved AB12 for the man and the later batches (woman, elders, child).
+  Do not lighten them unless the user asks again.
+- **AC9 zoom 0.5 performance: decided by the user 2026-11-22: leave it as it is** (about 48 fps with 200 people against the
+  55 fps target; the real camp is far smaller). No further performance work is planned.
+
+## Performance notes (AC9, 2026-11-21)
+- Measured with a throwaway Playwright test (headless Chromium on the GPU, `--use-angle=d3d11`, vsync 60, the PC about 40% busy with other work, so
+  treat the figures as +-3 fps): `?standins`, 200 people (clones of the start people, half sent walking), 1x speed, 5 s of frames.
+  **Before:** 17 fps at zoom 0.5, 1 and 2 alike. Cause: Phaser submits every visible image whether or not it is on screen, and the 96 x 96 map has about
+  10,000 ground tiles, trees and props (hiding the grass tiles alone took it from 17 to 48 fps). Yesterday's M3 figure of 60 fps was taken before the
+  terrain became sprites with art support, so it no longer holds.
+- **Fixed in code (all in the AC9 files below):** (1) the ground and its spills are baked into 36 chunk textures of 16 x 16 tiles
+  (`TerrainView`, the fallback already settled in DESIGN-map.md `## Drawing`); each tile keeps a template image that is never on the display list, and a
+  changed tile marks its chunk for redrawing (6 chunks a frame, so a season swap takes a few frames); (2) `TerrainView.cull` hides chunks, trees, bushes and
+  props outside the camera view plus 256 px (skipped while the view and the sprites are unchanged); (3) `standinsOn()` read `location.search` on every
+  call (about 5% of a frame): now read once; (4) the per-person tool Graphics is hidden for people drawn from art.
+- **After:** 60 fps with 20 people at zoom 0.5; with 200 walking people 59 fps at zoom 2, 57 at zoom 1, **about 48 at zoom 0.5** (render alone, sim paused:
+  about 53; the sim is 5.4 ms a tick at 200 people, mostly `heldTiles` / `goSit`). **The target (55 fps at zoom 0.5 with 200 people) is not met.** With no art
+  at all the same case is 45 fps, so the stand-in atlases are not the cause.
+- GPU memory: the 13-page stand-in atlas set loads as about 111 MB of textures (the pages are cropped to their used size); a full set of real 2048 pages is
+  about 210 MB as DESIGN-art.md says, plus about 75 MB for the chunks, so about 290 MB. Not measured on real art (none exists).
+- **For the user (Claude's proposal, not decided):** the 1.5x people-cell fallback in DESIGN-art.md saves texture memory, not frames, so it would not help here.
+  What is left at zoom 0.5 is draw calls (depth-sorted people alternate between six atlas pages, which breaks batching: not measured, a hypothesis) and the
+  sim's 5 ms ticks at 200 people. 200 people is a stress case (the real camp is much smaller), so I would leave it as it is; if the user wants more, a later
+  row could pack all five people models into one atlas group (Codex's `art:pack` groups) and make `heldTiles` cheaper.
+- Went past PLAN's file list on purpose: `src/render/terrainView.ts` (the chunks and the culling), `src/render/standins.ts`, `src/render/people.ts` (the hidden
+  overlay), `tests/smoke.spec.ts` (chunk counts in the terrain case), `DEVELOPMENT.md`, `DESIGN-map.md`. `Game.ts` gained `cameraView()` and one call.
+- Checked by screenshot (plain and `?standins`, zoom 1, 2 across a chunk corner, 0.5): no seams, banks and spills where they were. 290 unit tests and
+  `npm run e2e` pass. Not checked by hand: a pan across the whole map on the user's screen, a season swap (the 6-chunks-a-frame redraw), a felled tree.
+
+## Creature and effect art notes (AC7, 2026-11-21)
+- For Codex: wolves, deer, bison and horses draw `<key>/base/<anim>/<facing>/<nn>` (pattern A, base layer only), facing from screen-space movement
+  like people. Wolf: `run` when moving at 0.12 tiles a tick or more (a normal wolf, any fleeing one), `walk` when slowed (storm, fire pit), `attack`
+  while standing with its bite cooling down, else `idle`. The pack leader is the same frames at 1.4x with a darker multiply tint (`0x8c8682`); a
+  guardian is a pale blue tint (`0xd6ecff`) at 90% alpha over a code-drawn glow, so keep the wolf mid-grey for the tints to read. Deer and bison:
+  `run` while fleeing, `walk` while wandering, else `graze` two thirds of the time and `idle` the rest (5 s spells). Corral horses: `graze` / `idle`
+  only, standing on six fixed spots inside a 2x2 corral, each with its own facing (`CORRAL_SPOTS` in `src/render/creatureArt.ts`).
+- Deaths: a killed wolf plays `die` (held 1.5 s), then lies as `carcass_wolf/stage1/00` for 5 s, then fades; a wolf that runs off the map just goes.
+  A killed deer or bison plays `die` (held 0.4 s), then `carcass_<kind>/<stage>/00`: `stage1` until a load is taken, `stage2` while meat is left,
+  `stage3` (bones) for 6 s after the last load, then fades. A deer (10 meat, one load) goes from whole straight to bones.
+- Rider: a mounted lancer draws `person_rider` (base + family-tinted cloth) when that key has art, else the man or woman on foot as before:
+  walking or fleeing = `gallop`, any attack = `thrust`, else `idle`; a death plays `die`. Riders are always drafted (the draft takes the horse).
+- Effects: `ally_spirit/float` loops at 90% alpha (offset per spirit); `fx_storm/loop` is stretched so the cell's width is the storm's circle across
+  (about 452 px on screen, 1.18x the cell), drawn over everything with a faint code ring; the stampede is seven `animal_bison/base/run` sprites
+  abreast. One-shots (`src/render/fx.ts`): `fx_hit/burst` where hp drops (wolf, game, ally, a building with hp, a person bitten with a wolf within
+  1.5 tiles), `fx_dust/puff` every 220 ms behind a runner (wolves at run speed, fleeing game, guardians, riders, the stampede), `fx_sparkle/rise`
+  on a building as it finishes, `animal_fish/jump` on a random river tile in view every 2.5-5 s. Each plays once and is removed.
+- Arrows: `fx_arrow` is rotated along the flight (it must point right in the cell); `fx_arrow_stuck` is drawn upright, flipped when the miss
+  landed to the left, and fades.
+- No placeholders were added: everything new (horses, rider, carcass stills, effects, arrow sprites) shows only with art or `?standins`; without art
+  the game draws exactly as before. Health bars, the guardian glow and the storm ring stay code-drawn.
+- Went past PLAN's file list on purpose: new `src/render/{creatureArt,fx}.ts`, `src/render/people.ts` (rider model), `tests/art/creatureArt.test.ts`,
+  two e2e cases and a `camp.creatures()` hook, `TESTING.md`, `DEVELOPMENT.md`. The sim files (`animals.ts`, `combat.ts`, `effects.ts`) needed no
+  change: a wolf's death is read as "gone, and not on the map border".
+- Not checked by hand: the look with real art, a long wave with many falls, fps (AC9), the fish rate, dust density at 4x.
+- Bigger map: M1-M6 done 2026-11-20 (M6 passed: the user played the big map and said tested, no fixes); the item is finished. G23 done and G24 passed 2026-11-20 (the user tested the building cards by hand, no fixes); G15 passed too (the user played hunting, plaza, feedback and music; no fixes), so G1-G24 are all done; the user picks the next Phase D item. G22 done. G21, G20 done. G14 done 2026-11-20, next G15 (the user's playtest). G13 done. G12, G11 done. G10, G9, G8 done. G7 done. G16-G19 (user's additions) done 2026-11-20, G6 done. G5 done. G4, G3 done. W11 closed by the user 2026-11-20. G2, G1 done. G0 (2026-11-20): spec `DESIGN-hunting.md` and PLAN rows G1-G15 accepted by the user; next G1. Tier 3 W1-W10 and R1-R2 done (W11, the user's playtest, still open); tier 2 V1-V9 done (V9 passed; next: the user picks the next Phase D item). 2026-11-19: C1-C8 done (the user approved the slice: "all good"); Phase D saves: DS1 done
   (`save.ts`: `serialize`, `parseSave`, `loadState`, plus `dayOf` and `SAVE_FORMAT`); DS2 done
   (`src/save/slots.ts`: `listSlots`, `readSlot`, `writeSlot`, `clearSlot`, `importSlot`, `probe`,
   `firstEmptySlot`, `browserStorage`); DS3 done (`GameScene.saveNow()` and `saveSlot` are the hooks
   for the DS4 HUD menu); DS4 done. Next: DS5 (the user's playtest).
+
+## Interface art notes (AC8, 2026-11-20)
+- For Codex: panels, buttons and bars draw from `ui_panel` (9-slice, corner `slice` px at 2x), `ui_button/<normal|hover|pressed|disabled>` and `ui_bar_frame`; `ui_bar_fill` is the HUD Wotakuye fill (tinted green / amber / red, stretched to the bar). A toggled-on button (the speed in use, an armed stance, the card being placed) shows `ui_button/pressed`; an armed building strip is `ui_panel` tinted gold. Stretched panels are drawn at half size, so a 9-slice frame must not be trimmed.
+- Text colour switches with the art: when `ui_panel` has art the panels' text is dark brown (`#2b1d12`, gold titles `#7a4a10`), because STYLE.md makes them light hide; the dark fallback keeps light text. Change `HIDE` in `src/render/ui.ts` if the art ends up dark.
+- Icons: 64x64 keys are fitted into 14-32 px boxes. Places: resource bar (R1), speed buttons (`icon_speed_*`, replace the word), power buttons and upgrade rows (`icon_upgrade_<id>`), Draft / Undraft and Cancel (`icon_order_draft|undraft|delete`), the stance buttons (`icon_order_hold|defend|chase`, icon only, the label is the hover text). Not drawn anywhere yet (the UI has no slot for them today): `icon_order_move`, `icon_order_attack`, `icon_job_*`, `icon_season_*`, `icon_wotakuye`, `icon_hungry`.
+- Cursors: `cursor_<kind>` and `cursor_<kind>@2x` are cut from the atlas into data URLs at boot and set as the canvas default cursor; the hotspot is the manifest anchor x 32. Buttons keep the browser's hand cursor.
+- Title: `art/title.jpg` (any file there) is stretched to 1280 x 720 behind the menu; the code draws "Camp Fire", its line and `ui_emblem` (left of the title).
+- Font: Alegreya 400 and 700 from `@fontsource/alegreya` (OFL, dev dependency), Latin and Latin Extended; the Dakota letter might fall back to Georgia if Alegreya lacks it.
+- Went past PLAN's file list on purpose: new `src/render/{ui,uiLogic,fonts,cursors,cursorLogic,title}.ts`, `tests/art/ui.test.ts`, `Game.ts` (`ghostOk`), `scenes/hover.ts`, `Boot.ts`, `main.ts` (the game starts after the font loads), `package.json`, `TESTING.md`, `DEVELOPMENT.md`.
+- Not checked by hand: the look at the user's screen; the real art; the cursors in a real browser (tests read the CSS value, headless screenshots show no cursor).
+
+## Building art notes (AC6, 2026-11-20)
+- For Codex: a building draws `<key>/<state>/<nn>` (pattern B): `stage1` below 34% built, `stage2` below 67%, `stage3` below 100%, then `finished`, or `winter` in the winter season (`seasonAt(tick)`). A key that lacks the asked state shows `finished` (the fire has only `finished` and `winter`, so a site is never drawn from it). The barricade is `building_barricade/<state>/<mask>` (mask 0-15, unpadded; any barricade tile counts as a neighbour, finished or not). The drying rack's `finished` and `winter` loop 4 frames at 4 fps on scene time, offset per building. The frame is picked by `src/render/buildingArt.ts`.
+- Flames: a **finished** fire and fire pit carry an `fx_flame/loop/<nn>` sprite anchored on the building sprite's footprint centre (depth +0.5; the fire at art scale 0.5, the pit at 0.25), drawn only when `fx_flame` has final art or a stand-in. The fire's art must leave the hearth empty for it.
+- Without final art a site still fades in with progress (alpha 0.35 to 0.85); with art every stage is drawn at full alpha. The open store (`StoreHover`) keeps its own sprite; `syncBuildings` skips it and sets the right stage frame again when it closes (`hoverStore` now runs before `syncBuildings`).
+- Went past PLAN's file list on purpose: new `src/render/buildingArt.ts`, `tests/art/buildingArt.test.ts`, `tests/smoke.spec.ts` (two cases and a `buildings` debug hook), `TESTING.md`, `DEVELOPMENT.md`; `stores.ts` needed no change.
+- Choices the spec left open: the stage limits are `<0.34` and `<0.67` of `buildPoints`; the flame has no placeholder, so it simply does not show without art; a trap or pit that has sprung shows no different frame (the sim has no such state). Not checked by hand: the look at zoom 0.5, a real winter, a long barricade drag with art.
+
+## Terrain art notes (AC5, 2026-11-20)
+- For Codex: ground, banks, spills, trees, stumps, bushes, rocks and tufts are all picked from the **map seed and the tile** (no sim random draws), by `src/render/terrain.ts`. Frames are `<key>/<season>/<index>` as the spec says; the season follows `seasonAt(tick)` (a new camp starts in spring) and every sprite is re-skinned when it changes.
+- Which key shows where: a ground tile is `tile_<type>` in one of 4 variants; a **grass** tile with water on an edge draws `bank_river` (mask 1-15) instead; a grass tile with forest or berry on an edge also draws `spill_forest` / `spill_berry` for that edge on top (`ne` = the tile at y-1, `se` = x+1, `sw` = y+1, `nw` = x-1). A forest tile draws a tree (cottonwood or willow within 2 tiles of water, else bur oak or basswood; variant 0 or 1); a berry tile a chokecherry or plum bush (variant 0 or 1); a felled tree a `stump_tree/<season>/0`; about 9% of free plain grass a `tuft_grass` and 1.2% a `rock_boulder` (variants 0-2).
+- Until a key is final: ground tiles and trees keep their code drawings; banks, spills, stumps, bushes, rocks and tufts have none, so they are not drawn at all (and appear as grey boxes with `?standins`). Banks fall back to the plain grass tile until `bank_river` is final.
+- Went past PLAN's file list on purpose: new `src/render/{terrain,terrainView}.ts` (so `Game.ts` only loses code), `art/manifest.json` (`object_tree` deleted, a `placeholder` block on the four tree keys), `src/render/placeholders.ts` (the tree drawing now serves four keys; no new drawing), `tests/art/validate.test.ts`, `tests/smoke.spec.ts` (two cases and a `terrain` debug hook), `TESTING.md`, `DEVELOPMENT.md`, `art/SPEC.md` section 9. `src/sim/map.ts` and `seasons.json` needed no change.
+- Choices the spec left open: banks only on grass (a forest or berry tile beside water keeps its own floor, so its art must meet water by the 4 px water-edge band; spill and bank overlays are not combined); a tile with a bank still gets spills; rocks and tufts avoid bank tiles, spill tiles and building footprints, and a new building removes the props under it; props, trees and bushes are jittered inside their tile (trees as before); a stump sits where its tree stood and does not block anything; the berry bush is drawn on every berry tile whatever its fruit left (the tile keeps its berry floor); a tile's ground variant is picked per tile, not per felled state, so a felled tile keeps its grass variant.
+- Not checked by hand: the look at zoom 0.5 (about 1,000 extra sprites with full art, fps unchecked until AC9), a real winter, felling a tree with art installed.
+
+## People art notes (AC4, 2026-11-20)
+- For Codex: people now draw from `person_man`, `person_woman`, `person_elder_man`, `person_elder_woman` and `person_child` (pattern A frames
+  `<key>/<layer>/<anim>/<facing>/<nn>`). The `cloth` frame is drawn over `base` and tinted with the family colour from `src/data/map.json`
+  (`#e0905a`, `#7fa8d8`), so it must be greyscale and exactly aligned. Tools, loads and poses come from the frames (the code overlays only
+  draw on placeholders). `person_adult` and `person_elder` are gone from the manifest; their code drawings are the placeholders of the four new keys.
+- Sex: `Person.sex` from the id (odd = woman, even = man; `sexForId`), so it draws no random number and the sim's stream is unchanged; a save made
+  before it reads it with `sexOf`. No save code touched. Each start family: 3 men, 3 women, an elder man and an elder woman.
+- The map (`src/render/personArt.ts` `animFor`): flee = walk at 1.5x; drafted with the weapon fired in the last cooldown = shoot (hunters,
+  archers) / thrust (lancers) / strike (others); a hunter shooting game = shoot; walk = walk, or carry_walk with a load; sitting on the plaza = sit;
+  work: chop, gather, build (only while the site has its materials, else idle), dry = scrape, heal and tend = tend, drill = the society weapon;
+  else idle. A model without the animation (elders, children) idles. `fish` and `dance` are not used yet (no activity). Death: `removePerson`
+  notes a death (health 0 or less) in `GameState.fallen` (100 ticks, not saved); the view plays `die`, holds it 1.5 s and fades in 1 s; a
+  child, or anyone on a placeholder, only fades; someone who leaves the camp just goes.
+- Facing: 8 sectors from the screen-space way the smoothed sprite still has to go; standing still keeps the last facing (a fighter does not
+  turn to face the wolf yet). Animations run on scene time, not game speed (2x/4x do not speed them up).
+- Went past PLAN's file list on purpose: new `src/render/personArt.ts` (the pure picks, so the tests need no Phaser), `Game.ts` (`sync(state, ...)`),
+  `placeholders.ts` (keys renamed), `art/manifest.json`, `manifest.ts` comment, `tests/art/validate.test.ts` (legacy list), `art/SPEC.md` 9,
+  `DEVELOPMENT.md`. `tick.ts` needed no change.
+- A mounted lancer still draws as a man or woman on foot (the rider is AC7).
+- Checked: 259 tests and `npm run e2e` (16 tests) pass; a throwaway Playwright check with `?standins` at zoom 2 showed every label (idle, walk, carry_walk,
+  chop, gather, scrape, the fights on adults, idle on elders) in both family tints, and a death holding `die/s/05`; no console errors. Not checked by hand.
+
+## Atlas loader notes (AC3, 2026-11-20)
+- For Codex: after `npm run art:pack -- ABn` the game picks up `art/atlas/<group>.json` and its pages by itself (Vite globs them at build time: restart the dev
+  server after a new pack). A key is drawn from its atlas only when its manifest `status` is `final` **and** the atlas holds the frame; otherwise the code
+  placeholder stays. Frames draw at scale 0.5 with the manifest anchor, so the delivered cell size must equal `sourceSize` (the packer keeps it).
+  `/?debug&standins` (dev server only) shows the grey stand-ins for every key that has an atlas entry.
+- Went past PLAN's file list on purpose: new `src/render/{atlases,art,frames,standins,standinFiles,standinFiles.empty}.ts`; the draw sites in `Game.ts`,
+  `stores.ts`, `Build.ts` and `Hud.ts`; `tests/art/frames.test.ts`, a 16th e2e case, `TESTING.md`, `DEVELOPMENT.md`.
+- Choices the spec left open: the default frame is summer, variant 0 (`0`), the `finished` state, the first animation, facing `s`, frame `00` (`defaultFrame`);
+  the atlas JSON is bundled into the game's JS (about 1.4 MB for a full set, gzip smaller) and its page names are rewritten to the hashed URLs; the stand-ins are
+  kept out of a build by a Vite alias, not by a runtime check (a `DEV` guard still bundled the pages); a key with neither art nor placeholder draws Phaser's
+  missing-texture box and warns once; `people.ts` still draws the legacy keys, so people stay as today under `?standins` until AC4.
+- Not checked: a real Codex atlas (none exists), the loading bar on a slow connection, season swaps and variants (AC5 picks them).
+
+## Pack and stand-ins notes (AC2, 2026-11-20)
+- For Codex: `npm run art:pack -- ABn` (run after approval) validates the inbox, then repacks each group the batch touches from the
+  batch's folders plus, for the group's other `final` keys, `art/inbox/done/<batch>-r<revision>/<key>/` (the manifest's `batch` and
+  `revision`), so **keep the `done/` folders**; it does not edit `manifest.json` or move the inbox (PIPELINE.md steps 2 and 6).
+  Output: `art/atlas/<group>-<n>.png` and `<group>.json` (Phaser multiatlas: `textures[]` with `image`, `size`, `frames[]` of
+  `filename`, `frame`, `spriteSourceSize`, `sourceSize`, `trimmed`); pages are cropped to their used size; it stops over 16 pages in
+  all or a page over 4 MB.
+- Went past PLAN's file list on purpose: `scripts/art/{font,standin-lib,pack-lib}.mjs` and their `.d.mts` (the CLIs stay thin),
+  `scripts/art/lib.mjs` (the ground-point check skips `cloth` layers: a shirt never touches the ground), `DEVELOPMENT.md`, `TESTING.md`.
+- Choices the spec left open: stand-ins are shapes, not full cells, because full cells make 66 pages: people, animals and plants are
+  grey boxes (28 x 40% of the cell for a person), buildings and fire a footprint diamond, tiles, banks and spills a full diamond,
+  icons, cursors and UI the full cell; each carries its frame name in a 5 x 8 pixel font and a red cross on the anchor pixel (never in
+  the border); a `cloth` stand-in is a lighter patch inside the base box. `art:standins` also packs (`-- --no-pack` skips it); the
+  packer takes frames in name order, so a repack of the same frames gives the same files.
+- Not checked: the packer on real art (none yet; stand-ins pack to 13 pages, real trimmed art is expected to be about the same);
+  how the loader (AC3) reads the JSON in Phaser.
+
+## Manifest v2 and validator notes (AC1, 2026-11-20)
+- For Codex: `npm run art:validate -- --inbox ABn` is ready. It checks the manifest and the inbox delivery (exact cell,
+  2 px border, frame names and counts, 8-bit RGBA, cloth aligned with base, ground point, `delivery.json`, `contact.png`).
+  Frame names and files per key come from `expectedFrames` in `scripts/art/lib.mjs`; SPEC.md section 8 lists the details
+  the spec left open (bank masks 1-15 and spill edges as pattern C names, barricade `<state>_<mask>.png`, cursor `_2x.png`).
+- Went past PLAN's file list on purpose: `src/render/{people,stores,placeholders}.ts` and `src/scenes/Game.ts` (use `anchorOf`),
+  `package.json` (`pngjs` 7.0.0, `art:validate`), `scripts/art/lib.mjs` and `lib.d.mts`, `DEVELOPMENT.md`, `TESTING.md`, `art/SPEC.md`.
+- Choices the spec left open: the three old keys stay as `legacy` entries (placeholder only) because the code still draws them
+  until AC4 and AC5; per-key fields `border` (0 for tiles, banks, spills and 9-slice pieces), `ground` (people, animals,
+  carcasses, plants, items; not buildings, whose footprint centre may be empty in `stage1`), `indices`, `slice`, `retina`;
+  the cloth check allows max(4, 1%) cloth pixels over a transparent base (anti-aliased edges); the ground check looks in a
+  9 x 5 px box at the anchor pixel; atlas groups: `ground`, `plants` (trees, bushes, rocks, tufts, stumps, store items),
+  `buildings`, `man`, `woman`, `elder_man`, `elder_woman`, `child`, `rider`, `animals` (animals, fish, carcasses), `fx` (fx, ally, arrows), `ui`.
+- Not checked: the validator on a real Codex delivery (none exists yet); the 16-page atlas budget (AC2).
+
+## Minimap mouse notes (M5, 2026-11-20)
+- Went past PLAN's file list on purpose: none beyond `MinimapView.ts` (new in M4), `Hud.ts` (`overMinimap`), `Select.ts` (`moveSelectionTo`, `overUi`), `Game.ts` (`centerOnWorld`), `Menu.ts`, `tests/smoke.spec.ts`, `TESTING.md`.
+- Choices the spec left open: the click zone is the whole panel (padding included) and a click on the padding or the empty corners still centres the camera (clamped to the minimap); a right-click in a corner is ignored (no tile there); a right-click while placing or aiming does nothing (not even cancel), as the spec says a click only moves the camera; a right-click draws the usual green ping at the target tile (off screen unless the camera is there); the HUD menu panel disables the minimap; a drag keeps following the pointer outside the panel while the left button is held.
+- Not checked by hand: the feel of dragging at real size, right-clicking a far spot with a big group.
+
+## Minimap notes (M4, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/scenes/MinimapView.ts` (new, so `Hud.ts` gains only three lines), `tests/minimap.test.ts` (new).
+- Choices the spec left open: scale is exactly 1/32 (192 x 96 px, the spec said about 200 x 100), with the world's top edge half a tile above tile (0, 0)'s centre; the panel is 208 x 112 at x 1064, y 36 (the Wotakuye tooltip, depth 18, still covers it while open); berries are plum (`0xa8559a`) and forest dark green so neither reads as a wolf or herd; wolves are 3 px bright red in a 5 px dark halo, people and herds 2 px; carcasses are not drawn; an unfinished building is cream at 50%; the fire is a 3 px orange dot at its centre; the camera outline is clipped to the minimap and drawn every frame, the dots every 6 frames, the buildings when an id or `done` changes, the terrain when `mapVersion` changes (a whole redraw, about 18k pixels).
+- Hook for M5: `camp.minimap()` returns `{ rect: [x, y, w, h], view: [x, y, w, h], counts }` in 1280 x 720 HUD space. `miniToWorld` / `miniToTile` are the click maths. The panel is not interactive yet.
+- Not checked by hand: the look at real size on the user's screen, a felled tree updating the terrain, a long wave.
+## Bigger map notes (M3, 2026-11-20)
+- No code change: fps at zoom 0.5 on 96 x 96 is 60.0 (zoom 1: 60.1, zoom 2: 60.1), measured with a throwaway script (4 s of `requestAnimationFrame` frames per zoom, headless Chromium with the GPU flags from `playwright.config.ts`, WebGL, no console errors). Chunked ground is not needed.
+- Limit of the check: the start camp at rest, 20 people, no wolves, 1x speed; vsync caps at 60, so the headroom is unknown. If the user's PC stutters in a big wave at zoom 0.5, chunk the ground then (spec `## Drawing`).
+
+## Bigger map notes (M2, 2026-11-20)
+- Went past PLAN's file list on purpose: `src/data/enemies.json` (stampede numbers), `tests/sim/helpers.ts` (`o(n)`), and about 12 test files that hard-coded 48-map tiles.
+- Choices the spec left open: the stampede lane the player aims is drawn from the start to the end of the run, clipped to the map; a herd that starts at a clamped edge still runs 48 tiles (it may leave the map); `iso.ts` keeps default size arguments but reads them from `map.json`; `o(n)` shifts by fire x - 22, so tests keep their old geometry round the new camp (anything beyond the 7-tile clear radius can be forest, so such tests search for a spot).
+- The bison trips test now waits for the last delivery instead of a fixed 400 ticks (a carcass may fall far from the store).
+- Not checked by hand: the new aiming lane, the long walk to a far ford or a far berry patch.
+
+## Bigger map notes (M1, 2026-11-20)
+- Went past PLAN's file list on purpose: `tests/sim/hunting.test.ts` (the start-herds test now expects 12 herds, 8 deer and 4 bison) and `src/data/map.json` `camera.panPxPerSec` (900, M2 would have done it).
+- Choices the spec left open: the outer berry ring is `berry.outer` (optional) and runs after the near ring, so the near ring keeps its rng order; the outer herds are `outerHerds` / `outerDist` in `animals.json`, 6 deer and 3 bison (the same 2:1 mix); a herd's members spread a tile or two round its centre, so the test measures the herd's mean position.
+- The tests M1 left failing were fixed in M2.
+- Not checked: the new map in the browser (wolves and the stampede still read 48 / 24 until M2).
 
 ## Building cards notes (G23, 2026-11-20)
 - Went past PLAN's file list on purpose: `src/main.ts` (scene drawing order is now Select, Build, Hud, so the cards sit above the panel instead of under its translucent fill), `src/scenes/Menu.ts` (controls text), `DESIGN-slice.md` and `TESTING.md`.
@@ -295,8 +599,10 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   publish` was run once, so `index.html` and `build/` exist locally, uncommitted.
 
 ## Requests for Codex
-- None yet. Art requests start after the slice playtest (PLAN.md Phase D), per
-  [art/PIPELINE.md](../art/PIPELINE.md).
+- Art is specified (2026-11-20): read [art/STYLE.md](../art/STYLE.md), [art/SPEC.md](../art/SPEC.md),
+  [art/PIPELINE.md](../art/PIPELINE.md) and [art/BATCHES.md](../art/BATCHES.md). Rule: Codex draws and
+  installs all art; Claude never draws. **AB0 (style keys, Approval authority: user) is requested only
+  when the user says go**; it can be generated before Claude's AC rows, but is installed after AC1-AC3.
 
 ## Taken from Codex
 - None.

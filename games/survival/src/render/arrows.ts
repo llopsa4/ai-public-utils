@@ -4,6 +4,7 @@
 import Phaser from 'phaser';
 import { animalsOf } from '../sim/animals';
 import type { GameState, Person } from '../sim/state';
+import { applyArt, fromAtlas, spriteFor } from './art';
 import { tileToWorld } from './iso';
 import { hasBow } from './people';
 
@@ -41,9 +42,14 @@ export class ArrowsView {
   private enemies = new Map<number, Seen>();
   private animals = new Map<number, Seen>();
   private shots = 0;
+  /** Arrow images reused frame to frame (only with art); `used` of them are shown this frame. */
+  private pool: Phaser.GameObjects.Image[] = [];
+  private used = 0;
+  private art: { fly: boolean; stuck: boolean };
 
   constructor(scene: Phaser.Scene, private size: number) {
     this.gfx = scene.add.graphics().setDepth(100001);
+    this.art = { fly: fromAtlas(scene, 'fx_arrow', 'fx_arrow'), stuck: fromAtlas(scene, 'fx_arrow_stuck', 'fx_arrow_stuck') };
   }
 
   /** Looks for new shots this frame, then redraws every arrow in flight or stuck. `ground` gives a person's drawn feet. */
@@ -108,8 +114,22 @@ export class ArrowsView {
     return { at: best.seen, hit: !now || now.hp < best.seen.hp };
   }
 
+  /** The next pooled arrow image this frame, showing `key` (art drawn at scale 0.5, the game turns a flying one). */
+  private sprite(key: string): Phaser.GameObjects.Image {
+    let img = this.pool[this.used];
+    if (!img) {
+      img = spriteFor(this.gfx.scene, key, 0, 0).setDepth(100001);
+      this.pool.push(img);
+    } else if (img.frame.name !== key) {
+      applyArt(img, key, key);
+    }
+    this.used++;
+    return img.setVisible(true);
+  }
+
   private draw(nowMs: number): void {
     const g = this.gfx.clear();
+    this.used = 0;
     this.arrows = this.arrows.filter((a) => nowMs - a.t0 < FLIGHT_MS + (a.hit ? 0 : STUCK_MS));
     for (const a of this.arrows) {
       const age = nowMs - a.t0;
@@ -121,12 +141,21 @@ export class ArrowsView {
         const y = a.y0 + (ey - a.y0) * u - Math.sin(u * Math.PI) * 10;
         // Pointing along the flight, tilted a little by the rise and fall.
         const ang = Math.atan2(ey - a.y0, ex - a.x0) + (u - 0.5) * 0.5;
-        this.arrow(g, x, y, ang, 1);
+        if (this.art.fly) this.sprite('fx_arrow').setPosition(x, y).setRotation(ang).setAlpha(1).setFlipX(false);
+        else this.arrow(g, x, y, ang, 1);
       } else {
         const fade = Math.min(1, (a.t0 + FLIGHT_MS + STUCK_MS - nowMs) / FADE_MS);
-        this.arrow(g, a.x1 + a.ox, a.y1 + a.oy, Math.atan2(a.oy, a.ox) + 0.9, fade, true);
+        // The stuck arrow is painted leaning; it leans the way the arrow flew.
+        if (this.art.stuck) this.sprite('fx_arrow_stuck').setPosition(a.x1 + a.ox, a.y1 + a.oy).setRotation(0).setAlpha(fade).setFlipX(a.ox < 0);
+        else this.arrow(g, a.x1 + a.ox, a.y1 + a.oy, Math.atan2(a.oy, a.ox) + 0.9, fade, true);
       }
     }
+    for (let i = this.used; i < this.pool.length; i++) this.pool[i].setVisible(false);
+  }
+
+  /** The arrow frames on screen now (checks). */
+  shown(): string[] {
+    return this.pool.slice(0, this.used).map((img) => img.frame.name);
   }
 
   /** One arrow: a shaft with a pale head ahead of it and red feathers behind. A stuck arrow is shorter and stands tilted. */

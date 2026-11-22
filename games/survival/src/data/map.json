@@ -1,5 +1,5 @@
 {
-  "size": 48,
+  "size": 96,
   "tileWidth": 64,
   "tileHeight": 32,
   "tiles": {
@@ -9,16 +9,16 @@
     "forest": { "cost": 2, "passable": true,  "buildable": false, "wood": 30 },
     "berry":  { "cost": 1, "passable": true,  "buildable": false, "food": 40, "regrow": 0.005 }
   },
-  "river": { "startMin": 9, "startSpan": 6, "width": 2, "clamp": [5, 16], "fordRows": [[8, 10], [30, 10]] },
-  "forest": { "clusters": 7, "minDistFromCamp": 10, "radius": [2, 4], "density": 0.75 },
-  "berry": { "patches": 3, "distFromCamp": [7, 14], "tilesPerPatch": 7 },
+  "river": { "startMin": 18, "startSpan": 12, "width": 4, "clamp": [10, 32], "fordRows": [[16, 20], [60, 20]] },
+  "forest": { "clusters": 28, "minDistFromCamp": 10, "radius": [2, 4], "density": 0.75 },
+  "berry": { "patches": 3, "distFromCamp": [7, 14], "tilesPerPatch": 7, "outer": { "patches": 9, "distFromCamp": [15, 44] } },
   "camp": {
-    "fire": [22, 22],
+    "fire": [46, 46],
     "clearRadius": 7,
     "prebuilt": [
-      { "type": "tipi", "at": [18, 22] },
-      { "type": "tipi", "at": [28, 22] },
-      { "type": "store", "at": [22, 17] }
+      { "type": "tipi", "at": [42, 46] },
+      { "type": "tipi", "at": [52, 46] },
+      { "type": "store", "at": [46, 41] }
     ]
   },
   "start": {
@@ -35,5 +35,5 @@
     "perFamily": { "adult": 6, "elder": 2, "child": 2 },
     "spawnRadius": 5
   },
-  "camera": { "edgePx": 16, "panPxPerSec": 600, "zoom": [0.5, 2.0], "zoomStep": 0.1 }
+  "camera": { "edgePx": 16, "panPxPerSec": 900, "zoom": [0.5, 2.0], "zoomStep": 0.1 }
 }

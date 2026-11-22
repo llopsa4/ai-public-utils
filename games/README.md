@@ -6,6 +6,7 @@ for working on them are in [AGENTS.md](AGENTS.md).
 - [The Rift: Ashlands](https://llopsa4.github.io/ai-public-utils/games/adventure/) — a point-and-click adventure for desktop browsers (Phaser). See [the adventure guide](adventure/README.md).
 - [Kiln Courier](https://llopsa4.github.io/ai-public-utils/games/FFCardGame/) — an original industrial-fantasy card combat prototype. See [local play instructions](FFCardGame/README.md).
 - [Kota](https://llopsa4.github.io/ai-public-utils/games/kota/) — an early top-down arena survivor about Dakota culture, made for phones and tablets. See [the Kota guide](kota/README.md).
+- [Dead Woods](https://llopsa4.github.io/ai-public-utils/games/zombie/) — an early isometric zombie-survival game (camp hub + Commandos-style stealth missions) for desktop browsers. See [the Dead Woods guide](zombie/README.md).
 
 ## Publishing
 

@@ -1,7 +1,7 @@
 # Kota
 
 A free Brotato-style 2D top-down arena survivor for smartphones and tablets about Dakota culture
-(Lakota and Nakota later). It is an early build of the Phaser 3 rebuild of 2026-11-18 (see
+(Lakota and Nakota later). It is a playable milestone of the Phaser 3 rebuild begun on 2026-11-18 (see
 [PLAN.md](PLAN.md)); [WORKLOG.md](WORKLOG.md) has the current state and open items. Design decisions
 are in [DESIGN.md](DESIGN.md), the cultural reference in [CULTURE.md](CULTURE.md); contributors start
 at [AGENTS.md](AGENTS.md).
@@ -27,5 +27,5 @@ Iya material with a local community member and approved the small inventions in 
 
 ## Made with free software
 
-Phaser 3 (MIT) renders the game and is vendored in `game/vendor/`. All third-party code and assets are
-listed in [LICENSES.md](LICENSES.md), and stories are credited where they appear.
+Phaser 3 (MIT) renders the game and is vendored in `game/vendor/`. Phaser's licence text is in
+`game/vendor/PHASER-LICENSE.md`, and stories are credited where they appear.

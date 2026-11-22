@@ -5,7 +5,7 @@ import mapConfig from '../data/map.json';
 import { campCentre } from './map';
 import { rngNext } from './rng';
 import {
-  TIPI_BEDS, type Age, type GameState, type JobKind, type Person, type Task, type Tile2,
+  FALLEN_TICKS, TIPI_BEDS, type Age, type GameState, type JobKind, type Person, type Sex, type Task, type Tile2,
 } from './state';
 
 export interface AgeDef {
@@ -49,12 +49,12 @@ export function walkable(s: GameState, x: number, y: number): boolean {
 const DIRS: [number, number][] = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
 
 /**
- * A* on 8 neighbours: diagonals cost x1.4, no corner-cutting, at most 4000 expanded nodes.
+ * A* on 8 neighbours: diagonals cost x1.4, no corner-cutting, at most 16000 expanded nodes.
  * Returns the tiles to walk through (without the start tile), or null when there is no path.
  * Starting on the target tile gives `[target]` so the walker still reaches its centre.
  */
 export function findPath(s: GameState, from: [number, number], to: Tile2): Tile2[] | null {
-  return findGridPath(s.map.size, (x, y) => walkable(s, x, y), (i) => TILE[s.map.tiles[i]].cost, from, to, 4000);
+  return findGridPath(s.map.size, (x, y) => walkable(s, x, y), (i) => TILE[s.map.tiles[i]].cost, from, to, 16000);
 }
 
 /**
@@ -193,10 +193,20 @@ export function movePerson(s: GameState, p: Person): 'moving' | 'arrived' | 'blo
   return t.path.length === 0 ? 'arrived' : 'moving';
 }
 
+/**
+ * A person's sex from their id: odd ids are women, even ids men. Deterministic and draws no random number, so the
+ * same seed gives the same people and the sim's random stream is unchanged; each family's start people alternate.
+ */
+export const sexForId = (id: number): Sex => (id % 2 === 1 ? 'female' : 'male');
+
+/** A person's sex; a person loaded from a save made before the field existed gets the one their id gives. */
+export const sexOf = (p: Pick<Person, 'id'> & { sex?: Sex }): Sex => p.sex ?? sexForId(p.id);
+
 /** A new person with full health, a little hunger and no job. */
 export function makePerson(s: GameState, family: number, age: Age, name: string, x: number, y: number): Person {
+  const id = s.nextPersonId++;
   return {
-    id: s.nextPersonId++, name, family, age, x, y, health: 100, hunger: 20,
+    id, name, family, age, sex: sexForId(id), x, y, health: 100, hunger: 20,
     job: null, task: idleTask(), carry: { res: 'food', amount: 0 }, society: null, drafted: false, mounted: false,
     stance: 'defend', attackTarget: null, post: null, home: null, cooldown: 0,
   };
@@ -215,9 +225,14 @@ export function spawnSpots(s: GameState): Tile2[] {
   return spots;
 }
 
-/** Removes a person (died or left) and frees their bed. */
+/** Removes a person (died or left) and frees their bed; a death (health 0 or less) is noted in `fallen`. */
 export function removePerson(s: GameState, id: number): void {
-  if (s.people.find((p) => p.id === id)?.mounted) s.horses = Math.max(0, s.horses - 1); // the horse is lost too
+  const gone = s.people.find((p) => p.id === id);
+  if (gone?.mounted) s.horses = Math.max(0, s.horses - 1); // the horse is lost too
+  if (gone && gone.health <= 0) {
+    s.fallen = (s.fallen ?? []).filter((f) => s.tick - f.tick < FALLEN_TICKS);
+    s.fallen.push({ id, tick: s.tick });
+  }
   s.people = s.people.filter((p) => p.id !== id);
   for (const b of s.buildings) b.residents = b.residents.filter((r) => r !== id);
 }

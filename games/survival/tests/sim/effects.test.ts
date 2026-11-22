@@ -1,7 +1,7 @@
 import { campCentre } from '../../src/sim/map';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { bisonDirection, effectsOf, stepEffects } from '../../src/sim/effects';
+import { bisonDirection, bisonLane, effectsOf, stepEffects } from '../../src/sim/effects';
 import { ENEMIES } from '../../src/sim/combat';
 import type { GameState } from '../../src/sim/state';
 import { castPower } from '../../src/sim/upgrades';
@@ -109,4 +109,24 @@ test('a state without effects (an older file) still runs', () => {
   delete (s as unknown as { effects?: unknown }).effects;
   step(s, 5);
   assert.deepEqual(effectsOf(s), []);
+});
+
+test('the stampede starts 24 tiles before the point and runs 48 tiles, on the 96-tile map', () => {
+  const s = camp();
+  assert.equal(s.map.size, 96);
+  // East of the middle the nearest edge is east, so the herd runs west: it starts 24 tiles east of the point.
+  assert.deepEqual(bisonLane(96, [60, 40]), { start: [84, 40], dir: [-1, 0], run: 48 });
+  // Close to an edge the start is clamped inside the map.
+  assert.deepEqual(bisonLane(96, [5, 40]), { start: [0, 40], dir: [1, 0], run: 48 });
+  assert.equal(castPower(s, 'bison_charge', [60, 40]), true);
+  const herd = effectsOf(s)[0];
+  assert.deepEqual([herd.x, herd.y, herd.dx, herd.dy], [84, 40, -1, 0]);
+  for (let i = 0; i < 119; i++) {
+    s.tick++;
+    stepEffects(s);
+  }
+  assert.ok(Math.abs(herd.x - (84 - 119 * 0.4)) < 1e-9 && herd.x > 36, 'still running after 119 ticks');
+  s.tick += 3;
+  stepEffects(s);
+  assert.equal(effectsOf(s).length, 0, 'gone after 48 tiles (121 ticks)');
 });

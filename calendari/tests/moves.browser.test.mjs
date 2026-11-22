@@ -80,7 +80,7 @@ try {
   assert.equal(await page.locator('.participant-workday').count(), 2);
   assert.equal(await page.locator('#month-grid .pending').count(), 0);
   assert.equal(await page.locator('[data-date="2026-10-07"] [data-move]').count(), 0);
-  assert((await page.locator('#participant-view-status').textContent()).includes('2 workdays'));
+  assert((await page.locator('#participant-view-status').textContent()).includes('2 dies de guàrdia'));
   const beforePrint = await stored(page);
   await page.emulateMedia({ media: 'print' });
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
@@ -105,7 +105,7 @@ try {
   assert.equal(await page.locator('.participant-workday').count(), 1);
   await page.locator('#participant-view').selectOption(viewState.participants[2].id);
   assert.equal(await page.locator('#month-grid [data-move]').count(), 0);
-  assert((await page.locator('#participant-view-status').textContent()).includes('0 workdays'));
+  assert((await page.locator('#participant-view-status').textContent()).includes('0 dies de guàrdia'));
   await page.locator('[data-person]').nth(2).click();
   page.once('dialog', d => d.accept()); await page.locator('#remove-person').click();
   assert.equal(await page.locator('#participant-view').inputValue(), '');
@@ -141,7 +141,7 @@ try {
   assert(await page.locator('#generate').isEnabled());
   await page.locator('[data-date="2026-10-07"] .date-open').click();
   assert.equal(await page.locator('#day-dialog').evaluate(el => el.open), true);
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
 
   // Cancel assignment removes the duty, updates coverage, and restores focus to its date.
   await seed(page, state);
@@ -199,7 +199,7 @@ try {
   const beforeConflict = await stored(page);
   await page.locator('[data-confirm-assign="24/1"]').click();
   assert.equal(await stored(page), beforeConflict);
-  assert((await page.locator('#day-content').textContent()).includes('Not applied:'));
+  assert((await page.locator('#day-content').textContent()).includes('No aplicat:'));
   await page.locator('[data-cancel-assign="24/1"]').click();
   await page.locator('[data-assign="24/1"]').selectOption(state.participants[2].id);
   page.once('dialog', d => d.dismiss());
@@ -208,7 +208,7 @@ try {
   page.once('dialog', d => d.accept());
   await page.locator('[data-confirm-assign="24/1"]').click();
   assert.equal(JSON.parse(await stored(page)).months['2026-10'].assignments.at(-1).override, true);
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
 
   // Short-shift previews never mutate storage until a destination is committed.
   const short = fixture('day', '2026-10-03');
@@ -251,13 +251,13 @@ try {
   const red = page.locator('[data-date="2026-10-03"]');
   assert(await red.evaluate(el => el.classList.contains('overstaffed') && el.classList.contains('unfilled')));
   assert.equal(await red.evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(139, 41, 51)');
-  assert((await red.textContent()).includes('Needs cover'));
-  assert((await red.textContent()).includes('Overstaffed / overlapping coverage'));
+  assert((await red.textContent()).includes('Cal cobrir'));
+  assert((await red.textContent()).includes('Excés de personal / cobertura solapada'));
   await page.emulateMedia({ media: 'print' });
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')));
   const printDay = page.locator('.print-page').first().locator('.print-day.overstaffed');
   assert.equal(await printDay.evaluate(el => getComputedStyle(el).backgroundColor), 'rgb(139, 41, 51)');
-  assert((await printDay.textContent()).includes('Missing coverage'));
+  assert((await printDay.textContent()).includes('Falta cobertura'));
   assert(await printDay.evaluate(el => el.scrollHeight <= el.clientHeight), 'Print warnings and shifts must fit inside the date');
   await page.screenshot({ path: path.join(output, 'print.png'), fullPage: true });
   await page.pdf({ path: path.join(output, 'overlap.pdf'), format: 'A4', landscape: true, printBackground: true });
@@ -269,7 +269,7 @@ try {
   await page.locator('[data-drop="2026-10-05/24/0"]').click();
   assert.equal(await page.locator('.day-cell.overstaffed').count(), 0);
   await page.locator('#generate').click();
-  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Best coverage:'));
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Millor cobertura:'));
   assert.equal(await page.locator('[data-move]:enabled').count(), 0, 'Generation disables assignment moves');
   await page.locator('#cancel').click();
 
@@ -279,7 +279,7 @@ try {
   const mobileState = fixture(); await seed(mobile, mobileState);
   await mobile.locator(`[data-move="${key}"]`).tap();
   assert(await mobile.locator('#assignment-dialog').isVisible());
-  await mobile.getByRole('button', { name: 'Close assignment options' }).tap();
+  await mobile.getByRole('button', { name: 'Tanca les opcions de l’assignació' }).tap();
   assert.deepEqual(JSON.parse(await stored(mobile)).months['2026-10'].assignments, mobileState.months['2026-10'].assignments);
   const touch = (type, p) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: p ? [{ x: p.x, y: p.y, id: 1 }] : [] });
   let p = await point(mobile.locator(`[data-move="${key}"]`));
@@ -311,7 +311,7 @@ try {
   let migrated = JSON.parse(await stored(page));
   assert.deepEqual(migrated.participants[0].allowedKinds, ['24']);
   assert.deepEqual(migrated.months['2026-10'].assignments, legacy.months['2026-10'].assignments);
-  assert((await page.locator('#message').textContent()).includes('mixed shift permissions now default'));
+  assert((await page.locator('#message').textContent()).includes('permisos de torn mixtos ara tenen guàrdies de 24 hores per defecte'));
   await page.locator('[data-person]').first().click();
   assert(await page.locator('[data-kind="24"]').isChecked());
   assert(await page.locator('[data-kind="day"]').isDisabled());
@@ -329,17 +329,17 @@ try {
   migrated = JSON.parse(await stored(page));
   assert.equal(migrated.months['2026-10'].assignments.length, 2);
   assert(migrated.months['2026-10'].assignments.every(a => !a.override), 'Two 12-hour holiday duties need no exception');
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
   assert((await page.locator('#workloads tr').first().textContent()).includes('2 / 2'));
   assert((await page.locator('#workloads tr').first().textContent()).includes('24 / 24h'));
   await page.locator('[data-date="2026-10-17"] .date-open').click();
   await page.locator('[data-split="0"]').click();
   await page.locator('[data-assign="day/0"]').selectOption(legacy.participants[0].id);
   const beforeThird = await stored(page);
-  page.once('dialog', d => { assert(d.message().includes('Monthly holiday limit exceeded')); return d.dismiss(); });
+  page.once('dialog', d => { assert(d.message().includes('Límit mensual de festius superat')); return d.dismiss(); });
   await page.locator('[data-confirm-assign="day/0"]').click();
   assert.equal(await stored(page), beforeThird);
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
   // Restart clears only this planner, including every month, and can be declined.
   const restartState = fixture();
   restartState.cityId = '17079000'; restartState.months['2026-10'].cityId = restartState.cityId;
@@ -350,7 +350,7 @@ try {
   await page.locator('#person-name').fill('QA_RESTART_PRIVATE_SENTINEL');
   await page.locator('#confirm-participant').click();
   await page.locator('[data-date="2026-10-05"] .date-open').click();
-  await page.getByRole('button', { name: 'Close date editor' }).click();
+  await page.getByRole('button', { name: 'Tanca l’editor del dia' }).click();
   const beforeRestart = await stored(page);
   await page.locator('#participant-view').selectOption(restartState.participants[0].id);
   page.once('dialog', d => d.dismiss()); await page.locator('#restart').click();
@@ -360,7 +360,7 @@ try {
   await page.evaluate(() => { window.originalRemoveItem = Storage.prototype.removeItem; Storage.prototype.removeItem = () => { throw new Error('Storage unavailable'); }; });
   page.once('dialog', d => d.accept()); await page.locator('#restart').click();
   assert.equal(await stored(page), beforeRestart);
-  assert((await page.locator('#message').textContent()).includes('Nothing was reset'));
+  assert((await page.locator('#message').textContent()).includes('No s’ha reiniciat res'));
   await page.evaluate(() => { Storage.prototype.removeItem = window.originalRemoveItem; delete window.originalRemoveItem; });
   page.once('dialog', d => d.accept()); await page.locator('#restart').click();
   assert.equal(await stored(page), null);
@@ -379,7 +379,7 @@ try {
   await page.locator('#setup-next').click();
   await page.locator('#setup-generate').click();
   assert.equal(JSON.parse(await stored(page)).participants[0].code, 1);
-  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Best coverage:'));
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Millor cobertura:'));
   assert(await page.locator('#restart').isEnabled());
   page.once('dialog', d => d.accept()); await page.locator('#restart').click();
   await page.waitForTimeout(250);

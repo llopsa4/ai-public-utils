@@ -1,6 +1,6 @@
 # Adventure current status
 
-Updated 2026-11-17. Shared procedure: [WORKFLOW.md](../WORKFLOW.md).
+Updated 2026-11-20. Shared procedure: [WORKFLOW.md](../WORKFLOW.md).
 Per-agent activity and requests: [from Claude](handoff/from-claude.md), [from Codex](handoff/from-codex.md).
 History: Git history of this file, [CHANGELOG.md](CHANGELOG.md) and [art provenance](art/PROVENANCE.md).
 
@@ -12,10 +12,9 @@ History: Git history of this file, [CHANGELOG.md](CHANGELOG.md) and [art provena
   `/games/adventure/` and the shared workflow is now `games/WORKFLOW.md` (the old `process/` folder is gone). Old Codex threads still point at the old folder.
 
 ## Working on
-- **Active mode: Claude only (Codex paused)**, selected by the user on 2026-11-17 for a few days.
-  Both agents normally work here. While Codex is paused only image generation stops (queued as
-  requests for Codex); Claude does the other Codex tasks. Returns to Codex + Claude when the user
-  says so ([modes](../WORKFLOW.md#modes-and-ownership)).
+- **Active mode: Codex + Claude** since 2026-11-20 (user): Codex generates and installs art and does
+  routine work; Claude does the rest ([modes](../WORKFLOW.md#modes-and-ownership)). Claude's
+  takeovers while Codex was paused are recorded in [handoff/from-claude.md](handoff/from-claude.md).
 - **Redrawing paused** by the user (2026-11-17): C7 Ashways (last room) not started, no prompts.
 - Local Ashlands Story Board in ignored `private/story-board/` (desktop shortcut
   `Ashlands Story Board.lnk`). User edits in `data/board.json`: preserve them; never reseed.

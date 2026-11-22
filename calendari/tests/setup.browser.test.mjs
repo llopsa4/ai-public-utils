@@ -54,7 +54,7 @@ async function finish(page, count = '3') {
   await page.locator('#setup-count').fill(count);
   await page.locator('#setup-next').click();
   await page.locator('#setup-generate').click();
-  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Search finished.'));
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Cerca finalitzada.'));
 }
 try {
   const page = await pageFor();
@@ -84,17 +84,17 @@ try {
   await page.locator('#setup-next').evaluate(button => { button.click(); button.click(); });
   assert.equal(await page.evaluate(() => window.workerPosts.length), 0, 'Count confirmation never generates before a choice');
   await page.locator('#setup-generate').evaluate(button => { button.click(); button.click(); });
-  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Search finished.'));
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Cerca finalitzada.'));
   assert(await page.locator('#setup-dialog').isHidden());
   assert.equal(await page.evaluate(() => window.workerPosts.length), 1);
   const data = JSON.parse(await saved(page)); assert.equal(data.participants.length, 3);
   assert(data.participants.every(p => p.allowedKinds.join() === '24' && !p.blockedDates.length && !p.blockedWeekdays.length));
   assert(!(await saved(page)).includes('QA_PRIVATE_INVALID_CITY'));
-  assert((await page.locator('#message').textContent()).includes('Next: review'));
+  assert((await page.locator('#message').textContent()).includes('Següent pas: revisa'));
   await page.locator('[data-person]').first().click(); await page.locator('#person-name').fill('QA_SETUP_PRIVATE_NAME');
   await page.locator('#confirm-participant').click();
   await page.locator('#generate').click();
-  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Search finished.'));
+  await page.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Cerca finalitzada.'));
   assert(!(await saved(page)).includes('QA_SETUP_PRIVATE_NAME'));
   assert(!(await page.evaluate(() => window.workerPosts.join())).includes('QA_SETUP_PRIVATE_NAME'));
   await page.reload(); assert(await page.locator('#setup-dialog').isHidden());
@@ -112,13 +112,13 @@ try {
   await guided.locator('#setup-next').click(); await guided.locator('#setup-edit-people').click();
   assert(await guided.locator('#setup-dialog').isHidden()); assert(await guided.locator('#participant-dialog').isVisible());
   assert.equal(await guided.locator('dialog[open]').count(), 1);
-  assert((await guided.locator('#participant-setup-progress').textContent()).includes('1 of 3'));
+  assert((await guided.locator('#participant-setup-progress').textContent()).includes('1 de 3'));
   await guided.locator('#person-name').fill('QA_GUIDED_PRIVATE');
   await guided.locator('[data-kind="24"]').uncheck(); await guided.locator('[data-kind="day"]').check();
   await guided.locator('[data-weekday="1"]').check();
   await guided.locator(`[data-block-date="${todayMonth()}-12"]`).click();
   await guided.locator('#confirm-participant').click();
-  assert((await guided.locator('#participant-setup-progress').textContent()).includes('2 of 3'));
+  assert((await guided.locator('#participant-setup-progress').textContent()).includes('2 de 3'));
   const confirmed = JSON.parse(await saved(guided));
   assert.deepEqual(confirmed.participants[0].allowedKinds, ['day']);
   assert.deepEqual(confirmed.participants[0].blockedWeekdays, [1]);
@@ -127,17 +127,17 @@ try {
   assert(await guided.locator('#setup-choice-step').isVisible());
   assert.equal(await guided.evaluate(() => window.workerPosts.length), 0);
   await guided.locator('#setup-edit-people').click();
-  assert((await guided.locator('#participant-setup-progress').textContent()).includes('2 of 3'));
+  assert((await guided.locator('#participant-setup-progress').textContent()).includes('2 de 3'));
   assert.equal(await guided.locator('#person-name').inputValue(), '');
   await guided.locator('#cancel-participant').click();
-  assert((await guided.locator('#participant-setup-progress').textContent()).includes('3 of 3'));
+  assert((await guided.locator('#participant-setup-progress').textContent()).includes('3 de 3'));
   assert(await guided.locator('#confirm-participant').isEnabled(), 'Unchanged defaults can be confirmed');
   await guided.locator('#confirm-participant').click();
   assert(await guided.locator('#participant-dialog').isHidden());
-  assert((await guided.locator('#setup-title').textContent()).includes('ready'));
+  assert((await guided.locator('#setup-title').textContent()).includes('a punt'));
   assert.equal(await guided.evaluate(() => window.workerPosts.length), 0, 'Only the explicit generation action starts a search');
   await guided.locator('#setup-generate').click();
-  await guided.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Search finished.'));
+  await guided.waitForFunction(() => document.querySelector('#search-status').textContent.includes('Cerca finalitzada.'));
   assert.equal(JSON.parse(await saved(guided)).participants.length, 3, 'Review never duplicates the team');
   assert(!(await saved(guided)).includes('QA_GUIDED_PRIVATE'));
   assert(!(await guided.evaluate(() => window.workerPosts.join())).includes('QA_GUIDED_PRIVATE'));
@@ -183,7 +183,7 @@ try {
   assert.equal(await saved(broken), '{broken');
   await broken.evaluate(() => { window.realRemove = Storage.prototype.removeItem; Storage.prototype.removeItem = () => { throw new Error('Unavailable'); }; });
   broken.once('dialog', d => d.accept()); await broken.locator('#setup-restart').click();
-  assert.equal(await saved(broken), '{broken'); assert((await broken.locator('#setup-error').textContent()).includes('Nothing was reset'));
+  assert.equal(await saved(broken), '{broken'); assert((await broken.locator('#setup-error').textContent()).includes('No s’ha reiniciat res'));
   await broken.evaluate(() => { Storage.prototype.removeItem = window.realRemove; });
   broken.once('dialog', d => d.accept()); await broken.locator('#setup-restart').click();
   assert.equal(await saved(broken), null); assert(await broken.locator('#setup-city').isVisible());
@@ -191,10 +191,10 @@ try {
   const readFailed = await pageFor(undefined, () => { Storage.prototype.getItem = () => { throw new Error('Unavailable'); }; });
   assert(await readFailed.locator('#setup-recovery').isVisible());
   const writeFailed = await pageFor(undefined, () => { Storage.prototype.setItem = () => { throw new Error('Unavailable'); }; });
-  await city(writeFailed); assert((await writeFailed.locator('#setup-error').textContent()).includes('Saving is unavailable'));
+  await city(writeFailed); assert((await writeFailed.locator('#setup-error').textContent()).includes('No es pot desar'));
   await finish(writeFailed, '1'); assert(await writeFailed.locator('#setup-dialog').isHidden());
   assert.equal(await writeFailed.locator('[data-person]').count(), 1); assert.equal(await saved(writeFailed), null);
-  assert((await writeFailed.locator('#save-status').textContent()).includes('Not saved'));
+  assert((await writeFailed.locator('#save-status').textContent()).includes('No desat'));
   const future = await pageFor(undefined, () => { const NativeDate = Date; window.Date = class extends NativeDate { constructor(...args) { super(...(args.length ? args : ['2027-01-10T12:00:00Z'])); } }; });
   await city(future); assert(await future.locator('#setup-data-warning').isVisible());
   // Mobile popup fits the viewport and keyboard focus remains usable.

@@ -2,6 +2,7 @@
 // PNG gets a texture here, so Codex replaces art one asset at a time (art/PIPELINE.md).
 import Phaser from 'phaser';
 import { manifest } from './manifest';
+import { fromAtlas } from './art';
 
 type G = Phaser.GameObjects.Graphics;
 
@@ -17,9 +18,20 @@ function person(g: G, shirt: number, hair: number, k: number, stoop: number): vo
   g.fillStyle(0xd9a066, 1).fillCircle(X(16), Y(10.5), 4.4 * k);
 }
 
-const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void> = {
-  person_adult: (g, _w, _h, v) => person(g, v ? 0x4f7fb5 : 0xc4703c, 0x2e2118, 1, 0),
-  person_elder: (g, _w, _h, v) => person(g, v ? 0x6a8fb8 : 0xa8683c, 0xd2d2cc, 0.94, 1.5),
+/** The placeholder tree, 48 x 64, trunk base at the bottom centre. */
+function tree(g: G, w: number, h: number): void {
+  shadow(g, w / 2 + 4, h - 4, 30, 10);
+  g.fillStyle(0x6b4a2e, 1).fillRect(w / 2 - 3, h - 22, 6, 20);
+  g.fillStyle(0x3f6b34, 1).fillTriangle(w / 2, 4, w / 2 - 18, h - 20, w / 2 + 18, h - 20);
+  g.fillStyle(0x4f8040, 1).fillTriangle(w / 2, 14, w / 2 - 21, h - 8, w / 2 + 21, h - 8);
+  g.fillStyle(0x62954d, 1).fillTriangle(w / 2 - 2, 16, w / 2 - 20, h - 9, w / 2 - 4, h - 9);
+}
+
+const DRAW: Record<string, (g: G, w: number, h: number, variant: number, animatedFlame: boolean) => void> = {
+  person_man: (g, _w, _h, v) => person(g, v ? 0x4f7fb5 : 0xc4703c, 0x2e2118, 1, 0),
+  person_woman: (g, _w, _h, v) => person(g, v ? 0x4f7fb5 : 0xc4703c, 0x2e2118, 1, 0),
+  person_elder_man: (g, _w, _h, v) => person(g, v ? 0x6a8fb8 : 0xa8683c, 0xd2d2cc, 0.94, 1.5),
+  person_elder_woman: (g, _w, _h, v) => person(g, v ? 0x6a8fb8 : 0xa8683c, 0xd2d2cc, 0.94, 1.5),
   person_child: (g, _w, _h, v) => person(g, v ? 0x8cb2dc : 0xe0a064, 0x2e2118, 0.7, 0),
   tile_grass: (g, w, h) => ground(g, w, h, 0x8fae5a, [0x9cba66, 0x82a14f], 0x6f8f45),
   tile_river: (g, w, h) => ground(g, w, h, 0x4f8f9a, [0x6aa8b2, 0x437f8a], 0x3d727c),
@@ -32,13 +44,11 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.fillStyle(0x3f6b2f, 1);
     for (const [x, y] of [[22, 12], [38, 14], [30, 19]]) g.fillCircle(x, y, 3);
   },
-  object_tree: (g, w, h) => {
-    shadow(g, w / 2 + 4, h - 4, 30, 10);
-    g.fillStyle(0x6b4a2e, 1).fillRect(w / 2 - 3, h - 22, 6, 20);
-    g.fillStyle(0x3f6b34, 1).fillTriangle(w / 2, 4, w / 2 - 18, h - 20, w / 2 + 18, h - 20);
-    g.fillStyle(0x4f8040, 1).fillTriangle(w / 2, 14, w / 2 - 21, h - 8, w / 2 + 21, h - 8);
-    g.fillStyle(0x62954d, 1).fillTriangle(w / 2 - 2, 16, w / 2 - 20, h - 9, w / 2 - 4, h - 9);
-  },
+  // The one old tree drawing serves all four species until their art arrives (AC5).
+  tree_bur_oak: (g, w, h) => tree(g, w, h),
+  tree_basswood: (g, w, h) => tree(g, w, h),
+  tree_cottonwood: (g, w, h) => tree(g, w, h),
+  tree_willow: (g, w, h) => tree(g, w, h),
   building_tipi: (g, w, h) => {
     const cx = w / 2;
     const base = h * 0.75;
@@ -209,7 +219,7 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.lineStyle(2, 0x4a3624, 1).beginPath().arc(cx - 12, cy - 4, 14, -1.3, 0.2).strokePath();
     g.lineStyle(2, 0xc9a56e, 1).strokeEllipse(cx + 2, cy - 1, 18, 8);
   },
-  building_fire_pit: (g, w, h) => {
+  building_fire_pit: (g, w, h, _v, animatedFlame) => {
     // A ring of stones round glowing embers and a few logs, on one tile.
     const cx = w / 2;
     const cy = h * 0.75;
@@ -222,8 +232,10 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
       const a = (i / 9) * Math.PI * 2;
       g.fillCircle(cx + Math.cos(a) * 15, cy + Math.sin(a) * 7, 3);
     }
-    g.fillStyle(0xe8601c, 1).fillTriangle(cx, cy - 20, cx - 6, cy - 2, cx + 6, cy - 2);
-    g.fillStyle(0xfbe08a, 1).fillTriangle(cx, cy - 12, cx - 3, cy - 2, cx + 3, cy - 2);
+    if (!animatedFlame) {
+      g.fillStyle(0xe8601c, 1).fillTriangle(cx, cy - 20, cx - 6, cy - 2, cx + 6, cy - 2);
+      g.fillStyle(0xfbe08a, 1).fillTriangle(cx, cy - 12, cx - 3, cy - 2, cx + 3, cy - 2);
+    }
   },
   building_barricade: (g, w, h) => {
     // Sharpened stakes leaning out of a low earth bank, on one tile.
@@ -344,7 +356,7 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
     g.fillStyle(0x3a2616, 1).fillPoints([p(11, 10), p(19, 4), p(17, 9), p(13, 18), p(8, 28)], true);
     g.fillStyle(0xe7e1c8, 1).fillCircle(22, 11, 1.6);
   },
-  fire_central: (g, w, h) => {
+  fire_central: (g, w, h, _v, animatedFlame) => {
     // The council plaza on the 4x4 footprint diamond (256 x 128 at its base): beaten earth, hide mats and log
     // seats round a big fire, drying poles at the back, a drum and baskets at the sides. The ring of tiles
     // round the footprint stays free for people to sit on (G8).
@@ -388,9 +400,11 @@ const DRAW: Record<string, (g: G, w: number, h: number, variant: number) => void
       g.fillCircle(cx + Math.cos(a) * 22, cy + 2 + Math.sin(a) * 10, 5);
     }
     g.fillStyle(0x5a3b22, 1).fillRect(cx - 14, cy - 2, 28, 7);
-    g.fillStyle(0xe8601c, 1).fillTriangle(cx, cy - 46, cx - 15, cy + 2, cx + 15, cy + 2);
-    g.fillStyle(0xf6a53a, 1).fillTriangle(cx + 1, cy - 36, cx - 9, cy + 2, cx + 10, cy + 2);
-    g.fillStyle(0xfbe08a, 1).fillTriangle(cx, cy - 22, cx - 4, cy + 2, cx + 5, cy + 2);
+    if (!animatedFlame) {
+      g.fillStyle(0xe8601c, 1).fillTriangle(cx, cy - 46, cx - 15, cy + 2, cx + 15, cy + 2);
+      g.fillStyle(0xf6a53a, 1).fillTriangle(cx + 1, cy - 36, cx - 9, cy + 2, cx + 10, cy + 2);
+      g.fillStyle(0xfbe08a, 1).fillTriangle(cx, cy - 22, cx - 4, cy + 2, cx + 5, cy + 2);
+    }
   },
 };
 
@@ -430,16 +444,20 @@ function ground(g: G, w: number, h: number, base: number, speckles: number[], ed
 
 /** Draws a texture for every manifest key that has none yet. */
 export function ensureTextures(scene: Phaser.Scene): void {
+  const animatedFlame = fromAtlas(scene, 'fx_flame');
   for (const [key, e] of Object.entries(manifest)) {
     if (scene.textures.exists(key)) continue;
+    // Keys with no code placeholder get a grey stand-in from the loader (AC3), never a new drawing.
+    if (!e.placeholder) continue;
     const draw = DRAW[key];
     if (!draw) throw new Error(`No placeholder drawn for art key ${key}`);
+    const [w, h] = e.placeholder.size;
     // People also get a second-family texture, `<key>__b` (blue shirt); the family index picks it.
     const variants = key.startsWith('person_') ? [0, 1] : [0];
     for (const v of variants) {
       const g = scene.make.graphics({ x: 0, y: 0 }, false);
-      draw(g, e.size[0], e.size[1], v);
-      g.generateTexture(v ? `${key}__b` : key, e.size[0], e.size[1]);
+      draw(g, w, h, v, animatedFlame);
+      g.generateTexture(v ? `${key}__b` : key, w, h);
       g.destroy();
     }
   }

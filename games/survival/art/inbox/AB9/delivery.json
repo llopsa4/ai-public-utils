@@ -1,0 +1,46 @@
+{
+  "batch": "AB9",
+  "revision": 1,
+  "brief": "BATCHES.md AB9 rev 1",
+  "keys": [
+    "building_gathering_spot",
+    "building_hunting_lodge",
+    "building_drying_rack",
+    "building_horse_corral"
+  ],
+  "approvalAuthority": "claude",
+  "tools": {
+    "blender": "5.1.2",
+    "renderPy": "019192a993e16f7abd7f287fdb25d845c2c6ec2266fa9fb680b0698652b441cf",
+    "imageGen": "image_gen.imagegen",
+    "post": "Pillow"
+  },
+  "prompts": {
+    "concept_gathering_spot": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nCharacter/model sheet of a fictional camp gathering spot: a large woven mat under a light pole shade with baskets, gathering bags and a sorting heap. Front, side and back views, plain flat light grey background, complete structure, same scale in every view. A practical 4 metre square footprint, four peeled wood poles and plain hide lashings, a light woven mat canopy, low baskets and berry sorting heap below. Natural warm tan woven fibres, weathered grey-brown wood. No people, no garments, no feathers, no regalia, no text, no labels, no painted symbols. Generic invented everyday camp structure, not a named traditional building.",
+    "concept_hunting_lodge": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nCharacter/model sheet of a fictional camp hunting lodge: a low hide-covered arched pole lodge with a meat-and-hide rack beside it, plain bows leaning against a pole. Front, side and back views, plain flat light grey background, complete structure, same scale in every view. Entire building and side rack fit in a four metre square footprint. Plain tanned hide #D9BC8C, weathered grey-brown peeled poles, visible plain lashings, dried brown meat strips, a plain unpainted hide on the rack. Open doorway warm dark brown, never black. No people, no garments, no feathers, no regalia, no symbols, no blood or gore, no text or labels. Generic invented everyday camp structure, not a named traditional building.",
+    "concept_drying_rack": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nCharacter/model sheet of two A-frame pole racks with strips of dried meat hanging, a fictional camp drying rack structure. Front, side and back views, plain flat light grey background, full structure, the same scale in every view. Two parallel horizontal peeled-wood rails each supported by A-frames at its ends, plain hide lashings at joints. Entire pair fits within a four metre square footprint. Meat strips dark warm brown and dry, no blood, no gore, no carcasses. Weathered natural grey-brown wood. No people, no garments, no feathers, no regalia, no decoration, no text, no labels.",
+    "concept_horse_corral": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nCharacter/model sheet of a round rail fence of lashed peeled wooden poles with a gap gate and a hollow wooden water trough; empty, no horses. Front, side and back views, plain flat light grey background, full structure, same scale in every view. Round enclosure fits a four metre square footprint. Two horizontal rails per segment, plain visible hide lashings, blue-green water in trough, an open gap facing the viewer, natural weathered grey-brown pole wood. No people, no animals, no garments, no feathers, no regalia, no painted symbols, no text, no labels.",
+    "mat_woven": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nSeamless square hand-painted texture of plain woven mat, flat even light, no shadows, no perspective, fills the whole square, tiles on every side. Closely interlaced natural tan plant fibres with fine irregular strands, warm muted tan #D9BC8C and weathered ochre #B08A48, no decorative pattern, no symbols. 1024x1024."
+  },
+  "sourceSha256": {
+    "source/AB9-r1/build.py": "42ff547682e4e65ac39458defa8fe5dec553b89486a7274b6a5c24bef72c2351",
+    "source/AB9-r1/check_models.py": "44659a5a92210528a9090152fa461a5b7176fa7f30587486c981cbdb320fa089",
+    "source/AB9-r1/prepare.py": "9ef0ad155db4f9c293675057a6c3c6e2339a971992ef8141512eb5fef2f34b39",
+    "source/AB9-r1/render_batch.py": "a37db7f03f4a9c120f2af41f293ccc57b1cabf543ba0fc268b251bec4b7d0ae3",
+    "source/AB9-r1/preview.mjs": "8cc45fc17a96dccb3b3a1411b1bdca40e7e2193165d590b4a65b56b40efe4099",
+    "source/AB9-r1/concept_drying_rack.png": "9496ceaed3860b754a01557e7bcab93e86fc7d1b3f1b2db8a9e4f1643294f9f7",
+    "source/AB9-r1/concept_gathering_spot.png": "e5c0db98ff9ccd90342cb34800a9e5d4cfa7c16752ea89a7587a59ea177b00bd",
+    "source/AB9-r1/concept_horse_corral.png": "5c991c6c35279022e313f4ca1eb1dce9bfc9610bd8e7f9b8ca6ad130d39e39e4",
+    "source/AB9-r1/concept_hunting_lodge.png": "7d78baee720051dd58d298d3fb83308f7b715f550f0a23001ee3ad13e72c5c83",
+    "source/AB9-r1/mat_woven.png": "d28de927bd5709fc41ee9e3aba8c1a12aa7034fd59fe609ac5cd91d13c80a495",
+    "source/AB9-r1/README.md": "02654df2e507647a85b1ecdb6656e04e875fa2197426754b8732d1659053714e",
+    "source/building_gathering_spot.blend": "e2afb4a2a33dce773b0283f34c6964016decbc39cea198725e2d460722cf04c4",
+    "source/building_hunting_lodge.blend": "92ce127e6c60bca563f1d81708addcbd6788d05bf52b809c7ae79ca2d1ff73aa",
+    "source/building_drying_rack.blend": "9917b4c3afd0ace70e9dbd2f62faea5d8321a589ad1d8636a79f88cc702e59dd",
+    "source/building_horse_corral.blend": "c81dd7d2d69318b7378491e7db0acb5d36b11bcbcada03c7df21bb8cf6693fce",
+    "source/textures/wood_pole.png": "f870265b04ad5a091acd91f215aa05fe1747363c39c9c690eac914d187a91660",
+    "source/textures/hide_tanned.png": "f4ae72e99f776493c32851196386354946a6d0dafde9da0826f2fe9c37040c79",
+    "source/textures/mat_woven.png": "e9a909046380061ef4d17accc1c4a462a3b926c22c5ad82d9137f3c1c72bbf64"
+  },
+  "notes": "26 Blender frames: 5 states each, with four frames in both drying-rack finished and winter states. Four-metre square footprints and the manifest anchor are checked by camera projection. AB0 camera rotation, width-based ortho scale/shift, lighting, supersampling and shadow post reused. AB9 wrapper explicitly sets horizontal sensor fit: AUTO uses vertical fit in portrait cells, inflates the footprint by 512/384 and displaces the anchor. Shared render.py and prior art unchanged. AB0 hide/wood reused; new generated woven-mat material. Editable Blender state collections and strip sway actions retained. Empty corral: horses are runtime sprites. No tipi re-render. No installation."
+}

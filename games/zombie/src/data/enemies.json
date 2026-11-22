@@ -1,0 +1,24 @@
+{
+  "zombie": {
+    "hp": 60,
+    "vision": { "range": 4, "angle": 90 },
+    "speed": { "wander": 0.8, "investigate": 1.2, "chase": 2.2 },
+    "bite": { "damage": 15, "cooldown": 1 },
+    "loseTrack": 5,
+    "wanderRadius": 4,
+    "wanderPause": 2,
+    "hears": ["step", "shot", "lure", "alarm"]
+  },
+  "human": {
+    "hp": 80,
+    "vision": { "range": 9, "angle": 70 },
+    "farSpot": 0.5,
+    "speed": { "patrol": 1.5, "alert": 3 },
+    "gun": { "range": 8, "damage": 20, "cooldown": 1, "noise": 12 },
+    "alarm": 15,
+    "loseTrack": 5,
+    "search": 10,
+    "searchTurn": 2,
+    "hears": ["shot", "alarm"]
+  }
+}

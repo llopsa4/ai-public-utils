@@ -1,7 +1,8 @@
 import { campCentre } from '../../src/sim/map';
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { findPath, walkable } from '../../src/sim/people';
+import { findPath, removePerson, sexOf, walkable } from '../../src/sim/people';
+import { animFor, animLength, facingFrom, frameAt, personFrame, personKey, playable, tintOf } from '../../src/render/personArt';
 import { canWork, workRate } from '../../src/sim/jobs';
 import { addMessage, storeCap, type GameState, type Order, type Tile2 } from '../../src/sim/state';
 import { newGame, queueOrders, step } from '../../src/sim/tick';
@@ -15,7 +16,8 @@ function nearest(s: GameState, type: string): Tile2 {
     if (t !== type) return;
     const x = i % s.map.size;
     const y = Math.floor(i / s.map.size);
-    const d = Math.hypot(x - 24, y - 24);
+    const [cx, cy] = campCentre(s.map);
+    const d = Math.hypot(x - cx, y - cy);
     if (d < bestD) {
       bestD = d;
       best = [x, y];
@@ -35,7 +37,7 @@ function demoOrders(s: GameState): Order[] {
   return [
     { type: 'assign', ids: [a[0].id, a[1].id, a[2].id], job: 'gather', tile: berry },
     { type: 'assign', ids: [a[3].id, a[4].id], job: 'chop', tile: forest },
-    { type: 'move', ids: [a[5].id], to: [30, 30] },
+    { type: 'move', ids: [a[5].id], to: [campCentre(s.map)[0] + 6, campCentre(s.map)[1] + 6] },
   ];
 }
 
@@ -95,14 +97,16 @@ test('work rate: elders x0.5, children cannot work, hungry x0.75', () => {
 
 test('pathfinding: avoids the river, crosses by a ford, fails for water and blocked tiles', () => {
   const s = newGame(1);
-  const path = findPath(s, [0, 24], [47, 24]);
-  assert.ok(path && path.length >= 47);
+  const n = s.map.size;
+  const [cx, cy] = campCentre(s.map);
+  const path = findPath(s, [0, cy], [n - 1, cy]);
+  assert.ok(path && path.length >= n - 1);
   for (const [x, y] of path!) assert.ok(walkable(s, x, y));
-  assert.ok(path!.some(([x, y]) => s.map.tiles[y * 48 + x] === 'ford'));
+  assert.ok(path!.some(([x, y]) => s.map.tiles[y * n + x] === 'ford'));
   const river = s.map.tiles.indexOf('river');
-  assert.equal(findPath(s, [24, 30], [river % 48, Math.floor(river / 48)]), null);
-  assert.equal(findPath(s, [24, 30], [23, 23]), null, 'the fire blocks its tiles');
-  assert.deepEqual(findPath(s, [30.2, 30.1], [30, 30]), [[30, 30]]);
+  assert.equal(findPath(s, [cx, cy + 6], [river % n, Math.floor(river / n)]), null);
+  assert.equal(findPath(s, [cx, cy + 6], [s.map.fire[0] + 1, s.map.fire[1] + 1]), null, 'the fire blocks its tiles');
+  assert.deepEqual(findPath(s, [cx + 6.2, cy + 6.1], [cx + 6, cy + 6]), [[cx + 6, cy + 6]]);
 });
 
 test('a gatherer walks to the berries, works, and delivers food to the store', () => {
@@ -122,14 +126,14 @@ test('a gatherer walks to the berries, works, and delivers food to the store', (
   assert.ok(worked, 'reached the berry tile and worked');
   assert.ok(Math.abs(s.store.food - (before + 5)) < 1e-6, `delivered 5 food, store ${s.store.food}`);
   assert.equal(gatherer.carry.amount, 0);
-  assert.ok(s.map.amount[berry[1] * 48 + berry[0]] < 40, 'the berry tile lost food');
+  assert.ok(s.map.amount[berry[1] * s.map.size + berry[0]] < 40, 'the berry tile lost food');
 });
 
 test('a woodcutter fells a tile, which turns to grass, and moves to the next tree', () => {
   const s = newGame(1);
   const [cutter] = adults(s);
   const forest = nearest(s, 'forest');
-  const i = forest[1] * 48 + forest[0];
+  const i = forest[1] * s.map.size + forest[0];
   s.map.amount[i] = 0.3; // nearly bare: one short visit empties it
   queueOrders(s, [{ type: 'assign', ids: [cutter.id], job: 'chop', tile: forest }]);
   step(s, 2500);
@@ -182,4 +186,99 @@ test('elders and children stay within 3 tiles of their tipi or the fire', () => 
     const [hx, hy] = home ? [home.x + 0.5, home.y + 0.5] : campCentre(s.map);
     assert.ok(Math.hypot(p.x - hx, p.y - hy) <= 4.5, `${p.name} strayed`);
   }
+});
+
+// AC4: the sex field and the people-art picks (art/SPEC.md section 4, art/STYLE.md section 5).
+
+test('the same seed gives the same sexes; each family starts with 3 men, 3 women, an elder man and an elder woman', () => {
+  const sexes = (seed: number) => newGame(seed).people.map((p) => `${p.id}:${p.sex}`).join(',');
+  assert.equal(sexes(1), sexes(1));
+  assert.equal(sexes(1), sexes(7)); // from the id, so the seed does not change it
+  const s = newGame(1);
+  for (const f of [0, 1]) {
+    const of = (age: string, sex: string) => s.people.filter((p) => p.family === f && p.age === age && p.sex === sex).length;
+    assert.deepEqual([of('adult', 'male'), of('adult', 'female'), of('elder', 'male'), of('elder', 'female')], [3, 3, 1, 1]);
+  }
+  assert.equal(sexOf({ id: 3 }), 'female'); // a person from a save made before the field existed
+  assert.equal(sexOf({ id: 4 }), 'male');
+});
+
+test('the model key follows age and sex; children share one model', () => {
+  assert.equal(personKey({ id: 1, age: 'adult', sex: 'female' }), 'person_woman');
+  assert.equal(personKey({ id: 1, age: 'adult', sex: 'male' }), 'person_man');
+  assert.equal(personKey({ id: 1, age: 'elder', sex: 'female' }), 'person_elder_woman');
+  assert.equal(personKey({ id: 2, age: 'elder', sex: 'male' }), 'person_elder_man');
+  assert.equal(personKey({ id: 2, age: 'child', sex: 'male' }), 'person_child');
+});
+
+test('facing: 8 sectors from screen-space movement, s down and e right; a tiny move keeps the facing', () => {
+  const cases: [number, number, string][] = [
+    [0, 1, 's'], [-1, 1, 'sw'], [-1, 0, 'w'], [-1, -1, 'nw'], [0, -1, 'n'], [1, -1, 'ne'], [1, 0, 'e'], [1, 1, 'se'],
+    [2, 0.7, 'e'], [2, 1.0, 'se'], [-0.3, -2, 'n'], [0.9, -1, 'ne'],
+  ];
+  for (const [dx, dy, f] of cases) assert.equal(facingFrom(dx * 5, dy * 5), f, `${dx},${dy}`);
+  // An isometric walk one tile along +x goes down-right on screen.
+  assert.equal(facingFrom(32, 16), 'se');
+  assert.equal(facingFrom(0.01, 0.01, 'nw'), 'nw');
+});
+
+test('animations: state and job pick the animation; a model without it idles; flee walks at 1.5x', () => {
+  const s = newGame(1);
+  const p = s.people.find((q) => q.age === 'adult')!;
+  const pick = () => animFor(p, s.buildings).anim;
+  p.task = { step: 'walk', target: [1, 1], path: [[1, 1]], timer: 0, goal: 'work' };
+  assert.equal(pick(), 'walk');
+  p.carry = { res: 'wood', amount: 2 };
+  assert.equal(pick(), 'carry_walk');
+  p.carry = { res: 'wood', amount: 0 };
+  p.task = { ...p.task, step: 'flee' };
+  assert.deepEqual(animFor(p, s.buildings), { anim: 'walk', rate: 1.5 });
+  p.task = { step: 'work', target: null, path: [], timer: 0, goal: null };
+  const jobs: [string, string][] = [['chop', 'chop'], ['gather', 'gather'], ['dry', 'scrape'], ['heal', 'tend'], ['tend', 'tend'], ['scout', 'idle']];
+  for (const [kind, anim] of jobs) {
+    p.job = { kind: kind as never, building: null, tile: null };
+    assert.equal(pick(), anim, kind);
+  }
+  p.job = { kind: 'build', building: -1, tile: null };
+  assert.equal(pick(), 'idle'); // no site with its materials: wait
+  // Fighting: a drafted person whose weapon has just fired.
+  p.job = null;
+  p.task = { step: 'idle', target: null, path: [], timer: 0, goal: null };
+  p.drafted = true;
+  p.cooldown = 5;
+  for (const [society, anim] of [[null, 'strike'], ['hunters', 'shoot'], ['archers', 'shoot'], ['lancers', 'thrust']] as const) {
+    p.society = society;
+    assert.equal(pick(), anim, String(society));
+  }
+  p.cooldown = 0;
+  assert.equal(pick(), 'idle');
+  // Elders and children lack chop and the fights; they idle instead.
+  assert.equal(playable('person_elder_woman', 'chop'), 'idle');
+  assert.equal(playable('person_child', 'strike'), 'idle');
+  assert.equal(playable('person_child', 'gather'), 'gather');
+  assert.equal(playable('person_man', 'thrust'), 'thrust');
+});
+
+test('frames: loops wrap, die holds its last frame, and frame names follow pattern A', () => {
+  assert.equal(frameAt('person_man', 'walk', 0), 0);
+  assert.equal(frameAt('person_man', 'walk', 1000), 12 % 8); // 8 frames at 12 fps
+  assert.equal(frameAt('person_man', 'walk', 1000, 1.5), 18 % 8);
+  assert.equal(frameAt('person_man', 'die', 5000), 5);
+  assert.equal(animLength('person_man', 'die'), 500);
+  assert.equal(personFrame('person_woman', 'cloth', 'walk', 'ne', 5), 'person_woman/cloth/walk/ne/05');
+  assert.equal(tintOf('#7fa8d8'), 0x7fa8d8);
+});
+
+test('a death is noted in fallen so the view can play it; leaving the camp is not', () => {
+  const s = newGame(1);
+  const [a, b] = s.people;
+  a.health = 0;
+  removePerson(s, a.id);
+  removePerson(s, b.id);
+  assert.deepEqual(s.fallen, [{ id: a.id, tick: s.tick }]);
+  s.tick += 200;
+  const c = s.people[0];
+  c.health = -1;
+  removePerson(s, c.id);
+  assert.deepEqual(s.fallen, [{ id: c.id, tick: s.tick }]); // old deaths are dropped
 });

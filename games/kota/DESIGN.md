@@ -4,12 +4,12 @@ Settled decisions only ([AGENTS.md](AGENTS.md#kota-rules)); real-culture claims 
 [CULTURE.md](CULTURE.md), which is reference, not binding (user, 2026-11-18). Requests follow
 [PROMPTING.md](PROMPTING.md). The task plan is [PLAN.md](PLAN.md). Rewritten 2026-11-18 from the
 grilling session in which the user pivoted the game (18 decisions, all confirmed). Numbers, names and
-lists that are not decided here are specified in `DESIGN-m1.md` (plan task B1) and enter this file
-once the user approves them.
+milestone details are in [DESIGN-m1.md](DESIGN-m1.md), recorded as approved on 2026-11-18.
+Implementation status and later tuning are in WORKLOG.md and the current game data.
 
 Kota is a free, **Brotato-style 2D top-down arena survivor** for **smartphones and tablets** (touch,
 landscape), honouring **Dakota culture first**, with Lakota and Nakota to come later. It replaces the
-earlier isometric 3D room-chain roguelite, which is being deleted.
+earlier isometric 3D room-chain roguelite, retired on 2026-11-18.
 
 ## Premise and setting
 
@@ -93,9 +93,10 @@ A **floating joystick** for movement (either side, with the left-handed swap), a
 front view), **animated in code** (bob, squash, flip, hit flash, orbiting weapons); bosses get 2–3
 pose stills. Heroes keep their serious warrior direction. The game is built first with **placeholder
 shapes**, and art arrives in approved batches (heroes and threats, then weapons and items, then
-arenas). **Claude writes the image prompts; the user (or Codex) generates the images; Claude
-processes and installs them.** The earlier 3D models, Blender pipeline and rig are retired.
-Details: [art/STYLE.md](art/STYLE.md) and [art/PIPELINE.md](art/PIPELINE.md), both rewritten in the plan.
+arenas). **Claude writes the image prompts; Codex generates, processes and, after approval,
+installs the artwork** under the shared workflow. Existing user-generated references are retained. The earlier 3D models, Blender pipeline and rig are retired.
+Details: [art/PIPELINE.md](art/PIPELINE.md). The full 2D rewrite of [art/STYLE.md](art/STYLE.md)
+remains D1; its retired 3D sections do not govern the current game.
 
 ## Engine
 
@@ -121,7 +122,7 @@ available. No native-language voice unless a speaker records it.
 ## Delivery and software
 
 Free to play on GitHub Pages under `/games/kota/`; not published to app stores. **Free/open-source software
-only** (for example Phaser) and freely licensed assets, each recorded in [LICENSES.md](LICENSES.md).
+only** (for example Phaser) and freely licensed assets; this game keeps no LICENSES.md (user, 2026-11-20).
 
 ## Tone
 

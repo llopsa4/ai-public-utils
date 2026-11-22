@@ -73,7 +73,7 @@ test('legacy mixed holiday assignments remain readable but generation starts fre
 test('individual shift permissions and blocked weekdays/dates are enforced', () => {
   const s = fixture(1), p = s.participants[0];
   p.allowedKinds = ['night']; p.blockedWeekdays = [4]; p.blockedDates = ['2026-10-01'];
-  assert.deepEqual(ruleIssues(s, month, assignment(s), []), ['Shift type is not allowed', 'Weekday is blocked', 'Date is blocked']);
+  assert.deepEqual(ruleIssues(s, month, assignment(s), []), ['Tipus de torn no permès', 'Dia de la setmana bloquejat', 'Data bloquejada']);
   assert.equal(ruleIssues(s, month, assignment(s, '2026-10-02', 'night'), []).length, 0);
 });
 test('date blocking does not recur the next month', () => {
@@ -82,25 +82,25 @@ test('date blocking does not recur the next month', () => {
 });
 test('rest checks both adjacent dates, including month and year boundaries', () => {
   const s = fixture(1);
-  assert.ok(ruleIssues(s, month, assignment(s), [assignment(s, '2026-09-30')]).includes('Consecutive work dates'));
-  assert.ok(ruleIssues(s, month, assignment(s, '2026-10-31'), [assignment(s, '2026-11-01')]).includes('Consecutive work dates'));
-  assert.ok(ruleIssues(s, '2027-01', assignment(s, '2027-01-01'), [assignment(s, '2026-12-31')]).includes('Consecutive work dates'));
+  assert.ok(ruleIssues(s, month, assignment(s), [assignment(s, '2026-09-30')]).includes('Dies de treball consecutius'));
+  assert.ok(ruleIssues(s, month, assignment(s, '2026-10-31'), [assignment(s, '2026-11-01')]).includes('Dies de treball consecutius'));
+  assert.ok(ruleIssues(s, '2027-01', assignment(s, '2027-01-01'), [assignment(s, '2026-12-31')]).includes('Dies de treball consecutius'));
 });
 test('holiday and non-holiday monthly caps are independent and reset each month', () => {
   const s = fixture(1);
-  assert.ok(ruleIssues(s, month, assignment(s, '2026-10-10'), [assignment(s, '2026-10-03')]).includes('Monthly holiday limit exceeded'));
+  assert.ok(ruleIssues(s, month, assignment(s, '2026-10-10'), [assignment(s, '2026-10-03')]).includes('Límit mensual de festius superat'));
   const ordinary = ['2026-10-01', '2026-10-05', '2026-10-07'].map(d => assignment(s, d));
-  assert.ok(ruleIssues(s, month, assignment(s, '2026-10-09'), ordinary).includes('Monthly non-holiday limit exceeded'));
-  assert.ok(!ruleIssues(s, month, assignment(s, '2026-10-10'), ordinary).includes('Monthly holiday limit exceeded'));
-  assert.ok(!ruleIssues(s, '2026-11', assignment(s, '2026-11-07'), [assignment(s, '2026-10-03')]).includes('Monthly holiday limit exceeded'));
+  assert.ok(ruleIssues(s, month, assignment(s, '2026-10-09'), ordinary).includes('Límit mensual de dies laborables superat'));
+  assert.ok(!ruleIssues(s, month, assignment(s, '2026-10-10'), ordinary).includes('Límit mensual de festius superat'));
+  assert.ok(!ruleIssues(s, '2026-11', assignment(s, '2026-11-07'), [assignment(s, '2026-10-03')]).includes('Límit mensual de festius superat'));
 });
 test('cannot double a seat or work day and night on the same date', () => {
   const s = fixture(2);
   const day = assignment(s, '2026-10-03', 'day');
-  assert.ok(structuralIssues(s, month, assignment(s, '2026-10-03', 'night'), [day]).includes('A person cannot work two shifts on one date'));
-  assert.ok(structuralIssues(s, month, assignment(s, '2026-10-03', 'day', 0, 1), [day]).includes('Seat already occupied'));
-  assert.ok(structuralIssues(s, month, assignment(s, '2026-10-03', '24', 0, 1), [day]).includes('Seat already occupied'));
-  assert.ok(structuralIssues(s, month, assignment(s, '2026-10-01', 'day'), []).includes('Non-holidays require 24-hour duties'));
+  assert.ok(structuralIssues(s, month, assignment(s, '2026-10-03', 'night'), [day]).includes('Una persona no pot fer dos torns el mateix dia'));
+  assert.ok(structuralIssues(s, month, assignment(s, '2026-10-03', 'day', 0, 1), [day]).includes('Plaça ja ocupada'));
+  assert.ok(structuralIssues(s, month, assignment(s, '2026-10-03', '24', 0, 1), [day]).includes('Plaça ja ocupada'));
+  assert.ok(structuralIssues(s, month, assignment(s, '2026-10-01', 'day'), []).includes('Els dies laborables requereixen guàrdies de 24 hores'));
 });
 
 test('short-shift holiday allowance is two duties on separate dates, bounded by 24 hours', () => {
@@ -108,12 +108,12 @@ test('short-shift holiday allowance is two duties on separate dates, bounded by 
   const first = assignment(s, '2026-10-03', 'day'), second = assignment(s, '2026-10-10', 'night'), third = assignment(s, '2026-10-17', 'day');
   assert.equal(holidayDutyLimit(p), 2);
   assert.deepEqual(ruleIssues(s, month, second, [first]), []);
-  assert(ruleIssues(s, month, third, [first, second]).includes('Monthly holiday limit exceeded'));
-  assert(structuralIssues(s, month, { ...first, kind: 'night' }, [first]).includes('A person cannot work two shifts on one date'));
-  assert(ruleIssues(s, month, { ...second, date: '2026-10-04' }, [first]).includes('Consecutive work dates'));
-  assert(!ruleIssues(s, '2026-11', { ...third, date: '2026-11-07' }, [first, second]).includes('Monthly holiday limit exceeded'));
+  assert(ruleIssues(s, month, third, [first, second]).includes('Límit mensual de festius superat'));
+  assert(structuralIssues(s, month, { ...first, kind: 'night' }, [first]).includes('Una persona no pot fer dos torns el mateix dia'));
+  assert(ruleIssues(s, month, { ...second, date: '2026-10-04' }, [first]).includes('Dies de treball consecutius'));
+  assert(!ruleIssues(s, '2026-11', { ...third, date: '2026-11-07' }, [first, second]).includes('Límit mensual de festius superat'));
   // A retained old 24-hour duty already consumes the full holiday allowance.
-  assert(ruleIssues(s, month, second, [{ ...first, kind: '24' }]).includes('Monthly holiday limit exceeded'));
+  assert(ruleIssues(s, month, second, [{ ...first, kind: '24' }]).includes('Límit mensual de festius superat'));
   s.months[month].assignments = [first, second];
   assert.equal(totals(s, month)[p.id].holidayHours, 24);
   assert.equal(totals(s, month)[p.id].holidays, 2);
@@ -126,11 +126,11 @@ test('mixed permissions migrate to 24 hours while saved assignments remain intac
   const migrated = parseBackup(JSON.stringify(s));
   assert.deepEqual(migrated.participants[0].allowedKinds, ['24']);
   assert.deepEqual(migrated.months[month].assignments, s.months[month].assignments);
-  assert(audit(migrated, month).some(i => i.message === 'Shift type is not allowed'));
+  assert(audit(migrated, month).some(i => i.message === 'Tipus de torn no permès'));
   assert.deepEqual(exclusiveKinds(['night', 'day', 'day']), ['day', 'night']);
   assert.deepEqual(exclusiveKinds([]), []);
   assert.equal(holidayDutyLimit(migrated.participants[0]), 1);
-  assert(ruleIssues(s, month, assignment(s, '2026-10-10', 'day'), []).includes('Shift type is not allowed'));
+  assert(ruleIssues(s, month, assignment(s, '2026-10-10', 'day'), []).includes('Tipus de torn no permès'));
 });
 
 test('generation can assign two short holiday duties to each participant without exceptions', () => {
@@ -149,9 +149,9 @@ test('generation can assign two short holiday duties to each participant without
 test('audit exposes manual exceptions and stale shift structures', () => {
   const s = fixture(1), a = assignment(s); a.fixed = true; a.override = true;
   s.participants[0].blockedDates = [a.date]; s.months[month].assignments = [a];
-  assert.equal(audit(s, month)[0].message, 'Date is blocked');
+  assert.equal(audit(s, month)[0].message, 'Data bloquejada');
   a.kind = 'day';
-  assert.ok(audit(s, month).some(i => i.message === 'Non-holidays require 24-hour duties'));
+  assert.ok(audit(s, month).some(i => i.message === 'Els dies laborables requereixen guàrdies de 24 hores'));
 });
 test('workload accounts for 12/24-hour duties and holiday categories', () => {
   const s = fixture(1); s.months[month].assignments = [assignment(s), assignment(s, '2026-10-03', 'day')];
@@ -230,7 +230,7 @@ test('generation replaces stale short duties on a non-holiday without blocking',
 
 
 test('Friday allowance covers the same and adjacent calendar months in both directions', () => {
-  const s = fixture(2), message = 'Only one Friday duty per person across two consecutive months';
+  const s = fixture(2), message = 'Només una guàrdia en divendres per persona cada dos mesos consecutius';
   const october = assignment(s, '2026-10-16');
   for (const date of ['2026-09-04', '2026-10-02', '2026-11-27']) {
     assert(ruleIssues(s, month, october, [assignment(s, date)]).includes(message), date);

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { placeBuilding } from '../../src/sim/buildings';
 import { storeBlocked } from '../../src/sim/jobs';
+import { campCentre } from '../../src/sim/map';
 import { idleTask } from '../../src/sim/people';
 import { storeCap, type Building, type GameState, type Person } from '../../src/sim/state';
 import { newGame, queueOrders, step } from '../../src/sim/tick';
@@ -36,8 +37,9 @@ function loadedAdult(s: GameState, food = 10): Person {
 
 /** A site a few tiles east of the camp. */
 function site(s: GameState, type = 'gathering_spot'): Building {
-  for (let x = 30; x < 40; x++) {
-    const r = placeBuilding(s, type, x, 28);
+  const [cx, cy] = campCentre(s.map);
+  for (let x = cx + 4; x < cx + 10; x++) {
+    const r = placeBuilding(s, type, x, cy + 4);
     if (r.building) return r.building;
   }
   throw new Error('no room for a site');

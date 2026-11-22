@@ -1,0 +1,51 @@
+{
+  "batch": "AB10",
+  "revision": 1,
+  "brief": "BATCHES.md AB10 rev 1",
+  "keys": [
+    "building_healers_lodge",
+    "building_scouts_lodge",
+    "building_lancers_lodge",
+    "building_archers_lodge",
+    "building_spirit_lodge"
+  ],
+  "approvalAuthority": "claude",
+  "tools": {
+    "blender": "5.1.2",
+    "renderPy": "019192a993e16f7abd7f287fdb25d845c2c6ec2266fa9fb680b0698652b441cf",
+    "imageGen": "image_gen.imagegen",
+    "post": "Pillow"
+  },
+  "prompts": {
+    "healers_lodge": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nCharacter/model sheet of a fictional camp's healers' lodge: a domed lodge of bent poles covered in plain tanned hide and woven mats, bundles of dried plants hanging at the door (plain, generic herbs), front, side and back views, plain flat light grey background, full structure, the same scale in every view. Plain natural materials exactly: wood poles, tan hide, woven reed mats and simple rope lashings. Low 4 metre square footprint, domed 2 metre high shelter; warm dark-brown open doorway. No people, no feathers, no regalia, no symbols, no sacred objects, no text, no labels. Model reference only, no ground scenery.",
+    "scouts_lodge": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nCharacter/model sheet of a fictional camp's scouts' lodge: a low arched hide lodge with a tall plain lookout pole and a small plain cloth pennant, front, side and back views, plain flat light grey background, full structure, the same scale in every view. Plain natural materials exactly: wood poles, tan hide and rope lashings. Four metre square footprint containing a low 2 metre shelter with a 3.8 metre lookout pole beside it. Warm dark-brown open doorway, small unpatterned ochre cloth pennant. No people, no feathers, no regalia, no symbols, no sacred objects, no text, no labels. Model reference only, no ground scenery.",
+    "lancers_lodge": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nCharacter/model sheet of a fictional camp's lancers' lodge: a low arched hide lodge with a rack of exactly three plain lances beside its open doorway, front, side and back views, plain flat light grey background, full structure, same scale in every view. Plain natural materials exactly: wood poles, tan hide and rope lashings, simple grey stone lance points. Four metre square footprint containing a low 2 metre shelter; the rack and three upright lances fit inside the footprint. Warm dark-brown doorway. No people, no shields, no feathers, no regalia, no symbols, no sacred objects, no text, no labels. Model reference only, no ground scenery.",
+    "archers_lodge": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nCharacter/model sheet of a fictional camp's archers' lodge: a low arched hide lodge with a straw-bundle target on a wooden frame and a plain bow rack beside it, front, side and back views, plain flat light grey background, full structure, same scale in every view. Plain natural materials exactly: wood poles, tan hide, bound straw and simple rope lashings. Four metre square footprint containing a low 2 metre shelter; a round unpainted straw target and two self bows fit beside the shelter. Warm dark-brown open doorway. No painted bullseye, no people, no feathers, no regalia, no symbols, no sacred objects, no text, no labels. Model reference only, no ground scenery.",
+    "spirit_lodge": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nCharacter/model sheet of an invented fictional spirit lodge: a low arched lodge of pale bleached hide with a faint cool blue glow at its open doorway, front, side and back views, plain flat light grey background, full structure, same scale in every view. Plain natural materials exactly: wood poles, pale cream bleached hide and rope lashings; warm-brown interior subtly washed by faint cool light. Four metre square footprint, 2 metre high. Generic invented game shelter only: no symbols, no real sacred structure or objects, no people, no decorations, no feathers, no regalia, no text, no labels. Model reference only, no ground scenery. Restrained glow, no saturated neon or magical particles."
+  },
+  "sourceSha256": {
+    "source/AB10-r1/build.py": "2bb23f5e2dd5623ff430f451012ff2125401761882cb579042991ed6f2e5eabc",
+    "source/AB10-r1/check_models.py": "7c34ba9594698b8f3f21b175c74592ed1739cbff2d589cd807a373aa3108d560",
+    "source/AB10-r1/prepare.py": "e400efee424f745ae06ea796ca94db466001205a43a7d322de1a472ca7ce9380",
+    "source/AB10-r1/render_batch.py": "a073d5ee73153b464886e0ba3e5a2f8ba0958c210f367d33af094a6b3f9eef5d",
+    "source/AB10-r1/preview.mjs": "fcd07aa2aa153a0e1c2a2f89aeda42fa680cb7c7c7a9d8ad2ca8c3fe7ad3e2d4",
+    "source/AB10-r1/concept-archers_lodge.png": "ded586a2caa50748e73b9a9a6fa73c947522d577ad9de13c75c45f87818638bd",
+    "source/AB10-r1/concept-healers_lodge.png": "04547f8dad308fc7b94c16e38a60247413d31a969785909483a88002234381ef",
+    "source/AB10-r1/concept-lancers_lodge.png": "35daa26bf2488c6f9babc2cfd380d2458cc09ee79cbdf15fa8d8db9591a51835",
+    "source/AB10-r1/concept-scouts_lodge.png": "0c9c7dbdd8214f1285c6789ea6efe2bfcfa6fa17b23c048b83d546158ac12c0b",
+    "source/AB10-r1/concept-spirit_lodge.png": "0252ffa69d0ecac6bb27edba93210f48b86649cc4b53fce22e470b1a60baad87",
+    "source/AB10-r1/README.md": "7a03d18d9cdc638028be95895d60aa0df5261c852fc1e34ee12e1d529ea5918f",
+    "source/AB10-r1/prompts.json": "8b8f9f84baa4a3c46c7dbcb71369b4c4ccd165dae5ba32f09a4c00175b7de038",
+    "source/AB9-r1/build.py": "42ff547682e4e65ac39458defa8fe5dec553b89486a7274b6a5c24bef72c2351",
+    "source/finish_render.py": "da979e5eb13ef753c45d4b7d6191e3966f3e72fd796bcc09131fa356f5d88a9e",
+    "source/building_healers_lodge.blend": "2184f870c554c35060879aed84d132e9355a0006ad1dec97028c3ad8454ebe6c",
+    "source/building_scouts_lodge.blend": "34e1c2eea38ce013b28012a681b95ae44fcbdb8fb9903c2a2fd0a219e211b555",
+    "source/building_lancers_lodge.blend": "da413503f1baacfa20185e0827af107c6913f9d73afd4eeaf52b176f1bfdb01c",
+    "source/building_archers_lodge.blend": "4b598d6453650c92516854b63bfe04c40f7476341323314425d284568e2a5215",
+    "source/building_spirit_lodge.blend": "5fed16289338cd3f21728f0bea7b2c5fcfca61db182545709f6717a4c3b0a3cf",
+    "source/textures/wood_pole.png": "f870265b04ad5a091acd91f215aa05fe1747363c39c9c690eac914d187a91660",
+    "source/textures/hide_tanned.png": "f4ae72e99f776493c32851196386354946a6d0dafde9da0826f2fe9c37040c79",
+    "source/textures/mat_woven.png": "e9a909046380061ef4d17accc1c4a462a3b926c22c5ad82d9137f3c1c72bbf64"
+  },
+  "notes": "25 Blender frames: five lodges, five states each. Four metre footprints and the manifest anchor are checked numerically. Shared AB0 renderer, supersampling and shadow post, with AB9 horizontal sensor fit. AB9 helper definitions reused without its model-writing loop; all five models are separate packed Blender files. AB0 hide/wood and AB9 woven material reused. Pale spirit hide is desaturated from the painted hide material, with faint cool interior floor light. Dried generic herbs, plain pennant, three stone-point lances and bound unpainted straw target identify the lodges. No installation."
+}

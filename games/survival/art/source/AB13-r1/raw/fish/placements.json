@@ -1,0 +1,722 @@
+[
+  {
+    "anim": "fish",
+    "facing": "s",
+    "frame": 0,
+    "cell": [
+      0,
+      0,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "s",
+    "frame": 1,
+    "cell": [
+      162,
+      0,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "s",
+    "frame": 2,
+    "cell": [
+      324,
+      0,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "s",
+    "frame": 3,
+    "cell": [
+      486,
+      0,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "s",
+    "frame": 4,
+    "cell": [
+      648,
+      0,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "s",
+    "frame": 5,
+    "cell": [
+      810,
+      0,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "sw",
+    "frame": 0,
+    "cell": [
+      0,
+      137,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "sw",
+    "frame": 1,
+    "cell": [
+      162,
+      137,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "sw",
+    "frame": 2,
+    "cell": [
+      324,
+      137,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "sw",
+    "frame": 3,
+    "cell": [
+      486,
+      137,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "sw",
+    "frame": 4,
+    "cell": [
+      648,
+      137,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "sw",
+    "frame": 5,
+    "cell": [
+      810,
+      137,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "w",
+    "frame": 0,
+    "cell": [
+      0,
+      274,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "w",
+    "frame": 1,
+    "cell": [
+      162,
+      274,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "w",
+    "frame": 2,
+    "cell": [
+      324,
+      274,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "w",
+    "frame": 3,
+    "cell": [
+      486,
+      274,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "w",
+    "frame": 4,
+    "cell": [
+      648,
+      274,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "w",
+    "frame": 5,
+    "cell": [
+      810,
+      274,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "nw",
+    "frame": 0,
+    "cell": [
+      0,
+      411,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "nw",
+    "frame": 1,
+    "cell": [
+      162,
+      411,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "nw",
+    "frame": 2,
+    "cell": [
+      324,
+      411,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "nw",
+    "frame": 3,
+    "cell": [
+      486,
+      411,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "nw",
+    "frame": 4,
+    "cell": [
+      648,
+      411,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "nw",
+    "frame": 5,
+    "cell": [
+      810,
+      411,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "n",
+    "frame": 0,
+    "cell": [
+      0,
+      548,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "n",
+    "frame": 1,
+    "cell": [
+      162,
+      548,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "n",
+    "frame": 2,
+    "cell": [
+      324,
+      548,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "n",
+    "frame": 3,
+    "cell": [
+      486,
+      548,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "n",
+    "frame": 4,
+    "cell": [
+      648,
+      548,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "n",
+    "frame": 5,
+    "cell": [
+      810,
+      548,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "ne",
+    "frame": 0,
+    "cell": [
+      0,
+      685,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "ne",
+    "frame": 1,
+    "cell": [
+      162,
+      685,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "ne",
+    "frame": 2,
+    "cell": [
+      324,
+      685,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "ne",
+    "frame": 3,
+    "cell": [
+      486,
+      685,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "ne",
+    "frame": 4,
+    "cell": [
+      648,
+      685,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "ne",
+    "frame": 5,
+    "cell": [
+      810,
+      685,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "e",
+    "frame": 0,
+    "cell": [
+      0,
+      822,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "e",
+    "frame": 1,
+    "cell": [
+      162,
+      822,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "e",
+    "frame": 2,
+    "cell": [
+      324,
+      822,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "e",
+    "frame": 3,
+    "cell": [
+      486,
+      822,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "e",
+    "frame": 4,
+    "cell": [
+      648,
+      822,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "e",
+    "frame": 5,
+    "cell": [
+      810,
+      822,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "se",
+    "frame": 0,
+    "cell": [
+      0,
+      959,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "se",
+    "frame": 1,
+    "cell": [
+      162,
+      959,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "se",
+    "frame": 2,
+    "cell": [
+      324,
+      959,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "se",
+    "frame": 3,
+    "cell": [
+      486,
+      959,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "se",
+    "frame": 4,
+    "cell": [
+      648,
+      959,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  },
+  {
+    "anim": "fish",
+    "facing": "se",
+    "frame": 5,
+    "cell": [
+      810,
+      959,
+      162,
+      137
+    ],
+    "offset": [
+      30,
+      23
+    ]
+  }
+]

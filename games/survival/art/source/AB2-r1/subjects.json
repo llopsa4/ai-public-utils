@@ -1,0 +1,250 @@
+[
+  {
+    "key": "icon_wood",
+    "subject": "three cut oak logs"
+  },
+  {
+    "key": "icon_hides",
+    "subject": "a folded tanned hide"
+  },
+  {
+    "key": "icon_pemmican",
+    "subject": "a small hide bag with a round dried cake beside it"
+  },
+  {
+    "key": "icon_gift",
+    "subject": "a tied bundle of folded hides with a plain rust band"
+  },
+  {
+    "key": "icon_people",
+    "subject": "head and shoulders of a person with two braids, seen from behind, in silhouette-like painting"
+  },
+  {
+    "key": "icon_horses",
+    "subject": "a horse's head and neck"
+  },
+  {
+    "key": "icon_wotakuye",
+    "subject": "two hands clasped (plain, no symbols)"
+  },
+  {
+    "key": "icon_hungry",
+    "subject": "an empty wooden bowl"
+  },
+  {
+    "key": "icon_job_gather",
+    "subject": "a woven basket with berries"
+  },
+  {
+    "key": "icon_job_hunt",
+    "subject": "a plain bow and arrow"
+  },
+  {
+    "key": "icon_job_chop",
+    "subject": "a stone axe in a log"
+  },
+  {
+    "key": "icon_job_dry",
+    "subject": "meat strips on a pole"
+  },
+  {
+    "key": "icon_job_scout",
+    "subject": "a tall lookout pole with a small plain pennant"
+  },
+  {
+    "key": "icon_job_drill",
+    "subject": "two crossed plain lances"
+  },
+  {
+    "key": "icon_job_tend",
+    "subject": "a coiled rope halter"
+  },
+  {
+    "key": "icon_job_heal",
+    "subject": "a bundle of dried plain herbs"
+  },
+  {
+    "key": "icon_job_build",
+    "subject": "a stone maul and a stake"
+  },
+  {
+    "key": "icon_job_haul",
+    "subject": "a hide bundle with a tumpline"
+  },
+  {
+    "key": "icon_job_fight",
+    "subject": "a short wooden club"
+  },
+  {
+    "key": "icon_job_fish",
+    "subject": "a fishing spear and a fish"
+  },
+  {
+    "key": "icon_job_dance",
+    "subject": "two footprints in dust, side by side"
+  },
+  {
+    "key": "icon_order_move",
+    "subject": "a footprint"
+  },
+  {
+    "key": "icon_order_attack",
+    "subject": "a lance point"
+  },
+  {
+    "key": "icon_order_draft",
+    "subject": "a club raised in a hand"
+  },
+  {
+    "key": "icon_order_undraft",
+    "subject": "a club laid down on the ground"
+  },
+  {
+    "key": "icon_order_hold",
+    "subject": "a lance planted upright"
+  },
+  {
+    "key": "icon_order_defend",
+    "subject": "a round rawhide shield, plain"
+  },
+  {
+    "key": "icon_order_chase",
+    "subject": "running footprints"
+  },
+  {
+    "key": "icon_order_delete",
+    "subject": "a pulled-up stake"
+  },
+  {
+    "key": "icon_upgrade_dogs",
+    "subject": "a dog sitting"
+  },
+  {
+    "key": "icon_upgrade_bows",
+    "subject": "two plain bows"
+  },
+  {
+    "key": "icon_upgrade_healers",
+    "subject": "a healer's herb bundle and a bowl"
+  },
+  {
+    "key": "icon_upgrade_scouts",
+    "subject": "a scout's lookout pole"
+  },
+  {
+    "key": "icon_upgrade_warriors",
+    "subject": "a plain lance and a club crossed"
+  },
+  {
+    "key": "icon_upgrade_builders",
+    "subject": "a stone maul and lashing rope"
+  },
+  {
+    "key": "icon_upgrade_barricades",
+    "subject": "three sharpened stakes"
+  },
+  {
+    "key": "icon_upgrade_horses",
+    "subject": "a horse standing"
+  },
+  {
+    "key": "icon_upgrade_riders",
+    "subject": "a horse at gallop with a plain lance above it"
+  },
+  {
+    "key": "icon_upgrade_tools",
+    "subject": "a stone axe and a scraper"
+  },
+  {
+    "key": "icon_upgrade_spirits",
+    "subject": "a small pale-blue glowing wisp (invented)"
+  },
+  {
+    "key": "icon_upgrade_spirit_warriors",
+    "subject": "a translucent pale-blue figure with a lance (invented)"
+  },
+  {
+    "key": "icon_upgrade_guardian_wolves",
+    "subject": "a pale glowing wolf head"
+  },
+  {
+    "key": "icon_upgrade_bison_charge",
+    "subject": "a bison charging, dust behind it"
+  },
+  {
+    "key": "icon_upgrade_storm_caller",
+    "subject": "a swirl of grey-blue storm cloud and rain"
+  },
+  {
+    "key": "icon_season_spring",
+    "subject": "a new green shoot"
+  },
+  {
+    "key": "icon_season_summer",
+    "subject": "a tall bluestem grass head under a sun disc"
+  },
+  {
+    "key": "icon_season_autumn",
+    "subject": "a rust-red oak leaf"
+  },
+  {
+    "key": "icon_season_winter",
+    "subject": "a snow-covered branch"
+  },
+  {
+    "key": "icon_speed_pause",
+    "subject": "an open hand, palm out"
+  },
+  {
+    "key": "icon_speed_1x",
+    "subject": "one footprint"
+  },
+  {
+    "key": "icon_speed_2x",
+    "subject": "two footprints"
+  },
+  {
+    "key": "icon_speed_4x",
+    "subject": "four footprints running"
+  },
+  {
+    "key": "cursor_pointer",
+    "subject": "a plain bone-tan arrow pointer, pointing towards the upper left",
+    "hotspot": [
+      2,
+      2
+    ]
+  },
+  {
+    "key": "cursor_move",
+    "subject": "one walking footprint",
+    "hotspot": [
+      16,
+      28
+    ]
+  },
+  {
+    "key": "cursor_attack",
+    "subject": "two crossed plain wooden lances",
+    "hotspot": [
+      16,
+      16
+    ]
+  },
+  {
+    "key": "cursor_build",
+    "subject": "a plain stone-headed maul with a wooden handle",
+    "hotspot": [
+      6,
+      28
+    ]
+  },
+  {
+    "key": "cursor_invalid",
+    "subject": "a crossed-out circle in muted rust red",
+    "hotspot": [
+      16,
+      16
+    ]
+  }
+]

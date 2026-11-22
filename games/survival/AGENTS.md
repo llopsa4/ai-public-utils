@@ -27,9 +27,11 @@ the [repository instructions](../../AGENTS.md) and the shared Codex/Claude
   templates.
 - **Plan:** [PLAN.md](PLAN.md) lists the task units, easiest first, each with a model, exact reads,
   writes and a "done when".
-- **Art:** [art/PIPELINE.md](art/PIPELINE.md) (procedure) and [art/SPEC.md](art/SPEC.md) (sizes,
-  anchors, palette); the register is [art/ASSETS.md](art/ASSETS.md). Claude draws placeholders in
-  code; Codex generates final art later.
+- **Art:** the art bible [art/STYLE.md](art/STYLE.md), numbers [art/SPEC.md](art/SPEC.md), procedure
+  [art/PIPELINE.md](art/PIPELINE.md), work list [art/BATCHES.md](art/BATCHES.md), register
+  [art/ASSETS.md](art/ASSETS.md); decisions in [DESIGN-art.md](DESIGN-art.md). **Codex draws, Claude
+  never does:** Claude never draws, generates, edits or installs art and adds no new placeholder
+  drawings (new keys use grey stand-ins); Codex makes and installs all art.
 - **Pages serves committed files.** The live site is the committed `index.html` and `build/`, not the
   source. When the user asks to push and the live game should change, run `npm run publish` and commit
   its output first (the push itself still needs the user's explicit request and branch,
@@ -37,7 +39,7 @@ the [repository instructions](../../AGENTS.md) and the shared Codex/Claude
 - **Free software only;** this game keeps no LICENSES.md (user, 2026-11-19).
 - **Guides:** [DEVELOPMENT.md](DEVELOPMENT.md) (commands, layout) and [TESTING.md](TESTING.md)
   (unit and smoke tests, hand checks).
-- **Skills:** Claude's is `.claude/skills/survival-content/`; Codex's identical copy in
-  `.agents/skills/` is created when Codex starts working here.
+- **Skills:** Claude's is `.claude/skills/survival-content/`; Codex's identical copy is
+  `.agents/skills/survival-content/`; keep them identical.
 - Kota's and Adventure's rules (touch controls, style bibles, stories, staging) do not apply here,
   and their guides are not templates to copy unchanged.

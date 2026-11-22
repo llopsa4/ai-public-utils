@@ -87,9 +87,13 @@ Three tiers, unlocked with gift value plus camp size or Wotakuye:
   32 px tall, tipis about 96 px wide); camera pans with the screen edge or WASD and zooms with the
   wheel.
 - Warm hand-painted 2D sprites, natural colours, clear silhouettes.
-- Claude draws **placeholders in code** now. One **asset manifest** lists every sprite; the game loads
-  a PNG from `art/` when one exists, else the placeholder, so Codex replaces art one asset at a time.
-  Details: [art/SPEC.md](art/SPEC.md), [art/PIPELINE.md](art/PIPELINE.md).
+- **Codex draws, Claude never does** (user, 2026-11-20): the existing code placeholders stay until
+  Codex's art replaces each key; Claude adds no new placeholder drawings (new keys use grey stand-ins).
+  One **asset manifest** lists every key; the game loads `final` art, else the placeholder or stand-in.
+- Art direction settled 2026-11-20 in [DESIGN-art.md](DESIGN-art.md): hand-painted HD at 2×, the eastern
+  Dakota homeland (tallgrass prairie, lakes, woodland), 8 facings, Blender pre-rendered figures and buildings with a family-tinted cloth
+  layer. The look: [art/STYLE.md](art/STYLE.md); numbers: [art/SPEC.md](art/SPEC.md); procedure:
+  [art/PIPELINE.md](art/PIPELINE.md).
 
 ## 9. Content rules
 - A fiction: free invention of factions, spirits, allies and enemies; rival bands and the military

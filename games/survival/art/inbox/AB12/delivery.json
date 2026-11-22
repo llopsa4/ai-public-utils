@@ -1,0 +1,42 @@
+{
+  "batch": "AB12",
+  "revision": 1,
+  "brief": "BATCHES.md AB12 rev 1",
+  "keys": [
+    "person_man"
+  ],
+  "approvalAuthority": "user",
+  "tools": {
+    "blender": "5.1",
+    "renderPy": "467c058ead9ea7b1f4a2711e110e27d070987abeb46013aef65583e73137dcc1",
+    "imageGen": "AB0 concept and painted hide reused; no new generation"
+  },
+  "prompts": {
+    "person_man/concept": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:\nsoft painterly shading, rich natural material texture, warm late-summer light from the upper left,\nsoft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,\nno text.\nCharacter/model sheet of an invented everyday adult man, 1.72 m tall, believable proportions with head 1/7.5 body height, calm neutral face, skin midtone #A8704A, long black hair in two plain braids over the shoulders and thin plain hide headband, front, side and back views, neutral standing pose, plain flat light grey background, full body, the same scale in every view.\nClothing exactly: simple long-sleeved thigh-length dyed hide shirt in neutral grey #A8A8A8 with a single thin plain white/blue/rust bead band across shoulders, natural hide leggings #A97F52, dark brown moccasins #6B4A2E, plain hide belt and small pouch. Plain bead bands only. No feathers, no regalia, no text, no labels. No weapons, sacred objects, painted symbols, caricature, pure black or logos.",
+    "grass": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nSeamless square top-down hand-painted ground texture of dense tallgrass prairie seen from above in summer: tall green grasses with golden seedheads, bronze-red stems and a few small white, purple and yellow wildflowers. Flat even light, no perspective, no large objects, tiles on every side, 1024x1024. Uniform dense coverage, grass midtone #8F9B4E, sparse accents, edge and center same visual density.",
+    "hide": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nSeamless square hand-painted texture of tanned hide, flat even light, no shadows, no perspective, fills the whole square, tiles on every side. Warm light buff, #D9BC8C midtone, subtle natural nap, no seams or markings.",
+    "wood": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nSeamless square hand-painted texture of pole wood, flat even light, no shadows, no perspective, fills the whole square, tiles on every side. Fine straight vertical grain, peeled poles, midtone #8C8070; no knots or cracks.",
+    "tipi": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nModel sheet of a generic fictional camp's plain tipi, front, side and back views, on flat light grey background, same scale in every view. A cone of unpainted tanned hide on about fourteen poles with pole tips crossing above, open door flap, smoke flaps, and a softly weathered darker base. No painted symbols, no text, no labels.",
+    "panel": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nA game interface panel of tanned hide stretched in a frame of plain lashed wooden poles, stitched edges, seen straight on, even light, plain flat #00FF00 background, no text, no symbols. Square. Rectangular even silhouette, pale matte hide center suitable for dark text, corners and frame confined to outer sixth, straight and uniform edges, all four corners visible.",
+    "button": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nA small game interface button of tanned hide stretched in a thin frame of plain lashed wooden poles, stitched edges, seen straight on, even light, plain flat #00FF00 background, no text, no symbols. One button twice as wide as tall, daylight normal state, narrow even borders, level front view, all corners visible.",
+    "food": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders: soft painterly shading, rich natural material texture, warm late-summer light from the upper left, soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines, no text.\nGame icon of a haunch of roasted meat on a plain wooden board, a single painted object, three-quarter view, centred, fills about 80% of the square, plain flat #00FF00 background, readable at 16 pixels, no frame, no text."
+  },
+  "sources": {
+    "source\\AB12-r1\\build.py": "52fa3e80b0e781a7c1fd363041c70d425373388361bf880fb38a47fab6c8c946",
+    "source\\AB12-r1\\render_figures.py": "da781b1053023cf614d98f9b486bf52ecebd3649086509982b6d7fb3d66440b2",
+    "source\\AB12-r1\\finish.py": "5cfff407bf00eefc3008a62d6e912394ec2339fc1eb7c70f92f663f8e89a55f6",
+    "source\\AB12-r1\\human_rig.blend": "0c4d98ca2d26b07daba6cd2f6cd24103e77648cd8d62b2af22aa6cebdff2f79b",
+    "source\\AB12-r1\\concept_person_man.png": "002f52d977425df5ba417b8a9c9cf9d4a24d61a158aff6734c89b1617dbee0f7",
+    "source\\render.py": "467c058ead9ea7b1f4a2711e110e27d070987abeb46013aef65583e73137dcc1",
+    "source\\finish_render.py": "da979e5eb13ef753c45d4b7d6191e3966f3e72fd796bcc09131fa356f5d88a9e",
+    "source\\AB0-r1\\hide.png": "d7d56340b7e74cc9716df3f9a5fce75cd7ca70b579a276ce6f873dcf887b97ae",
+    "source\\AB12-r1\\prepare.py": "68b4e811d58f71063b07d13ebc14a39ecb5eedc1ab0ad7b80810a021507148c4",
+    "source\\AB12-r1\\preview.mjs": "0e211338f6a1003d8f9a6cca6b5eaf3bc95831db055d22dd87d68f3c6ec4b467",
+    "source\\AB12-r1\\check_rig.py": "44ad145ef2e1f6f89173006fbb954899054c711566952973653e9c284ef0c2c6",
+    "source\\AB12-r1\\README.md": "231d6e5f440a01a9b31fad3491e6362a4323ef19ddb98014f8e7865a16017516",
+    "source\\AB12-r1\\rig-checks.json": "fb54703793552855ecb9664f8bd92c4fd642428edb4c173407b593dccd3b10b9",
+    "source\\AB12-r1\\projection-checks.json": "0aad386686eb132f3a54d6779d44663e0ce73cbe28f7bd1b9426b62c3190ee76",
+    "source\\human_rig.blend": "0c4d98ca2d26b07daba6cd2f6cd24103e77648cd8d62b2af22aa6cebdff2f79b"
+  },
+  "notes": "128 walk PNGs only. AB0 approved concept and painted hide reused. Shared rig and packed materials; target-driven two-bone legs and keyed arm swing. Figure renderer extension uses horizontal sensor fit. Base includes neutral shirt and shadow; cloth is greyscale with noncloth holdouts. Isolated walk-only game preview; no installed assets or runtime code changed. AB13 adds the other actions. No approval or installation implied."
+}

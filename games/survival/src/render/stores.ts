@@ -3,7 +3,7 @@
 // pemmican for each fortieth of the camp's capacity. Visual only: it reads the state and changes nothing.
 import type Phaser from 'phaser';
 import { footprintOf, storeCap, type GameState, type Res } from '../sim/state';
-import { entry } from './manifest';
+import { applyArt, spriteFor } from './art';
 import { worldToTile } from './iso';
 
 const RESOURCES: Res[] = ['food', 'wood', 'hides', 'pemmican'];
@@ -77,17 +77,16 @@ export class StoreHover {
     }
     if (this.open !== null && this.open !== id) this.close(views);
     this.open = id;
-    view.setTexture('building_store_open');
+    applyArt(view, 'building_store_open');
     for (const res of RESOURCES) {
       const n = itemCount(s.store[res], storeCap(s, res));
       const list = this.items[res];
-      const a = entry(ITEM_KEY[res]).anchor;
       for (let i = 0; i < Math.max(n, list.length); i++) {
         if (i >= n) {
           list[i].setVisible(false);
           continue;
         }
-        const img = (list[i] ??= this.scene.add.image(0, 0, ITEM_KEY[res]).setOrigin(a[0], a[1]));
+        const img = (list[i] ??= spriteFor(this.scene, ITEM_KEY[res], 0, 0));
         const slot = itemSlot(res, i);
         img.setPosition(view.x + slot.dx, view.y + slot.dy).setDepth(view.depth + 1 + slot.depth).setVisible(true);
       }
@@ -96,7 +95,10 @@ export class StoreHover {
 
   /** The store's roof comes back and the items go. */
   private close(views: Map<number, Phaser.GameObjects.Image>): void {
-    if (this.open !== null) views.get(this.open)?.setTexture('building_store');
+    if (this.open !== null) {
+      const view = views.get(this.open);
+      if (view) applyArt(view, 'building_store');
+    }
     this.open = null;
     for (const res of RESOURCES) for (const img of this.items[res]) img.setVisible(false);
   }

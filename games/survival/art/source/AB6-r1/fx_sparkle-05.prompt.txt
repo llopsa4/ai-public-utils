@@ -1,0 +1,2 @@
+Edit the supplied base painting into frame 6 of 6 of the SAME game-effect animation. Last frame: two tiny faint glints, 40 percent canvas height above original positions. No new glints near the origin.
+Preserve the exact original canvas dimensions, framing, palette, painterly texture, lighting and subject identity. Make only a SMALL consecutive animation step. No camera motion, cropping, reframing, zoom or added objects. Maintain the same plain flat #00FF00 backing including interior holes. No text, labels, sheet, border, symbols or scene.  

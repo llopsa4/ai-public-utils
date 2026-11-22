@@ -15,7 +15,7 @@
     "guardian": { "power": "guardian_wolves", "count": 5, "ticks": 600, "hp": 40, "range": 0.7, "damage": 10, "cooldown": 10, "accuracy": 0.7, "speed": 0.16, "sight": 10 }
   },
   "powers": {
-    "bison_charge": { "speed": 0.4, "halfWidth": 1.5, "depth": 1.0, "damage": 40 },
+    "bison_charge": { "speed": 0.4, "startBefore": 24, "run": 48, "halfWidth": 1.5, "depth": 1.0, "damage": 40 },
     "storm_caller": { "radius": 5, "ticks": 200, "speedFactor": 0.4, "damagePerTick": 0.2 }
   },
   "stances": { "defendRadius": 8, "chaseSight": 10 }

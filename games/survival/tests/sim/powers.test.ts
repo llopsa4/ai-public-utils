@@ -5,6 +5,7 @@ import { addBuilding, type GameState } from '../../src/sim/state';
 import { buyUpgrade, castError, castPower, POWER_IDS, upgradeNeeds, upgradesOf } from '../../src/sim/upgrades';
 import { queueOrders } from '../../src/sim/orders';
 import { newGame, step } from '../../src/sim/tick';
+import { o } from './helpers';
 
 const UNITED = 80;
 const STEADY = 50;
@@ -18,7 +19,7 @@ function spiritCamp(): GameState {
   s.store.food = 100;
   s.store.wood = 100;
   s.store.hides = 50;
-  addBuilding(s, 'spirit_lodge', 28, 26, true);
+  addBuilding(s, 'spirit_lodge', o(28), o(26), true);
   return s;
 }
 
@@ -46,12 +47,12 @@ test('the lodge cannot be placed before the society, and costs 25 wood + 5 hides
   const s = newGame(1);
   s.store.wood = 100;
   s.store.hides = 10;
-  queueOrders(s, [{ type: 'place', building: 'spirit_lodge', at: [28, 26] }]);
+  queueOrders(s, [{ type: 'place', building: 'spirit_lodge', at: [o(28), o(26)] }]);
   step(s, 1);
   assert.equal(s.buildings.some((b) => b.type === 'spirit_lodge'), false);
   assert.equal(s.messages.at(-1)?.text, 'Needs the Spirit society.');
   s.upgrades.push('spirits');
-  queueOrders(s, [{ type: 'place', building: 'spirit_lodge', at: [28, 26] }]);
+  queueOrders(s, [{ type: 'place', building: 'spirit_lodge', at: [o(28), o(26)] }]);
   step(s, 1);
   assert.equal(s.buildings.some((b) => b.type === 'spirit_lodge'), true);
   assert.equal(s.store.wood, 75);
@@ -74,7 +75,7 @@ test('each power needs its tier 2 upgrade, United, a finished lodge and its pric
     s.wotakuye = UNITED;
     s.buildings = s.buildings.filter((b) => b.type !== 'spirit_lodge');
     assert.equal(upgradeNeeds(s, power as never), 'Needs a finished spirit lodge');
-    addBuilding(s, 'spirit_lodge', 28, 26, true);
+    addBuilding(s, 'spirit_lodge', o(28), o(26), true);
     assert.equal(buyUpgrade(s, power as never), true, power);
   }
 });

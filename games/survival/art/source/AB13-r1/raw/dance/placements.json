@@ -1,0 +1,962 @@
+[
+  {
+    "anim": "dance",
+    "facing": "s",
+    "frame": 0,
+    "cell": [
+      0,
+      0,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "s",
+    "frame": 1,
+    "cell": [
+      86,
+      0,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "s",
+    "frame": 2,
+    "cell": [
+      172,
+      0,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "s",
+    "frame": 3,
+    "cell": [
+      258,
+      0,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "s",
+    "frame": 4,
+    "cell": [
+      344,
+      0,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "s",
+    "frame": 5,
+    "cell": [
+      430,
+      0,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "s",
+    "frame": 6,
+    "cell": [
+      516,
+      0,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "s",
+    "frame": 7,
+    "cell": [
+      602,
+      0,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "sw",
+    "frame": 0,
+    "cell": [
+      0,
+      92,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "sw",
+    "frame": 1,
+    "cell": [
+      86,
+      92,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "sw",
+    "frame": 2,
+    "cell": [
+      172,
+      92,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "sw",
+    "frame": 3,
+    "cell": [
+      258,
+      92,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "sw",
+    "frame": 4,
+    "cell": [
+      344,
+      92,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "sw",
+    "frame": 5,
+    "cell": [
+      430,
+      92,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "sw",
+    "frame": 6,
+    "cell": [
+      516,
+      92,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "sw",
+    "frame": 7,
+    "cell": [
+      602,
+      92,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "w",
+    "frame": 0,
+    "cell": [
+      0,
+      184,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "w",
+    "frame": 1,
+    "cell": [
+      86,
+      184,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "w",
+    "frame": 2,
+    "cell": [
+      172,
+      184,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "w",
+    "frame": 3,
+    "cell": [
+      258,
+      184,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "w",
+    "frame": 4,
+    "cell": [
+      344,
+      184,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "w",
+    "frame": 5,
+    "cell": [
+      430,
+      184,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "w",
+    "frame": 6,
+    "cell": [
+      516,
+      184,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "w",
+    "frame": 7,
+    "cell": [
+      602,
+      184,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "nw",
+    "frame": 0,
+    "cell": [
+      0,
+      276,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "nw",
+    "frame": 1,
+    "cell": [
+      86,
+      276,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "nw",
+    "frame": 2,
+    "cell": [
+      172,
+      276,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "nw",
+    "frame": 3,
+    "cell": [
+      258,
+      276,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "nw",
+    "frame": 4,
+    "cell": [
+      344,
+      276,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "nw",
+    "frame": 5,
+    "cell": [
+      430,
+      276,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "nw",
+    "frame": 6,
+    "cell": [
+      516,
+      276,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "nw",
+    "frame": 7,
+    "cell": [
+      602,
+      276,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "n",
+    "frame": 0,
+    "cell": [
+      0,
+      368,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "n",
+    "frame": 1,
+    "cell": [
+      86,
+      368,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "n",
+    "frame": 2,
+    "cell": [
+      172,
+      368,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "n",
+    "frame": 3,
+    "cell": [
+      258,
+      368,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "n",
+    "frame": 4,
+    "cell": [
+      344,
+      368,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "n",
+    "frame": 5,
+    "cell": [
+      430,
+      368,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "n",
+    "frame": 6,
+    "cell": [
+      516,
+      368,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "n",
+    "frame": 7,
+    "cell": [
+      602,
+      368,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "ne",
+    "frame": 0,
+    "cell": [
+      0,
+      460,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "ne",
+    "frame": 1,
+    "cell": [
+      86,
+      460,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "ne",
+    "frame": 2,
+    "cell": [
+      172,
+      460,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "ne",
+    "frame": 3,
+    "cell": [
+      258,
+      460,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "ne",
+    "frame": 4,
+    "cell": [
+      344,
+      460,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "ne",
+    "frame": 5,
+    "cell": [
+      430,
+      460,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "ne",
+    "frame": 6,
+    "cell": [
+      516,
+      460,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "ne",
+    "frame": 7,
+    "cell": [
+      602,
+      460,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "e",
+    "frame": 0,
+    "cell": [
+      0,
+      552,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "e",
+    "frame": 1,
+    "cell": [
+      86,
+      552,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "e",
+    "frame": 2,
+    "cell": [
+      172,
+      552,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "e",
+    "frame": 3,
+    "cell": [
+      258,
+      552,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "e",
+    "frame": 4,
+    "cell": [
+      344,
+      552,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "e",
+    "frame": 5,
+    "cell": [
+      430,
+      552,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "e",
+    "frame": 6,
+    "cell": [
+      516,
+      552,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "e",
+    "frame": 7,
+    "cell": [
+      602,
+      552,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "se",
+    "frame": 0,
+    "cell": [
+      0,
+      644,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "se",
+    "frame": 1,
+    "cell": [
+      86,
+      644,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "se",
+    "frame": 2,
+    "cell": [
+      172,
+      644,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "se",
+    "frame": 3,
+    "cell": [
+      258,
+      644,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "se",
+    "frame": 4,
+    "cell": [
+      344,
+      644,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "se",
+    "frame": 5,
+    "cell": [
+      430,
+      644,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "se",
+    "frame": 6,
+    "cell": [
+      516,
+      644,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  },
+  {
+    "anim": "dance",
+    "facing": "se",
+    "frame": 7,
+    "cell": [
+      602,
+      644,
+      86,
+      92
+    ],
+    "offset": [
+      69,
+      51
+    ]
+  }
+]

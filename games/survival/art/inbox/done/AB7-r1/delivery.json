@@ -1,0 +1,36 @@
+{
+  "batch": "AB7",
+  "revision": 1,
+  "brief": "BATCHES.md AB7 rev 1 (2026-11-20)",
+  "keys": [
+    "ui_emblem"
+  ],
+  "externalFiles": {
+    "title.jpg": {
+      "titleSize": [
+        2560,
+        1440
+      ],
+      "mode": "RGB",
+      "bytes": 981637,
+      "quality": 92,
+      "sourceSize": [
+        1672,
+        941
+      ],
+      "emblemIdenticalToAB1": true,
+      "sha256": "c14caff877aad3fc37059a2a933066e3f800b7a72caa276add8d5305446bf1bb"
+    }
+  },
+  "tools": {
+    "imageGen": "image_gen.imagegen",
+    "pillow": "12.2.0"
+  },
+  "prompts": {
+    "title": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:\nsoft painterly shading, rich natural material texture, warm late-summer light from the upper left,\nsoft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,\nno text.\nWide landscape painting, 16:9: the camp at dusk on the tallgrass prairie beside a lake: tipis glowing from within around a central fire, oak woodland and cottonwoods along the shore, the lake reflecting a wide sky going from warm orange to deep blue, low wooded river bluffs on the horizon; no people in close-up, no text, space at the top centre for the title. Calm, warm, inviting. No text,\nno logo, no people in close-up.\nOutput a full-bleed landscape image at 2560x1440, aspect ratio exactly 16:9. A fictional everyday camp, no real named place. Natural plain unpainted tanned-hide tipis with slender wood poles, a small warm fire, fine textured prairie grasses with golden seedheads, a few tiny wildflowers, rich eastern woodland greens, gentle wooded bluffs. No symbols painted on covers, no regalia, no feathers, no ceremonial objects, no close human figures, no buildings from other settings, no mountains or desert, no pure black. The top-centre 1200x300 area of the final image must stay quiet dark dusk-blue sky, low detail, no branches, stars, clouds or bright glow crossing it, for code-drawn cream title text. Keep the horizon below that quiet area. Arrange camp and the fire in the lower-left/lower-centre, lake on the right with restrained warm reflections. Broad tranquil open sky grading from deep soft blue at the top to muted orange near the horizon. No lettering of any kind. Match the grounded painterly material detail of the existing art.",
+    "title_composition_edit": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:\nsoft painterly shading, rich natural material texture, warm late-summer light from the upper left,\nsoft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,\nno text.\nEdit the supplied wide 16:9 title landscape for its existing menu overlay. Keep the same palette, dusk sky, painting style, lake on the right, wooded bluffs, left oak trees and foreground prairie flowers. Keep the full top-centre 1200x300 region (on a 2560x1440 canvas) calm dark blue sky, no text anywhere.\nRecompose ONLY the small camp so its plain unpainted hide tipis and central fire are noticeably higher and smaller in the view, visible in a narrow horizontal band of the landscape. On the final 2560x1440 image, put the distant tipis and fire within x=90..1000 and y=625..780: tipi bodies approximately y=640..750 with a few thin pole tips above, warm fire at y=755. Place four small tipis in a loose horizontal cluster around the fire on a slightly raised grassy shore; adjust the near left shore and far tree edge naturally to accommodate this. Make the camp read clearly as a distant village, keeping generous small gaps and believable scale. The band y=625..780 is the part visible between the menu panels; the foreground below y=800 is mostly covered, so do not leave the camp there. The view should remain a beautiful natural full-bleed landscape, no rectangles or visible UI, no diagram, no annotations, no lettering. No close people, no symbols, no regalia, no ceremonial objects, no pure black. Preserve 16:9 landscape aspect.",
+    "title_position_edit": "Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:\nsoft painterly shading, rich natural material texture, warm late-summer light from the upper left,\nsoft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,\nno text.\nEdit only the position of the distant camp and the little grassy bank immediately around it in this existing 16:9 painting. Move the ENTIRE group of four tipis AND its fire UPWARD in the image by about one tenth of the total image height. The tipi roofs should begin at 44 percent of the image height and every tipi base and the fire should be at 51 percent of the total height, all strictly above the halfway-lower 54 percent line. On the supplied 1672 by 941 image, put the tipi roofs near y=414 and the bases plus fire near y=480, not down at y=575. Keep the group's horizontal position x=300..620 as it is and its current small distant scale. Adjust the nearby treeline and raised shore naturally behind and under it, but keep the water and foreground grasses below the village. Nothing belonging to the camp may remain at the old lower position. This is necessary because the existing menu covers everything below 54 percent height. Keep the sky and upper title area exactly as now, the large left oak, wooded right bluffs, sunset colours, lake reflection, painterly detail, and foreground flowers. No UI or guidelines drawn in the image. No text. No new objects, people, symbols, regalia, or ceremonial objects. Same 16:9 full-bleed landscape.",
+    "ui_emblem": "Reused byte-identically from AB1 revision 1; original generation prompt in its delivery.json."
+  },
+  "notes": "Title JPEG is delivered in the inbox, not installed as art/title.jpg. Two composition edits move the camp into the gap between existing menu panels; the initial and intermediate paintings are retained in source. The normal manifest validator checks the reused emblem; prepare.py separately checks exact 2560x1440 RGB JPEG dimensions and <=1 MB. Candidate menu previews use an isolated snapshot with the unchanged AB1 emblem. Both AB1 emblem and AB7 title require Claude review before installation."
+}

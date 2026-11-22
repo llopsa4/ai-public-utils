@@ -1,0 +1,10 @@
+{
+  "missions": [
+    {
+      "id": "m01",
+      "title": "Mission 1: the guarded yard",
+      "briefing": "Slip past the guard, open the crates and reach the extraction zone."
+    }
+  ],
+  "ending": "To be continued..."
+}

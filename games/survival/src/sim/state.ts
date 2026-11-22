@@ -9,11 +9,15 @@ import { makeRng, type RngState } from './rng';
 import type { Animal, Wild } from './animals';
 
 export const TICKS_PER_SECOND = 10;
+/** How long a death stays in `GameState.fallen`. */
+export const FALLEN_TICKS = 100;
 /** One in-game day (DESIGN-slice.md conventions). */
 export const DAY_TICKS = 1200;
 
 export type Res = 'food' | 'wood' | 'hides' | 'pemmican';
 export type Age = 'adult' | 'elder' | 'child';
+/** Picks the art model (art/SPEC.md section 4): man or woman, elder man or elder woman; children share one model. */
+export type Sex = 'female' | 'male';
 export type JobKind = 'gather' | 'hunt' | 'dry' | 'heal' | 'scout' | 'drill' | 'tend' | 'chop' | 'build' | 'haul' | 'fight';
 export type Tile2 = [number, number];
 
@@ -40,6 +44,8 @@ export interface Person {
   name: string;
   family: number;
   age: Age;
+  /** Set at spawn from the id (`sexForId`); a person saved before it existed reads it with `sexOf`. */
+  sex: Sex;
   x: number;
   y: number;
   health: number;
@@ -186,6 +192,11 @@ export interface GameState {
   animals?: Animal[];
   /** The herds' random stream and ids; absent in an older state, so read it with `wildOf`. */
   wild?: Wild;
+  /**
+   * People who died in the last `FALLEN_TICKS` ticks, so the view can play their death (art/SPEC.md section 4) and
+   * tell it from leaving the camp. Absent in an older state; not written to saves.
+   */
+  fallen?: { id: number; tick: number }[];
   /** Set once the run ends; the tick loop stops advancing. */
   result: 'won' | 'lost' | null;
   /** Tiles covered by a building footprint, indexed like `map.tiles`. */

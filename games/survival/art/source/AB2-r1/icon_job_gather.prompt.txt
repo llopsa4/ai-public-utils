@@ -1,0 +1,7 @@
+Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
+soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
+soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
+no text.
+Game icon of a woven basket with berries, a single painted object, three-quarter view, centred, fills about 80% of
+the square, plain flat #00FF00 background, readable at 16 pixels, no frame, no text.
+Simple compact silhouette with distinct large shapes. Natural materials, no pure black, no worn feathers, no ceremonial objects, no extra symbols, no decorative border. Keep every part and shadow inside an empty margin.

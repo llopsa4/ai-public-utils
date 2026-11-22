@@ -1,0 +1,2 @@
+Edit the supplied base painting into frame 7 of 8 of the SAME game-effect animation. The upper tongues sway left, about 4 percent canvas width; base fixed.
+Preserve the exact original canvas dimensions, framing, palette, painterly texture, lighting and subject identity. Make only a SMALL consecutive animation step. No camera motion, cropping, reframing, zoom or added objects. Maintain the same plain flat #00FF00 backing including interior holes. No text, labels, sheet, border, symbols or scene.  No smoke, logs, sparks, ground or stones; entire base stays exactly fixed.

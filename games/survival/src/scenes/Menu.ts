@@ -8,9 +8,13 @@ import {
   type SlotId, type SlotInfo, type SlotStorage,
 } from '../save/slots';
 import { parseSave } from '../sim/save';
+import { showCursor } from '../render/cursors';
+import { addTitle } from '../render/title';
+import { addIcon, makeSurface, palette, placeButton, textButton, UI_FONT, type Palette, type TextButton } from '../render/ui';
 
-const INK = '#f3e9d2';
-const DIM = '#cdbf9c';
+/** Text over the title picture (or the plain background): light with a dark edge, so it reads on either. */
+const LIGHT = '#f3e9d2';
+const LIGHT_DIM = '#e3d6b4';
 const CARD = { w: 360, h: 150, y: 165, gap: 20 };
 const CONTROLS = [
   'Left-click: select      Drag: box select      Shift-click: add or remove',
@@ -20,6 +24,7 @@ const CONTROLS = [
   'F1-F4: cast a bought spirit power, once a wave (the bison and the storm wait for a left-click on the map)',
   'Space: pause      1 2 3: speed 1x 2x 4x      Esc: clear the selection      Click a finished building: its upgrades',
   'WASD or arrows or the screen edge: scroll      Mouse wheel: zoom      Menu button: music on / off and volume',
+  'Minimap (top right): click or drag to look there; right-click sends the selected people to that spot',
 ];
 const REFUSED = 'That file is not a Camp Fire save, or it is from another version.';
 
@@ -41,6 +46,7 @@ export class MenuScene extends Phaser.Scene {
   /** Button centres by name, for the `?debug` hook (the smoke test clicks them). */
   private spots: Record<string, [number, number]> = {};
   private cardTexts: string[] = [];
+  private pal!: Palette;
 
   constructor() {
     super('Menu');
@@ -53,13 +59,21 @@ export class MenuScene extends Phaser.Scene {
     const store = browserStorage();
     this.storage = probe(store) ? store : null;
 
-    const text = (x: number, y: number, size: number, label: string, color = INK) =>
-      this.add.text(x, y, label, { fontFamily: 'sans-serif', fontSize: `${size}px`, color, align: 'center' }).setOrigin(0.5);
-
-    text(640, 65, 52, 'Camp Fire');
-    text(640, 112, 18, 'A few families, one fire, and the winter ahead.', DIM);
-    text(640, 405, 16, 'Controls', DIM);
-    CONTROLS.forEach((line, i) => text(640, 438 + i * 25, 15, line));
+    this.pal = palette(this);
+    showCursor(this, 'pointer');
+    addTitle(this);
+    // The title and its line sit on the picture's calm top centre; the code draws them, the picture has no text.
+    const text = (x: number, y: number, size: number, label: string, color = LIGHT, edge = true) =>
+      this.add.text(x, y, label, { fontFamily: UI_FONT, fontSize: `${size}px`, fontStyle: size >= 40 ? 'bold' : 'normal', color, align: 'center', stroke: '#1d1a16', strokeThickness: edge ? 4 : 0 }).setOrigin(0.5);
+    text(640, 65, 60, 'Camp Fire');
+    text(640, 116, 22, 'A few families, one fire, and the winter ahead.', LIGHT_DIM);
+    addIcon(this, 'ui_emblem', 430, 70, 84);
+    // The controls get their own panel, so they read over any picture.
+    makeSurface(this, 'panel', 60, 392, 1160, 250, { fill: 0x1d1a16, alpha: 0.85 });
+    const note = (x: number, y: number, size: number, label: string, color: string) =>
+      this.add.text(x, y, label, { fontFamily: UI_FONT, fontSize: `${size}px`, color, align: 'center' }).setOrigin(0.5);
+    note(640, 412, 18, 'Controls', this.pal.dim);
+    CONTROLS.forEach((line, i) => note(640, 440 + i * 24, 16, line, this.pal.ink));
 
     this.render();
 
@@ -82,7 +96,7 @@ export class MenuScene extends Phaser.Scene {
     this.cardTexts = [];
 
     if (!this.storage) {
-      this.label(640, 215, 'Saving is not available in this browser.', 18, DIM);
+      this.label(640, 215, 'Saving is not available in this browser.', 20, LIGHT_DIM, true);
       this.button('start', 640, 265, 'Start', () => this.begin(null, defaultSeed()));
       this.button('random', 640, 325, 'Random seed', () => this.begin(null, randomSeed()));
       return;
@@ -91,14 +105,14 @@ export class MenuScene extends Phaser.Scene {
     const slots = listSlots(this.storage);
     const left = 640 - CARD.w - CARD.gap;
     slots.forEach((info, i) => this.card(left + i * (CARD.w + CARD.gap), info));
-    if (this.notice) this.label(640, 340, this.notice, 15, '#ffb4a8');
+    if (this.notice) this.label(640, 350, this.notice, 17, '#ffb4a8', true);
   }
 
   private card(cx: number, info: SlotInfo): void {
     const { slot } = info;
     const top = CARD.y;
-    this.dynamic.push(this.add.rectangle(cx, top + CARD.h / 2, CARD.w, CARD.h, 0x1d1a16, 0.85).setStrokeStyle(2, 0x6b5a3a));
-    this.label(cx, top + 24, `Slot ${slot}`, 20, INK);
+    this.dynamic.push(makeSurface(this, 'panel', cx, top + CARD.h / 2, CARD.w, CARD.h, { fill: 0x1d1a16, alpha: 0.85, stroke: [0x6b5a3a, 2], origin: [0.5, 0.5] }));
+    this.label(cx, top + 24, `Slot ${slot}`, 22, this.pal.ink);
 
     const summary =
       info.status === 'filled'
@@ -107,14 +121,14 @@ export class MenuScene extends Phaser.Scene {
     this.cardTexts.push(`Slot ${slot} ${summary}`);
 
     if (this.confirming === slot) {
-      this.label(cx, top + 66, 'Delete this camp?', 17, INK);
+      this.label(cx, top + 66, 'Delete this camp?', 19, this.pal.ink);
       this.row(cx, top + 112, [
         ['yes', 'Yes', () => this.deleteSlot(slot)],
         ['no', 'No', () => ((this.confirming = null), this.render())],
       ], slot);
       return;
     }
-    this.label(cx, top + 66, summary, 16, info.status === 'filled' ? INK : DIM);
+    this.label(cx, top + 66, summary, 18, info.status === 'filled' ? this.pal.ink : this.pal.dim);
 
     if (info.status === 'empty') {
       this.row(cx, top + 112, [
@@ -136,35 +150,30 @@ export class MenuScene extends Phaser.Scene {
     }
   }
 
-  private label(x: number, y: number, label: string, size: number, color: string): void {
+  private label(x: number, y: number, label: string, size: number, color: string, edge = false): void {
     this.dynamic.push(
-      this.add.text(x, y, label, { fontFamily: 'sans-serif', fontSize: `${size}px`, color, align: 'center' }).setOrigin(0.5),
+      this.add.text(x, y, label, { fontFamily: UI_FONT, fontSize: `${size}px`, color, align: 'center', stroke: '#1d1a16', strokeThickness: edge ? 3 : 0 }).setOrigin(0.5),
     );
   }
 
-  /** Buttons side by side, centred on `cx`. */
+  /** Buttons side by side, centred on `cx`: made first, then spaced by their real widths. */
   private row(cx: number, y: number, defs: [string, string, () => void][], slot: SlotId): void {
-    const labels = defs.map(([, label]) => label);
-    const widths = labels.map((l) => l.length * 8 + 28);
     const gap = 10;
-    let x = cx - (widths.reduce((a, b) => a + b, 0) + gap * (defs.length - 1)) / 2;
-    defs.forEach(([name, label, onClick], i) => {
-      this.button(`slot${slot}.${name}`, x + widths[i] / 2, y, label, onClick, 15, 6);
+    const made = defs.map(([name, label, onClick]) => ({ name, b: this.button(`slot${slot}.${name}`, 0, y, label, onClick, 18, 5) }));
+    const widths = made.map(({ b }) => b.bg.displayWidth);
+    let x = cx - (widths.reduce((a, c) => a + c, 0) + gap * (defs.length - 1)) / 2;
+    made.forEach(({ name, b }, i) => {
+      placeButton(b, x + widths[i] / 2, y);
+      this.spots[`slot${slot}.${name}`] = [x + widths[i] / 2, y];
       x += widths[i] + gap;
     });
   }
 
-  private button(name: string, x: number, y: number, label: string, onClick: () => void, size = 24, pad = 8): void {
-    const b = this.add
-      .text(x, y, label, { fontFamily: 'sans-serif', fontSize: `${size}px`, color: '#1d1a16', backgroundColor: INK })
-      .setOrigin(0.5)
-      .setPadding(size === 24 ? 14 : 10, pad)
-      .setInteractive({ useHandCursor: true });
-    b.on('pointerover', () => b.setBackgroundColor('#ffffff'));
-    b.on('pointerout', () => b.setBackgroundColor(INK));
-    b.on('pointerdown', (p: Phaser.Input.Pointer) => p.leftButtonDown() && onClick());
-    this.dynamic.push(b);
+  private button(name: string, x: number, y: number, label: string, onClick: () => void, size = 26, pad = 8): TextButton {
+    const b = textButton(this, x, y, label, size, [size >= 24 ? 16 : 11, pad], onClick);
+    this.dynamic.push(b.bg, b.text);
     this.spots[name] = [x, y];
+    return b;
   }
 
   private begin(slot: SlotId | null, seed: number): void {

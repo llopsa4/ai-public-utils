@@ -1,0 +1,7 @@
+Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
+soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
+soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
+no text.
+A single grey glacial boulder, half sunk at its base with a few short grass blades in spring, seen from a 30-degree isometric angle, standing on the ground, soft shadow to the lower right, fully inside the frame with an empty margin, plain flat #00FF00 background, no green fringe.
+EDIT the supplied summer painting of this exact variant. A few tiny fresh-green grass blades at its base; keep the stone or stump itself identical.
+Keep the exact camera, full image dimensions, subject location, ground-contact position, trunk/branch or stone structure, object size and shadow direction. Only change seasonal growth, foliage colours and snow. Snow #F4F6F8 #E8ECEF shadow #A9B7C6. Do not recenter or zoom, do not fill empty margins, do not add any surrounding scene or platform. The entire background stays uniformly #00FF00, including the holes between branches. No text, no numbers, no symbols, no people, no pure black.

@@ -56,9 +56,9 @@ test('moving respects saved adjacent months and holiday caps', () => {
   const state = fixture(), source = duty(state, '2026-10-05');
   state.months[month].assignments = [source];
   state.months['2026-09'] = { ...newMonth(), assignments: [duty(state, '2026-09-30')] };
-  assert.throws(() => movedAssignments(state, month, slotKey(source), target('2026-10-01')), /Consecutive/);
+  assert.throws(() => movedAssignments(state, month, slotKey(source), target('2026-10-01')), /consecutius/);
   state.months[month].assignments.push(duty(state, '2026-10-10'));
-  assert.throws(() => movedAssignments(state, month, slotKey(source), target('2026-10-17')), /holiday limit/);
+  assert.throws(() => movedAssignments(state, month, slotKey(source), target('2026-10-17')), /Límit mensual de festius/);
 });
 
 test('short duties reveal empty holiday targets and establish a split only on commit', () => {
@@ -80,8 +80,8 @@ test('short duties cannot overlap an occupied 24-hour place or switch day/night'
   const state = fixture(), source = duty(state, '2026-10-03', 'day');
   state.participants[0].allowedKinds = ['day'];
   state.months[month].assignments = [source, duty(state, '2026-10-10', '24', 0, 1)];
-  assert.throws(() => movedAssignments(state, month, slotKey(source), target('2026-10-10', 'day')), /occupied/);
-  assert.throws(() => movedAssignments(state, month, slotKey(source), target('2026-10-10', 'night', 1)), /shift type/);
+  assert.throws(() => movedAssignments(state, month, slotKey(source), target('2026-10-10', 'day')), /ocupada/);
+  assert.throws(() => movedAssignments(state, month, slotKey(source), target('2026-10-10', 'night', 1)), /tipus de torn/);
 });
 
 test('coverage distinguishes legitimate mixed holidays from overlaps, including simultaneous gaps', () => {
@@ -107,7 +107,7 @@ test('Friday moves remove the source allowance and reject other same or adjacent
     const otherMonth = date.slice(0, 7);
     if (!s.months[otherMonth]) s.months[otherMonth] = newMonth();
     s.months[otherMonth].assignments.push(duty(s, date));
-    assert.throws(() => movedAssignments(s, month, slotKey(source), target('2026-10-16')), /Friday/);
+    assert.throws(() => movedAssignments(s, month, slotKey(source), target('2026-10-16')), /divendres/);
     assert(!moveTargets(s, month, slotKey(source)).some(a => a.date === '2026-10-16'));
     s.months[otherMonth].assignments.pop();
   }
