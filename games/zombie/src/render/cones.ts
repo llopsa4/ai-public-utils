@@ -37,6 +37,13 @@ export function conePolygon(g: Grid, v: Viewer, range = v.range, rays = 14): P[]
   return pts;
 }
 
+/** A zombie's sight circle (DESIGN §7): all round, clipped by walls and trees like a cone. */
+export function sightPolygon(g: Grid, x: number, y: number, radius: number): P[] {
+  const pts = conePolygon(g, { x, y, facing: [1, 0], range: radius, angle: 360 }, radius, 28);
+  pts.shift(); // the apex is the centre; the ring of ray ends is the outline
+  return pts;
+}
+
 /** A circle of `radius` tiles as a polygon. */
 export function circlePoints(cx: number, cy: number, radius: number, n = 28): P[] {
   const pts: P[] = [];

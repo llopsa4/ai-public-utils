@@ -12,7 +12,10 @@
     "test": "node --import tsx --test \"tests/**/*.test.ts\"",
     "build": "vite build",
     "publish": "node scripts/publish.mjs",
-    "e2e": "playwright test"
+    "art:pack": "node scripts/art/pack.mjs",
+    "art:standins": "node scripts/art/standins.mjs",
+    "e2e": "playwright test",
+    "balance": "node --import tsx scripts/balance.ts"
   },
   "dependencies": {
     "phaser": "3.90.0"
@@ -20,6 +23,7 @@
   "devDependencies": {
     "@playwright/test": "1.64.1",
     "@types/node": "26.6.6",
+    "pngjs": "7.0.0",
     "tsx": "4.23.15",
     "typescript": "7.0.2",
     "vite": "8.3.5"

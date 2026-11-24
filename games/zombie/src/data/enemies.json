@@ -1,13 +1,14 @@
 {
   "zombie": {
     "hp": 60,
-    "vision": { "range": 4, "angle": 90 },
+    "sight": { "radius": 3, "crouchRadius": 2 },
     "speed": { "wander": 0.8, "investigate": 1.2, "chase": 2.2 },
     "bite": { "damage": 15, "cooldown": 1 },
     "loseTrack": 5,
     "wanderRadius": 4,
     "wanderPause": 2,
-    "hears": ["step", "shot", "lure", "alarm"]
+    "reachRadius": 2,
+    "hears": ["step", "shot", "lure", "alarm", "can"]
   },
   "human": {
     "hp": 80,

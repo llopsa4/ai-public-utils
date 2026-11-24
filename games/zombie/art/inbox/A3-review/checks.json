@@ -1,0 +1,40 @@
+[
+  {
+    "path": "art/inbox/A3/scout/idle_se_0.png",
+    "bounds": [
+      23,
+      6,
+      41,
+      56
+    ],
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      32,
+      56
+    ],
+    "palette": true,
+    "binaryAlpha": true
+  },
+  {
+    "path": "art/inbox/A3/scout/idle_ne_0.png",
+    "bounds": [
+      24,
+      6,
+      40,
+      56
+    ],
+    "cell": [
+      64,
+      64
+    ],
+    "anchor": [
+      32,
+      56
+    ],
+    "palette": true,
+    "binaryAlpha": true
+  }
+]

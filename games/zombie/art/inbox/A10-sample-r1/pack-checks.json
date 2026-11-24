@@ -1,0 +1,16 @@
+{
+  "portrait_fighter_neutral": {
+    "size": [
+      256,
+      256
+    ],
+    "sha256": "15638e07a967633e21768ea359b72205e468887cda8b327228de09954682cb63"
+  },
+  "portrait_scout_neutral": {
+    "size": [
+      256,
+      256
+    ],
+    "sha256": "ef1dcd67dfb423ff7bf224731bbc65cf3e9f49a5e49d71e43c73f47e2abe1528"
+  }
+}

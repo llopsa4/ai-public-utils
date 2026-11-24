@@ -14,11 +14,15 @@ Play: <https://llopsa4.github.io/ai-public-utils/games/zombie/>. Local developme
 
 | Input | Action |
 |---|---|
-| Left-click / drag | select survivor / box-select |
-| Right-click | move (attack when on an enemy) |
+| Left-click | with a survivor selected: on a survivor selects them, on an enemy attacks, on an object (stove, crate, broken door or window) uses it, on the ground walks |
+| Double left-click on the ground | run |
+| Drag | box-select |
+| Right-click | cancels a pending V / L / B / T / X command (gives no orders) |
 | C | crouch / stand |
 | V, then click | watch: hold position facing the click; attack any enemy entering the cone |
 | F / G | Fighter: silent takedown / carry body |
 | L, then click | Scout: throw a noise lure |
 | Space | pause (cones stay visible) |
+| Esc | cancels a pending command, otherwise opens the pause menu (Resume, Restart, Options, Controls, Quit); losing window focus opens it too |
+| R | asks "Restart?" (Enter or Y restarts, Esc cancels) |
 | WASD / screen edge, wheel | pan, zoom |

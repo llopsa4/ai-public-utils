@@ -9,15 +9,40 @@ export function clampCenter(cx: number, cy: number, b: Bounds): [number, number]
   return [Math.min(b.w, Math.max(0, cx)), Math.min(b.h, Math.max(0, cy))];
 }
 
-export function clampZoom(z: number, min: number, max: number): number {
-  return Math.min(max, Math.max(min, z));
+/**
+ * Next zoom stop in a direction (`dir` > 0 zooms in, < 0 out). From a value between stops it goes to
+ * the nearest stop beyond it; at either end it stays.
+ */
+export function stepZoom(z: number, dir: number, steps: readonly number[]): number {
+  const sorted = [...steps].sort((a, b) => a - b);
+  if (dir > 0) return sorted.find((s) => s > z + 1e-9) ?? sorted[sorted.length - 1]!;
+  if (dir < 0) return [...sorted].reverse().find((s) => s < z - 1e-9) ?? sorted[0]!;
+  return z;
 }
 
-/** One wheel notch: scrolling up (negative deltaY) zooms in. */
-export function zoomStep(z: number, deltaY: number, step: number, min: number, max: number): number {
-  if (deltaY === 0) return z;
-  const next = Math.round((z + (deltaY < 0 ? step : -step)) * 100) / 100;
-  return clampZoom(next, min, max);
+/** The stop closest to `z` (used for the start zoom). */
+export function snapZoom(z: number, steps: readonly number[]): number {
+  return steps.reduce((best, s) => (Math.abs(s - z) < Math.abs(best - z) ? s : best));
+}
+
+/**
+ * Wheel input to whole zoom steps. A mouse notch is ~100 px and a touchpad sends many small deltas, so
+ * deltas add up until they are worth one step. Returns the new accumulator and the signed step count
+ * (positive zooms in: scrolling up has a negative `deltaY`). `deltaMode` 1 is lines, 2 is pages.
+ */
+export function wheelSteps(acc: number, deltaY: number, deltaMode: number, threshold: number): [number, number] {
+  const px = deltaY * (deltaMode === 1 ? 33 : deltaMode === 2 ? 400 : 1);
+  if (px === 0) return [acc, 0];
+  const base = Math.sign(acc) === Math.sign(px) ? acc : 0; // a change of direction starts over
+  const total = base + px;
+  const n = Math.trunc(Math.abs(total) / threshold);
+  const left = total - Math.sign(total) * n * threshold;
+  return [left, n === 0 ? 0 : -Math.sign(total) * n];
+}
+
+/** True when the pointer is inside the w x h canvas (the browser keeps the last position after it leaves). */
+export function pointerInside(px: number, py: number, w: number, h: number): boolean {
+  return px >= 0 && py >= 0 && px < w && py < h;
 }
 
 /** Direction (-1, 0 or 1 per axis) of edge scrolling for a pointer inside a w x h view. */

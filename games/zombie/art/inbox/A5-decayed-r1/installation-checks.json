@@ -1,0 +1,959 @@
+{
+  "approvedBatch": "A5-decayed-r1",
+  "approvedOn": "2026-11-24",
+  "frames": [
+    {
+      "body": "zombie_decayed_a",
+      "file": "bite_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\bite_ne_0.png",
+      "sha256": "782c2ee073451420f5ce9ab6b207fdf56324d846d69bb5b6eabe1bdb68e9ea77"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "bite_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\bite_ne_1.png",
+      "sha256": "9bfb1ce41137045909174fb9bde69880786b5710ee1c06e9e42a5ef199452701"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "bite_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\bite_ne_2.png",
+      "sha256": "5de091f96cfaf0a415945df7ea801578bd082d676a678825767085893f5cf51a"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "bite_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\bite_se_0.png",
+      "sha256": "09094334fe6c0315546cf1f6bc38e3c0c0bdfe906fec6916f1f206f70ef84892"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "bite_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\bite_se_1.png",
+      "sha256": "2e4ea3061df2cb783316d5e747a9e2f0cfc6ac19a3b26102701503b11484d4d0"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "bite_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\bite_se_2.png",
+      "sha256": "d8c81c3c4231a9073de911bb248978e18a757b8257658882a386c8178f261534"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "death_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\death_ne_0.png",
+      "sha256": "ffd9ccd98af0da620bacd4e9a65093021bb2f944fe75518f6bc8eca4d4d91d95"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "death_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\death_ne_1.png",
+      "sha256": "c6dbf1d04a126db3ac53f1c2bb74c0a01fe600a64b5ae1886966dfa403ccc3a0"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "death_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\death_ne_2.png",
+      "sha256": "2006deba0cbc84e33f5065a8cc12ef6e935c69ab657f7273550db0cb84b0ca05"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "death_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_a\\death_ne_3.png",
+      "sha256": "17b6b5db08540949e98c5155eaee6fca15506edb3b513da5e6547d313044796b"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "death_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\death_se_0.png",
+      "sha256": "a5107db7e7d6a84bd9c08d1559b80bc4cc6a718c9a14c335acbf94c3cc6b5f2a"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "death_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\death_se_1.png",
+      "sha256": "ddc663fc24704f841d68325208109856e4157d263fa2944e20a37d6fff89ee0a"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "death_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\death_se_2.png",
+      "sha256": "108acb48f326d393838b64d8bb68032b1ba8a1495aedeffc7ae3eaca4e41169c"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "death_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_a\\death_se_3.png",
+      "sha256": "770b741f9e563b974f2265210a505d456688a9e3a5816fe473e6d38656a34d78"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "idle_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\idle_ne_0.png",
+      "sha256": "ee6d0aa8ba0184aad524a7fc7199e4d0cd2efc6b4d4a16a592c08092e6168096"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "idle_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\idle_se_0.png",
+      "sha256": "49369e0fdaa567586906487d43b30af23ac4645f5e000eeaae12cbe3d07bc616"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_ne_0.png",
+      "sha256": "498c3d8e3e49ccf5dabcf5e08eb34ed8fb30cea2bcec3317dce964245b44e4cf"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_ne_1.png",
+      "sha256": "8710984b17d75f9f313c110180a77312686d83d2eb429b5c1ec80231442b0d67"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_ne_2.png",
+      "sha256": "6f9f12a0f87d9ff7202489e71d65d183de33ae041085a94625809c3675fe7209"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_ne_3.png",
+      "sha256": "c807da7bb45a054d20f3f0329d057dfd4543d8213357a48de659518606632a0c"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_ne_4.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_ne_4.png",
+      "sha256": "3f4a0c247e753a570386ae882688482e9de39ba23e9a9e1f630a19240efedcb2"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_ne_5.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_ne_5.png",
+      "sha256": "7ba7f5105300fb76dc36ec6c0777d934e1c906190d513946856a3e35e1b746b6"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_se_0.png",
+      "sha256": "26989fc8979346c59238c141d45d65a89b449657a0b9ce6cba0c52502cf7360e"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_se_1.png",
+      "sha256": "231fb53b97c5c783772f2512759576650c2df2ede0f21786e1980ad2b26ac052"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_se_2.png",
+      "sha256": "39015836aecc27570295f9519364d2a2afdaa1893e0d5888ee191a590c976b4b"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_se_3.png",
+      "sha256": "7a80b6981d6f968d8668f22e9f856fd267bfa5d8f0ed56f4e38c9c83d924c79f"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_se_4.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_se_4.png",
+      "sha256": "e6e9e92b2cbf462030ece9953a3c15d2657303354d66e2d9c37c8011651fc02e"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "lurch_se_5.png",
+      "installed": "art\\frames\\zombie_decayed_a\\lurch_se_5.png",
+      "sha256": "cf06cee6cb68b045e7b7900d5ffe7f66402ba357215f4f1870a22c6adff687b7"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_ne_0.png",
+      "sha256": "34edfb0ccc4f802a1f6dd9a7e415c68f917c506015f938ad6e8b60b515282486"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_ne_1.png",
+      "sha256": "4ad47946d28d9a9a231606d47fb87f8d2525caca65d5e40c37db06e2e718da2c"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_ne_2.png",
+      "sha256": "ccafb1adc5b767a960fa01b92f2f93917375df2a81cb7e2f86279844e4b5f12a"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_ne_3.png",
+      "sha256": "4b09beef446f0b8ed214b97f7f3b710beb14afca978e7d2883572b1789f11df9"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_ne_4.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_ne_4.png",
+      "sha256": "b6c7ee3b1747222099b85483a0b5bcf9ef34cebc7b10a7de6184d9e62cf84361"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_ne_5.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_ne_5.png",
+      "sha256": "5dca7acef3b1bf62d83c7e8a8bb0d6b0a988d666d1586206e3327144f8d597e6"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_se_0.png",
+      "sha256": "ae0bf6e174c4737cc4f2b2e6f67f3c58d99fdfbef5ac5281235a1bd9863314f8"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_se_1.png",
+      "sha256": "cdce9a37c1761660a1a13681e0e2e627a29e9486ea79de2d7a5cef50da45fde7"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_se_2.png",
+      "sha256": "aa8235abc36a8442a2add7e58ea0558bbbd9a4f1cc8453ebbc8a24e6013141f3"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_se_3.png",
+      "sha256": "280ef132f87f114b7508aebaa4e14f0e175a2e93e3c5296a2b9de53fa79025e3"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_se_4.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_se_4.png",
+      "sha256": "60fb9f93ab83dc4aa39e149bf994bb9205b598fb9c2d32b97992175e4d4476d2"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "reach_se_5.png",
+      "installed": "art\\frames\\zombie_decayed_a\\reach_se_5.png",
+      "sha256": "86324025a10e345898203227b5390278034a3fe78450ec4628598abe45e9125f"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_ne_0.png",
+      "sha256": "3b027dff6a0930700a3067ddeddc555e6645f05898250151b77ae2b8d15d8dcb"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_ne_1.png",
+      "sha256": "8d24609bc1c629fb8ab2697332d7bfdc264654191aee43492195b8500fb38119"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_ne_2.png",
+      "sha256": "c632b38b4d1362f0d3c9275e5414402db1496a96733f038ccf129568dadd52a3"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_ne_3.png",
+      "sha256": "a86d3265899e3d9e6a027ed770fb5733cdc6af312ec2724d6feee7a49f1fb1ae"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_ne_4.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_ne_4.png",
+      "sha256": "5fe651f572e12e393e44e4495501831eed55a25bb9910aeeaf943bbe9d9a2de4"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_ne_5.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_ne_5.png",
+      "sha256": "22697dba7c2a9f97a45feae4967f5066a7bcc91485de68859041ffc832e22866"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_se_0.png",
+      "sha256": "3b88ddd85077836acc5b501378d418eb6787f0075639acdf71e922747044eea2"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_se_1.png",
+      "sha256": "159f184c723b54d92d3423766e59b5321e5f40a1220665708b68358f754059c4"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_se_2.png",
+      "sha256": "9fa058577c1c0e4a82d1f013eb5fe777b4a30a48fd69fd241eb36645eb9b23c1"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_se_3.png",
+      "sha256": "abff071efbd2790ce83a6d14e7638798290d9a7d764f3403f66baac4a6ccc2ae"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_se_4.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_se_4.png",
+      "sha256": "373ead6d530022b26cab84e4f136a780ddfafc6741dfef5f227fa0e3af74a631"
+    },
+    {
+      "body": "zombie_decayed_a",
+      "file": "shamble_se_5.png",
+      "installed": "art\\frames\\zombie_decayed_a\\shamble_se_5.png",
+      "sha256": "26c7f42f9c91e7175f2d21151a5e2612fedc5af15d5c66181ce5e34d9348a074"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "bite_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\bite_ne_0.png",
+      "sha256": "1db9bd594df094d1d92ea3a26b7f707bc2d7a65cf9c3e08b89fbba29ea18422f"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "bite_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\bite_ne_1.png",
+      "sha256": "d87c5ae4a70c7e30bd45e0d870e92a6b39106495022b52f67c96b09442ce7f9a"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "bite_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\bite_ne_2.png",
+      "sha256": "8a21294c0479ab5793b933a4f9b4d1c5292fbdce34c10a629b14f443c0938f40"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "bite_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\bite_se_0.png",
+      "sha256": "a3acd391e6379818a7ab3d8d5eeea9b707458adee2c2c846df8b3ffbd3ab94d0"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "bite_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\bite_se_1.png",
+      "sha256": "184f3dc29b344c5ca2a050518907fb6772f2a55039e1429f7f558f1a6820eab6"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "bite_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\bite_se_2.png",
+      "sha256": "7f91313886a1e9c9d20a582768f456e70cf17f94461bf706a1d32bb2e47f1435"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "death_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\death_ne_0.png",
+      "sha256": "60b9857bcb2cdefe316d7fb779ad057d9c15b04fbdb5e464ca39cb5a16e5bddc"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "death_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\death_ne_1.png",
+      "sha256": "cef4520f01950cb909b6e2cd0ede5f7ca02263279ca991768a6868f00b1998b3"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "death_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\death_ne_2.png",
+      "sha256": "ca87a9b65cd62b72b275e49ac9f6ce5870d71604f658ef238c2f031c69337581"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "death_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_b\\death_ne_3.png",
+      "sha256": "eaafc2f9869bfa534334d39f6ca9d5275cf7e360bd16b7f6736e6eaf172b9fb2"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "death_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\death_se_0.png",
+      "sha256": "f9b8d902c667bd922a9518cc12c72fe472dfc2df58ac03618d2a7665bf1e4d44"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "death_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\death_se_1.png",
+      "sha256": "88fc2c4ca6cec3557005c21aeebf76660118ee1bee0b31b962a7af878fadebf6"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "death_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\death_se_2.png",
+      "sha256": "32aded31d3df5d9b591d2fdf482b9392b34b2ef37eeb7ebd6da51b014aa7993a"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "death_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_b\\death_se_3.png",
+      "sha256": "3e584f897d671c72e7223cac876f13286203279a1cc278a6b020a4de12e92e5c"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "idle_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\idle_ne_0.png",
+      "sha256": "dea712f6e23b5138a4b079da4ef5f48e9948efc3ccd3b406017ce23119f77bec"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "idle_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\idle_se_0.png",
+      "sha256": "f520cc949ca4df567f96a2c326cb9211a3b28871470cb32c2f53f6d3244d3421"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_ne_0.png",
+      "sha256": "6a9ac62640cb67c6b1e5b566bff922d2ae063092fcfb10b23ba4d53284c41ce6"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_ne_1.png",
+      "sha256": "29f1e22a8a5c9e68413fec1f4b46f1105b5d18be73599f04d002193882f058a0"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_ne_2.png",
+      "sha256": "eb1518694743455bd1113aed16ed644de603281b8a551dfa9dd30ed03f26f728"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_ne_3.png",
+      "sha256": "5ed0504d0a25e0ec44abcfdb0f777d495d25bc1855782156c07d68f3415d1b62"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_ne_4.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_ne_4.png",
+      "sha256": "29486521505c0102771a9ba73340653b205fffddbe06963a6c0310ef0616c222"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_ne_5.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_ne_5.png",
+      "sha256": "97698eb398413f68eebebd51dc5c4d771dc23530fb0d0d2760cebdb3e201fa94"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_se_0.png",
+      "sha256": "98d12f8220de1f972aec1277c76dddc1758161865213679110e80b26b000bba2"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_se_1.png",
+      "sha256": "7efdac9c8abf3e099e54e3c9f5349c93edfbc57a029f692427e7ef8ac5880311"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_se_2.png",
+      "sha256": "45ae79f22d0ef59bbe7c8ac4bbe8ce117a97431cd124bd6de8a9ccf05c7b97d3"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_se_3.png",
+      "sha256": "8bd44d86558e81241c1f501c0bda954e73be706136bac6c50289576ebe1fd2db"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_se_4.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_se_4.png",
+      "sha256": "4eb63a4f04b81f45c9ff6f078c6868b4a0a3e0bf6e90759ad358362a66bf3a21"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "lurch_se_5.png",
+      "installed": "art\\frames\\zombie_decayed_b\\lurch_se_5.png",
+      "sha256": "c3a02233cfb8b0759d44762e785064a8fc04270d3281e18c8614b3ccbf263c8d"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_ne_0.png",
+      "sha256": "a47ce97a7ddaa026c1c6328763fb027ccc20dc42c5e2a377a8ced8fc81a868b6"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_ne_1.png",
+      "sha256": "c5f4ae20cb198ca481684a195b9661d9111aac26509f327f61734d7663ab2a83"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_ne_2.png",
+      "sha256": "b2e7b7d25ee7d055ac4864cc10b2bc54ad5070475369e62eafa8d7f961a34f54"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_ne_3.png",
+      "sha256": "52ec202d5544fd1bb38aafd9bba7dc73041a8a79d11c3a7d183fc629d3ccb7ab"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_ne_4.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_ne_4.png",
+      "sha256": "31699cd376749e441eb4376a2ebefd1be0ada6bf8484d2390fe892ea1134ba1d"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_ne_5.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_ne_5.png",
+      "sha256": "76ada4a4e05c098d0f8d936786dede4debc9ba70a860a7f6f29814b8ae0548f9"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_se_0.png",
+      "sha256": "93241b45b814b559fa2c345ae27cb4b05502e28c737e636144441a8d952712b0"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_se_1.png",
+      "sha256": "010d483c1bbbd3fd85b34b677d2900321dd08acd14813e786af09a15622b3078"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_se_2.png",
+      "sha256": "1c3bc23405492bc664add8feebb2230723a91e8a0bb1cf2edb6921ab788ab7a2"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_se_3.png",
+      "sha256": "06a7c28401cbcad3f2ce9064c3fd38b11ae45e3a75b424d57107101baf66585e"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_se_4.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_se_4.png",
+      "sha256": "67598099f027ac7f04b036054ece4cd3e759a7c44ac227991b1ca536ba6baee8"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "reach_se_5.png",
+      "installed": "art\\frames\\zombie_decayed_b\\reach_se_5.png",
+      "sha256": "9e7c340282f0956a34729f825edfb5ea7ff60acb4f19b636d36bcaa97337ee1f"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_ne_0.png",
+      "sha256": "ab6dedac3bff2537e216c5aa9ed0f7453643cab802d987db95b581ffcac4c694"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_ne_1.png",
+      "sha256": "2e126492691e7bd8259f63268b87365745a06548d2c8fe4f45c4dbf6dd16fcfa"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_ne_2.png",
+      "sha256": "eb0198b272a2d1dd1eb1be2e67f5722675c494c3bb9aa9e72733a12e32ca1443"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_ne_3.png",
+      "sha256": "c196b34e816d775938bc5a46411bcdd7720cb91357c8f4dec43148c0b724960b"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_ne_4.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_ne_4.png",
+      "sha256": "41a4b2a54db1fdfda2999e908b57850b3007da92bf5a20296c8e489ef990ac09"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_ne_5.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_ne_5.png",
+      "sha256": "10c8f3bdff3fb79e9c7fb43b2fbaf9d3db5f03549f9c301f42b37d1815fa6a43"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_se_0.png",
+      "sha256": "21e67fc41717328ff6858ec4c0263f6719830424e380568b3c0c2adc78257f45"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_se_1.png",
+      "sha256": "a225ed6f5560fbd9d3e89f5cae07854258e9d8f9128a16ba5f062e8b7dbbf60a"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_se_2.png",
+      "sha256": "9291fe856771f3a09d91af9116c8ec02654890bd6652aff6b55a6991878cac9f"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_se_3.png",
+      "sha256": "bea52544f716016cd73b6942def95bd28c0ec5198014c9655e8d49f97e0ddc7f"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_se_4.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_se_4.png",
+      "sha256": "149bffefe2f8f5e5f4e8cedbd7d61ae5ac5e40faae0d92815fbbd50b329efa13"
+    },
+    {
+      "body": "zombie_decayed_b",
+      "file": "shamble_se_5.png",
+      "installed": "art\\frames\\zombie_decayed_b\\shamble_se_5.png",
+      "sha256": "0dab8faa70c370f8cc4ae58008a7ba56678f978b579fa1720637c556e900b315"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "bite_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\bite_ne_0.png",
+      "sha256": "46b597f54113ae21f8c39a12998aae4da00729ba617b4bb8180b8c14317c35e2"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "bite_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\bite_ne_1.png",
+      "sha256": "b4faabec32480e7c9df3061bc9ea5149fc24f47204497e2e292d53858d699afd"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "bite_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\bite_ne_2.png",
+      "sha256": "e747a6aef8d76ba2d1cb48da6ed1f26e484f303c560b656064e2fffc2620cef0"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "bite_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\bite_se_0.png",
+      "sha256": "cf181a321aa5a5526ba8abfac15e56e9e262e96c975d2c126ec5005f4b03004c"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "bite_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\bite_se_1.png",
+      "sha256": "505c18dc15cf91049473a6b36217fdafdd768a6065070f34d0023a9e3a83ac2e"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "bite_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\bite_se_2.png",
+      "sha256": "dbbe655fae084504ddc3074e89b572e11c393fe310dcb0696a88798773fc6015"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "death_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\death_ne_0.png",
+      "sha256": "3c5075a7efb589e73296376f8527166ad4a945f09a12cc7e7d3732fbdbc57ce2"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "death_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\death_ne_1.png",
+      "sha256": "505b8ff9574d643383cc1e54dc0119f1606ff6e92f76a4f528464636c603f9ed"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "death_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\death_ne_2.png",
+      "sha256": "2edf39c18be0777346b790bf3608a0bc63d2f0a591d43e77c859531a1426cc61"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "death_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_c\\death_ne_3.png",
+      "sha256": "c695e2a3ca72fa6c09e336a3aa5e03dc99526014cb3631d1547bed3ead7d2309"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "death_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\death_se_0.png",
+      "sha256": "795f63ae820375f437535ad3c074a2a829e1ce9e5ddca22b8f15eaf52340f08a"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "death_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\death_se_1.png",
+      "sha256": "5787c26ce53ea1002dfefd9092510f5c12886988be7b97ebf558ae805cccb75b"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "death_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\death_se_2.png",
+      "sha256": "e0250002f1d0a60ad971db53245759c61c69b908a947e791cb975232b4c49eaa"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "death_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_c\\death_se_3.png",
+      "sha256": "16cd4a3c1ab9bbbdf9f75f5a9a655e841525b19ec172f9c898ee0815571b9755"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "idle_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\idle_ne_0.png",
+      "sha256": "68938dfb5cb327472081004ea62ef86d7275b4d33a107dcde96a717487272bba"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "idle_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\idle_se_0.png",
+      "sha256": "abfb2a21904d0fea2ccefb774b756a30e4a38f27876deb612b3a547a303afe8b"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_ne_0.png",
+      "sha256": "7f4a56153bc76455c5faf9c5c14d54bae4afb7151bc648fee36e35958f60233b"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_ne_1.png",
+      "sha256": "7588db243e0d2c214eaf1e340d79130eca2e15efab61621c73ab47b832e45db0"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_ne_2.png",
+      "sha256": "77b32c6ab92e7fd0e0d5d4984fed4bc2ce138ec6043841ba780a17f93d76d02e"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_ne_3.png",
+      "sha256": "c51fc8f8fbdeccd544988f13de65ce222c09e67eaf022be424398714ca0f23e3"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_ne_4.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_ne_4.png",
+      "sha256": "9ba75a86eb2c79272cc146a52514498d8446ae42e9f82ff4f2279a9d2109a637"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_ne_5.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_ne_5.png",
+      "sha256": "1b4a6e5bc9ea59e4b6a8fa5deb535bcdcb905a18074cde442ea866450b5ae6b8"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_se_0.png",
+      "sha256": "14d5c9ca2fdf543b5d6599f8329f2a6e296ef70b4497b359cce0b489bdb564eb"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_se_1.png",
+      "sha256": "a428ace714f83a44a143e22182b14deb8b6e742f762a046483f10249785ffc7d"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_se_2.png",
+      "sha256": "75a2e9987018a3edb972d60dfb765f34bdfce3ae8fb368fbc56d4db7e0e39e5d"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_se_3.png",
+      "sha256": "be0b610cf1b6e87694aeeed781fd938c08f7be3e6864100f5cd883c095b777fd"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_se_4.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_se_4.png",
+      "sha256": "8cdc10f375c4c335206c86b5bb8ddb20dea65c15934e0394fe83367fd56803cf"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "lurch_se_5.png",
+      "installed": "art\\frames\\zombie_decayed_c\\lurch_se_5.png",
+      "sha256": "05a7089cc3afc363c387d02c963c35fb9290782ea91f84877c7473e1a8d3aff3"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_ne_0.png",
+      "sha256": "8225ab6229aa84d767716c0fc58965a94fe6d072a63bd53e71c841b4bfb4e3e8"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_ne_1.png",
+      "sha256": "06ee83c5e73a4a88ce868dd6965ac13f552a8b12fcf2c9c4470035aed8128d33"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_ne_2.png",
+      "sha256": "3c2c37ff90e648a56be25e8a4ac274002cffbb2f0fb506d41d8df3677dc1f716"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_ne_3.png",
+      "sha256": "1f2fbdf53c2bc33e022f4c71f707487c603c29a490c501419555e4c6d0024aad"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_ne_4.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_ne_4.png",
+      "sha256": "d230256ac8ed61b88ae06377a9d57bf4912ad4a30857440bf7ad94ca30ee1067"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_ne_5.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_ne_5.png",
+      "sha256": "ffb3c6ab5050a273e9e86429f510a092d377f94d69793da03d62d0657ad5c40b"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_se_0.png",
+      "sha256": "36b67f804384b0ea493f95abfe1025aff230eff2f0a8102cc3135895c64d7133"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_se_1.png",
+      "sha256": "06b13a205c19c324124d2370648e186bbea48ff1b4e775f4162184af4b0a7cba"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_se_2.png",
+      "sha256": "70f2afe99d2c3ea7f11b59dd4d2065ec44d38ecbfa7c748e19044ff910dc38da"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_se_3.png",
+      "sha256": "f2b0b66fe932cef6299557f95c6a8fb9d52dd56f0318ecfd83b06ccd941d08c9"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_se_4.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_se_4.png",
+      "sha256": "f06c547d215661d55d48027536004d4f21b17fac3d18fb93986e2dddb136320a"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "reach_se_5.png",
+      "installed": "art\\frames\\zombie_decayed_c\\reach_se_5.png",
+      "sha256": "4e5b9a63e1f761b6f62c026b6eec190036912d794da4b1e00f0b6c9caf7e6d59"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_ne_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_ne_0.png",
+      "sha256": "eeceaa9d2c2550ee266dff8e7f6af4e4b6f369173ce209eff164bb6ccdadee54"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_ne_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_ne_1.png",
+      "sha256": "f5f7f30de9c98cd5e43d3b08b4de91e9b2bb946f4a48be081153a26ce9ffc6d5"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_ne_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_ne_2.png",
+      "sha256": "a84ec6cb5e473bd6c19b6dc3f36b35aa6f7651cf277a13ac9f36df0872536343"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_ne_3.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_ne_3.png",
+      "sha256": "c64301350813d6ef7db80f75cafce03d7ce1a1dda682df2bbcc1cf3238e292ba"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_ne_4.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_ne_4.png",
+      "sha256": "4ef234977312f02aa87bd836d3afb4f1d9302c61a3838f90ac9178b9c317cc2b"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_ne_5.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_ne_5.png",
+      "sha256": "2ae89da3ca67a6b0c648f5fd124fc99dd93f6ea8c2213410b9a4761d457be955"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_se_0.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_se_0.png",
+      "sha256": "f44e4c7a43d3714dec3c4c10a30aca2869fffe2c2d649d32a952a2b3b1117595"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_se_1.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_se_1.png",
+      "sha256": "78487950d104dd8a8063f45304b27e0e79e5d0065eac08ddb4966ae37da9d00c"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_se_2.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_se_2.png",
+      "sha256": "289bcde67a1b565680cd83fbdf0e94eb5bd1e643ee8a5897a9db71aa9b52a23d"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_se_3.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_se_3.png",
+      "sha256": "62f0202a8d0959795f248ff84c1429a20e8043b463f687550fa756862e1999d3"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_se_4.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_se_4.png",
+      "sha256": "f6de1917f658e1cf7703a656f63aedfcc306f90aa45eab62dcd2a9b2931f2413"
+    },
+    {
+      "body": "zombie_decayed_c",
+      "file": "shamble_se_5.png",
+      "installed": "art\\frames\\zombie_decayed_c\\shamble_se_5.png",
+      "sha256": "f1b8dc9f76438115592a43984e2e9ddbe02a53724d986feb3ef14fde03e800e6"
+    }
+  ],
+  "atlases": [
+    {
+      "file": "art/atlas/zombies_decayed.png",
+      "sha256": "5dd44cb7ae722f1b7844dbe64f080cd40b6116fb4286142adebcaa51e3c08bac"
+    },
+    {
+      "file": "art/atlas/zombies_decayed.json",
+      "sha256": "cdafc7085c6558008603dcef9ca4e061ac2dd47d80b559d606b8aae28c7ef6cd"
+    }
+  ],
+  "manifestFinal": [
+    "zombie_decayed_a",
+    "zombie_decayed_b",
+    "zombie_decayed_c"
+  ],
+  "unrelatedFilesVerified": 468,
+  "publishedOutputRebuilt": false
+}

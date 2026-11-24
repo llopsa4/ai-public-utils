@@ -1,0 +1,70 @@
+{
+  "version": 2,
+  "notes": "Every sprite key. size [w,h] px, anchor [x,y] 0-1, frames, status placeholder|final. A placeholder block is drawn in code by src/render/placeholders.ts (grey only; functional colours for blood). Codex replaces keys with final art. v2 adds `figures` and `atlases` (the atlas contract in art/STYLE.md): animated survivors and zombies. The old one-image survivor_*/zombie keys stay until the shared renderer (Z25) stops using them.",
+  "keys": {
+    "tile_ground":   { "size": [64, 32], "anchor": [0.5, 0.5], "frames": 1, "status": "placeholder", "placeholder": { "shape": "diamond", "color": "#4b4f49" } },
+    "tile_ground_b": { "size": [64, 32], "anchor": [0.5, 0.5], "frames": 1, "status": "placeholder", "placeholder": { "shape": "diamond", "color": "#454943" } },
+    "tile_hover":    { "size": [64, 32], "anchor": [0.5, 0.5], "frames": 1, "status": "placeholder", "placeholder": { "shape": "ring", "color": "#d8d8d0" } },
+    "tree":          { "size": [28, 72], "anchor": [0.5, 0.92], "frames": 1, "status": "placeholder", "placeholder": { "shape": "capsule", "color": "#2c302b" } },
+    "tent":          { "size": [80, 56], "anchor": [0.5, 0.8], "frames": 1, "status": "placeholder", "placeholder": { "shape": "box", "color": "#8a8a82" } },
+    "fire":          { "size": [28, 20], "anchor": [0.5, 0.6], "frames": 1, "status": "placeholder", "placeholder": { "shape": "box", "color": "#b9b9b0" } },
+    "survivor_fighter": { "size": [20, 40], "anchor": [0.5, 0.92], "frames": 1, "status": "placeholder", "placeholder": { "shape": "capsule", "color": "#c9c9c2" } },
+    "survivor_scout":   { "size": [18, 38], "anchor": [0.5, 0.92], "frames": 1, "status": "placeholder", "placeholder": { "shape": "capsule", "color": "#a9aaa3" } },
+    "zombie":        { "size": [20, 40], "anchor": [0.5, 0.92], "frames": 1, "status": "placeholder", "placeholder": { "shape": "capsule", "color": "#5d625a" } },
+    "human_guard":   { "size": [20, 40], "anchor": [0.5, 0.92], "frames": 1, "status": "placeholder", "placeholder": { "shape": "capsule", "color": "#77736b" } },
+    "crate":         { "size": [26, 22], "anchor": [0.5, 0.8], "frames": 1, "status": "placeholder", "placeholder": { "shape": "box", "color": "#6f6b62" } },
+    "barricade":     { "size": [40, 26], "anchor": [0.5, 0.8], "frames": 1, "status": "placeholder", "placeholder": { "shape": "box", "color": "#5a5750" } },
+    "body":          { "size": [34, 14], "anchor": [0.5, 0.5], "frames": 1, "status": "placeholder", "placeholder": { "shape": "capsule", "color": "#3b3d39" } },
+    "blood":         { "size": [44, 20], "anchor": [0.5, 0.5], "frames": 1, "status": "placeholder", "placeholder": { "shape": "ellipse", "color": "#5a1010" } },
+    "wall":          { "size": [64, 64], "anchor": [0.5, 0.78], "frames": 1, "status": "placeholder", "placeholder": { "shape": "box", "color": "#7b7a72" } },
+    "cover":         { "size": [44, 24], "anchor": [0.5, 0.8], "frames": 1, "status": "placeholder", "placeholder": { "shape": "box", "color": "#65635b" } },
+    "bush":          { "size": [40, 26], "anchor": [0.5, 0.75], "frames": 1, "status": "placeholder", "placeholder": { "shape": "ellipse", "color": "#3b4238" } },
+    "tile_extract":  { "size": [64, 32], "anchor": [0.5, 0.5], "frames": 1, "status": "placeholder", "placeholder": { "shape": "diamond", "color": "#6a6d64" } }
+  },
+  "figures": {
+    "cell": [64, 64],
+    "anchor": [0.5, 0.875],
+    "drawnFacings": ["se", "ne"],
+    "mirroredFacings": { "sw": "se", "nw": "ne" },
+    "frameName": "<key>_<anim>_<facing>_<n>",
+    "inbox": "art/inbox/<batch>/<key>/<anim>_<facing>_<n>.png",
+    "installed": "art/frames/<key>/<anim>_<facing>_<n>.png",
+    "keys": {
+      "fighter": {
+        "atlas": "fighter",
+        "legacyKey": "survivor_fighter",
+        "status": "placeholder",
+        "anims": { "idle": 1, "walk": 4, "run": 4, "crouch": 4, "crawl": 4, "hold": 1, "work": 2, "death": 4, "stab": 3, "takedown": 4, "carry": 4, "pistol_shot": 3 }
+      },
+      "scout": {
+        "atlas": "scout",
+        "legacyKey": "survivor_scout",
+        "status": "placeholder",
+        "anims": { "idle": 1, "walk": 4, "run": 4, "crouch": 4, "crawl": 4, "hold": 1, "work": 2, "death": 4, "shot": 3, "club": 3, "throw": 3 }
+      },
+      "zombie_fresh": {
+        "atlas": "zombies",
+        "legacyKey": "zombie",
+        "status": "placeholder",
+        "anims": { "idle": 1, "shamble": 4, "lurch": 4, "bite": 3, "death": 4 }
+      },
+      "zombie_decayed": {
+        "atlas": "zombies",
+        "legacyKey": "zombie",
+        "status": "placeholder",
+        "anims": { "idle": 1, "shamble": 4, "lurch": 4, "bite": 3, "death": 4 }
+      },
+      "zombie_rotting": {
+        "atlas": "zombies",
+        "legacyKey": "zombie",
+        "status": "placeholder",
+        "anims": { "idle": 1, "shamble": 4, "lurch": 4, "bite": 3, "death": 4 }
+      }
+    }
+  },
+  "atlases": {
+    "fighter": { "png": "art/atlas/fighter.png", "json": "art/atlas/fighter.json", "format": "phaser-json-hash", "keys": ["fighter"] },
+    "scout":   { "png": "art/atlas/scout.png",   "json": "art/atlas/scout.json",   "format": "phaser-json-hash", "keys": ["scout"] },
+    "zombies": { "png": "art/atlas/zombies.png", "json": "art/atlas/zombies.json", "format": "phaser-json-hash", "keys": ["zombie_fresh", "zombie_decayed", "zombie_rotting"] }
+  }
+}

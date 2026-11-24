@@ -1,0 +1,10 @@
+import {readFileSync,writeFileSync} from 'node:fs';
+import {join} from 'node:path';
+const dir='art/inbox/A7',preview=readFileSync(`${dir}/local-preview-root.txt`,'utf8').trim();
+const data=p=>'data:image/png;base64,'+readFileSync(p).toString('base64');
+const rows=['SE','SW','NE','NW'].map((f,i)=>{
+ const facing=i<2?'se':'ne',flip=i%2?'transform:scaleX(-1)':'';
+ return `<article><h2>${f}</h2><div class="pair">${['fighter','scout'].map(k=>`<figure><img style="${flip}" src="${data(k==='fighter'?`${dir}/fighter/idle_${facing}_0.png`:`art/frames/scout/idle_${facing}_0.png`)}"><figcaption>${k==='fighter'?'Cass candidate':'Eli approved'}</figcaption></figure>`).join('')}</div></article>`;
+}).join('');
+const html=`<!doctype html><html lang="en"><meta charset="utf-8"><title>Cass · 2× idle review</title><style>body{margin:32px;background:#24272a;color:#d9d9cb;font:16px system-ui}main{max-width:1200px;margin:auto}h1{font-size:28px}section{display:flex;flex-wrap:wrap;gap:16px}article{background:#4b4f49;padding:16px}h2{margin:0;font-size:18px}.pair{display:flex}figure{margin:8px;text-align:center}img{width:192px;height:192px;image-rendering:pixelated}figcaption{font-size:13px}button{padding:8px 16px;font:inherit}body.actual img{width:64px;height:64px}.game{width:100%;height:auto}a{color:#d9d9cb}</style><main><h1>Cass · 2× idle review</h1><p>New SE/NE source art; SW/NW use the game's mirror rule. Cass stands 48 world pixels tall, Eli 50.</p><button onclick="document.body.classList.toggle('actual')">Toggle actual game size / enlarged</button><section>${rows}</section><p>Only these two Cass idle frames are candidates. Review uses an isolated game copy; other Cass animations are enlarged old art as temporary preview scaffolding.</p><p><a href="/?debug">Open playable preview</a></p><h2>In-game comparison</h2>${['se','ne'].map(f=>`<img class="game" src="${data(`${dir}/game-intro-${f}.png`)}">`).join('')}</main></html>`;
+writeFileSync(`${dir}/review.html`,html);writeFileSync(join(preview,'src/cass-review.html'),html);

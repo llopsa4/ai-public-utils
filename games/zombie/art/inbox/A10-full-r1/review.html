@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dead Woods · Portrait review</title>
+<style>
+  body { margin: 2rem auto; max-width: 46rem; padding: 0 1rem; background: #24272a; color: #e0c7a1; font: 16px system-ui, sans-serif }
+  h1 { font: 2rem Georgia, serif }
+  h2 { font: 1.4rem Georgia, serif }
+  a { color: #e0c7a1 }
+  .portraits { display: flex; flex-wrap: wrap; gap: 1rem }
+  figure { margin: 0; text-align: center }
+  img { display: block; image-rendering: pixelated; border: 1px solid #646e73; margin-bottom: .3rem }
+  section { margin: 1.5rem 0 }
+</style>
+<main>
+  <h1>Dead Woods portrait review</h1>
+  <p><a href="/?a10">Preview Base 1</a></p>
+  <div id="gallery"></div>
+</main>
+<script>
+  const gallery = document.querySelector('#gallery');
+  for (const [name, key] of [['Cass Mireles', 'fighter'], ['Eli Varga', 'scout']]) {
+    const section = document.createElement('section');
+    section.innerHTML = '<h2>' + name + '</h2><div class="portraits"></div><h3>Squad heads</h3><div class="portraits"></div>';
+    const groups = section.querySelectorAll('.portraits');
+    for (const [i, labels, prefix, size] of [
+      [0, ['Neutral', 'Afraid', 'Determined', 'Hurt'], 'portrait', 128],
+      [1, ['Neutral', 'Hurt'], 'portrait_small', 36],
+    ]) {
+      for (const label of labels) {
+        const src = './a10-portraits/' + prefix + '_' + key + '_' + label.toLowerCase() + '.png';
+        groups[i].insertAdjacentHTML('beforeend', '<figure><img src="' + src + '" width="' + size + '" height="' + size + '" alt="' + name + ', ' + label.toLowerCase() + '"><figcaption>' + label + '</figcaption></figure>');
+      }
+    }
+    gallery.append(section);
+  }
+</script>
+</html>
+

@@ -1,0 +1,84 @@
+{
+  "url": "http://127.0.0.1:5258",
+  "checks": [
+    {
+      "file": "installed-game-base-kit.png",
+      "surfaces": [
+        [
+          "ActionBar",
+          "kit_button_active"
+        ],
+        [
+          "ActionBar",
+          "kit_button_disabled"
+        ],
+        [
+          "ActionBar",
+          "kit_tooltip"
+        ],
+        [
+          "Squad",
+          "kit_card"
+        ]
+      ]
+    },
+    {
+      "file": "installed-game-options-kit.png",
+      "surfaces": [
+        [
+          "Pause",
+          "kit_panel"
+        ],
+        [
+          "Pause",
+          "kit_slider_track"
+        ],
+        [
+          "Pause",
+          "kit_slider_knob"
+        ],
+        [
+          "Pause",
+          "kit_check_off"
+        ],
+        [
+          "Pause",
+          "kit_check_on"
+        ]
+      ]
+    },
+    {
+      "file": "installed-game-options-adjusted.png",
+      "surfaces": [
+        [
+          "Pause",
+          "kit_check_on"
+        ],
+        [
+          "Pause",
+          "kit_slider_knob"
+        ]
+      ]
+    },
+    {
+      "file": "installed-game-base-large-text.png",
+      "surfaces": [
+        [
+          "ActionBar",
+          "kit_panel"
+        ],
+        [
+          "Squad",
+          "kit_card"
+        ]
+      ]
+    }
+  ],
+  "interactions": [
+    "Hover tooltip",
+    "Volume slider",
+    "Mute checkbox",
+    "Text size to 150%"
+  ],
+  "errors": []
+}

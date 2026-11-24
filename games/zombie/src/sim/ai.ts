@@ -6,7 +6,7 @@ import { type Grid, isBlocked } from './grid';
 import { type Noise, emitNoise, pickNoise } from './noise';
 import { type Pt, findPath, nearestFree } from './path';
 import { rngInt } from './rng';
-import { type Viewer, ADJACENT, dist, moveMode, seeSurvivor, seesPoint } from './vision';
+import { type Mode, type Viewer, ADJACENT, dist, isLow, moveMode, seeSurvivor, seesPoint } from './vision';
 import type { Enemy, MissionState, Survivor } from './mission';
 
 export type AiMode = 'wander' | 'investigate' | 'chase' | 'patrol' | 'alert' | 'search' | 'body';
@@ -21,14 +21,16 @@ export interface AiState {
   waypoint: number; // patrol index
   spot: Record<string, number>; // human far-half spotting, ticks per survivor
   alarmed: boolean; // human raised the alarm in this alert
+  /** Zombie only, looks only: walking within `reachRadius` of what it goes for, so it reaches out (DESIGN §7). */
+  near: boolean;
 }
 
 const Z = enemies.zombie;
 const H = enemies.human;
 /** Chasers recompute their route this often (ticks). */
 export const REPATH = 5;
-const BITE: Weapon = { range: ADJACENT, damage: Z.bite.damage, noise: 0, cooldown: Z.bite.cooldown };
-const GUN: Weapon = H.gun;
+const BITE: Weapon = { range: ADJACENT, damage: Z.bite.damage, noise: 0, cooldown: Z.bite.cooldown, act: 'bite' };
+const GUN: Weapon = { ...H.gun, act: 'shot' };
 
 export function newAi(kind: 'zombie' | 'human'): AiState {
   return {
@@ -41,7 +43,17 @@ export function newAi(kind: 'zombie' | 'human'): AiState {
     waypoint: 0,
     spot: {},
     alarmed: false,
+    near: false,
   };
+}
+
+/**
+ * True when a zombie that is not chasing is within `reachRadius` tiles of one of `points` (its goal, a
+ * survivor, a blocker it will chew). A chaser already lurches arms-out, so it is never "near" here.
+ */
+export function nearTarget(e: { x: number; y: number; ai: AiState }, points: readonly (readonly [number, number])[]): boolean {
+  if (e.ai.mode === 'chase' || e.ai.mode === 'alert') return false;
+  return points.some((p) => dist(e.x, e.y, p[0], p[1]) <= Z.reachRadius);
 }
 
 /** Walks along `u.path` for one tick at `speed` tiles/s; returns the distance moved. */
@@ -86,9 +98,16 @@ export function route(g: Grid, u: { x: number; y: number }, to: readonly [number
   return findPath(g, [Math.round(u.x), Math.round(u.y)], dest) ?? [];
 }
 
-export function enemyViewer(e: Enemy): Viewer {
-  const v = e.side === 'zombie' ? Z.vision : H.vision;
-  return { x: e.x, y: e.y, facing: e.facing, range: v.range, angle: v.angle };
+/**
+ * What an enemy looks with. A human has a cone. A zombie has no cone (DESIGN §7): it senses all
+ * round within `sight.radius` tiles, or `sight.crouchRadius` when the target is crouched or crawling.
+ */
+export function enemyViewer(e: Enemy, target?: Mode): Viewer {
+  if (e.side === 'zombie') {
+    const range = target !== undefined && isLow(target) ? Z.sight.crouchRadius : Z.sight.radius;
+    return { x: e.x, y: e.y, facing: e.facing, range, angle: 360 };
+  }
+  return { x: e.x, y: e.y, facing: e.facing, range: H.vision.range, angle: H.vision.angle };
 }
 
 const farTicks = (): number => Math.round(H.farSpot * TICK_HZ);
@@ -97,7 +116,8 @@ const farTicks = (): number => Math.round(H.farSpot * TICK_HZ);
 export function enemySees(s: MissionState, e: Enemy, u: Survivor): boolean {
   if (e.hp <= 0 || u.hp <= 0) return false;
   const human = e.side === 'human';
-  const z = seeSurvivor(s.grid, enemyViewer(e), { x: u.x, y: u.y, mode: moveMode(u) }, human);
+  const mode = moveMode(u);
+  const z = seeSurvivor(s.grid, enemyViewer(e, mode), { x: u.x, y: u.y, mode }, human);
   if (z === 'none') return false;
   if (z === 'near' || !human) return true;
   return (e.ai.mode === 'alert' && e.ai.target === u.id) || (e.ai.spot[u.id] ?? 0) >= farTicks();
@@ -106,12 +126,12 @@ export function enemySees(s: MissionState, e: Enemy, u: Survivor): boolean {
 /** Nearest survivor this enemy sees this tick; humans build up far-half spotting time here. */
 function perceive(s: MissionState, e: Enemy): Survivor | null {
   const human = e.side === 'human';
-  const v = enemyViewer(e);
   let best: Survivor | null = null;
   let bd = Infinity;
   for (const u of s.survivors) {
     if (u.hp <= 0) continue;
-    const z = seeSurvivor(s.grid, v, { x: u.x, y: u.y, mode: moveMode(u) }, human);
+    const mode = moveMode(u);
+    const z = seeSurvivor(s.grid, enemyViewer(e, mode), { x: u.x, y: u.y, mode }, human);
     if (z === 'none') {
       e.ai.spot[u.id] = 0;
       continue;
@@ -152,8 +172,12 @@ function survivorById(s: MissionState, id: string | null): Survivor | undefined 
 export function stepEnemy(s: MissionState, e: Enemy, heard: readonly Noise[]): void {
   if (e.hp <= 0) return;
   if (e.cooldown > 0) e.cooldown--;
-  if (e.side === 'zombie') stepZombie(s, e, heard);
-  else stepHuman(s, e, heard);
+  if (e.side === 'zombie') {
+    stepZombie(s, e, heard);
+    const points: (readonly [number, number])[] = s.survivors.filter((u) => u.hp > 0).map((u) => [u.x, u.y]);
+    if (e.ai.goal) points.push(e.ai.goal);
+    e.ai.near = nearTarget(e, points);
+  } else stepHuman(s, e, heard);
 }
 
 // Zombie: wanders; walks to any noise it hears; chases a survivor it sees; bites when adjacent;

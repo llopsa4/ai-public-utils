@@ -1,65 +1,72 @@
-// Campaign progress and the save slot (DESIGN §2, §11): New Game -> Camp -> mission -> Debrief ->
-// Camp, one `localStorage` slot. Pure TypeScript: no Phaser, storage is passed in so tests can fake it.
-import camp from '../data/camp.json';
+// Story flow and the save slot (DESIGN §15, §18): New Game -> Intro -> Mission 1 -> Base 1 -> end.
+// One `localStorage` slot, written at the start of each scene, so Continue resumes there. Pure
+// TypeScript: no Phaser, storage is passed in so tests can fake it.
 import story from '../data/story.json';
+import { type BaseState, restoreBase } from './base';
 
 export const SAVE_KEY = 'deadwoods.save';
-const VERSION = 1;
+const VERSION = 2; // 1 was the slice; those saves are discarded
 
-export interface StoryMission {
-  id: string;
-  title: string;
-  briefing: string;
-}
+/** The scenes of the story, in order. The save always names the one that is about to start. */
+export const STAGES = ['intro', 'mission1', 'base1', 'done'] as const;
+export type Stage = (typeof STAGES)[number];
 
-export interface SavedBarricade {
-  x: number;
-  y: number;
-  hp: number;
-}
-
-/** Everything the campaign keeps between scenes. JSON-serialisable. */
+/** Everything the story keeps between scenes. JSON-serialisable. */
 export interface Campaign {
   version: number;
+  stage: Stage;
   food: number;
   scrap: number;
-  missionsDone: number;
-  barricades: SavedBarricade[];
+  ammo: number;
+  /** Cass has taken back her pistol (Base 1 arrival beat, DESIGN §5). Absent in older v2 saves: false. */
+  cassGun: boolean;
+  /** Base 1 as it was when the herd warning came (DESIGN §12, §18): the fail screen's Retry and Continue resume there. Null until then. */
+  checkpoint: BaseState | null;
 }
 
-export type Loot = { food: number; scrap: number };
+/** What Mission 1 hands to Base 1. */
+export type Carry = { food: number; scrap: number; ammo: number };
 export type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>;
 
-export const MISSIONS: readonly StoryMission[] = story.missions;
+export const TITLES: Readonly<Record<Stage, string>> = story.stages;
 export const ENDING: string = story.ending;
 
+/** The Phaser scene that plays each stage; `done` has none (the menu shows "To be continued..." instead). */
+export const SCENES: Readonly<Record<Stage, 'Intro' | 'Mission' | 'Base' | null>> = { intro: 'Intro', mission1: 'Mission', base1: 'Base', done: null };
+
+/** A new game starts at the Intro with nothing carried (the Intro and Mission 1 set their own start stock). */
 export function newCampaign(): Campaign {
-  return { version: VERSION, food: camp.start.food, scrap: camp.start.scrap, missionsDone: 0, barricades: [] };
+  return { version: VERSION, stage: 'intro', food: 0, scrap: 0, ammo: 0, cassGun: false, checkpoint: null };
 }
 
-/** The mission the camp offers next, or null once the story has run out. */
-export function nextMission(c: Campaign): StoryMission | null {
-  return MISSIONS[c.missionsDone] ?? null;
+/** The Intro is over: Mission 1 starts with the ammo the Intro left. The old campaign is not changed. */
+export function toMission1(c: Campaign, ammo: number): Campaign {
+  return { ...c, stage: 'mission1', ammo, checkpoint: null };
 }
 
-export function finished(c: Campaign): boolean {
-  return nextMission(c) === null;
+/** Mission 1 is won: Base 1 starts with what the crates gave plus the ammo still unspent. */
+export function toBase1(c: Campaign, carry: Carry): Campaign {
+  return { ...c, stage: 'base1', food: carry.food, scrap: carry.scrap, ammo: carry.ammo, checkpoint: null };
 }
 
-/** Adds a mission's loot, counts the mission as done and returns the new campaign (the old one is not changed). */
-export function applyDebrief(c: Campaign, loot: Loot): Campaign {
-  return {
-    ...c,
-    food: c.food + loot.food,
-    scrap: c.scrap + loot.scrap,
-    missionsDone: Math.min(c.missionsDone + 1, MISSIONS.length),
-    barricades: c.barricades.map((b) => ({ ...b })),
-  };
+/** Base 1 is won: the save keeps what Base 1 started with, so Replay Base 1 starts from the same stock. */
+export function toDone(c: Campaign): Campaign {
+  return { ...c, stage: 'done', checkpoint: null };
 }
 
-/** The camp's current resources and fences, taken before leaving the camp scene. */
-export function withCamp(c: Campaign, food: number, scrap: number, barricades: readonly SavedBarricade[]): Campaign {
-  return { ...c, food, scrap, barricades: barricades.map((b) => ({ x: b.x, y: b.y, hp: b.hp })) };
+/** Replay Base 1 from the end screen: same stock, Cass keeps her gun, no checkpoint. The old campaign is not changed. */
+export function replayBase1(c: Campaign): Campaign {
+  return { ...c, stage: 'base1', checkpoint: null };
+}
+
+/** Keeps (or, with null, drops) the herd checkpoint. The old campaign is not changed. */
+export function withCheckpoint(c: Campaign, checkpoint: BaseState | null): Campaign {
+  return { ...c, checkpoint };
+}
+
+/** The Base 1 arrival beat has played: Cass keeps her pistol from now on. The old campaign is not changed. */
+export function withCassGun(c: Campaign): Campaign {
+  return { ...c, cassGun: true };
 }
 
 const count = (v: unknown): v is number => typeof v === 'number' && Number.isInteger(v) && v >= 0;
@@ -75,16 +82,11 @@ export function parseSave(text: string | null): Campaign | null {
   }
   if (typeof raw !== 'object' || raw === null) return null;
   const r = raw as Record<string, unknown>;
-  if (r.version !== VERSION || !count(r.food) || !count(r.scrap) || !count(r.missionsDone) || r.missionsDone > MISSIONS.length) return null;
-  if (!Array.isArray(r.barricades)) return null;
-  const barricades: SavedBarricade[] = [];
-  for (const b of r.barricades as unknown[]) {
-    if (typeof b !== 'object' || b === null) return null;
-    const { x, y, hp } = b as Record<string, unknown>;
-    if (!count(x) || !count(y) || typeof hp !== 'number' || !Number.isFinite(hp) || hp <= 0) return null;
-    barricades.push({ x, y, hp });
-  }
-  return { version: VERSION, food: r.food, scrap: r.scrap, missionsDone: r.missionsDone, barricades };
+  const stage = STAGES.find((s) => s === r.stage);
+  if (r.version !== VERSION || !stage || !count(r.food) || !count(r.scrap) || !count(r.ammo)) return null;
+  // A checkpoint that does not fit this build is dropped alone; the rest of the save still loads.
+  const checkpoint = stage === 'base1' ? restoreBase(r.checkpoint) : null;
+  return { version: VERSION, stage, food: r.food, scrap: r.scrap, ammo: r.ammo, cassGun: r.cassGun === true, checkpoint };
 }
 
 /** Storage can be missing or throw (private window, blocked site data): saving then quietly fails. */
@@ -97,6 +99,15 @@ export function saveCampaign(storage: StorageLike | undefined, c: Campaign): boo
   }
 }
 
+export function clearSave(storage: StorageLike | undefined): void {
+  try {
+    storage?.removeItem(SAVE_KEY);
+  } catch {
+    // nothing to clear
+  }
+}
+
+/** The saved campaign, or null. A slot that is there but unusable (the slice's v1 save, damage) is ignored and kept. */
 export function loadCampaign(storage: StorageLike | undefined): Campaign | null {
   try {
     return parseSave(storage?.getItem(SAVE_KEY) ?? null);
@@ -105,11 +116,12 @@ export function loadCampaign(storage: StorageLike | undefined): Campaign | null 
   }
 }
 
-export function clearSave(storage: StorageLike | undefined): void {
+/** True when the slot holds anything at all, readable or not: New Game must ask before replacing it. */
+export function hasSlot(storage: StorageLike | undefined): boolean {
   try {
-    storage?.removeItem(SAVE_KEY);
+    return (storage?.getItem(SAVE_KEY) ?? null) !== null;
   } catch {
-    // nothing to clear
+    return false;
   }
 }
 

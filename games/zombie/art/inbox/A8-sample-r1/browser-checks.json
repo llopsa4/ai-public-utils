@@ -1,0 +1,36 @@
+{
+  "url": "http://127.0.0.1:5238",
+  "checks": [
+    {
+      "file": "game-intro-dialogue.png",
+      "scene": "Dialogue",
+      "frame": "kit_panel",
+      "count": 1
+    },
+    {
+      "file": "game-base-action-bar.png",
+      "scene": "ActionBar",
+      "frame": "kit_button_disabled",
+      "count": 3
+    },
+    {
+      "file": "game-pause-normal.png",
+      "scene": "Pause",
+      "frame": "kit_button_normal",
+      "count": 5
+    },
+    {
+      "file": "game-pause-hover.png",
+      "scene": "Pause",
+      "frame": "kit_button_hover",
+      "count": 1
+    },
+    {
+      "file": "game-pause-pressed.png",
+      "scene": "Pause",
+      "frame": "kit_button_pressed",
+      "count": 1
+    }
+  ],
+  "errors": []
+}

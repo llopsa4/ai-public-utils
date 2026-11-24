@@ -3,7 +3,7 @@
 import chars from '../data/characters.json';
 import { REPATH, enemySees, route } from './ai';
 import { TICK_HZ } from './time';
-import { damage, face } from './combat';
+import { activeWeapon, damage, face, hasAmmo, weapon } from './combat';
 import { emitNoise } from './noise';
 import { ADJACENT, dist } from './vision';
 import type { MissionState, Order, Survivor } from './mission';
@@ -48,7 +48,10 @@ export function stepTakedown(s: MissionState, u: Survivor, o: Extract<Order, { t
   u.path = [];
   face(u, t.x, t.y);
   if (enemySees(s, t, u)) return end(u); // seen at any moment: the takedown fails
-  if (o.left < 0) o.left = Math.round(chars.fighter.takedown.time * TICK_HZ);
+  if (o.left < 0) {
+    o.left = Math.round(chars.fighter.takedown.time * TICK_HZ);
+    u.act = { kind: 'takedown', tick: s.tick }; // the 1 s kill animation starts now
+  }
   if (--o.left <= 0) {
     damage(s, t, t.hp); // silent: no noise
     end(u);
@@ -104,11 +107,12 @@ export function useLure(s: MissionState, id: string, at: readonly [number, numbe
   if (!('lure' in c) || u.lureCd > 0 || dist(u.x, u.y, at[0], at[1]) > c.lure.range) return false;
   emitNoise(s, at[0], at[1], c.lure.radius, 'lure', u.id);
   u.lureCd = Math.round(c.lure.cooldown * TICK_HZ);
+  u.act = { kind: 'throw', tick: s.tick };
   face(u, at[0], at[1]);
   return true;
 }
 
-// ---- Crates (right-click a crate): walk up, then open it; the loot is added to the mission loot. ----
+// ---- Crates (left-click a crate): walk up, then open it; the loot is added to the mission loot. ----
 
 export function orderOpen(s: MissionState, id: string, crate: string): boolean {
   const u = living(s, id);
@@ -130,6 +134,70 @@ export function stepOpen(s: MissionState, u: Survivor, o: Extract<Order, { type:
     c.opened = true;
     s.loot.food += c.food;
     s.loot.scrap += c.scrap;
+    s.loot.ammo += c.ammo;
+    s.ammo += c.ammo; // usable at once by every survivor
     end(u);
   }
+}
+
+// ---- Weapons (action bar buttons, keys 1 and 2): choose the weapon a left-click attack uses. ----
+
+export const WEAPON_LABEL: Record<string, string> = { knife: 'Knife', pistol: 'Gun', club: 'Club' };
+
+/** Chooses one of the survivor's own weapons. A weapon that needs ammo cannot be chosen with none left. */
+export function selectWeapon(s: MissionState, id: string, weaponId: string): boolean {
+  const u = living(s, id);
+  if (!u || !u.weapons.includes(weaponId) || !hasAmmo(s, weapon(weaponId))) return false;
+  u.weapon = weaponId;
+  return true;
+}
+
+/** Cass takes back her pistol (DESIGN §5, Base 1 arrival): she gains the Gun action and the shared ammo. Safe to repeat. */
+export function unlockGun(s: MissionState, id: string): boolean {
+  const u = living(s, id);
+  if (!u || u.weapons.includes('pistol')) return false;
+  u.weapons.push('pistol');
+  return true;
+}
+
+// ---- Free fire (DESIGN §13): lets Hold use the gun. Only a survivor who has a ranged weapon can have it. ----
+
+/** True when the survivor owns a ranged weapon (Cass only after her gun unlocks). */
+export function canFreeFire(u: Survivor): boolean {
+  return u.weapons.some((id) => weapon(id).range > chars.adjacent);
+}
+
+/** Sets Free fire for one survivor; refused (false) when they have no gun. */
+export function setFreeFire(s: MissionState, id: string, on: boolean): boolean {
+  const u = living(s, id);
+  if (!u || !canFreeFire(u)) return false;
+  u.freeFire = on;
+  return true;
+}
+
+// ---- Action bar (DESIGN §17): the buttons for one survivor. Pure data; the scene draws and clicks them. ----
+
+export interface BarButton {
+  id: string; // `weapon:<id>`, `takedown`, `carry`, `hold`, `crouch`, `lure`
+  label: string;
+  key: string;
+  enabled: boolean; // greyed when false
+  active: boolean; // the chosen weapon, a held position, a crouched stance
+}
+
+export function barButtons(s: MissionState, u: Survivor): BarButton[] {
+  const out: BarButton[] = [];
+  const using = activeWeapon(s, u);
+  u.weapons.forEach((id, i) => {
+    const w = weapon(id);
+    const label = WEAPON_LABEL[id] ?? id;
+    out.push({ id: `weapon:${id}`, label: w.ammo ? `${label} ${s.ammo}` : label, key: String(i + 1), enabled: hasAmmo(s, w), active: using === id });
+  });
+  if (canTakedown(u)) out.push({ id: 'takedown', label: 'Takedown', key: 'F', enabled: true, active: u.order?.type === 'takedown' });
+  if (canCarry(u)) out.push({ id: 'carry', label: 'Carry', key: 'G', enabled: true, active: u.carrying !== null });
+  if (canLure(u)) out.push({ id: 'lure', label: 'Lure', key: 'L', enabled: u.lureCd <= 0, active: false });
+  out.push({ id: 'hold', label: 'Hold', key: 'V', enabled: true, active: u.order?.type === 'hold' });
+  if (canFreeFire(u)) out.push({ id: 'freefire', label: 'Free fire', key: 'Z', enabled: true, active: u.freeFire === true });
+  out.push({ id: 'crouch', label: 'Crouch', key: 'C', enabled: true, active: u.stance !== 'walk' });
+  return out;
 }

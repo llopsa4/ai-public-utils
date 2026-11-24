@@ -763,10 +763,9 @@ test('?standins starts the game from the grey stand-in atlases, with no console 
   expect(errors).toEqual([]);
 });
 
-// AC5: terrain art. Without art the ground keeps its code drawings; with `?standins` the banks, spills and props appear,
-// banks name their mask, and a season change swaps every frame.
-test('terrain: without art the ground keeps its code drawings (trees, no spills or props)', async ({ page }) => {
-  test.skip(!fs.existsSync('art/standins/atlas/ground.json'), 'run `npm run art:standins` first');
+// AC5: installed AB3/AB4/AB5 terrain shows ground, banks, spills, trees, bushes and props.
+// With `?standins`, a season change swaps every frame too.
+test('terrain: installed art shows trees, bushes and props with camera chunk culling', async ({ page }) => {
   const errors = watchErrors(page);
   await page.goto('/?debug');
   await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
@@ -774,7 +773,10 @@ test('terrain: without art the ground keeps its code drawings (trees, no spills 
   await page.waitForFunction(() => window.camp?.state.people.length === 20);
   const plain = await page.evaluate(() => window.camp.terrain());
   expect(plain.trees).toBeGreaterThan(100);
-  expect([plain.spills, plain.stumps, plain.bushes, plain.props]).toEqual([0, 0, 0, 0]);
+  expect(plain.spills).toBeGreaterThan(100);
+  expect(plain.stumps).toBe(0); // No tree has been felled.
+  expect(plain.bushes).toBeGreaterThan(20);
+  expect(plain.props).toBeGreaterThan(200);
   // AC9: the 96 x 96 ground is baked into 6 x 6 chunk textures, and only the chunks near the camera are drawn.
   expect(plain.chunks).toBe(36);
   await page.evaluate(() => {
@@ -897,7 +899,7 @@ test('buildings: normal mode draws the installed flame on the council fire', asy
 });
 
 // AC8: final button art and stand-ins use nine-slices, with the active speed using the pressed frame.
-test('interface: normal mode uses installed button art and keeps the browser cursor', async ({ page }) => {
+test('interface: normal mode uses installed button art and cursors that follow the selection', async ({ page }) => {
   const errors = watchErrors(page);
   await page.goto('/?debug');
   await page.waitForFunction(() => !!window.menu?.buttons()['slot1.new']);
@@ -909,8 +911,12 @@ test('interface: normal mode uses installed button art and keeps the browser cur
     : [null, null, null, null];
   await expect.poll(() => page.evaluate(() => window.camp.speedFrames())).toEqual(speedFrames);
   const c = await page.evaluate(() => window.camp.cursor());
-  expect(c.installed).toEqual([]);
-  expect(c.css).not.toContain('image-set');
+  expect(c.installed.sort()).toEqual(['attack', 'build', 'invalid', 'move', 'pointer']);
+  expect(c.css).toContain('image-set');
+  await page.evaluate(() => window.camp.selectPeople([window.camp.state.people[0].id]));
+  await page.mouse.move(640, 360);
+  await page.mouse.move(650, 370);
+  await expect.poll(() => page.evaluate(() => window.camp.cursor().shown)).toBe('move');
   expect(errors).toEqual([]);
 });
 

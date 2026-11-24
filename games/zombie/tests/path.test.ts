@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { createCamp, orderMove, stepCamp, treeCount } from '../src/sim/camp';
+import { createBase, stepBase } from '../src/sim/base';
+import { orderMove } from '../src/sim/mission';
 import { BUSH, TREE, isBlocked, makeGrid, setTile } from '../src/sim/grid';
 import { findPath, nearestFree } from '../src/sim/path';
 
@@ -45,36 +46,35 @@ test('nearestFree skips blocked and taken tiles', () => {
   assert.notDeepEqual(nearestFree(g, [3, 3], new Set([2 * 6 + 3])), [3, 2]);
 });
 
-test('the camp has a clearing, a tent, a fire, trees and two survivors on free tiles', () => {
-  const s = createCamp();
+test('the base map has two survivors on free tiles and trees around the clearing', () => {
+  const s = createBase({ calm: true });
   assert.equal(s.survivors.length, 2);
   assert.equal(s.food, 5);
-  assert.equal(s.scrap, 2);
+  assert.equal(s.scrap, 4);
   for (const u of s.survivors) assert.equal(isBlocked(s.grid, u.x, u.y), false);
-  assert.ok(isBlocked(s.grid, 13, 13) && isBlocked(s.grid, 14, 14) && isBlocked(s.grid, 17, 16));
-  assert.ok(isBlocked(s.grid, 0, 0));
-  assert.ok(treeCount(s) > 100);
-  assert.deepEqual(createCamp().grid, s.grid, 'same seed, same woods');
+  assert.ok(s.grid.tiles.filter((k) => k === TREE).length > 100);
+  assert.deepEqual(createBase({ calm: true }).grid, s.grid, 'same seed, same woods');
 });
 
 test('a move order walks the survivor to the tile at 3 tiles per second', () => {
-  const s = createCamp();
+  const s = createBase({ calm: true });
   const u = s.survivors[0]!;
-  assert.deepEqual(orderMove(s, [u.id], [u.x + 6, u.y]), [u.id]);
-  for (let i = 0; i < 10; i++) stepCamp(s);
-  assert.ok(Math.abs(u.x - 19) < 1e-6 && u.y === 18, `after 1 s at x=${u.x}`);
-  for (let i = 0; i < 20; i++) stepCamp(s);
-  assert.deepEqual([u.x, u.y], [22, 18]);
+  const [tx, ty] = [u.x + 6, u.y];
+  assert.deepEqual(orderMove(s, [u.id], [tx, ty]), [u.id]);
+  for (let i = 0; i < 10; i++) stepBase(s);
+  assert.ok(Math.abs(u.x - (tx - 3)) < 1e-6 && u.y === ty, `after 1 s at x=${u.x}`);
+  for (let i = 0; i < 20; i++) stepBase(s);
+  assert.deepEqual([u.x, u.y], [tx, ty]);
   assert.equal(u.path.length, 0);
 });
 
 test('a group order spreads the survivors over different tiles; an order onto a tree ends beside it', () => {
-  const s = createCamp();
+  const s = createBase({ calm: true });
   orderMove(s, s.survivors.map((v) => v.id), [10, 20]);
-  for (let i = 0; i < 100; i++) stepCamp(s);
+  for (let i = 0; i < 100; i++) stepBase(s);
   const [a, b] = s.survivors;
   assert.notDeepEqual([a!.x, a!.y], [b!.x, b!.y]);
   orderMove(s, ['fighter'], [0, 0]);
-  for (let i = 0; i < 400; i++) stepCamp(s);
+  for (let i = 0; i < 400; i++) stepBase(s);
   assert.equal(isBlocked(s.grid, Math.round(a!.x), Math.round(a!.y)), false);
 });

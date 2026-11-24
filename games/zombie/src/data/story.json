@@ -1,10 +1,215 @@
 {
-  "missions": [
-    {
-      "id": "m01",
-      "title": "Mission 1: the guarded yard",
-      "briefing": "Slip past the guard, open the crates and reach the extraction zone."
+  "stages": {
+    "intro": "The woods camp",
+    "mission1": "Mission 1: the house in the woods",
+    "base1": "Base 1: the house",
+    "done": "Base 1 held"
+  },
+  "ending": "To be continued...",
+  "dialogue": {
+    "intro": {
+      "start": [
+        {
+          "speaker": "Scout",
+          "mood": "afraid",
+          "text": "Is that it? Tell me that's the last one."
+        },
+        {
+          "speaker": "Fighter",
+          "mood": "determined",
+          "text": "That's the last one. Look at me. You hurt?"
+        },
+        {
+          "speaker": "Scout",
+          "mood": "afraid",
+          "text": "No. I don't think so. You?"
+        },
+        {
+          "speaker": "Fighter",
+          "mood": "determined",
+          "text": "Not my blood. Get over to the fire. I want to know what we have left before it gets dark."
+        }
+      ],
+      "afterMove": [
+        {
+          "speaker": "Scout",
+          "mood": "afraid",
+          "text": "Three rounds. Three. And I'm not going to tell you about the food, because I've already counted twice."
+        },
+        {
+          "speaker": "Fighter",
+          "mood": "neutral",
+          "text": "Then we stop shooting at things we can walk around."
+        },
+        {
+          "speaker": "Fighter",
+          "mood": "determined",
+          "text": "Don't turn too fast. One at the edge of camp, dragging its feet. I'll take this one."
+        }
+      ],
+      "afterKnife": [
+        {
+          "speaker": "Fighter",
+          "mood": "neutral",
+          "text": "Close and quiet. It's the only way we can afford to do this now."
+        },
+        {
+          "speaker": "Scout",
+          "mood": "determined",
+          "text": "There's another one, past the creek. Too far for the knife. Damn it. I'm taking the shot."
+        }
+      ],
+      "afterGun": [
+        {
+          "speaker": "Scout",
+          "mood": "afraid",
+          "text": "Two left. And everything within a mile just heard that."
+        },
+        {
+          "speaker": "Fighter",
+          "mood": "determined",
+          "text": "Then let them come to us. Something's moving in the trees. Plant yourself, face the woods, and let it walk right into you."
+        }
+      ],
+      "afterHold": [
+        {
+          "speaker": "Fighter",
+          "mood": "neutral",
+          "text": "We can't stay here. A tent, a fire and nothing to eat. We're a dinner bell."
+        },
+        {
+          "speaker": "Scout",
+          "mood": "neutral",
+          "text": "When I was up on the ridge I saw a house. North, through the trees. I didn't want to say anything until I was sure."
+        },
+        {
+          "speaker": "Fighter",
+          "mood": "neutral",
+          "text": "Sure of what?"
+        },
+        {
+          "speaker": "Scout",
+          "mood": "afraid",
+          "text": "That it's empty. ...I'm never sure."
+        },
+        {
+          "speaker": "Fighter",
+          "mood": "determined",
+          "text": "Then we find out together. Stay low and stay close."
+        }
+      ]
+    },
+    "m01Win": [
+      {
+        "speaker": "Scout",
+        "mood": "neutral",
+        "text": "Clear. All of it. I keep waiting for one more to come out of the walls."
+      },
+      {
+        "speaker": "Fighter",
+        "mood": "determined",
+        "text": "Bring in everything from the crates. And look at the windows, the glass is gone. A door that won't close is just a hole."
+      },
+      {
+        "speaker": "Scout",
+        "mood": "neutral",
+        "text": "A roof and four walls. Do you remember how long it's been?"
+      },
+      {
+        "speaker": "Fighter",
+        "mood": "determined",
+        "text": "Don't get used to it. Fix the door."
+      }
+    ],
+    "base1Arrival": [
+      {
+        "speaker": "Scout",
+        "mood": "neutral",
+        "text": "Wait. Is that a pistol? You've had a pistol in your pack this whole time?"
+      },
+      {
+        "speaker": "Fighter",
+        "mood": "neutral",
+        "text": "Empty. Out there a shot meant company, so I kept it for a night I could afford to be loud."
+      },
+      {
+        "speaker": "Scout",
+        "mood": "neutral",
+        "text": "And tonight is that night?"
+      },
+      {
+        "speaker": "Fighter",
+        "mood": "determined",
+        "text": "Four walls, and a door we're about to fix. One pile of rounds, two guns. Don't waste mine either."
+      }
+    ],
+    "herdWarning": [
+      {
+        "speaker": "Fighter",
+        "mood": "determined",
+        "text": "Stop. Everybody stop. Do you hear that?"
+      },
+      {
+        "speaker": "Scout",
+        "mood": "afraid",
+        "text": "I don't hear anything."
+      },
+      {
+        "speaker": "Fighter",
+        "mood": "determined",
+        "text": "Exactly. The birds went quiet. Something big is moving in the north, and it isn't one or two."
+      },
+      {
+        "speaker": "Scout",
+        "mood": "afraid",
+        "text": "How long?"
+      },
+      {
+        "speaker": "Fighter",
+        "mood": "determined",
+        "text": "Two minutes. Maybe less. Seal whatever you can."
+      }
+    ],
+    "base1Win": [
+      {
+        "speaker": "Fighter",
+        "mood": "neutral",
+        "text": "Is that the last one?"
+      },
+      {
+        "speaker": "Scout",
+        "mood": "neutral",
+        "text": "I think so. I think we actually did it."
+      },
+      {
+        "speaker": "Fighter",
+        "mood": "neutral",
+        "text": "Sit down before you fall down."
+      },
+      {
+        "speaker": "Scout",
+        "mood": "neutral",
+        "text": "We held. Against that. I never thought we would."
+      },
+      {
+        "speaker": "Fighter",
+        "mood": "neutral",
+        "text": "Neither did I. Eat, sleep. Tomorrow we find out how far we are from anything alive."
+      }
+    ],
+    "hunger": {
+      "warning": [
+        {
+          "speaker": "Fighter",
+          "mood": "neutral",
+          "text": "I'm not hungry. Eat yours first."
+        },
+        {
+          "speaker": "Scout",
+          "mood": "afraid",
+          "text": "My legs are going. I need to eat something."
+        }
+      ]
     }
-  ],
-  "ending": "To be continued..."
+  }
 }

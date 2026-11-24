@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { orderOpen, orderTakedown, toggleCarry, useLure } from '../src/sim/abilities';
+import { barButtons, orderOpen, orderTakedown, selectWeapon, setFreeFire, toggleCarry, unlockGun, useLure } from '../src/sim/abilities';
 import { damage } from '../src/sim/combat';
-import { type MissionSpec, type MissionState, createMission, orderMove, stepMission } from '../src/sim/mission';
+import { dist as distXY } from '../src/sim/vision';
+import { type MissionSpec, type MissionState, createMission, orderAttack, orderMove, stepMission } from '../src/sim/mission';
 
 const open = (n: number): string[] => Array.from({ length: n }, () => '.'.repeat(n));
 const corner = { x: 0, y: 0, w: 1, h: 1 };
@@ -111,7 +112,7 @@ test('a crate takes 2 s to open and adds its loot; success needs one opened', ()
   assert.equal(s.crates[0]!.opened, false);
   run(s, 1);
   assert.equal(s.crates[0]!.opened, true);
-  assert.deepEqual(s.loot, { food: 2, scrap: 3 });
+  assert.deepEqual(s.loot, { food: 2, scrap: 3, ammo: 0 });
   assert.equal(s.status, 'success');
   assert.equal(orderOpen(s, 'f', 'c1'), false); // already open
 });
@@ -132,21 +133,111 @@ test('a survivor death fails the mission', () => {
   assert.equal(s.status, 'failed');
 });
 
-test('m01: everything stands on a free tile and every crate and the extract zone are reachable', async () => {
-  const { default: m01 } = await import('../src/data/missions/m01.json', { with: { type: 'json' } });
-  const { isBlocked } = await import('../src/sim/grid');
-  const { findPath } = await import('../src/sim/path');
-  const s = createMission(m01 as unknown as MissionSpec);
-  assert.equal(s.grid.size, 32);
-  const start: [number, number] = [Math.round(s.survivors[0]!.x), Math.round(s.survivors[0]!.y)];
-  for (const u of [...s.survivors, ...s.enemies]) assert.ok(!isBlocked(s.grid, Math.round(u.x), Math.round(u.y)), u.id);
-  for (const e of s.enemies) for (const w of e.patrol) assert.ok(!isBlocked(s.grid, w[0], w[1]), `${e.id} waypoint ${w}`);
-  for (const c of s.crates) {
-    assert.ok(!isBlocked(s.grid, c.x, c.y), c.id);
-    assert.ok(findPath(s.grid, start, [c.x, c.y]), `${c.id} reachable`);
-  }
-  assert.equal(s.crates.length, 3);
-  assert.equal(s.enemies.filter((e) => e.kind === 'zombie').length, 2);
-  assert.equal(s.enemies.filter((e) => e.kind === 'human').length, 1);
-  for (let i = 0; i < 600; i++) stepMission(s); // runs without throwing
+// ---- Weapons, ammo and the action bar (DESIGN §5, §17) ----
+
+const scout = { id: 's', kind: 'scout' as const, x: 10, y: 10 };
+const zombieAt = (x: number) => ({ id: 'z', kind: 'zombie' as const, x, y: 10, facing: [1, 0] as [number, number] });
+
+test('a new mission has 3 ammo; each gun shot uses 1; the Gun greys out at 0', () => {
+  const s = mission({ survivors: [scout], enemies: [zombieAt(14)] });
+  assert.equal(s.ammo, 3);
+  assert.equal(barButtons(s, unitOf(s, 's')).find((b) => b.id === 'weapon:pistol')!.enabled, true);
+  orderAttack(s, ['s'], 'z');
+  run(s, 1);
+  assert.equal(s.ammo, 2);
+  assert.equal(enemy(s, 'z').hp, 35);
+  s.ammo = 0;
+  const gun = barButtons(s, unitOf(s, 's')).find((b) => b.id === 'weapon:pistol')!;
+  assert.equal(gun.enabled, false);
+  assert.equal(selectWeapon(s, 's', 'pistol'), false);
+});
+
+test('a gun shot is loud and silent weapons are not; the Fighter has the knife only', () => {
+  const s = mission({ survivors: [fighter, { ...scout, x: 12 }], enemies: [zombieAt(14)] });
+  assert.deepEqual(barButtons(s, unitOf(s, 'f')).filter((b) => b.id.startsWith('weapon:')).map((b) => b.id), ['weapon:knife']);
+  assert.deepEqual(barButtons(s, unitOf(s, 's')).filter((b) => b.id.startsWith('weapon:')).map((b) => b.id), ['weapon:pistol', 'weapon:club']);
+  assert.equal(selectWeapon(s, 'f', 'pistol'), false);
+  orderAttack(s, ['s'], 'z');
+  stepMission(s);
+  assert.ok(s.noises.some((n) => n.kind === 'shot' && n.from === 's'));
+});
+
+test("unlocking Cass's gun adds the Gun action, shares the ammo, plays a shot cue and is safe to repeat (DESIGN §5)", () => {
+  const s = mission({ survivors: [fighter, { ...scout, x: 12 }], enemies: [zombieAt(14)] });
+  assert.equal(unlockGun(s, 'f'), true);
+  assert.equal(unlockGun(s, 'f'), false); // already has it: no duplicate
+  assert.deepEqual(unitOf(s, 'f').weapons, ['knife', 'pistol']);
+  assert.deepEqual(unitOf(s, 's').weapons, ['pistol', 'club']); // the scout is untouched
+  const gun = () => barButtons(s, unitOf(s, 'f')).find((b) => b.id === 'weapon:pistol')!;
+  assert.equal(gun().label, 'Gun 3');
+  assert.equal(selectWeapon(s, 'f', 'pistol'), true);
+  orderAttack(s, ['f'], 'z');
+  run(s, 1);
+  assert.equal(s.ammo, 2);
+  assert.equal(unitOf(s, 'f').act?.kind, 'shot');
+  s.ammo = 0;
+  assert.equal(gun().enabled, false); // greys at 0 like the scout's
+  assert.equal(selectWeapon(s, 'f', 'pistol'), false);
+  assert.equal(unlockGun(s, 'nobody'), false);
+});
+
+test('at 0 ammo the Scout attacks with the club: walks up, 15 damage, silent, ammo stays 0', () => {
+  const s = mission({ survivors: [scout], enemies: [zombieAt(15)], ammo: 0 });
+  orderAttack(s, ['s'], 'z');
+  run(s, 10);
+  assert.equal(s.ammo, 0);
+  assert.ok(enemy(s, 'z').hp < 60 || distXY(unitOf(s, 's').x, unitOf(s, 's').y, enemy(s, 'z').x, enemy(s, 'z').y) > 1.5);
+  run(s, 80);
+  assert.ok(enemy(s, 'z').hp <= 45);
+  assert.ok(!s.noises.some((n) => n.kind === 'shot'));
+  assert.equal(s.ammo, 0);
+});
+
+test('choosing the club makes a left-click attack use it even with ammo', () => {
+  const s = mission({ survivors: [scout], enemies: [zombieAt(11)] });
+  assert.ok(selectWeapon(s, 's', 'club'));
+  assert.equal(unitOf(s, 's').weapon, 'club');
+  orderAttack(s, ['s'], 'z');
+  run(s, 1);
+  assert.equal(enemy(s, 'z').hp, 45);
+  assert.equal(s.ammo, 3);
+  const club = barButtons(s, unitOf(s, 's')).find((b) => b.id === 'weapon:club')!;
+  assert.equal(club.active, true);
+});
+
+test('crates can hold ammo: opening one adds it to the shared ammo and the loot', () => {
+  const s = mission({ survivors: [scout], enemies: [], crates: [{ id: 'c', x: 11, y: 10, food: 0, scrap: 0, ammo: 4 }] });
+  assert.ok(orderOpen(s, 's', 'c'));
+  run(s, 30);
+  assert.equal(s.ammo, 7);
+  assert.equal(s.loot.ammo, 4);
+});
+
+test('bar buttons: crouch and hold show as active, the lure greys while it recharges', () => {
+  const s = mission({ survivors: [scout], enemies: [] });
+  const u = unitOf(s, 's');
+  const find = (id: string) => barButtons(s, u).find((b) => b.id === id)!;
+  assert.equal(find('crouch').active, false);
+  u.stance = 'crouch';
+  assert.equal(find('crouch').active, true);
+  assert.equal(find('lure').enabled, true);
+  useLure(s, 's', [12, 12]);
+  assert.equal(find('lure').enabled, false);
+  assert.deepEqual(barButtons(s, unitOf(s, 's')).map((b) => b.key), ['1', '2', 'L', 'V', 'Z', 'C']);
+});
+
+test('free fire: a survivor with a gun gets the toggle; one without a gun does not, and cannot set it', () => {
+  const s = mission({ survivors: [scout, fighter], enemies: [] });
+  const find = (id: string, b: string) => barButtons(s, unitOf(s, id)).find((x) => x.id === b);
+  assert.equal(find('s', 'freefire')?.active, false);
+  assert.ok(setFreeFire(s, 's', true));
+  assert.equal(find('s', 'freefire')?.active, true);
+  assert.ok(setFreeFire(s, 's', false));
+  assert.equal(find('s', 'freefire')?.active, false);
+  // the Fighter starts with the knife only (DESIGN §5), so no toggle until the gun unlocks
+  assert.equal(find('f', 'freefire'), undefined);
+  assert.equal(setFreeFire(s, 'f', true), false);
+  assert.ok(unlockGun(s, 'f'));
+  assert.equal(find('f', 'freefire')?.active, false);
+  assert.ok(setFreeFire(s, 'f', true));
 });

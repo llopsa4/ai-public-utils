@@ -1,0 +1,53 @@
+{
+  "results": [
+    {
+      "facing": "se",
+      "frame": "scout_idle_se_0",
+      "sourceWidth": 128,
+      "displayWidth": 64,
+      "scale": 0.5,
+      "flipX": false,
+      "origin": [
+        0.5,
+        0.875
+      ]
+    },
+    {
+      "facing": "sw",
+      "frame": "scout_idle_se_0",
+      "sourceWidth": 128,
+      "displayWidth": 64,
+      "scale": 0.5,
+      "flipX": true,
+      "origin": [
+        0.5,
+        0.875
+      ]
+    },
+    {
+      "facing": "ne",
+      "frame": "scout_idle_ne_0",
+      "sourceWidth": 128,
+      "displayWidth": 64,
+      "scale": 0.5,
+      "flipX": false,
+      "origin": [
+        0.5,
+        0.875
+      ]
+    },
+    {
+      "facing": "nw",
+      "frame": "scout_idle_ne_0",
+      "sourceWidth": 128,
+      "displayWidth": 64,
+      "scale": 0.5,
+      "flipX": true,
+      "origin": [
+        0.5,
+        0.875
+      ]
+    }
+  ],
+  "errors": []
+}

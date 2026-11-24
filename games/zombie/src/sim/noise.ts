@@ -2,7 +2,7 @@
 // Noises made during tick t are heard during tick t + 1; rings are for drawing only.
 import { dist } from './vision';
 
-export type NoiseKind = 'step' | 'shot' | 'lure' | 'alarm';
+export type NoiseKind = 'step' | 'shot' | 'lure' | 'alarm' | 'can';
 
 export interface Noise {
   x: number;

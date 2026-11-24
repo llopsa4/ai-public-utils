@@ -1,0 +1,382 @@
+{
+  "url": "http://127.0.0.1:5214",
+  "errors": [],
+  "results": [
+    {
+      "scene": "Intro",
+      "checks": [
+        {
+          "body": "fighter",
+          "facing": "se",
+          "frame": "fighter_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "scout",
+          "facing": "se",
+          "frame": "scout_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "se",
+          "frame": "zombie_fresh_a_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "se",
+          "frame": "zombie_fresh_b_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "se",
+          "frame": "zombie_fresh_c_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "fighter",
+          "facing": "ne",
+          "frame": "fighter_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "scout",
+          "facing": "ne",
+          "frame": "scout_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "ne",
+          "frame": "zombie_fresh_a_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "ne",
+          "frame": "zombie_fresh_b_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "ne",
+          "frame": "zombie_fresh_c_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "fighter",
+          "facing": "sw",
+          "frame": "fighter_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "scout",
+          "facing": "sw",
+          "frame": "scout_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "sw",
+          "frame": "zombie_fresh_a_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "sw",
+          "frame": "zombie_fresh_b_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "sw",
+          "frame": "zombie_fresh_c_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "fighter",
+          "facing": "nw",
+          "frame": "fighter_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "scout",
+          "facing": "nw",
+          "frame": "scout_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "nw",
+          "frame": "zombie_fresh_a_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "nw",
+          "frame": "zombie_fresh_b_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "nw",
+          "frame": "zombie_fresh_c_idle_ne_0",
+          "flip": true
+        }
+      ]
+    },
+    {
+      "scene": "Mission",
+      "checks": [
+        {
+          "body": "fighter",
+          "facing": "se",
+          "frame": "fighter_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "scout",
+          "facing": "se",
+          "frame": "scout_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "se",
+          "frame": "zombie_fresh_a_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "se",
+          "frame": "zombie_fresh_b_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "se",
+          "frame": "zombie_fresh_c_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "fighter",
+          "facing": "ne",
+          "frame": "fighter_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "scout",
+          "facing": "ne",
+          "frame": "scout_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "ne",
+          "frame": "zombie_fresh_a_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "ne",
+          "frame": "zombie_fresh_b_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "ne",
+          "frame": "zombie_fresh_c_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "fighter",
+          "facing": "sw",
+          "frame": "fighter_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "scout",
+          "facing": "sw",
+          "frame": "scout_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "sw",
+          "frame": "zombie_fresh_a_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "sw",
+          "frame": "zombie_fresh_b_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "sw",
+          "frame": "zombie_fresh_c_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "fighter",
+          "facing": "nw",
+          "frame": "fighter_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "scout",
+          "facing": "nw",
+          "frame": "scout_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "nw",
+          "frame": "zombie_fresh_a_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "nw",
+          "frame": "zombie_fresh_b_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "nw",
+          "frame": "zombie_fresh_c_idle_ne_0",
+          "flip": true
+        }
+      ]
+    },
+    {
+      "scene": "Base",
+      "checks": [
+        {
+          "body": "fighter",
+          "facing": "se",
+          "frame": "fighter_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "scout",
+          "facing": "se",
+          "frame": "scout_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "se",
+          "frame": "zombie_fresh_a_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "se",
+          "frame": "zombie_fresh_b_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "se",
+          "frame": "zombie_fresh_c_idle_se_0",
+          "flip": false
+        },
+        {
+          "body": "fighter",
+          "facing": "ne",
+          "frame": "fighter_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "scout",
+          "facing": "ne",
+          "frame": "scout_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "ne",
+          "frame": "zombie_fresh_a_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "ne",
+          "frame": "zombie_fresh_b_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "ne",
+          "frame": "zombie_fresh_c_idle_ne_0",
+          "flip": false
+        },
+        {
+          "body": "fighter",
+          "facing": "sw",
+          "frame": "fighter_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "scout",
+          "facing": "sw",
+          "frame": "scout_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "sw",
+          "frame": "zombie_fresh_a_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "sw",
+          "frame": "zombie_fresh_b_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "sw",
+          "frame": "zombie_fresh_c_idle_se_0",
+          "flip": true
+        },
+        {
+          "body": "fighter",
+          "facing": "nw",
+          "frame": "fighter_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "scout",
+          "facing": "nw",
+          "frame": "scout_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_a",
+          "facing": "nw",
+          "frame": "zombie_fresh_a_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_b",
+          "facing": "nw",
+          "frame": "zombie_fresh_b_idle_ne_0",
+          "flip": true
+        },
+        {
+          "body": "zombie_fresh_c",
+          "facing": "nw",
+          "frame": "zombie_fresh_c_idle_ne_0",
+          "flip": true
+        }
+      ]
+    }
+  ],
+  "note": "Synthetic idle comparison using the real scene and UnitSprite. Other fresh animation frames in the preview are stand-ins."
+}

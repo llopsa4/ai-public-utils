@@ -182,9 +182,11 @@ work and fish loops. Frame order is listed in SPEC.md.
 - **Berry ground:** a woodland-edge thicket of low shrubs bearing small dark red berries (#8E2A30)
   among the tall grass.
 - **River (and lakes):** calm blue-green water, gentle current lines, darker in the middle of the diamond
-  shape of the river; every water tile's outer 4 px edge band is the shared water mid colour so
-  river and ford tiles meet without a seam.
-- **Ford:** shallow water over pale stones and gravel.
+  shape of the river; every river tile's outer 4 px edge band is the river's water mid colour so
+  river tiles meet without a seam.
+- **Ford:** shallow water over pale stones and gravel. Its outer 4 px band is its own shallows
+  mid colour, not the river's blue (a blue band made a grid across a ford), so fords meet fords
+  seamlessly and meet the river along a plain shoreline.
 - **Banks:** a muddy band (#8A6644) and small reeds where land meets water, then grass.
 - **Spills:** soft, feathered edge patches of forest litter or berry shrubs reaching about a third
   into the neighbouring grass tile.

@@ -1,0 +1,28 @@
+{
+  "reserved": ["ESC", "ENTER", "R", "UP", "DOWN", "LEFT", "RIGHT"],
+  "actions": [
+    { "id": "panUp", "label": "Pan up", "key": "W", "also": ["UP"] },
+    { "id": "panDown", "label": "Pan down", "key": "S", "also": ["DOWN"] },
+    { "id": "panLeft", "label": "Pan left", "key": "A", "also": ["LEFT"] },
+    { "id": "panRight", "label": "Pan right", "key": "D", "also": ["RIGHT"] },
+    { "id": "select1", "label": "Select 1st survivor", "key": "F1" },
+    { "id": "select2", "label": "Select 2nd survivor", "key": "F2" },
+    { "id": "cycle", "label": "Next survivor", "key": "TAB" },
+    { "id": "freeze", "label": "Pause time", "key": "SPACE" },
+    { "id": "alert", "label": "Jump to attack", "key": "U" },
+    { "id": "weapon1", "label": "Weapon 1", "key": "ONE" },
+    { "id": "weapon2", "label": "Weapon 2", "key": "TWO" },
+    { "id": "crouch", "label": "Stance", "key": "C" },
+    { "id": "hold", "label": "Hold", "key": "V" },
+    { "id": "freefire", "label": "Free fire", "key": "Z" },
+    { "id": "takedown", "label": "Takedown", "key": "F" },
+    { "id": "carry", "label": "Carry body", "key": "G" },
+    { "id": "lure", "label": "Lure", "key": "L" },
+    { "id": "fix", "label": "Fix opening", "key": "X" },
+    { "id": "cook", "label": "Cook", "key": "K" },
+    { "id": "eat", "label": "Eat", "key": "E" },
+    { "id": "give", "label": "Give meal", "key": "Q" },
+    { "id": "build", "label": "Barricade", "key": "B" },
+    { "id": "trap", "label": "Trap", "key": "T" }
+  ]
+}

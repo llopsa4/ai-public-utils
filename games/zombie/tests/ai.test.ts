@@ -1,8 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { enemySees, nearTarget } from '../src/sim/ai';
 import { damage } from '../src/sim/combat';
 import { emitNoise } from '../src/sim/noise';
-import { type MissionSpec, type MissionState, createMission, orderMove, orderWatch, stepMission } from '../src/sim/mission';
+import { type MissionSpec, type MissionState, type Survivor, createMission, orderMove, orderHold, stepMission } from '../src/sim/mission';
 import { dist } from '../src/sim/vision';
 
 const open = (n: number): string[] => Array.from({ length: n }, () => '.'.repeat(n));
@@ -31,6 +32,78 @@ test('a lure pulls a zombie in range to the noise; one out of range ignores it',
   assert.equal(enemy(s, 'z2').ai.mode, 'wander');
   run(s, 50);
   assert.ok(dist(enemy(s, 'z1').x, enemy(s, 'z1').y, 8, 8) < 0.5);
+});
+
+test('reach: a zombie walking to a lure is near within 2 tiles of it, not at 3; a chaser never is', () => {
+  const s = mission({
+    survivors: [{ id: 'scout', kind: 'scout', x: 0, y: 23 }],
+    enemies: [{ id: 'z1', kind: 'zombie', x: 2, y: 8, facing: [1, 0] }],
+  });
+  emitNoise(s, 8, 8, 8, 'lure', 'scout');
+  stepMission(s);
+  const z = enemy(s, 'z1');
+  assert.equal(z.ai.mode, 'investigate');
+  assert.equal(z.ai.near, false);
+  let sawFar = false;
+  for (let i = 0; i < 80 && z.ai.mode === 'investigate'; i++) {
+    stepMission(s);
+    const d = dist(z.x, z.y, 8, 8);
+    if (d > 2.05) assert.equal(z.ai.near, false, `at ${d.toFixed(2)}`);
+    if (d >= 3) sawFar = true;
+    if (d <= 1.95 && z.path.length > 0) assert.equal(z.ai.near, true, `at ${d.toFixed(2)}`);
+  }
+  assert.ok(sawFar);
+  const chaser = { x: 0, y: 0, ai: { ...z.ai, mode: 'chase' as const } };
+  assert.equal(nearTarget(chaser, [[0, 1]]), false);
+  assert.equal(nearTarget({ ...chaser, ai: { ...z.ai, mode: 'wander' } }, [[0, 2]]), true);
+  assert.equal(nearTarget({ ...chaser, ai: { ...z.ai, mode: 'wander' } }, [[0, 3]]), false);
+});
+
+test('zombie senses: 360° at 3 tiles, 2 if crouched; no cone beyond', () => {
+  const s = mission({
+    survivors: [{ id: 'f', kind: 'fighter', x: 10, y: 12 }],
+    enemies: [{ id: 'z', kind: 'zombie', x: 13, y: 12, facing: [1, 0] }], // facing away from the survivor
+  });
+  const f = s.survivors[0]!;
+  const z = enemy(s, 'z');
+  assert.ok(enemySees(s, z, f)); // exactly 3 tiles, behind its back
+  f.x = 9.9;
+  assert.ok(!enemySees(s, z, f)); // just past 3
+  f.x = 10.5;
+  f.stance = 'crouch';
+  assert.ok(!enemySees(s, z, f)); // 2.5 tiles: seen standing, not crouched
+  f.x = 11;
+  assert.ok(enemySees(s, z, f)); // exactly 2 tiles crouched
+  f.stance = 'walk';
+  f.x = 10;
+  f.y = 12;
+  stepMission(s);
+  assert.equal(z.ai.mode, 'chase');
+});
+
+test('zombie senses: a wall blocks, and a bush hides a crouched survivor unless adjacent', () => {
+  const rows = open(16);
+  rows[8] = '.'.repeat(7) + '#' + '.'.repeat(8); // wall at (7, 8)
+  rows[3] = '.'.repeat(7) + 'b' + '.'.repeat(8); // bush at (7, 3)
+  const s = createMission({
+    map: rows,
+    extract: corner,
+    survivors: [
+      { id: 'a', kind: 'fighter', x: 9, y: 8 },
+      { id: 'b', kind: 'scout', x: 7, y: 3 },
+    ],
+    enemies: [
+      { id: 'zw', kind: 'zombie', x: 6, y: 8, facing: [1, 0] },
+      { id: 'zb', kind: 'zombie', x: 5, y: 3, facing: [1, 0] },
+    ],
+  });
+  const [a, b] = s.survivors as [Survivor, Survivor];
+  assert.ok(!enemySees(s, enemy(s, 'zw'), a)); // 3 tiles, but the wall is between
+  assert.ok(enemySees(s, enemy(s, 'zb'), b)); // standing in a bush is seen at 2 tiles
+  b.stance = 'crouch';
+  assert.ok(!enemySees(s, enemy(s, 'zb'), b)); // hidden at 2 tiles
+  enemy(s, 'zb').x = 6;
+  assert.ok(enemySees(s, enemy(s, 'zb'), b)); // adjacent: seen
 });
 
 test('a human far cone spots a standing survivor only after 0.5 s', () => {
@@ -83,7 +156,7 @@ test('a guard who sees a dead guard walks to the body, searches 10 s, then resum
   assert.equal(enemy(s, 'b').ai.mode, 'patrol');
 });
 
-test('watch: the first enemy in the cone is attacked (knife adjacent, else ranged); a new order ends it', () => {
+test('hold: melee strikes an adjacent enemy; the gun fires only with Free fire; a new order ends it', () => {
   const s = mission(
     {
       survivors: [
@@ -98,18 +171,23 @@ test('watch: the first enemy in the cone is attacked (knife adjacent, else range
     },
     16,
   );
-  assert.ok(orderWatch(s, 'scout', [10, 8]));
-  assert.ok(orderWatch(s, 'fighter', [10, 2]));
+  assert.ok(orderHold(s, 'scout', [10, 8]));
+  assert.ok(orderHold(s, 'fighter', [10, 2]));
+  // Free fire is off by default: the scout holds fire at the zombie 5 tiles away
   stepMission(s);
-  assert.equal(enemy(s, 'ahead').hp, 30); // bow 30
-  assert.equal(enemy(s, 'behind').hp, 60);
+  assert.equal(enemy(s, 'ahead').hp, 60);
+  assert.ok(!s.noises.some((n) => n.kind === 'shot'));
   assert.equal(enemy(s, 'next').hp, 20); // knife 40, silent
+  s.survivors.find((u) => u.id === 'scout')!.freeFire = true;
+  stepMission(s);
+  assert.equal(enemy(s, 'ahead').hp, 35); // gun 25
+  assert.equal(enemy(s, 'behind').hp, 60);
   assert.ok(!s.noises.some((n) => n.kind === 'shot' && n.from === 'fighter'));
 
   orderMove(s, ['scout'], [3, 12]);
   assert.equal(s.survivors[0]!.order?.type, 'move');
   run(s, 20);
-  assert.equal(enemy(s, 'ahead').hp, 30);
+  assert.equal(enemy(s, 'ahead').hp, 35);
 });
 
 test('a survivor death fails the mission and freezes it', () => {

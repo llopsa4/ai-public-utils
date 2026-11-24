@@ -106,6 +106,25 @@ computed from the canvas box) and fail on any `pageerror` or console error.
 On Windows the config passes ANGLE/Direct3D flags so headless Chromium uses the GPU; elsewhere the
 defaults apply. The first run may need `npx playwright install chromium`.
 
+AB8 installed-art check: `node art/source/AB8-r1/install-check.mjs` writes captures and checks to
+`test-results/ab8-installed/` at both screen sizes and zoom 0.5/1/2. It uses real pointer drags
+for L/T barricades, checks construction stages, winter and separate fire-pit flames, and captures
+a 20-piece winter barricade line at zoom 0.5. Run after e2e, which clears test-results.
+
+AB9 installed-art check: `node art/source/AB9-r2/install-check.mjs` writes captures and checks to
+`test-results/ab9-installed/` at both screen sizes and zoom 0.5/1/2. It checks all four buildings'
+construction stages and winter frames, plus all four summer/winter drying-rack sway frames.
+It sleeps the continuous loop and advances controlled renderer frames; it does not measure performance.
+Use `--reuse-captures` only to resume captures against the same unchanged art revision.
+Run after e2e, which clears test-results.
+
+AB2 installed-art check: `node art/source/AB2-r2/install-check.mjs` writes captures and checks to
+`test-results/ab2-installed/` at 1280x720 / 2560x1440 and world zoom 0.5/1/2. It checks all 57
+installed keys, normal/high-resolution cursor CSS and all five hotspots, the undraft state and
+the dogs upgrade row. Captures show menu, HUD, selection, orders and upgrades. It sleeps the
+continuous loop and advances controlled renderer frames; it does not measure performance.
+Run after e2e, or give e2e a separate `--output` subfolder to preserve the captures.
+
 ## Checking by hand
 
 Not covered by tests, so check in the browser (`npm run dev`) when touching them: mouse-edge and WASD
@@ -120,7 +139,88 @@ line dragged with a few builders, and the builders going on to the next segment 
 `npm run publish` builds and writes `index.html` and `build/` in this folder. Check that both exist
 and that the page loads from a static server. Commit them only when the user asks, and never push
 without an explicit request (the site deploys when `main` is pushed).
-22. **Interface art (AC8):** without art the speed buttons have no nine-slice frame and the cursor is the browser's (`camp.speedFrames()` all null, no
-    `image-set`); with `?standins` the speed buttons show `ui_button/normal` and the active one `ui_button/pressed`, the five cursors are installed, and selecting a
-    person turns the cursor to `move` (CSS holds an `image-set`). Skipped when `art/standins/atlas/ui.json` is missing. Unit tests in `tests/art/ui.test.ts`
-    (surface frames, cursor choice, hotspots, CSS). Not covered: the real cursor image in a browser, the hide text palette on real art.
+22. **Interface art (AC8 / AB2):** normal mode uses installed nine-slice speed buttons and five painted cursors; selecting a person changes the cursor to
+    `move` (CSS holds an `image-set`). The separate `?standins` case checks the same surfaces and selection behaviour and is skipped when
+    `art/standins/atlas/ui.json` is missing. Unit tests in `tests/art/ui.test.ts` cover surface frames, cursor choice, hotspots and CSS.
+    AB2's installed-art check above verifies both cursor resolutions and all hotspots; visual cursor appearance while moving a real mouse remains a hand check.
+
+## Installed AB3 terrain
+
+Run `node art/source/AB3-r4/install-check.mjs` after `npm run e2e` (Playwright clears test-results on startup). It checks the installed ground atlas and manifest, all 80 frames, four seasons, zoom 0.5/1/2 at 1280x720 and 2560x1440, terrain scale/origin/chunks and browser errors. Captures in `test-results/ab3-installed/` include river/ford views at 1x and 2x. Controlled renderer frames verify appearance, not performance or manual play. Delivery hashes in `art/source/AB3-r4/install-hashes.json` verify the unchanged archive `art/inbox/done/AB3-r4/`.
+
+## Installed AB5 plants and goods
+
+After the e2e run, run `node art/source/AB5-r2/install-check.mjs`. The installed-art check covers all 80 atlas frames, four seasons, zoom 0.5/1/2, 1280x720 and 2560x1440, every seasonal key/variant, normal stump creation, and empty/half/full store goods through pointer hover. Captures in `test-results/ab5-installed/` include oak and basswood on the installed AB3 terrain. Controlled frames check appearance, not performance or manual play. The unchanged approved delivery is archived at `art/inbox/done/AB5-r2/`; `art/source/AB5-r2/install-hashes.json` records every file hash.
+
+## Installed AB4 banks and spills
+
+After e2e, run `node art/source/AB4-r1/install-check.mjs`. It checks all 92 installed frames,
+normal ground-atlas textures, banks and both spill keys, four seasons, zoom 0.5/1/2 and
+1280x720 / 2560x1440, with no browser errors. Captures in `test-results/ab4-installed/`
+include ford-bank joins at 1x/2x and both directional spill types. Controlled renderer frames
+check appearance, not performance or manual play. Delivery hashes in
+`art/source/AB4-r1/install-hashes.json` verify `art/inbox/done/AB4-r1/` unchanged.
+The thin river-blue lip beside pale fords is reported to Claude in K21 for a decision.
+
+AB10 installed-art check: `node art/source/AB10-r2/install-check.mjs` writes captures and checks to
+`test-results/ab10-installed/` at 1280x720 / 2560x1440 and zoom 0.5/1/2. It checks the five society
+lodges in all three construction stages, finished summer and winter, normal atlas texture,
+scale/origin and all 146 building frames across two pages. Controlled renderer frames check
+appearance, not performance or a manual construction playthrough. Run after e2e, which clears test-results.
+
+
+## Installed AB11 plaza and store
+
+Run `node art/source/AB11-r3/install-check.mjs` after e2e (which clears test-results).
+It verifies eight approved AB11 frames among all 154 installed building frames, all
+construction stages, summer/winter, zoom 0.5/1/2 at 1280x720 and 2560x1440, normal
+textures/scale/origins, the centred hearth flame and pointer hover into/out of the
+store with empty/half/full resource piles. Captures and assertions are written to
+`test-results/ab11-installed/`. Controlled debug states check rendering, not performance
+or a manual construction playthrough. `art/source/AB11-r3/install-hashes.json` records
+all 61 unchanged delivery files archived in `art/inbox/done/AB11-r3/`.
+
+
+## Installed AB13 man animations
+
+Run `node art/source/AB13-r2/install-check.mjs` after e2e (which clears test-results).
+It verifies the approved immutable delivery hashes, all 1,408 installed frames,
+normal man selection, atlas texture, scale and origin, every animation/facing/frame
+in both family tints, and zoom 0.5/1/2 at 1280x720 and 2560x1440.
+Captures and assertions go to `test-results/ab13-installed/`. The frame sweep uses
+controlled renderer states; it does not constitute a manual gameplay or performance test.
+The approved delivery is archived at `art/inbox/done/AB13-r2/`; its file hashes are
+in `art/source/AB13-r2/install-hashes.json`.
+
+
+## Installed AB14 woman animations
+
+Run `node art/source/AB14-r2/install-check.mjs` after e2e (which clears test-results).
+It verifies approved delivery hashes, all 1,408 installed frames, normal woman selection,
+atlas texture, scale/origin, every animation/facing/frame in both family tints,
+and zoom 0.5/1/2 at 1280x720 and 2560x1440. Captures and assertions go to
+`test-results/ab14-installed/`. Controlled renderer states check appearance, not manual
+play or performance. The approved delivery is archived at `art/inbox/done/AB14-r2/`;
+its hashes are in `art/source/AB14-r2/install-hashes.json`.
+
+## Elder-man art (AB15)
+
+Run `node art/source/AB15-r1/install-check.mjs` after e2e (which clears test-results).
+It verifies the approved delivery hashes, all 928 installed frames, normal elder-male
+selection, texture, scale and origin, base/cloth alignment, both family tints and all
+464 frame pairs at 1280x720 and 2560x1440. Captures cover ten actions at zoom 0.5/1/2
+and an action overview in `test-results/ab15-installed/`. Controlled renderer states
+check appearance, not manual gameplay or performance; fish/dance remain art previews.
+The unchanged delivery is archived at `art/inbox/done/AB15-r1/`; hashes are in
+`art/source/AB15-r1/install-hashes.json`.
+
+## Elder-woman art (AB16)
+
+Run `node art/source/AB16-r1/install-check.mjs` after e2e (which clears test-results).
+It verifies approved delivery hashes, all 928 installed frames, normal elder-female
+selection, texture, scale and origin, base/cloth alignment, both family tints and all
+464 frame pairs at 1280x720 and 2560x1440. Captures cover ten actions at zoom 0.5/1/2
+and an action overview in `test-results/ab16-installed/`. Controlled renderer states
+check appearance, not manual gameplay or performance; fish/dance remain art previews.
+The unchanged delivery is archived at `art/inbox/done/AB16-r1/`; hashes are in
+`art/source/AB16-r1/install-hashes.json`.

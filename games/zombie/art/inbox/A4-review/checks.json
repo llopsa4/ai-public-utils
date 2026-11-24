@@ -1,0 +1,120 @@
+{
+  "checks": [
+    {
+      "key": "zombie_fresh_a",
+      "facing": "se",
+      "cell": [
+        128,
+        128
+      ],
+      "height": 96,
+      "anchor": [
+        64,
+        112
+      ],
+      "bounds": [
+        43,
+        16,
+        84,
+        112
+      ]
+    },
+    {
+      "key": "zombie_fresh_a",
+      "facing": "ne",
+      "cell": [
+        128,
+        128
+      ],
+      "height": 96,
+      "anchor": [
+        64,
+        112
+      ],
+      "bounds": [
+        43,
+        16,
+        81,
+        112
+      ]
+    },
+    {
+      "key": "zombie_fresh_b",
+      "facing": "se",
+      "cell": [
+        128,
+        128
+      ],
+      "height": 92,
+      "anchor": [
+        64,
+        112
+      ],
+      "bounds": [
+        50,
+        20,
+        75,
+        112
+      ]
+    },
+    {
+      "key": "zombie_fresh_b",
+      "facing": "ne",
+      "cell": [
+        128,
+        128
+      ],
+      "height": 92,
+      "anchor": [
+        64,
+        112
+      ],
+      "bounds": [
+        50,
+        20,
+        75,
+        112
+      ]
+    },
+    {
+      "key": "zombie_fresh_c",
+      "facing": "se",
+      "cell": [
+        128,
+        128
+      ],
+      "height": 88,
+      "anchor": [
+        64,
+        112
+      ],
+      "bounds": [
+        50,
+        24,
+        75,
+        112
+      ]
+    },
+    {
+      "key": "zombie_fresh_c",
+      "facing": "ne",
+      "cell": [
+        128,
+        128
+      ],
+      "height": 88,
+      "anchor": [
+        64,
+        112
+      ],
+      "bounds": [
+        50,
+        24,
+        74,
+        112
+      ]
+    }
+  ],
+  "preview": "C:\\Users\\Nuria\\AppData\\Local\\Temp\\dead-woods-A4-qBL9jI",
+  "packed": true
+}

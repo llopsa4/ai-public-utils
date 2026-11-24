@@ -139,7 +139,7 @@ one diamond, so neighbouring tiles continue seamlessly.
 | Key | Seasons | Variants | Rule |
 |---|---|---|---|
 | `tile_grass`, `tile_forest`, `tile_berry` | 4 | 4 | variant 0 is the clean texture; variants 1-3 add interior details (tufts, patches, litter, shrubs) that stay **8 px away from the diamond edge**, so every variant meets every other |
-| `tile_river`, `tile_ford` | 4 | 4 | the outer 4 px edge band of every water tile is the water mid colour of its season, so river and ford meet without a seam |
+| `tile_river`, `tile_ford` | 4 | 4 | `tile_river`: the outer 4 px edge band is the river's water mid colour of its season, so river tiles meet without a seam. `tile_ford` (K18, 2026-11-23): its outer 4 px band is the ford's **own** shallows mid colour (the mean of its interior, no blue), so ford tiles meet each other without a seam; a ford meets a river tile along a plain shoreline (shallows against deep water), which is accepted |
 | `bank_river` | 4 | 15 | masks 1-15, by which edges touch water (river or ford): NE 1, SE 2, SW 4, NW 8, as for the barricade; mask 0 is the plain ground tile; the water side of each edge blends to the water edge band, the land side to grass |
 | `spill_forest`, `spill_berry` | 4 | 4 edges | `ne`, `se`, `sw`, `nw`: the edge of the grass tile the forest/berry neighbour lies across; a feathered overlay reaching 1/3 into the tile, transparent elsewhere |
 

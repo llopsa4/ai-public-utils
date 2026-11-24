@@ -1,0 +1,35 @@
+{
+  "seed": 11,
+  "start": { "food": 5, "scrap": 4, "ammo": 5 },
+  "sealed": [[19, 9]],
+  "openings": [
+    { "id": "door", "kind": "door", "x": 12, "y": 19 },
+    { "id": "window1", "kind": "window", "x": 9, "y": 16 },
+    { "id": "window2", "kind": "window", "x": 22, "y": 12 }
+  ],
+  "stove": { "x": 21, "y": 17 },
+  "fix": { "time": 3, "cost": 1, "hp": 100 },
+  "barricade": { "cost": 1, "hp": 100 },
+  "cook": { "time": 6, "food": 1 },
+  "traps": {
+    "spike": { "cost": 2, "time": 2, "damage": 60, "rearmCost": 1, "rearmTime": 1 },
+    "can": { "cost": 1, "time": 2, "radius": 6, "cooldown": 5 }
+  },
+  "hunger": { "seconds": 480, "warn": 120, "critical": 30, "starveEvery": 3, "starveDamage": 1, "starveSpeed": 0.7, "mealHeal": 60 },
+  "roamers": {
+    "start": 3,
+    "every": 90,
+    "max": 4,
+    "spawns": [[3, 3], [28, 4], [4, 27], [27, 26]]
+  },
+  "herd": { "warnAt": 300, "arriveAt": 420, "count": 12, "over": 60, "row": 1, "arrow": [16, 0] },
+  "hints": [
+    "{fix}, then click a broken window or door: fix it (3 s, 1 scrap)",
+    "{cook} or click the stove: cook a meal (1 food). {eat}: eat. {give}: give it to a friend",
+    "{trap}, then click a tile: spike pit or noise can. {build}: barricade a gap",
+    "Watch the hunger bars: hungry survivors move slower, then starve",
+    "{hold}: hold a spot with the knife or club. {freefire}: free fire lets Hold use the gun"
+  ],
+  "objective": { "prepare": "Prepare the house", "herd": "Survive the herd: {n} left" },
+  "say": { "hungry": "I need to eat something." }
+}

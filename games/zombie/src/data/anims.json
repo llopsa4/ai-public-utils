@@ -1,0 +1,24 @@
+{
+  "notes": "Frame rates and loops per anim name (art/STYLE.md Atlas contract; frame counts live in art/manifest.json figures.keys). fastFps: the rate used when the figure is hurrying (a zombie investigating). One-shots (loop false) play once from the sim's `act` cue or from death; takedown runs 4 frames at 4 fps to fill the 1 s takedown. Which sim state plays which anim is in src/render/figure.ts.",
+  "anims": {
+    "idle": { "fps": 1, "loop": true },
+    "hold": { "fps": 1, "loop": true },
+    "walk": { "fps": 8, "loop": true },
+    "run": { "fps": 12, "loop": true },
+    "crouch": { "fps": 6, "loop": true },
+    "crawl": { "fps": 5, "loop": true },
+    "carry": { "fps": 8, "loop": true },
+    "work": { "fps": 4, "loop": true },
+    "shamble": { "fps": 7.5, "fastFps": 10.5, "loop": true },
+    "reach": { "fps": 7.5, "fastFps": 10.5, "loop": true },
+    "lurch": { "fps": 15, "loop": true },
+    "stab": { "fps": 12, "loop": false },
+    "shot": { "fps": 12, "loop": false },
+    "pistol_shot": { "fps": 12, "loop": false },
+    "club": { "fps": 12, "loop": false },
+    "throw": { "fps": 12, "loop": false },
+    "takedown": { "fps": 4, "loop": false },
+    "bite": { "fps": 12, "loop": false },
+    "death": { "fps": 8, "loop": false }
+  }
+}

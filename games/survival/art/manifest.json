@@ -96,10 +96,10 @@
     "variants": null,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB13",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -208,10 +208,10 @@
     "variants": null,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB14",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -295,10 +295,10 @@
     "variants": null,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB15",
+    "revision": 1,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -382,10 +382,10 @@
     "variants": null,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB16",
+    "revision": 1,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -1092,10 +1092,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB11",
+    "revision": 3,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         256,
@@ -1133,10 +1133,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB11",
+    "revision": 3,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         256,
@@ -1170,10 +1170,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB11",
+    "revision": 3,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         256,
@@ -1252,10 +1252,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB9",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         128,
@@ -1293,10 +1293,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB9",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         128,
@@ -1334,10 +1334,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB9",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         128,
@@ -1375,10 +1375,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB10",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         128,
@@ -1416,10 +1416,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB10",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         128,
@@ -1457,10 +1457,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB10",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         128,
@@ -1498,10 +1498,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB10",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         128,
@@ -1539,10 +1539,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB10",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         128,
@@ -1591,10 +1591,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB9",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         128,
@@ -1632,10 +1632,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB8",
+    "revision": 1,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         64,
@@ -1673,10 +1673,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB8",
+    "revision": 1,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         64,
@@ -1714,10 +1714,10 @@
     "variants": 16,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB8",
+    "revision": 1,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         64,
@@ -1750,9 +1750,9 @@
     "border": 0,
     "ground": false,
     "status": "final",
-    "batch": "AB0",
-    "revision": 1,
-    "approvedBy": "user",
+    "batch": "AB3",
+    "revision": 4,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         64,
@@ -1784,10 +1784,10 @@
     "variants": 4,
     "border": 0,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB3",
+    "revision": 4,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         64,
@@ -1819,10 +1819,10 @@
     "variants": 4,
     "border": 0,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB3",
+    "revision": 4,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         64,
@@ -1854,10 +1854,10 @@
     "variants": 4,
     "border": 0,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB3",
+    "revision": 4,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         64,
@@ -1889,10 +1889,10 @@
     "variants": 4,
     "border": 0,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB3",
+    "revision": 4,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         64,
@@ -1941,10 +1941,10 @@
       "14",
       "15"
     ],
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB4",
+    "revision": 1,
+    "approvedBy": "claude"
   },
   "spill_forest": {
     "atlas": "ground",
@@ -1972,10 +1972,10 @@
       "sw",
       "nw"
     ],
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB4",
+    "revision": 1,
+    "approvedBy": "claude"
   },
   "spill_berry": {
     "atlas": "ground",
@@ -2003,10 +2003,10 @@
       "sw",
       "nw"
     ],
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB4",
+    "revision": 1,
+    "approvedBy": "claude"
   },
   "tree_bur_oak": {
     "atlas": "plants",
@@ -2028,10 +2028,10 @@
     "variants": 2,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         48,
@@ -2063,10 +2063,10 @@
     "variants": 2,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         48,
@@ -2098,10 +2098,10 @@
     "variants": 2,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         48,
@@ -2133,10 +2133,10 @@
     "variants": 2,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         48,
@@ -2168,10 +2168,10 @@
     "variants": 2,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "bush_plum": {
     "atlas": "plants",
@@ -2193,10 +2193,10 @@
     "variants": 2,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "rock_boulder": {
     "atlas": "plants",
@@ -2218,10 +2218,10 @@
     "variants": 3,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "tuft_grass": {
     "atlas": "plants",
@@ -2243,10 +2243,10 @@
     "variants": 3,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "stump_tree": {
     "atlas": "plants",
@@ -2268,10 +2268,10 @@
     "variants": 1,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "item_basket": {
     "atlas": "plants",
@@ -2293,10 +2293,10 @@
     "variants": null,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         16,
@@ -2328,10 +2328,10 @@
     "variants": null,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         16,
@@ -2363,10 +2363,10 @@
     "variants": null,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         16,
@@ -2398,10 +2398,10 @@
     "variants": null,
     "border": 2,
     "ground": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB5",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         16,
@@ -2567,10 +2567,10 @@
     "border": 2,
     "ground": false,
     "retina": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "cursor_move": {
     "atlas": "ui",
@@ -2593,10 +2593,10 @@
     "border": 2,
     "ground": false,
     "retina": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "cursor_attack": {
     "atlas": "ui",
@@ -2619,10 +2619,10 @@
     "border": 2,
     "ground": false,
     "retina": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "cursor_build": {
     "atlas": "ui",
@@ -2645,10 +2645,10 @@
     "border": 2,
     "ground": false,
     "retina": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "cursor_invalid": {
     "atlas": "ui",
@@ -2671,10 +2671,10 @@
     "border": 2,
     "ground": false,
     "retina": true,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_food": {
     "atlas": "ui",
@@ -2731,10 +2731,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -2766,10 +2766,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -2801,10 +2801,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -2836,10 +2836,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -2871,10 +2871,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -2906,10 +2906,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null,
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude",
     "placeholder": {
       "size": [
         32,
@@ -2941,10 +2941,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_hungry": {
     "atlas": "ui",
@@ -2966,10 +2966,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_gather": {
     "atlas": "ui",
@@ -2991,10 +2991,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_hunt": {
     "atlas": "ui",
@@ -3016,10 +3016,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_chop": {
     "atlas": "ui",
@@ -3041,10 +3041,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_dry": {
     "atlas": "ui",
@@ -3066,10 +3066,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_scout": {
     "atlas": "ui",
@@ -3091,10 +3091,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_drill": {
     "atlas": "ui",
@@ -3116,10 +3116,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_tend": {
     "atlas": "ui",
@@ -3141,10 +3141,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_heal": {
     "atlas": "ui",
@@ -3166,10 +3166,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_build": {
     "atlas": "ui",
@@ -3191,10 +3191,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_haul": {
     "atlas": "ui",
@@ -3216,10 +3216,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_fight": {
     "atlas": "ui",
@@ -3241,10 +3241,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_fish": {
     "atlas": "ui",
@@ -3266,10 +3266,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_job_dance": {
     "atlas": "ui",
@@ -3291,10 +3291,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_order_move": {
     "atlas": "ui",
@@ -3316,10 +3316,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_order_attack": {
     "atlas": "ui",
@@ -3341,10 +3341,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_order_draft": {
     "atlas": "ui",
@@ -3366,10 +3366,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_order_undraft": {
     "atlas": "ui",
@@ -3391,10 +3391,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_order_hold": {
     "atlas": "ui",
@@ -3416,10 +3416,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_order_defend": {
     "atlas": "ui",
@@ -3441,10 +3441,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_order_chase": {
     "atlas": "ui",
@@ -3466,10 +3466,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_order_delete": {
     "atlas": "ui",
@@ -3491,10 +3491,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_dogs": {
     "atlas": "ui",
@@ -3516,10 +3516,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_bows": {
     "atlas": "ui",
@@ -3541,10 +3541,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_healers": {
     "atlas": "ui",
@@ -3566,10 +3566,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_scouts": {
     "atlas": "ui",
@@ -3591,10 +3591,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_warriors": {
     "atlas": "ui",
@@ -3616,10 +3616,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_builders": {
     "atlas": "ui",
@@ -3641,10 +3641,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_barricades": {
     "atlas": "ui",
@@ -3666,10 +3666,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_horses": {
     "atlas": "ui",
@@ -3691,10 +3691,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_riders": {
     "atlas": "ui",
@@ -3716,10 +3716,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_tools": {
     "atlas": "ui",
@@ -3741,10 +3741,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_spirits": {
     "atlas": "ui",
@@ -3766,10 +3766,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_spirit_warriors": {
     "atlas": "ui",
@@ -3791,10 +3791,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_guardian_wolves": {
     "atlas": "ui",
@@ -3816,10 +3816,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_bison_charge": {
     "atlas": "ui",
@@ -3841,10 +3841,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_upgrade_storm_caller": {
     "atlas": "ui",
@@ -3866,10 +3866,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_season_spring": {
     "atlas": "ui",
@@ -3891,10 +3891,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_season_summer": {
     "atlas": "ui",
@@ -3916,10 +3916,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_season_autumn": {
     "atlas": "ui",
@@ -3941,10 +3941,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_season_winter": {
     "atlas": "ui",
@@ -3966,10 +3966,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_speed_pause": {
     "atlas": "ui",
@@ -3991,10 +3991,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_speed_1x": {
     "atlas": "ui",
@@ -4016,10 +4016,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_speed_2x": {
     "atlas": "ui",
@@ -4041,10 +4041,10 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   },
   "icon_speed_4x": {
     "atlas": "ui",
@@ -4066,9 +4066,9 @@
     "variants": null,
     "border": 2,
     "ground": false,
-    "status": "placeholder",
-    "batch": null,
-    "revision": 0,
-    "approvedBy": null
+    "status": "final",
+    "batch": "AB2",
+    "revision": 2,
+    "approvedBy": "claude"
   }
 }

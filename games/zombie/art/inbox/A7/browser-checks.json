@@ -1,0 +1,343 @@
+{
+  "url": "http://127.0.0.1:5207/?debug",
+  "results": [
+    {
+      "scene": "Intro",
+      "facing": "se",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_se_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_se_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Intro",
+      "facing": "sw",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_se_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_se_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Intro",
+      "facing": "ne",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_ne_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_ne_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Intro",
+      "facing": "nw",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_ne_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_ne_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Mission",
+      "facing": "se",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_se_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_se_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Mission",
+      "facing": "sw",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_se_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_se_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Mission",
+      "facing": "ne",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_ne_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_ne_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Mission",
+      "facing": "nw",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_ne_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_ne_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Base",
+      "facing": "se",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_se_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_se_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Base",
+      "facing": "sw",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_se_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_se_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Base",
+      "facing": "ne",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_ne_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_ne_0",
+          "flipX": false,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    },
+    {
+      "scene": "Base",
+      "facing": "nw",
+      "checked": [
+        {
+          "kind": "fighter",
+          "frame": "fighter_idle_ne_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        },
+        {
+          "kind": "scout",
+          "frame": "scout_idle_ne_0",
+          "flipX": true,
+          "sourceWidth": 128,
+          "displayWidth": 64,
+          "origin": [
+            0.5,
+            0.875
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "note": "Synthetic idle states through actual UnitSprite in all 3 scenes, both characters adjacent. Other Cass animations are old frames enlarged only in isolated preview."
+}

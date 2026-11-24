@@ -1,0 +1,524 @@
+[
+  {
+    "name": "crouch_se_0.png",
+    "bounds": {
+      "left": 19,
+      "top": 24,
+      "right": 44,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crouch_se_1.png",
+    "bounds": {
+      "left": 22,
+      "top": 23,
+      "right": 44,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crouch_se_2.png",
+    "bounds": {
+      "left": 19,
+      "top": 24,
+      "right": 44,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crouch_se_3.png",
+    "bounds": {
+      "left": 22,
+      "top": 23,
+      "right": 43,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crouch_ne_0.png",
+    "bounds": {
+      "left": 20,
+      "top": 24,
+      "right": 43,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crouch_ne_1.png",
+    "bounds": {
+      "left": 22,
+      "top": 23,
+      "right": 43,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crouch_ne_2.png",
+    "bounds": {
+      "left": 22,
+      "top": 24,
+      "right": 43,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crouch_ne_3.png",
+    "bounds": {
+      "left": 23,
+      "top": 23,
+      "right": 42,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crawl_se_0.png",
+    "bounds": {
+      "left": 17,
+      "top": 41,
+      "right": 47,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crawl_se_1.png",
+    "bounds": {
+      "left": 18,
+      "top": 41,
+      "right": 43,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crawl_se_2.png",
+    "bounds": {
+      "left": 15,
+      "top": 41,
+      "right": 46,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crawl_se_3.png",
+    "bounds": {
+      "left": 18,
+      "top": 41,
+      "right": 43,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crawl_ne_0.png",
+    "bounds": {
+      "left": 18,
+      "top": 41,
+      "right": 47,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crawl_ne_1.png",
+    "bounds": {
+      "left": 17,
+      "top": 41,
+      "right": 45,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crawl_ne_2.png",
+    "bounds": {
+      "left": 17,
+      "top": 41,
+      "right": 47,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "crawl_ne_3.png",
+    "bounds": {
+      "left": 18,
+      "top": 41,
+      "right": 44,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "hold_se_0.png",
+    "bounds": {
+      "left": 20,
+      "top": 11,
+      "right": 48,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "work_se_0.png",
+    "bounds": {
+      "left": 19,
+      "top": 19,
+      "right": 46,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "work_se_1.png",
+    "bounds": {
+      "left": 19,
+      "top": 24,
+      "right": 44,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "hold_ne_0.png",
+    "bounds": {
+      "left": 21,
+      "top": 11,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "work_ne_0.png",
+    "bounds": {
+      "left": 19,
+      "top": 18,
+      "right": 46,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "work_ne_1.png",
+    "bounds": {
+      "left": 18,
+      "top": 24,
+      "right": 42,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "death_se_0.png",
+    "bounds": {
+      "left": 21,
+      "top": 10,
+      "right": 48,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "death_se_1.png",
+    "bounds": {
+      "left": 17,
+      "top": 17,
+      "right": 44,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "death_se_2.png",
+    "bounds": {
+      "left": 13,
+      "top": 23,
+      "right": 48,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "death_se_3.png",
+    "bounds": {
+      "left": 11,
+      "top": 36,
+      "right": 54,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "death_ne_0.png",
+    "bounds": {
+      "left": 21,
+      "top": 10,
+      "right": 48,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "death_ne_1.png",
+    "bounds": {
+      "left": 17,
+      "top": 18,
+      "right": 45,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "death_ne_2.png",
+    "bounds": {
+      "left": 13,
+      "top": 26,
+      "right": 52,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "death_ne_3.png",
+    "bounds": {
+      "left": 10,
+      "top": 39,
+      "right": 52,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "stab_se_0.png",
+    "bounds": {
+      "left": 19,
+      "top": 10,
+      "right": 42,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "stab_se_1.png",
+    "bounds": {
+      "left": 26,
+      "top": 10,
+      "right": 54,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "stab_se_2.png",
+    "bounds": {
+      "left": 23,
+      "top": 10,
+      "right": 42,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "stab_ne_0.png",
+    "bounds": {
+      "left": 21,
+      "top": 10,
+      "right": 42,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "stab_ne_1.png",
+    "bounds": {
+      "left": 23,
+      "top": 10,
+      "right": 54,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "stab_ne_2.png",
+    "bounds": {
+      "left": 24,
+      "top": 10,
+      "right": 43,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "pistol_shot_se_0.png",
+    "bounds": {
+      "left": 26,
+      "top": 10,
+      "right": 46,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "pistol_shot_se_1.png",
+    "bounds": {
+      "left": 26,
+      "top": 10,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "pistol_shot_se_2.png",
+    "bounds": {
+      "left": 26,
+      "top": 10,
+      "right": 46,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "pistol_shot_ne_0.png",
+    "bounds": {
+      "left": 26,
+      "top": 10,
+      "right": 44,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "pistol_shot_ne_1.png",
+    "bounds": {
+      "left": 26,
+      "top": 10,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "pistol_shot_ne_2.png",
+    "bounds": {
+      "left": 26,
+      "top": 10,
+      "right": 44,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "takedown_se_0.png",
+    "bounds": {
+      "left": 22,
+      "top": 10,
+      "right": 47,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "takedown_se_1.png",
+    "bounds": {
+      "left": 21,
+      "top": 10,
+      "right": 46,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "takedown_se_2.png",
+    "bounds": {
+      "left": 20,
+      "top": 11,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "takedown_se_3.png",
+    "bounds": {
+      "left": 22,
+      "top": 10,
+      "right": 42,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "takedown_ne_0.png",
+    "bounds": {
+      "left": 23,
+      "top": 10,
+      "right": 48,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "takedown_ne_1.png",
+    "bounds": {
+      "left": 21,
+      "top": 10,
+      "right": 46,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "takedown_ne_2.png",
+    "bounds": {
+      "left": 21,
+      "top": 12,
+      "right": 50,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "takedown_ne_3.png",
+    "bounds": {
+      "left": 23,
+      "top": 10,
+      "right": 46,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "carry_se_0.png",
+    "bounds": {
+      "left": 13,
+      "top": 8,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "carry_se_1.png",
+    "bounds": {
+      "left": 13,
+      "top": 8,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "carry_se_2.png",
+    "bounds": {
+      "left": 13,
+      "top": 8,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "carry_se_3.png",
+    "bounds": {
+      "left": 14,
+      "top": 8,
+      "right": 50,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "carry_ne_0.png",
+    "bounds": {
+      "left": 14,
+      "top": 8,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "carry_ne_1.png",
+    "bounds": {
+      "left": 15,
+      "top": 10,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "carry_ne_2.png",
+    "bounds": {
+      "left": 15,
+      "top": 8,
+      "right": 49,
+      "bottom": 56
+    }
+  },
+  {
+    "name": "carry_ne_3.png",
+    "bounds": {
+      "left": 14,
+      "top": 8,
+      "right": 49,
+      "bottom": 56
+    }
+  }
+]

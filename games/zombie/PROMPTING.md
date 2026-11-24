@@ -13,7 +13,7 @@ which one you assumed. Never move to a later stage (spec, code, final art) uninv
   recommended option, short outline, numbers where they matter, data shape if it adds JSON, art needs
   listed but not produced. Settled results go to DESIGN.md and new rows to PLAN.md, nothing else.
 - **WRITE:** player-facing text (mission briefings, tooltips, menu and help text). English, short.
-  No dialogue for now.
+  Dialogue lines go in `data/story.json` (DESIGN §6) and need the user's approval.
 - **BUILD:** implement an approved design or PLAN.md unit: only the requested behaviour, grey
   placeholders unless approved art exists, save compatibility once saves exist, no unrelated polish.
   Report what still needs checking in the browser.

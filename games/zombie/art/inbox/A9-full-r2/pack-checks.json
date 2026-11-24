@@ -1,0 +1,307 @@
+{
+  "cursor_attack": {
+    "size": [
+      32,
+      32
+    ],
+    "group": "cursor",
+    "sha256": "e188ea92d8f2a9383deccf43fa5718f0d465391f299cd5654303cbeb4bf47e1e",
+    "hotspot": [
+      16,
+      16
+    ],
+    "changedSinceR1": false
+  },
+  "cursor_move": {
+    "size": [
+      32,
+      32
+    ],
+    "group": "cursor",
+    "sha256": "c36052caaa00eff212e2283a71e60f7925a259db4582074233b91f6535059599",
+    "hotspot": [
+      16,
+      16
+    ],
+    "changedSinceR1": false
+  },
+  "cursor_run": {
+    "size": [
+      32,
+      32
+    ],
+    "group": "cursor",
+    "sha256": "43f557b526c5f8a750eb1f2fa51e42149d29fefad9b0157b4e97b44fb41ff95d",
+    "hotspot": [
+      16,
+      16
+    ],
+    "changedSinceR1": false
+  },
+  "cursor_select": {
+    "size": [
+      32,
+      32
+    ],
+    "group": "cursor",
+    "sha256": "ce92631460dcd54647e55670cf5738afb511f958225e63a081f336a10e8987b7",
+    "hotspot": [
+      6,
+      3
+    ],
+    "changedSinceR1": false
+  },
+  "cursor_use": {
+    "size": [
+      32,
+      32
+    ],
+    "group": "cursor",
+    "sha256": "a1a28a6af6e6d148b86a2490e7a108d970fb01946473da1efd5abbd4c6a881f1",
+    "hotspot": [
+      16,
+      16
+    ],
+    "changedSinceR1": false
+  },
+  "icon_bar_barricade": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "48f456d43550986abe799a5c1c110c27a77ab5d02b979b0a3065f3dc1beadd52",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_can": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "ee7793f4406f647b713af3ef7816c420a4828572d68d875ae1131e8eae2171ce",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_carry": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "205249bd83be593222b7de62bd8aff7a58cbe93daa8b6f2d06a7db40ead3c5a9",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_club": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "32fbce339fda40a4e0e09566d4e02f3070bc360b3b6a954be724654411709788",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_cook": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "743bf113a49613e3e22ae93fc57d9659e2551d5d386fcfbf41458c667445630c",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_crouch": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "062f60f2d93639046648b206614f35d1cd1ad1a1fbc6128356c39e24e3bfa6ee",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_eat": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "542ddf325230061e5fff7c558d9944b0aca023306fd146df18bdfa72662e552e",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_fix": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "7835a86f1f8e5bae46dc6d3d07d1568b81592843d9681cd27404e7dabbbb17b3",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_freefire": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "2a6b36d1cdbb0d2adcb472397ba11eadbcd19bc5092817cf83c98dee947a4cdd",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_give": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "aaa8ed64777dd12ea41603bc72ca30f10a64f3bd1d70ba230d02f520bdd6b48a",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_gun": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "cb6b18396a4878595df6c30ff4d08efa839a026e8b0c7975bd54adea3be24e5b",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_hold": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "f7cb65b2f93136e0c394f3abd5a2241bc8f50fa41afbe0b70efe7a0e0fbdd59d",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_knife": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "90b8e96942ec01566fedd92820b932f5170e059847971d78c59c55b32d8c59bf",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_lure": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "6a7dc63d4063ca1115dfcb7eb7ed6e43d0f698176d3189799a1036cda4505b4d",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_spike": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "be3b5804c34b81be9b0725eb927e1546bec96caba56ee0dfe4dbf72904422b0c",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_bar_takedown": {
+    "size": [
+      96,
+      96
+    ],
+    "group": "icon_bar",
+    "sha256": "88e4f30638e7ce6a7878b84910fae38201626409aa328d33ca52807c4a176c8e",
+    "matchesPackedPixels": true,
+    "changedSinceR1": true
+  },
+  "icon_hud_ammo": {
+    "size": [
+      48,
+      48
+    ],
+    "group": "icon_hud",
+    "sha256": "7839ccb1e5a7bf89a5f888c9fe03dca05735d2d0bb77206fa15dabb18852dd90",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_hud_crate": {
+    "size": [
+      48,
+      48
+    ],
+    "group": "icon_hud",
+    "sha256": "715265067a9c546b01c8181deadd115d7733fbc9dd2363a75a7d97007ff1dc2e",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_hud_food": {
+    "size": [
+      48,
+      48
+    ],
+    "group": "icon_hud",
+    "sha256": "ea3c56c61b4ca704f2847216d7da25f4ae3f71fa6f5bf732e519bed9bbaa245a",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_hud_herd": {
+    "size": [
+      48,
+      48
+    ],
+    "group": "icon_hud",
+    "sha256": "b7359a6739960312552b85a4545e790523b4042c0a21a9a5664a4ce2e58d6432",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_hud_hp": {
+    "size": [
+      48,
+      48
+    ],
+    "group": "icon_hud",
+    "sha256": "65f05ab48f334bc4f52a8c237e53e548e53bdefaa5aef6fc1550a2936a32715a",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_hud_hunger": {
+    "size": [
+      48,
+      48
+    ],
+    "group": "icon_hud",
+    "sha256": "598d96b41cfd90bf7f1f11d3b9bbaa285a45af3f53a0e1c0c6bc96e2cb8d4d75",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_hud_scrap": {
+    "size": [
+      48,
+      48
+    ],
+    "group": "icon_hud",
+    "sha256": "43f2365a68beb5cbe2ca3f977339af15e607307c241a5f6dbbe390d9d407ff8c",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  },
+  "icon_hud_zombie": {
+    "size": [
+      48,
+      48
+    ],
+    "group": "icon_hud",
+    "sha256": "3a2d979f9ea4d2ea96ab4cd566589f314b2e5913f6b8c4367774e9222ec7854b",
+    "matchesPackedPixels": true,
+    "changedSinceR1": false
+  }
+}

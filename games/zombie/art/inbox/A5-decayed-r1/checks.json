@@ -1,0 +1,2524 @@
+{
+  "checks": [
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "idle",
+      "frame": 0,
+      "sha256": "49369e0fdaa567586906487d43b30af23ac4645f5e000eeaae12cbe3d07bc616",
+      "bounds": {
+        "left": 46,
+        "top": 16,
+        "right": 86,
+        "bottom": 112,
+        "pixels": 2884
+      },
+      "silhouetteOverlap": 0.933
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 0,
+      "sha256": "3b88ddd85077836acc5b501378d418eb6787f0075639acdf71e922747044eea2",
+      "bounds": {
+        "left": 43,
+        "top": 16,
+        "right": 89,
+        "bottom": 112,
+        "pixels": 3007
+      },
+      "silhouetteOverlap": 0.951
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 1,
+      "sha256": "159f184c723b54d92d3423766e59b5321e5f40a1220665708b68358f754059c4",
+      "bounds": {
+        "left": 42,
+        "top": 19,
+        "right": 91,
+        "bottom": 112,
+        "pixels": 2891
+      },
+      "silhouetteOverlap": 0.946
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 2,
+      "sha256": "9fa058577c1c0e4a82d1f013eb5fe777b4a30a48fd69fd241eb36645eb9b23c1",
+      "bounds": {
+        "left": 40,
+        "top": 17,
+        "right": 88,
+        "bottom": 112,
+        "pixels": 3044
+      },
+      "silhouetteOverlap": 0.954
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 3,
+      "sha256": "abff071efbd2790ce83a6d14e7638798290d9a7d764f3403f66baac4a6ccc2ae",
+      "bounds": {
+        "left": 44,
+        "top": 20,
+        "right": 89,
+        "bottom": 112,
+        "pixels": 2809
+      },
+      "silhouetteOverlap": 0.936
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 4,
+      "sha256": "373ead6d530022b26cab84e4f136a780ddfafc6741dfef5f227fa0e3af74a631",
+      "bounds": {
+        "left": 48,
+        "top": 19,
+        "right": 92,
+        "bottom": 112,
+        "pixels": 2566
+      },
+      "silhouetteOverlap": 0.914
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 5,
+      "sha256": "26c7f42f9c91e7175f2d21151a5e2612fedc5af15d5c66181ce5e34d9348a074",
+      "bounds": {
+        "left": 46,
+        "top": 17,
+        "right": 87,
+        "bottom": 112,
+        "pixels": 2515
+      },
+      "silhouetteOverlap": 0.949
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 0,
+      "sha256": "ae0bf6e174c4737cc4f2b2e6f67f3c58d99fdfbef5ac5281235a1bd9863314f8",
+      "bounds": {
+        "left": 43,
+        "top": 16,
+        "right": 108,
+        "bottom": 112,
+        "pixels": 2925
+      },
+      "registration": {
+        "y": 84,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.913
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 1,
+      "sha256": "cdce9a37c1761660a1a13681e0e2e627a29e9486ea79de2d7a5cef50da45fde7",
+      "bounds": {
+        "left": 42,
+        "top": 19,
+        "right": 109,
+        "bottom": 112,
+        "pixels": 2836
+      },
+      "registration": {
+        "y": 85,
+        "dx": 1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.914
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 2,
+      "sha256": "aa8235abc36a8442a2add7e58ea0558bbbd9a4f1cc8453ebbc8a24e6013141f3",
+      "bounds": {
+        "left": 40,
+        "top": 18,
+        "right": 106,
+        "bottom": 112,
+        "pixels": 2862
+      },
+      "registration": {
+        "y": 86,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.94
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 3,
+      "sha256": "280ef132f87f114b7508aebaa4e14f0e175a2e93e3c5296a2b9de53fa79025e3",
+      "bounds": {
+        "left": 44,
+        "top": 20,
+        "right": 109,
+        "bottom": 112,
+        "pixels": 2707
+      },
+      "registration": {
+        "y": 87,
+        "dx": 1,
+        "dy": 1
+      },
+      "silhouetteOverlap": 0.918
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 4,
+      "sha256": "60fb9f93ab83dc4aa39e149bf994bb9205b598fb9c2d32b97992175e4d4476d2",
+      "bounds": {
+        "left": 48,
+        "top": 19,
+        "right": 108,
+        "bottom": 112,
+        "pixels": 2578
+      },
+      "registration": {
+        "y": 88,
+        "dx": 1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.927
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 5,
+      "sha256": "86324025a10e345898203227b5390278034a3fe78450ec4628598abe45e9125f",
+      "bounds": {
+        "left": 46,
+        "top": 18,
+        "right": 106,
+        "bottom": 112,
+        "pixels": 2552
+      },
+      "registration": {
+        "y": 86,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.906
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 0,
+      "sha256": "26989fc8979346c59238c141d45d65a89b449657a0b9ce6cba0c52502cf7360e",
+      "bounds": {
+        "left": 41,
+        "top": 28,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 2488
+      },
+      "silhouetteOverlap": 0.926
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 1,
+      "sha256": "231fb53b97c5c783772f2512759576650c2df2ede0f21786e1980ad2b26ac052",
+      "bounds": {
+        "left": 24,
+        "top": 20,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 3198
+      },
+      "silhouetteOverlap": 0.947
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 2,
+      "sha256": "39015836aecc27570295f9519364d2a2afdaa1893e0d5888ee191a590c976b4b",
+      "bounds": {
+        "left": 36,
+        "top": 36,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 2482
+      },
+      "silhouetteOverlap": 0.931
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 3,
+      "sha256": "7a80b6981d6f968d8668f22e9f856fd267bfa5d8f0ed56f4e38c9c83d924c79f",
+      "bounds": {
+        "left": 49,
+        "top": 35,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 2194
+      },
+      "silhouetteOverlap": 0.942
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 4,
+      "sha256": "e6e9e92b2cbf462030ece9953a3c15d2657303354d66e2d9c37c8011651fc02e",
+      "bounds": {
+        "left": 48,
+        "top": 27,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 2237
+      },
+      "silhouetteOverlap": 0.936
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 5,
+      "sha256": "cf06cee6cb68b045e7b7900d5ffe7f66402ba357215f4f1870a22c6adff687b7",
+      "bounds": {
+        "left": 43,
+        "top": 18,
+        "right": 121,
+        "bottom": 112,
+        "pixels": 2583
+      },
+      "silhouetteOverlap": 0.945
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "bite",
+      "frame": 0,
+      "sha256": "09094334fe6c0315546cf1f6bc38e3c0c0bdfe906fec6916f1f206f70ef84892",
+      "bounds": {
+        "left": 41,
+        "top": 17,
+        "right": 113,
+        "bottom": 112,
+        "pixels": 3042
+      },
+      "silhouetteOverlap": 0.931
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "bite",
+      "frame": 1,
+      "sha256": "2e4ea3061df2cb783316d5e747a9e2f0cfc6ac19a3b26102701503b11484d4d0",
+      "bounds": {
+        "left": 43,
+        "top": 31,
+        "right": 116,
+        "bottom": 112,
+        "pixels": 2727
+      },
+      "silhouetteOverlap": 0.917
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "bite",
+      "frame": 2,
+      "sha256": "d8c81c3c4231a9073de911bb248978e18a757b8257658882a386c8178f261534",
+      "bounds": {
+        "left": 41,
+        "top": 18,
+        "right": 98,
+        "bottom": 112,
+        "pixels": 2977
+      },
+      "silhouetteOverlap": 0.938
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "death",
+      "frame": 0,
+      "sha256": "a5107db7e7d6a84bd9c08d1559b80bc4cc6a718c9a14c335acbf94c3cc6b5f2a",
+      "bounds": {
+        "left": 38,
+        "top": 17,
+        "right": 94,
+        "bottom": 112,
+        "pixels": 3208
+      },
+      "silhouetteOverlap": 0.948
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "death",
+      "frame": 1,
+      "sha256": "ddc663fc24704f841d68325208109856e4157d263fa2944e20a37d6fff89ee0a",
+      "bounds": {
+        "left": 39,
+        "top": 37,
+        "right": 86,
+        "bottom": 112,
+        "pixels": 2289
+      },
+      "silhouetteOverlap": 0.942
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "death",
+      "frame": 2,
+      "sha256": "108acb48f326d393838b64d8bb68032b1ba8a1495aedeffc7ae3eaca4e41169c",
+      "bounds": {
+        "left": 23,
+        "top": 58,
+        "right": 80,
+        "bottom": 112,
+        "pixels": 1575
+      },
+      "silhouetteOverlap": 0.919
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "se",
+      "anim": "death",
+      "frame": 3,
+      "sha256": "770b741f9e563b974f2265210a505d456688a9e3a5816fe473e6d38656a34d78",
+      "bounds": {
+        "left": 30,
+        "top": 82,
+        "right": 98,
+        "bottom": 120,
+        "pixels": 1435
+      },
+      "silhouetteOverlap": 0.93
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "idle",
+      "frame": 0,
+      "sha256": "ee6d0aa8ba0184aad524a7fc7199e4d0cd2efc6b4d4a16a592c08092e6168096",
+      "bounds": {
+        "left": 42,
+        "top": 16,
+        "right": 84,
+        "bottom": 112,
+        "pixels": 2771
+      },
+      "silhouetteOverlap": 0.915
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 0,
+      "sha256": "3b027dff6a0930700a3067ddeddc555e6645f05898250151b77ae2b8d15d8dcb",
+      "bounds": {
+        "left": 47,
+        "top": 16,
+        "right": 89,
+        "bottom": 112,
+        "pixels": 2725
+      },
+      "silhouetteOverlap": 0.928
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 1,
+      "sha256": "8d24609bc1c629fb8ab2697332d7bfdc264654191aee43492195b8500fb38119",
+      "bounds": {
+        "left": 47,
+        "top": 19,
+        "right": 89,
+        "bottom": 112,
+        "pixels": 2599
+      },
+      "silhouetteOverlap": 0.941
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 2,
+      "sha256": "c632b38b4d1362f0d3c9275e5414402db1496a96733f038ccf129568dadd52a3",
+      "bounds": {
+        "left": 41,
+        "top": 17,
+        "right": 87,
+        "bottom": 112,
+        "pixels": 2948
+      },
+      "silhouetteOverlap": 0.933
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 3,
+      "sha256": "a86d3265899e3d9e6a027ed770fb5733cdc6af312ec2724d6feee7a49f1fb1ae",
+      "bounds": {
+        "left": 46,
+        "top": 20,
+        "right": 90,
+        "bottom": 112,
+        "pixels": 2659
+      },
+      "silhouetteOverlap": 0.947
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 4,
+      "sha256": "5fe651f572e12e393e44e4495501831eed55a25bb9910aeeaf943bbe9d9a2de4",
+      "bounds": {
+        "left": 43,
+        "top": 19,
+        "right": 86,
+        "bottom": 112,
+        "pixels": 2712
+      },
+      "silhouetteOverlap": 0.942
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 5,
+      "sha256": "22697dba7c2a9f97a45feae4967f5066a7bcc91485de68859041ffc832e22866",
+      "bounds": {
+        "left": 43,
+        "top": 17,
+        "right": 87,
+        "bottom": 112,
+        "pixels": 2684
+      },
+      "silhouetteOverlap": 0.931
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 0,
+      "sha256": "34edfb0ccc4f802a1f6dd9a7e415c68f917c506015f938ad6e8b60b515282486",
+      "bounds": {
+        "left": 54,
+        "top": 15,
+        "right": 120,
+        "bottom": 112,
+        "pixels": 2879
+      },
+      "registration": {
+        "y": 88,
+        "dx": 0,
+        "dy": 1
+      },
+      "silhouetteOverlap": 0.903
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 1,
+      "sha256": "4ad47946d28d9a9a231606d47fb87f8d2525caca65d5e40c37db06e2e718da2c",
+      "bounds": {
+        "left": 51,
+        "top": 20,
+        "right": 119,
+        "bottom": 112,
+        "pixels": 2764
+      },
+      "registration": {
+        "y": 88,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.935
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 2,
+      "sha256": "ccafb1adc5b767a960fa01b92f2f93917375df2a81cb7e2f86279844e4b5f12a",
+      "bounds": {
+        "left": 45,
+        "top": 18,
+        "right": 117,
+        "bottom": 112,
+        "pixels": 3020
+      },
+      "registration": {
+        "y": 85,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.912
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 3,
+      "sha256": "4b09beef446f0b8ed214b97f7f3b710beb14afca978e7d2883572b1789f11df9",
+      "bounds": {
+        "left": 46,
+        "top": 20,
+        "right": 112,
+        "bottom": 112,
+        "pixels": 2688
+      },
+      "registration": {
+        "y": 85,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.938
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 4,
+      "sha256": "b6c7ee3b1747222099b85483a0b5bcf9ef34cebc7b10a7de6184d9e62cf84361",
+      "bounds": {
+        "left": 48,
+        "top": 19,
+        "right": 114,
+        "bottom": 112,
+        "pixels": 2868
+      },
+      "registration": {
+        "y": 85,
+        "dx": -1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.902
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 5,
+      "sha256": "5dca7acef3b1bf62d83c7e8a8bb0d6b0a988d666d1586206e3327144f8d597e6",
+      "bounds": {
+        "left": 44,
+        "top": 15,
+        "right": 110,
+        "bottom": 112,
+        "pixels": 2847
+      },
+      "registration": {
+        "y": 85,
+        "dx": 0,
+        "dy": 2
+      },
+      "silhouetteOverlap": 0.881
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 0,
+      "sha256": "498c3d8e3e49ccf5dabcf5e08eb34ed8fb30cea2bcec3317dce964245b44e4cf",
+      "bounds": {
+        "left": 45,
+        "top": 28,
+        "right": 123,
+        "bottom": 112,
+        "pixels": 2591
+      },
+      "silhouetteOverlap": 0.947
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 1,
+      "sha256": "8710984b17d75f9f313c110180a77312686d83d2eb429b5c1ec80231442b0d67",
+      "bounds": {
+        "left": 24,
+        "top": 19,
+        "right": 121,
+        "bottom": 112,
+        "pixels": 3653
+      },
+      "silhouetteOverlap": 0.951
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 2,
+      "sha256": "6f9f12a0f87d9ff7202489e71d65d183de33ae041085a94625809c3675fe7209",
+      "bounds": {
+        "left": 35,
+        "top": 34,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 3005
+      },
+      "silhouetteOverlap": 0.943
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 3,
+      "sha256": "c807da7bb45a054d20f3f0329d057dfd4543d8213357a48de659518606632a0c",
+      "bounds": {
+        "left": 52,
+        "top": 32,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 2424
+      },
+      "silhouetteOverlap": 0.954
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 4,
+      "sha256": "3f4a0c247e753a570386ae882688482e9de39ba23e9a9e1f630a19240efedcb2",
+      "bounds": {
+        "left": 44,
+        "top": 25,
+        "right": 124,
+        "bottom": 112,
+        "pixels": 2820
+      },
+      "silhouetteOverlap": 0.958
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 5,
+      "sha256": "7ba7f5105300fb76dc36ec6c0777d934e1c906190d513946856a3e35e1b746b6",
+      "bounds": {
+        "left": 59,
+        "top": 42,
+        "right": 123,
+        "bottom": 112,
+        "pixels": 1673
+      },
+      "silhouetteOverlap": 0.938
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "bite",
+      "frame": 0,
+      "sha256": "782c2ee073451420f5ce9ab6b207fdf56324d846d69bb5b6eabe1bdb68e9ea77",
+      "bounds": {
+        "left": 46,
+        "top": 17,
+        "right": 114,
+        "bottom": 112,
+        "pixels": 2880
+      },
+      "silhouetteOverlap": 0.926
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "bite",
+      "frame": 1,
+      "sha256": "9bfb1ce41137045909174fb9bde69880786b5710ee1c06e9e42a5ef199452701",
+      "bounds": {
+        "left": 46,
+        "top": 31,
+        "right": 112,
+        "bottom": 112,
+        "pixels": 2578
+      },
+      "silhouetteOverlap": 0.87
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "bite",
+      "frame": 2,
+      "sha256": "5de091f96cfaf0a415945df7ea801578bd082d676a678825767085893f5cf51a",
+      "bounds": {
+        "left": 45,
+        "top": 18,
+        "right": 99,
+        "bottom": 112,
+        "pixels": 2828
+      },
+      "silhouetteOverlap": 0.897
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 0,
+      "sha256": "ffd9ccd98af0da620bacd4e9a65093021bb2f944fe75518f6bc8eca4d4d91d95",
+      "bounds": {
+        "left": 34,
+        "top": 16,
+        "right": 92,
+        "bottom": 112,
+        "pixels": 3144
+      },
+      "silhouetteOverlap": 0.902
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 1,
+      "sha256": "c6dbf1d04a126db3ac53f1c2bb74c0a01fe600a64b5ae1886966dfa403ccc3a0",
+      "bounds": {
+        "left": 34,
+        "top": 37,
+        "right": 83,
+        "bottom": 112,
+        "pixels": 2189
+      },
+      "silhouetteOverlap": 0.93
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 2,
+      "sha256": "2006deba0cbc84e33f5065a8cc12ef6e935c69ab657f7273550db0cb84b0ca05",
+      "bounds": {
+        "left": 15,
+        "top": 57,
+        "right": 76,
+        "bottom": 112,
+        "pixels": 1540
+      },
+      "silhouetteOverlap": 0.879
+    },
+    {
+      "body": "zombie_decayed_a",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 3,
+      "sha256": "17b6b5db08540949e98c5155eaee6fca15506edb3b513da5e6547d313044796b",
+      "bounds": {
+        "left": 30,
+        "top": 82,
+        "right": 98,
+        "bottom": 120,
+        "pixels": 1385
+      },
+      "silhouetteOverlap": 0.894
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "idle",
+      "frame": 0,
+      "sha256": "f520cc949ca4df567f96a2c326cb9211a3b28871470cb32c2f53f6d3244d3421",
+      "bounds": {
+        "left": 44,
+        "top": 20,
+        "right": 80,
+        "bottom": 112,
+        "pixels": 1943
+      },
+      "silhouetteOverlap": 0.906
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 0,
+      "sha256": "21e67fc41717328ff6858ec4c0263f6719830424e380568b3c0c2adc78257f45",
+      "bounds": {
+        "left": 46,
+        "top": 21,
+        "right": 85,
+        "bottom": 112,
+        "pixels": 2060
+      },
+      "silhouetteOverlap": 0.919
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 1,
+      "sha256": "a225ed6f5560fbd9d3e89f5cae07854258e9d8f9128a16ba5f062e8b7dbbf60a",
+      "bounds": {
+        "left": 51,
+        "top": 23,
+        "right": 90,
+        "bottom": 112,
+        "pixels": 1909
+      },
+      "silhouetteOverlap": 0.929
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 2,
+      "sha256": "9291fe856771f3a09d91af9116c8ec02654890bd6652aff6b55a6991878cac9f",
+      "bounds": {
+        "left": 42,
+        "top": 21,
+        "right": 86,
+        "bottom": 112,
+        "pixels": 2112
+      },
+      "silhouetteOverlap": 0.929
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 3,
+      "sha256": "bea52544f716016cd73b6942def95bd28c0ec5198014c9655e8d49f97e0ddc7f",
+      "bounds": {
+        "left": 42,
+        "top": 24,
+        "right": 86,
+        "bottom": 112,
+        "pixels": 1982
+      },
+      "silhouetteOverlap": 0.917
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 4,
+      "sha256": "149bffefe2f8f5e5f4e8cedbd7d61ae5ac5e40faae0d92815fbbd50b329efa13",
+      "bounds": {
+        "left": 48,
+        "top": 24,
+        "right": 86,
+        "bottom": 112,
+        "pixels": 1835
+      },
+      "silhouetteOverlap": 0.933
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 5,
+      "sha256": "0dab8faa70c370f8cc4ae58008a7ba56678f978b579fa1720637c556e900b315",
+      "bounds": {
+        "left": 44,
+        "top": 21,
+        "right": 84,
+        "bottom": 112,
+        "pixels": 1949
+      },
+      "silhouetteOverlap": 0.931
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 0,
+      "sha256": "93241b45b814b559fa2c345ae27cb4b05502e28c737e636144441a8d952712b0",
+      "bounds": {
+        "left": 46,
+        "top": 21,
+        "right": 97,
+        "bottom": 112,
+        "pixels": 2022
+      },
+      "registration": {
+        "y": 86,
+        "dx": -1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.865
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 1,
+      "sha256": "010d483c1bbbd3fd85b34b677d2900321dd08acd14813e786af09a15622b3078",
+      "bounds": {
+        "left": 50,
+        "top": 23,
+        "right": 103,
+        "bottom": 112,
+        "pixels": 2100
+      },
+      "registration": {
+        "y": 85,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.923
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 2,
+      "sha256": "1c3bc23405492bc664add8feebb2230723a91e8a0bb1cf2edb6921ab788ab7a2",
+      "bounds": {
+        "left": 36,
+        "top": 22,
+        "right": 90,
+        "bottom": 112,
+        "pixels": 2247
+      },
+      "registration": {
+        "y": 88,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.915
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 3,
+      "sha256": "06a7c28401cbcad3f2ce9064c3fd38b11ae45e3a75b424d57107101baf66585e",
+      "bounds": {
+        "left": 42,
+        "top": 24,
+        "right": 92,
+        "bottom": 112,
+        "pixels": 1999
+      },
+      "registration": {
+        "y": 87,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.919
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 4,
+      "sha256": "67598099f027ac7f04b036054ece4cd3e759a7c44ac227991b1ca536ba6baee8",
+      "bounds": {
+        "left": 48,
+        "top": 25,
+        "right": 95,
+        "bottom": 112,
+        "pixels": 1903
+      },
+      "registration": {
+        "y": 87,
+        "dx": 2,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.813
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 5,
+      "sha256": "9e7c340282f0956a34729f825edfb5ea7ff60acb4f19b636d36bcaa97337ee1f",
+      "bounds": {
+        "left": 44,
+        "top": 21,
+        "right": 93,
+        "bottom": 112,
+        "pixels": 1985
+      },
+      "registration": {
+        "y": 86,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.936
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 0,
+      "sha256": "98d12f8220de1f972aec1277c76dddc1758161865213679110e80b26b000bba2",
+      "bounds": {
+        "left": 36,
+        "top": 21,
+        "right": 101,
+        "bottom": 112,
+        "pixels": 2369
+      },
+      "silhouetteOverlap": 0.92
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 1,
+      "sha256": "7efdac9c8abf3e099e54e3c9f5349c93edfbc57a029f692427e7ef8ac5880311",
+      "bounds": {
+        "left": 28,
+        "top": 23,
+        "right": 118,
+        "bottom": 112,
+        "pixels": 2728
+      },
+      "silhouetteOverlap": 0.922
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 2,
+      "sha256": "45ae79f22d0ef59bbe7c8ac4bbe8ce117a97431cd124bd6de8a9ccf05c7b97d3",
+      "bounds": {
+        "left": 42,
+        "top": 24,
+        "right": 121,
+        "bottom": 112,
+        "pixels": 2713
+      },
+      "silhouetteOverlap": 0.922
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 3,
+      "sha256": "8bd44d86558e81241c1f501c0bda954e73be706136bac6c50289576ebe1fd2db",
+      "bounds": {
+        "left": 43,
+        "top": 25,
+        "right": 121,
+        "bottom": 112,
+        "pixels": 2373
+      },
+      "silhouetteOverlap": 0.854
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 4,
+      "sha256": "4eb63a4f04b81f45c9ff6f078c6868b4a0a3e0bf6e90759ad358362a66bf3a21",
+      "bounds": {
+        "left": 29,
+        "top": 23,
+        "right": 109,
+        "bottom": 112,
+        "pixels": 2520
+      },
+      "silhouetteOverlap": 0.91
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 5,
+      "sha256": "c3a02233cfb8b0759d44762e785064a8fc04270d3281e18c8614b3ccbf263c8d",
+      "bounds": {
+        "left": 40,
+        "top": 22,
+        "right": 102,
+        "bottom": 112,
+        "pixels": 1993
+      },
+      "silhouetteOverlap": 0.912
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "bite",
+      "frame": 0,
+      "sha256": "a3acd391e6379818a7ab3d8d5eeea9b707458adee2c2c846df8b3ffbd3ab94d0",
+      "bounds": {
+        "left": 38,
+        "top": 20,
+        "right": 108,
+        "bottom": 112,
+        "pixels": 2327
+      },
+      "silhouetteOverlap": 0.826
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "bite",
+      "frame": 1,
+      "sha256": "184f3dc29b344c5ca2a050518907fb6772f2a55039e1429f7f558f1a6820eab6",
+      "bounds": {
+        "left": 38,
+        "top": 35,
+        "right": 109,
+        "bottom": 112,
+        "pixels": 2113
+      },
+      "silhouetteOverlap": 0.919
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "bite",
+      "frame": 2,
+      "sha256": "7f91313886a1e9c9d20a582768f456e70cf17f94461bf706a1d32bb2e47f1435",
+      "bounds": {
+        "left": 39,
+        "top": 22,
+        "right": 91,
+        "bottom": 112,
+        "pixels": 2180
+      },
+      "silhouetteOverlap": 0.896
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "death",
+      "frame": 0,
+      "sha256": "f9b8d902c667bd922a9518cc12c72fe472dfc2df58ac03618d2a7665bf1e4d44",
+      "bounds": {
+        "left": 39,
+        "top": 20,
+        "right": 89,
+        "bottom": 112,
+        "pixels": 2431
+      },
+      "silhouetteOverlap": 0.845
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "death",
+      "frame": 1,
+      "sha256": "88fc2c4ca6cec3557005c21aeebf76660118ee1bee0b31b962a7af878fadebf6",
+      "bounds": {
+        "left": 39,
+        "top": 40,
+        "right": 87,
+        "bottom": 112,
+        "pixels": 1774
+      },
+      "silhouetteOverlap": 0.948
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "death",
+      "frame": 2,
+      "sha256": "32aded31d3df5d9b591d2fdf482b9392b34b2ef37eeb7ebd6da51b014aa7993a",
+      "bounds": {
+        "left": 29,
+        "top": 60,
+        "right": 78,
+        "bottom": 112,
+        "pixels": 1117
+      },
+      "silhouetteOverlap": 0.936
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "se",
+      "anim": "death",
+      "frame": 3,
+      "sha256": "3e584f897d671c72e7223cac876f13286203279a1cc278a6b020a4de12e92e5c",
+      "bounds": {
+        "left": 26,
+        "top": 82,
+        "right": 102,
+        "bottom": 120,
+        "pixels": 1329
+      },
+      "silhouetteOverlap": 0.902
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "idle",
+      "frame": 0,
+      "sha256": "dea712f6e23b5138a4b079da4ef5f48e9948efc3ccd3b406017ce23119f77bec",
+      "bounds": {
+        "left": 42,
+        "top": 20,
+        "right": 92,
+        "bottom": 112,
+        "pixels": 2153
+      },
+      "silhouetteOverlap": 0.918
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 0,
+      "sha256": "ab6dedac3bff2537e216c5aa9ed0f7453643cab802d987db95b581ffcac4c694",
+      "bounds": {
+        "left": 44,
+        "top": 20,
+        "right": 91,
+        "bottom": 112,
+        "pixels": 2343
+      },
+      "silhouetteOverlap": 0.915
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 1,
+      "sha256": "2e126492691e7bd8259f63268b87365745a06548d2c8fe4f45c4dbf6dd16fcfa",
+      "bounds": {
+        "left": 50,
+        "top": 23,
+        "right": 90,
+        "bottom": 112,
+        "pixels": 2187
+      },
+      "silhouetteOverlap": 0.934
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 2,
+      "sha256": "eb0198b272a2d1dd1eb1be2e67f5722675c494c3bb9aa9e72733a12e32ca1443",
+      "bounds": {
+        "left": 37,
+        "top": 21,
+        "right": 91,
+        "bottom": 112,
+        "pixels": 2359
+      },
+      "silhouetteOverlap": 0.92
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 3,
+      "sha256": "c196b34e816d775938bc5a46411bcdd7720cb91357c8f4dec43148c0b724960b",
+      "bounds": {
+        "left": 43,
+        "top": 24,
+        "right": 85,
+        "bottom": 112,
+        "pixels": 2096
+      },
+      "silhouetteOverlap": 0.92
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 4,
+      "sha256": "41a4b2a54db1fdfda2999e908b57850b3007da92bf5a20296c8e489ef990ac09",
+      "bounds": {
+        "left": 51,
+        "top": 23,
+        "right": 92,
+        "bottom": 112,
+        "pixels": 2044
+      },
+      "silhouetteOverlap": 0.905
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 5,
+      "sha256": "10c8f3bdff3fb79e9c7fb43b2fbaf9d3db5f03549f9c301f42b37d1815fa6a43",
+      "bounds": {
+        "left": 40,
+        "top": 21,
+        "right": 88,
+        "bottom": 112,
+        "pixels": 2250
+      },
+      "silhouetteOverlap": 0.917
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 0,
+      "sha256": "a47ce97a7ddaa026c1c6328763fb027ccc20dc42c5e2a377a8ced8fc81a868b6",
+      "bounds": {
+        "left": 44,
+        "top": 19,
+        "right": 107,
+        "bottom": 112,
+        "pixels": 2247
+      },
+      "registration": {
+        "y": 86,
+        "dx": 0,
+        "dy": 1
+      },
+      "silhouetteOverlap": 0.909
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 1,
+      "sha256": "c5f4ae20cb198ca481684a195b9661d9111aac26509f327f61734d7663ab2a83",
+      "bounds": {
+        "left": 50,
+        "top": 23,
+        "right": 107,
+        "bottom": 112,
+        "pixels": 2252
+      },
+      "registration": {
+        "y": 86,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.925
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 2,
+      "sha256": "b2e7b7d25ee7d055ac4864cc10b2bc54ad5070475369e62eafa8d7f961a34f54",
+      "bounds": {
+        "left": 37,
+        "top": 22,
+        "right": 96,
+        "bottom": 112,
+        "pixels": 2366
+      },
+      "registration": {
+        "y": 87,
+        "dx": 1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.917
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 3,
+      "sha256": "52ec202d5544fd1bb38aafd9bba7dc73041a8a79d11c3a7d183fc629d3ccb7ab",
+      "bounds": {
+        "left": 43,
+        "top": 25,
+        "right": 100,
+        "bottom": 112,
+        "pixels": 2005
+      },
+      "registration": {
+        "y": 87,
+        "dx": 0,
+        "dy": 1
+      },
+      "silhouetteOverlap": 0.912
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 4,
+      "sha256": "31699cd376749e441eb4376a2ebefd1be0ada6bf8484d2390fe892ea1134ba1d",
+      "bounds": {
+        "left": 51,
+        "top": 25,
+        "right": 105,
+        "bottom": 112,
+        "pixels": 1969
+      },
+      "registration": {
+        "y": 87,
+        "dx": 1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.9
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 5,
+      "sha256": "76ada4a4e05c098d0f8d936786dede4debc9ba70a860a7f6f29814b8ae0548f9",
+      "bounds": {
+        "left": 40,
+        "top": 20,
+        "right": 100,
+        "bottom": 112,
+        "pixels": 2163
+      },
+      "registration": {
+        "y": 86,
+        "dx": 0,
+        "dy": 1
+      },
+      "silhouetteOverlap": 0.896
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 0,
+      "sha256": "6a9ac62640cb67c6b1e5b566bff922d2ae063092fcfb10b23ba4d53284c41ce6",
+      "bounds": {
+        "left": 32,
+        "top": 21,
+        "right": 107,
+        "bottom": 112,
+        "pixels": 2275
+      },
+      "silhouetteOverlap": 0.902
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 1,
+      "sha256": "29f1e22a8a5c9e68413fec1f4b46f1105b5d18be73599f04d002193882f058a0",
+      "bounds": {
+        "left": 29,
+        "top": 23,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 2690
+      },
+      "silhouetteOverlap": 0.91
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 2,
+      "sha256": "eb1518694743455bd1113aed16ed644de603281b8a551dfa9dd30ed03f26f728",
+      "bounds": {
+        "left": 44,
+        "top": 35,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 2116
+      },
+      "silhouetteOverlap": 0.882
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 3,
+      "sha256": "5ed0504d0a25e0ec44abcfdb0f777d495d25bc1855782156c07d68f3415d1b62",
+      "bounds": {
+        "left": 46,
+        "top": 36,
+        "right": 121,
+        "bottom": 112,
+        "pixels": 1947
+      },
+      "silhouetteOverlap": 0.877
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 4,
+      "sha256": "29486521505c0102771a9ba73340653b205fffddbe06963a6c0310ef0616c222",
+      "bounds": {
+        "left": 59,
+        "top": 43,
+        "right": 123,
+        "bottom": 112,
+        "pixels": 1467
+      },
+      "silhouetteOverlap": 0.907
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 5,
+      "sha256": "97698eb398413f68eebebd51dc5c4d771dc23530fb0d0d2760cebdb3e201fa94",
+      "bounds": {
+        "left": 56,
+        "top": 22,
+        "right": 118,
+        "bottom": 112,
+        "pixels": 2049
+      },
+      "silhouetteOverlap": 0.942
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "bite",
+      "frame": 0,
+      "sha256": "1db9bd594df094d1d92ea3a26b7f707bc2d7a65cf9c3e08b89fbba29ea18422f",
+      "bounds": {
+        "left": 38,
+        "top": 20,
+        "right": 106,
+        "bottom": 112,
+        "pixels": 2275
+      },
+      "silhouetteOverlap": 0.868
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "bite",
+      "frame": 1,
+      "sha256": "d87c5ae4a70c7e30bd45e0d870e92a6b39106495022b52f67c96b09442ce7f9a",
+      "bounds": {
+        "left": 37,
+        "top": 35,
+        "right": 111,
+        "bottom": 112,
+        "pixels": 2120
+      },
+      "silhouetteOverlap": 0.892
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "bite",
+      "frame": 2,
+      "sha256": "8a21294c0479ab5793b933a4f9b4d1c5292fbdce34c10a629b14f443c0938f40",
+      "bounds": {
+        "left": 38,
+        "top": 22,
+        "right": 92,
+        "bottom": 112,
+        "pixels": 2235
+      },
+      "silhouetteOverlap": 0.883
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 0,
+      "sha256": "60b9857bcb2cdefe316d7fb779ad057d9c15b04fbdb5e464ca39cb5a16e5bddc",
+      "bounds": {
+        "left": 38,
+        "top": 20,
+        "right": 90,
+        "bottom": 112,
+        "pixels": 2542
+      },
+      "silhouetteOverlap": 0.939
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 1,
+      "sha256": "cef4520f01950cb909b6e2cd0ede5f7ca02263279ca991768a6868f00b1998b3",
+      "bounds": {
+        "left": 37,
+        "top": 40,
+        "right": 88,
+        "bottom": 112,
+        "pixels": 1779
+      },
+      "silhouetteOverlap": 0.928
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 2,
+      "sha256": "ca87a9b65cd62b72b275e49ac9f6ce5870d71604f658ef238c2f031c69337581",
+      "bounds": {
+        "left": 25,
+        "top": 60,
+        "right": 79,
+        "bottom": 112,
+        "pixels": 1245
+      },
+      "silhouetteOverlap": 0.93
+    },
+    {
+      "body": "zombie_decayed_b",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 3,
+      "sha256": "eaafc2f9869bfa534334d39f6ca9d5275cf7e360bd16b7f6736e6eaf172b9fb2",
+      "bounds": {
+        "left": 27,
+        "top": 83,
+        "right": 101,
+        "bottom": 120,
+        "pixels": 1152
+      },
+      "silhouetteOverlap": 0.915
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "idle",
+      "frame": 0,
+      "sha256": "abfb2a21904d0fea2ccefb774b756a30e4a38f27876deb612b3a547a303afe8b",
+      "bounds": {
+        "left": 50,
+        "top": 24,
+        "right": 83,
+        "bottom": 112,
+        "pixels": 1702
+      },
+      "silhouetteOverlap": 0.928
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 0,
+      "sha256": "f44e4c7a43d3714dec3c4c10a30aca2869fffe2c2d649d32a952a2b3b1117595",
+      "bounds": {
+        "left": 44,
+        "top": 24,
+        "right": 84,
+        "bottom": 112,
+        "pixels": 2032
+      },
+      "silhouetteOverlap": 0.932
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 1,
+      "sha256": "78487950d104dd8a8063f45304b27e0e79e5d0065eac08ddb4966ae37da9d00c",
+      "bounds": {
+        "left": 47,
+        "top": 28,
+        "right": 89,
+        "bottom": 112,
+        "pixels": 1886
+      },
+      "silhouetteOverlap": 0.915
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 2,
+      "sha256": "289bcde67a1b565680cd83fbdf0e94eb5bd1e643ee8a5897a9db71aa9b52a23d",
+      "bounds": {
+        "left": 44,
+        "top": 25,
+        "right": 84,
+        "bottom": 112,
+        "pixels": 1881
+      },
+      "silhouetteOverlap": 0.944
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 3,
+      "sha256": "62f0202a8d0959795f248ff84c1429a20e8043b463f687550fa756862e1999d3",
+      "bounds": {
+        "left": 49,
+        "top": 28,
+        "right": 88,
+        "bottom": 112,
+        "pixels": 1978
+      },
+      "silhouetteOverlap": 0.938
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 4,
+      "sha256": "f6de1917f658e1cf7703a656f63aedfcc306f90aa45eab62dcd2a9b2931f2413",
+      "bounds": {
+        "left": 51,
+        "top": 27,
+        "right": 90,
+        "bottom": 112,
+        "pixels": 1826
+      },
+      "silhouetteOverlap": 0.91
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "shamble",
+      "frame": 5,
+      "sha256": "f1b8dc9f76438115592a43984e2e9ddbe02a53724d986feb3ef14fde03e800e6",
+      "bounds": {
+        "left": 44,
+        "top": 25,
+        "right": 84,
+        "bottom": 112,
+        "pixels": 1804
+      },
+      "silhouetteOverlap": 0.925
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 0,
+      "sha256": "36b67f804384b0ea493f95abfe1025aff230eff2f0a8102cc3135895c64d7133",
+      "bounds": {
+        "left": 44,
+        "top": 24,
+        "right": 100,
+        "bottom": 112,
+        "pixels": 1952
+      },
+      "registration": {
+        "y": 87,
+        "dx": 1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.87
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 1,
+      "sha256": "06b13a205c19c324124d2370648e186bbea48ff1b4e775f4162184af4b0a7cba",
+      "bounds": {
+        "left": 47,
+        "top": 28,
+        "right": 104,
+        "bottom": 112,
+        "pixels": 1955
+      },
+      "registration": {
+        "y": 86,
+        "dx": -1,
+        "dy": -1
+      },
+      "silhouetteOverlap": 0.754
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 2,
+      "sha256": "70f2afe99d2c3ea7f11b59dd4d2065ec44d38ecbfa7c748e19044ff910dc38da",
+      "bounds": {
+        "left": 44,
+        "top": 25,
+        "right": 105,
+        "bottom": 112,
+        "pixels": 2037
+      },
+      "registration": {
+        "y": 86,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.841
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 3,
+      "sha256": "f2b0b66fe932cef6299557f95c6a8fb9d52dd56f0318ecfd83b06ccd941d08c9",
+      "bounds": {
+        "left": 50,
+        "top": 28,
+        "right": 107,
+        "bottom": 112,
+        "pixels": 1845
+      },
+      "registration": {
+        "y": 86,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.848
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 4,
+      "sha256": "f06c547d215661d55d48027536004d4f21b17fac3d18fb93986e2dddb136320a",
+      "bounds": {
+        "left": 51,
+        "top": 30,
+        "right": 101,
+        "bottom": 112,
+        "pixels": 1672
+      },
+      "registration": {
+        "y": 86,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.836
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "reach",
+      "frame": 5,
+      "sha256": "4e5b9a63e1f761b6f62c026b6eec190036912d794da4b1e00f0b6c9caf7e6d59",
+      "bounds": {
+        "left": 44,
+        "top": 25,
+        "right": 100,
+        "bottom": 112,
+        "pixels": 1812
+      },
+      "registration": {
+        "y": 87,
+        "dx": 1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.883
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 0,
+      "sha256": "14d5c9ca2fdf543b5d6599f8329f2a6e296ef70b4497b359cce0b489bdb564eb",
+      "bounds": {
+        "left": 31,
+        "top": 25,
+        "right": 99,
+        "bottom": 112,
+        "pixels": 2136
+      },
+      "silhouetteOverlap": 0.909
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 1,
+      "sha256": "a428ace714f83a44a143e22182b14deb8b6e742f762a046483f10249785ffc7d",
+      "bounds": {
+        "left": 31,
+        "top": 27,
+        "right": 114,
+        "bottom": 112,
+        "pixels": 2412
+      },
+      "silhouetteOverlap": 0.939
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 2,
+      "sha256": "75a2e9987018a3edb972d60dfb765f34bdfce3ae8fb368fbc56d4db7e0e39e5d",
+      "bounds": {
+        "left": 44,
+        "top": 26,
+        "right": 113,
+        "bottom": 112,
+        "pixels": 2196
+      },
+      "silhouetteOverlap": 0.927
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 3,
+      "sha256": "be0b610cf1b6e87694aeeed781fd938c08f7be3e6864100f5cd883c095b777fd",
+      "bounds": {
+        "left": 50,
+        "top": 28,
+        "right": 122,
+        "bottom": 112,
+        "pixels": 1981
+      },
+      "silhouetteOverlap": 0.934
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 4,
+      "sha256": "8cdc10f375c4c335206c86b5bb8ddb20dea65c15934e0394fe83367fd56803cf",
+      "bounds": {
+        "left": 58,
+        "top": 38,
+        "right": 123,
+        "bottom": 112,
+        "pixels": 1673
+      },
+      "silhouetteOverlap": 0.76
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "lurch",
+      "frame": 5,
+      "sha256": "05a7089cc3afc363c387d02c963c35fb9290782ea91f84877c7473e1a8d3aff3",
+      "bounds": {
+        "left": 35,
+        "top": 26,
+        "right": 105,
+        "bottom": 112,
+        "pixels": 2084
+      },
+      "silhouetteOverlap": 0.865
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "bite",
+      "frame": 0,
+      "sha256": "cf181a321aa5a5526ba8abfac15e56e9e262e96c975d2c126ec5005f4b03004c",
+      "bounds": {
+        "left": 45,
+        "top": 24,
+        "right": 105,
+        "bottom": 112,
+        "pixels": 1890
+      },
+      "silhouetteOverlap": 0.875
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "bite",
+      "frame": 1,
+      "sha256": "505c18dc15cf91049473a6b36217fdafdd768a6065070f34d0023a9e3a83ac2e",
+      "bounds": {
+        "left": 44,
+        "top": 39,
+        "right": 101,
+        "bottom": 112,
+        "pixels": 1864
+      },
+      "silhouetteOverlap": 0.91
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "bite",
+      "frame": 2,
+      "sha256": "dbbe655fae084504ddc3074e89b572e11c393fe310dcb0696a88798773fc6015",
+      "bounds": {
+        "left": 47,
+        "top": 27,
+        "right": 88,
+        "bottom": 112,
+        "pixels": 1799
+      },
+      "silhouetteOverlap": 0.91
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "death",
+      "frame": 0,
+      "sha256": "795f63ae820375f437535ad3c074a2a829e1ce9e5ddca22b8f15eaf52340f08a",
+      "bounds": {
+        "left": 41,
+        "top": 25,
+        "right": 80,
+        "bottom": 112,
+        "pixels": 1850
+      },
+      "silhouetteOverlap": 0.869
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "death",
+      "frame": 1,
+      "sha256": "5787c26ce53ea1002dfefd9092510f5c12886988be7b97ebf558ae805cccb75b",
+      "bounds": {
+        "left": 42,
+        "top": 43,
+        "right": 78,
+        "bottom": 112,
+        "pixels": 1491
+      },
+      "silhouetteOverlap": 0.881
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "death",
+      "frame": 2,
+      "sha256": "e0250002f1d0a60ad971db53245759c61c69b908a947e791cb975232b4c49eaa",
+      "bounds": {
+        "left": 27,
+        "top": 63,
+        "right": 76,
+        "bottom": 112,
+        "pixels": 991
+      },
+      "silhouetteOverlap": 0.833
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "se",
+      "anim": "death",
+      "frame": 3,
+      "sha256": "16cd4a3c1ab9bbbdf9f75f5a9a655e841525b19ec172f9c898ee0815571b9755",
+      "bounds": {
+        "left": 26,
+        "top": 84,
+        "right": 102,
+        "bottom": 120,
+        "pixels": 1292
+      },
+      "silhouetteOverlap": 0.89
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "idle",
+      "frame": 0,
+      "sha256": "68938dfb5cb327472081004ea62ef86d7275b4d33a107dcde96a717487272bba",
+      "bounds": {
+        "left": 43,
+        "top": 24,
+        "right": 79,
+        "bottom": 112,
+        "pixels": 1747
+      },
+      "silhouetteOverlap": 0.919
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 0,
+      "sha256": "eeceaa9d2c2550ee266dff8e7f6af4e4b6f369173ce209eff164bb6ccdadee54",
+      "bounds": {
+        "left": 44,
+        "top": 24,
+        "right": 84,
+        "bottom": 112,
+        "pixels": 1999
+      },
+      "silhouetteOverlap": 0.921
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 1,
+      "sha256": "f5f7f30de9c98cd5e43d3b08b4de91e9b2bb946f4a48be081153a26ce9ffc6d5",
+      "bounds": {
+        "left": 47,
+        "top": 27,
+        "right": 90,
+        "bottom": 112,
+        "pixels": 2017
+      },
+      "silhouetteOverlap": 0.918
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 2,
+      "sha256": "a84ec6cb5e473bd6c19b6dc3f36b35aa6f7651cf277a13ac9f36df0872536343",
+      "bounds": {
+        "left": 43,
+        "top": 25,
+        "right": 85,
+        "bottom": 112,
+        "pixels": 1948
+      },
+      "silhouetteOverlap": 0.91
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 3,
+      "sha256": "c64301350813d6ef7db80f75cafce03d7ce1a1dda682df2bbcc1cf3238e292ba",
+      "bounds": {
+        "left": 50,
+        "top": 28,
+        "right": 92,
+        "bottom": 112,
+        "pixels": 1904
+      },
+      "silhouetteOverlap": 0.926
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 4,
+      "sha256": "4ef234977312f02aa87bd836d3afb4f1d9302c61a3838f90ac9178b9c317cc2b",
+      "bounds": {
+        "left": 50,
+        "top": 27,
+        "right": 92,
+        "bottom": 112,
+        "pixels": 1918
+      },
+      "silhouetteOverlap": 0.936
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "shamble",
+      "frame": 5,
+      "sha256": "2ae89da3ca67a6b0c648f5fd124fc99dd93f6ea8c2213410b9a4761d457be955",
+      "bounds": {
+        "left": 42,
+        "top": 25,
+        "right": 87,
+        "bottom": 112,
+        "pixels": 1954
+      },
+      "silhouetteOverlap": 0.918
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 0,
+      "sha256": "8225ab6229aa84d767716c0fc58965a94fe6d072a63bd53e71c841b4bfb4e3e8",
+      "bounds": {
+        "left": 44,
+        "top": 25,
+        "right": 99,
+        "bottom": 112,
+        "pixels": 1921
+      },
+      "registration": {
+        "y": 87,
+        "dx": 0,
+        "dy": -1
+      },
+      "silhouetteOverlap": 0.866
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 1,
+      "sha256": "06ee83c5e73a4a88ce868dd6965ac13f552a8b12fcf2c9c4470035aed8128d33",
+      "bounds": {
+        "left": 47,
+        "top": 27,
+        "right": 104,
+        "bottom": 112,
+        "pixels": 1998
+      },
+      "registration": {
+        "y": 88,
+        "dx": 1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.88
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 2,
+      "sha256": "3c2c37ff90e648a56be25e8a4ac274002cffbb2f0fb506d41d8df3677dc1f716",
+      "bounds": {
+        "left": 43,
+        "top": 26,
+        "right": 101,
+        "bottom": 112,
+        "pixels": 2003
+      },
+      "registration": {
+        "y": 86,
+        "dx": -1,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.816
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 3,
+      "sha256": "1f2fbdf53c2bc33e022f4c71f707487c603c29a490c501419555e4c6d0024aad",
+      "bounds": {
+        "left": 50,
+        "top": 28,
+        "right": 108,
+        "bottom": 112,
+        "pixels": 1931
+      },
+      "registration": {
+        "y": 90,
+        "dx": -2,
+        "dy": -1
+      },
+      "silhouetteOverlap": 0.748
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 4,
+      "sha256": "d230256ac8ed61b88ae06377a9d57bf4912ad4a30857440bf7ad94ca30ee1067",
+      "bounds": {
+        "left": 50,
+        "top": 28,
+        "right": 104,
+        "bottom": 112,
+        "pixels": 1773
+      },
+      "registration": {
+        "y": 89,
+        "dx": 0,
+        "dy": 0
+      },
+      "silhouetteOverlap": 0.917
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "reach",
+      "frame": 5,
+      "sha256": "ffb3c6ab5050a273e9e86429f510a092d377f94d69793da03d62d0657ad5c40b",
+      "bounds": {
+        "left": 42,
+        "top": 25,
+        "right": 97,
+        "bottom": 112,
+        "pixels": 1817
+      },
+      "registration": {
+        "y": 88,
+        "dx": 0,
+        "dy": 1
+      },
+      "silhouetteOverlap": 0.882
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 0,
+      "sha256": "7f4a56153bc76455c5faf9c5c14d54bae4afb7151bc648fee36e35958f60233b",
+      "bounds": {
+        "left": 32,
+        "top": 25,
+        "right": 103,
+        "bottom": 112,
+        "pixels": 2144
+      },
+      "silhouetteOverlap": 0.929
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 1,
+      "sha256": "7588db243e0d2c214eaf1e340d79130eca2e15efab61621c73ab47b832e45db0",
+      "bounds": {
+        "left": 31,
+        "top": 28,
+        "right": 111,
+        "bottom": 112,
+        "pixels": 2374
+      },
+      "silhouetteOverlap": 0.917
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 2,
+      "sha256": "77b32c6ab92e7fd0e0d5d4984fed4bc2ce138ec6043841ba780a17f93d76d02e",
+      "bounds": {
+        "left": 42,
+        "top": 26,
+        "right": 112,
+        "bottom": 112,
+        "pixels": 2205
+      },
+      "silhouetteOverlap": 0.937
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 3,
+      "sha256": "c51fc8f8fbdeccd544988f13de65ce222c09e67eaf022be424398714ca0f23e3",
+      "bounds": {
+        "left": 52,
+        "top": 28,
+        "right": 120,
+        "bottom": 112,
+        "pixels": 1958
+      },
+      "silhouetteOverlap": 0.918
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 4,
+      "sha256": "9ba75a86eb2c79272cc146a52514498d8446ae42e9f82ff4f2279a9d2109a637",
+      "bounds": {
+        "left": 58,
+        "top": 34,
+        "right": 124,
+        "bottom": 112,
+        "pixels": 1785
+      },
+      "silhouetteOverlap": 0.834
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "lurch",
+      "frame": 5,
+      "sha256": "1b4a6e5bc9ea59e4b6a8fa5deb535bcdcb905a18074cde442ea866450b5ae6b8",
+      "bounds": {
+        "left": 37,
+        "top": 26,
+        "right": 106,
+        "bottom": 112,
+        "pixels": 2092
+      },
+      "silhouetteOverlap": 0.909
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "bite",
+      "frame": 0,
+      "sha256": "46b597f54113ae21f8c39a12998aae4da00729ba617b4bb8180b8c14317c35e2",
+      "bounds": {
+        "left": 45,
+        "top": 24,
+        "right": 101,
+        "bottom": 112,
+        "pixels": 1936
+      },
+      "silhouetteOverlap": 0.768
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "bite",
+      "frame": 1,
+      "sha256": "b4faabec32480e7c9df3061bc9ea5149fc24f47204497e2e292d53858d699afd",
+      "bounds": {
+        "left": 45,
+        "top": 39,
+        "right": 99,
+        "bottom": 112,
+        "pixels": 1980
+      },
+      "silhouetteOverlap": 0.838
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "bite",
+      "frame": 2,
+      "sha256": "e747a6aef8d76ba2d1cb48da6ed1f26e484f303c560b656064e2fffc2620cef0",
+      "bounds": {
+        "left": 46,
+        "top": 26,
+        "right": 90,
+        "bottom": 112,
+        "pixels": 1912
+      },
+      "silhouetteOverlap": 0.864
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 0,
+      "sha256": "3c5075a7efb589e73296376f8527166ad4a945f09a12cc7e7d3732fbdbc57ce2",
+      "bounds": {
+        "left": 38,
+        "top": 24,
+        "right": 84,
+        "bottom": 112,
+        "pixels": 2022
+      },
+      "silhouetteOverlap": 0.882
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 1,
+      "sha256": "505b8ff9574d643383cc1e54dc0119f1606ff6e92f76a4f528464636c603f9ed",
+      "bounds": {
+        "left": 41,
+        "top": 44,
+        "right": 81,
+        "bottom": 112,
+        "pixels": 1550
+      },
+      "silhouetteOverlap": 0.87
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 2,
+      "sha256": "2edf39c18be0777346b790bf3608a0bc63d2f0a591d43e77c859531a1426cc61",
+      "bounds": {
+        "left": 23,
+        "top": 62,
+        "right": 78,
+        "bottom": 112,
+        "pixels": 1074
+      },
+      "silhouetteOverlap": 0.824
+    },
+    {
+      "body": "zombie_decayed_c",
+      "facing": "ne",
+      "anim": "death",
+      "frame": 3,
+      "sha256": "c695e2a3ca72fa6c09e336a3aa5e03dc99526014cb3631d1547bed3ead7d2309",
+      "bounds": {
+        "left": 27,
+        "top": 83,
+        "right": 101,
+        "bottom": 120,
+        "pixels": 1309
+      },
+      "silhouetteOverlap": 0.878
+    }
+  ]
+}

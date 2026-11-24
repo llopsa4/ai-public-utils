@@ -1,0 +1,130 @@
+{
+  "url": "http://127.0.0.1:5269",
+  "checks": [
+    {
+      "screenshot": "gallery.png",
+      "images": 29,
+      "cursors": [
+        "url(\"http://127.0.0.1:5269/a9-art/cursor_select.png\") 6 3, auto",
+        "url(\"http://127.0.0.1:5269/a9-art/cursor_attack.png\") 16 16, auto",
+        "url(\"http://127.0.0.1:5269/a9-art/cursor_use.png\") 16 16, auto",
+        "url(\"http://127.0.0.1:5269/a9-art/cursor_move.png\") 16 16, auto",
+        "url(\"http://127.0.0.1:5269/a9-art/cursor_run.png\") 16 16, auto"
+      ]
+    },
+    {
+      "screenshot": "game-base-fighter.png",
+      "icons": [
+        "icon_hud_hunger",
+        "icon_hud_ammo",
+        "icon_hud_food",
+        "icon_hud_scrap",
+        "icon_bar_knife",
+        "icon_bar_gun",
+        "icon_bar_hold",
+        "icon_bar_freefire",
+        "icon_bar_crouch",
+        "icon_bar_eat",
+        "icon_bar_give",
+        "icon_bar_fix",
+        "icon_bar_cook",
+        "icon_bar_barricade",
+        "icon_bar_spike",
+        "icon_bar_can",
+        "icon_hud_hp"
+      ]
+    },
+    {
+      "runtimeCursors": {
+        "pointer": "url(\"/@fs/C:/Users/Nuria/AppData/Local/Temp/dead-woods-a9-full-r2/art/frames/ui/cursor_select.png\") 6 3, pointer",
+        "crosshair": "url(\"/@fs/C:/Users/Nuria/AppData/Local/Temp/dead-woods-a9-full-r2/art/frames/ui/cursor_attack.png\") 16 16, crosshair",
+        "grab": "url(\"/@fs/C:/Users/Nuria/AppData/Local/Temp/dead-woods-a9-full-r2/art/frames/ui/cursor_use.png\") 16 16, grab",
+        "move": "url(\"/@fs/C:/Users/Nuria/AppData/Local/Temp/dead-woods-a9-full-r2/art/frames/ui/cursor_move.png\") 16 16, move"
+      },
+      "method": "Base view controller"
+    },
+    {
+      "input": "V targeting order",
+      "cursor": "cursor_attack"
+    },
+    {
+      "screenshot": "game-base-herd.png",
+      "icons": [
+        "icon_hud_hunger",
+        "icon_hud_ammo",
+        "icon_hud_food",
+        "icon_hud_scrap",
+        "icon_hud_herd",
+        "icon_bar_knife",
+        "icon_bar_gun",
+        "icon_bar_hold",
+        "icon_bar_freefire",
+        "icon_bar_crouch",
+        "icon_bar_eat",
+        "icon_bar_give",
+        "icon_bar_fix",
+        "icon_bar_cook",
+        "icon_bar_barricade",
+        "icon_bar_spike",
+        "icon_bar_can",
+        "icon_hud_hp"
+      ]
+    },
+    {
+      "screenshot": "game-base-large-text.png",
+      "icons": [
+        "icon_hud_hunger",
+        "icon_hud_ammo",
+        "icon_hud_food",
+        "icon_hud_scrap",
+        "icon_bar_knife",
+        "icon_bar_gun",
+        "icon_bar_hold",
+        "icon_bar_freefire",
+        "icon_bar_crouch",
+        "icon_bar_eat",
+        "icon_bar_give",
+        "icon_bar_fix",
+        "icon_bar_cook",
+        "icon_bar_barricade",
+        "icon_bar_spike",
+        "icon_bar_can",
+        "icon_hud_hp"
+      ]
+    },
+    {
+      "screenshot": "game-mission-fighter.png",
+      "icons": [
+        "icon_hud_ammo",
+        "icon_hud_food",
+        "icon_hud_scrap",
+        "icon_hud_crate",
+        "icon_hud_zombie",
+        "icon_bar_knife",
+        "icon_bar_takedown",
+        "icon_bar_carry",
+        "icon_bar_hold",
+        "icon_bar_crouch",
+        "icon_hud_hp"
+      ]
+    },
+    {
+      "screenshot": "game-mission-scout.png",
+      "icons": [
+        "icon_hud_ammo",
+        "icon_hud_food",
+        "icon_hud_scrap",
+        "icon_hud_crate",
+        "icon_hud_zombie",
+        "icon_bar_gun",
+        "icon_bar_club",
+        "icon_bar_lure",
+        "icon_bar_hold",
+        "icon_bar_freefire",
+        "icon_bar_crouch",
+        "icon_hud_hp"
+      ]
+    }
+  ],
+  "errors": []
+}

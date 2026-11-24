@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { clampCenter, edgeDirection, panVector, zoomAtCursor, zoomStep } from '../src/render/camera';
+import { clampCenter, edgeDirection, panVector, pointerInside, snapZoom, stepZoom, wheelSteps, zoomAtCursor } from '../src/render/camera';
 import { tileToWorld, worldBounds, worldToTile, worldToTileF } from '../src/render/iso';
 import { makeRng, rngInt, rngNext } from '../src/sim/rng';
 import manifest from '../art/manifest.json';
@@ -28,9 +28,6 @@ test('the whole map projects inside the world bounds', () => {
 test('camera: clamp, wheel zoom steps, pan speed and zoom under the cursor', () => {
   const b = { w: 2048, h: 1088 };
   assert.deepEqual(clampCenter(-5, 9999, b), [0, 1088]);
-  assert.equal(zoomStep(1, -100, 0.1, 0.5, 2), 1.1);
-  assert.equal(zoomStep(2, -100, 0.1, 0.5, 2), 2);
-  assert.equal(zoomStep(0.5, 100, 0.1, 0.5, 2), 0.5);
   assert.deepEqual(edgeDirection(0, 360, 1280, 720, 16), [-1, 0]);
   assert.deepEqual(edgeDirection(1270, 715, 1280, 720, 16), [1, 1]);
   assert.deepEqual(panVector(1, 0, 1000, 2, 600), [300, 0]);
@@ -38,6 +35,35 @@ test('camera: clamp, wheel zoom steps, pan speed and zoom under the cursor', () 
   assert.ok(Math.abs(Math.hypot(dx, dy) - 600) < 1e-9);
   // The point under the cursor stays put: centre the cursor, zooming changes nothing.
   assert.deepEqual(zoomAtCursor(100, 100, 1, 640, 360, 1280, 720, 2), [100, 100]);
+});
+
+test('camera zoom: fixed stops, touchpad accumulation, pointer inside', () => {
+  const stops = [1, 1.5, 2, 3];
+  assert.equal(stepZoom(1, 1, stops), 1.5);
+  assert.equal(stepZoom(1.5, 1, stops), 2);
+  assert.equal(stepZoom(3, 1, stops), 3);
+  assert.equal(stepZoom(1, -1, stops), 1);
+  assert.equal(stepZoom(2, -1, stops), 1.5);
+  assert.equal(stepZoom(1.2, 1, stops), 1.5); // between stops: the next one beyond
+  assert.equal(stepZoom(1.2, -1, stops), 1);
+  assert.equal(snapZoom(1.4, stops), 1.5);
+  // A mouse notch (100 px, up = negative) is one step in; down is one step out.
+  assert.deepEqual(wheelSteps(0, -100, 0, 100), [0, 1]);
+  assert.deepEqual(wheelSteps(0, 100, 0, 100), [0, -1]);
+  // Touchpad: small deltas add up, a change of direction starts over, lines count more than pixels.
+  let [acc, n] = wheelSteps(0, -30, 0, 100);
+  assert.deepEqual([acc, n], [-30, 0]);
+  [acc, n] = wheelSteps(acc, -30, 0, 100);
+  [acc, n] = wheelSteps(acc, -30, 0, 100);
+  assert.equal(n, 0);
+  [acc, n] = wheelSteps(acc, -30, 0, 100);
+  assert.equal(n, 1);
+  assert.equal(acc, -20);
+  assert.deepEqual(wheelSteps(-60, 40, 0, 100), [40, 0]);
+  assert.deepEqual(wheelSteps(0, -3, 1, 100), [-99 + 0, 0]); // 3 lines = 99 px, just short
+  assert.deepEqual(wheelSteps(0, 0, 0, 100), [0, 0]);
+  assert.ok(pointerInside(0, 0, 1280, 720) && pointerInside(1279, 719, 1280, 720));
+  assert.ok(!pointerInside(-1, 5, 1280, 720) && !pointerInside(1280, 5, 1280, 720));
 });
 
 test('seeded rng repeats and stays in range', () => {

@@ -21,6 +21,8 @@ const CULL_MARGIN = 256;
 
 /** Ground tiles per chunk side: a 16 x 16 chunk is one 1024 x 512 texture (96 x 96 tiles are 36 chunks, about 75 MB). */
 const CHUNK = 16;
+/** Ground tiles are drawn this much larger than their diamond so neighbours overlap and no seam is left between them. */
+const SEAM_GROW = 1 + 2 / TILE_W;
 /** Chunks redrawn per frame after a season change, so the swap spreads over a few frames instead of one long one. */
 const REDRAWS_PER_FRAME = 6;
 
@@ -224,6 +226,9 @@ export class TerrainView {
     if (art && !fromAtlas(this.scene, art.key, art.frame)) art = null; // no bank art yet: the plain grass tile
     art ??= groundArt(map, seed, x, y, season);
     applyArt(img, art.key, art.frame);
+    // A hard-edged diamond drawn at half size has half-transparent edge pixels, and the chunk under it is empty, so every shared edge
+    // would show a faint dark seam when the chunk is magnified. Each ground tile overlaps its neighbours by a pixel instead.
+    img.setScale(img.scaleX * SEAM_GROW, img.scaleY * SEAM_GROW);
     if (manifest[art.key].status === 'placeholder') {
       // A placeholder tile gets a little brightness noise so the flat colour is not a grid (final art needs none).
       const v = 0xff - Math.floor(hash01(x, y, 1) * 22);

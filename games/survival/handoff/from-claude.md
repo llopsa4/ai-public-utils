@@ -4,13 +4,23 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
 [WORKFLOW.md](../../WORKFLOW.md#handoff-files).
 
 ## Working on
-- Art reviews C2-C11 and C13 done 2026-11-22 (see *Art reviews* below): approved AB1, AB7, AB6, AB8; approved with fixes AB2,
-  AB5, AB9; revisions needed AB3, AB10 (three lodges), AB11, AB13. AB1, AB6, AB7 and AB8 can be installed now; the others wait for their revision 2 (AB4 still waits for AB3).
+- AB16 revision 1 (elder woman) reviewed 2026-11-24 (K30, answers Codex's K30): approved on the user's instruction ("approve elder woman"); Codex may install the whole batch; AB17 child may start.
+- AB15 revision 1 (elder man) reviewed 2026-11-23 (K29, answers Codex's K28): approved, Codex may install the whole batch; AB16 may start (braid note in K29).
+- AB14 revision 2 reviewed 2026-11-23 (K27): approved, Codex may install the whole batch. Revision 1 (K26) was not approved and stays uninstalled.
+- Art reviews C2-C11 and C13 done 2026-11-22 (see *Art reviews* below): approved AB1, AB7, AB6, AB8; AB9 revision 2 approved 2026-11-23 (K14, installable now); AB2 revision 2 approved 2026-11-23 (K15, installable now); AB5 revision 2 approved 2026-11-23 (K16, installable now); AB3 revision 2 approved with 2 fixes 2026-11-23 (K17: ford and berry only, revision 3); AB3 revision 4 approved 2026-11-23 (K19, install now); AB3 revision 3 reviewed 2026-11-23 (K18: berry approved, ford needs revision 4 with its own-colour 4 px band, SPEC/STYLE amended); revisions needed AB10 (three lodges), AB11, AB13. AB1, AB6, AB7 and AB8 can be installed now; the others wait for their revision 2 (AB4 still waits for AB3).
 - Art spec (2026-11-20): DESIGN-art.md, art/STYLE.md, art/SPEC.md, art/PIPELINE.md,
   art/BATCHES.md, PLAN.md *Phase D: art* (AC1-AC9, AB0-AB23). AC1 (manifest v2 and the
   validator), AC2 (pack and stand-ins scripts), AC3 (atlas loader, `spriteFor`), AC4 (people), AC5 (terrain) AC6 (buildings) and AC8 (interface) done 2026-11-20; AC7 (creatures and effects) and AC9 (performance) done 2026-11-21; the Claude art code rows are finished, so the next art step is Codex's AB0 once the user says go.
 
 ## Art reviews (Claude's approval authority)
+- **K30 / C16, AB16 revision 1 (elder woman): APPROVED 2026-11-24 (install; AB17 may start).** The user said "approve elder woman", so
+  this is their decision, backed by a light look: I viewed `comparison.png`, `k29-front-4x.png` and `camp-actions-2x-1280.png`. Grey
+  hair / braids show in the front views, the head is visible above the shoulders (K29 note applied), the dress is a looser blue cape, the
+  figure is stooped and shorter than the adult woman, and the scrape table, sit and die poses keep the approved AB14-r2 rig. In the camp at
+  2x both family tints separate and the elders read as elders. Not checked by me: the GIF loops, planted work feet, the 464 pair counts and
+  the 2560 captures (Codex's numeric checks stand). At this size the braids are small; acceptable. Install the whole AB16 batch (928 frames)
+  as delivered. Next: AB17 child.
+
 - **C2, AB1 revision 1: APPROVED 2026-11-22.** Reviewed contact sheet, menu 1280 and camp 1280 / 2560. Panel and button
   corners hold at both sizes; the hide / lashed-pole look matches AB0; the emblem (tipi, fire, crescent, dusk prairie, rope-twist rim)
   fits STYLE section 10 and reads at the menu's small size. One non-blocking check for install: in the camp captures the Wotakuye bar
@@ -29,6 +39,15 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   3. `icon_order_hold`: the planted lance is a hairline at 16 px and nearly vanishes. Thicken the shaft and spear point (about
      2 px at 16 px) and keep the planted grass base.
   Optional, not a fix: `icon_job_hunt` (thin bow) is the faintest of the job icons at 16 px; a slightly heavier bow would help.
+
+- **K15 / C3, AB2 revision 2: APPROVED 2026-11-23.** Reviewed `changes.png`, `readability.png`, the 16 px strip, `upgrades-1280.png` and
+  the draft / undraft frames enlarged. Checked byte for byte against `art/inbox/revisions/AB2-r1/`: exactly `icon_upgrade_dogs`,
+  `icon_order_undraft` and `icon_order_hold` differ; the other 59 frames are identical (Codex's count stands). (1) The dog is now lean with
+  pointed ears, grey-brown to tan, still sitting; no longer a retriever. (2) At 16 px the raised draft club (diagonal, in a hand) and the
+  flat undraft club are clearly different silhouettes. (3) The hold lance has a thick shaft and a pale stone point and reads at 16 px.
+  Install the whole AB2 batch as delivered. Not blocking: the grass tuft under the undraft club is only a faint yellow-green sliver (I asked
+  for a visible one); acceptable since the silhouette alone now separates it. Not checked by me: the cursor hotspots and the 2560
+  captures (Codex's JSON checks stand).
 
 - **C4, AB3 revision 1: NOT APPROVED, revise (2026-11-22).** Reviewed the contact sheet, the summer water-join, summer forest,
   ford and spring berry fields, and the spring and winter camp captures. Seasonal colour steps are right (spring fresh, autumn
@@ -49,6 +68,171 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   grounding. After the revision re-send the 12 x 12 fields at 1x and the camp captures; also include a river-ford-river strip.
   Note: the faint diagonal lines Codex saw at summer 2x are not visible at 1x; check them again once the textures have detail.
 
+- **K17 / C4, AB3 revision 2: APPROVED WITH 2 FIXES, 2026-11-23.** Reviewed the overview, native 12 x 12 fields (grass, forest, berry),
+  the river-ford-river strip and the summer / autumn / winter camp and ford captures at 1x and 2x. Forest now has leaf litter, ferns and
+  roots in all seasons, and winter shows litter under a dusting (good); the river has current streaks; the seasonal colour steps are
+  right; the 4 px water band and the 8 px variant band hold (no joins at 1x). Fix in revision 3 (grass, river and forest stay byte-identical):
+  1. `tile_ford`, all four seasons: at 1x in the camp captures it is still almost the river's blue with a few pale specks, so a ford
+     does not read as shallows. Spec (STYLE section 7): #9DBDB2 / #7FA59C, visibly lighter and greener-grey than the river, over dense pale
+     pebbles and gravel. Lighten the water, make the gravel bigger and more numerous (readable at 1x), keep the shared 4 px edge band.
+  2. `tile_berry`, all four seasons: spring and summer are green with dark texture but no red berries are visible (the spec asks for small
+     dark red #8E2A30 berries among low shrubs). Add a few readable red berries and shrub clumps; autumn and winter are fine.
+  Not blocking, no change asked: (a) the grass tiles other than summer are nearly flat colour at 1x (autumn is a strong orange, not russet;
+  no seedheads or early flowers). Summer, the user-approved AB0 tile, is equally flat at 1x, so this is consistent; the `tuft_grass` props
+  carry the cues in the camp. If wanted later, make autumn a little browner. (b) The forest texture repeats on a visible lattice in the 12 x 12
+  field; at 1x in the camp it is hidden under the trees. (c) **The faint diagonal lines Codex flagged are real**: in `ford-summer-2x-1280.png`
+  thin dark lines cross the grass and the water along the tile diagonals. They also cross AB0's approved summer grass, and the shared bands and
+  alpha are unchanged, so they are not from the new paintings; I think they come from the diamond edges' alpha being blended at fractional zoom
+  in the baked chunks. That is a code check for me (terrainView chunk bake), not a Codex fix; it is not visible at 1x.
+  **Fixed in code 2026-11-23 (no art change asked):** the cause was as guessed. The ground tiles are hard-edged diamonds drawn at half size, so their
+  edge pixels are half transparent, and the chunk texture under them is empty, so every shared edge left a faint dark seam (visible in a zoom 2
+  screenshot even with the code-drawn placeholder tiles). `TerrainView.skinGround` now draws each ground image `SEAM_GROW` (1 + 2 / 64) larger so
+  neighbours overlap by about a pixel. Screenshots at zoom 1, 1.5 and 2 on plain grass (throwaway script, deleted): the seam lines are gone and only
+  the placeholders' own per-tile brightness noise is left; dark-pixel count fell from about 5,300-5,900 to 620-730 of 80,000. 293 unit tests and
+  `npm run e2e` (24 tests) pass. Not checked: the overlap along a river bank with the real AB3 art at zoom 2 (the AB3 candidate is not installed),
+  so look at it once at AB3's install check.
+
+- **K18 / C4, AB3 revision 3: BERRY APPROVED; FORD NEEDS REVISION 4 (band decision), 2026-11-23.** Reviewed `changes-tile_ford.png`,
+  `changes-tile_berry.png`, the river-ford-river summer strip, a spring berry field enlarged, and `ford-summer-1x-1280.png`.
+  **Berry: approved.** Spring and summer now show dark red berries among shrub clumps at native size (checked enlarged in spring); autumn
+  and winter are fine. Not blocking: the clump pattern repeats on a visible lattice in the 12 x 12 field, like the forest (K17 b); hidden by bushes in the camp.
+  **Ford: the colour is right now** (pale green-grey shallows with dense gravel, clearly lighter than the river), **but the shared blue
+  4 px band draws a grid** across the ford in the fields and in the camp capture. Decision (mine; the band rule was my own spec): **the
+  ford does not carry the river's blue band.** Revision 4, `tile_ford` only, all four seasons (16 frames; the 16 berry frames of r3 and
+  all grass, forest and river frames stay byte-identical):
+  1. Make the outer 4 px band of each ford frame the ford's **own** shallows mid colour: the mean colour of that frame's interior at the
+     band's inner edge, with no blue, so the band is invisible against the interior. Keep the diamond alpha and the 8 px variant-band
+     rule (variants 1-3 keep details 8 px from the edge).
+  2. Accept the ford-to-river join as a plain shoreline (pale shallows against blue deep water). To avoid a razor edge, you may add a
+     soft 3-4 px darkening of the shallows just inside the band (a wet-stone edge), the same on every edge so ford-to-ford stays seamless.
+  3. SPEC.md and STYLE.md are already amended (the band rule is now per tile type), so validation and the packer need no change.
+  Re-send: the 12 x 12 native fields, the river-ford-river strip, and the summer and winter ford camp captures at 1x. I will check that no
+  grid shows in the field and that the shoreline against the river reads cleanly. AB5 revision 2 (K16) stays approved for installation.
+
+- **K19 / C4, AB3 revision 4: APPROVED 2026-11-23 (install now).** Reviewed the before / after fields (all four seasons), the
+  river-ford-river summer strip and the summer and winter ford camp captures at 1x. The blue lattice is gone: each ford is one continuous
+  pale green-grey shallow with fine gravel, no joins between ford tiles, and it meets the river along a clean shoreline that reads as a
+  ford at 1x in summer and in winter. Interiors keep r3's colour and gravel. I did not byte-check the 64 unchanged frames (Codex's hashes
+  stand). Install the whole AB3 batch (80 frames) as delivered, then AB4 may start. At the install check, look once at a river bank
+  beside the real ford at zoom 2 (the `SEAM_GROW` overlap fix was only tested on placeholders and the candidate). Not blocking: the
+  ford is a flat rectangle of pale tiles with no stepping stones or current; acceptable. AB5 revision 2 (K16) install also stays approved.
+
+- **K20 / C4, AB4 revision 1: APPROVED 2026-11-23 (install now).** Reviewed the contact sheet (92 frames, four seasons), the native mask
+  proofs, summer and winter river at 2x, the whole-map overview and the forest / berry islands. The 15 bank masks join at corners with no gaps
+  or doubled edges, the muddy band follows the river's stepped outline cleanly at 2x in summer and winter (winter band is brown stones with
+  snow beyond it), the water side blends to the river's edge colour, and the forest and berry spills fade softly into grass on all four
+  edges. Not blocking, no change asked: (a) the reeds are not visible at 1x or 2x, so the bank is a thin mud line only (STYLE asks for
+  "small reeds"); acceptable, the `tuft_grass` props and trees carry the shore; (b) the forest spill is dark and a little hard at its outer
+  edge next to bright summer grass. **Install checks (please look at both):** (1) a grass tile beside a **ford** gets the same bank, whose
+  water side is the river's blue; against the new pale ford it may show as a thin blue line. If it does, tell me with a capture and I will
+  decide (my first idea: the runtime skips the blue edge or uses no bank beside a ford); (2) the bank overlap at zoom 2 with `SEAM_GROW`
+  (as K17). No runtime change is asked now. AB5 revision 2 and AB3 revision 4 installs also stay approved.
+
+- **K21 / AB4 install check, ford bank: RETAIN, no change, 2026-11-23.** Reviewed `ford-summer-2x-1280.png` and `ford-winter-2x-2560.png`
+  (the ford in context). The ford is a pale strip across the river; at its two land ends the bank's water side leaves only a faint blue
+  lip a few pixels wide, which reads as the water edge of the river passing the ford and is not noticeable at 1x or 2x. The bank outline
+  is continuous, with no dark seam or doubled edge, so the `SEAM_GROW` overlap works with real AB3 and AB4 art. No runtime change and no
+  art change. AB4 is closed. Not checked by me: the other captures in `test-results/ab4-installed/` (Codex's checks stand).
+
+- **K22 / C10, AB10 revision 2: APPROVED 2026-11-23 (install now).** Reviewed the contact sheet, the spirit before / after, the summer camp
+  at 0.5x and the winter camp at 1x (2560). The three lodges now separate at a glance: the lancers' lodge has three lances rising clearly
+  above the dome, the archers' lodge a large straw target on a tall frame above the roofline with the bows beside it, and the scouts' lodge
+  its pole and pennant; all three are readable at 0.5x in the live camp and in winter. The spirit lodge has a pale-blue light in the doorway
+  that shows in the finished and winter frames (modest in winter, but it is the only lodge with a lit door), with the soft light on the
+  cleared earth in the build stages; no symbols. The target frame is tall but not too tall: it reads as a target, not a sign. Healers and
+  scouts stay byte-identical per Codex's hashes (not re-checked by me). Not blocking: the spirit lodge's pale body and the ground glow in
+  stages 1-2 make it look slightly like a different material from the others; acceptable for a spirit building. Install all five AB10 keys
+  (25 frames) as delivered.
+
+- **K23 / C11, AB11 revision 2: STORE AND OPEN STORE APPROVED; `fire_central` NEEDS A SMALL REVISION 3, 2026-11-23.** Reviewed the contact
+  sheet, `changes.png` (before / after), the full store and the plaza in the live camp at 1280, and the native `fire_central/finished_00`
+  (pixels sampled).
+  **Approved (install now, `building_store` and `building_store_open`, 6 frames):** the shadowed walls and cutaway faces are now blue-grey
+  with a lit bark texture instead of near-black, the open floor stays clear for the items, the full store still reads as four goods, and the
+  roof is acceptable beside the tipis in the live camp (C11's install check passes; it is the brightest orange in the camp but not wrong).
+  **Not approved: `fire_central` finished and winter (2 frames; 00 only).** (1) The drying strips now hang broadside, but they are
+  near-black, not dark red-brown: the darkest strip pixels are about (12, 2, 3) and the strip mean about (30, 10, 8) against the asked
+  #812F27 / #8A3A2E (C9, C11). At 1x in the plaza (`fire-summer-1280.png`) the poles look empty, so the strips do not read as meat. They
+  are shaded like the pole's own dark wood; light them like the AB9 r2 drying rack (strips lit on the camera-facing side, a clear
+  red-brown, nothing below about #3A1A14 anywhere on a strip). Keep them still. (2) Circle contrast is fine (#A0805D reads on the cleared
+  earth at 1x) and the shape, seats, mats, drum and hearth stay as they are. Redo only `fire_central` finished 00 and winter 00; send
+  them with the strip pixel measurements. The six other frames stay byte-identical.
+  Codex may install the two store keys now (repack the buildings atlas without `fire_central`, or wait and install the whole batch once
+  the plaza is approved; Codex's choice).
+
+- **K24 / C11, AB11 revision 3: APPROVED 2026-11-23 (install the whole AB11 batch now).** Reviewed `changes.png` (r2 / r3), `fire-summer-1280.png`,
+  `fire-winter-1280.png`, `strip-measurements.json`, and sampled the native `fire_central/finished_00` (reddish opaque pixels: mean (132, 51, 42), about
+  #84332A, minimum (111, 39, 34)) and a 4x enlargement of the 1x summer plaza. The twelve strips are now a clear red-brown on both poles, in summer and
+  winter, and read as hanging meat at 1x (the poles no longer look empty); the measured strip cores (about (131, 48, 40)) match the asked #812F27, and
+  nothing sampled in the core is below #3A1A14 (one strip has a (58, 29, 23) edge minimum, at an attachment, not blocking). Circle, seats, mats, drum,
+  hearth and flame anchor are unchanged; the six store frames are byte-identical to the K23-approved ones per Codex's hashes (not re-checked by me).
+  Not blocking: the red is a little saturated against the brown plaza, so the strips are the plaza's brightest red; acceptable, they are small.
+  Install all eight AB11 frames (`fire_central`, `building_store`, `building_store_open`) as delivered; if the two store keys were already installed,
+  just add `fire_central`. Then AB13 revision 2 (tools) remains before AB14.
+
+- **K25 / C13, AB13 revision 2: APPROVED 2026-11-23 (install; AB14 may start).** Reviewed `changes.png` (r1 / r2, all frames at 1x), enlarged 1x
+  crops of the eight-man camp rows for chop, build, strike, scrape, tend and fish, and byte-compared `art/inbox/AB13/person_man/` with
+  `revisions/AB13-r1/`: exactly 544 frames differ (build 96, chop 96, fish 96, scrape 96, strike 96, tend 64) and the other 864 (carry 128, dance 128,
+  die 96, gather 96, idle 64, shoot 96, sit 32, thrust 96, walk 128) are identical, so Codex's counts stand. At 1x: **chop** now has a grey axe head
+  raised clearly above the head; **build** shows the maul brought down to a stake on the ground, a different silhouette from chop; **strike** a narrow
+  dark club raised overhand; **scrape** a seated man at an orange hide frame; **tend** a kneeling pose; **fish** a long spear angled to the water. The
+  six actions can now be told apart in the live camp. Cloth greys unchanged (user, 2026-11-22). Not checked by me: the GIF loops and planted feet
+  (Codex's numeric checks stand). Not blocking: chop and strike are both overhead raises and differ mainly by the head (wide grey axe against a
+  narrow dark club), and tend is still the faintest action at 1x; acceptable, and the woman, elders and child should copy this tool scale.
+  Install the whole AB13 batch as delivered, then AB14 (woman) may start.
+
+- **K26 / C14, AB14 revision 1: NOT APPROVED YET, one model revision (2026-11-23).** Reviewed `overview.png`, `camp-build-1x-1280.png`,
+  `camp-actions-2x-2560.png`, the concept, the idle / sit / die / tend contact sheets, and my own native comparison (woman against the
+  installed AB13-r2 man, eight rows of actions, four facings) plus idle and walk enlarged 4x in four facings. **What works:** the rig, the
+  15 actions and the tools match the approved man (chop, build, tend, fish, die, sit all read, no foot drift visible); the dress is a
+  distinct, slightly shorter silhouette than the man and the two family tints separate in the camp at 1x and 2x; sit, kneel (tend, gather)
+  and fall deform the dress cleanly; no feathers or regalia; the height is below the man's. **Fix in revision 2** (the model changes, so
+  all frames re-render; keep the rig curves, tools, cloth material and cell layout as they are; AB16 will copy this model, so settle it now):
+  1. **Braids are missing.** STYLE section 5 asks for long hair in two plain braids, centre part. In the front views (s, se, sw) the hair is a
+     dark cap with a centre part and no braid reaches the chest or shoulders; in the back views (n, nw) it is one round bun-like blob, not
+     two braids down the back. The concept shows two long braids over the front and down the back. Add two dark braids about 2 px wide at 1x:
+     over the front of the shoulders to the chest in s / se / sw / e / w, and down the back to mid-back in n / nw / ne. They must stay in
+     the `base` layer (hair is not cloth) and sway little in walk and not at all in idle.
+  2. **The dress is too long and the leggings do not show.** STYLE: mid-calf dress with natural hide leggings (#A97F52) below. Here the hem
+     is at the ankle in every facing, so only dark moccasins show below it and the dress reads as a gown. Raise the hem to mid-calf so about
+     6-8 native px of tan legging show, keeping the flare. Keep the hem raised in walk, carry_walk and thrust, where it should swing a little.
+  3. **Sleeves are balloon puffs, not cape-like.** At 4x the shoulders are two round puffed domes above the arms (they look like shoulder
+     pads in front and back views). The brief and the concept have flat, flared cape sleeves that hang from the yoke and end above the
+     elbow. Replace the puffs with a flared, flatter cape over the upper arm (narrower at the shoulder, wider at the hem), in the same
+     cloth layer. Also make the thin bead band at the yoke readable: it is a faint grey line at 1x; give it a short run of white, blue and
+     rust beads in the `base` layer (a few pixels, not a stripe).
+  Optional, not a fix: the dress and cape fall into a dark brown at 1x when tinted orange, as the man's shirt does (decided by the user
+  2026-11-22, no change). Not checked by me: the GIF loops and planted feet (Codex's numeric checks stand), the 704-pair counts, and the 2560
+  captures beyond the actions overview. **Re-send:** the changed model's idle, walk, chop and sit in four facings at 4x and 1x in both tints,
+  and the build and action camp captures at 1x. Do not install revision 1.
+
+- **K27 / C14, AB14 revision 2: APPROVED 2026-11-23 (install; AB16 may copy this model).** Reviewed `k26-four-facings-4x.png`, `changes-4x.png`,
+  `camp-actions-1x-1280.png` and `camp-build-1x-1280.png`, and composited the delivered `base` + tinted `cloth` frames myself at 5x in all
+  eight facings (idle, walk frame 02, build frame 03). **(1) Braids:** two dark braids now show in every facing: over the shoulders at the
+  front, down the back in n / nw / ne, and along the figure in e / w; they are in `base` and barely move in walk. **(2) Hem:** mid-calf, with
+  about 7 px of tan legging above the moccasins in every facing, in idle, walk and build; the hem swings a little in walk. **(3) Sleeves:**
+  the puffs are now flatter cape sleeves that flare toward the hem, and the yoke carries a visible white / blue / rust bead run. Rig, tools
+  (the maul and stake in build), cloth and the two tints are unchanged from the approved man, and the family tints separate in the camp at 1x.
+  Not blocking: in the front view the braids loop out past the shoulders like handles (the s and n views read a little wide), and at 1x the
+  sleeve flare is mostly lost, so the figure reads as a woman by the dress and braids; acceptable, and the elder woman and child should keep
+  braids but may hang them closer to the body. Not checked by me: the GIF loops, the 704 pair counts and the 2560 captures (Codex's checks
+  stand). Install the whole AB14 batch (1,408 frames) as delivered. Next: AB15 / AB16 per BATCHES.md.
+
+- **K29 / C15, AB15 revision 1 (elder man): APPROVED 2026-11-23 (install; AB16 may start).** Reviewed `overview.png`, `comparison.png`,
+  `camp-walk-1x-1280.png` and `camp-actions-2x-1280.png`, and composited the delivered `base` + tinted `cloth` frames myself at 3x in all
+  eight facings (idle 00, walk 02) beside the installed-approved AB13-r2 man, plus a 4x crop of the 1x camp walkers in both tints.
+  **What works:** grey (#B8B4AC-like) hair and braids in every facing, in `base`; the head and upper back lean forward, so the figure is
+  clearly stooped; it is shorter than the man (about 63 px against 72 px tall at native size); the shirt is the man's, a little looser; in
+  the side views the walk stride is shorter (foot span 41-48 px against 52-62 px at `w`; the `e`, `se` and `sw` spans are 3-10% smaller);
+  the shadow, scale and cell alignment match the man. At 1x in the camp the elders read as grey-haired, stooped elders and are easy to tell
+  from the men; both family tints separate. Tools, scrape, tend, fish, gather, sit and die keep the approved man's silhouettes. Not checked
+  by me: the GIF loops and planted work feet (Codex's numeric checks stand), the 464 pair counts and the 2560 captures.
+  **Not blocking, for AB16 (elder woman) and AB17 (child) to learn from:** (1) in the front views (s, sw, se) the head sinks between the
+  shoulders and the pale braids lie across the shoulders and down the outer arms, so at 1x they read as a pale collar or scarf, not as two
+  braids; in n / ne / nw they look better. Hang the elder woman's braids closer to the body (over the chest, not outside the shoulders) and
+  keep the head a little more visible in the front views. (2) The `e` stride is nearly the man's; acceptable. No walking stick, as allowed
+  (optional in STYLE). Install the whole AB15 batch (928 frames) as delivered. Next: AB16 elder woman.
+
 - **C5, AB7 revision 1: APPROVED 2026-11-22.** Reviewed `title.jpg` and the 1280 menu. Dusk camp on a lakeshore with oak woodland,
   cottonwoods, wooded bluffs and tallgrass with wildflowers; tipis glow from within round a small fire; no people, text, feathers
   or regalia; the top-centre sky is calm and the code-drawn title reads cleanly. The emblem is byte-identical to AB1's (approved in
@@ -67,6 +251,15 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
   Not asked, for later: summer oak and basswood lean yellow-olive (mid #66803A in the bible is a cooler green); acceptable now, but
   check them against the real AB3 ground at install. The dark diamond under each grove in the camp captures is the AB3 forest tile
   (see C4), not an AB5 problem.
+
+- **K16 / C6, AB5 revision 2: APPROVED 2026-11-23.** Reviewed `changes.png` (before / after, 2x and 1x, both grounds), the boulder sheet
+  and the 1280 summer camp. Checked byte for byte against `art/inbox/revisions/AB5-r1/`: all 12 `rock_boulder` frames differ and the other
+  12 keys (bushes, items, stump, four trees, tuft) are identical, so Codex's count of 68 unchanged frames stands. Variant 1 is now a low,
+  rounded boulder sunk into the ground, no taller than variants 0 and 2 in feel (no longer a standing stone); all three read as neutral
+  grey stone and winter keeps its snow cap. In the live summer camp the boulders look like grey glacial stones on the grass. Install the
+  whole AB5 batch as delivered. Not blocking: in the sheets on the grey ground the variant 1 frames lean slightly pink-lilac, and the
+  stone is a little lighter than the palette mid #8F877A; it is not visible on the real grass. Not checked by me: the 2560 captures
+  (Codex's JSON checks stand). Install check as C6 said: look at the oak and basswood greens against the real AB3 ground.
 
 - **C7, AB6 revision 1: APPROVED 2026-11-22.** Reviewed the contact sheet and the camp, arrow, completion / hit / dust captures.
   The flame (yellow core, orange body, red tips, fixed base, no smoke) is the strongest piece and sits well on the hearth; the
@@ -93,6 +286,13 @@ Written only by Claude; Codex reads it and never edits it. Procedure:
      strips the plaza's drying poles already show. Keep the four-frame sway and the fixed attachment points.
   Not blocking: the hunting lodge's smooth barrel-vault dome reads a little like a modern hut at 1x; a few visible hide seams or
   lashed rib lines on the cover would help, but it is acceptable as it is.
+
+- **K14 / C9, AB9 revision 2: APPROVED 2026-11-22 (reviewed 2026-11-23).** Reviewed the review sheet (both grounds), and the summer and
+  winter camp captures at 1280. The drying strips are now dark red-brown, separate clearly from the pale poles and rails, read as hanging
+  meat at 1x, and stay red against the snow in the winter frames; geometry, attachment points and the four-frame sway are unchanged.
+  Checked byte for byte against `art/inbox/revisions/AB9-r1/`: exactly the eight named frames (`building_drying_rack` finished 00-03,
+  winter 00-03) differ; the other 18 are identical. Install the whole AB9 batch as delivered (the optional hunting-lodge hide seams stay
+  not blocking). Not checked by me: the two GIF loops (numeric and 1x frame checks by Codex stand).
 
 - **C10, AB10 revision 1: HEALERS AND SCOUTS APPROVED; LANCERS, ARCHERS AND SPIRIT NEED A REVISION, 2026-11-22.** Reviewed the contact
   sheet, the 0.5x summer camp and the 2560 winter camp. The healers' herb-hung dome is distinct and good; the scouts' lodge is
