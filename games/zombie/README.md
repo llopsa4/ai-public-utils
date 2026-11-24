@@ -1,16 +1,16 @@
 # Dead Woods
 
-An early isometric zombie-survival game for desktop browsers. Two survivors start at an improvised
-camp in the woods. Between story missions you manage the camp (food, scrap, upgrades) and hold off
-the dead; on missions you sneak through Commandos-style maps with vision cones, noise and character
-abilities to scavenge supplies. Mature content: visible gore.
+An early isometric zombie-survival game for desktop browsers. Two survivors, Cass and Eli, sneak
+through Commandos-style maps with vision cones, noise and character abilities to scavenge supplies
+(Mission 1), then hold a house against a herd (Base 1). Mature content: visible gore.
 
-All art is currently grey placeholder shapes.
+The survivors, zombies, interface and title art are installed; the environment is still grey
+placeholder shapes.
 
 Play: <https://llopsa4.github.io/ai-public-utils/games/zombie/>. Local development:
 [DEVELOPMENT.md](DEVELOPMENT.md). Rules for working on the game: [AGENTS.md](AGENTS.md).
 
-## Controls (first slice, as planned)
+## Controls
 
 | Input | Action |
 |---|---|
@@ -19,7 +19,7 @@ Play: <https://llopsa4.github.io/ai-public-utils/games/zombie/>. Local developme
 | Drag | box-select |
 | Right-click | cancels a pending V / L / B / T / X command (gives no orders) |
 | C | crouch / stand |
-| V, then click | watch: hold position facing the click; attack any enemy entering the cone |
+| V, then click | hold: stand facing the click; attack any enemy entering the cone |
 | F / G | Fighter: silent takedown / carry body |
 | L, then click | Scout: throw a noise lure |
 | Space | pause (cones stay visible) |

@@ -31,7 +31,6 @@ type Work = Extract<Order, { type: 'work' }>;
 
 export const TRAP_TICKS: Record<TrapKind, number> = { spike: secs(T.spike.time), can: secs(T.can.time) };
 export const REARM_TICKS = secs(T.spike.rearmTime);
-export const TRAP_KINDS: readonly TrapKind[] = ['spike', 'can'];
 export const trapCost = (kind: TrapKind): number => T[kind].cost;
 
 export const trapAt = (s: BaseState, x: number, y: number): Trap | undefined => s.traps.find((t) => t.x === x && t.y === y);

@@ -241,11 +241,6 @@ function stepHerd(s: BaseState): void {
   }
 }
 
-/** Any survivor dead: Base 1 restarts from its start (DESIGN §12). */
-export function baseFailed(s: BaseState): boolean {
-  return s.status === 'failed';
-}
-
 /** A zombie at (x, y) facing `toward`; roamers (`r…`) and herd zombies (`h…`) pass their own id. */
 export function addZombie(s: BaseState, x: number, y: number, toward: readonly [number, number] = [0, 1], id = `z${s.enemies.length + 1}`): string {
   s.enemies.push({

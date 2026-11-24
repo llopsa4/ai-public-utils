@@ -24,8 +24,3 @@ export function worldToTile(wx: number, wy: number, size: number): { x: number; 
 export function worldBounds(size: number): { w: number; h: number } {
   return { w: size * TILE_W, h: size * TILE_H + TILE_H * 2 };
 }
-
-/** Screen direction of a tile-space vector (for cones and facings drawn on screen). */
-export function tileDirToScreen(dx: number, dy: number): { x: number; y: number } {
-  return { x: (dx - dy) * (TILE_W / 2), y: (dx + dy) * (TILE_H / 2) };
-}

@@ -196,7 +196,8 @@ Continue resumes there. 2026-11-23: winning Base 1 saves the stage **done** (sav
 Continue then shows the existing "To be continued..." text with **Replay Base 1** and **Menu**. The
 Base 1 herd checkpoint (§12) is stored in the save (`checkpoint`, a copy of the whole Base state); Continue
 and Retry resume there, Restart Base 1 and every stage change drop it, and a checkpoint that does not fit
-the build is ignored on its own. A save slot that cannot be read is kept and
+the build is ignored on its own. **Replay Base 1** overwrites the finished save with a Base 1 save
+(quitting mid-replay then Continues into Base 1, not the end page). A save slot that cannot be read is kept and
 ignored, never erased. New Game asks before overwriting a save. The save version is bumped and slice-era saves are discarded. The old
 Mission 1 "Ranger station" and the menu's test button are removed; the human-guard AI stays in the
 code for later missions.
@@ -209,14 +210,18 @@ code for later missions.
   volume plus mute; edge scroll on/off; text size 100 / 125 / 150%; shape cues on/off (default on:
   `!` over a chasing zombie, `?` over an investigating one, a dash style per noise kind, a text
   label on the hunger meter); screen shake on/off (default on); key rebinding with reset to
-  defaults.
+  defaults. Esc, Enter, R, Y, N and the arrow keys are not rebindable (the arrows always pan too);
+  a key already in use is refused with the name of its action, never swapped; Free fire, Hold and
+  the other actions follow the live map everywhere a key is shown. Restart from the pause menu or `R`
+  means from the very beginning of the scene (it drops the Base 1 checkpoint); Quit keeps it.
 - **Controls page:** every key, from the live key map, plus each scene's entry hints.
 - **Camera zoom** snaps to 1×, 1.5×, 2×, 3×, one step per wheel notch (touchpad scrolling is added
   up until it is worth one step), with pixel rounding on.
 - **Hit feedback, no damage numbers:** a white flash on the figure that is hit, a small screen shake
   on shots and bites, short text pops for events only ("Silent kill", "+3 ammo", "Out of ammo"),
   edge-of-screen arrows when a survivor or opening is attacked off-screen, and a stronger herd
-  arrival (flash and camera pan north).
+  arrival (flash and camera pan north). `U` (rebindable) glides the camera to the newest attacked
+  survivor or opening; alert arrows last 6 s after the last hit, at most 4.
 - **UI art** (2026-11-24): a painted "worn field kit" (9-slice panels, buttons, cards, sliders); the
   action bar shows an icon per button with its key in a corner and the name on hover; small HUD
   icons sit beside the numbers; a painted title screen (art/STYLE.md *UI art*).

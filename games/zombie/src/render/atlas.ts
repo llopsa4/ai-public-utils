@@ -40,8 +40,3 @@ export function crispAtlases(scene: Phaser.Scene): void {
 export function hasFigure(scene: Phaser.Scene, group: string, key: string): boolean {
   return scene.textures.exists(group) && scene.textures.get(group).has(`${key}_idle_se_0`);
 }
-
-/** True when the UI atlas is loaded and holds the item (a stand-in counts; ask `isFinal` for real art). */
-export function hasUi(scene: Phaser.Scene, name: string): boolean {
-  return scene.textures.exists(UI_TEXTURE) && scene.textures.get(UI_TEXTURE).has(name);
-}

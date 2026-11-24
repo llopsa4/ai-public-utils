@@ -16,13 +16,13 @@ Needs Node >= 22.12.
 | `npm run balance` | plays Base 1 headless with a careful and a passive scripted defence over 100 seeds and prints each win rate against the DESIGN §19 target; `--seeds N`, `--bot careful`, `--verbose`, `--trace <seed> --from <s>` (see the header of `scripts/balance.ts`) |
 | `npm run e2e` | Playwright smoke test on its own dev server (port 5185); see [TESTING.md](TESTING.md) |
 | `npm run art:standins` | writes a grey numbered stand-in for every figure frame still missing in `art/frames/`, (and every UI item in the manifest `ui`) then rebuilds `art/atlas/` (never overwrites real art) |
-| `npm run art:pack -- <batch>` | validates `art/inbox/<batch>/`, installs it into `art/frames/` (a `ui/` folder inside the batch holds UI items), rebuilds the atlases incl. `ui`; any bad file fails the whole batch with its name; palette checked against `art/palette.json` once Codex delivers it |
+| `npm run art:pack -- <batch>` | validates `art/inbox/<batch>/` (git-ignored, local only), installs it into `art/frames/` (a `ui/` folder inside the batch holds UI items), rebuilds the atlases incl. `ui`; any bad file fails the whole batch with its name; palette checked against `art/palette.json` once Codex delivers it |
 
 Run `npm run typecheck && npm test` before finishing a task.
 
 ## Layout
 
-- `src/sim/`: game rules, pure TypeScript, **no Phaser import** (`rng`, `grid`, `path` A*, `camp` so far).
+- `src/sim/`: game rules, pure TypeScript, **no Phaser import** (`rng`, `grid`, `path` A*, `campaign`, `base`, `mission`, `traps`, `dialogue`, `options`, and more).
 - `src/render/`: `iso.ts` (tile ↔ world projection) and `camera.ts` (pan / zoom maths), both pure and
   unit-tested; `placeholders.ts` draws a grey texture for every manifest key that has a
   `placeholder` block. Figures (survivors, zombies): `figure.ts` (pure, tested: facing, which anim and

@@ -56,7 +56,7 @@ reviews; **Claude never draws** (DESIGN §9). The art spec for batch 1 is below 
   build, same letter). The game picks decay and body per zombie from its id, among the keys whose
   status is `final` (so with only fresh art drawn, the crowd is fresh a, b and c). One 2x atlas per
   decay level: `zombies_fresh`, `zombies_decayed`, `zombies_rotting` (156 frames each).
-  **Decay looks (user, 2026-11-24):** fresh = recently turned (handoff C6); decayed and rotting are
+  **Decay looks (user, 2026-11-24):** fresh = recently turned (pale grey skin, dark paired veins at the temples and neck, clouded eyes, slack open mouth with blood, clothes torn in matched places); decayed and rotting are
   much grimmer, in the general manner of classic survival-horror zombies (no design copied from any
   game): decayed = torn-open skin, exposed muscle at both forearms, ribs through a shredded shirt,
   rags; rotting = near-skeletal face (teeth and jaw, sunken sockets), bone at both forearms and shins,
@@ -66,18 +66,47 @@ reviews; **Claude never draws** (DESIGN §9). The art spec for batch 1 is below 
   **Limp (user, 2026-11-24):** every zombie limps and stands lopsided, each body its own way and the
   same at every decay level: `a` drags his right foot on its toe, `b` swings a stiff left knee out
   sideways, `c` steps on a turned-in ankle with his upper body jerking forward. Idle stands lopsided;
-  `shamble`, `reach` and `lurch` limp over 6 frames (handoff C8). Looks only.
+  `shamble`, `reach` and `lurch` limp over 6 frames. Looks only.
 - **Survivor frames per drawn facing:** idle 1; walk, run, crouch walk, crawl 4 each; Hold pose 1;
   work loop 2 (fix, cook, traps); death 4; **pistol shot 3 for every survivor** (aim, fire, recoil;
   two-handed grip, arms out, centred; 2026-11-23). Fighter adds knife stab 3, takedown 4, carry-body
   walk 4. Scout adds club swing 3, lure throw 3. Each later survivor adds their own melee anim.
-- **Zombie frames per drawn facing, per variant:** idle 1; shamble 4 (wander and investigate, played
-  faster to investigate); chase lurch 4; bite 3; death 4, ending on the body sprite.
+- **Zombie frames per drawn facing, per variant:** idle 1; shamble 6 (wander and investigate, played
+  faster to investigate); reach 6; chase lurch 6; bite 3; death 4, ending on the body sprite.
+- **Drawing rules for every figure (from the batch briefs C1–C9, 2026-11-24):**
+  - *Readability:* the ground is dark grey-green `#4b4f49` under overcast light; keep a clear
+    silhouette and no pure-black blob; face and hands must read at game size. Paint no cones, rings,
+    selection or ground shadow (code draws them). No red outside blood pixels, no saturated colour.
+    Zombies stay apart from survivors by colour: Cass charcoal and olive, Eli blue-grey and navy,
+    zombies paler skin with browns, faded olives and washed-out colours.
+  - *Loops:* draw each loop from one base pose and move only the limbs, so it reads as one figure
+    moving. Standing frames keep the idle's height; the stride bob is at most 2 px at 1× (4 px at 2×).
+    `reach` keeps the `shamble` legs frame for frame; only arms and head change. Feet rest on the
+    anchor row (soles, or knees, belly or back when kneeling, prone or dead), so swaps do not jitter.
+  - *Held items:* the knife is a short combat knife (dark matte blade, at most one edge pixel, dark
+    grip); the club is a short plain wooden club about 14 px long, no spikes, nails or blood; no
+    shine streaks or motion blur (show speed by pose). Handedness: knife and club sit in the figure's
+    right hand, and the knife's thigh sheath is then empty. The club is never stowed on the body (it
+    would break the mirror rule). A holstered pistol stays holstered in every frame except the shot.
+    The lure is only a 2-3 px `#818d91` cluster in the hand and in flight.
+  - *Takedown and carry:* draw only the survivor; the victim is its own sprite. In `takedown` the
+    hands grip empty space where the head would be (one tile ahead, head height). In `carry` the body
+    is part of the frame: an adult-sized limp figure with no recognisable zombie detail.
+  - *Death:* the last frame lies flat along the screen diagonal of the facing, centred on the anchor,
+    and holds while the scene swaps in the body sprite: survivors inside rows 36-60 and columns 4-60 of
+    the 64 px cell, zombies inside rows 72-120 and columns 8-120 of the 128 px cell (double the survivor
+    box on a 2× sheet). A survivor's death shows a little centred blood in the last two frames; a fresh
+    zombie shows a little more.
+  - *Staging:* a new figure hands back its idle SE and NE first, previewed in the game beside the
+    approved figures; the user approves the look before any other frame, then the full set is
+    previewed and approved before installation. Installation is byte-identical to the approved
+    preview; the manifest `status` becomes `final` in the same change.
+  - *Portraits:* plain dark background, no frame (the kit frames them); the hurt mood is bloodied,
+    pale and wincing; the small heads are hand-pixelled, not downscaled.
 - **Portraits:** head-and-shoulders pixel-art busts on the shared palette, at the game's gore level.
   Superseded in size by *UI art* below (128 px large in four moods, 36 px small heads).
 - **Delivery:** packed PNG atlases with a JSON frame map per sheet; `manifest.json` keys map to
-  frames. Manifest sizes for survivors and zombies (now 20 × 40 and 18 × 38 px placeholders) change to
-  the 48 px scale when batch 1 is installed.
+  frames.
 - **Batches:** batch 1 is characters only: Fighter (Cass), then Scout (Eli), then the zombie variants,
   one character at a time, each approved before the next is drawn. Base props, portraits and ground
   tiles come in later batches; ground stays a placeholder until then.
@@ -86,7 +115,7 @@ reviews; **Claude never draws** (DESIGN §9). The art spec for batch 1 is below 
 
 - **Order:** UI before environment art. Batches after A5: **A8** UI kit, **A9** icons + cursors
   (replaces A6), **A10** portraits, **A11** title. Each has a first-sample gate in the game. Claude
-  builds the slots first (Z53 contract and stand-ins, Z54 scenes). Brief: handoff C9.
+  builds the slots first (Z53 contract and stand-ins, Z54 scenes).
 - **Look: "worn field kit":** dark weathered panels (scuffed canvas, worn chipped metal, stitched or
   riveted edges), Special Elite text drawn by code, small painted icons with a dark outline, sparse
   blood-red accents for danger only. Crisp pixel art on `art/palette.json`, alpha 0 or 255.
@@ -132,8 +161,8 @@ Current machine implementation: `art/manifest.json` v2 `figures` and `atlases`. 
 resolutions, set **per atlas** by `atlases.<group>.scale` (Z49, 2026-11-24): `1` (default) is the
 64 × 64 cell below; `2` is the *Character resolution* cell, **128 × 128** with the feet anchor at
 **(64, 112)**. The anchor fraction (0.5, 0.875) is the same for both, and the game draws a 2× sheet at
-0.5 scale, so a figure keeps its world size. Every sheet is still `1` until its 2× art is installed:
-the owner of that install sets `scale: 2` in the same change (A3 for `scout`, A7 for `fighter`). The
+0.5 scale, so a figure keeps its world size. Every shipped figure sheet is `2`; a new sheet starts at
+`1` with grey stand-ins, and whoever installs its 2× art sets `scale: 2` in the same change. The
 sizes quoted below (64 × 64, feet (32, 56)) are the 1× values; double them on a 2× sheet. For the
 current pipeline's technical behaviour, the manifest wins. Applies to survivors and zombies only;
 props, tiles and decals keep their one-image `keys` entries.
