@@ -1,8 +1,0 @@
-Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
-soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
-soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
-no text.
-Game icon of one short oak log with a pale cut end, a single painted object, in the store's 2:1 isometric projection (30-degree elevated view), centred, fills about 80% of the square, plain flat #00FF00 background, readable at 16 pixels, no frame, no text.
- Natural muted greens, tan wood/hide, grey stone; no saturated colours.
-Main object ground-contact point centred horizontally at about 76 percent image height.
-Single subject only, generous empty margin around every leaf, twig and shadow, no clipped parts. Background is uniformly #00FF00 everywhere except the subject and its faint contact/cast shadow. No ground platform, no landscape, no horizon, no surrounding objects, no buildings, no people, no text, no symbols, no pure black. Fine painterly grain, readable silhouette.

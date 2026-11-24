@@ -1,6 +1,0 @@
-Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
-soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
-soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
-no text.
-A single grey glacial boulder in winter, seen from a 30-degree isometric angle, standing on the ground, soft shadow to the lower right, fully inside the frame with an empty margin, plain flat #00FF00 background, no green fringe.
-EDIT the supplied summer boulder. Snow on the same top and small upward ledges, little snow at the base; snow #F4F6F8 #E8ECEF #A9B7C6. Preserve exact rock shape, all stone facets and grain, location, scale, full image dimensions, ground contact and camera. Change only seasonal appearance. No holes, arches, new objects, platform, surrounding scene, text, symbols or pure black. Background remains uniform #00FF00.

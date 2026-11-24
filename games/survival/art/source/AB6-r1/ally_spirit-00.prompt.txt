@@ -1,7 +1,0 @@
-Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
-soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
-soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
-no text.
-A single painted game effect sprite: An invented luminous translucent pale-blue human spirit, faceless blank oval head, indistinct long hair of light, simple unadorned tunic-shaped body and arms relaxed low. The lower legs dissolve gently into wisps. No eyes, mouth, facial detail, symbols, regalia, sacred objects, weapons, helmet, armour, cloak, buckles or real person. Pale blue-white #E6F6FC #BFE3F2 #7FB2CC, soft edges and gentle inner glow.
-Full human silhouette, neutral relaxed symmetrical pose, x=50 percent, feet/wisp base at y=80 percent. Leave empty margins. This is neutral float-loop phase 0, ready to bob gently; the figure stays upright.
-Plain flat #00FF00 background everywhere except the effect, including any holes inside it. Single frame only, never a sprite sheet. No labels, text, numbers, logos, borders, frame, pure black, additional subjects or surrounding scenery. Keep the full sprite inside the image. Fine painterly shading with a clear readable silhouette at small display size.

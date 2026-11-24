@@ -1,2 +1,0 @@
-Edit the supplied base painting into frame 3 of 4 of the SAME game-effect animation. The low puff spreads sideways to 160 percent original width; loose thin curling wisps, original ground contact fixed.
-Preserve the exact original canvas dimensions, framing, palette, painterly texture, lighting and subject identity. Make only a SMALL consecutive animation step. No camera motion, cropping, reframing, zoom or added objects. Maintain the same plain flat #00FF00 backing including interior holes. No text, labels, sheet, border, symbols or scene.  

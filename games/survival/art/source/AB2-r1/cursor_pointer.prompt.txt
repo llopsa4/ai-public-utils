@@ -1,5 +1,0 @@
-Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
-soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
-soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
-no text.
-A single game mouse cursor: a plain bone-tan arrow pointer, pointing towards the upper left. Three-quarter painted view except pointer and invalid circle face the viewer. Bold compact clean silhouette, fills 75% of square with generous empty margin. Plain flat #00FF00 background. Dark brown local-colour rim for contrast; bone-tan wood and stone, muted natural colours. Must read at 32 pixels. No text, no numbers, no symbols beyond the requested cursor shape, no frame.

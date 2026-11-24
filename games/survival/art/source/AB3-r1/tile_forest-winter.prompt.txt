@@ -1,9 +1,0 @@
-Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
-soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
-soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
-no text.
-Seamless square top-down hand-painted ground texture of summer woodland floor: dark loam with tiny brown oak leaf litter, scattered small ferns and fine roots under the canopy, rich oak woodland greens, ground material only; NO trees, trunks or large objects in winter,
-flat even light, no perspective, no large objects, tiles on every side, 1024x1024.
-EDIT the supplied summer texture into winter. Preserve exact composition, surface layout, scale, object positions, top-down projection and seamless edge arrangement. Change only seasonal appearance. snow cover with grass tips showing and pale soft blue-grey snow shadows. Snow #F4F6F8 #E8ECEF shadow #A9B7C6. Sparse bare plant stems only; no new objects. River water is darker blue-green, ford water cold and dark over pale submerged stones. No banks or shoreline in water textures.
-Keep every root, leaf cluster and ground detail in the same position. Winter adds snow over the same shapes.
-Entire square filled edge to edge, no diamond shape, no blank margin, no text or symbols.

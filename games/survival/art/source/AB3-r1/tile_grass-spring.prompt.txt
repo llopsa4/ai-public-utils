@@ -1,8 +1,0 @@
-Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
-soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
-soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
-no text.
-Seamless square top-down hand-painted ground texture of tallgrass prairie in spring,
-flat even light, no perspective, no large objects, tiles on every side, 1024x1024.
-EDIT the supplied SUMMER grass texture into spring. Keep the exact plant positions, fine surface layout, top-down projection and seamless edge arrangement; change only season colours, small seasonal growth and snow cover. short fresh green grass, new pale leaves, early flowers. Spring grass light #A9C46A mid #7FA048 dark #4E6A2C. Water slightly fresh blue-green, woodland litter remains dark with a few early small green shoots.
-Ground texture only, edge to edge, no scene, no skyline, no diamond shape, no shadows, no text.

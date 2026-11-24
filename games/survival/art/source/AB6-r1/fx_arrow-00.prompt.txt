@@ -1,7 +1,0 @@
-Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
-soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
-soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
-no text.
-A single painted game effect sprite: One plain wooden arrow with grey fletching, drawn perfectly horizontally, pointing RIGHT: grey fletching at the LEFT, simple tiny stone point at the RIGHT. Long slim shaft. The entire arrow and nothing else, no bow, no scene.
-Arrow midpoint at image centre; arrow occupies 80 percent of the image width and no more than 12 percent of its height. Wide landscape framing.
-Plain flat #00FF00 background everywhere except the effect, including any holes inside it. Single frame only, never a sprite sheet. No labels, text, numbers, logos, borders, frame, pure black, additional subjects or surrounding scenery. Keep the full sprite inside the image. Fine painterly shading with a clear readable silhouette at small display size.

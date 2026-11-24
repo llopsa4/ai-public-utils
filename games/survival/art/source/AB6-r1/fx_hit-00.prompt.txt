@@ -1,7 +1,0 @@
-Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
-soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
-soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
-no text.
-A single painted game effect sprite: A small tan dust impact burst, a compact warm loam-coloured contact cloud with a few tiny outward flecks. No blood, no gore, no weapon or object, no explosion or fire. Muted tan #9C7A58 #B0A28E #D9BC8C.
-Effect's ground contact fixed at image x=50 percent, y=75 percent. First frame of a four-frame impact: small compact burst, about 24 percent of square width, just starting to expand. Generous empty margin for later expansion.
-Plain flat #00FF00 background everywhere except the effect, including any holes inside it. Single frame only, never a sprite sheet. No labels, text, numbers, logos, borders, frame, pure black, additional subjects or surrounding scenery. Keep the full sprite inside the image. Fine painterly shading with a clear readable silhouette at small display size.

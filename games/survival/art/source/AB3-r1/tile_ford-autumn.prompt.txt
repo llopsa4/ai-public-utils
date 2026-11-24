@@ -1,7 +1,0 @@
-Hand-painted semi-realistic HD isometric game art, like the best classic 2D castle city-builders:
-soft painterly shading, rich natural material texture, warm late-summer light from the upper left,
-soft shadow to the lower right, tallgrass prairie, lake and oak woodland palette, no outlines,
-no text.
-Seamless square top-down hand-painted ground texture of shallow water over pale stones and gravel in autumn,
-flat even light, no perspective, no large objects, tiles on every side, 1024x1024.
-EDIT the supplied summer ford texture into autumn. Preserve all pebble positions, ripple layout, scale and seamless edge arrangement. Change only seasonal water appearance. Cold dark water in winter (mid #365968), fresh blue-green in spring (#578697), subdued blue-green in autumn (#4B7889). Pale submerged stones remain visible, more muted under deeper-coloured water. Water covers the entire surface, no exposed land, no bank, no shore, no ice floes or snow blanket. No new objects, no diamond, no text.
