@@ -1,0 +1,15 @@
+{
+  "easy": {
+    "ammoBonus": 2,
+    "herd": 12,
+    "hungerSeconds": 600,
+    "zombieSight": { "radius": 2, "crouchRadius": 1 }
+  },
+  "normal": {},
+  "hard": {
+    "herd": 24,
+    "hungerSeconds": 360,
+    "roamers": { "start": 6, "max": 9 },
+    "crateAmmo": -1
+  }
+}

@@ -13,10 +13,9 @@ Needs Node >= 22.12.
 | `npm test` | unit tests (`tests/**/*.test.ts`, Node's test runner via tsx) |
 | `npm run build` | Vite build into `dist/` (git-ignored) |
 | `npm run publish` | build, then write `index.html` and `build/` here, which GitHub Pages serves (commit them only when the user asks) |
-| `npm run balance` | plays Base 1 headless with a careful and a passive scripted defence over 100 seeds and prints each win rate against the DESIGN §19 target; `--seeds N`, `--bot careful`, `--verbose`, `--trace <seed> --from <s>` (see the header of `scripts/balance.ts`) |
 | `npm run e2e` | Playwright smoke test on its own dev server (port 5185); see [TESTING.md](TESTING.md) |
 | `npm run art:standins` | writes a grey numbered stand-in for every figure frame still missing in `art/frames/`, (and every UI item in the manifest `ui`) then rebuilds `art/atlas/` (never overwrites real art) |
-| `npm run art:pack -- <batch>` | validates `art/inbox/<batch>/` (git-ignored, local only), installs it into `art/frames/` (a `ui/` folder inside the batch holds UI items), rebuilds the atlases incl. `ui`; any bad file fails the whole batch with its name; palette checked against `art/palette.json` once Codex delivers it |
+| `npm run art:pack -- <batch>` | validates `art/inbox/<batch>/` (git-ignored, local only), installs it into `art/frames/` (a `ui/` folder inside the batch holds UI items, an `env/` folder the environment kit: `<key>.png` at the key's 2x source size, installed as `art/frames/env/<key>.png`), rebuilds the atlases incl. `ui`; any bad file fails the whole batch with its name; palette checked against `art/palette.json` once Codex delivers it |
 
 Run `npm run typecheck && npm test` before finishing a task.
 
@@ -80,3 +79,14 @@ Run `npm run typecheck && npm test` before finishing a task.
 texture of that key at Boot. Only grey tones, plus functional colours for vision cones (red / yellow
 / green) and blood (dark red). Codex replaces keys with final art; scenes use the key and
 `anchorOf(key)`, never hard-coded sizes.
+
+**Environment kit (Z63).** Manifest keys with `group: env` and `scale: 2` are the 35 environment keys
+(ground, trees, bushes, walls, doors, windows, floor, roof top, props, blood). Their `size` is the
+double-size source px and the game draws them at half (`drawScale`); scenes add them with
+`addSprite(scene, key, x, y, depth)`, never `add.image` + `setOrigin`. The `cube` shape is an
+isometric block (`h` = block height, `mark` = door or window on its `face`). Final art is one PNG per key
+in `art/frames/env/`; a key with a file there uses it, otherwise the stand-in shows. When Codex sets a key's
+`status` to `final`, the world text label for it goes (`isFinalKey`). Which key a tile gets is
+`src/render/terrain.ts` (hashed moss, dirt and leaves; `,` in a `m01.json` map row, or `path` in
+`intro.json`, marks a path tile); `src/render/occlude.ts` fades walls and trees in front of survivors and
+`src/render/outline.ts` draws the hover outline and the see-through survivor.

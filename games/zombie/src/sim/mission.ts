@@ -3,16 +3,21 @@
 import chars from '../data/characters.json';
 import enemiesData from '../data/enemies.json';
 import { carryFollow, stepOpen, stepTakedown } from './abilities';
+import { type BondState, newBond, stepBond } from './bond';
+import { type Difficulty, tuning } from './difficulty';
 import { type AiState, REPATH, newAi, route, stepEnemy, walkPath } from './ai';
-import { activeWeapon, face, fire, hasAmmo, inReach, weapon } from './combat';
+import { activeWeapon, face, fire, hasAmmo, inReach, pickUpArrows, weapon } from './combat';
 import { BUSH, COVER, FLOOR, type Grid, type Kind, TREE, WALL, makeGrid, setTile } from './grid';
 import { type NoiseHolder, ageRings, emitNoise } from './noise';
 import { type Pt, nearestFree } from './path';
 import { type RngState, makeRng } from './rng';
+import { moveNoiseOf } from './traits';
 import { type Viewer, dist, moveMode, seesPoint } from './vision';
 
 export type Stance = 'walk' | 'crouch' | 'crawl';
-export type SurvivorKind = 'fighter' | 'scout';
+export type SurvivorKind = 'fighter' | 'scout' | 'hunter' | 'archer';
+/** The name the player sees for each survivor (DESIGN §5). Ids stay `fighter` / `scout` / `hunter` / `archer`. */
+export const SURVIVOR_NAME: Record<SurvivorKind, string> = { fighter: 'Cass', scout: 'Eli', hunter: 'Ray', archer: 'June' };
 export type EnemyKind = 'zombie' | 'human';
 
 export type Order =
@@ -23,13 +28,22 @@ export type Order =
   | { type: 'open'; crate: string; left: number }
   | { type: 'work'; job: 'fix' | 'cook' | 'trap' | 'rearm'; target: string; left: number }; // Base 1 (sim/base.ts); left: ticks, -1 until adjacent
 
-/** What a unit is doing as a one-shot animation (art spec: stab, shot, club, throw, takedown, bite). */
-export type ActKind = 'stab' | 'shot' | 'club' | 'throw' | 'takedown' | 'bite';
+/** What a unit is doing as a one-shot animation (art spec: stab, shot, club, hatchet, bow shot, throw, takedown, bite). */
+export type ActKind = 'stab' | 'shot' | 'club' | 'hatchet' | 'bow_shot' | 'throw' | 'takedown' | 'bite';
 
 /** Set at the start of an action; the renderer plays the one-shot from `tick` (the sim never clears it). */
 export interface Act {
   kind: ActKind;
   tick: number;
+  at?: [number, number]; // a bow shot: the point the arrow flies to (the scene draws its flight)
+}
+
+/** An arrow lying where it hit, until a survivor walks over its tile and it goes back to `owner` (DESIGN §5 *Bow*). */
+export interface LooseArrow {
+  x: number;
+  y: number;
+  owner: string; // the survivor id who shot it
+  tick: number; // when it was shot: the scene shows it once its flight has landed
 }
 
 interface UnitBase {
@@ -57,6 +71,7 @@ export interface Survivor extends UnitBase {
   lureCd: number; // ticks until the lure is ready
   speedMul?: number; // walking speed factor (Base 1 hunger slows a starving survivor); default 1
   freeFire?: boolean; // Hold may fire the gun (DESIGN §13); off by default, so Hold is melee-only
+  arrows?: number; // arrows in the quiver, for a survivor with a bow (Ray, June; DESIGN §5); absent otherwise
 }
 
 export interface Enemy extends UnitBase {
@@ -105,6 +120,7 @@ export interface MissionState extends NoiseHolder {
   enemies: Enemy[];
   bodies: Body[];
   decals: { x: number; y: number }[];
+  looseArrows: LooseArrow[]; // shot arrows lying on the map (DESIGN §5 *Bow*)
   crates: Crate[];
   crateTime: number; // seconds to open a crate
   loot: { food: number; scrap: number; ammo: number }; // from opened crates
@@ -113,9 +129,11 @@ export interface MissionState extends NoiseHolder {
   extract: Zone; // empty (w = 0) when there is none
   roof: Zone | null; // hides everything inside until a survivor enters (DESIGN §16)
   roofOpen: boolean; // a survivor has entered: the roof is gone for good
+  bond: BondState | null; // the Cass + Eli move (DESIGN §23); null where the scene has none (the Intro)
+  difficulty: Difficulty; // the level this scene started on (DESIGN §21); zombie sight reads it
 }
 
-/** Map rows: `.` floor, `#` wall, `T` tree, `c` cover, `b` bush. The map must be square. */
+/** Map rows: `.` floor, `,` path (floor drawn as a worn track, art/STYLE.md *Placement*), `#` wall, `T` tree, `c` cover, `b` bush. The map must be square. */
 export interface MissionSpec {
   seed?: number;
   map: string[];
@@ -123,18 +141,77 @@ export interface MissionSpec {
   enemies: { id: string; kind: EnemyKind; x: number; y: number; facing?: [number, number]; patrol?: Pt[] }[];
   crates?: { id: string; x: number; y: number; food: number; scrap: number; ammo?: number }[];
   ammo?: number; // default `startAmmo`
+  difficulty?: Difficulty; // default 'normal'; `withDifficulty` also applies the level's ammo
   crateTime?: number; // seconds, default 2
   /** `extract` (default): every survivor in `extract` and one crate opened. `clear`: every enemy dead and every crate opened. */
   win?: 'extract' | 'clear';
   extract?: Zone;
   roof?: Zone; // the house footprint, walls included
+  bond?: boolean; // the scene offers the bond move (DESIGN §23)
+  /** Run shuffles (DESIGN §21): other zombie start spots and crates; `enemies` and `crates` above are layout 0. */
+  layouts?: Pick<MissionSpec, 'enemies' | 'crates'>[];
 }
 
-const TILE_CHARS: Record<string, Kind> = { '.': FLOOR, '#': WALL, T: TREE, c: COVER, b: BUSH };
+const TILE_CHARS: Record<string, Kind> = { '.': FLOOR, ',': FLOOR, '#': WALL, T: TREE, c: COVER, b: BUSH };
 
 function unit(v: [number, number]): [number, number] {
   const d = Math.hypot(v[0], v[1]);
   return d > 1e-9 ? [v[0] / d, v[1] / d] : [0, 1];
+}
+
+/** A survivor at full health with their character's weapons (also used when one arrives mid-scene, DESIGN §15). */
+export function newSurvivor(id: string, kind: SurvivorKind, x: number, y: number): Survivor {
+  return {
+    id,
+    side: 'survivor',
+    kind,
+    x,
+    y,
+    hp: chars[kind].hp,
+    maxHp: chars[kind].hp,
+    facing: [0, -1],
+    path: [],
+    cooldown: 0,
+    act: null,
+    stance: 'walk',
+    running: false,
+    order: null,
+    weapon: chars[kind].primary,
+    weapons: [...chars[kind].weapons],
+    carrying: null,
+    lureCd: 0,
+    ...(chars[kind].weapons.includes('bow') ? { arrows: chars.quiver } : {}),
+  };
+}
+
+/**
+ * A mission spec on a difficulty (DESIGN §21): the level's ammo bonus on the starting ammo and its change to every
+ * crate that holds ammo (never below 0). The spec itself is not changed.
+ */
+export function withDifficulty(spec: MissionSpec, d: Difficulty): MissionSpec {
+  const t = tuning(d);
+  return {
+    ...spec,
+    difficulty: d,
+    ammo: (spec.ammo ?? chars.startAmmo) + t.ammoBonus,
+    crates: spec.crates?.map((c) => (c.ammo ? { ...c, ammo: Math.max(0, c.ammo + t.crateAmmo) } : { ...c })),
+  };
+}
+
+/** How many layouts a spec has: its own enemies and crates, plus each of `layouts`. */
+export function layoutCount(spec: MissionSpec): number {
+  return 1 + (spec.layouts?.length ?? 0);
+}
+
+/** The spec with layout `i` in place (0 or out of range: its own enemies and crates). The spec itself is not changed. */
+export function withLayout(spec: MissionSpec, i: number): MissionSpec {
+  const l = i > 0 ? spec.layouts?.[i - 1] : undefined;
+  return l ? { ...spec, enemies: l.enemies, crates: l.crates } : spec;
+}
+
+/** A layout for a new run or restart (DESIGN §21 run shuffles). `rand` returns [0, 1). */
+export function rollLayout(spec: MissionSpec, rand: () => number = Math.random): number {
+  return Math.floor(rand() * layoutCount(spec)) % layoutCount(spec);
 }
 
 export function createMission(spec: MissionSpec): MissionState {
@@ -148,26 +225,7 @@ export function createMission(spec: MissionSpec): MissionState {
       setTile(grid, x, y, k);
     }
   });
-  const survivors: Survivor[] = spec.survivors.map((s) => ({
-    id: s.id,
-    side: 'survivor',
-    kind: s.kind,
-    x: s.x,
-    y: s.y,
-    hp: chars[s.kind].hp,
-    maxHp: chars[s.kind].hp,
-    facing: [0, -1],
-    path: [],
-    cooldown: 0,
-    act: null,
-    stance: 'walk',
-    running: false,
-    order: null,
-    weapon: chars[s.kind].primary,
-    weapons: [...chars[s.kind].weapons],
-    carrying: null,
-    lureCd: 0,
-  }));
+  const survivors: Survivor[] = spec.survivors.map((s) => newSurvivor(s.id, s.kind, s.x, s.y));
   const enemies: Enemy[] = spec.enemies.map((e) => {
     const facing = unit(e.facing ?? [0, 1]);
     return {
@@ -196,6 +254,7 @@ export function createMission(spec: MissionSpec): MissionState {
     enemies,
     bodies: [],
     decals: [],
+    looseArrows: [],
     crates: (spec.crates ?? []).map((c) => ({ ammo: 0, ...c, opened: false })),
     crateTime: spec.crateTime ?? 2,
     loot: { food: 0, scrap: 0, ammo: 0 },
@@ -204,6 +263,8 @@ export function createMission(spec: MissionSpec): MissionState {
     extract: { ...(spec.extract ?? { x: -1, y: -1, w: 0, h: 0 }) },
     roof: spec.roof ? { ...spec.roof } : null,
     roofOpen: !spec.roof,
+    bond: spec.bond ? newBond() : null,
+    difficulty: spec.difficulty ?? 'normal',
     noises: [],
     rings: [],
   };
@@ -282,8 +343,9 @@ export function nextStance(st: Stance): Stance {
 // ---- Tick ----
 
 /**
- * Hold: the nearest enemy inside the cone is struck with the melee weapon when adjacent. The ranged
- * weapon is used only when the survivor's Free fire is on (and there is ammo), DESIGN §13.
+ * Hold: the nearest enemy inside the cone is shot with the bow while there are arrows (silent, DESIGN §13 *Bow on
+ * Hold*), else struck with the melee weapon when adjacent. The gun is used only when the survivor's Free fire is
+ * on (and there is ammo), DESIGN §13.
  */
 function hold(s: MissionState, u: Survivor, facing: [number, number]): void {
   u.path = [];
@@ -302,8 +364,10 @@ function hold(s: MissionState, u: Survivor, facing: [number, number]): void {
   }
   if (!best) return;
   const list = u.weapons.map(weapon);
+  const bow = list.find((w) => w.arrows && hasAmmo(s, w, u));
+  if (bow && fire(s, u, bow, best)) return;
   const melee = list.find((w) => w.range <= chars.adjacent);
-  const ranged = u.freeFire ? list.find((w) => w.range > chars.adjacent && hasAmmo(s, w)) : undefined;
+  const ranged = u.freeFire ? list.find((w) => w.range > chars.adjacent && !w.arrows && hasAmmo(s, w, u)) : undefined;
   if (melee && bd <= melee.range) fire(s, u, melee, best);
   else if (ranged) fire(s, u, ranged, best);
 }
@@ -335,7 +399,8 @@ function stepSurvivor(s: MissionState, u: Survivor): void {
   const c = chars[u.kind];
   const speed = c.speed[mode] * (u.carrying && 'carrySpeed' in c ? c.carrySpeed : 1) * (u.speedMul ?? 1);
   const moved = walkPath(s.grid, u, speed);
-  if (moved > 0) emitNoise(s, u.x, u.y, chars.moveNoise[mode], 'step', u.id, s.tick % 5 === 0);
+  if (moved > 0) emitNoise(s, u.x, u.y, moveNoiseOf(u.kind, mode), 'step', u.id, s.tick % 5 === 0);
+  if (moved > 0 && s.looseArrows.length) pickUpArrows(s, u);
   if (u.path.length === 0) {
     u.running = false;
     if (o?.type === 'move') u.order = null;
@@ -351,11 +416,11 @@ export function inZone(z: Zone, x: number, y: number): boolean {
 
 const DEATH_CAUSE: Record<string, string> = { zombie: 'was killed by a zombie', human: 'was shot by a guard', hunger: 'starved' };
 
-/** The fail-screen line (DESIGN §19): who died and what killed them, e.g. "Fighter was killed by a zombie." */
+/** The fail-screen line (DESIGN §19): who died and what killed them, e.g. "Cass was killed by a zombie." */
 export function failText(s: Pick<MissionState, 'survivors'>): string {
   return s.survivors
     .filter((u) => u.hp <= 0)
-    .map((u) => `${u.kind[0]!.toUpperCase()}${u.kind.slice(1)} ${DEATH_CAUSE[u.killedBy ?? ''] ?? 'died'}.`)
+    .map((u) => `${SURVIVOR_NAME[u.kind]} ${DEATH_CAUSE[u.killedBy ?? ''] ?? 'died'}.`)
     .join('  ');
 }
 
@@ -384,6 +449,7 @@ function updateRoof(s: MissionState): void {
 export function stepMission(s: MissionState): void {
   if (s.status !== 'playing') return;
   s.tick++;
+  if (s.bond?.run) return stepBond(s); // the set piece plays; the rest of the world is frozen (DESIGN §23)
   const heard = s.noises;
   s.noises = [];
   ageRings(s);

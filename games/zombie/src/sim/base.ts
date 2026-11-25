@@ -5,7 +5,9 @@
 import base from '../data/base1.json';
 import enemies from '../data/enemies.json';
 import m01 from '../data/missions/m01.json';
+import type { StartPose } from './campaign';
 import { type BarButton, barButtons, unlockGun } from './abilities';
+import { type Difficulty, isDifficulty, tuning } from './difficulty';
 import { REPATH, nearTarget, newAi, route } from './ai';
 import { face } from './combat';
 import { BUSH, COVER, FLOOR, getTile, isBlocked, setTile } from './grid';
@@ -54,8 +56,16 @@ export interface BaseEvent {
   kind: 'herdWarning' | 'herdArrives' | 'win';
 }
 
-/** The herd's progress: the warning was given, how many have entered from the north. */
+/** The map edge the herd comes from (DESIGN §12), rolled when Base 1 starts or restarts. */
+export type HerdEdge = 'north' | 'east' | 'south' | 'west';
+export const HERD_EDGES: readonly HerdEdge[] = ['north', 'east', 'south', 'west'];
+export function isHerdEdge(v: unknown): v is HerdEdge {
+  return HERD_EDGES.some((e) => e === v);
+}
+
+/** The herd's progress: its edge, whether the warning was given, how many have entered. */
 export interface HerdState {
+  from: HerdEdge;
   warned: boolean;
   spawned: number;
 }
@@ -71,6 +81,7 @@ export interface BaseState extends MissionState {
   said: Said[]; // barks, oldest first; the scene shows the new ones
   calm: boolean; // no roamers and no herd (tests of the other rules)
   roamersSpawned: number;
+  layout: number; // which roamer spawn set this run uses (DESIGN §21 run shuffles), 0 = `roamers.spawns`
   herd: HerdState;
   events: BaseEvent[];
 }
@@ -79,7 +90,12 @@ export type PlaceResult = 'ok' | 'blocked' | 'occupied' | 'scrap';
 export type WorkResult = 'ok' | 'invalid' | 'scrap' | 'food' | 'meal';
 export type HungerLevel = 'ok' | 'low' | 'critical' | 'starving';
 
+/** A full belly on Normal; `hungerTicks` gives the scene's own level (DESIGN §21). */
 export const HUNGER_TICKS = secs(base.hunger.seconds);
+/** Ticks from a meal to starving on this scene's difficulty. */
+export function hungerTicks(s: Pick<BaseState, 'difficulty'>): number {
+  return secs(tuning(s.difficulty).hungerSeconds);
+}
 export const FIX_TICKS = secs(base.fix.time);
 export const COOK_TICKS = secs(base.cook.time);
 
@@ -92,21 +108,37 @@ function baseMap(spec: MissionSpec): string[] {
   return rows.map((r) => r.join(''));
 }
 
+/** The roamer spawn sets: `roamers.spawns` first, then `roamers.layouts` (DESIGN §21 run shuffles). */
+const ROAMER_SETS: readonly (readonly number[][])[] = [base.roamers.spawns, ...base.roamers.layouts];
+/** How many Base 1 layouts there are to shuffle between. */
+export const BASE_LAYOUTS = ROAMER_SETS.length;
+
+/** A fresh Base 1 run's shuffle (DESIGN §12, §21): a roamer layout and the herd's edge. `rand` returns [0, 1). */
+export function rollBase(rand: () => number = Math.random): { layout: number; herdFrom: HerdEdge } {
+  return { layout: Math.floor(rand() * BASE_LAYOUTS) % BASE_LAYOUTS, herdFrom: HERD_EDGES[Math.floor(rand() * HERD_EDGES.length) % HERD_EDGES.length]! };
+}
+
 /**
  * The house and yard. `from` is what the survivors carry over from Mission 1; `calm` leaves out roamers and the herd;
- * `cassGun` gives the Fighter her pistol back (already unlocked in the save).
+ * `cassGun` gives the Fighter her pistol back (already unlocked in the save); `start` puts each survivor on the tile and
+ * facing where Mission 1 was won (DESIGN §12); `difficulty` (default Normal) sets the herd, hunger, roamers, zombie
+ * sight and the ammo bonus (DESIGN §21); `layout` (default 0) picks the roamer spawns and `herdFrom` (default north)
+ * the herd's edge, both rolled by the scene with `rollBase`.
  */
-export function createBase(from?: { food?: number; scrap?: number; ammo?: number; calm?: boolean; cassGun?: boolean }): BaseState {
+export function createBase(from?: { food?: number; scrap?: number; ammo?: number; calm?: boolean; cassGun?: boolean; start?: readonly StartPose[] | null; difficulty?: Difficulty; layout?: number; herdFrom?: HerdEdge }): BaseState {
   const spec = m01 as unknown as MissionSpec;
+  const difficulty = from?.difficulty ?? 'normal';
   const mission = createMission({
     seed: base.seed,
     map: baseMap(spec),
-    survivors: spec.survivors,
+    survivors: [...spec.survivors, ...(base.extraSurvivors as MissionSpec['survivors'])],
     enemies: [],
-    ammo: from?.ammo ?? base.start.ammo,
+    ammo: (from?.ammo ?? base.start.ammo) + tuning(difficulty).ammoBonus,
+    bond: true,
+    difficulty,
   });
   const hunger: Record<string, Hunger> = {};
-  for (const u of mission.survivors) hunger[u.id] = { left: HUNGER_TICKS, meal: false, warned: false, starveIn: secs(base.hunger.starveEvery) };
+  for (const u of mission.survivors) hunger[u.id] = { left: hungerTicks(mission), meal: false, warned: false, starveIn: secs(base.hunger.starveEvery) };
   const s: BaseState = {
     ...mission,
     food: from?.food ?? base.start.food,
@@ -119,12 +151,39 @@ export function createBase(from?: { food?: number; scrap?: number; ammo?: number
     said: [],
     calm: from?.calm ?? false,
     roamersSpawned: 0,
-    herd: { warned: false, spawned: 0 },
+    layout: Number.isInteger(from?.layout) && from!.layout! >= 0 && from!.layout! < BASE_LAYOUTS ? from!.layout! : 0,
+    herd: { from: from?.herdFrom ?? 'north', warned: false, spawned: 0 },
     events: [],
   };
+  if (from?.start) placeSurvivors(s, from.start);
   if (from?.cassGun) unlockGun(s, 'fighter');
-  if (!s.calm) for (let i = 0; i < base.roamers.start; i++) spawnRoamer(s);
+  if (!s.calm) for (let i = 0; i < tuning(difficulty).roamers.start; i++) spawnRoamer(s);
   return s;
+}
+
+/**
+ * Survivors start where Mission 1 ended, on that tile and facing. A tile Base 1 has blocked (the sealed back door, the
+ * stove) or that an earlier survivor took falls back to the nearest free one. A survivor with no pose stays put.
+ */
+function placeSurvivors(s: BaseState, start: readonly StartPose[]): void {
+  const n = s.grid.size;
+  const taken = new Set<number>();
+  for (const u of s.survivors) {
+    const p = start.find((q) => q.id === u.id);
+    if (!p) {
+      taken.add(Math.round(u.y) * n + Math.round(u.x));
+      continue;
+    }
+    const want: Pt = [Math.round(p.x), Math.round(p.y)];
+    const tile = isBlocked(s.grid, want[0], want[1]) || taken.has(want[1] * n + want[0]) ? nearestFree(s.grid, want, taken) : want;
+    if (tile) {
+      u.x = tile[0];
+      u.y = tile[1];
+      taken.add(tile[1] * n + tile[0]);
+    }
+    const len = Math.hypot(p.facing[0], p.facing[1]);
+    if (len > 1e-9) u.facing = [p.facing[0] / len, p.facing[1] / len];
+  }
 }
 
 // ---- Herd checkpoint (DESIGN §12, §18) ----
@@ -141,6 +200,20 @@ export function checkpointOf(s: BaseState): BaseState | null {
 
 const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v);
 
+/** A checkpoint from before Ray and June had only Cass and Eli: join the others at their start tiles, fed. */
+function addMissingSurvivors(r: Record<string, unknown>, fresh: BaseState): void {
+  const have = r.survivors;
+  const hunger = r.hunger as Record<string, unknown> | null | undefined;
+  if (!Array.isArray(have) || !hunger || typeof hunger !== 'object') return;
+  const ids = have.map((v) => (v as { id?: unknown } | null)?.id);
+  if (ids.length !== 2 || ids[0] !== 'fighter' || ids[1] !== 'scout') return; // only the exact old pair; any other shortfall is damage
+  for (const u of fresh.survivors) {
+    if (have.some((v) => (v as { id?: unknown } | null)?.id === u.id)) continue;
+    have.push(JSON.parse(JSON.stringify(u)));
+    hunger[u.id] = { ...fresh.hunger[u.id]! };
+  }
+}
+
 /**
  * A saved checkpoint back into a state, or null when it is missing or does not fit this build's Base 1
  * (damage, an edited slot, changed data). A bad checkpoint is only ignored: the save itself stays usable.
@@ -148,17 +221,25 @@ const finite = (v: unknown): v is number => typeof v === 'number' && Number.isFi
 export function restoreBase(raw: unknown): BaseState | null {
   if (typeof raw !== 'object' || raw === null) return null;
   const r = raw as Record<string, unknown>;
+  if (r.bond === undefined) r.bond = { used: false, run: null }; // a checkpoint saved before the bond move existed (Z76)
+  if (r.difficulty === undefined) r.difficulty = 'normal'; // saved before difficulty existed (Z64)
+  if (r.looseArrows === undefined) r.looseArrows = []; // saved before the bow (Z80)
+  if (r.layout === undefined) r.layout = 0; // saved before the run shuffles (Z65): the one layout there was
+  const rh = r.herd as Record<string, unknown> | null | undefined;
+  if (rh && typeof rh === 'object' && rh.from === undefined) rh.from = 'north'; // ... and the herd always came from the north
   const t = createBase({ calm: true }) as unknown as Record<string, unknown>;
+  addMissingSurvivors(r, t as unknown as BaseState); // a checkpoint saved with two survivors (before Ray and June, Z81)
   for (const k of Object.keys(t)) {
     if (typeof r[k] !== typeof t[k] || Array.isArray(r[k]) !== Array.isArray(t[k]) || (r[k] === null) !== (t[k] === null)) return null;
   }
   const s = r as unknown as BaseState;
   const tt = t as unknown as BaseState;
+  if (!isDifficulty(s.difficulty) || !isHerdEdge(s.herd.from) || !Number.isInteger(s.layout) || s.layout < 0 || s.layout >= BASE_LAYOUTS) return null;
   if (s.status !== 'playing' || !s.herd.warned || !Number.isInteger(s.tick) || s.tick < 0 || !finite(s.rng.s)) return null;
   if (s.grid.size !== tt.grid.size || !Array.isArray(s.grid.tiles) || s.grid.tiles.length !== s.grid.size ** 2) return null;
   if (!s.grid.tiles.every((k) => Number.isInteger(k) && k >= FLOOR && k <= BUSH)) return null;
   if (s.survivors.length !== tt.survivors.length) return null;
-  const sameIds = s.survivors.every((u, i) => u?.id === tt.survivors[i]!.id && finite(u.x) && finite(u.y) && finite(u.hp) && u.hp > 0 && typeof s.hunger[u.id] === 'object' && s.hunger[u.id] !== null);
+  const sameIds = s.survivors.every((u, i) => u?.id === tt.survivors[i]!.id && finite(u.x) && finite(u.y) && finite(u.hp) && u.hp > 0 && (u.arrows === undefined || (Number.isInteger(u.arrows) && u.arrows >= 0)) && typeof s.hunger[u.id] === 'object' && s.hunger[u.id] !== null);
   const units = s.enemies.every((e) => typeof e?.id === 'string' && finite(e.x) && finite(e.y) && finite(e.hp) && Array.isArray(e.path) && typeof e.ai === 'object' && e.ai !== null);
   const openings = s.openings.length === tt.openings.length && s.openings.every((o, i) => o?.id === tt.openings[i]!.id && typeof o.fixed === 'boolean' && finite(o.hp));
   if (!sameIds || !units || !openings) return null;
@@ -168,26 +249,63 @@ export function restoreBase(raw: unknown): BaseState | null {
 // ---- Roamers and the herd (DESIGN §12) ----
 
 const HERD_START = secs(base.herd.arriveAt);
-const HERD_GAP = (base.herd.over * TICK_HZ) / base.herd.count; // ticks between herd arrivals
+/** The warning and arrival ticks, for the dusk and rain that follow them (DESIGN §20). */
+export const HERD_WARN_TICK = secs(base.herd.warnAt);
+export const HERD_ARRIVE_TICK = HERD_START;
+/** The herd's size on Normal; `herdCount` gives the scene's own level (DESIGN §21). */
+export const HERD_COUNT = base.herd.count;
+/** How many zombies the herd brings on this scene's difficulty. */
+export function herdCount(s: Pick<BaseState, 'difficulty'>): number {
+  return tuning(s.difficulty).herd;
+}
+/** Ticks between herd arrivals: the whole herd always comes in over the same `herd.over` seconds. */
+const herdGap = (s: BaseState): number => (base.herd.over * TICK_HZ) / herdCount(s);
 const isRoamer = (e: { id: string }): boolean => e.id.startsWith('r');
 const isHerd = (e: { id: string }): boolean => e.id.startsWith('h');
 const liveZombie = (e: BaseState['enemies'][number]): boolean => e.kind === 'zombie' && e.hp > 0;
 
-/** The next roamer enters at one of the corner spawns, in turn. */
+/** The next roamer enters at one of this layout's edge spawns, in turn. */
 function spawnRoamer(s: BaseState): void {
-  const [x, y] = base.roamers.spawns[s.roamersSpawned % base.roamers.spawns.length]!;
+  const spawns = ROAMER_SETS[s.layout] ?? ROAMER_SETS[0]!;
+  const [x, y] = spawns[s.roamersSpawned % spawns.length]!;
   s.roamersSpawned++;
   addZombie(s, x!, y!, [0, 1], `r${s.roamersSpawned}`);
 }
 
-/** Herd zombie `i` enters on the north row, spread across the width. */
+/** Inward unit step from each edge. */
+const INWARD: Readonly<Record<HerdEdge, Pt>> = { north: [0, 1], south: [0, -1], west: [1, 0], east: [-1, 0] };
+
+/**
+ * A point `depth` tiles in from the middle of the herd's edge, shifted `side` tiles along it. Depth 0 is the map's
+ * outer ring of tiles. The arrow, its label and the arrival pan all hang off this.
+ */
+export function edgePoint(from: HerdEdge, n: number, depth: number, side = 0): [number, number] {
+  const mid = n / 2;
+  const [ix, iy] = INWARD[from];
+  const ox = ix === 0 ? mid + side : ix > 0 ? depth : n - 1 - depth;
+  const oy = iy === 0 ? mid + side : iy > 0 ? depth : n - 1 - depth;
+  return [ox, oy];
+}
+
+/** The red arrow on the herd's edge, pointing out of the map (tile coordinates, DESIGN §12). */
+export function herdArrow(from: HerdEdge, n: number): [number, number][] {
+  const at = (depth: number, side: number): [number, number] => edgePoint(from, n, depth, side);
+  return [at(0.5, 0), at(2.2, 1.4), at(2.2, 0.5), at(4, 0.5), at(4, -0.5), at(2.2, -0.5), at(2.2, -1.4)];
+}
+
+/** Herd zombie `i` enters on its edge's inset row or column, spread along it; a blocked tile moves to the nearest free one. */
 function spawnHerdZombie(s: BaseState, i: number): void {
-  addZombie(s, 3 + ((i * 7) % (s.grid.size - 6)), base.herd.row, [0, 1], `h${i + 1}`);
+  const n = s.grid.size;
+  const along = 3 + ((i * 7) % (n - 6));
+  const want: Pt = s.herd.from === 'north' ? [along, base.herd.inset] : s.herd.from === 'south' ? [along, n - 1 - base.herd.inset] : s.herd.from === 'west' ? [base.herd.inset, along] : [n - 1 - base.herd.inset, along];
+  const taken = new Set(s.enemies.filter((e) => e.hp > 0).map((e) => Math.round(e.y) * n + Math.round(e.x)));
+  const [x, y] = isBlocked(s.grid, want[0], want[1]) || taken.has(want[1] * n + want[0]) ? (nearestFree(s.grid, want, taken) ?? want) : want;
+  addZombie(s, x, y, INWARD[s.herd.from], `h${i + 1}`);
 }
 
 /** Every herd zombie has entered and none is left alive. */
 export function herdCleared(s: BaseState): boolean {
-  return s.herd.spawned >= base.herd.count && !s.enemies.some((e) => isHerd(e) && liveZombie(e));
+  return s.herd.spawned >= herdCount(s) && !s.enemies.some((e) => isHerd(e) && liveZombie(e));
 }
 
 /** Seconds until the herd arrives (0 once it has), for the HUD. */
@@ -198,7 +316,7 @@ export function herdSeconds(s: BaseState): number {
 /** Herd zombies still to kill: those not yet entered plus the live ones (for the objective line). */
 export function herdLeft(s: BaseState): number {
   const entered = s.enemies.filter((e) => isHerd(e) && liveZombie(e)).length;
-  return Math.max(0, base.herd.count - s.herd.spawned) + entered;
+  return Math.max(0, herdCount(s) - s.herd.spawned) + entered;
 }
 
 /** HUD objective: "Prepare the house" until the warning, then "Survive the herd: n left" (DESIGN §12). */
@@ -211,14 +329,14 @@ export function objectiveText(s: BaseState): string {
 function stepSchedule(s: BaseState): void {
   if (s.calm) return;
   const every = secs(base.roamers.every);
-  if (s.tick > 0 && s.tick % every === 0 && s.enemies.filter((e) => isRoamer(e) && liveZombie(e)).length < base.roamers.max) spawnRoamer(s);
+  if (s.tick > 0 && s.tick % every === 0 && s.enemies.filter((e) => isRoamer(e) && liveZombie(e)).length < tuning(s.difficulty).roamers.max) spawnRoamer(s);
   if (!s.herd.warned && s.tick >= secs(base.herd.warnAt)) {
     s.herd.warned = true;
     s.events.push({ tick: s.tick, kind: 'herdWarning' });
   }
   if (s.tick < HERD_START) return;
   if (s.herd.spawned === 0) s.events.push({ tick: s.tick, kind: 'herdArrives' });
-  const due = Math.min(base.herd.count, Math.floor((s.tick - HERD_START) / HERD_GAP) + 1);
+  const due = Math.min(herdCount(s), Math.floor((s.tick - HERD_START) / herdGap(s)) + 1);
   while (s.herd.spawned < due) spawnHerdZombie(s, s.herd.spawned++);
 }
 
@@ -361,7 +479,7 @@ export function eat(s: BaseState, id: string): boolean {
   const h = s.hunger[id];
   if (!u || !h?.meal) return false;
   h.meal = false;
-  h.left = HUNGER_TICKS;
+  h.left = hungerTicks(s);
   h.warned = false;
   h.starveIn = secs(base.hunger.starveEvery);
   u.hp = Math.min(u.maxHp, u.hp + base.hunger.mealHeal);
@@ -387,7 +505,7 @@ export function give(s: BaseState, id: string): boolean {
 }
 
 export function hungerLevel(s: BaseState, id: string): HungerLevel {
-  const left = s.hunger[id]?.left ?? HUNGER_TICKS;
+  const left = s.hunger[id]?.left ?? hungerTicks(s);
   return left <= 0 ? 'starving' : left <= secs(base.hunger.critical) ? 'critical' : left <= secs(base.hunger.warn) ? 'low' : 'ok';
 }
 
@@ -497,6 +615,7 @@ function chew(s: BaseState): void {
  */
 export function stepBase(s: BaseState): void {
   if (s.status !== 'playing') return;
+  if (s.bond?.run) return stepMission(s); // the bond set piece: hunger, spawns, traps and chewing wait (DESIGN §23)
   for (const u of s.survivors) if (u.hp > 0 && u.order?.type === 'work') stepWork(s, u, u.order);
   stepSchedule(s);
   stepHerd(s);
@@ -519,10 +638,10 @@ export function stepBase(s: BaseState): void {
  * The bar for one survivor in Base 1: weapons, Hold and Crouch (Takedown, Carry and Lure are mission
  * tools and are not offered), then Eat, Give, Fix, Cook, Barricade, Spike pit and Noise can (T picks the type). `armed` is the pending click mode.
  */
-export function baseButtons(s: BaseState, u: Survivor, armed: 'fix' | 'build' | 'hold' | 'spike' | 'can' | null = null): BarButton[] {
+export function baseButtons(s: BaseState, u: Survivor, armed: 'fix' | 'build' | 'hold' | 'spike' | 'can' | 'bond' | null = null): BarButton[] {
   const out = barButtons(s, u)
     .filter((b) => b.id !== 'takedown' && b.id !== 'carry' && b.id !== 'lure')
-    .map((b) => (b.id === 'hold' && armed === 'hold' ? { ...b, active: true } : b));
+    .map((b) => ((b.id === 'hold' && armed === 'hold') || (b.id === 'bond' && armed === 'bond') ? { ...b, active: true } : b));
   const meal = s.hunger[u.id]?.meal ?? false;
   const work = u.order?.type === 'work' ? u.order.job : null;
   out.push(

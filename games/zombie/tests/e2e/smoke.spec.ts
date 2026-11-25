@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 // Smoke: menu loads, New Game reaches the Intro, the opening dialogue is closed with Enter,
-// then dw.step(50) advances with no console errors.
+// a move order lifts the tutorial pause, then dw.step(50) advances with no console errors.
 test('menu, New Game, intro steps without errors', async ({ page }) => {
   const errors: string[] = [];
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
@@ -32,6 +32,12 @@ test('menu, New Game, intro steps without errors', async ({ page }) => {
     await page.waitForTimeout(150);
   }
   expect(await page.evaluate(() => window.dw!.state.say)).toBeNull();
+
+  // The tutorial pause (DESIGN §15) freezes the world until the step's order is given: step() does nothing yet.
+  const frozen = await page.evaluate(() => window.dw!.state.tick);
+  await page.evaluate(() => window.dw!.step(20));
+  expect(await page.evaluate(() => window.dw!.state.tick)).toBe(frozen);
+  await page.evaluate(() => window.dw!.orders!([{ type: 'move', ids: ['fighter'], to: [33, 32] }]));
 
   const before = await page.evaluate(() => window.dw!.state.tick);
   await page.evaluate(() => window.dw!.step(50));

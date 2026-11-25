@@ -6,11 +6,11 @@ import { barIconKey, cursorArtFor, cursorCss, hudIconKey, isFinal, nineSlice, po
 
 test('the manifest holds every UI item the plan names', () => {
   assert.equal(uiGroup('kit').length, 12);
-  assert.equal(uiGroup('icon_bar').length, 16);
+  assert.equal(uiGroup('icon_bar').length, 20);
   assert.equal(uiGroup('icon_hud').length, 8);
   assert.equal(uiGroup('cursor').length, 5);
-  assert.equal(uiGroup('portrait').length, 8);
-  assert.equal(uiGroup('portrait_small').length, 4);
+  assert.equal(uiGroup('portrait').length, 16);
+  assert.equal(uiGroup('portrait_small').length, 8);
   assert.equal(uiGroup('title').length, 2);
   assert.equal(new Set(UI_NAMES).size, UI_NAMES.length);
 });

@@ -4,7 +4,7 @@ import { uiItem } from '../src/render/ui';
 import { ammoCount, barIcon, buttonFrame, layoutCounters, lootCounters, plainName, tooltipBox, tooltipText } from '../src/render/uiview';
 
 test('barIcon: every action bar button id the game builds has an icon item', () => {
-  const ids = ['weapon:knife', 'weapon:pistol', 'weapon:club', 'takedown', 'carry', 'lure', 'hold', 'freefire', 'crouch', 'eat', 'give', 'fix', 'cook', 'build', 'spike', 'can'];
+  const ids = ['weapon:knife', 'weapon:pistol', 'weapon:club', 'weapon:hatchet', 'weapon:warclub', 'weapon:bow', 'takedown', 'carry', 'lure', 'hold', 'freefire', 'crouch', 'eat', 'give', 'fix', 'cook', 'build', 'spike', 'can'];
   for (const id of ids) {
     const icon = barIcon(id);
     assert.ok(icon && uiItem(icon), `${id} -> ${icon}`);
@@ -12,7 +12,7 @@ test('barIcon: every action bar button id the game builds has an icon item', () 
   assert.equal(barIcon('weapon:pistol'), 'icon_bar_gun');
   assert.equal(barIcon('build'), 'icon_bar_barricade');
   assert.equal(barIcon('nothing'), null);
-  assert.equal(barIcon('weapon:bow'), null);
+  assert.equal(barIcon('weapon:bow'), 'icon_bar_bow');
 });
 
 test('ammoCount and plainName read the count off a weapon label', () => {

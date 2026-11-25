@@ -12,18 +12,18 @@ const run = (s: MissionState, ticks: number): void => {
 };
 const spec = m01 as unknown as MissionSpec;
 
-test('m01: 5 zombies (2 inside the house), 4 crates with the settled loot, win by clearing, no extract', () => {
+test('m01: 10 zombies (2 inside the house, 1 in the shed), 6 crates with the settled loot, win by clearing, no extract', () => {
   const s = createMission(spec);
-  assert.equal(s.grid.size, 32);
+  assert.equal(s.grid.size, 64);
   assert.equal(s.win, 'clear');
   assert.equal(s.extract.w, 0);
-  assert.equal(s.enemies.length, 5);
+  assert.equal(s.enemies.length, 10);
   assert.ok(s.enemies.every((e) => e.kind === 'zombie'));
   assert.equal(s.enemies.filter((e) => underRoof(s, e.x, e.y)).length, 2);
-  assert.equal(s.crates.length, 4);
+  assert.equal(s.crates.length, 6);
   const sum = (k: 'food' | 'scrap' | 'ammo') => s.crates.reduce((a, c) => a + c[k], 0);
-  assert.deepEqual([sum('food'), sum('scrap'), sum('ammo')], [5, 4, 5]);
-  assert.deepEqual(s.crates.map((c) => [c.food, c.scrap, c.ammo]), [[0, 0, 3], [3, 0, 0], [0, 4, 0], [2, 0, 2]]);
+  assert.deepEqual([sum('food'), sum('scrap'), sum('ammo')], [7, 6, 6]);
+  assert.deepEqual(s.crates.map((c) => [c.food, c.scrap, c.ammo]), [[0, 0, 3], [3, 0, 0], [0, 4, 0], [2, 0, 2], [0, 2, 1], [2, 0, 0]]);
   assert.equal(s.crates.filter((c) => underRoof(s, c.x, c.y)).length, 2);
 });
 
@@ -119,7 +119,7 @@ test('a survivor killed by a zombie is named with that cause on the fail screen'
   run(s, 100);
   assert.equal(s.status, 'failed');
   assert.equal(s.survivors[0]!.killedBy, 'zombie');
-  assert.equal(failText(s), 'Fighter was killed by a zombie.');
+  assert.equal(failText(s), 'Cass was killed by a zombie.');
 });
 
 test('a survivor who starves is named with hunger as the cause', () => {
@@ -131,5 +131,5 @@ test('a survivor who starves is named with hunger as the cause', () => {
   stepBase(s);
   assert.equal(s.status, 'failed');
   assert.equal(u.killedBy, 'hunger');
-  assert.equal(failText(s), 'Scout starved.');
+  assert.equal(failText(s), 'Eli starved.');
 });

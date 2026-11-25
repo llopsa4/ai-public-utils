@@ -1,21 +1,24 @@
+import { GAME_FONT } from '../render/font';
 import Phaser from 'phaser';
 import { audio } from '../audio/engine';
 import { DOUBLE_MS } from '../render/click';
 import { hungerLabel, squadMetrics } from '../render/cues';
 import { uiFactor } from '../render/cues';
+import { lastMood } from '../render/moods';
 import { squadPortrait } from '../render/ui';
 import { type HungerLevel, type SquadCard, type SquadUnit, cycleNext, pressCard, selectIndex, squadCards } from '../render/squad';
 import { options } from '../sim/options';
 import { bindActionKeys, keyOf } from './actionKeys';
-import { kitSlice, uiImage } from './kit';
+import { traitLine } from '../sim/traits';
+import { Tooltip, kitSlice, uiImage } from './kit';
 import { ui } from './uiScale';
 
 // Squad panel (DESIGN §17): one card per survivor down the left edge, always visible, so an off-screen
 // survivor can be watched. Click selects, Shift-click adds, double-click centres the camera; F1/F2 and Tab
-// select from the keyboard. The head on each card is the small neutral portrait, or the hurt one under 35% HP (DESIGN §6). The overlay reads the
+// select from the keyboard. The head on each card is the dialogue portrait, cropped to the face: hurt under 35% HP, else the mood of the survivor's last line (DESIGN §6). The bar is the only health display (no HP number, DESIGN §17). The overlay reads the
 // registry key `m_squad` and reports a card click as the game event `dw-squad`.
 
-const FONT = 'Georgia, "Times New Roman", serif';
+const FONT = GAME_FONT;
 export const SQUAD_EVENT = 'dw-squad';
 // Card sizes come from `squadMetrics` (DESIGN §19: they grow with the text size); at 100% the first card
 // starts at y 140, below the resource, hunger and objective lines of the HUD.
@@ -71,16 +74,23 @@ export function bindSquad(scene: Phaser.Scene, h: SquadHooks): { publish: () => 
   };
 }
 
+/** The face of a 256 px portrait (source px), shown in a square of `px` display px at (x, y). */
+const FACE = { x: 48, y: 16, size: 160 };
+const PORTRAIT_SRC = 256;
+
+function cropHead(img: Phaser.GameObjects.Image, x: number, y: number, px: number): void {
+  const k = px / FACE.size;
+  img.setCrop(FACE.x, FACE.y, FACE.size, FACE.size).setDisplaySize(PORTRAIT_SRC * k, PORTRAIT_SRC * k).setPosition(x - FACE.x * k, y - FACE.y * k);
+}
+
 interface Slot {
   id: string;
   box: Phaser.GameObjects.NineSlice;
   frame: Phaser.GameObjects.Rectangle; // the gold outline of a selected card
-  hpIcon: Phaser.GameObjects.Image;
   portrait: Phaser.GameObjects.Rectangle;
   head: Phaser.GameObjects.Image;
   headKey: string;
   name: Phaser.GameObjects.Text;
-  hp: Phaser.GameObjects.Text;
   key: Phaser.GameObjects.Text;
   word: Phaser.GameObjects.Text;
 }
@@ -93,6 +103,8 @@ export class SquadScene extends Phaser.Scene {
   private bars!: Phaser.GameObjects.Graphics;
   private lastId = '';
   private lastAt = -Infinity;
+  private tip!: Tooltip; // the hovered card's trait line (DESIGN §5)
+  private hover = '';
 
   constructor() {
     super('Squad');
@@ -105,22 +117,26 @@ export class SquadScene extends Phaser.Scene {
     this.lastId = '';
     this.lastAt = -Infinity;
     this.bars = this.add.graphics();
+    this.hover = '';
+    this.tip = new Tooltip(this, FONT);
   }
 
   private rebuild(cards: readonly SquadCard[]): void {
-    for (const s of this.slots) for (const o of [s.box, s.frame, s.hpIcon, s.portrait, s.head, s.name, s.hp, s.key, s.word]) o.destroy();
+    for (const s of this.slots) for (const o of [s.box, s.frame, s.portrait, s.head, s.name, s.key, s.word]) o.destroy();
     const { x: X, y: Y, w: W, h: H, gap: GAP, portrait: PORTRAIT } = squadMetrics(this.size, this.withHunger);
     this.slots = cards.map((c, i) => {
       const y = Y + i * (H + GAP);
       const box = kitSlice(this, 'kit_card', X, y, W, H, uiFactor(this.size)).setInteractive({ useHandCursor: true });
       const frame = this.add.rectangle(X, y, W, H).setOrigin(0, 0).setStrokeStyle(2, 0xe8c46a).setVisible(false);
-      const hpIcon = uiImage(this, 'icon_hud_hp', 0, y + ui(5), ui(16));
       const portrait = this.add.rectangle(X + 6, y + (H - PORTRAIT) / 2, PORTRAIT, PORTRAIT, 0x1a1c19).setOrigin(0, 0).setStrokeStyle(1, 0x8a8d86);
-      const head = uiImage(this, 'portrait_small_fighter_neutral', X + 6, y + (H - PORTRAIT) / 2, PORTRAIT).setVisible(false);
+      const head = uiImage(this, 'portrait_fighter_neutral', X + 6, y + (H - PORTRAIT) / 2, PORTRAIT).setVisible(false);
       const name = this.add.text(X + PORTRAIT + 14, y + ui(5), '', { fontFamily: FONT, fontSize: `${ui(15)}px`, color: '#e8e6de' });
-      const hp = this.add.text(X + W - 8, y + ui(5), '', { fontFamily: FONT, fontSize: `${ui(13)}px`, color: '#a8a69e' }).setOrigin(1, 0);
       const key = this.add.text(X + 6 + PORTRAIT / 2, y + H - 6, c.key, { fontFamily: FONT, fontSize: `${ui(11)}px`, color: '#a8a69e' }).setOrigin(0.5, 1);
       const word = this.add.text(X + PORTRAIT + 14, y + ui(41), '', { fontFamily: FONT, fontSize: `${ui(11)}px`, color: '#e8c46a' }); // DESIGN §19: the hunger bar's word
+      box.on('pointerover', () => (this.hover = c.id));
+      box.on('pointerout', () => {
+        if (this.hover === c.id) this.hover = '';
+      });
       box.on('pointerdown', (p: Phaser.Input.Pointer) => {
         if (p.rightButtonDown()) return;
         audio.ui();
@@ -129,7 +145,7 @@ export class SquadScene extends Phaser.Scene {
         this.lastAt = centre ? -Infinity : p.downTime; // a third click starts over
         this.game.events.emit(SQUAD_EVENT, { id: c.id, add: p.event.shiftKey, centre } satisfies SquadPress);
       });
-      return { id: c.id, box, frame, hpIcon, portrait, head, headKey: '', name, hp, key, word };
+      return { id: c.id, box, frame, portrait, head, headKey: '', name, key, word };
     });
   }
 
@@ -139,6 +155,8 @@ export class SquadScene extends Phaser.Scene {
     if (!cards || cards.length === 0) {
       if (this.slots.length) this.rebuild([]);
       this.signature = '';
+      this.hover = '';
+      this.tip.hide();
       return;
     }
     const size = options().textSize;
@@ -159,16 +177,15 @@ export class SquadScene extends Phaser.Scene {
       s.box.setAlpha(c.alive ? 1 : 0.5);
       s.frame.setVisible(c.selected && c.alive);
       s.portrait.setAlpha(c.alive ? 1 : 0.5);
-      const headKey = squadPortrait(c.name, c.hp, c.maxHp);
+      const headKey = squadPortrait(c.name, c.hp, c.maxHp, lastMood(c.name));
       if (headKey && headKey !== s.headKey) {
         s.headKey = headKey;
         s.head.setFrame(headKey);
       }
+      cropHead(s.head, X + 6, y + (H - PORTRAIT) / 2, PORTRAIT);
       s.head.setVisible(!!headKey).setAlpha(c.alive ? 1 : 0.5);
       s.name.setText(c.name).setColor(c.alive ? '#e8e6de' : '#8a8d86');
       const word = options().cues && c.alive && c.hunger ? hungerLabel(c.hunger.level) : ''; // DESIGN §19: a word as well as the colour
-      s.hp.setText(c.alive ? `${c.hp} HP` : 'down');
-      s.hpIcon.setVisible(c.alive).setPosition(X + W - 8 - s.hp.width - ui(16) - 3, y + ui(5) + Math.round((s.hp.height - ui(16)) / 2)).setDisplaySize(ui(16), ui(16));
       s.word.setText(word).setColor(c.hunger?.level === 'low' ? '#e8c46a' : '#e0806a');
       const bx = X + PORTRAIT + 14;
       const frac = c.maxHp > 0 ? Math.max(0, Math.min(1, c.hp / c.maxHp)) : 0;
@@ -183,5 +200,11 @@ export class SquadScene extends Phaser.Scene {
         if (!flash) g.fillStyle(color, 1).fillRect(bx, y + ui(35), hu.level === 'starving' ? BAR_W : BAR_W * Math.max(0, Math.min(1, hu.frac)), ui(4));
       }
     });
+    const at = cards.findIndex((c) => c.id === this.hover);
+    const line = at >= 0 ? traitLine(cards[at]!.name) : '';
+    if (line) {
+      for (const o of this.tip.parts()) this.children.bringToTop(o);
+      this.tip.show(line, { x: X, y: Y + at * (H + GAP), w: W, h: H }, this.scale.width, uiFactor(size));
+    } else this.tip.hide();
   }
 }

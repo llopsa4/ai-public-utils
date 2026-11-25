@@ -148,12 +148,61 @@ reviews; **Claude never draws** (DESIGN §9). The art spec for batch 1 is below 
   | `kit` (2x) | `kit_panel` 96 (insets 12), `kit_button_normal/hover/pressed/disabled/active` 96 (10), `kit_card` 96 (8), `kit_tooltip` 64 (6), `kit_slider_track` 128x24 (ends 6, 3-slice), `kit_slider_knob` 32x40, `kit_check_off/on` 40 |
   | `icon_bar` (2x) | `icon_bar_<id>` 96: knife gun club takedown carry lure hold freefire crouch eat give fix cook barricade spike can |
   | `icon_hud` (2x) | `icon_hud_<id>` 48: food scrap ammo hunger zombie herd crate hp |
-  | `portrait` (2x) | `portrait_<fighter\|scout>_<neutral\|afraid\|determined\|hurt>` 256 |
-  | `portrait_small` (2x) | `portrait_small_<fighter\|scout>_<neutral\|hurt>` 72 |
+  | `portrait` (2x) | `portrait_<fighter\|scout\|hunter\|archer>_<neutral\|afraid\|determined\|hurt>` 256 |
+  | `portrait_small` (2x) | `portrait_small_<fighter\|scout\|hunter\|archer>_<neutral\|hurt>` 72 |
   | `cursor` (1x) | `cursor_select/attack/use/move/run` 32, hot spots in the manifest (select (6,3), the rest centre (16,16)): Codex may move them to fit its drawing |
   | `title` (1x) | `title_bg` 640x360, `title_logo` 400x120 |
 
   Code reads it through `src/render/ui.ts` (key lookup, `isFinal`, `nineSlice` geometry, cursor CSS).
+
+## Environment art (user, 2026-11-24)
+
+- **Lighting stays overcast daylight**, one painted version per asset; dusk, fire glow, fog and rain
+  are code overlays (DESIGN §20), never painted.
+- **Resolution:** 2× like the characters: author at double size, shown at half (a ground tile is
+  128 × 64 source, 64 × 32 in the world). Same palette and alpha rule as the figures.
+- **Kit (~35–40 sprites):** 4 ground tiles (moss, dirt, leaf litter, path); 3 trees; 2 bushes; walls
+  for both diagonals with door and window pieces, each broken and fixed; wood floor; roof pieces;
+  stove; crate closed and opened; spike pit armed and spent; noise can; barricade; tent; campfire;
+  body; 2–3 blood decals. The exact keys, sizes and anchors are set in `art/manifest.json` (Z63, 2026-11-25;
+  the manifest wins): see *Key contract* below.
+- **Placement:** code scatters moss, dirt and leaves by a stable per-tile hash; path tiles are marked
+  by hand in the map data.
+- **Occlusion:** code fades a wall or tree in front of a figure to ~40% and outlines selected
+  survivors through it; no cut-away or low wall pieces.
+- **Labels:** once a key is final, its world text label goes; interactables get a code hover
+  outline and cursor; broken openings keep a faint pulsing red marker drawn by code.
+- **Key contract** (35 keys, all `group: env`, `scale: 2`; sizes are SOURCE px, shown at half; anchor
+  = the point on the tile the piece stands on):
+
+  | Keys | Source size | Anchor | Notes |
+  | --- | --- | --- | --- |
+  | `ground_moss`, `ground_dirt`, `ground_leaves`, `ground_path` | 128 × 64 | (0.5, 0.5) | one diamond tile, corners transparent; seamless beside any other ground tile (code mixes them by patch) |
+  | `floor_wood` | 128 × 64 | (0.5, 0.5) | the house floor, same diamond |
+  | `roof_top` | 128 × 64 | (0.5, 0.5) | one roof piece per footprint tile, drawn 52 world px up; the roof's side faces stay code until E3 says otherwise |
+  | `tree_a`, `tree_b`, `tree_c` | 56 × 144 | (0.5, 0.92) | trunk foot on the anchor |
+  | `bush_a`, `bush_b` | 80 × 52 | (0.5, 0.75) | low, hides a crouched figure |
+  | `wall_se`, `wall_sw` | 128 × 160 | (0.5, 0.8) | one full wall tile, 48 world (96 source) px high on a 128 × 64 base diamond; `se` runs along the tile x axis (down-right on screen), `sw` along y (down-left); a corner or lone post uses `se` |
+  | `door_<run>_fixed` / `_broken`, `window_<run>_fixed` / `_broken` (`<run>` = `se` or `sw`) | 128 × 160 | (0.5, 0.8) | the same cell as the wall: fixed = the wall with a boarded door or window, broken = a gap with rubble (the tile is walkable); wall faces must line up with `wall_<run>` |
+  | `stove` | 96 × 112 | (0.5, 0.85) | |
+  | `campfire` | 64 × 48 | (0.5, 0.7) | flames are drawn by code light; the sprite is the logs and stones |
+  | `crate_closed`, `crate_open` | 64 × 56 | (0.5, 0.8) | |
+  | `spike_armed`, `spike_spent` | 96 × 48 | (0.5, 0.5) | flat on the ground, fits a tile |
+  | `noise_can` | 40 × 56 | (0.5, 0.85) | |
+  | `barricade` | 96 × 64 | (0.5, 0.8) | |
+  | `cover` | 88 × 48 | (0.5, 0.8) | low fence or counter |
+  | `tent` | 160 × 112 | (0.5, 0.8) | covers 2 × 2 tiles |
+  | `body` | 68 × 28 | (0.5, 0.5) | lies on the ground |
+  | `blood_a`, `blood_b`, `blood_c` | 88 × 40, 64 × 32, 104 × 44 | (0.5, 0.5) | ground decals, drawn flat |
+
+  `tile_hover` and `tile_extract` stay 1× code-tinted markers (functional, not part of the kit). Inbox:
+  `art/inbox/<batch>/env/<key>.png` at the exact size above; `npm run art:pack -- <batch>` checks the
+  size and the palette and installs `art/frames/env/<key>.png`; Codex sets the key's manifest `status`
+  to `final` in the same change (its world label then goes).
+- **Batches**, each with an in-game first-sample gate: **E1** probe (one ground tile, one tree, one
+  bush, beside the approved figures), **E2** woods (all ground, trees, bushes, tent, campfire),
+  **E3** house (walls, openings, floor, roof), **E4** props (stove, crates, traps, barricade, body,
+  blood).
 
 ## Atlas contract (batch 1 figures; Z22, 2026-11-23)
 
@@ -180,9 +229,11 @@ props, tiles and decals keep their one-image `keys` entries.
   | Survivors (both) | `idle` 1, `walk` 4, `run` 4, `crouch` 4 (crouch walk), `crawl` 4, `hold` 1, `work` 2 (fix, cook, traps), `death` 4 |
   | `fighter` adds | `stab` 3, `takedown` 4, `carry` 4 (carry-body walk) |
   | `scout` adds | `shot` 3, `club` 3, `throw` 3 |
+  | `hunter` (Ray) adds | `pistol_shot` 3 (two-handed, like Cass), `bow_shot` 3 (draw and release, bow in the right hand), `hatchet` 3 |
+  | `archer` (June) adds | `pistol_shot` 3, `bow_shot` 3, `club` 3 (the war club) |
   | each `zombie_<decay>_<body>` | `idle` 1, `shamble` 6 (limping walk, wander and investigate; the game plays it faster to investigate), `reach` 6 (shamble with both arms forward, near the target), `lurch` 6 (limping chase), `bite` 3, `death` 4 |
 
-  That is 35 frames per facing for `fighter`, 33 for `scout`, 26 for each zombie key (a decay + body). The last
+  That is 35 frames per facing for `fighter`, 33 for `scout`, 33 each for `hunter` and `archer`, 26 for each zombie key (a decay + body). The last
   `death` frame matches the `body` sprite.
 - **Cell:** every frame is **64 × 64 px** (1× sheet; **128 × 128** on a 2× sheet), transparent,
   untrimmed (a 48 px figure leaves room for arms, weapons and the carried body). **Feet anchor** is

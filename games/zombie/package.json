@@ -14,8 +14,7 @@
     "publish": "node scripts/publish.mjs",
     "art:pack": "node scripts/art/pack.mjs",
     "art:standins": "node scripts/art/standins.mjs",
-    "e2e": "playwright test",
-    "balance": "node --import tsx scripts/balance.ts"
+    "e2e": "playwright test"
   },
   "dependencies": {
     "phaser": "3.90.0"

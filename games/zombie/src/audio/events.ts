@@ -110,6 +110,8 @@ const ACT_SOUND: Record<Exclude<ActKind, 'bite'>, { id: SoundId; gain: number }>
   takedown: { id: 'knife', gain: 0.5 }, // a silent kill is quiet to the ear too
   shot: { id: 'shot', gain: 1 },
   club: { id: 'club', gain: 1 },
+  hatchet: { id: 'knife', gain: 0.9 },
+  bow_shot: { id: 'throw', gain: 0.5 }, // silent to zombies; a soft twang-like swish for the player
   throw: { id: 'throw', gain: 0.8 },
 };
 

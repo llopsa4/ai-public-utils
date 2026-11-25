@@ -51,18 +51,42 @@ arrival at **Base 1** a short dialogue beat has her take back her pistol, and fr
 the Gun action too (saved in the campaign). Every survivor shows a centred holster and shoots with
 a two-handed grip centred in front of the chest (art/STYLE.md).
 
+**Names and traits** (user, 2026-11-25): everything the player sees says **Cass** and **Eli**
+(hints, dialogue speakers, squad cards, options and keys pages, barks), never "Fighter"/"Scout";
+internal ids stay `fighter`/`scout`. Each has one passive trait, always on: **Cass runs silently**
+(run noise radius 0), and **Eli runs at 6.5 tiles/s**, the fastest survivor. Each trait shows as a
+line on the squad card on hover and in a Mission 1 start hint. Together they have the bond
+technique (§23).
+
+**Ray and June** (user, 2026-11-25): survivors 3 and 4, a Dakota father and daughter who join at the
+end of Mission 1 (§16) and are playable from Base 1 on. Cards in `DESIGN-characters.md`. Internal ids
+`hunter` (Ray) and `archer` (June); everything the player sees says **Ray** and **June**. With each
+other they use their Dakota names, *Tahca Wanyaka* and *Wakpa Win*, only inside dialogue lines.
+- **Bow** (an exception to "pistol plus own melee"): both carry a bow as well as the shared pistol.
+  **8 arrows each**, range **8**, **30 damage** (two hits kill a 60 HP zombie), silent (noise 0),
+  1.5 s cooldown. An arrow flies visibly (about 0.2 s), then lies on the tile it hit until a survivor
+  walks over that tile to pick it up.
+- **Melee:** Ray a **hatchet** (range 1.5, 30 damage, silent, 1.5 s); June a **war club** (range 1.5,
+  25 damage, silent, 1 s). Cass stays the only knife user; Ray's belt knife is part of his look only.
+- **Traits:** Ray, **Tracker**: zombies within 6 tiles of him always show as faint markers, even
+  behind walls and outside cones. June, **Quick draw**: her bow cooldown is 0.75 s.
+- **Starting numbers** (placeholders; the user judges balance by playing): Ray 110 HP, vision 7; June 90 HP, vision 7; both walk 3, Ray runs 5 and June 5.5 (Eli stays the fastest at 6.5). They live in `src/data/characters.json`.
+- The bond technique (§23) stays Cass + Eli only.
+
 ## §6 Tone
 Mature, **visible gore**: blood decals, bodies stay on the map. Serious survival tone.
 
 **Dialogue** (2026-11-23): a box across the bottom of the screen, above the action bar (§17), with
 speaker name and the speaker's portrait. **Portraits** (2026-11-24): painted Cass and Eli in four
 moods (neutral, afraid, determined, hurt); each line in `data/story.json` carries a mood, and hurt
-replaces it while that survivor is under 35% HP. The squad card shows a small neutral or hurt head. Text is typed letter by letter in the typewriter font
+replaces it while that survivor is under 35% HP. The squad card shows the same dialogue portrait,
+cropped, with the same rule: hurt under 35% HP, otherwise the mood of that survivor's last line
+(2026-11-25). Text is typed letter by letter in the typewriter font
 'Special Elite' (free, Apache 2.0, bundled locally in `src/fonts/`), with typewriter blips (see
 *Audio* below). Click or Enter completes the line, then advances; **Esc skips the whole beat**
 (2026-11-23). The game is paused while a line is shown. Lines live in
-`data/story.json`; Claude drafts them and the user approves. Speakers stay "Fighter" and "Scout"
-until the roster (§5) is settled.
+`data/story.json`; Claude drafts them and the user approves. Speakers are named Cass and Eli (§5),
+and Ray and June from the end of Mission 1 (2026-11-25).
 
 **Audio** (2026-11-23): Claude makes all sound **in code** with WebAudio, with no audio files and
 nothing from Codex. Effects: shots, knife, club, bite, footsteps by movement state, the noise can,
@@ -71,6 +95,13 @@ the spike pit, crates, chewing, zombie groans, UI clicks and typewriter blips. E
 off-screen groans act as a warning. Music is an **adaptive ambience**, not melodies: a calm woods
 bed (wind, low drone), a pulse layer while a zombie chases or an alarm is up, and a heavy layer from
 the herd warning (§12) until Base 1 is won or lost; layers crossfade.
+
+**Music** (user, 2026-11-25, supersedes the drone and pulse above): a sinister music track made in
+code (low pads or strings, a slow dissonant motif) replaces the drone bed and the heartbeat pulse.
+When a zombie sees a survivor it **intensifies and speeds up** (tempo rises, percussion and higher
+voices come in), then relaxes about 8 s after the last zombie loses sight. The herd layer stays as
+the top intensity. Wind and rain stay as quieter sound effects, and the white-noise hiss is turned
+down hard ("too loud").
 
 ## §7 Enemies
 - **Humans:** long vision cones, patrol routes, notice bodies, raise alarms that call other humans.
@@ -121,8 +152,11 @@ Resources are what the player carries over from Mission 1.
   there and warning the player.
 - **Roamers:** 3 zombies at the start; one more wanders in every 90 s, at most 4 alive.
 - **The herd:** at 5:00 the Scout warns (dialogue) that a herd is coming from the north, and a red
-  arrow marks the north edge. At 7:00, 12 zombies enter from the north over 60 s and head for the
+  arrow marks the north edge. At 7:00, 18 zombies (§12 *Four survivors*) enter from the north over 60 s and head for the
   house, following noise and chewing fixed openings and barricades.
+  **Herd direction** (2026-11-24, supersedes "from the north"): the herd comes from any of the four
+  edges, rolled when Base 1 starts; the warning line and the red arrow name the edge. Retry from
+  the warning keeps it (it is in the checkpoint); Restart rolls it again.
 - **Win:** every herd zombie dead → dialogue → "To be continued..." (saved as finished, §18).
   **Fail:** any survivor dies → Base 1 restarts from its start, or, after the herd warning, the
   player chooses **Retry from the warning** (a checkpoint of the whole Base state taken at 5:00) or
@@ -132,6 +166,15 @@ Resources are what the player carries over from Mission 1.
   Barricade, hunger), as in Mission 1, re-readable on the pause menu's Controls page (§19). An
   objective line at the top reads "Prepare the house", then from the warning "Survive the herd: n
   left". The herd stays a surprise until the warning.
+- **Start position** (user, 2026-11-25): Base 1 starts with each survivor on the tile and facing
+  where Mission 1 was won. Both are saved (§18), so Continue uses them too. A tile now blocked falls
+  back to the nearest free one.
+- **Size** (user, 2026-11-25): the map is 64 × 64 (§16). Roamers scale up with it. The herd stays
+  at 12 but starts farther out, so the warning gives more time.
+- **Four survivors** (user, 2026-11-25, supersedes "stays at 12"): Base 1 starts with Cass, Eli, Ray
+  and June (§5), each with hunger and a start tile from the end of Mission 1. The herd is **18**;
+  starting food stays 5. Easy and Hard scale with it: herd 12 and 24 (Z81, Claude's choice: keep Easy < Normal < Hard; tell me if wrong). Ray and June start at (31, 47) and (32, 47) until Mission 1 hands them poses (Z82). Older saves with two survivors still load. The rain promised in the
+  Mission 1 talk is Base 1's existing drizzle-to-rain (§20); no weather change.
 
 ## §13 Hold order (Commandos 2 ambush; renamed from "Watch" 2026-11-23, "Cover" clashed with cover tiles)
 A survivor holds position facing a chosen direction with a visible view cone; any enemy that enters
@@ -142,6 +185,14 @@ the facing; any other order for that survivor ends it.
 per-survivor **Free fire** toggle (action-bar button and key) lets Hold use the gun too; it is off
 by default so scarce, loud ammo is not spent by accident. Every survivor who has a gun gets the
 toggle (Cass only once her gun unlocks at Base 1, §5).
+**Bow on Hold** (user, 2026-11-25): Ray and June shoot the bow at enemies in the cone while they have
+arrows (it is silent, so no Free fire needed); Free fire still adds the pistol; with no arrows left
+they strike with melee as above.
+
+**Cones** (user, 2026-11-25): selecting a survivor shows no cone. While aiming Hold, the cone
+follows the pointer live from that survivor until the click sets the facing. Once set, the fixed
+Hold cone stays visible for as long as the Hold lasts. Zombie cones are unchanged. **Icon:** a small
+crouched figure aiming a pistol, with a pale cone fanning out in front (Codex, UI-kit style).
 
 ## §14 Movement states
 Four separate states, each with its own animation (art/STYLE.md): **run** (double left-click, §1;
@@ -158,7 +209,7 @@ Starting values, tuned in the playtest:
 
 Crouched and crawling survivors can hide in bushes and low cover; enemies look past them unless
 adjacent. The Scout crouches faster (2.2) than the Fighter. Speeds apply to the slice's Fighter;
-other characters may differ later.
+other characters may differ later. Traits (§5, 2026-11-25): Cass's run noise is 0; Eli runs at 6.5.
 
 ## §15 Story flow and Intro (2026-11-23)
 New Game → **Intro** → **Mission 1** (§16) → **Base 1** (§12) → "To be continued...". The Intro is
@@ -169,12 +220,33 @@ woods to stop a last zombie. Dialogue (§6) plays between steps: they are out of
 must find a place to stay; the Scout has spotted a house in the woods. Crouch, takedown, lure and
 carry are taught by short hints when Mission 1 starts.
 
+**New start** (user, 2026-11-25, supersedes the step order above): Cass is alone at the camp; Eli is
+away scouting. The game opens paused on Cass's monologue by the fire, 4–6 lines in her clipped
+voice: Eli is overdue, there is no food, she has only the knife and the pistol is empty, she counts
+exits and the daylight left, and there is a veiled hint about her brother (never named). Then:
+(1) move Cass; (2) Cass knifes a zombie; (3) **rescue shot**: a second zombie closes on Cass and Eli
+appears at the edge of the woods. The world freezes with it about 2 tiles from her until you
+select Eli and shoot it. A dialogue follows (Eli brings the news of the house), then (4) Hold.
+**Tutorial pause:** every step freezes the world while its hint shows. Camera, selection and weapon
+switching still work. Only the order the hint asks for is accepted; time resumes once it is given.
+**Size:** the map is 64 × 64; the camp stays the same size with more woods around it, and there are
+no extra zombies.
+
 ## §16 Mission 1: the house in the woods (2026-11-23)
 Stealth mission, zombies only. 32 × 32 woods with bushes and trees; a 2-room wooden house in the
 middle with a **roof** that hides its interior (and anything inside) until a survivor enters, then
 fades. 5 zombies: 2 inside the house, 3 wandering outside. 4 crates: food 3; ammo 3; scrap 4;
 food 2 + ammo 2. **Win:** every zombie dead and every crate opened → short dialogue → Base 1 starts
 on the same map. No extract zone. **Fail:** any survivor dies → restart (§8).
+**Bigger map** (user, 2026-11-25, supersedes the counts above): 64 × 64 tiles (4× the area). The
+house stays in the centre, plus a small shed and more bushes and cover. **10 zombies** and
+**6 crates**; same win rule.
+**The rescue** (user, 2026-11-25, between "win" and the Debrief): a non-interactive cutscene. Eli's
+"one more out of the walls" line plays, then **6 zombies** walk out of the treeline toward Cass and
+Eli and the camera follows them (`m01Ambush`). Arrows fly in from off-screen and kill them; Ray and
+June walk in and the talk plays (`m01Rescue`, which replaced `m01Win` in Z82): introductions, Ray reads rain coming, and all
+four agree to spend the night in the house. Then the Debrief, and Base 1 starts with four survivors
+(§12). Esc skips a dialogue beat, not the kills. Mission 1 itself stays dry.
 
 ## §17 Action bar (2026-11-23)
 A bar along the bottom shows the selected survivor's portrait (with hunger meter, §12) and their
@@ -190,6 +262,11 @@ off-screen survivor can be watched. Click a card selects; double-click centres t
 select a survivor, `Tab` cycles, Shift-click adds to the selection. The action bar stays
 selection-only.
 
+**Trimmed HUD** (user, 2026-11-25): no life bars over survivors' heads. The action bar no longer
+shows the selected survivor's name and HP, only the actions. The squad card is the only health
+display: the dialogue portrait (§6) and a health bar with no HP number. The bond technique button
+and key are in §23.
+
 ## §18 Saves (2026-11-23)
 The save (`deadwoods.save`) is written at the start of each scene (Intro, Mission 1, Base 1);
 Continue resumes there. 2026-11-23: winning Base 1 saves the stage **done** (save still version 2);
@@ -200,7 +277,8 @@ the build is ignored on its own. **Replay Base 1** overwrites the finished save 
 (quitting mid-replay then Continues into Base 1, not the end page). A save slot that cannot be read is kept and
 ignored, never erased. New Game asks before overwriting a save. The save version is bumped and slice-era saves are discarded. The old
 Mission 1 "Ranger station" and the menu's test button are removed; the human-guard AI stays in the
-code for later missions.
+code for later missions. 2026-11-25: the Base 1 save also holds each survivor's Mission 1 end tile
+and facing (§12), and each scene's state holds whether the bond technique was used (§23).
 
 ## §19 Pause, options and feedback (2026-11-23)
 - **Pause menu:** Esc opens it in Intro, Mission 1 and Base 1 (Esc first cancels a pending order;
@@ -209,7 +287,9 @@ code for later missions.
 - **Options** (stored in `localStorage` key `deadwoods.options`): master, effects and ambience
   volume plus mute; edge scroll on/off; text size 100 / 125 / 150%; shape cues on/off (default on:
   `!` over a chasing zombie, `?` over an investigating one, a dash style per noise kind, a text
-  label on the hunger meter); screen shake on/off (default on); key rebinding with reset to
+  label on the hunger meter); screen shake on/off (default on); **weather and fog** on/off
+  (default on; turns off only the rain and fog particles, §20); **difficulty** (§21, "applies on
+  restart"); key rebinding with reset to
   defaults. Esc, Enter, R, Y, N and the arrow keys are not rebindable (the arrows always pan too);
   a key already in use is refused with the name of its action, never swapped; Free fire, Hold and
   the other actions follow the live map everywhere a key is shown. Restart from the pause menu or `R`
@@ -225,7 +305,66 @@ code for later missions.
 - **UI art** (2026-11-24): a painted "worn field kit" (9-slice panels, buttons, cards, sliders); the
   action bar shows an icon per button with its key in a corner and the name on hover; small HUD
   icons sit beside the numbers; a painted title screen (art/STYLE.md *UI art*).
+- **One font** (user, 2026-11-25): every text drawn in code uses Special Elite, the dialogue font
+  (§6). The painted title logo is unchanged. Small text gets bigger where needed to stay readable.
 - **HUD:** Mission 1 shows the zombies left; the fail screen names who died and what killed them,
   and any key skips the wait.
-- **Balance target for Base 1:** challenging but fair: a scripted careful defence wins 70–80% of
-  seeds and a passive one under 20%. Tuning edits data only.
+- **Balance** (user, 2026-11-25): challenging but fair, judged by the user playing. No scripted
+  balance bot or win-rate runs. Tuning edits data only.
+
+## §20 Atmosphere (user, 2026-11-24; code only, looks only)
+Art stays painted in overcast daylight, one version per asset (art/STYLE.md); mood comes from
+code-drawn overlays that never change gameplay (cones, sight and noise stay as they are).
+- **Dusk:** a tint over Base 1 that deepens from the 5:00 warning to the herd's arrival.
+- **Light pools:** flickering warm glow at the Intro campfire and the Base 1 stove.
+- **Fog:** low, slow, light fog drifting through the Intro and Mission 1, kept light so cones read.
+- **Rain:** Base 1 only: drizzle from the 5:00 warning, building to steady rain with the herd; a rain
+  layer in the code ambience (§6 *Audio*).
+- The **Weather and fog** option (§19) turns off the rain and fog particles; dusk and light pools stay.
+
+## §21 Debrief, records, difficulty, variety (user, 2026-11-24)
+- **Debrief:** after Mission 1 and Base 1 (not the Intro), a kit panel after the win dialogue and
+  before Base 1 or "To be continued...": time, silent kills, shots, damage taken, crates, grade and
+  badges.
+- **Grades:** Mission 1: **Ghost** (no shots, no damage taken), **Quiet** (at most 1 shot), **Loud**.
+  Base 1: **Fortress** (no opening or barricade broken through, nobody under 50% HP), **Held** (won),
+  **Scraped by** (won with someone starving or under 25% HP).
+- **Challenges** (badges, earned on any difficulty, the badge shows it): Mission 1 **Silent** (no
+  shots), **Untouched** (no damage), **Swift** (under 6 min); Base 1 **No breach** (no opening or
+  barricade destroyed), **Well fed** (nobody ever starves), **Trapper** (5+ trap kills).
+- **Records:** localStorage key `deadwoods.records`, separate from the save so New Game keeps them:
+  best grade and best time per scene and difficulty, and badges. The main menu gets a Records page.
+- **Difficulty:** Easy / Normal / Hard. Normal is today's tuning. Easy: herd 12, hunger 10 min, +2
+  ammo each time Mission 1 or Base 1 starts or restarts, zombie sight 2 tiles (1 crouched). Hard:
+  herd 24, hunger 6 min, roamers 6 at the start and at most 9 (Normal +25%, rescaled after Z77's
+  5 and 7; user, 2026-11-25), one fewer ammo per Mission 1 crate that holds any. Changeable in
+  Options at any time; it applies at the next scene start or restart (a herd checkpoint keeps its
+  own), and a record is filed under that scene's difficulty. The Intro always plays on Normal.
+- **Run shuffles:** 3–4 hand-made layouts per scene for crate contents and zombie start spots; a seed
+  picks one at each new run or restart.
+
+## §22 Barks and transitions (user, 2026-11-24)
+- **Barks:** floating one-liners above the speaker's head for ~3 s, in Special Elite with a soft
+  blip, never pausing; at most one every 20 s, each line at most once per scene; they follow the text
+  size option. Eight triggers, 1–3 lines per survivor: low HP (<35%), first kill, zombie spotted
+  close by, out of ammo, opening fixed, trap kill, the herd's first breach, and 20 s idle at the fire
+  or stove (the only place for hints of Cass's brother and Eli's mum, never spelled out). Lines live
+  in `data/story.json`; Claude drafts, the user approves.
+- **Transitions:** a 0.6 s fade to black between scenes, then a 2 s location card over black, skipped
+  by any key: "The woods — day 30", "The house in the woods — day 30, afternoon", "The house — day 30,
+  evening" (wording approved with the barks). A loading bar on Boot.
+- Not taken (2026-11-24): found notes, credits.
+
+## §23 Bond technique (user, 2026-11-25)
+A unique Cass + Eli move, **once per scene**, in Mission 1 and Base 1 (not in the Intro). Both must
+be alive.
+- **Aim:** the bond key (`J`, rebindable; `B` is Barricade) or its action-bar button, shown when
+  either survivor is selected, starts aiming. A circle of radius 4 tiles follows the pointer and
+  highlights up to the 3 zombies nearest its centre. The centre must be within 10 tiles of both
+  survivors. Click starts it; right-click or Esc cancels. In Base 1, herd zombies can't be targeted.
+- **Set piece, always succeeds:** the rest of the world freezes. Eli sprints past the marked zombies,
+  they turn to chase him, and he runs off. Cass follows and kills each one silently from behind. It
+  takes about 4–6 s, with a short camera follow and no noise. Afterwards Cass stands by the last
+  body and Eli 3 tiles further on, both walking.
+- The button then shows a "used" state until the next scene or restart. It is taught by a hint and a
+  short Cass/Eli exchange at the start of Mission 1. Icon (Codex): two figures back to back.

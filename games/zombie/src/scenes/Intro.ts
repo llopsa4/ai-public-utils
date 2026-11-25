@@ -1,25 +1,32 @@
+import { GAME_FONT } from '../render/font';
 import Phaser from 'phaser';
 import intro from '../data/intro.json';
-import { type P, circlePoints, conePolygon, ringLook, sightPolygon } from '../render/cones';
+import { type P, circlePoints, ringLook, sightPolygon, survivorCone } from '../render/cones';
 import { NOISE_DASH, dashSegments } from '../render/cues';
 import { type ClickTarget, DoubleClick, cursorFor, resolveClick } from '../render/click';
 import { TILE_H, tileToWorld, worldBounds, worldToTile, worldToTileF } from '../render/iso';
-import { anchorOf } from '../render/placeholders';
-import { bakeGround, checker } from './ground';
+import { Occlusion } from '../render/occlude';
+import { Ghosts } from '../render/outline';
+import { addSprite, anchorOf, boxOf } from '../render/placeholders';
+import { bloodKey, groundKey, pathTilesOf, treeKey } from '../render/terrain';
+import { bakeGround } from './ground';
+import { changeScene } from './Card';
 import { UnitSprite } from '../render/units';
 import { barButtons, selectWeapon } from '../sim/abilities';
 import { enemyViewer } from '../sim/ai';
 import { type Campaign, browserStorage, newCampaign, saveCampaign, toMission1 } from '../sim/campaign';
 import { TICK_HZ } from '../sim/time';
 import { TREE } from '../sim/grid';
-import { type Survivor, failText, orderAttack, orderHold, orderMove, survivorViewer } from '../sim/mission';
-import { type IntroState, STEPS, ackSay, createIntro, hintOf, introLines, objectiveAt, stepIntro } from '../sim/tutorial';
+import { SURVIVOR_NAME, type Survivor, failText, orderAttack, orderHold, orderMove, survivorViewer } from '../sim/mission';
+import { type IntroState, STEPS, ackSay, admit, createIntro, hintOf, introLines, objectiveAt, resume, stepIntro } from '../sim/tutorial';
 import { ACTION_EVENT, type BarModel, HINT_WRAP, SKIP_AFTER_MS, barH, overBar, placeHint } from './ActionBar';
 import { options } from '../sim/options';
 import { CounterRow } from './counters';
 import { placeText, scaleText, sizeBanner } from './uiScale';
 import { type Counter, lootCounters } from '../render/uiview';
 import { pressCard } from '../render/squad';
+import { FOG_LEVEL } from '../render/atmos';
+import { publishAtmos, startAtmos } from './Atmos';
 import { Feel } from './feelFx';
 import { ViewInput } from './input';
 import { bindSquad, overSquad } from './Squad';
@@ -32,7 +39,8 @@ const STEP_MS = 1000 / TICK_HZ;
 const PICK_W = 16; // half-width and height (world px) of a unit's click target
 const PICK_H = 44;
 const RESTART_MS = 2500;
-const FONT = 'Georgia, "Times New Roman", serif';
+const FONT = GAME_FONT;
+const FIRE_GLOW = 190; // world px: half the width of the campfire's light pool (DESIGN §20)
 
 /** The key lines in the HUD corner and on the pause menu's Controls page. */
 // `{action}` is filled with the live key (rebindable, `fillHelp`).
@@ -44,7 +52,7 @@ type Ord =
   | { type: 'hold'; id: string; toward: [number, number] }
   | { type: 'attack'; ids: string[]; target: string };
 
-const name = (u: Survivor): string => u.kind[0]!.toUpperCase() + u.kind.slice(1);
+const name = (u: Survivor): string => SURVIVOR_NAME[u.kind]; // player-visible: Cass, Eli (DESIGN §5)
 
 /**
  * Intro scene (DESIGN §15): the woods camp right after a fight, and the tutorial. Four gated steps
@@ -59,6 +67,8 @@ export class IntroScene extends Phaser.Scene {
   private ping!: Phaser.GameObjects.Image;
   private view!: ViewInput;
   private feel!: Feel;
+  private occlusion!: Occlusion<Phaser.GameObjects.Image>;
+  private ghosts!: Ghosts;
   private state!: IntroState;
   private sprites = new Map<string, UnitSprite>();
   private bodySprites = new Map<string, Phaser.GameObjects.Image>();
@@ -98,15 +108,12 @@ export class IntroScene extends Phaser.Scene {
     this.sayOpen = false;
 
     this.drawWorld();
+    this.ghosts = new Ghosts(this);
     this.fx = this.add.graphics().setDepth(0.3);
     this.hover = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5);
     this.marker = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.6).setTint(0xe8c46a);
     this.ping = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5).setTint(0xe8e6de);
     this.bars = this.add.graphics().setDepth(850);
-    for (const u of this.state.survivors) {
-      const ring = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5).setTint(0xe8e6de);
-      this.sprites.set(u.id, new UnitSprite(this, u, ring));
-    }
     this.sync(1);
 
     const mid = tileToWorld(intro.fire.x - 2, intro.fire.y + 1, N);
@@ -118,7 +125,7 @@ export class IntroScene extends Phaser.Scene {
       onBox: (a, b) => this.boxSelect(a, b),
     });
     this.view.start(mid.x, mid.y);
-    this.feel = new Feel(this, { n: () => N, view: () => this.view, sprites: () => this.sprites });
+    this.feel = new Feel(this, { n: () => N, view: () => this.view, sprites: () => this.sprites, hearth: () => intro.fire });
     this.squad = bindSquad(this, {
       units: () => this.state.survivors,
       nameOf: (id) => name(this.state.survivors.find((u) => u.id === id)!),
@@ -157,6 +164,7 @@ export class IntroScene extends Phaser.Scene {
       hints: () => [],
     });
 
+    startAtmos(this);
     this.scene.launch('IntroHud');
     this.scene.launch('ActionBar');
     this.scene.launch('Squad');
@@ -187,7 +195,7 @@ export class IntroScene extends Phaser.Scene {
 
   private leave(): void {
     delete (window as unknown as { dw?: unknown }).dw;
-    this.scene.start('Menu');
+    changeScene(this, 'Menu');
   }
 
   /** The Intro is over: Mission 1 is saved as the next scene (with the ammo left) and starts. */
@@ -196,13 +204,20 @@ export class IntroScene extends Phaser.Scene {
     const next = toMission1((this.registry.get('campaign') as Campaign | undefined) ?? newCampaign(), this.state.ammo);
     this.registry.set('campaign', next);
     saveCampaign(browserStorage(), next);
-    this.scene.start('Mission');
+    changeScene(this, 'Mission');
   }
 
+  /** An order from the debug hook: it goes through the tutorial's order filter like a click. */
   private debugOrder(o: Ord): void {
-    if (o.type === 'move') orderMove(this.state, o.ids, o.to);
-    else if (o.type === 'hold') orderHold(this.state, o.id, o.toward);
-    else orderAttack(this.state, o.ids, o.target);
+    if (o.type === 'move') {
+      const ids = admit(this.state, 'move', o.ids);
+      if (ids.length > 0 && orderMove(this.state, ids, o.to).length > 0) resume(this.state);
+    } else if (o.type === 'hold') {
+      if (admit(this.state, 'hold', [o.id]).length > 0 && orderHold(this.state, o.id, o.toward)) resume(this.state);
+    } else {
+      const ids = admit(this.state, 'attack', o.ids, o.target);
+      if (ids.length > 0 && orderAttack(this.state, ids, o.target).length > 0) resume(this.state);
+    }
   }
 
   /** Plays the dialogue the sim is waiting on (once); when it closes the sim runs again, or Mission 1 starts. */
@@ -221,18 +236,33 @@ export class IntroScene extends Phaser.Scene {
   /** Ground, trees, tent and fire. Upright things are depth-sorted by the world y of their foot. */
   private drawWorld(): void {
     const g = this.state.grid;
-    bakeGround(this, N, checker);
+    const path = pathTilesOf(intro.path, N);
+    bakeGround(this, N, (x, y) => groundKey(x, y, N, path));
+    this.occlusion = new Occlusion(N);
     for (let y = 0; y < N; y++) {
       for (let x = 0; x < N; x++) {
         const w = tileToWorld(x, y, N);
-        if (g.tiles[y * N + x] === TREE) this.add.image(w.x, w.y, 'tree').setOrigin(...anchorOf('tree')).setDepth(w.y);
+        if (g.tiles[y * N + x] !== TREE) continue;
+        const key = treeKey(x, y);
+        const img = addSprite(this, key, w.x, w.y, w.y);
+        this.occlusion.add(x, y, img, boxOf(key, w.x, w.y));
       }
     }
     const t = intro.tent;
     const tw = tileToWorld(t.x + (t.w - 1) / 2, t.y + (t.h - 1) / 2, N);
-    this.add.image(tw.x, tw.y, 'tent').setOrigin(...anchorOf('tent')).setDepth(tw.y + TILE_H / 2);
+    addSprite(this, 'tent', tw.x, tw.y, tw.y + TILE_H / 2);
     const fw = tileToWorld(intro.fire.x, intro.fire.y, N);
-    this.add.image(fw.x, fw.y, 'fire').setOrigin(...anchorOf('fire')).setDepth(fw.y);
+    addSprite(this, 'campfire', fw.x, fw.y, fw.y);
+  }
+
+  /** Trees in front of a survivor fade; a selected survivor behind one shows through, outlined (art/STYLE.md *Occlusion*). */
+  private seeThrough(dt: number): void {
+    const alive = this.state.survivors.filter((u) => u.hp > 0);
+    const covered = this.occlusion.update(alive.map((u) => ({ x: u.x, y: u.y })), dt);
+    for (const u of this.state.survivors) {
+      const i = alive.indexOf(u);
+      this.ghosts.show(u.id, i >= 0 && covered[i] && this.selected.has(u.id) ? this.sprites.get(u.id)!.body : null);
+    }
   }
 
   private at(u: { id: string; x: number; y: number }, frac: number): [number, number] {
@@ -246,7 +276,9 @@ export class IntroScene extends Phaser.Scene {
     for (const u of [...s.survivors, ...s.enemies]) {
       let sp = this.sprites.get(u.id);
       if (!sp) {
-        sp = new UnitSprite(this, u); // a zombie the next step brought in
+        // Cass at the start, or a zombie or Eli the next step brought in.
+        const ring = u.side === 'survivor' ? this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5).setTint(0xe8e6de) : undefined;
+        sp = new UnitSprite(this, u, ring);
         this.sprites.set(u.id, sp);
       }
       const drawn = sp.update(u, s.tick, frac);
@@ -268,7 +300,7 @@ export class IntroScene extends Phaser.Scene {
     for (const b of s.bodies) {
       let img = this.bodySprites.get(b.id);
       if (!img) {
-        img = this.add.image(0, 0, 'body').setOrigin(...anchorOf('body'));
+        img = addSprite(this, 'body', 0, 0);
         this.bodySprites.set(b.id, img);
       }
       const w = tileToWorld(b.x, b.y, N);
@@ -277,7 +309,7 @@ export class IntroScene extends Phaser.Scene {
     for (; this.decalCount < s.decals.length; this.decalCount++) {
       const d = s.decals[this.decalCount]!;
       const w = tileToWorld(d.x, d.y, N);
-      this.add.image(w.x, w.y, 'blood').setOrigin(...anchorOf('blood')).setDepth(0.2);
+      addSprite(this, bloodKey(d.x, d.y), w.x, w.y, 0.2);
     }
   }
 
@@ -288,6 +320,16 @@ export class IntroScene extends Phaser.Scene {
   }
 
   // ---- Drawing the cones, rings, health bars and the objective marker each frame ----
+
+  /** While Hold is being aimed, the pointer in tile space (the live cone follows it, DESIGN §13); else null. */
+  private aimPoint(): P | null {
+    if (!(this.pendingHold && this.canOrder)) return null;
+    const p = this.input.activePointer;
+    if (this.onBar(p)) return null;
+    const w = this.worldOf(p);
+    const f = worldToTileF(w.x, w.y, N);
+    return [f.x, f.y];
+  }
 
   private fill(pts: P[], color: number, alpha: number, outline = 0): void {
     const w = pts.map(([x, y]) => tileToWorld(x, y, N));
@@ -304,12 +346,13 @@ export class IntroScene extends Phaser.Scene {
       const [x, y] = this.at(e, frac);
       this.fill(sightPolygon(s.grid, x, y, enemyViewer(e).range), 0x9a9a92, 0.1, 0.3); // faint grey sight circle
     }
+    const aim = this.aimPoint();
     for (const u of s.survivors) {
       if (u.hp <= 0) continue;
       const [x, y] = this.at(u, frac);
       const v = { ...survivorViewer(u), x, y };
-      if (u.order?.type === 'hold') this.fill(conePolygon(s.grid, v), 0x58c070, 0.24, 0.8);
-      else if (this.selected.has(u.id)) this.fill(conePolygon(s.grid, v), 0x58c070, 0.08, 0.3);
+      const cone = survivorCone(s.grid, v, u.order?.type === 'hold', aim && this.selected.has(u.id) ? aim : null);
+      if (cone) this.fill(cone, 0x58c070, u.order?.type === 'hold' && !aim ? 0.24 : 0.16, u.order?.type === 'hold' && !aim ? 0.8 : 0.6);
     }
     for (const r of s.rings) {
       const look = ringLook(r.radius, r.age);
@@ -318,13 +361,13 @@ export class IntroScene extends Phaser.Scene {
       const dash = options().cues ? NOISE_DASH[r.kind] : NOISE_DASH.step; // DESIGN §19: each noise kind has its own line style
       for (const run of dashSegments(w.map((q): [number, number] => [q.x, q.y]), dash.on, dash.off)) this.fx.strokePoints(run.map(([px, py]) => ({ x: px, y: py })));
     }
-    for (const u of [...s.survivors, ...s.enemies]) {
-      if (u.hp <= 0 || (u.side !== 'survivor' && u.hp >= u.maxHp)) continue;
+    for (const u of s.enemies) {
+      if (u.hp <= 0 || u.hp >= u.maxHp) continue; // no life bar over a survivor (DESIGN §17)
       const [x, y] = this.at(u, frac);
       const w = tileToWorld(x, y, N);
       const top = w.y - 52;
       this.bars.fillStyle(0x1a1c19, 0.8).fillRect(w.x - 14, top, 28, 4);
-      this.bars.fillStyle(u.side === 'survivor' ? 0x9bc79b : 0xc77b6b, 1).fillRect(w.x - 14, top, (28 * u.hp) / u.maxHp, 4);
+      this.bars.fillStyle(0xc77b6b, 1).fillRect(w.x - 14, top, (28 * u.hp) / u.maxHp, 4);
     }
     const goal = objectiveAt(s);
     if (goal && !this.sayOpen) {
@@ -404,7 +447,9 @@ export class IntroScene extends Phaser.Scene {
     const wp = this.worldOf(p);
     if (this.pendingHold && this.canOrder) {
       const f = worldToTileF(wp.x, wp.y, N);
-      for (const u of this.chosen()) orderHold(this.state, u.id, [f.x, f.y]);
+      const holders = admit(this.state, 'hold', this.chosen().map((u) => u.id));
+      if (holders.length === 0) this.toast(hintOf(this.state));
+      for (const id of holders) if (orderHold(this.state, id, [f.x, f.y])) resume(this.state);
       this.pendingHold = false;
       this.dbl.reset();
       return;
@@ -418,11 +463,16 @@ export class IntroScene extends Phaser.Scene {
       this.selected = pressCard(this.state.survivors, this.selected, target.id!, p.event.shiftKey); // Shift adds
       this.sync(1);
     } else if (action === 'attack') {
-      orderAttack(this.state, ids, target.id!);
+      const ok = admit(this.state, 'attack', ids, target.id!);
+      if (ok.length === 0) return this.toast(hintOf(this.state));
+      if (orderAttack(this.state, ok, target.id!).length > 0) resume(this.state);
     } else if (action === 'walk') {
       const t = worldToTile(wp.x, wp.y, N);
       const run = this.dbl.walkClick(p.x, p.y, p.downTime);
-      if (orderMove(this.state, ids, [t.x, t.y], run).length === 0) return;
+      const ok = admit(this.state, 'move', ids);
+      if (ok.length === 0) return this.toast(hintOf(this.state));
+      if (orderMove(this.state, ok, [t.x, t.y], run).length === 0) return;
+      resume(this.state);
       const w = tileToWorld(t.x, t.y, N);
       this.ping.setPosition(w.x, w.y).setVisible(true).setAlpha(1);
       this.tweens.killTweensOf(this.ping);
@@ -488,7 +538,7 @@ export class IntroScene extends Phaser.Scene {
     this.registry.set('i_sel', lines.length ? lines.join('\n') : 'Nobody selected');
     const step = Math.min(s.step + 1, STEPS.length);
     this.registry.set('i_goal', s.done || s.step >= STEPS.length ? 'Find a place to stay' : `${step}/${STEPS.length}   ${hintOf(s)}`);
-    const pending = this.pendingHold ? 'Click where to hold (right-click cancels)' : '';
+    const pending = this.pendingHold ? 'Click where to hold (right-click cancels)' : s.waiting && s.say === null ? 'Time is stopped until you give this order' : '';
     this.registry.set('i_hint', this.time.now < this.toastUntil ? this.toastText : pending);
     this.registry.set('i_banner', s.status === 'failed' ? `${failText(s)}\nPress any key to try again.` : '');
   }
@@ -496,6 +546,7 @@ export class IntroScene extends Phaser.Scene {
   update(_t: number, dt: number): void {
     if (this.state.done) return; // Mission 1 is starting: the dialogue's close may resume this scene for one more frame
     this.view.update(dt);
+    this.seeThrough(dt);
     const p = this.input.activePointer;
 
     const failed = this.state.status === 'failed';
@@ -510,6 +561,8 @@ export class IntroScene extends Phaser.Scene {
     const frac = failed || this.state.say !== null ? 1 : this.acc / STEP_MS;
     this.sync(frac);
     this.feel.frame(this.state);
+    const fw = tileToWorld(intro.fire.x, intro.fire.y, N);
+    publishAtmos(this, this.view, { dusk: 0, rain: 0, fog: FOG_LEVEL, lights: [{ x: fw.x, y: fw.y - 8, r: FIRE_GLOW, phase: 1.3 }] });
     this.drawFx(frac);
 
     if (failed) {
@@ -558,7 +611,7 @@ export class IntroHudScene extends Phaser.Scene {
     this.help = this.add
       .text(width - 16, 14, fillHelp(HELP), {
         fontFamily: FONT,
-        fontSize: '13px',
+        fontSize: '14px',
         color: '#a8a69e',
         align: 'right',
       })

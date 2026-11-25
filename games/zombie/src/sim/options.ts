@@ -1,4 +1,5 @@
 import { type StorageLike, browserStorage } from './campaign';
+import { type Difficulty, isDifficulty } from './difficulty';
 import { type ActionId, type BindResult, type Bindings, type Overrides, bindKey, parseOverrides, resolveKeys } from './keymap';
 
 // Player options (DESIGN §19): stored in localStorage under `deadwoods.options`. Pure apart from the
@@ -22,8 +23,12 @@ export interface Options {
   cues: boolean;
   /** Screen shake on shots and bites (Z38 applies it). */
   shake: boolean;
+  /** Rain and fog particles (DESIGN §20); dusk and light pools always stay. */
+  weather: boolean;
   /** Key rebinding (Z37): only the keys that differ from `data/keys.json`; `liveKeys()` is the resolved map. */
   keys: Overrides;
+  /** Easy / Normal / Hard (DESIGN §21): read when Mission 1 or Base 1 starts or restarts. */
+  difficulty: Difficulty;
 }
 
 export const DEFAULT_OPTIONS: Readonly<Options> = {
@@ -35,11 +40,13 @@ export const DEFAULT_OPTIONS: Readonly<Options> = {
   textSize: 100,
   cues: true,
   shake: true,
+  weather: true,
   keys: {},
+  difficulty: 'normal',
 };
 
 export type VolumeKey = 'master' | 'effects' | 'ambience';
-export type ToggleKey = 'mute' | 'edgeScroll' | 'cues' | 'shake';
+export type ToggleKey = 'mute' | 'edgeScroll' | 'cues' | 'shake' | 'weather';
 
 /** A volume snapped to the nearest step inside 0..1 (anything that is not a number reads as 0). */
 export function snapVolume(v: number): number {
@@ -81,7 +88,9 @@ export function parseOptions(text: string | null): Options {
     textSize: TEXT_SIZES.find((s) => s === r.textSize) ?? d.textSize,
     cues: bool(r.cues, d.cues),
     shake: bool(r.shake, d.shake),
+    weather: bool(r.weather, d.weather),
     keys: parseOverrides(r.keys),
+    difficulty: isDifficulty(r.difficulty) ? r.difficulty : d.difficulty,
   };
 }
 

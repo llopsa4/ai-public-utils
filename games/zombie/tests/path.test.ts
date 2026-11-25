@@ -46,9 +46,9 @@ test('nearestFree skips blocked and taken tiles', () => {
   assert.notDeepEqual(nearestFree(g, [3, 3], new Set([2 * 6 + 3])), [3, 2]);
 });
 
-test('the base map has two survivors on free tiles and trees around the clearing', () => {
+test('the base map has four survivors on free tiles and trees around the clearing', () => {
   const s = createBase({ calm: true });
-  assert.equal(s.survivors.length, 2);
+  assert.equal(s.survivors.length, 4);
   assert.equal(s.food, 5);
   assert.equal(s.scrap, 4);
   for (const u of s.survivors) assert.equal(isBlocked(s.grid, u.x, u.y), false);

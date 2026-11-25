@@ -3,6 +3,7 @@
 import chars from '../data/characters.json';
 import { REPATH, enemySees, route } from './ai';
 import { TICK_HZ } from './time';
+import { bondAvailable } from './bond';
 import { activeWeapon, damage, face, hasAmmo, weapon } from './combat';
 import { emitNoise } from './noise';
 import { ADJACENT, dist } from './vision';
@@ -140,14 +141,14 @@ export function stepOpen(s: MissionState, u: Survivor, o: Extract<Order, { type:
   }
 }
 
-// ---- Weapons (action bar buttons, keys 1 and 2): choose the weapon a left-click attack uses. ----
+// ---- Weapons (action bar buttons, keys 1 to 3): choose the weapon a left-click attack uses. ----
 
-export const WEAPON_LABEL: Record<string, string> = { knife: 'Knife', pistol: 'Gun', club: 'Club' };
+export const WEAPON_LABEL: Record<string, string> = { knife: 'Knife', pistol: 'Gun', club: 'Club', hatchet: 'Hatchet', warclub: 'War club', bow: 'Bow' };
 
 /** Chooses one of the survivor's own weapons. A weapon that needs ammo cannot be chosen with none left. */
 export function selectWeapon(s: MissionState, id: string, weaponId: string): boolean {
   const u = living(s, id);
-  if (!u || !u.weapons.includes(weaponId) || !hasAmmo(s, weapon(weaponId))) return false;
+  if (!u || !u.weapons.includes(weaponId) || !hasAmmo(s, weapon(weaponId), u)) return false;
   u.weapon = weaponId;
   return true;
 }
@@ -178,7 +179,7 @@ export function setFreeFire(s: MissionState, id: string, on: boolean): boolean {
 // ---- Action bar (DESIGN §17): the buttons for one survivor. Pure data; the scene draws and clicks them. ----
 
 export interface BarButton {
-  id: string; // `weapon:<id>`, `takedown`, `carry`, `hold`, `crouch`, `lure`
+  id: string; // `weapon:<id>`, `takedown`, `carry`, `hold`, `crouch`, `lure`, `bond`
   label: string;
   key: string;
   enabled: boolean; // greyed when false
@@ -191,7 +192,8 @@ export function barButtons(s: MissionState, u: Survivor): BarButton[] {
   u.weapons.forEach((id, i) => {
     const w = weapon(id);
     const label = WEAPON_LABEL[id] ?? id;
-    out.push({ id: `weapon:${id}`, label: w.ammo ? `${label} ${s.ammo}` : label, key: String(i + 1), enabled: hasAmmo(s, w), active: using === id });
+    const count = w.arrows ? ` ${u.arrows ?? 0}` : w.ammo ? ` ${s.ammo}` : '';
+    out.push({ id: `weapon:${id}`, label: label + count, key: String(i + 1), enabled: hasAmmo(s, w, u), active: using === id });
   });
   if (canTakedown(u)) out.push({ id: 'takedown', label: 'Takedown', key: 'F', enabled: true, active: u.order?.type === 'takedown' });
   if (canCarry(u)) out.push({ id: 'carry', label: 'Carry', key: 'G', enabled: true, active: u.carrying !== null });
@@ -199,5 +201,10 @@ export function barButtons(s: MissionState, u: Survivor): BarButton[] {
   out.push({ id: 'hold', label: 'Hold', key: 'V', enabled: true, active: u.order?.type === 'hold' });
   if (canFreeFire(u)) out.push({ id: 'freefire', label: 'Free fire', key: 'Z', enabled: true, active: u.freeFire === true });
   out.push({ id: 'crouch', label: 'Crouch', key: 'C', enabled: true, active: u.stance !== 'walk' });
+  // The bond move (DESIGN §23) on Cass's and Eli's bars where the scene has it; greyed once used, until the next scene.
+  if (s.bond && (u.kind === 'fighter' || u.kind === 'scout')) {
+    const both = s.survivors.filter((v) => v.hp > 0 && (v.kind === 'fighter' || v.kind === 'scout')).length >= 2;
+    out.push({ id: 'bond', label: s.bond.used ? 'Bond (used)' : 'Bond', key: 'J', enabled: bondAvailable(s) && both, active: s.bond.run !== null });
+  }
   return out;
 }

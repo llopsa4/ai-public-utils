@@ -1,3 +1,4 @@
+import { GAME_FONT } from '../render/font';
 import Phaser from 'phaser';
 import { flashAlpha } from '../render/fx';
 import { keyOf } from './actionKeys';
@@ -8,7 +9,7 @@ import { ui } from './uiScale';
 // barricade attacked out of sight, with the jump key beside the newest, and the herd's arrival flash.
 // The playable scene's `Feel` publishes `fx_alerts` and `fx_flash`; this scene only draws them.
 
-const FONT = 'Georgia, "Times New Roman", serif';
+const FONT = GAME_FONT;
 const ARROW = 0xd8382a;
 
 export class FeelScene extends Phaser.Scene {

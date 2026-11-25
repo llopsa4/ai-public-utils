@@ -94,7 +94,7 @@ test('Base 1: arrival, herd warning, herd arrival, pause, save round trip', asyn
   expect(cp!.tick).toBeGreaterThanOrEqual(WARN_TICK);
   expect(cp!.tick).toBeLessThan(WARN_TICK + 100);
 
-  // The herd arrives from the north.
+  // The herd arrives from its rolled edge (Z65).
   await stepTo(page, ARRIVE_TICK + 60);
   const herd = await page.evaluate(() => (window.dw!.state.enemies as { id: string }[]).filter((e) => e.id.startsWith('h')).length);
   expect(herd).toBeGreaterThan(0);

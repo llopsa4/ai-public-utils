@@ -1,16 +1,23 @@
 import Phaser from 'phaser';
 import manifest from '../../art/manifest.json';
+import { type Rect, spriteRect } from './occlude';
 
 // Grey code stand-ins for every manifest key with a `placeholder` block (DEVELOPMENT.md
 // *Art placeholders*). Claude never draws real art; Codex replaces keys with final art.
-export type Shape = 'diamond' | 'capsule' | 'box' | 'ring' | 'ellipse';
+export type Shape = 'diamond' | 'capsule' | 'box' | 'ring' | 'ellipse' | 'cube';
 
 export interface ManifestEntry {
+  /** Source px: for a `scale: 2` key this is the double-size art, shown at half. */
   size: [number, number];
   anchor: [number, number];
   frames: number;
   status: 'placeholder' | 'final';
-  placeholder?: { shape: Shape; color: string };
+  /** `env` for the environment kit (art/STYLE.md *Environment art*); its final art is art/frames/env/<key>.png. */
+  group?: string;
+  /** Resolution of the art: 2 = authored at double size and drawn at 1/2. Default 1. */
+  scale?: number;
+  /** `cube` is an isometric block: `h` its height in source px (default: fills the sprite), `mark` a door or window on its `face`. */
+  placeholder?: { shape: Shape; color: string; h?: number; mark?: 'door' | 'window'; face?: 'left' | 'right' };
 }
 
 export const MANIFEST = manifest.keys as unknown as Record<string, ManifestEntry>;
@@ -19,7 +26,69 @@ export function anchorOf(key: string): [number, number] {
   return MANIFEST[key]?.anchor ?? [0.5, 0.5];
 }
 
+/** The factor a key's image is drawn at: 1 / its art resolution (a 2x key is shown at 0.5). */
+export function drawScale(key: string): number {
+  return 1 / (MANIFEST[key]?.scale ?? 1);
+}
+
+/** True once Codex has installed the key's final art (its manifest status): the world label for it goes (art/STYLE.md *Labels*). */
+export function isFinalKey(key: string): boolean {
+  return MANIFEST[key]?.status === 'final';
+}
+
+/** The names of the environment kit keys (manifest `group: env`), in manifest order. */
+export const ENV_KEYS: readonly string[] = Object.entries(MANIFEST)
+  .filter(([, e]) => e.group === 'env')
+  .map(([k]) => k);
+
+/** The world-px box of a key's image with its foot at (x, y): where the wall and tree fade tests overlap (art/STYLE.md *Occlusion*). */
+export function boxOf(key: string, x: number, y: number): Rect {
+  const [w, h] = MANIFEST[key]!.size;
+  const [ax, ay] = anchorOf(key);
+  const k = drawScale(key);
+  return spriteRect(x, y, w * k, h * k, ax, ay);
+}
+
+/** One image of a manifest key standing at world (x, y): its anchor and its drawing scale applied, so scenes never hard-code a size. */
+export function addSprite(scene: Phaser.Scene, key: string, x: number, y: number, depth?: number): Phaser.GameObjects.Image {
+  const img = scene.add.image(x, y, key).setOrigin(...anchorOf(key)).setScale(drawScale(key));
+  if (depth !== undefined) img.setDepth(depth);
+  return img;
+}
+
 const hex = (c: string): number => parseInt(c.replace('#', ''), 16);
+
+/** `color` scaled by `k` per channel (0..1.2), as a 0xrrggbb number. */
+function shade(color: number, k: number): number {
+  const ch = (shift: number) => Math.min(255, Math.round(((color >> shift) & 255) * k));
+  return (ch(16) << 16) | (ch(8) << 8) | ch(0);
+}
+
+type Pt = { x: number; y: number };
+
+/** An isometric block standing on the bottom diamond of its w x h sprite: lit top, mid left face, dark right face. */
+function drawCube(g: Phaser.GameObjects.Graphics, w: number, h: number, color: number, height: number, mark?: 'door' | 'window', face?: 'left' | 'right'): void {
+  const d = w / 2; // the diamond's height
+  const t0 = h - d - height; // y of the top diamond's upper corner
+  const top: Pt[] = [{ x: w / 2, y: t0 }, { x: w, y: t0 + d / 2 }, { x: w / 2, y: t0 + d }, { x: 0, y: t0 + d / 2 }];
+  const left: Pt[] = [{ x: 0, y: t0 + d / 2 }, { x: w / 2, y: t0 + d }, { x: w / 2, y: t0 + d + height }, { x: 0, y: t0 + d / 2 + height }];
+  const right: Pt[] = [{ x: w / 2, y: t0 + d }, { x: w, y: t0 + d / 2 }, { x: w, y: t0 + d / 2 + height }, { x: w / 2, y: t0 + d + height }];
+  const edge = 0x1a1c19;
+  g.fillStyle(shade(color, 1.12)).fillPoints(top, true);
+  g.fillStyle(shade(color, 0.95)).fillPoints(left, true);
+  g.fillStyle(shade(color, 0.72)).fillPoints(right, true);
+  g.lineStyle(1, edge, 0.9);
+  for (const poly of [top, left, right]) g.strokePoints(poly, true);
+  if (!mark) return;
+  // A door or window set into the long face: a quad between u0..u1 across the face and v0..v1 down it.
+  const onLeft = face !== 'right';
+  const p = (u: number, v: number): Pt =>
+    onLeft ? { x: u * (w / 2), y: t0 + d / 2 + u * (d / 2) + v * height } : { x: w / 2 + u * (w / 2), y: t0 + d - u * (d / 2) + v * height };
+  const [v0, v1] = mark === 'door' ? [0.22, 1] : [0.2, 0.55];
+  const quad = [p(0.28, v0), p(0.72, v0), p(0.72, v1), p(0.28, v1)];
+  g.fillStyle(mark === 'door' ? 0x22241f : 0xb8b8ae, 1).fillPoints(quad, true);
+  g.lineStyle(1, edge, 0.9).strokePoints(quad, true);
+}
 
 /** Makes one texture per placeholder key; keys with final art are left to the loader. */
 export function ensureTextures(scene: Phaser.Scene): void {
@@ -47,6 +116,9 @@ export function ensureTextures(scene: Phaser.Scene): void {
         break;
       case 'ellipse':
         g.fillStyle(color, 0.85).fillEllipse(w / 2, h / 2, w, h);
+        break;
+      case 'cube':
+        drawCube(g, w, h, color, e.placeholder.h ?? h - w / 2, e.placeholder.mark, e.placeholder.face);
         break;
     }
     g.generateTexture(key, w, h);

@@ -8,8 +8,8 @@ import keyData from '../data/keys.json';
 export type ActionId =
   | 'panUp' | 'panDown' | 'panLeft' | 'panRight'
   | 'select1' | 'select2' | 'cycle' | 'freeze' | 'alert'
-  | 'weapon1' | 'weapon2'
-  | 'crouch' | 'hold' | 'freefire' | 'takedown' | 'carry' | 'lure'
+  | 'weapon1' | 'weapon2' | 'weapon3'
+  | 'crouch' | 'hold' | 'freefire' | 'takedown' | 'carry' | 'lure' | 'bond'
   | 'fix' | 'cook' | 'eat' | 'give' | 'build' | 'trap';
 
 export interface KeyAction {

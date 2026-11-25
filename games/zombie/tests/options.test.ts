@@ -48,11 +48,16 @@ test('a bad field falls back alone and the good ones are kept', () => {
   assert.equal(o.textSize, 100);
   assert.equal(o.cues, false);
   assert.equal(o.shake, true);
+  assert.equal(o.weather, true); // the weather option is on by default, and an old save without it keeps it on
+  assert.equal(parseOptions(JSON.stringify({ weather: false })).weather, false);
+  assert.equal(o.difficulty, 'normal'); // an old save without a difficulty plays Normal
+  assert.equal(parseOptions(JSON.stringify({ difficulty: 'easy' })).difficulty, 'easy');
+  assert.equal(parseOptions(JSON.stringify({ difficulty: 'nightmare' })).difficulty, 'normal');
 });
 
 test('saved options read back the same', () => {
   const s = fakeStorage();
-  const o = { master: 0.5, effects: 0.25, ambience: 0, mute: true, edgeScroll: false, textSize: 150 as const, cues: false, shake: false, keys: { crouch: 'H', hold: 'J' } };
+  const o = { master: 0.5, effects: 0.25, ambience: 0, mute: true, edgeScroll: false, textSize: 150 as const, cues: false, shake: false, weather: false, keys: { crouch: 'H', hold: 'P' }, difficulty: 'hard' as const };
   assert.equal(saveOptions(s, o), true);
   assert.ok(s.data.has(OPTIONS_KEY));
   assert.deepEqual(loadOptions(s), o);

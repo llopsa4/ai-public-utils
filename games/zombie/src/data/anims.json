@@ -16,6 +16,8 @@
     "shot": { "fps": 12, "loop": false },
     "pistol_shot": { "fps": 12, "loop": false },
     "club": { "fps": 12, "loop": false },
+    "hatchet": { "fps": 12, "loop": false },
+    "bow_shot": { "fps": 12, "loop": false },
     "throw": { "fps": 12, "loop": false },
     "takedown": { "fps": 4, "loop": false },
     "bite": { "fps": 12, "loop": false },

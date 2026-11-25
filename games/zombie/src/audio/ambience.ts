@@ -1,23 +1,25 @@
 import { audio } from './engine';
-import { type LayerId, type Mood, SILENT, approach, beatGap } from './mood';
+import { type Mood, SILENT, approach, drive } from './mood';
+import { Music } from './music';
 
-// The adaptive ambience's sound (DESIGN §6 *Audio*), made in code like the effects: three layers on the
-// engine's ambience bus. The rules for which layer is wanted are `audio/mood.ts`; this file builds the layers
-// and fades them. The bed and the herd layer run all the time and are only turned up or down; the pulse is a
-// heartbeat scheduled a little ahead of the clock, so it keeps its rhythm between frames.
+// The adaptive music and ambience's sound (DESIGN §6 *Audio*, *Music*), made in code like the effects, on the
+// engine's ambience bus. The rules for how loud each layer is are `audio/mood.ts`. The bed holds the music
+// (`audio/music.ts`, intensified by the tension and the herd) and a quiet wind; the herd layer and the rain
+// run all the time and are only turned up or down.
 
-/** Each layer's top level (before the bus and the options' volumes), balanced by measuring each one offline. */
-export const MAX: Record<LayerId, number> = { bed: 0.8, pulse: 0.55, herd: 0.8 };
+/** Each layer's top level (before the bus and the options' volumes). */
+export const MAX: Record<'bed' | 'herd', number> = { bed: 0.8, herd: 0.8 };
 const RAMP = 0.12; // seconds a level change takes to settle, so a frame-by-frame fade does not step
-const AHEAD = 0.25; // seconds of heartbeat scheduled in advance
 const MAX_DT = 0.25; // a longer gap between frames (a pause) counts as this much for the fades
+
+/** The rain layer's top level (Base 1 only, DESIGN §20): it follows the rain level, not the mood, and stays on when the weather option hides the drops. */
+export const RAIN_MAX = 0.5;
 
 export interface Layers {
   bed: GainNode;
-  pulse: GainNode;
   herd: GainNode;
-  /** Schedules the heartbeat thuds up to a little past `now` at `level`; returns nothing. */
-  beat(now: number, level: number): void;
+  rain: GainNode;
+  music: Music;
 }
 
 function loop(ctx: BaseAudioContext, noise: AudioBuffer): AudioBufferSourceNode {
@@ -47,7 +49,7 @@ function osc(ctx: BaseAudioContext, type: OscillatorType, hz: number, level: num
   o.start();
 }
 
-/** Builds the three layers into `bus` (all silent at first). Exported for the offline checks. */
+/** Builds the layers into `bus` (all silent at first). */
 export function buildLayers(ctx: BaseAudioContext, bus: AudioNode, noise: AudioBuffer): Layers {
   const layer = (): GainNode => {
     const g = ctx.createGain();
@@ -56,24 +58,46 @@ export function buildLayers(ctx: BaseAudioContext, bus: AudioNode, noise: AudioB
     return g;
   };
   const bed = layer();
-  const pulse = layer();
   const herd = layer();
+  const rain = layer();
 
-  // Bed: wind that swells and thins on two slow cycles, over a low drone of two close notes that beat slowly.
+  // Rain: a hiss of filtered noise with a lower patter under it, both swelling and thinning a little.
+  const hiss = loop(ctx, noise);
+  const hissHigh = ctx.createBiquadFilter();
+  hissHigh.type = 'highpass';
+  hissHigh.frequency.value = 1800;
+  const hissBand = ctx.createBiquadFilter();
+  hissBand.type = 'bandpass';
+  hissBand.frequency.value = 5200;
+  hissBand.Q.value = 0.4;
+  const hissGain = ctx.createGain();
+  hissGain.gain.value = 0.125; // −12 dB (Z66): the hiss sits well under the effects
+  wobble(ctx, hissGain.gain, 0.09, 0.03);
+  hiss.connect(hissHigh).connect(hissBand).connect(hissGain).connect(rain);
+  hiss.start(0, 0.4);
+  const patter = loop(ctx, noise);
+  const patterBand = ctx.createBiquadFilter();
+  patterBand.type = 'bandpass';
+  patterBand.frequency.value = 1400;
+  patterBand.Q.value = 0.7;
+  const patterGain = ctx.createGain();
+  patterGain.gain.value = 0.35;
+  wobble(ctx, patterGain.gain, 0.13, 0.15);
+  patter.connect(patterBand).connect(patterGain).connect(rain);
+  patter.start(0, 1.1);
+
+  // Bed: the music (added at the end) over a quiet wind that swells and thins on two slow cycles.
   const wind = loop(ctx, noise);
   const windFilter = ctx.createBiquadFilter();
   windFilter.type = 'bandpass';
   windFilter.frequency.value = 420;
   windFilter.Q.value = 0.6;
   const windGain = ctx.createGain();
-  windGain.gain.value = 0.32;
+  windGain.gain.value = 0.06; // quieter again under the music (Z75)
   wobble(ctx, windFilter.frequency, 0.045, 160);
-  wobble(ctx, windGain.gain, 0.07, 0.2);
+  wobble(ctx, windGain.gain, 0.07, 0.05);
   wind.connect(windFilter).connect(windGain).connect(bed);
   wind.start();
-  osc(ctx, 'sine', 55, 0.14, bed);
-  osc(ctx, 'sine', 55.7, 0.1, bed);
-  osc(ctx, 'triangle', 82.4, 0.03, bed);
 
   // Herd: a heavy low saw pair and a rumble, with a faint dissonant tone that makes it uneasy.
   const lowpass = ctx.createBiquadFilter();
@@ -96,59 +120,16 @@ export function buildLayers(ctx: BaseAudioContext, bus: AudioNode, noise: AudioB
   rumble.connect(rumbleFilter).connect(rumbleGain).connect(herd);
   rumble.start();
 
-  // Pulse: a two-part heartbeat (a firm thud, then a softer one) with a faint click of noise on the first.
-  let next = 0;
-  const thud = (t: number, hz: number, peak: number): void => {
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = 'sine';
-    o.frequency.setValueAtTime(hz, t);
-    o.frequency.exponentialRampToValueAtTime(hz * 0.55, t + 0.18);
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(peak, t + 0.012);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
-    o.connect(g).connect(pulse);
-    o.start(t);
-    o.stop(t + 0.25);
-  };
-  const click = (t: number): void => {
-    const s = ctx.createBufferSource();
-    s.buffer = noise;
-    const f = ctx.createBiquadFilter();
-    f.type = 'lowpass';
-    f.frequency.value = 260;
-    const g = ctx.createGain();
-    g.gain.setValueAtTime(0.0001, t);
-    g.gain.linearRampToValueAtTime(0.35, t + 0.008);
-    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
-    s.connect(f).connect(g).connect(pulse);
-    s.start(t, 0.3);
-    s.stop(t + 0.08);
-  };
-  const beat = (now: number, level: number): void => {
-    if (level < 0.02) {
-      next = 0;
-      return;
-    }
-    if (next < now) next = now + 0.02; // first beat, or the clock ran on while no frames came
-    while (next < now + AHEAD) {
-      thud(next, 62, 1);
-      click(next);
-      thud(next + 0.17, 54, 0.6);
-      next += beatGap(level);
-    }
-  };
-
-  return { bed, pulse, herd, beat };
+  return { bed, herd, rain, music: new Music(ctx, bed, noise) };
 }
 
-/** The ambience: `update` once a frame with the wanted layers (`moodOf`) and it fades towards them. */
+/** The ambience: `update` once a frame with the wanted layers (`moodOf`) and it fades towards them, music included; `rain` (0..1) is the rain layer's level, already smooth. */
 export class Ambience {
   private layers: Layers | null = null;
   private cur: Mood = SILENT;
   private last = 0;
 
-  update(want: Mood): void {
+  update(want: Mood, rain = 0): void {
     const a = audio.ambience;
     if (!a || a.ctx.state !== 'running') return;
     this.layers ??= buildLayers(a.ctx, a.bus, a.noise);
@@ -157,8 +138,9 @@ export class Ambience {
     this.last = now;
     this.cur = approach(this.cur, want, dt);
     const t = a.ctx.currentTime;
-    for (const k of ['bed', 'pulse', 'herd'] as const) this.layers[k].gain.setTargetAtTime(this.cur[k] * MAX[k], t, RAMP);
-    this.layers.beat(t, this.cur.pulse);
+    for (const k of ['bed', 'herd'] as const) this.layers[k].gain.setTargetAtTime(this.cur[k] * MAX[k], t, RAMP);
+    this.layers.rain.gain.setTargetAtTime(Math.max(0, Math.min(1, rain)) * RAIN_MAX, t, RAMP * 4);
+    this.layers.music.update(drive(this.cur));
   }
 
   /** Where the layers are now (for the checks). */

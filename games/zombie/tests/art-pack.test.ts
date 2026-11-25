@@ -255,3 +255,23 @@ test('pack on a 2x sheet expects 128 px frames, rejects 64 px ones, and redraws 
   assert.equal(Object.keys(scout.frames).length, 66);
   assert.deepEqual(sizeOf(join(root, 'art', 'atlas', 'scout.png')), [8 * 128, 9 * 128]);
 });
+
+test('pack installs environment art at its 2x source size and rejects a wrong size or an unknown key', () => {
+  const root = makeRoot();
+  const inbox = join(root, 'art', 'inbox', 'E1', 'env');
+  mkdirSync(inbox, { recursive: true });
+  writeFileSync(join(inbox, 'ground_moss.png'), blankPng(128, 64));
+  writeFileSync(join(inbox, 'tree_a.png'), blankPng(56, 144));
+  const ok = run('pack', root, 'E1');
+  assert.equal(ok.code, 0, ok.err);
+  assert.match(ok.out, /Installed 2 frames/);
+  assert.ok(existsSync(join(root, 'art', 'frames', 'env', 'ground_moss.png')) && existsSync(join(root, 'art', 'frames', 'env', 'tree_a.png')));
+
+  writeFileSync(join(inbox, 'tree_b.png'), blankPng(28, 72)); // the 1x size of a tree
+  writeFileSync(join(inbox, 'dragon.png'), blankPng(64, 64));
+  const bad = run('pack', root, 'E1');
+  assert.equal(bad.code, 1);
+  assert.match(bad.err, /env\/tree_b\.png: size 28x72, expected 56x144/);
+  assert.match(bad.err, /env\/dragon\.png: not an environment key/);
+  assert.ok(!existsSync(join(root, 'art', 'frames', 'env', 'tree_b.png')), 'nothing from a failed batch is installed');
+});

@@ -22,13 +22,13 @@ function sealed(zombies: number): BaseState {
     s.grid.tiles[o.y * s.grid.size + o.x] = COVER;
   }
   const [a, b] = s.survivors;
-  [a!.x, a!.y] = [12, 12];
-  [b!.x, b!.y] = [14, 13];
+  [a!.x, a!.y] = [28, 28];
+  [b!.x, b!.y] = [30, 29];
   // Open floor outside the house, spread over the map, in a fixed order (no randomness).
   const spots: [number, number][] = [];
   for (let y = 1; y < s.grid.size - 1 && spots.length < 400; y += 2) {
     for (let x = 1; x < s.grid.size - 1; x += 2) {
-      if (!isBlocked(s.grid, x, y) && Math.hypot(x - 13, y - 12) > 7) spots.push([x, y]);
+      if (!isBlocked(s.grid, x, y) && Math.hypot(x - 29, y - 28) > 7) spots.push([x, y]);
     }
   }
   const step = Math.floor(spots.length / zombies);

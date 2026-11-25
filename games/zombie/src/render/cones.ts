@@ -37,6 +37,21 @@ export function conePolygon(g: Grid, v: Viewer, range = v.range, rays = 14): P[]
   return pts;
 }
 
+/**
+ * A survivor's own cone (DESIGN §13 *Cones*). Selecting shows none. While the survivor is being aimed,
+ * the cone turns live toward `aim` (the pointer in tile space) from where it stands; otherwise a Hold
+ * shows its fixed cone; otherwise nothing (null).
+ */
+export function survivorCone(g: Grid, v: Viewer, holding: boolean, aim: P | null): P[] | null {
+  if (aim) {
+    const dx = aim[0] - v.x;
+    const dy = aim[1] - v.y;
+    const len = Math.hypot(dx, dy);
+    if (len > 1e-9) return conePolygon(g, { ...v, facing: [dx / len, dy / len] });
+  }
+  return holding ? conePolygon(g, v) : null;
+}
+
 /** A zombie's sight circle (DESIGN §7): all round, clipped by walls and trees like a cone. */
 export function sightPolygon(g: Grid, x: number, y: number, radius: number): P[] {
   const pts = conePolygon(g, { x, y, facing: [1, 0], range: radius, angle: 360 }, radius, 28);

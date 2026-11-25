@@ -1,3 +1,4 @@
+import { GAME_FONT } from './font';
 import type Phaser from 'phaser';
 import manifest from '../../art/manifest.json';
 import type { Enemy, Stance, Survivor } from '../sim/mission';
@@ -48,7 +49,7 @@ export class UnitSprite {
     this.body = scene.add.image(0, 0, first.tex, first.frame);
     this.body.setOrigin(...(this.key ? [AX, AY] : anchorOf(this.legacy)));
     if (this.key) this.body.setScale(this.scale);
-    this.cue = scene.add.text(0, 0, '', { fontFamily: 'Georgia, "Times New Roman", serif', fontSize: '22px', fontStyle: 'bold', color: '#ffffff', stroke: '#141614', strokeThickness: 4 }).setOrigin(0.5, 1).setDepth(900).setVisible(false);
+    this.cue = scene.add.text(0, 0, '', { fontFamily: GAME_FONT, fontSize: '22px', fontStyle: 'bold', color: '#ffffff', stroke: '#141614', strokeThickness: 4 }).setOrigin(0.5, 1).setDepth(900).setVisible(false);
   }
 
   /** Shows or hides the state cue above the figure's feet at (x, y) world px; call after `update`. */

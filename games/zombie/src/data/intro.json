@@ -1,51 +1,60 @@
 {
   "seed": 7,
-  "size": 32,
+  "size": 64,
   "clearingRadius": 8.5,
   "treeChance": 0.55,
-  "tent": { "x": 13, "y": 13, "w": 2, "h": 2 },
-  "fire": { "x": 17, "y": 16 },
+  "tent": { "x": 29, "y": 29, "w": 2, "h": 2 },
+  "fire": { "x": 33, "y": 32 },
+  "path": [[28, 34], [28, 33], [29, 33], [29, 32], [29, 31], [30, 33], [31, 33], [32, 33], [32, 32]],
   "survivors": [
-    { "id": "fighter", "kind": "fighter", "x": 12, "y": 19 },
-    { "id": "scout", "kind": "scout", "x": 13, "y": 20 }
+    { "id": "fighter", "kind": "fighter", "x": 28, "y": 35 }
   ],
   "start": "start",
   "steps": [
     {
       "id": "move",
       "goal": "reach",
-      "at": { "x": 17, "y": 16 },
+      "order": "move",
+      "at": { "x": 33, "y": 32 },
       "radius": 2.5,
-      "hint": "Click a survivor to select, then left-click near the fire to walk there (double-click to run).",
+      "hint": "Click Cass, then left-click near the fire to walk there (double-click to run).",
       "after": "afterMove"
     },
     {
       "id": "knife",
       "goal": "kill",
-      "zombie": { "x": 10, "y": 14, "mode": "wander" },
+      "order": "attack",
+      "by": "fighter",
+      "zombie": { "x": 26, "y": 30, "mode": "wander" },
       "needs": "fighter",
       "ammoAfter": 3,
-      "hint": "Click the Fighter, then left-click the zombie to attack it with the knife.",
-      "retry": "Use the knife: click the Fighter, then left-click the new zombie.",
+      "hint": "Click Cass, then left-click the zombie to attack it with the knife. It costs no ammo.",
+      "retry": "Use the knife: click Cass, then left-click the new zombie.",
       "after": "afterKnife"
     },
     {
       "id": "gun",
       "goal": "kill",
-      "zombie": { "x": 22, "y": 11, "mode": "wander" },
+      "order": "attack",
+      "by": "scout",
+      "weapon": "pistol",
+      "stopWithin": 3.4,
+      "arrives": { "id": "scout", "kind": "scout", "x": 38, "y": 34, "near": 7 },
+      "zombie": { "x": 38, "y": 28, "mode": "investigate", "near": 6 },
       "needs": "shot",
       "ammoAfter": 2,
-      "hint": "Click the Scout, press {weapon1} for the Gun, then left-click the zombie. Every shot uses one of the rounds.",
-      "retry": "Shoot it: click the Scout, press {weapon1} for the Gun, then left-click the new zombie.",
+      "hint": "Eli is at the edge of the woods. Click Eli, press {weapon1} for the Gun, then left-click the zombie. Every shot uses one round.",
+      "retry": "Shoot it: click Eli, press {weapon1} for the Gun, then left-click the new zombie.",
       "after": "afterGun"
     },
     {
       "id": "hold",
       "goal": "kill",
-      "zombie": { "x": 17, "y": 8, "mode": "investigate" },
+      "order": "hold",
+      "zombie": { "x": 33, "y": 24, "mode": "investigate" },
       "needs": "hold",
       "ammoAfter": 2,
-      "hint": "Click a survivor, press {hold}, then click toward the woods where it comes from. A survivor on Hold strikes whatever walks up to them inside the green cone.",
+      "hint": "Click a survivor, press {hold}, then click toward the woods where it comes from. A survivor on Hold strikes whatever walks up inside the green cone.",
       "retry": "Hold the line: click a survivor, press {hold}, then click toward the new zombie.",
       "after": "afterHold"
     }

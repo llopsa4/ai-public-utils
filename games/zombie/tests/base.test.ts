@@ -46,12 +46,12 @@ function sealAll(s: BaseState): void {
 
 test('the base: the m01 house with 3 broken openings, the back door walled up, a stove, no zombies yet', () => {
   const s = createBase({ calm: true });
-  assert.equal(s.grid.size, 32);
+  assert.equal(s.grid.size, 64);
   assert.equal(s.enemies.length, 0);
   assert.deepEqual([s.food, s.scrap, s.ammo], [5, 4, 5]);
   assert.deepEqual(s.openings.map((o) => [o.kind, o.fixed]), [['door', false], ['window', false], ['window', false]]);
   for (const o of s.openings) assert.equal(getTile(s.grid, o.x, o.y), FLOOR, `${o.id} is a gap`);
-  assert.equal(getTile(s.grid, 19, 9), WALL, 'the back door is walled up');
+  assert.equal(getTile(s.grid, 35, 25), WALL, 'the back door is walled up');
   assert.ok(isBlocked(s.grid, s.stove.x, s.stove.y));
   assert.equal(s.roof, null);
   assert.equal(s.status, 'playing');
@@ -60,13 +60,13 @@ test('the base: the m01 house with 3 broken openings, the back door walled up, a
 
 test('every broken opening lets the survivors in; with all three fixed the house is sealed', () => {
   const s = createBase({ calm: true });
-  const from: [number, number] = [14, 29];
+  const from: [number, number] = [30, 45];
   for (const o of s.openings) assert.ok(findPath(s.grid, from, [o.x, o.y]), `${o.id} reachable`);
-  assert.ok(findPath(s.grid, from, [11, 12]), 'room 1 reachable');
+  assert.ok(findPath(s.grid, from, [27, 28]), 'room 1 reachable');
   assert.ok(findPath(s.grid, from, [s.stove.x - 1, s.stove.y]), 'the stove is reachable');
   sealAll(s);
-  assert.equal(findPath(s.grid, from, [11, 12]), null);
-  assert.equal(findPath(s.grid, from, [18, 14]), null);
+  assert.equal(findPath(s.grid, from, [27, 28]), null);
+  assert.equal(findPath(s.grid, from, [34, 30]), null);
 });
 
 test('fix: the survivor walks up, works 3 s, then 1 scrap is spent and the gap is blocked', () => {
@@ -97,8 +97,8 @@ test('fix is refused with no scrap, for a fixed opening, an unknown one or a dea
 
 test('two workers on the same opening pay only once; a later move order ends the work', () => {
   const s = createBase({ calm: true });
-  put(fighter(s), 12, 20);
-  put(scout(s), 13, 20);
+  put(fighter(s), 28, 36);
+  put(scout(s), 29, 36);
   orderFix(s, 'fighter', 'door');
   orderFix(s, 'scout', 'door');
   run(s, 60);
@@ -107,10 +107,10 @@ test('two workers on the same opening pay only once; a later move order ends the
   assert.equal(scout(s).order, null);
 
   const t = createBase({ calm: true });
-  put(fighter(t), 12, 20);
+  put(fighter(t), 28, 36);
   orderFix(t, 'fighter', 'door');
   run(t, 10);
-  orderMove(t, ['fighter'], [14, 25]);
+  orderMove(t, ['fighter'], [30, 41]);
   run(t, 100);
   assert.equal(t.openings[0]!.fixed, false);
   assert.equal(t.scrap, 4);
@@ -128,24 +128,24 @@ test('a worker standing in the gap is moved off it so nobody is walled into a ti
 
 test('barricades stay for the yard: refused on a window or door gap and on the stove', () => {
   const s = createBase({ calm: true });
-  assert.equal(placeBarricade(s, 12, 19), 'blocked');
-  assert.equal(placeBarricade(s, 9, 16), 'blocked');
+  assert.equal(placeBarricade(s, 28, 35), 'blocked');
+  assert.equal(placeBarricade(s, 25, 32), 'blocked');
   assert.equal(placeBarricade(s, s.stove.x, s.stove.y), 'blocked');
-  assert.equal(placeBarricade(s, 14, 22), 'ok');
+  assert.equal(placeBarricade(s, 30, 38), 'ok');
   assert.equal(s.scrap, 3);
 });
 
 test('an open window lets a zombie in; a fixed one makes it chew, and only after ~7 s does it break', () => {
   const open = createBase({ calm: true });
-  put(fighter(open), 10, 16);
-  addZombie(open, 8, 16);
+  put(fighter(open), 26, 32);
+  addZombie(open, 24, 32);
   run(open, 100);
   assert.ok(fighter(open).hp < 100, 'through the gap and biting');
 
   const s = createBase({ calm: true });
   sealAll(s);
-  put(fighter(s), 10, 16);
-  const z = addZombie(s, 8, 16);
+  put(fighter(s), 26, 32);
+  const z = addZombie(s, 24, 32);
   const win = s.openings[1]!;
   run(s, 60);
   assert.equal(s.enemies.find((e) => e.id === z)!.ai.mode, 'chase');
@@ -163,8 +163,8 @@ test('a broken opening can be fixed again', () => {
   sealAll(s);
   const win = s.openings[2]!;
   win.hp = 1;
-  put(fighter(s), 21, 12);
-  addZombie(s, 23, 12);
+  put(fighter(s), 37, 28);
+  addZombie(s, 39, 28);
   run(s, 30);
   assert.equal(win.fixed, false);
   s.enemies.length = 0;
@@ -175,7 +175,7 @@ test('a broken opening can be fixed again', () => {
 
 test('cook: walk to the stove, 5 s, then 1 food becomes 1 meal in the cook\'s hands; a second one is refused', () => {
   const s = createBase({ calm: true });
-  put(fighter(s), 20, 16);
+  put(fighter(s), 36, 32);
   assert.equal(orderCook(s, 'fighter'), 'ok');
   run(s, 40);
   assert.equal(s.hunger.fighter!.meal, false);
@@ -214,11 +214,11 @@ test('eat: hunger back to 8 min and the meal heal (base1.json) for the eater onl
 
 test('give: a meal goes to an adjacent survivor who has none, not to a far one or one who has a meal', () => {
   const s = createBase({ calm: true });
-  put(fighter(s), 14, 29);
-  put(scout(s), 20, 29);
+  put(fighter(s), 30, 45);
+  put(scout(s), 36, 45);
   s.hunger.fighter!.meal = true;
   assert.equal(give(s, 'fighter'), false, 'too far');
-  put(scout(s), 15, 29);
+  put(scout(s), 31, 45);
   s.hunger.scout!.meal = true;
   assert.equal(give(s, 'fighter'), false, 'already has one');
   s.hunger.scout!.meal = false;
@@ -233,13 +233,13 @@ test('hunger: 8 min, warns once at 2 min, critical at 30 s, no damage before 0',
   assert.equal(s.said.length, 0);
   assert.equal(hungerLevel(s, 'fighter'), 'ok');
   run(s, 1);
-  assert.deepEqual(s.said.map((m) => [m.id, m.text]), [['fighter', 'I need to eat something.'], ['scout', 'I need to eat something.']]);
+  assert.deepEqual(s.said.map((m) => [m.id, m.text]), ['fighter', 'scout', 'hunter', 'archer'].map((id) => [id, 'I need to eat something.']));
   assert.equal(hungerLevel(s, 'fighter'), 'low');
   run(s, 900 - 1);
   assert.equal(hungerLevel(s, 'fighter'), 'low');
   run(s, 1);
   assert.equal(hungerLevel(s, 'fighter'), 'critical');
-  assert.equal(s.said.length, 2, 'warned once');
+  assert.equal(s.said.length, 4, 'warned once each');
   run(s, 299);
   assert.equal(fighter(s).hp, 100);
   assert.equal(hungerLevel(s, 'fighter'), 'critical');
@@ -273,12 +273,12 @@ test('a starving survivor is slower: the same walk covers 30% less ground', () =
   const a = createBase({ calm: true });
   const b = createBase({ calm: true });
   b.hunger.fighter!.left = 0;
-  orderMove(a, ['fighter'], [14, 20]);
-  orderMove(b, ['fighter'], [14, 20]);
+  orderMove(a, ['fighter'], [30, 36]);
+  orderMove(b, ['fighter'], [30, 36]);
   run(a, 20);
   run(b, 20);
-  const da = 29 - a.survivors[0]!.y;
-  const db = 29 - b.survivors[0]!.y;
+  const da = 45 - a.survivors[0]!.y;
+  const db = 45 - b.survivors[0]!.y;
   assert.ok(Math.abs(db / da - 0.7) < 0.05, `ratio ${db / da}`);
 });
 
@@ -300,20 +300,20 @@ test('a calm base (no roamers, no herd) neither wins nor fails by itself', () =>
   assert.equal(s.status, 'playing');
 });
 
-test('action bar: weapons, Hold, Free fire (with a gun), Crouch, Eat, Give, Fix, Cook, Barricade, Spike pit, Noise can; no mission tools', () => {
+test('action bar: weapons, Hold, Free fire (with a gun), Crouch, Bond, Eat, Give, Fix, Cook, Barricade, Spike pit, Noise can; no mission tools', () => {
   const s = createBase({ calm: true });
   const ids = (u: BaseState['survivors'][number]) => baseButtons(s, u).map((b) => b.id);
-  assert.deepEqual(ids(fighter(s)), ['weapon:knife', 'hold', 'crouch', 'eat', 'give', 'fix', 'cook', 'build', 'spike', 'can']);
-  assert.deepEqual(ids(scout(s)), ['weapon:pistol', 'weapon:club', 'hold', 'freefire', 'crouch', 'eat', 'give', 'fix', 'cook', 'build', 'spike', 'can']);
+  assert.deepEqual(ids(fighter(s)), ['weapon:knife', 'hold', 'crouch', 'bond', 'eat', 'give', 'fix', 'cook', 'build', 'spike', 'can']);
+  assert.deepEqual(ids(scout(s)), ['weapon:pistol', 'weapon:club', 'hold', 'freefire', 'crouch', 'bond', 'eat', 'give', 'fix', 'cook', 'build', 'spike', 'can']);
   const on = (id: string) => baseButtons(s, fighter(s)).find((b) => b.id === id)!.enabled;
   assert.deepEqual([on('eat'), on('give'), on('fix'), on('cook'), on('build')], [false, false, true, true, true]);
   s.scrap = 0;
   s.food = 0;
   assert.deepEqual([on('fix'), on('cook'), on('build')], [false, false, false]);
   s.hunger.fighter!.meal = true;
-  put(scout(s), 15, 29);
+  put(scout(s), 31, 45);
   assert.deepEqual([on('eat'), on('give')], [true, true]);
-  put(scout(s), 25, 29);
+  put(scout(s), 41, 45);
   assert.equal(on('give'), false);
   assert.equal(baseButtons(s, fighter(s), 'build').find((b) => b.id === 'build')!.active, true);
 });
@@ -331,9 +331,10 @@ function tough(s: BaseState): void {
 const herdOf = (s: BaseState) => s.enemies.filter((e) => e.id.startsWith('h'));
 const roamersOf = (s: BaseState) => s.enemies.filter((e) => e.id.startsWith('r') && e.hp > 0);
 
-test('the base starts with 3 roamers on open floor, far from the survivors, and no herd yet', () => {
+test('the base starts with roamers.start roamers on open floor, far from the survivors, and no herd yet', () => {
   const s = createBase();
-  assert.deepEqual(roamersOf(s).map((e) => e.id), ['r1', 'r2', 'r3']);
+  assert.deepEqual(roamersOf(s).map((e) => e.id), Array.from({ length: base.roamers.start }, (_, i) => `r${i + 1}`));
+  for (const [x, y] of base.roamers.spawns) assert.ok(findPath(s.grid, [x!, y!], [base.stove.x - 1, base.stove.y]), `spawn ${x},${y} reaches the house`);
   for (const e of s.enemies) {
     assert.ok(!isBlocked(s.grid, e.x, e.y), `${e.id} stands on open floor`);
     for (const u of s.survivors) assert.ok(Math.hypot(e.x - u.x, e.y - u.y) > 10, `${e.id} starts far away`);
@@ -350,19 +351,20 @@ test('a calm base has no roamers and spawns nothing', () => {
   assert.equal(s.events.length, 0);
 });
 
-test('one more roamer every 90 s, never more than 4 alive; killing one lets the next in', () => {
+test('one more roamer every roamers.every s, never more than roamers.max alive; killing one lets the next in', () => {
   const s = createBase();
   tough(s);
-  run(s, TICKS(89));
-  assert.equal(roamersOf(s).length, 3);
+  const { start, every, max } = base.roamers;
+  run(s, TICKS(every - 1));
+  assert.equal(roamersOf(s).length, start);
   run(s, TICKS(2));
-  assert.equal(roamersOf(s).length, 4, 'the fourth at 90 s');
-  run(s, TICKS(90));
-  assert.equal(roamersOf(s).length, 4, 'capped at 4');
+  assert.equal(roamersOf(s).length, start + 1, 'one more at roamers.every');
+  run(s, TICKS(every * (max - start + 1)));
+  assert.equal(roamersOf(s).length, max, 'capped at roamers.max');
   roamersOf(s)[0]!.hp = 0;
-  assert.equal(roamersOf(s).length, 3);
-  run(s, TICKS(90));
-  assert.equal(roamersOf(s).length, 4, 'a replacement came at 270 s');
+  assert.equal(roamersOf(s).length, max - 1);
+  run(s, TICKS(every));
+  assert.equal(roamersOf(s).length, max, 'a replacement came');
 });
 
 test('the Scout warns at 5:00 and the herd stays away until 7:00', () => {
@@ -392,7 +394,7 @@ test('the herd: herd.count zombies enter from the north over 60 s, on the north 
   assert.equal(herdOf(s).length, base.herd.count);
   assert.equal(s.herd.spawned, base.herd.count);
   assert.equal(new Set(herdOf(s).map((e) => `${e.x},${e.y}`)).size, base.herd.count, 'no two start on one tile');
-  for (const e of herdOf(s)) assert.ok(!isBlocked(s.grid, 3 + ((Number(e.id.slice(1)) - 1) * 7) % 26, 1));
+  for (const e of herdOf(s)) assert.ok(!isBlocked(s.grid, 3 + ((Number(e.id.slice(1)) - 1) * 7) % (s.grid.size - 6), 1));
   assert.equal(s.events.filter((e) => e.kind === 'herdArrives').length, 1, 'announced once');
 });
 
@@ -409,8 +411,8 @@ test('a sealed house: the herd walks to it and chews the fixed openings', () => 
   const s = createBase();
   tough(s);
   sealAll(s);
-  put(fighter(s), 12, 12);
-  put(scout(s), 14, 13);
+  put(fighter(s), 28, 28);
+  put(scout(s), 30, 29);
   s.tick = TICKS(420) - 1;
   run(s, TICKS(120));
   const worn = s.openings.some((o) => !o.fixed || o.hp < 100);
@@ -484,9 +486,9 @@ test('Base 1 starts the Fighter with the knife only, and with the Gun once the b
 function atWarning(): BaseState {
   const s = createBase({ cassGun: true });
   for (const u of s.survivors) u.hp = u.maxHp = 100000; // roamers must not end the run before the warning
-  orderMove(s, ['fighter'], [12, 14]);
+  orderMove(s, ['fighter'], [28, 30]);
   run(s, 20);
-  placeBarricade(s, 14, 20);
+  placeBarricade(s, 30, 36);
   for (let i = 0; i < TICKS(310) && !s.herd.warned; i++) stepBase(s);
   assert.equal(s.herd.warned, true);
   return s;
@@ -521,7 +523,7 @@ test('a state restored from a saved checkpoint steps exactly like the original, 
   assert.ok(back);
   assert.deepEqual(back, s);
   // Past the herd's arrival (7:00 = tick 4200) and into the fight; both carry the same orders.
-  for (const x of [s, back]) orderMove(x, ['scout'], [20, 12]);
+  for (const x of [s, back]) orderMove(x, ['scout'], [36, 28]);
   run(s, 1500);
   run(back, 1500);
   assert.ok(s.herd.spawned > 0, 'the herd came in');
@@ -563,4 +565,62 @@ test('a damaged or foreign checkpoint is refused, not half-loaded', () => {
   assert.equal(bad((c) => delete c.hunger.scout), null);
   assert.equal(bad((c) => (c.tick = -1)), null);
   assert.equal(bad((c) => (c.rng = { s: 'x' })), null);
+});
+
+test('Base 1 starts each survivor on the tile and facing where Mission 1 ended; a blocked or shared tile falls back to the nearest free one', () => {
+  const usual = createBase({ calm: true }).survivors.map((u) => [u.x, u.y]);
+  const s = createBase({ calm: true, start: [{ id: 'fighter', x: 28, y: 30, facing: [0, 3] }, { id: 'scout', x: 28, y: 30, facing: [-1, 0] }] });
+  const [a, b] = s.survivors;
+  assert.deepEqual([a!.x, a!.y, ...a!.facing], [28, 30, 0, 1], 'facing is a unit vector');
+  assert.deepEqual(b!.facing, [-1, 0]);
+  assert.notDeepEqual([b!.x, b!.y], [28, 30], 'the second survivor does not share the tile');
+  assert.ok(Math.hypot(b!.x - 28, b!.y - 30) < 1.5);
+  assert.ok(!isBlocked(s.grid, b!.x, b!.y));
+  const blocked = createBase({ calm: true, start: [{ id: 'fighter', x: 35, y: 25, facing: [0, 1] }] }); // the walled-up back door
+  const f = blocked.survivors[0]!;
+  assert.ok(!isBlocked(blocked.grid, f.x, f.y));
+  assert.ok(Math.hypot(f.x - 35, f.y - 25) < 2);
+  assert.deepEqual([blocked.survivors[1]!.x, blocked.survivors[1]!.y], usual[1]!, 'a survivor with no pose stays at the usual tile');
+});
+
+// ---- Four survivors (Z81, DESIGN §12) ----
+
+test('Base 1 starts with Cass, Eli, Ray and June, each fed, and an herd of 18 on Normal', () => {
+  const s = createBase({ calm: true });
+  assert.deepEqual(s.survivors.map((u) => u.id), ['fighter', 'scout', 'hunter', 'archer']);
+  for (const u of s.survivors) {
+    assert.equal(s.hunger[u.id]!.left, HUNGER_TICKS);
+    assert.equal(isBlocked(s.grid, Math.round(u.x), Math.round(u.y)), false);
+  }
+  assert.equal(base.herd.count, 18);
+  assert.equal(herdLeft(s), 18);
+});
+
+test('Ray and June start where Mission 1 ended when poses are given', () => {
+  const start = [
+    { id: 'hunter', x: 34, y: 30, facing: [1, 0] as [number, number] },
+    { id: 'archer', x: 35, y: 30, facing: [0, 1] as [number, number] },
+  ];
+  const s = createBase({ calm: true, start });
+  const ray = s.survivors.find((u) => u.id === 'hunter')!;
+  const june = s.survivors.find((u) => u.id === 'archer')!;
+  assert.deepEqual([ray.x, ray.y], [34, 30]);
+  assert.deepEqual([june.x, june.y], [35, 30]);
+  assert.deepEqual(june.facing, [0, 1]);
+});
+
+test('a two-survivor checkpoint from before Ray and June still loads, with the two joining', () => {
+  const s = createBase();
+  for (const u of s.survivors) u.hp = u.maxHp = 100000;
+  for (let i = 0; i < TICKS(310) && !s.herd.warned; i++) stepBase(s);
+  const old = JSON.parse(JSON.stringify(checkpointOf(s))) as BaseState;
+  old.survivors = old.survivors.filter((u) => u.id === 'fighter' || u.id === 'scout');
+  delete old.hunger.hunter;
+  delete old.hunger.archer;
+  const back = restoreBase(old);
+  assert.ok(back, 'the old checkpoint loads');
+  assert.deepEqual(back.survivors.map((u) => u.id), ['fighter', 'scout', 'hunter', 'archer']);
+  assert.ok(back.hunger.hunter && back.hunger.archer);
+  run(back, 100); // and it plays
+  assert.equal(back.status, 'playing');
 });

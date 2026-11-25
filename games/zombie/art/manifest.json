@@ -1,133 +1,124 @@
 {
   "version": 2,
-  "notes": "Every sprite key. size [w,h] px, anchor [x,y] 0-1, frames, status placeholder|final. A placeholder block is drawn in code by src/render/placeholders.ts (grey only; functional colours for blood). Codex replaces keys with final art. v2 adds `figures` and `atlases` (the atlas contract in art/STYLE.md): animated survivors and zombies. Each atlas has a `scale` (1 or 2, default 1): its cells are figures.cell times scale, the feet anchor stays at the same fraction (0.5, 0.875), and the game draws a 2x sheet at half size so a figure keeps its world size. The old one-image survivor_*/zombie keys stay until the shared renderer (Z25) stops using them.",
+  "notes": "Every sprite key. `group: env` + `scale: 2` keys (Z63) are the environment kit: size is SOURCE px (author at double size), shown at 1/scale; their final art is art/frames/env/<key>.png (art:pack, inbox art/inbox/<batch>/env/). `placeholder.shape` cube is an isometric block (h = block height in source px, mark door|window on the `face`). size [w,h] px, anchor [x,y] 0-1, frames, status placeholder|final. A placeholder block is drawn in code by src/render/placeholders.ts (grey only; functional colours for blood). Codex replaces keys with final art. v2 adds `figures` and `atlases` (the atlas contract in art/STYLE.md): animated survivors and zombies. Each atlas has a `scale` (1 or 2, default 1): its cells are figures.cell times scale, the feet anchor stays at the same fraction (0.5, 0.875), and the game draws a 2x sheet at half size so a figure keeps its world size. The old one-image survivor_*/zombie keys stay until the shared renderer (Z25) stops using them.",
   "keys": {
-    "tile_ground": {
-      "size": [64, 32],
-      "anchor": [0.5, 0.5],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "diamond", "color": "#4b4f49" }
-    },
-    "tile_ground_b": {
-      "size": [64, 32],
-      "anchor": [0.5, 0.5],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "diamond", "color": "#454943" }
-    },
     "tile_hover": {
       "size": [64, 32],
       "anchor": [0.5, 0.5],
       "frames": 1,
       "status": "placeholder",
-      "placeholder": { "shape": "ring", "color": "#d8d8d0" }
-    },
-    "tree": {
-      "size": [28, 72],
-      "anchor": [0.5, 0.92],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "capsule", "color": "#2c302b" }
-    },
-    "tent": {
-      "size": [80, 56],
-      "anchor": [0.5, 0.8],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "box", "color": "#8a8a82" }
-    },
-    "fire": {
-      "size": [28, 20],
-      "anchor": [0.5, 0.6],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "box", "color": "#b9b9b0" }
+      "placeholder": {
+        "shape": "ring",
+        "color": "#d8d8d0"
+      }
     },
     "survivor_fighter": {
       "size": [24, 48],
       "anchor": [0.5, 0.92],
       "frames": 1,
       "status": "placeholder",
-      "placeholder": { "shape": "capsule", "color": "#c9c9c2" }
+      "placeholder": {
+        "shape": "capsule",
+        "color": "#c9c9c2"
+      }
     },
     "survivor_scout": {
       "size": [24, 50],
       "anchor": [0.5, 0.92],
       "frames": 1,
       "status": "placeholder",
-      "placeholder": { "shape": "capsule", "color": "#a9aaa3" }
+      "placeholder": {
+        "shape": "capsule",
+        "color": "#a9aaa3"
+      }
+    },
+    "survivor_hunter": {
+      "size": [26, 50],
+      "anchor": [0.5, 0.92],
+      "frames": 1,
+      "status": "placeholder",
+      "placeholder": {
+        "shape": "capsule",
+        "color": "#b4b5a8"
+      }
+    },
+    "survivor_archer": {
+      "size": [22, 46],
+      "anchor": [0.5, 0.92],
+      "frames": 1,
+      "status": "placeholder",
+      "placeholder": {
+        "shape": "capsule",
+        "color": "#bdbdb4"
+      }
     },
     "zombie": {
       "size": [20, 40],
       "anchor": [0.5, 0.92],
       "frames": 1,
       "status": "placeholder",
-      "placeholder": { "shape": "capsule", "color": "#5d625a" }
+      "placeholder": {
+        "shape": "capsule",
+        "color": "#5d625a"
+      }
     },
     "human_guard": {
       "size": [20, 40],
       "anchor": [0.5, 0.92],
       "frames": 1,
       "status": "placeholder",
-      "placeholder": { "shape": "capsule", "color": "#77736b" }
-    },
-    "crate": {
-      "size": [26, 22],
-      "anchor": [0.5, 0.8],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "box", "color": "#6f6b62" }
-    },
-    "barricade": {
-      "size": [40, 26],
-      "anchor": [0.5, 0.8],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "box", "color": "#5a5750" }
-    },
-    "body": {
-      "size": [34, 14],
-      "anchor": [0.5, 0.5],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "capsule", "color": "#3b3d39" }
-    },
-    "blood": {
-      "size": [44, 20],
-      "anchor": [0.5, 0.5],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "ellipse", "color": "#5a1010" }
-    },
-    "wall": {
-      "size": [64, 64],
-      "anchor": [0.5, 0.78],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "box", "color": "#7b7a72" }
-    },
-    "cover": {
-      "size": [44, 24],
-      "anchor": [0.5, 0.8],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "box", "color": "#65635b" }
-    },
-    "bush": {
-      "size": [40, 26],
-      "anchor": [0.5, 0.75],
-      "frames": 1,
-      "status": "placeholder",
-      "placeholder": { "shape": "ellipse", "color": "#3b4238" }
+      "placeholder": {
+        "shape": "capsule",
+        "color": "#77736b"
+      }
     },
     "tile_extract": {
       "size": [64, 32],
       "anchor": [0.5, 0.5],
       "frames": 1,
       "status": "placeholder",
-      "placeholder": { "shape": "diamond", "color": "#6a6d64" }
-    }
+      "placeholder": {
+        "shape": "diamond",
+        "color": "#6a6d64"
+      }
+    },
+    "ground_moss": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#4b4f49" } },
+    "ground_dirt": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#57534b" } },
+    "ground_leaves": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#4f4c42" } },
+    "ground_path": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#6a675e" } },
+    "floor_wood": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#5f5a50" } },
+    "roof_top": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#62625c" } },
+    "tree_a": { "group": "env", "scale": 2, "size": [56, 144], "anchor": [0.5, 0.92], "frames": 1, "status": "final", "placeholder": { "shape": "capsule", "color": "#2c302b" } },
+    "tree_b": { "group": "env", "scale": 2, "size": [56, 144], "anchor": [0.5, 0.92], "frames": 1, "status": "final", "placeholder": { "shape": "capsule", "color": "#2f332e" } },
+    "tree_c": { "group": "env", "scale": 2, "size": [56, 144], "anchor": [0.5, 0.92], "frames": 1, "status": "final", "placeholder": { "shape": "capsule", "color": "#292d28" } },
+    "bush_a": { "group": "env", "scale": 2, "size": [80, 52], "anchor": [0.5, 0.75], "frames": 1, "status": "final", "placeholder": { "shape": "ellipse", "color": "#3b4238" } },
+    "bush_b": { "group": "env", "scale": 2, "size": [80, 52], "anchor": [0.5, 0.75], "frames": 1, "status": "final", "placeholder": { "shape": "ellipse", "color": "#363d34" } },
+    "wall_se": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#7b7a72" } },
+    "wall_sw": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#75746c" } },
+    "door_se_fixed": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#6c6a62", "mark": "door", "face": "left" } },
+    "door_se_broken": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#55534c", "h": 22, "mark": "door", "face": "left" } },
+    "window_se_fixed": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#7b7a72", "mark": "window", "face": "left" } },
+    "window_se_broken": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#55534c", "h": 22, "mark": "window", "face": "left" } },
+    "door_sw_fixed": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#6c6a62", "mark": "door", "face": "right" } },
+    "door_sw_broken": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#55534c", "h": 22, "mark": "door", "face": "right" } },
+    "window_sw_fixed": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#7b7a72", "mark": "window", "face": "right" } },
+    "window_sw_broken": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#55534c", "h": 22, "mark": "window", "face": "right" } },
+    "cover": { "group": "env", "scale": 2, "size": [88, 48], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#65635b" } },
+    "stove": { "group": "env", "scale": 2, "size": [96, 112], "anchor": [0.5, 0.85], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#8a8a82" } },
+    "campfire": { "group": "env", "scale": 2, "size": [64, 48], "anchor": [0.5, 0.7], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#b9b9b0" } },
+    "crate_closed": { "group": "env", "scale": 2, "size": [64, 56], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#6f6b62" } },
+    "crate_open": { "group": "env", "scale": 2, "size": [64, 56], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#5a574f" } },
+    "spike_armed": { "group": "env", "scale": 2, "size": [96, 48], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#a8a590" } },
+    "spike_spent": { "group": "env", "scale": 2, "size": [96, 48], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#55534c" } },
+    "noise_can": { "group": "env", "scale": 2, "size": [40, 56], "anchor": [0.5, 0.85], "frames": 1, "status": "final", "placeholder": { "shape": "capsule", "color": "#8d8b82" } },
+    "barricade": { "group": "env", "scale": 2, "size": [96, 64], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#5a5750" } },
+    "tent": { "group": "env", "scale": 2, "size": [160, 112], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#8a8a82" } },
+    "body": { "group": "env", "scale": 2, "size": [68, 28], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "capsule", "color": "#3b3d39" } },
+    "blood_a": { "group": "env", "scale": 2, "size": [88, 40], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "ellipse", "color": "#5a1010" } },
+    "blood_b": { "group": "env", "scale": 2, "size": [64, 32], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "ellipse", "color": "#5a1010" } },
+    "blood_c": { "group": "env", "scale": 2, "size": [104, 44], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "ellipse", "color": "#4e0e0e" } },
+    "arrow_fly": { "group": "env", "scale": 2, "size": [48, 16], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#8a8a82" } },
+    "arrow_ground": { "group": "env", "scale": 2, "size": [48, 20], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#8a8a82" } }
   },
   "figures": {
     "cell": [64, 64],
@@ -149,6 +140,18 @@
         "legacyKey": "survivor_scout",
         "status": "final",
         "anims": { "idle": 1, "walk": 4, "run": 4, "crouch": 4, "crawl": 4, "hold": 1, "work": 2, "death": 4, "shot": 3, "club": 3, "throw": 3 }
+      },
+      "hunter": {
+        "atlas": "hunter",
+        "legacyKey": "survivor_hunter",
+        "status": "final",
+        "anims": { "idle": 1, "walk": 4, "run": 4, "crouch": 4, "crawl": 4, "hold": 1, "work": 2, "death": 4, "pistol_shot": 3, "bow_shot": 3, "hatchet": 3 }
+      },
+      "archer": {
+        "atlas": "archer",
+        "legacyKey": "survivor_archer",
+        "status": "final",
+        "anims": { "idle": 1, "walk": 4, "run": 4, "crouch": 4, "crawl": 4, "hold": 1, "work": 2, "death": 4, "pistol_shot": 3, "bow_shot": 3, "club": 3 }
       },
       "zombie_fresh_a": {
         "atlas": "zombies_fresh",
@@ -209,6 +212,8 @@
   "atlases": {
     "fighter": { "scale": 2, "png": "art/atlas/fighter.png", "json": "art/atlas/fighter.json", "format": "phaser-json-hash", "keys": ["fighter"] },
     "scout": { "scale": 2, "png": "art/atlas/scout.png", "json": "art/atlas/scout.json", "format": "phaser-json-hash", "keys": ["scout"] },
+    "hunter": { "scale": 2, "png": "art/atlas/hunter.png", "json": "art/atlas/hunter.json", "format": "phaser-json-hash", "keys": ["hunter"] },
+    "archer": { "scale": 2, "png": "art/atlas/archer.png", "json": "art/atlas/archer.json", "format": "phaser-json-hash", "keys": ["archer"] },
     "zombies_fresh": {
       "scale": 2,
       "png": "art/atlas/zombies_fresh.png",
@@ -260,10 +265,14 @@
       "icon_bar_knife": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_gun": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_club": { "group": "icon_bar", "size": [96,96], "status": "final" },
+      "icon_bar_bow": { "group": "icon_bar", "size": [96,96], "status": "final" },
+      "icon_bar_hatchet": { "group": "icon_bar", "size": [96,96], "status": "final" },
+      "icon_bar_warclub": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_takedown": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_carry": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_lure": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_hold": { "group": "icon_bar", "size": [96,96], "status": "final" },
+      "icon_bar_bond": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_freefire": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_crouch": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_eat": { "group": "icon_bar", "size": [96,96], "status": "final" },
@@ -294,10 +303,22 @@
       "portrait_scout_afraid": { "group": "portrait", "size": [256,256], "status": "final" },
       "portrait_scout_determined": { "group": "portrait", "size": [256,256], "status": "final" },
       "portrait_scout_hurt": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_hunter_neutral": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_hunter_afraid": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_hunter_determined": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_hunter_hurt": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_archer_neutral": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_archer_afraid": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_archer_determined": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_archer_hurt": { "group": "portrait", "size": [256,256], "status": "final" },
       "portrait_small_fighter_neutral": { "group": "portrait_small", "size": [72,72], "status": "final" },
       "portrait_small_fighter_hurt": { "group": "portrait_small", "size": [72,72], "status": "final" },
       "portrait_small_scout_neutral": { "group": "portrait_small", "size": [72,72], "status": "final" },
       "portrait_small_scout_hurt": { "group": "portrait_small", "size": [72,72], "status": "final" },
+      "portrait_small_hunter_neutral": { "group": "portrait_small", "size": [72,72], "status": "final" },
+      "portrait_small_hunter_hurt": { "group": "portrait_small", "size": [72,72], "status": "final" },
+      "portrait_small_archer_neutral": { "group": "portrait_small", "size": [72,72], "status": "final" },
+      "portrait_small_archer_hurt": { "group": "portrait_small", "size": [72,72], "status": "final" },
       "title_bg": { "group": "title", "size": [640,360], "status": "final" },
       "title_logo": { "group": "title", "size": [400,120], "status": "final" }
     }

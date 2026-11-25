@@ -102,7 +102,7 @@ export function hudIconKey(id: string): string | null {
   return ITEMS.has(name) ? name : null;
 }
 
-export type Who = 'fighter' | 'scout';
+export type Who = 'fighter' | 'scout' | 'hunter' | 'archer';
 export type PortraitMood = 'neutral' | 'afraid' | 'determined' | 'hurt';
 
 /** The 128 px portrait for a survivor in a mood. */
@@ -118,10 +118,10 @@ export function smallPortraitKey(who: Who, hurt: boolean): string {
 /** A survivor below this share of their HP shows the hurt portrait, whatever the line's mood (DESIGN §6). */
 export const HURT_BELOW = 0.35;
 
-/** Which survivor a speaker or card name is ("Fighter", "Scout"), or null for anyone else. */
+/** Which survivor a speaker or card name is ("Cass", "Eli", "Ray", "June"), or null for anyone else. */
 export function speakerWho(name: string): Who | null {
   const n = name.trim().toLowerCase();
-  return n === 'fighter' || n === 'scout' ? n : null;
+  return n === 'cass' ? 'fighter' : n === 'eli' ? 'scout' : n === 'ray' ? 'hunter' : n === 'june' ? 'archer' : null;
 }
 
 /** True when a survivor is under 35% HP (a dead one, at 0, counts). Unknown HP is not hurt. */
@@ -144,10 +144,12 @@ export function dialoguePortrait(speaker: string, mood: string | undefined, hp?:
   return portraitKey(who, hp && isHurt(hp.hp, hp.maxHp) ? 'hurt' : lineMood(mood));
 }
 
-/** The small squad-card head key for a card: hurt under 35% HP (and when down), else neutral. Null for an unknown name. */
-export function squadPortrait(name: string, hp: number, maxHp: number): string | null {
-  const who = speakerWho(name);
-  return who ? smallPortraitKey(who, isHurt(hp, maxHp)) : null;
+/**
+ * The squad-card head key (DESIGN §6, §17): the dialogue portrait, cropped by the card. Hurt under 35% HP (and
+ * when down), otherwise the mood of that survivor's last line (`mood`, neutral before any). Null for an unknown name.
+ */
+export function squadPortrait(name: string, hp: number, maxHp: number, mood?: string): string | null {
+  return dialoguePortrait(name, mood, { hp, maxHp });
 }
 
 // ---- 9-slice -----------------------------------------------------------------------------------------

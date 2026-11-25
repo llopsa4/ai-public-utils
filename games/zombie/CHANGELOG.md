@@ -1,5 +1,33 @@
 # Dead Woods changelog
 
+- 2026-11-25: Ray and June have finished character animations and portraits in Mission 1 and Base 1. Bows, hatchets and war clubs have action-bar icons, and arrows have their own art in flight and on the ground.
+
+- 2026-11-25: After Mission 1 is cleared, a short cutscene plays: six zombies come out of the trees, arrows from off-screen bring them down, and two new survivors, Ray and June, walk in and introduce themselves. Base 1 then starts with all four, each where the cutscene left them. Esc skips a line, not the action. The Base 1 hunger line now shows only names and times, so four survivors fit on it.
+
+- 2026-11-25: Mission 1 has wooden supply crates with distinct closed and looted states, plus new body and blood sprites. Base 1 has a cast-iron stove, scrap barricades, and new art for the noise can and both spike-pit states.
+
+- 2026-11-25: The cabin in Mission 1 and Base 1 now has timber walls, a wood floor, and distinct broken and boarded openings. In Mission 1, a shingled roof with narrow trim leaves the exterior walls visible until the roof fades.
+
+- 2026-11-25: Options has a Difficulty setting: Easy, Normal or Hard. Normal plays as before. Easy brings a herd of 8, 10 minutes before hunger, 2 extra rounds when Mission 1 or Base 1 starts, and zombies that notice you only within 2 tiles (1 if crouched). Hard brings a herd of 16, 6 minutes before hunger, up to 9 roamers (6 at the start), and one round fewer in each Mission 1 crate that holds ammo. A change applies when a scene next starts or restarts; the Intro always plays on Normal. Records are filed under the difficulty the scene started on. The main menu's Options page now has a title in place of the logo, as in the pause menu.
+
+- 2026-11-25: The Bond action button now shows Cass and Eli standing back to back.
+
+- 2026-11-25: All three maps are now 64 × 64 tiles, with more woods around the camp, the house and the yard. Mission 1 adds a small shed east of the house, a trail from the south edge, 10 zombies and 6 crates. Base 1 has more roamers (5 at the start, up to 7), and the herd starts much farther out, so the warning gives more time. Squad cards and the hunger line now say Cass and Eli and show their portraits again.
+
+- 2026-11-25: Cass and Eli have a bond move, once per scene in Mission 1 and Base 1 (key J). Aim a circle near up to three zombies; time stops while Eli draws them off and Cass kills each one silently. Mission 1 now opens with a short exchange that sets it up. The herd in Base 1 cannot be targeted.
+
+- 2026-11-25: A sinister music track replaces the low drone and the heartbeat. When a zombie or guard sees a survivor it speeds up and adds drums and high strings, then calms down about 8 seconds after the last one loses sight. The wind is quieter.
+
+- 2026-11-25: Base 1 now starts with each survivor on the tile and facing where Mission 1 ended, including after Continue.
+
+- 2026-11-25: Selecting a survivor no longer shows a view cone. While you aim Hold, the cone follows the pointer, and once set it stays for as long as the Hold lasts.
+
+- 2026-11-25: All text drawn in the game now uses the dialogue font, Special Elite, and small labels are slightly larger.
+
+- 2026-11-25: The Hold action icon now shows a crouched survivor aiming a pistol with a pale vision cone ahead.
+
+- 2026-11-25: The survivors are called Cass and Eli everywhere the player sees them (hints, dialogue, barks, alerts, the fail line), not Fighter and Scout.
+
 - 2026-11-24: The title screen now shows a misty forest, distant zombies and a worn Dead Woods wordmark. The forest also appears behind the pause menu.
 
 - 2026-11-24: Cass and Eli now have four dialogue expressions and illustrated squad cards. Both show hurt portraits below 35% health.
@@ -108,3 +136,5 @@
 - 2026-11-23: Cass has pixel art for her idle pose in all four facings. Movement and action frames still use stand-ins.
 - 2026-11-23: Cass now has pixel art for movement, work, combat and death in all four facings.
 - 2026-11-24: Installed the approved full Eli (Scout) pixel-art animation set: 66 frames at 2× source resolution, rendered at the same game size, covering movement, stealth, work, Hold, pistol, club, lure and death.
+- 2026-11-25: Added the first forest sprites for moss, spruce trees and low bushes.
+- 2026-11-25: Added dirt, leaf litter, footpaths, Scots pines, dying birches and fern thickets to the woods, plus a tent and stone fire pit in the Intro camp.

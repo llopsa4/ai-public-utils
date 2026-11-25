@@ -6,193 +6,411 @@
     "done": "Base 1 held"
   },
   "ending": "To be continued...",
+  "cards": {
+    "Intro": "The woods — day 30",
+    "Mission": "The house in the woods — day 30, afternoon",
+    "Base": "The house — day 30, evening"
+  },
+  "barks": {
+    "Cass": {
+      "lowHp": [
+        "Still standing. Keep moving.",
+        "I've had worse. Not much worse."
+      ],
+      "firstKill": [
+        "One. Count them.",
+        "Down. Don't get comfortable."
+      ],
+      "zombieClose": [
+        "Contact. Close.",
+        "Eyes left. Now."
+      ],
+      "outOfAmmo": [
+        "Dry. Knife.",
+        "That's the last round. Make it count."
+      ],
+      "openingFixed": [
+        "Sealed. One less way in.",
+        "That'll hold. For a while."
+      ],
+      "trapKill": [
+        "Good. Let the traps work.",
+        "Free kill. I'll take it."
+      ],
+      "herdBreach": [
+        "They're through. Fall back to the stove.",
+        "Breach. Hold the line."
+      ],
+      "idle": [
+        "Six of us went out hunting. ...Forget it.",
+        "Rounds, exits, people. Always the same count.",
+        "Quiet. I hate quiet."
+      ]
+    },
+    "Eli": {
+      "lowHp": [
+        "Okay, that hurt. That really hurt.",
+        "I'm fine. I'm fine. I'm not fine."
+      ],
+      "firstKill": [
+        "That was real. That was really real.",
+        "One down. I'm shaking."
+      ],
+      "zombieClose": [
+        "Too close. Too close!",
+        "There's one right there!"
+      ],
+      "outOfAmmo": [
+        "Click. That's bad, right?",
+        "I'm out. Cass, I'm out."
+      ],
+      "openingFixed": [
+        "Nailed it. Almost like I know what I'm doing.",
+        "Door's done. Breathe."
+      ],
+      "trapKill": [
+        "The trap got it! I love this trap.",
+        "Ha! Did you see that?"
+      ],
+      "herdBreach": [
+        "They're inside! They're inside!",
+        "That's too many. That's way too many."
+      ],
+      "idle": [
+        "Mum would've hated this stove. She'd have fixed it anyway.",
+        "Two valleys. That's all it is. Two valleys.",
+        "I could run it in a day. If it were just me."
+      ]
+    }
+  },
   "dialogue": {
     "intro": {
       "start": [
         {
-          "speaker": "Scout",
-          "mood": "afraid",
-          "text": "Is that it? Tell me that's the last one."
+          "speaker": "Cass",
+          "mood": "neutral",
+          "text": "Sundown in two hours. Maybe less."
         },
         {
-          "speaker": "Fighter",
+          "speaker": "Cass",
+          "mood": "neutral",
+          "text": "Two ways out. The creek and the road. I've checked both twice."
+        },
+        {
+          "speaker": "Cass",
+          "mood": "neutral",
+          "text": "No food since yesterday. One knife. A pistol with nothing in it."
+        },
+        {
+          "speaker": "Cass",
           "mood": "determined",
-          "text": "That's the last one. Look at me. You hurt?"
+          "text": "Eli said an hour. That was three ago."
         },
         {
-          "speaker": "Scout",
-          "mood": "afraid",
-          "text": "No. I don't think so. You?"
+          "speaker": "Cass",
+          "mood": "neutral",
+          "text": "I know how this goes when someone's late. I'm not doing that again."
         },
         {
-          "speaker": "Fighter",
+          "speaker": "Cass",
           "mood": "determined",
-          "text": "Not my blood. Get over to the fire. I want to know what we have left before it gets dark."
+          "text": "Move. Check the fire. Smoke draws them."
         }
       ],
       "afterMove": [
         {
-          "speaker": "Scout",
-          "mood": "afraid",
-          "text": "Three rounds. Three. And I'm not going to tell you about the food, because I've already counted twice."
-        },
-        {
-          "speaker": "Fighter",
+          "speaker": "Cass",
           "mood": "neutral",
-          "text": "Then we stop shooting at things we can walk around."
+          "text": "Embers. Nothing else. No Eli."
         },
         {
-          "speaker": "Fighter",
+          "speaker": "Cass",
           "mood": "determined",
-          "text": "Don't turn too fast. One at the edge of camp, dragging its feet. I'll take this one."
+          "text": "Something at the edge of camp, dragging its feet. Knife. Quiet."
         }
       ],
       "afterKnife": [
         {
-          "speaker": "Fighter",
+          "speaker": "Cass",
           "mood": "neutral",
-          "text": "Close and quiet. It's the only way we can afford to do this now."
+          "text": "Close and quiet. The only way we can afford it now."
         },
         {
-          "speaker": "Scout",
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "Cass! Don't move, I've got it!"
+        },
+        {
+          "speaker": "Cass",
           "mood": "determined",
-          "text": "There's another one, past the creek. Too far for the knife. Damn it. I'm taking the shot."
+          "text": "Then make it count."
         }
       ],
       "afterGun": [
         {
-          "speaker": "Scout",
+          "speaker": "Eli",
           "mood": "afraid",
-          "text": "Two left. And everything within a mile just heard that."
+          "text": "Two rounds left. ...Hi. Sorry I'm late."
         },
         {
-          "speaker": "Fighter",
+          "speaker": "Cass",
+          "mood": "neutral",
+          "text": "You're late. ...Thanks."
+        },
+        {
+          "speaker": "Eli",
+          "mood": "neutral",
+          "text": "I went up the ridge. There's a house, Cass. North, through the trees."
+        },
+        {
+          "speaker": "Cass",
+          "mood": "neutral",
+          "text": "Empty?"
+        },
+        {
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "I couldn't get close enough to say. ...I'm never sure."
+        },
+        {
+          "speaker": "Cass",
           "mood": "determined",
-          "text": "Then let them come to us. Something's moving in the trees. Plant yourself, face the woods, and let it walk right into you."
+          "text": "Then we find out. First, something's moving in the trees. Plant yourself, face the woods, and let it walk right into you."
         }
       ],
       "afterHold": [
         {
-          "speaker": "Fighter",
+          "speaker": "Cass",
           "mood": "neutral",
-          "text": "We can't stay here. A tent, a fire and nothing to eat. We're a dinner bell."
+          "text": "That's three down, and everything within a mile heard us."
         },
         {
-          "speaker": "Scout",
+          "speaker": "Cass",
           "mood": "neutral",
-          "text": "When I was up on the ridge I saw a house. North, through the trees. I didn't want to say anything until I was sure."
+          "text": "A tent, a fire and nothing to eat. We're a dinner bell."
         },
         {
-          "speaker": "Fighter",
-          "mood": "neutral",
-          "text": "Sure of what?"
-        },
-        {
-          "speaker": "Scout",
+          "speaker": "Eli",
           "mood": "afraid",
-          "text": "That it's empty. ...I'm never sure."
+          "text": "North, then?"
         },
         {
-          "speaker": "Fighter",
+          "speaker": "Cass",
           "mood": "determined",
-          "text": "Then we find out together. Stay low and stay close."
+          "text": "Stay low, stay close. And next time you're late, send word."
         }
       ]
     },
-    "m01Win": [
+    "m01Start": [
       {
-        "speaker": "Scout",
-        "mood": "neutral",
-        "text": "Clear. All of it. I keep waiting for one more to come out of the walls."
-      },
-      {
-        "speaker": "Fighter",
+        "speaker": "Cass",
         "mood": "determined",
-        "text": "Bring in everything from the crates. And look at the windows, the glass is gone. A door that won't close is just a hole."
+        "text": "Rounds are for emergencies. Everything else, quiet."
       },
       {
-        "speaker": "Scout",
+        "speaker": "Eli",
         "mood": "neutral",
-        "text": "A roof and four walls. Do you remember how long it's been?"
+        "text": "And when there's a cluster we can't sneak around?"
       },
       {
-        "speaker": "Fighter",
+        "speaker": "Cass",
         "mood": "determined",
-        "text": "Don't get used to it. Fix the door."
+        "text": "You draw them off. You run, they follow, I finish them from behind."
+      },
+      {
+        "speaker": "Eli",
+        "mood": "afraid",
+        "text": "So I'm bait."
+      },
+      {
+        "speaker": "Cass",
+        "mood": "neutral",
+        "text": "You're fast. Once per place, though. After that you're too winded to run and too proud to say so."
+      },
+      {
+        "speaker": "Eli",
+        "mood": "neutral",
+        "text": "That's the nicest thing you've said to me."
       }
+    ],
+    "m01Ambush": [
+      { "speaker": "Eli", "mood": "neutral", "text": "Clear. All of it. I keep waiting for one more to come out of the walls." },
+      { "speaker": "Eli", "mood": "afraid", "text": "Cass... that's not one more. That's six." },
+      { "speaker": "Cass", "mood": "afraid", "text": "Back to the wall. We can't hold six." },
+      { "speaker": "Eli", "mood": "afraid", "text": "Where is that coming from?" }
+    ],
+    "m01Rescue": [
+      { "speaker": "June", "mood": "determined", "text": "Four for me, two for you, Tahca Wanyaka. You're getting slow." },
+      { "speaker": "Ray", "mood": "neutral", "text": "You shot from too close again, Wakpa Win." },
+      { "speaker": "Ray", "mood": "neutral", "text": "Easy. We're not here to take anything. I'm Ray. This is my daughter, June." },
+      { "speaker": "Cass", "mood": "determined", "text": "Cass. That's Eli. You were watching us." },
+      { "speaker": "Ray", "mood": "neutral", "text": "Since morning. I wanted to know what kind of people you were." },
+      { "speaker": "June", "mood": "neutral", "text": "He wanted to know. I wanted to come down hours ago." },
+      { "speaker": "Eli", "mood": "neutral", "text": "Where did you even come from?" },
+      { "speaker": "Ray", "mood": "neutral", "text": "The woods. Thirty days of them. We were hunting deer when it started." },
+      { "speaker": "June", "mood": "determined", "text": "Now we hunt other stuff." },
+      { "speaker": "Ray", "mood": "afraid", "text": "Clouds are building in the west. Rain tonight, a lot of it. Not a night to be outside." },
+      { "speaker": "Cass", "mood": "determined", "text": "The door's broken. The windows are gone." },
+      { "speaker": "Ray", "mood": "neutral", "text": "Then we fix them together. Four hold a house better than two." },
+      { "speaker": "Cass", "mood": "determined", "text": "One night. Then we'll see." },
+      { "speaker": "June", "mood": "determined", "text": "Deal. I call the room with the bed." },
+      { "speaker": "Cass", "mood": "determined", "text": "Fix the door first." }
     ],
     "base1Arrival": [
       {
-        "speaker": "Scout",
+        "speaker": "Eli",
         "mood": "neutral",
         "text": "Wait. Is that a pistol? You've had a pistol in your pack this whole time?"
       },
       {
-        "speaker": "Fighter",
+        "speaker": "Cass",
         "mood": "neutral",
         "text": "Empty. Out there a shot meant company, so I kept it for a night I could afford to be loud."
       },
       {
-        "speaker": "Scout",
+        "speaker": "Eli",
         "mood": "neutral",
         "text": "And tonight is that night?"
       },
       {
-        "speaker": "Fighter",
+        "speaker": "Cass",
         "mood": "determined",
         "text": "Four walls, and a door we're about to fix. One pile of rounds, two guns. Don't waste mine either."
       }
     ],
-    "herdWarning": [
-      {
-        "speaker": "Fighter",
-        "mood": "determined",
-        "text": "Stop. Everybody stop. Do you hear that?"
-      },
-      {
-        "speaker": "Scout",
-        "mood": "afraid",
-        "text": "I don't hear anything."
-      },
-      {
-        "speaker": "Fighter",
-        "mood": "determined",
-        "text": "Exactly. The birds went quiet. Something big is moving in the north, and it isn't one or two."
-      },
-      {
-        "speaker": "Scout",
-        "mood": "afraid",
-        "text": "How long?"
-      },
-      {
-        "speaker": "Fighter",
-        "mood": "determined",
-        "text": "Two minutes. Maybe less. Seal whatever you can."
-      }
-    ],
+    "herdWarning": {
+      "north": [
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Stop. Everybody stop. Do you hear that?"
+        },
+        {
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "I don't hear anything."
+        },
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Exactly. The birds went quiet. Something big is moving in the north, and it isn't one or two."
+        },
+        {
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "How long?"
+        },
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Two minutes. Maybe less. Seal whatever you can."
+        }
+      ],
+      "east": [
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Stop. Everybody stop. Do you hear that?"
+        },
+        {
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "I don't hear anything."
+        },
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Exactly. The crows just left the east ridge. Something big is moving that way, and it isn't one or two."
+        },
+        {
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "How long?"
+        },
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Two minutes. Maybe less. Seal whatever you can."
+        }
+      ],
+      "south": [
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Stop. Everybody stop. Do you hear that?"
+        },
+        {
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "I don't hear anything."
+        },
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Exactly. The birds went quiet along the trail. Something big is coming up from the south, and it isn't one or two."
+        },
+        {
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "How long?"
+        },
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Two minutes. Maybe less. Seal whatever you can."
+        }
+      ],
+      "west": [
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Stop. Everybody stop. Do you hear that?"
+        },
+        {
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "I don't hear anything."
+        },
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Exactly. Listen west, under the wind. Something big is moving there, and it isn't one or two."
+        },
+        {
+          "speaker": "Eli",
+          "mood": "afraid",
+          "text": "How long?"
+        },
+        {
+          "speaker": "Cass",
+          "mood": "determined",
+          "text": "Two minutes. Maybe less. Seal whatever you can."
+        }
+      ]
+    },
     "base1Win": [
       {
-        "speaker": "Fighter",
+        "speaker": "Cass",
         "mood": "neutral",
         "text": "Is that the last one?"
       },
       {
-        "speaker": "Scout",
+        "speaker": "Eli",
         "mood": "neutral",
         "text": "I think so. I think we actually did it."
       },
       {
-        "speaker": "Fighter",
+        "speaker": "Cass",
         "mood": "neutral",
         "text": "Sit down before you fall down."
       },
       {
-        "speaker": "Scout",
+        "speaker": "Eli",
         "mood": "neutral",
         "text": "We held. Against that. I never thought we would."
       },
       {
-        "speaker": "Fighter",
+        "speaker": "Cass",
         "mood": "neutral",
         "text": "Neither did I. Eat, sleep. Tomorrow we find out how far we are from anything alive."
       }
@@ -200,12 +418,12 @@
     "hunger": {
       "warning": [
         {
-          "speaker": "Fighter",
+          "speaker": "Cass",
           "mood": "neutral",
           "text": "I'm not hungry. Eat yours first."
         },
         {
-          "speaker": "Scout",
+          "speaker": "Eli",
           "mood": "afraid",
           "text": "My legs are going. I need to eat something."
         }

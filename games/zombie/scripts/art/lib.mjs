@@ -188,6 +188,15 @@ export function buildUiAtlas(root, manifest) {
   return `${atlas.texture} (${items.length} items)`;
 }
 
+// ---- Environment art (manifest `keys` with `group: env`, art/STYLE.md *Environment art*): one PNG per key, `art/frames/env/<key>.png`.
+
+/** The environment kit as `{ name, size: [w, h] source px }` in manifest order; [] when the manifest has none. */
+export function envItems(manifest) {
+  return Object.entries(manifest.keys)
+    .filter(([, k]) => k.group === 'env')
+    .map(([name, k]) => ({ name, size: k.size }));
+}
+
 export const listDir = (dir) => (existsSync(dir) ? readdirSync(dir, { withFileTypes: true }) : []);
 
 // Grey numbered stand-ins (npm run art:standins). 3x5 digits, one string per row.

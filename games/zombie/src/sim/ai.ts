@@ -2,6 +2,7 @@
 import enemies from '../data/enemies.json';
 import { TICK_HZ } from './time';
 import { face, fire, type Weapon } from './combat';
+import { type Difficulty, tuning } from './difficulty';
 import { type Grid, isBlocked } from './grid';
 import { type Noise, emitNoise, pickNoise } from './noise';
 import { type Pt, findPath, nearestFree } from './path';
@@ -29,8 +30,8 @@ const Z = enemies.zombie;
 const H = enemies.human;
 /** Chasers recompute their route this often (ticks). */
 export const REPATH = 5;
-const BITE: Weapon = { range: ADJACENT, damage: Z.bite.damage, noise: 0, cooldown: Z.bite.cooldown, act: 'bite' };
-const GUN: Weapon = { ...H.gun, act: 'shot' };
+const BITE: Weapon = { id: 'bite', range: ADJACENT, damage: Z.bite.damage, noise: 0, cooldown: Z.bite.cooldown, act: 'bite' };
+const GUN: Weapon = { id: 'gun', ...H.gun, act: 'shot' };
 
 export function newAi(kind: 'zombie' | 'human'): AiState {
   return {
@@ -100,11 +101,13 @@ export function route(g: Grid, u: { x: number; y: number }, to: readonly [number
 
 /**
  * What an enemy looks with. A human has a cone. A zombie has no cone (DESIGN §7): it senses all
- * round within `sight.radius` tiles, or `sight.crouchRadius` when the target is crouched or crawling.
+ * round within `sight.radius` tiles, or `sight.crouchRadius` when the target is crouched or crawling, on the
+ * scene's difficulty.
  */
-export function enemyViewer(e: Enemy, target?: Mode): Viewer {
+export function enemyViewer(e: Enemy, target?: Mode, difficulty?: Difficulty): Viewer {
   if (e.side === 'zombie') {
-    const range = target !== undefined && isLow(target) ? Z.sight.crouchRadius : Z.sight.radius;
+    const sight = tuning(difficulty).zombieSight; // the level's zombie sight (DESIGN §21)
+    const range = target !== undefined && isLow(target) ? sight.crouchRadius : sight.radius;
     return { x: e.x, y: e.y, facing: e.facing, range, angle: 360 };
   }
   return { x: e.x, y: e.y, facing: e.facing, range: H.vision.range, angle: H.vision.angle };
@@ -117,7 +120,7 @@ export function enemySees(s: MissionState, e: Enemy, u: Survivor): boolean {
   if (e.hp <= 0 || u.hp <= 0) return false;
   const human = e.side === 'human';
   const mode = moveMode(u);
-  const z = seeSurvivor(s.grid, enemyViewer(e, mode), { x: u.x, y: u.y, mode }, human);
+  const z = seeSurvivor(s.grid, enemyViewer(e, mode, s.difficulty), { x: u.x, y: u.y, mode }, human);
   if (z === 'none') return false;
   if (z === 'near' || !human) return true;
   return (e.ai.mode === 'alert' && e.ai.target === u.id) || (e.ai.spot[u.id] ?? 0) >= farTicks();
@@ -131,7 +134,7 @@ function perceive(s: MissionState, e: Enemy): Survivor | null {
   for (const u of s.survivors) {
     if (u.hp <= 0) continue;
     const mode = moveMode(u);
-    const z = seeSurvivor(s.grid, enemyViewer(e, mode), { x: u.x, y: u.y, mode }, human);
+    const z = seeSurvivor(s.grid, enemyViewer(e, mode, s.difficulty), { x: u.x, y: u.y, mode }, human);
     if (z === 'none') {
       e.ai.spot[u.id] = 0;
       continue;

@@ -4,9 +4,14 @@
   "weapons": {
     "knife": { "range": 1.5, "damage": 40, "noise": 0, "cooldown": 1 },
     "pistol": { "range": 6, "damage": 25, "noise": 12, "cooldown": 1, "ammo": true },
-    "club": { "range": 1.5, "damage": 15, "noise": 0, "cooldown": 1 }
+    "club": { "range": 1.5, "damage": 15, "noise": 0, "cooldown": 1 },
+    "hatchet": { "range": 1.5, "damage": 30, "noise": 0, "cooldown": 1.5 },
+    "warclub": { "range": 1.5, "damage": 25, "noise": 0, "cooldown": 1 },
+    "bow": { "range": 8, "damage": 30, "noise": 0, "cooldown": 1.5, "arrows": true }
   },
   "startAmmo": 3,
+  "quiver": 8,
+  "bond": { "radius": 4, "reach": 10, "targets": 3, "eliSpeed": 6.5, "cassSpeed": 5.5, "lead": 6, "cassDelay": 0.8, "kill": 0.6, "maxTime": 8 },
   "fighter": {
     "hp": 100,
     "vision": { "range": 6, "angle": 90 },
@@ -14,14 +19,31 @@
     "primary": "knife",
     "weapons": ["knife"],
     "takedown": { "time": 1 },
-    "carrySpeed": 0.6
+    "carrySpeed": 0.6,
+    "moveNoise": { "run": 0 }
   },
   "scout": {
     "hp": 100,
     "vision": { "range": 8, "angle": 90 },
-    "speed": { "run": 5, "walk": 3, "crouch": 2.2, "crawl": 0.8 },
+    "speed": { "run": 6.5, "walk": 3, "crouch": 2.2, "crawl": 0.8 },
     "primary": "pistol",
     "weapons": ["pistol", "club"],
     "lure": { "range": 8, "radius": 6, "cooldown": 10 }
+  },
+  "hunter": {
+    "hp": 110,
+    "vision": { "range": 7, "angle": 90 },
+    "speed": { "run": 5, "walk": 3, "crouch": 1.5, "crawl": 0.8 },
+    "primary": "bow",
+    "weapons": ["bow", "pistol", "hatchet"],
+    "tracker": { "radius": 6 }
+  },
+  "archer": {
+    "hp": 90,
+    "vision": { "range": 7, "angle": 90 },
+    "speed": { "run": 5.5, "walk": 3, "crouch": 2, "crawl": 0.8 },
+    "primary": "bow",
+    "weapons": ["bow", "pistol", "warclub"],
+    "quickDraw": { "bowCooldown": 0.75 }
   }
 }

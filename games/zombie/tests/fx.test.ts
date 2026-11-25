@@ -57,7 +57,7 @@ test('a hit survivor flashes, shakes the view and raises an alert with their nam
   const ev = observe(w, s);
   assert.deepEqual(kinds(ev), ['flash', 'shake', 'alert']);
   assert.deepEqual(ev[1], { kind: 'shake', strength: 'hit', x: 6, y: 4 });
-  assert.deepEqual(ev[2], { kind: 'alert', key: 'u:s', label: 'Scout', x: 6, y: 4 });
+  assert.deepEqual(ev[2], { kind: 'alert', key: 'u:s', label: 'Eli', x: 6, y: 4 });
 });
 
 test('a new shot cue shakes lightly; the same cue seen again does not', () => {

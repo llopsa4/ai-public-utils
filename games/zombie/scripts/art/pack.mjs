@@ -3,7 +3,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { PNG } from 'pngjs';
-import { buildAtlases, cellOf, framesDir, listDir, loadManifest, loadPalette, paletteProblem, parseArgs, parseFrameFile, readStandins, uiItems, writeStandinFrames, writeStandins } from './lib.mjs';
+import { buildAtlases, cellOf, envItems, framesDir, listDir, loadManifest, loadPalette, paletteProblem, parseArgs, parseFrameFile, readStandins, uiItems, writeStandinFrames, writeStandins } from './lib.mjs';
 
 const { root, rest } = parseArgs(process.argv.slice(2));
 const batch = rest[0];
@@ -31,14 +31,17 @@ for (const entry of listDir(inbox)) {
     continue;
   }
   const key = entry.name;
-  if (key === 'ui') {
-    // UI art (manifest `ui`): flat files art/inbox/<batch>/ui/<item>.png at the item's exact source size.
-    const known = new Map(uiItems(manifest, root).map((i) => [i.name, i]));
+  if (key === 'ui' || key === 'env') {
+    // UI art (manifest `ui`) and environment art (manifest `keys` with group env): flat files
+    // art/inbox/<batch>/<ui|env>/<item>.png at the item's exact source size.
+    const known = new Map((key === 'ui' ? uiItems(manifest, root) : envItems(manifest)).map((i) => [i.name, i]));
     for (const f of listDir(join(inbox, key))) {
       const where = rel(key, f.name);
       const item = f.isFile() && f.name.endsWith('.png') ? known.get(f.name.slice(0, -4)) : null;
       if (!item) {
-        errors.push(`${where}: not a UI item; expected <item>.png with an item name from art/manifest.json ui.items (for example kit_panel.png).`);
+        errors.push(key === 'ui'
+          ? `${where}: not a UI item; expected <item>.png with an item name from art/manifest.json ui.items (for example kit_panel.png).`
+          : `${where}: not an environment key; expected <key>.png with a key whose group is env in art/manifest.json (for example tree_a.png).`);
         continue;
       }
       let png;

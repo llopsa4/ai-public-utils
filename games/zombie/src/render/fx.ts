@@ -1,5 +1,5 @@
 import type { Barricade, Opening } from '../sim/base';
-import type { MissionState } from '../sim/mission';
+import { SURVIVOR_NAME, type MissionState } from '../sim/mission';
 
 // Hit feedback (DESIGN §19): pure rules for what the player is told when something happens. `observe`
 // compares the sim with what it saw last frame and returns events (a white flash on a hit figure, a small
@@ -14,13 +14,15 @@ export const ALERT_MS = 6000; // an attacked survivor or opening keeps its arrow
 export const HERD_FLASH_MS = 650;
 export const HERD_FLASH_PEAK = 0.45;
 export const MAX_ARROWS = 4;
+export const ARROW_FLIGHT_MS = 200; // a shot arrow flies this long (DESIGN §5 *Bow*: about 0.2 s)
 
 /** What a scene does in answer to a change in the sim. Positions are tile coordinates. */
 export type FxEvent =
   | { kind: 'flash'; id: string }
   | { kind: 'shake'; strength: 'shot' | 'hit'; x: number; y: number }
   | { kind: 'pop'; text: string; x: number; y: number }
-  | { kind: 'alert'; key: string; label: string; x: number; y: number };
+  | { kind: 'alert'; key: string; label: string; x: number; y: number }
+  | { kind: 'arrow'; x: number; y: number; tx: number; ty: number }; // a bow shot: an arrow flies from (x, y) to (tx, ty)
 
 /** The part of a mission, intro or Base state `observe` reads (Base adds barricades and openings). */
 export type Watched = MissionState & { barricades?: Barricade[]; openings?: Opening[] };
@@ -60,7 +62,7 @@ export function popColor(text: string): string {
 /**
  * Compares the state with the last look (and updates the look). Hit points that dropped flash the figure; a
  * hit survivor shakes the view and raises an alert, as does a fixed opening or barricade that lost hit points
- * or was chewed through; a new shot cue shakes; an opened crate, a takedown kill and the last bullet pop text.
+ * or was chewed through; a new shot cue shakes; a new bow shot sends an arrow flying; an opened crate, a takedown kill and the last bullet pop text.
  */
 export function observe(w: FxWatch, s: Watched): FxEvent[] {
   const out: FxEvent[] = [];
@@ -72,12 +74,14 @@ export function observe(w: FxWatch, s: Watched): FxEvent[] {
       out.push({ kind: 'flash', id: u.id });
       if (u.side === 'survivor') {
         out.push({ kind: 'shake', strength: 'hit', x: u.x, y: u.y });
-        out.push({ kind: 'alert', key: `u:${u.id}`, label: title(u.kind), x: u.x, y: u.y });
+        out.push({ kind: 'alert', key: `u:${u.id}`, label: SURVIVOR_NAME[u.kind], x: u.x, y: u.y });
       } else if (u.hp <= 0 && w.takedowns.has(u.id)) out.push({ kind: 'pop', text: 'Silent kill', x: u.x, y: u.y });
     }
     w.hp.set(u.id, u.hp);
     if (u.act) {
-      if (u.act.kind === 'shot' && w.acts.has(u.id) && w.acts.get(u.id) !== u.act.tick) out.push({ kind: 'shake', strength: 'shot', x: u.x, y: u.y });
+      const fresh = w.acts.has(u.id) && w.acts.get(u.id) !== u.act.tick;
+      if (u.act.kind === 'shot' && fresh) out.push({ kind: 'shake', strength: 'shot', x: u.x, y: u.y });
+      if (u.act.kind === 'bow_shot' && fresh && u.act.at) out.push({ kind: 'arrow', x: u.x, y: u.y, tx: u.act.at[0], ty: u.act.at[1] });
       w.acts.set(u.id, u.act.tick);
     } else if (!w.acts.has(u.id)) w.acts.set(u.id, -1);
   }

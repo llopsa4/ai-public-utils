@@ -218,3 +218,33 @@ test('a damaged checkpoint is dropped alone: the rest of the save still loads, a
   assert.equal(parseSave(JSON.stringify(old))!.checkpoint, null);
   assert.equal(parseSave(JSON.stringify({ ...c, stage: 'mission1' }))!.checkpoint, null);
 });
+
+test('Mission 1\'s end tiles and facings carry to Base 1, are saved, and Continue and Replay use them (DESIGN §12)', () => {
+  const st = fakeStorage();
+  const start = [
+    { id: 'fighter', x: 12, y: 14, facing: [1, 0] as [number, number] },
+    { id: 'scout', x: 13, y: 14, facing: [0, -1] as [number, number] },
+  ];
+  const c = toBase1(toMission1(newCampaign(), 2), { food: 5, scrap: 4, ammo: 6, start });
+  assert.deepEqual(c.start, start);
+  assert.notEqual(c.start![0], start[0]); // a copy, not the caller's objects
+  saveCampaign(st, c);
+  const back = loadCampaign(st)!;
+  assert.deepEqual(back.start, start);
+  const s = createBase({ calm: true, start: back.start });
+  assert.deepEqual(s.survivors.slice(0, 2).map((u) => [u.id, u.x, u.y, ...u.facing]), [['fighter', 12, 14, 1, 0], ['scout', 13, 14, 0, -1]]); // Ray and June have no pose here: their usual tiles
+  assert.deepEqual(replayBase1(toDone(back)).start, start);
+  assert.equal(toMission1(back, 1).start, null); // a replayed Mission 1 forgets the old end tiles
+});
+
+test('a save without poses, or with damaged ones, still loads and starts Base 1 at the usual tiles', () => {
+  const c = toBase1(toMission1(newCampaign(), 2), { food: 5, scrap: 4, ammo: 6 });
+  assert.equal(c.start, null);
+  const { start: _drop, ...old } = c; // a v2 slot written before the poses existed
+  assert.equal(parseSave(JSON.stringify(old))!.start, null);
+  for (const bad of ['x', [{ id: 'a', x: 1, y: 2 }], [{ id: 'a', x: 'q', y: 2, facing: [0, 1] }], [{ id: 'a', x: 1, y: 2, facing: [0] }], [null]]) {
+    const got = parseSave(JSON.stringify({ ...c, start: bad }));
+    assert.ok(got, 'the save itself loads');
+    assert.equal(got.start, null);
+  }
+});

@@ -1,10 +1,12 @@
+import { GAME_FONT } from '../render/font';
 import Phaser from 'phaser';
 import { audio } from '../audio/engine';
 import { UI_TEXTURE, uiOf } from '../render/ui';
+import { DIFFICULTY_NAME, nextDifficulty } from '../sim/difficulty';
 import { type ToggleKey, type VolumeKey, nextTextSize, options, sliderValue, updateOptions } from '../sim/options';
 import { kitSlice, menuButton } from './kit';
 
-export const UI_FONT = 'Georgia, "Times New Roman", serif';
+export const UI_FONT = GAME_FONT;
 
 const ROW_H = 44;
 const LABEL_X = -300; // from the page centre
@@ -23,6 +25,7 @@ const TOGGLES: { key: ToggleKey; label: string; on: string; off: string }[] = [
   { key: 'edgeScroll', label: 'Edge scroll', on: 'On', off: 'Off' },
   { key: 'shake', label: 'Screen shake', on: 'On', off: 'Off' },
   { key: 'cues', label: 'Shape cues', on: 'On', off: 'Off' },
+  { key: 'weather', label: 'Weather and fog', on: 'On', off: 'Off' },
 ];
 
 /**
@@ -103,6 +106,17 @@ export function drawOptionsPage(scene: Phaser.Scene, cx: number, top: number): n
     refresh.forEach((r) => r());
   }, '#e8e6de', 100);
   refresh.push(() => sizeButton.label?.setText(`${options().textSize}%`));
+  y += ROW_H;
+
+  // Difficulty (DESIGN §21): Easy → Normal → Hard; it applies when a scene next starts or restarts.
+  label('Difficulty');
+  const levelButton = menuButton(scene, cx + CHECK_X + 50, y, 'Normal', UI_FONT, 20, () => {
+    updateOptions({ difficulty: nextDifficulty(options().difficulty) });
+    audio.ui();
+    refresh.forEach((r) => r());
+  }, '#e8e6de', 100);
+  scene.add.text(cx + CHECK_X + 126, y, 'from the next start or restart', { fontFamily: UI_FONT, fontSize: '16px', color: '#9a988f' }).setOrigin(0, 0.5);
+  refresh.push(() => levelButton.label?.setText(DIFFICULTY_NAME[options().difficulty]));
   y += ROW_H;
 
   refresh.forEach((r) => r());

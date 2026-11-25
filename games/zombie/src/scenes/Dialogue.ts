@@ -1,12 +1,15 @@
+import { GAME_FONT } from '../render/font';
 import Phaser from 'phaser';
 import { audio } from '../audio/engine';
 import { uiFactor } from '../render/cues';
 import type { SquadCard } from '../render/squad';
+import { noteMood } from '../render/moods';
 import { dialoguePortrait } from '../render/ui';
 import { options } from '../sim/options';
 import { type DialogueLine, type DialogueState, advance, currentLine, isTyping, skipDialogue, startDialogue, stepDialogue, visibleText } from '../sim/dialogue';
 import { TICK_HZ } from '../sim/time';
 import { barH } from './ActionBar';
+import { CARD_SCENE } from './Card';
 import { kitSlice, uiImage } from './kit';
 import { ui } from './uiScale';
 
@@ -14,7 +17,7 @@ import { ui } from './uiScale';
 // the speaker's portrait (128 px, in the line's mood; hurt under 35% HP, DESIGN §6), typewriter text. Opening it pauses every other running scene (so the
 // simulation, orders and hotkeys stop); closing it resumes exactly those scenes.
 
-export const TYPEWRITER_FONT = '"Special Elite", "Courier New", monospace';
+export const TYPEWRITER_FONT = GAME_FONT;
 export const DIALOGUE_SCENE = 'Dialogue';
 
 const PORTRAIT = 128; // display px at 100% text size (art/STYLE.md *UI art*); the box, portrait and text grow with the option (DESIGN §19)
@@ -70,7 +73,7 @@ export class DialogueScene extends Phaser.Scene {
     this.paused = this.scene.manager
       .getScenes(true)
       .map((s) => s.scene.key)
-      .filter((k) => k !== DIALOGUE_SCENE);
+      .filter((k) => k !== DIALOGUE_SCENE && k !== CARD_SCENE);
     for (const k of this.paused) this.scene.pause(k);
 
     const { width, height } = this.scale;
@@ -147,6 +150,7 @@ export class DialogueScene extends Phaser.Scene {
   private showPortrait(line: DialogueLine): void {
     const cards = this.registry.get('m_squad') as SquadCard[] | null | undefined;
     const card = cards?.find((c) => c.name === line.speaker);
+    noteMood(line.speaker, line.mood);
     const key = dialoguePortrait(line.speaker, line.mood, card ? { hp: card.hp, maxHp: card.maxHp } : undefined);
     if (!key) {
       this.head.setVisible(false);

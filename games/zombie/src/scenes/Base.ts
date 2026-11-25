@@ -1,20 +1,28 @@
+import { GAME_FONT } from '../render/font';
 import Phaser from 'phaser';
 import base from '../data/base1.json';
 import story from '../data/story.json';
-import { type P, circlePoints, conePolygon, ringLook, sightPolygon } from '../render/cones';
+import { type P, circlePoints, ringLook, sightPolygon, survivorCone } from '../render/cones';
 import { type ClickTarget, DoubleClick, cursorFor, resolveClick } from '../render/click';
 import { NOISE_DASH, dashSegments, hungerLabel } from '../render/cues';
 import { tileToWorld, worldBounds, worldToTile, worldToTileF } from '../render/iso';
-import { anchorOf } from '../render/placeholders';
-import { bakeGround, checker } from './ground';
+import m01 from '../data/missions/m01.json';
+import { type Fadable, Occlusion } from '../render/occlude';
+import { Ghosts, HoverOutline } from '../render/outline';
+import { addSprite, anchorOf, boxOf, isFinalKey } from '../render/placeholders';
+import { type WallRun, bloodKey, bushKey, groundKey, openingKey, pathTiles, treeKey, wallKey, wallRun } from '../render/terrain';
+import { bakeGround } from './ground';
+import { changeScene } from './Card';
 import { UnitSprite } from '../render/units';
 import { canFreeFire, selectWeapon, setFreeFire, unlockGun } from '../sim/abilities';
 import { enemyViewer } from '../sim/ai';
+import { BOND_REFUSAL_TEXT, bondAim, bondPlaying, startBond } from '../sim/bond';
+import { drawBondAim, followBond } from './bondView';
 import { type Campaign, browserStorage, saveCampaign, toDone, withCassGun, withCheckpoint } from '../sim/campaign';
 import {
   COOK_TICKS,
   FIX_TICKS,
-  HUNGER_TICKS,
+  hungerTicks,
   TICK_HZ,
   type BaseState,
   type PlaceResult,
@@ -24,11 +32,17 @@ import {
   checkpointOf,
   cloneBase,
   createBase,
+  edgePoint,
+  herdArrow,
+  rollBase,
   eat,
   give,
   hungerLevel,
   herdSeconds,
   hungerSeconds,
+  HERD_ARRIVE_TICK,
+  herdCount,
+  HERD_WARN_TICK,
   orderAttack,
   orderCook,
   orderFix,
@@ -40,15 +54,21 @@ import {
   stepBase,
 } from '../sim/base';
 import { BUSH, TREE, WALL } from '../sim/grid';
-import { type Survivor, failText, nextStance, survivorViewer } from '../sim/mission';
+import { SURVIVOR_NAME, type Survivor, failText, nextStance, survivorViewer } from '../sim/mission';
 import { options } from '../sim/options';
 import { REARM_TICKS, TRAP_TICKS, type TrapKind, type TrapResult, orderRearm, orderTrap, trapAt, trapCost } from '../sim/traps';
 import type { DialogueLine } from '../sim/dialogue';
 import { ACTION_EVENT, type BarModel, HINT_WRAP, SKIP_AFTER_MS, barH, overBar, placeHint } from './ActionBar';
 import { pressCard } from '../render/squad';
+import { duskLevel, rainLevel } from '../render/atmos';
+import { publishAtmos, startAtmos } from './Atmos';
 import { Feel } from './feelFx';
+import { BowView } from './bowView';
 import { ViewInput } from './input';
 import { DIALOGUE_SCENE, openDialogue } from './Dialogue';
+import { openDebrief } from './Debrief';
+import { recordRun } from '../sim/records';
+import { baseResult, observeStats } from '../sim/stats';
 import { bindPause } from './Pause';
 import { bindActionKeys, fillHelp } from './actionKeys';
 import { bindSquad, overSquad } from './Squad';
@@ -63,11 +83,12 @@ const PICK_H = 44;
 const RESTART_MS = 2500;
 const BARK_MS = 4000;
 const HINT_MS = 6000; // each start hint stays this long (only counted while the scene runs, so dialogues do not eat them)
-const FONT = 'Georgia, "Times New Roman", serif';
+const FONT = GAME_FONT;
+const STOVE_GLOW = 150; // world px: half the width of the stove's light pool (DESIGN §20)
 
 /** The key lines in the HUD corner and on the pause menu's Controls page. */
 // `{action}` is filled with the live key (rebindable, `fillHelp`).
-const HELP = 'Drag: box select    Left-click: select / move / attack / cook / fix (double-click: run)    Right-click: cancel\n{crouch}: stance    {hold}: hold    {freefire}: free fire    {build}: barricade    {fix}: fix window or door    {weapon1} / {weapon2}: weapon\n{cook}: cook    {eat}: eat    {give}: give meal    {trap}: trap (spike pit / noise can)    {freeze}: pause    {alert}: jump to attack    R: restart    Esc: menu\n{select1} / {select2} / {cycle}: select survivor    Shift-click: add to selection    Double-click a squad card: centre';
+const HELP = 'Drag: box select    Left-click: select / move / attack / cook / fix (double-click: run)    Right-click: cancel\n{crouch}: stance    {hold}: hold    {freefire}: free fire    {bond}: bond move    {build}: barricade    {fix}: fix window or door    {weapon1} / {weapon2} / {weapon3}: weapon\n{cook}: cook    {eat}: eat    {give}: give meal    {trap}: trap (spike pit / noise can)    {freeze}: pause    {alert}: jump to attack    R: restart    Esc: menu\n{select1} / {select2} / {cycle}: select survivor    Shift-click: add to selection    Double-click a squad card: centre';
 const NOISE_COLOR: Record<string, number> = { step: 0xd8d8d0, shot: 0xe0a45a, lure: 0x8fb4d8, alarm: 0xd85a4a, can: 0xc8a0e0 };
 const TRAP_REFUSED: Record<Exclude<TrapResult, 'ok'>, string> = {
   invalid: 'Nothing to do there',
@@ -87,7 +108,7 @@ const WORK_REFUSED: Record<Exclude<WorkResult, 'ok'>, string> = {
   meal: 'Already holding a meal',
 };
 
-type Pending = null | 'hold' | 'build' | 'fix' | TrapKind;
+type Pending = null | 'hold' | 'build' | 'fix' | 'bond' | TrapKind;
 type Ord =
   | { type: 'move'; ids: string[]; to: [number, number] }
   | { type: 'hold'; id: string; toward: [number, number] }
@@ -99,9 +120,10 @@ type Ord =
   | { type: 'rearm'; id: string; trap: string }
   | { type: 'eat'; id: string }
   | { type: 'give'; id: string }
-  | { type: 'zombie'; at: [number, number] };
+  | { type: 'zombie'; at: [number, number] }
+  | { type: 'bond'; at: [number, number] };
 
-const name = (u: Survivor): string => u.kind[0]!.toUpperCase() + u.kind.slice(1);
+const name = (u: Survivor): string => SURVIVOR_NAME[u.kind]; // player-visible: Cass, Eli (DESIGN §5)
 const clock = (sec: number): string => `${Math.floor(sec / 60)}:${String(sec % 60).padStart(2, '0')}`;
 
 /**
@@ -119,9 +141,18 @@ export class BaseScene extends Phaser.Scene {
   private ping!: Phaser.GameObjects.Image;
   private view!: ViewInput;
   private feel!: Feel;
+  private bow!: BowView; // arrows on the ground and Ray's Tracker marks (DESIGN §5)
   private units = new Map<string, UnitSprite>();
   private bodySprites = new Map<string, Phaser.GameObjects.Image>();
   private blockSprites = new Map<string, Phaser.GameObjects.Image>();
+  private openSprites = new Map<string, Phaser.GameObjects.Image>();
+  private openRuns = new Map<string, WallRun>();
+  private trapSprites = new Map<string, Phaser.GameObjects.Image>();
+  private stoveSprite!: Phaser.GameObjects.Image;
+  private occlusion!: Occlusion<Fadable>;
+  private openFade = new Map<string, number>(); // the wall fade of a fixed door or window, by opening id
+  private outline!: HoverOutline;
+  private ghosts!: Ghosts;
   private openLabels = new Map<string, Phaser.GameObjects.Text>();
   private stoveLabel!: Phaser.GameObjects.Text;
   private decalCount = 0;
@@ -149,11 +180,17 @@ export class BaseScene extends Phaser.Scene {
     const from = this.registry.get('campaign') as Campaign | null | undefined;
     // A saved herd checkpoint (taken at the warning) is where Base 1 resumes: Retry, Continue (DESIGN §12, §18).
     const resume = from?.stage === 'base1' ? from.checkpoint : null;
-    this.state = resume ? cloneBase(resume) : createBase(from?.stage === 'base1' ? { food: from.food, scrap: from.scrap, ammo: from.ammo, cassGun: from.cassGun } : undefined);
+    // A fresh start or restart rolls the roamer layout and the herd's edge (DESIGN §12, §21); a checkpoint keeps its own level, layout and edge.
+    const fresh = { difficulty: options().difficulty, ...rollBase() };
+    this.state = resume ? cloneBase(resume) : createBase(from?.stage === 'base1' ? { food: from.food, scrap: from.scrap, ammo: from.ammo, cassGun: from.cassGun, start: from.start, ...fresh } : fresh);
     this.n = this.state.grid.size;
     this.units.clear();
     this.bodySprites.clear();
     this.blockSprites.clear();
+    this.openSprites.clear();
+    this.openRuns.clear();
+    this.openFade.clear();
+    this.trapSprites.clear();
     this.openLabels.clear();
     this.prev.clear();
     this.selected.clear();
@@ -170,6 +207,8 @@ export class BaseScene extends Phaser.Scene {
     this.hintMs = 0;
 
     this.drawWorld();
+    this.outline = new HoverOutline(this);
+    this.ghosts = new Ghosts(this);
     this.fx = this.add.graphics().setDepth(0.3);
     this.hover = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5);
     this.ping = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5).setTint(0xe8e6de);
@@ -186,11 +225,12 @@ export class BaseScene extends Phaser.Scene {
       onBox: (a, b) => this.boxSelect(a, b),
     });
     this.view.start(mid.x, mid.y);
-    this.feel = new Feel(this, { n: () => this.n, view: () => this.view, sprites: () => this.units });
+    this.feel = new Feel(this, { n: () => this.n, view: () => this.view, sprites: () => this.units, hearth: () => this.state.stove });
+    this.bow = new BowView(this, () => this.n);
     this.squad = bindSquad(this, {
       units: () => this.state.survivors,
       nameOf: (id) => name(this.state.survivors.find((u) => u.id === id)!),
-      hungerOf: (id) => ({ frac: (this.state.hunger[id]?.left ?? 0) / HUNGER_TICKS, level: hungerLevel(this.state, id) }),
+      hungerOf: (id) => ({ frac: (this.state.hunger[id]?.left ?? 0) / hungerTicks(this.state), level: hungerLevel(this.state, id) }),
       selection: () => this.selected,
       select: (ids) => {
         this.selected = ids;
@@ -219,6 +259,7 @@ export class BaseScene extends Phaser.Scene {
       alert: () => this.feel.jump() || this.toast('Nothing is under attack'),
       crouch: () => this.onAction('crouch'),
       hold: () => this.onAction('hold'),
+      bond: () => this.onAction('bond'),
       build: () => this.onAction('build'),
       fix: () => this.onAction('fix'),
       cook: () => this.onAction('cook'),
@@ -228,6 +269,7 @@ export class BaseScene extends Phaser.Scene {
       freefire: () => this.onAction('freefire'),
       weapon1: () => this.chooseWeapon(0),
       weapon2: () => this.chooseWeapon(1),
+      weapon3: () => this.chooseWeapon(2),
     });
     kb.on('keydown', (e: KeyboardEvent) => {
       if (this.state.status !== 'failed' || e.key === 'Escape' || this.endedAt < SKIP_AFTER_MS) return;
@@ -249,6 +291,7 @@ export class BaseScene extends Phaser.Scene {
       hints: () => base.hints.map(fillHelp),
     });
 
+    startAtmos(this);
     this.scene.launch('BaseHud');
     this.scene.launch('ActionBar');
     this.scene.launch('Squad');
@@ -278,7 +321,7 @@ export class BaseScene extends Phaser.Scene {
   /** Quit from the pause menu: back to the title; the save already names this scene's start (Continue replays Base 1). */
   private leave(): void {
     delete (window as unknown as { dw?: unknown }).dw;
-    this.scene.start('Menu');
+    changeScene(this, 'Menu');
   }
 
   private debugOrder(o: Ord): void {
@@ -286,6 +329,7 @@ export class BaseScene extends Phaser.Scene {
     switch (o.type) {
       case 'move': orderMove(s, o.ids, o.to); break;
       case 'hold': orderHold(s, o.id, o.toward); break;
+      case 'bond': startBond(s, o.at); break;
       case 'attack': orderAttack(s, o.ids, o.target); break;
       case 'build': placeBarricade(s, o.at[0], o.at[1]); break;
       case 'fix': orderFix(s, o.id, o.opening); break;
@@ -302,23 +346,35 @@ export class BaseScene extends Phaser.Scene {
   private drawWorld(): void {
     const s = this.state;
     const n = this.n;
-    bakeGround(this, n, checker);
+    const path = pathTiles(m01.map);
+    const house = m01.roof; // the wood floor of the house (the Base has no roof drawn)
+    const floor = (x: number, y: number) => house && x >= house.x && y >= house.y && x < house.x + house.w && y < house.y + house.h && s.grid.tiles[y * n + x] !== WALL;
+    bakeGround(this, n, (x, y) => (floor(x, y) ? 'floor_wood' : groundKey(x, y, n, path)));
+    this.occlusion = new Occlusion(n);
     for (let y = 0; y < n; y++) {
       for (let x = 0; x < n; x++) {
         const w = tileToWorld(x, y, n);
         const k = s.grid.tiles[y * n + x];
-        const key = k === WALL ? 'wall' : k === TREE ? 'tree' : k === BUSH ? 'bush' : null;
-        if (key) this.add.image(w.x, w.y, key).setOrigin(...anchorOf(key)).setDepth(w.y + (k === BUSH ? 1 : 0));
+        const key = k === WALL ? wallKey(wallRun(s.grid, x, y)) : k === TREE ? treeKey(x, y) : k === BUSH ? bushKey(x, y) : null;
+        if (!key) continue;
+        const img = addSprite(this, key, w.x, w.y, w.y + (k === BUSH ? 1 : 0));
+        if (k === WALL || k === TREE) this.occlusion.add(x, y, img, boxOf(key, w.x, w.y));
       }
     }
     const sw = tileToWorld(s.stove.x, s.stove.y, n);
-    this.add.image(sw.x, sw.y, 'fire').setOrigin(...anchorOf('fire')).setDepth(sw.y);
-    this.stoveLabel = this.add.text(sw.x, sw.y - 40, 'Stove', { fontFamily: FONT, fontSize: '12px', color: '#d8d6ce' }).setOrigin(0.5).setDepth(880);
-    const aw = tileToWorld(base.herd.arrow[0]!, base.herd.arrow[1]! + 4.2, n);
+    this.stoveSprite = addSprite(this, 'stove', sw.x, sw.y, sw.y);
+    this.stoveLabel = this.add.text(sw.x, sw.y - 40, 'Stove', { fontFamily: FONT, fontSize: '14px', color: '#d8d6ce' }).setOrigin(0.5).setDepth(880).setVisible(!isFinalKey('stove'));
+    const [lx, ly] = edgePoint(s.herd.from, n, 4.2); // the label sits just inside the arrow
+    const aw = tileToWorld(lx, ly, n);
     this.herdLabel = this.add.text(aw.x, aw.y, '', { fontFamily: FONT, fontSize: '16px', color: '#ff8a78', backgroundColor: '#1d201cb0', padding: { x: 6, y: 3 } }).setOrigin(0.5).setDepth(880).setVisible(false);
     for (const o of s.openings) {
       const w = tileToWorld(o.x, o.y, n);
-      this.openLabels.set(o.id, this.add.text(w.x, w.y - 34, '', { fontFamily: FONT, fontSize: '12px', color: '#e0806a' }).setOrigin(0.5).setDepth(880));
+      const run = wallRun(s.grid, o.x, o.y);
+      this.openRuns.set(o.id, run);
+      this.openSprites.set(o.id, addSprite(this, openingKey(o.kind, run, o.fixed), w.x, w.y, w.y));
+      // A fixed door or window stands as tall as a wall, so it fades like one (syncBlockers applies the fade).
+      this.occlusion.add(o.x, o.y, { setAlpha: (a: number) => this.openFade.set(o.id, a) }, boxOf(openingKey(o.kind, run, true), w.x, w.y));
+      this.openLabels.set(o.id, this.add.text(w.x, w.y - 34, '', { fontFamily: FONT, fontSize: '14px', color: '#e0806a' }).setOrigin(0.5).setDepth(880));
     }
   }
 
@@ -363,7 +419,7 @@ export class BaseScene extends Phaser.Scene {
     for (const b of s.bodies) {
       let img = this.bodySprites.get(b.id);
       if (!img) {
-        img = this.add.image(0, 0, 'body').setOrigin(...anchorOf('body'));
+        img = addSprite(this, 'body', 0, 0);
         this.bodySprites.set(b.id, img);
       }
       const w = tileToWorld(b.x, b.y, n);
@@ -372,7 +428,7 @@ export class BaseScene extends Phaser.Scene {
     for (; this.decalCount < s.decals.length; this.decalCount++) {
       const d = s.decals[this.decalCount]!;
       const w = tileToWorld(d.x, d.y, n);
-      this.add.image(w.x, w.y, 'blood').setOrigin(...anchorOf('blood')).setDepth(0.2);
+      addSprite(this, bloodKey(d.x, d.y), w.x, w.y, 0.2);
     }
     this.syncBlockers();
   }
@@ -381,23 +437,64 @@ export class BaseScene extends Phaser.Scene {
   private syncBlockers(): void {
     const s = this.state;
     const live = new Set<string>();
-    for (const b of [...s.barricades, ...s.openings.filter((o) => o.fixed)]) {
+    for (const b of s.barricades) {
       const key = `${b.x},${b.y}`;
       live.add(key);
       let img = this.blockSprites.get(key);
       if (!img) {
         const w = tileToWorld(b.x, b.y, this.n);
-        img = this.add.image(w.x, w.y, 'barricade').setOrigin(...anchorOf('barricade')).setDepth(w.y);
+        img = addSprite(this, 'barricade', w.x, w.y, w.y);
         this.blockSprites.set(key, img);
       }
       img.setAlpha(0.45 + (0.55 * b.hp) / base.fix.hp);
     }
+    // A door or window is one piece, broken or fixed; its damage fades it like a barricade's.
+    for (const o of s.openings) {
+      const img = this.openSprites.get(o.id)!;
+      img.setTexture(openingKey(o.kind, this.openRuns.get(o.id)!, o.fixed)).setAlpha(o.fixed ? (0.45 + (0.55 * o.hp) / base.fix.hp) * (this.openFade.get(o.id) ?? 1) : 1);
+    }
+    this.syncTraps();
     for (const [key, img] of this.blockSprites) {
       if (live.has(key)) continue;
       img.destroy();
       this.blockSprites.delete(key);
     }
-    for (const o of s.openings) this.openLabels.get(o.id)?.setText(o.fixed ? '' : o.kind === 'door' ? 'Broken door' : 'Broken window');
+    // The text labels go once the broken piece has final art (art/STYLE.md *Labels*).
+    for (const o of s.openings) {
+      const label = o.fixed || isFinalKey(openingKey(o.kind, this.openRuns.get(o.id)!, false)) ? '' : o.kind === 'door' ? 'Broken door' : 'Broken window';
+      this.openLabels.get(o.id)?.setText(label);
+    }
+  }
+
+  /** One sprite per trap: an armed or spent spike pit, a noise can (dimmed while it cools down). */
+  private syncTraps(): void {
+    const live = new Set<string>();
+    for (const t of this.state.traps) {
+      live.add(t.id);
+      let img = this.trapSprites.get(t.id);
+      if (!img) {
+        const w = tileToWorld(t.x, t.y, this.n);
+        img = addSprite(this, t.kind === 'spike' ? 'spike_armed' : 'noise_can', w.x, w.y, t.kind === 'spike' ? 0.4 : w.y);
+        this.trapSprites.set(t.id, img);
+      }
+      if (t.kind === 'spike') img.setTexture(t.armed ? 'spike_armed' : 'spike_spent');
+      else img.setAlpha(t.cooldown > 0 ? 0.5 : 1);
+    }
+    for (const [id, img] of this.trapSprites) {
+      if (live.has(id)) continue;
+      img.destroy();
+      this.trapSprites.delete(id);
+    }
+  }
+
+  /** Walls and trees in front of a survivor fade; a selected survivor behind one shows through, outlined (art/STYLE.md *Occlusion*). */
+  private seeThrough(dt: number): void {
+    const alive = this.state.survivors.filter((u) => u.hp > 0);
+    const covered = this.occlusion.update(alive.map((u) => ({ x: u.x, y: u.y })), dt);
+    for (const u of this.state.survivors) {
+      const i = alive.indexOf(u);
+      this.ghosts.show(u.id, i >= 0 && covered[i] && this.selected.has(u.id) ? this.units.get(u.id)!.body : null);
+    }
   }
 
   /** The world labels (stove, herd countdown, broken openings) follow the text size option too. */
@@ -410,6 +507,7 @@ export class BaseScene extends Phaser.Scene {
   private tickOnce(): void {
     for (const u of [...this.state.survivors, ...this.state.enemies]) this.prev.set(u.id, [u.x, u.y]);
     stepBase(this.state);
+    observeStats(this.state); // before the checkpoint, so a retry keeps the counters (DESIGN §21)
     if (this.state.herd.warned) this.takeCheckpoint();
   }
 
@@ -447,6 +545,26 @@ export class BaseScene extends Phaser.Scene {
 
   // ---- Drawing the cones, rings, markers and bars each frame ----
 
+  /** While Hold is being aimed, the pointer in tile space (the live cone follows it, DESIGN §13); else null. */
+  private aimPoint(): P | null {
+    if (!(this.pending === 'hold' && this.canOrder)) return null;
+    const p = this.input.activePointer;
+    if (this.onBar(p)) return null;
+    const w = this.worldOf(p);
+    const f = worldToTileF(w.x, w.y, this.n);
+    return [f.x, f.y];
+  }
+
+  /** While the bond move is being aimed, the pointer in tile space (the circle follows it, DESIGN §23); else null. */
+  private bondPoint(): P | null {
+    if (!(this.pending === 'bond' && this.canOrder)) return null;
+    const p = this.input.activePointer;
+    if (this.onBar(p)) return null;
+    const w = this.worldOf(p);
+    const f = worldToTileF(w.x, w.y, this.n);
+    return [f.x, f.y];
+  }
+
   private fill(pts: P[], color: number, alpha: number, outline = 0): void {
     const w = pts.map(([x, y]) => tileToWorld(x, y, this.n));
     this.fx.fillStyle(color, alpha).fillPoints(w, true);
@@ -457,37 +575,31 @@ export class BaseScene extends Phaser.Scene {
     const s = this.state;
     this.fx.clear();
     this.bars.clear();
+    const gap = 0.5 + 0.5 * Math.sin(this.time.now / 380); // a broken opening keeps a faint pulsing red marker (art/STYLE.md *Labels*)
     for (const o of s.openings) {
       if (o.fixed) continue;
       const [cx, cy] = [o.x, o.y];
-      this.fill([[cx, cy - 0.5], [cx + 0.5, cy], [cx, cy + 0.5], [cx - 0.5, cy]], 0xd0604a, 0.25, 0.9); // a broken opening
+      this.fill([[cx, cy - 0.5], [cx + 0.5, cy], [cx, cy + 0.5], [cx - 0.5, cy]], 0xd0604a, 0.08 + 0.14 * gap, 0.3 + 0.4 * gap);
     }
-    if (s.herd.warned && s.herd.spawned < base.herd.count) {
-      const [ax, ay] = base.herd.arrow as [number, number]; // a pulsing red arrow on the north edge, pointing out of the map
-      const pulse = 0.55 + 0.35 * Math.sin(this.time.now / 180);
-      this.fill([[ax, ay + 0.5], [ax + 1.4, ay + 2.2], [ax + 0.5, ay + 2.2], [ax + 0.5, ay + 4], [ax - 0.5, ay + 4], [ax - 0.5, ay + 2.2], [ax - 1.4, ay + 2.2]], 0xd8382a, pulse, 1);
-    }
-    for (const t of s.traps) {
-      const [cx, cy] = [t.x, t.y];
-      if (t.kind === 'spike') {
-        const k = t.armed ? 0.32 : 0.22; // a spent pit is smaller and grey
-        this.fill([[cx, cy - k], [cx + k, cy], [cx, cy + k], [cx - k, cy]], t.armed ? 0xd8c070 : 0x6a6a64, t.armed ? 0.6 : 0.35, 0.9);
-      } else {
-        this.fill(circlePoints(cx, cy, t.cooldown > 0 ? 0.18 : 0.26), NOISE_COLOR.can!, t.cooldown > 0 ? 0.3 : 0.6, 0.9);
-      }
+    if (s.herd.warned && s.herd.spawned < herdCount(s)) {
+      const pulse = 0.55 + 0.35 * Math.sin(this.time.now / 180); // a pulsing red arrow on the herd's edge, pointing out of the map
+      this.fill(herdArrow(s.herd.from, this.n), 0xd8382a, pulse, 1);
     }
     for (const e of s.enemies) {
       if (e.hp <= 0) continue;
       const [x, y] = this.at(e, frac);
-      this.fill(sightPolygon(s.grid, x, y, enemyViewer(e).range), 0x9a9a92, 0.1, 0.3); // faint grey sight circle
+      this.fill(sightPolygon(s.grid, x, y, enemyViewer(e, undefined, s.difficulty).range), 0x9a9a92, 0.1, 0.3); // faint grey sight circle
     }
+    const aim = this.aimPoint();
     for (const u of s.survivors) {
       if (u.hp <= 0) continue;
       const [x, y] = this.at(u, frac);
       const v = { ...survivorViewer(u), x, y };
-      if (u.order?.type === 'hold') this.fill(conePolygon(s.grid, v), 0x58c070, 0.24, 0.8);
-      else if (this.selected.has(u.id)) this.fill(conePolygon(s.grid, v), 0x58c070, 0.08, 0.3);
+      const cone = survivorCone(s.grid, v, u.order?.type === 'hold', aim && this.selected.has(u.id) ? aim : null);
+      if (cone) this.fill(cone, 0x58c070, u.order?.type === 'hold' && !aim ? 0.24 : 0.16, u.order?.type === 'hold' && !aim ? 0.8 : 0.6);
     }
+    const bondAt = this.bondPoint();
+    if (bondAt) drawBondAim(this.fx, s, this.n, bondAt);
     for (const r of s.rings) {
       const look = ringLook(r.radius, r.age);
       const w = circlePoints(r.x, r.y, look.r).map(([px, py]) => tileToWorld(px, py, this.n));
@@ -495,14 +607,14 @@ export class BaseScene extends Phaser.Scene {
       const dash = options().cues ? NOISE_DASH[r.kind] : NOISE_DASH.step; // DESIGN §19: each noise kind has its own line style
       for (const run of dashSegments(w.map((q): [number, number] => [q.x, q.y]), dash.on, dash.off)) this.fx.strokePoints(run.map(([px, py]) => ({ x: px, y: py })));
     }
-    for (const u of [...s.survivors, ...s.enemies]) {
+    for (const u of s.enemies) {
       if (u.hp <= 0) continue;
       const [x, y] = this.at(u, frac);
       const w = tileToWorld(x, y, this.n);
-      if (u.side !== 'survivor' && u.hp >= u.maxHp) continue;
+      if (u.hp >= u.maxHp) continue; // no life bar over a survivor (DESIGN §17)
       const top = w.y - 52;
       this.bars.fillStyle(0x1a1c19, 0.8).fillRect(w.x - 14, top, 28, 4);
-      this.bars.fillStyle(u.side === 'survivor' ? 0x9bc79b : 0xc77b6b, 1).fillRect(w.x - 14, top, (28 * u.hp) / u.maxHp, 4);
+      this.bars.fillStyle(0xc77b6b, 1).fillRect(w.x - 14, top, (28 * u.hp) / u.maxHp, 4);
     }
     for (const u of s.survivors) {
       const o = u.order;
@@ -561,7 +673,7 @@ export class BaseScene extends Phaser.Scene {
   }
 
   private get canOrder(): boolean {
-    return !this.paused && this.state.status === 'playing';
+    return !this.paused && this.state.status === 'playing' && !bondPlaying(this.state);
   }
 
   private toast(msg: string): void {
@@ -580,6 +692,10 @@ export class BaseScene extends Phaser.Scene {
   }
 
   private arm(mode: Exclude<Pending, null>): void {
+    if (mode === 'bond') {
+      const why = bondAim(this.state, [0, 0]).refusal;
+      if (why !== null && why !== 'far' && why !== 'empty') return this.toast(BOND_REFUSAL_TEXT[why]);
+    }
     if (this.chosen().length === 0) return this.toast('Select a survivor first');
     this.pending = this.pending === mode ? null : mode;
   }
@@ -591,7 +707,7 @@ export class BaseScene extends Phaser.Scene {
     if (id.startsWith('weapon:')) {
       const wid = id.slice('weapon:'.length);
       if (who.length === 0 || !who.some((u) => selectWeapon(this.state, u.id, wid))) this.toast(this.state.ammo <= 0 && wid === 'pistol' ? 'Out of ammo' : 'That survivor does not carry it');
-    } else if (id === 'hold' || id === 'build' || id === 'fix' || id === 'spike' || id === 'can') this.arm(id);
+    } else if (id === 'hold' || id === 'build' || id === 'fix' || id === 'spike' || id === 'can' || id === 'bond') this.arm(id);
     else if (id === 'trap') {
       // T: spike pit, then noise can, then off (the bar buttons pick a type directly)
       if (this.pending === 'spike') this.arm('can');
@@ -689,6 +805,12 @@ export class BaseScene extends Phaser.Scene {
       const f = worldToTileF(wp.x, wp.y, this.n);
       for (const u of this.chosen()) orderHold(s, u.id, [f.x, f.y]);
       this.pending = null;
+    } else if (this.pending === 'bond') {
+      const f = worldToTileF(wp.x, wp.y, this.n);
+      const why = bondAim(s, [f.x, f.y]).refusal;
+      if (why !== null) return this.toast(BOND_REFUSAL_TEXT[why]);
+      startBond(s, [f.x, f.y]);
+      this.pending = null;
     } else if (this.pending === 'build') {
       const t = this.tileOf(p);
       const r = placeBarricade(s, t.x, t.y);
@@ -746,11 +868,12 @@ export class BaseScene extends Phaser.Scene {
       return bits.join('  ·  ');
     });
     const herdLeft = herdSeconds(s);
-    const herdText = !s.herd.warned || s.status === 'success' ? '' : herdLeft > 0 ? `Herd in ${clock(herdLeft)}` : s.herd.spawned < base.herd.count ? 'The herd is coming in!' : 'Kill the herd';
+    const herdText = !s.herd.warned || s.status === 'success' ? '' : herdLeft > 0 ? `Herd in ${clock(herdLeft)}` : s.herd.spawned < herdCount(s) ? 'The herd is coming in!' : 'Kill the herd';
     this.herdLabel.setText(herdText).setVisible(herdText !== '' && s.status === 'playing');
     this.registry.set('b_counters', lootCounters({ ammo: s.ammo, food: s.food, scrap: s.scrap, herd: herdText }));
     const word = (id: string): string => (options().cues ? hungerLabel(hungerLevel(s, id)).toLowerCase() : ''); // DESIGN §19: colour is not the only signal
-    this.registry.set('b_hunger', s.survivors.map((u) => `${name(u)}  hunger ${u.hp > 0 ? clock(hungerSeconds(s, u.id)) : 'dead'}${u.hp > 0 && word(u.id) ? ` (${word(u.id)})` : ''}`).join('      '));
+    // The hunger icon names the line, so each entry is just the name and the clock: four fit beside the key help (Z82).
+    this.registry.set('b_hunger', s.survivors.map((u) => `${name(u)} ${u.hp > 0 ? clock(hungerSeconds(s, u.id)) : 'dead'}${u.hp > 0 && word(u.id) ? ` (${word(u.id)})` : ''}`).join('    '));
     const worst = s.survivors.some((u) => hungerLevel(s, u.id) === 'starving' || hungerLevel(s, u.id) === 'critical') ? '#e0806a' : s.survivors.some((u) => hungerLevel(s, u.id) === 'low') ? '#f0dc8a' : '#a8a69e';
     this.registry.set('b_hunger_color', worst);
 
@@ -760,7 +883,7 @@ export class BaseScene extends Phaser.Scene {
           name: name(first),
           hp: first.hp,
           buttons: baseButtons(s, first, this.pending),
-          hunger: { frac: (s.hunger[first.id]?.left ?? 0) / HUNGER_TICKS, level: hungerLevel(s, first.id) },
+          hunger: { frac: (s.hunger[first.id]?.left ?? 0) / hungerTicks(s), level: hungerLevel(s, first.id) },
           meal: s.hunger[first.id]?.meal ?? false,
         }
       : null;
@@ -770,6 +893,7 @@ export class BaseScene extends Phaser.Scene {
 
     const hint =
       this.pending === 'hold' ? 'Click where to hold (right-click cancels)'
+      : this.pending === 'bond' ? 'Click to mark up to 3 zombies for the bond move; the herd cannot be marked (right-click cancels)'
       : this.pending === 'build' ? `Click a tile to build a barricade, ${base.barricade.cost} scrap each (right-click cancels)`
       : this.pending === 'fix' ? `Click a broken window or door: ${base.fix.time} s of work and ${base.fix.cost} scrap (right-click cancels)`
       : this.pending === 'spike' || this.pending === 'can' ? `Click a tile for a ${TRAP_NAME[this.pending]}, ${trapCost(this.pending)} scrap; click a spent pit to re-arm it; T switches type (right-click cancels)`
@@ -795,15 +919,17 @@ export class BaseScene extends Phaser.Scene {
     const s = this.state;
     if (this.eventsSeen >= s.events.length || this.scene.isActive(DIALOGUE_SCENE)) return;
     const e = s.events[this.eventsSeen++]!;
-    const lines = (key: 'herdWarning' | 'base1Win'): DialogueLine[] => story.dialogue[key] as DialogueLine[];
-    if (e.kind === 'herdWarning') openDialogue(this, lines('herdWarning'));
+    if (e.kind === 'herdWarning') openDialogue(this, story.dialogue.herdWarning[s.herd.from] as DialogueLine[]); // the line names the edge (DESIGN §12)
     else if (e.kind === 'herdArrives') {
-      this.feel.herdArrives(base.herd.arrow[0]!, base.herd.row + 3); // flash and pan north (DESIGN §19)
+      const [px, py] = edgePoint(s.herd.from, this.n, base.herd.inset + 3);
+      this.feel.herdArrives(px, py); // flash and pan to the herd's edge (DESIGN §19)
       this.toastText = 'The herd is here!';
       this.toastUntil = this.time.now + BARK_MS;
     } else {
       this.saveDone();
-      openDialogue(this, lines('base1Win'), () => (this.won = true));
+      const result = baseResult(this.state);
+      const filed = recordRun(browserStorage(), result, this.state.difficulty); // filed at once, like Mission 1 (DESIGN §21)
+      openDialogue(this, story.dialogue.base1Win as DialogueLine[], () => openDebrief(this, result, filed, () => (this.won = true)));
     }
   }
 
@@ -828,6 +954,7 @@ export class BaseScene extends Phaser.Scene {
 
   update(_t: number, dt: number): void {
     this.view.update(dt);
+    this.seeThrough(dt);
     const p = this.input.activePointer;
 
     const running = this.state.status === 'playing' && !this.paused;
@@ -842,7 +969,12 @@ export class BaseScene extends Phaser.Scene {
     } else this.acc = 0;
     const frac = running ? this.acc / STEP_MS : 1;
     this.sync(frac);
-    this.feel.frame(this.state);
+    this.bow.sync(this.state, (u) => this.at(u, frac));
+    followBond(this.view, this.state, this.n);
+    const rain = rainLevel(this.state.tick, HERD_WARN_TICK, HERD_ARRIVE_TICK, this.state.herd.spawned, herdCount(this.state));
+    this.feel.frame(this.state, rain);
+    const sw = tileToWorld(this.state.stove.x, this.state.stove.y, this.n);
+    publishAtmos(this, this.view, { dusk: duskLevel(this.state.tick, HERD_WARN_TICK, HERD_ARRIVE_TICK), rain, fog: 0, lights: [{ x: sw.x, y: sw.y - 8, r: STOVE_GLOW, phase: 0 }] });
     this.scaleLabels();
     this.drawFx(frac);
     this.barks();
@@ -857,7 +989,9 @@ export class BaseScene extends Phaser.Scene {
     const t = this.tileOf(p);
     const inside = t.x >= 0 && t.y >= 0 && t.x < this.n && t.y < this.n && !this.onBar(p);
     this.hover.setVisible(inside).setTint(this.pending ? 0xe8c46a : 0xffffff);
-    this.view.setCursor(this.onBar(p) ? 'default' : cursorFor(resolveClick(this.targetAt(this.worldOf(p)).kind, this.canOrder && this.chosen().length > 0), this.pending !== null && this.canOrder));
+    const under = this.onBar(p) ? null : this.targetAt(this.worldOf(p));
+    this.view.setCursor(under ? cursorFor(resolveClick(under.kind, this.canOrder && this.chosen().length > 0), this.pending !== null && this.canOrder) : 'default');
+    this.outline.set(under?.kind === 'object' && under.id ? (under.id === 'stove' ? this.stoveSprite : (this.openSprites.get(under.id) ?? null)) : null);
     if (inside) {
       const w = tileToWorld(t.x, t.y, this.n);
       this.hover.setPosition(w.x, w.y);
@@ -892,7 +1026,7 @@ export class BaseHudScene extends Phaser.Scene {
     this.hint = this.add.text(width / 2, height - barH() - 12, '', { fontFamily: FONT, fontSize: '20px', color: '#f0dc8a', wordWrap: { width: HINT_WRAP }, align: 'center', ...box }).setOrigin(0.5, 1);
     this.banner = this.add.text(width / 2, height * 0.35, '', { fontFamily: FONT, fontSize: '34px', color: '#ffffff', backgroundColor: '#141614d0', padding: { x: 24, y: 14 }, align: 'center' }).setOrigin(0.5);
     this.help = this.add.text(width - 16, 14, fillHelp(HELP), {
-      fontFamily: FONT, fontSize: '13px', color: '#a8a69e', align: 'right',
+      fontFamily: FONT, fontSize: '14px', color: '#a8a69e', align: 'right',
     }).setOrigin(1, 0);
   }
 

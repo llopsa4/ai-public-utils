@@ -2,7 +2,9 @@ import Phaser from 'phaser';
 import { ACTIONS, type ActionId, keyLabel, keyNameOf, refusal } from '../sim/keymap';
 import { liveKeys, rebindKey, resetKeys } from '../sim/options';
 import { keyOf } from './actionKeys';
+import { DEBRIEF_SCENE } from './Debrief';
 import { DIALOGUE_SCENE } from './Dialogue';
+import { CARD_SCENE } from './Card';
 import { KitButton, kitSlice, menuButton, titleBackdrop } from './kit';
 import { UI_FONT, drawOptionsPage } from './optionsPage';
 
@@ -40,13 +42,13 @@ let open = false; // one menu at a time, also in the frame between launch and cr
 /** Wires Esc, R and window blur of a playable scene to the pause menu. Call once in `create`. */
 export function bindPause(scene: Phaser.Scene, hooks: PauseHooks): void {
   const launch = (page: Page): void => {
-    if (open || !scene.scene.isActive() || scene.scene.isActive(DIALOGUE_SCENE)) return;
+    if (open || !scene.scene.isActive() || scene.scene.isActive(DIALOGUE_SCENE) || scene.scene.isActive(DEBRIEF_SCENE)) return;
     open = true;
     scene.scene.launch(PAUSE_SCENE, { hooks, page } satisfies PauseData);
   };
   const kb = scene.input.keyboard!;
   kb.on('keydown-ESC', () => {
-    if (scene.scene.isActive(DIALOGUE_SCENE) || hooks.cancelPending()) return; // the dialogue takes Esc
+    if (scene.scene.isActive(DIALOGUE_SCENE) || scene.scene.isActive(DEBRIEF_SCENE) || hooks.cancelPending()) return; // the dialogue and the debrief take Esc
     launch('main');
   });
   kb.on('keydown-R', () => {
@@ -109,7 +111,7 @@ export class PauseScene extends Phaser.Scene {
     this.paused = this.scene.manager
       .getScenes(true)
       .map((s) => s.scene.key)
-      .filter((k) => k !== PAUSE_SCENE);
+      .filter((k) => k !== PAUSE_SCENE && k !== CARD_SCENE);
     for (const k of this.paused) this.scene.pause(k);
 
     const kb = this.input.keyboard!;

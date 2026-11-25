@@ -1,14 +1,21 @@
+import { GAME_FONT } from '../render/font';
 import Phaser from 'phaser';
 import m01 from '../data/missions/m01.json';
-import { type P, circlePoints, conePolygon, ringLook, sightPolygon } from '../render/cones';
+import { type P, circlePoints, conePolygon, ringLook, sightPolygon, survivorCone } from '../render/cones';
 import { NOISE_DASH, dashSegments } from '../render/cues';
 import { type ClickTarget, DoubleClick, cursorFor, resolveClick } from '../render/click';
 import { tileToWorld, worldBounds, worldToTile, worldToTileF } from '../render/iso';
-import { anchorOf } from '../render/placeholders';
-import { bakeGround, checker } from './ground';
+import { Occlusion } from '../render/occlude';
+import { Ghosts, HoverOutline } from '../render/outline';
+import { addSprite, anchorOf, boxOf } from '../render/placeholders';
+import { bushKey, groundKey, pathTiles, treeKey, wallKey, wallRun, bloodKey } from '../render/terrain';
+import { bakeGround } from './ground';
+import { changeScene } from './Card';
 import { UnitSprite } from '../render/units';
 import { barButtons, canCarry, canFreeFire, canLure, canTakedown, orderOpen, orderTakedown, selectWeapon, setFreeFire, toggleCarry, useLure } from '../sim/abilities';
 import { enemyViewer } from '../sim/ai';
+import { BOND_REFUSAL_TEXT, bondAim, bondPlaying, startBond } from '../sim/bond';
+import { drawBondAim, followBond } from './bondView';
 import { activeWeapon } from '../sim/combat';
 import { type Campaign, browserStorage, newCampaign, saveCampaign, toBase1 } from '../sim/campaign';
 import { TICK_HZ } from '../sim/time';
@@ -18,8 +25,13 @@ import {
   type MissionState,
   type Stance,
   type Survivor,
+  type SurvivorKind,
+  newSurvivor,
   createMission,
   failText,
+  withDifficulty,
+  withLayout,
+  rollLayout,
   nextStance,
   orderAttack,
   orderMove,
@@ -28,6 +40,7 @@ import {
   stepMission,
   survivorViewer,
   underRoof,
+  SURVIVOR_NAME,
 } from '../sim/mission';
 
 import story from '../data/story.json';
@@ -38,7 +51,14 @@ import { CounterRow } from './counters';
 import { scaleText, sizeBanner } from './uiScale';
 import { type Counter, lootCounters } from '../render/uiview';
 import { pressCard } from '../render/squad';
+import { FOG_LEVEL } from '../render/atmos';
+import { publishAtmos, startAtmos } from './Atmos';
 import { Feel } from './feelFx';
+import { BowView } from './bowView';
+import { recordRun } from '../sim/records';
+import { type Rescue, type RescueBeat, linesDone, newRescue, rescueFocus, startAmbush, stepRescue, waitsForLines } from '../sim/rescue';
+import { missionResult, observeStats } from '../sim/stats';
+import { openDebrief } from './Debrief';
 import { ViewInput } from './input';
 import { bindSquad, overSquad } from './Squad';
 import { openDialogue } from './Dialogue';
@@ -52,14 +72,15 @@ const RESTART_MS = 2500;
 const HINT_MS = 5000; // each entry hint stays this long
 const ROOF_H = 52; // roof height above the floor (world px)
 const ROOF_FADE_MS = 700;
-const FONT = 'Georgia, "Times New Roman", serif';
+const TALK_LIFT = 110; // screen px the rescue talk's camera sits below the four, so they show above the dialogue box
+const FONT = GAME_FONT;
 
 /** The key lines in the HUD corner and on the pause menu's Controls page. */
 // `{action}` is filled with the live key (rebindable, `fillHelp`).
-const HELP = 'Drag: box select    Left-click: select / move / attack / open crate (double-click: run)    Right-click: cancel\n{crouch}: stance    {hold}: hold    {freefire}: free fire    {takedown}: takedown    {carry}: carry body    {lure}: lure    {weapon1} / {weapon2}: weapon\n{freeze}: pause    {alert}: jump to attack    R: restart    Esc: menu\n{select1} / {select2} / {cycle}: select survivor    Shift-click: add to selection    Double-click a squad card: centre';
+const HELP = 'Drag: box select    Left-click: select / move / attack / open crate (double-click: run)    Right-click: cancel\n{crouch}: stance    {hold}: hold    {freefire}: free fire    {takedown}: takedown    {carry}: carry body    {lure}: lure    {bond}: bond move    {weapon1} / {weapon2} / {weapon3}: weapon\n{freeze}: pause    {alert}: jump to attack    R: restart    Esc: menu\n{select1} / {select2} / {cycle}: select survivor    Shift-click: add to selection    Double-click a squad card: centre';
 const NOISE_COLOR: Record<string, number> = { step: 0xd8d8d0, shot: 0xe0a45a, lure: 0x8fb4d8, alarm: 0xd85a4a };
 
-type Pending = null | 'hold' | 'takedown' | 'lure';
+type Pending = null | 'hold' | 'takedown' | 'lure' | 'bond';
 type Ord =
   | { type: 'move'; ids: string[]; to: [number, number]; run?: boolean }
   | { type: 'hold'; id: string; toward: [number, number] }
@@ -67,10 +88,11 @@ type Ord =
   | { type: 'takedown'; id: string; target: string }
   | { type: 'open'; id: string; crate: string }
   | { type: 'lure'; id: string; at: [number, number] }
+  | { type: 'bond'; at: [number, number] }
   | { type: 'carry'; id: string }
   | { type: 'stance'; id: string; stance: Stance };
 
-const name = (u: Survivor): string => u.kind[0]!.toUpperCase() + u.kind.slice(1);
+const name = (u: Survivor): string => SURVIVOR_NAME[u.kind]; // player-visible: Cass, Eli (DESIGN §5)
 
 /**
  * Mission scene (DESIGN §3, §6, §7, §8, §13, §14): m01 on the stealth sim. Draws the state, vision
@@ -81,6 +103,8 @@ export class MissionScene extends Phaser.Scene {
   private state!: MissionState;
   private campaign: Campaign | null = null; // set by the menu or the Intro; its ammo is the Intro's leftover
   private won = false;
+  private rescue: Rescue | null = null; // the scripted rescue after the win (DESIGN §16); input stays locked while it plays
+  private rescueSeen: RescueBeat | null = null; // the last beat the scene reacted to (lines opened, camera moved)
   private leaving = false; // Base 1 is starting: the dialogue's close may resume this scene for one more frame
   private fx!: Phaser.GameObjects.Graphics;
   private bars!: Phaser.GameObjects.Graphics;
@@ -88,6 +112,7 @@ export class MissionScene extends Phaser.Scene {
   private ping!: Phaser.GameObjects.Image;
   private view!: ViewInput;
   private feel!: Feel;
+  private bow!: BowView; // arrows on the ground and Ray's Tracker marks (DESIGN §5)
   private units = new Map<string, UnitSprite>();
   private bodySprites = new Map<string, Phaser.GameObjects.Image>();
   private crateSprites = new Map<string, Phaser.GameObjects.Image>();
@@ -102,7 +127,10 @@ export class MissionScene extends Phaser.Scene {
   private endedAt = 0;
   private toastText = '';
   private toastUntil = 0;
-  private roofGfx: Phaser.GameObjects.Graphics | null = null;
+  private roofGfx: Phaser.GameObjects.Container | null = null;
+  private occlusion!: Occlusion<Phaser.GameObjects.Image>;
+  private outline!: HoverOutline;
+  private ghosts!: Ghosts;
   private roofFading = false;
   private hintIdx = -1;
   private hintUntil = 0;
@@ -111,11 +139,18 @@ export class MissionScene extends Phaser.Scene {
     super('Mission');
   }
 
-  create(): void {
+  create(data?: { restart?: boolean }): void {
+    const restarted = data?.restart === true;
+    this.sys.settings.data = {}; // Phaser keeps start data across starts: a later entry from the Intro or the menu is a fresh one
     this.campaign = (this.registry.get('campaign') as Campaign | null | undefined) ?? null;
-    const spec = m01 as unknown as MissionSpec;
-    this.state = createMission(this.campaign?.stage === 'mission1' ? { ...spec, ammo: this.campaign.ammo } : spec);
+    const m = m01 as unknown as MissionSpec;
+    // Each start and restart shuffles the zombie spots and crates (DESIGN §21 run shuffles) and reads the Options
+    // difficulty; the state keeps the level for the record.
+    const spec = withLayout(m, rollLayout(m));
+    this.state = createMission(withDifficulty(this.campaign?.stage === 'mission1' ? { ...spec, ammo: this.campaign.ammo } : spec, options().difficulty));
     this.won = false;
+    this.rescue = null;
+    this.rescueSeen = null;
     this.leaving = false;
     this.n = this.state.grid.size;
     this.units.clear();
@@ -136,6 +171,8 @@ export class MissionScene extends Phaser.Scene {
 
     this.drawWorld();
     this.drawRoof();
+    this.outline = new HoverOutline(this);
+    this.ghosts = new Ghosts(this);
     this.fx = this.add.graphics().setDepth(0.3);
     this.hover = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5);
     this.ping = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5).setTint(0xe8e6de);
@@ -161,6 +198,7 @@ export class MissionScene extends Phaser.Scene {
     });
     this.view.start(mid.x, mid.y);
     this.feel = new Feel(this, { n: () => this.n, view: () => this.view, sprites: () => this.units });
+    this.bow = new BowView(this, () => this.n, (x, y) => this.hidden(x, y));
     this.squad = bindSquad(this, {
       units: () => this.state.survivors,
       nameOf: (id) => name(this.state.survivors.find((u) => u.id === id)!),
@@ -184,10 +222,12 @@ export class MissionScene extends Phaser.Scene {
       hold: () => this.arm('hold'),
       takedown: () => this.arm('takedown'),
       lure: () => this.arm('lure'),
+      bond: () => this.arm('bond'),
       carry: () => this.carry(),
       freefire: () => this.onAction('freefire'),
       weapon1: () => this.chooseWeapon(0),
       weapon2: () => this.chooseWeapon(1),
+      weapon3: () => this.chooseWeapon(2),
     });
     kb.on('keydown', (e: KeyboardEvent) => {
       if (this.state.status === 'failed' && e.key !== 'Escape' && this.endedAt >= SKIP_AFTER_MS) this.endedAt = RESTART_MS;
@@ -199,12 +239,13 @@ export class MissionScene extends Phaser.Scene {
         return had;
       },
       failed: () => this.state.status === 'failed',
-      restart: () => this.scene.restart(),
+      restart: () => this.scene.restart({ restart: true }),
       quit: () => this.leave(),
       controls: () => fillHelp(HELP).split('\n'),
       hints: () => ((m01 as unknown as { hints?: string[] }).hints ?? []).map(fillHelp),
     });
 
+    startAtmos(this);
     this.scene.launch('MissionHud');
     this.scene.launch('ActionBar');
     this.scene.launch('Squad');
@@ -228,29 +269,81 @@ export class MissionScene extends Phaser.Scene {
         },
         orders: (list: Ord[]) => list.forEach((o) => this.debugOrder(o)),
         say: (lines: DialogueLine[]) => openDialogue(this, lines),
+        join: (id: string, kind: SurvivorKind, x: number, y: number) => {
+          this.state.survivors.push(newSurvivor(id, kind, x, y));
+          this.sync(1);
+        },
       };
     }
+    // The bond move is taught by a short Cass/Eli exchange on the first entry (DESIGN §23); a restart skips it.
+    if (!restarted) openDialogue(this, story.dialogue.m01Start as DialogueLine[]);
   }
 
   /** Quit from the pause menu: back to the title; the save already names this mission's start. */
   private leave(): void {
     delete (window as unknown as { dw?: unknown }).dw;
-    this.scene.start('Menu');
+    changeScene(this, 'Menu');
   }
 
-  /** All clear: the win dialogue plays, then Base 1 is saved as the next scene (loot and unspent ammo carried) and starts. */
+  /**
+   * All clear: the run is filed, then the rescue plays (DESIGN §16 *The rescue*): Eli's line, six zombies from the
+   * treeline, the alarm lines, arrows from off-screen, Ray and June walk in, `m01Rescue`. Then the Debrief, and Base 1
+   * is saved as the next scene with all four on their end tiles (loot and unspent ammo carried) and starts.
+   */
   private win(): void {
     this.won = true;
     this.pending = null;
-    openDialogue(this, story.dialogue.m01Win as DialogueLine[], () => {
-      this.leaving = true;
-      delete (window as unknown as { dw?: unknown }).dw;
-      const s = this.state;
-      const next = toBase1(this.campaign ?? newCampaign(), { food: s.loot.food, scrap: s.loot.scrap, ammo: s.ammo });
-      this.registry.set('campaign', next);
-      saveCampaign(browserStorage(), next);
-      this.scene.start('Base');
-    });
+    // The run is filed at once (DESIGN §21), so quitting during the rescue or the debrief still keeps it; the rescue's kills are not the player's.
+    const result = missionResult(this.state);
+    const filed = recordRun(browserStorage(), result, this.state.difficulty);
+    this.rescue = newRescue();
+    this.onRescueDone = () =>
+      openDebrief(this, result, filed, () => {
+        this.leaving = true;
+        delete (window as unknown as { dw?: unknown }).dw;
+        const s = this.state;
+        const next = toBase1(this.campaign ?? newCampaign(), { food: s.loot.food, scrap: s.loot.scrap, ammo: s.ammo, start: s.survivors.filter((u) => u.hp > 0).map((u) => ({ id: u.id, x: Math.round(u.x), y: Math.round(u.y), facing: [u.facing[0], u.facing[1]] })) });
+        this.registry.set('campaign', next);
+        saveCampaign(browserStorage(), next);
+        changeScene(this, 'Base');
+      });
+  }
+
+  private onRescueDone: () => void = () => {};
+
+  /** True while a moving beat of the rescue runs (the sprites interpolate between its ticks). */
+  private get rescueMoving(): boolean {
+    return this.rescue !== null && !waitsForLines(this.rescue) && this.rescue.beat !== 'done';
+  }
+
+  /** A new rescue beat opens its lines (Esc skips a line, never the kills) and moves the camera. */
+  private playRescue(r: Rescue): void {
+    if (r.beat === this.rescueSeen) return;
+    this.rescueSeen = r.beat;
+    const lines = story.dialogue.m01Ambush as DialogueLine[];
+    const look = (ms: number): void => {
+      const [x, y] = rescueFocus(this.state, r);
+      const w = tileToWorld(x, y, this.n);
+      this.view.glideTo(w.x, w.y - PICK_H / 2, ms);
+    };
+    if (r.beat === 'ambush')
+      openDialogue(this, lines.slice(0, 1), () => {
+        startAmbush(this.state, r);
+        this.sync(1);
+      });
+    else if (r.beat === 'walk') {
+      const w = tileToWorld(r.from[0], r.from[1], this.n);
+      this.view.glideTo(w.x, w.y - PICK_H / 2, 1200);
+    } else if (r.beat === 'alarm') openDialogue(this, lines.slice(1), () => linesDone(r));
+    else if (r.beat === 'arrows') look(800);
+    else if (r.beat === 'walkIn') look(1500);
+    else if (r.beat === 'talk') {
+      // The lines pause this scene, and a glide with it: cut straight to the four, a little above the dialogue box.
+      const [x, y] = rescueFocus(this.state, r);
+      const w = tileToWorld(x, y, this.n);
+      this.view.centreOn(w.x, w.y + TALK_LIFT / this.cameras.main.zoom);
+      openDialogue(this, story.dialogue.m01Rescue as DialogueLine[], () => linesDone(r));
+    } else if (r.beat === 'done') this.onRescueDone();
   }
 
   private debugOrder(o: Ord): void {
@@ -262,6 +355,7 @@ export class MissionScene extends Phaser.Scene {
       case 'takedown': orderTakedown(s, o.id, o.target); break;
       case 'open': orderOpen(s, o.id, o.crate); break;
       case 'lure': useLure(s, o.id, o.at); break;
+      case 'bond': startBond(s, o.at); break;
       case 'carry': toggleCarry(s, o.id); break;
       case 'stance': setStance(s, o.id, o.stance); break;
     }
@@ -272,20 +366,27 @@ export class MissionScene extends Phaser.Scene {
     const s = this.state;
     const n = this.n;
     const z = s.extract;
-    bakeGround(this, n, (x, y) => (x >= z.x && y >= z.y && x < z.x + z.w && y < z.y + z.h ? 'tile_extract' : checker(x, y)));
+    const path = pathTiles(m01.map);
+    const house = m01.roof; // the wood floor of the house
+    const floor = (x: number, y: number) => house && x >= house.x && y >= house.y && x < house.x + house.w && y < house.y + house.h && s.grid.tiles[y * n + x] !== WALL;
+    bakeGround(this, n, (x, y) => (x >= z.x && y >= z.y && x < z.x + z.w && y < z.y + z.h ? 'tile_extract' : floor(x, y) ? 'floor_wood' : groundKey(x, y, n, path)));
+    this.occlusion = new Occlusion(n);
     for (let y = 0; y < n; y++) {
       for (let x = 0; x < n; x++) {
         const w = tileToWorld(x, y, n);
         const k = s.grid.tiles[y * n + x];
-        const key = k === WALL ? 'wall' : k === TREE ? 'tree' : k === COVER ? 'cover' : k === BUSH ? 'bush' : null;
-        if (key) this.add.image(w.x, w.y, key).setOrigin(...anchorOf(key)).setDepth(w.y + (k === BUSH ? 1 : 0));
+        const key = k === WALL ? wallKey(wallRun(s.grid, x, y)) : k === TREE ? treeKey(x, y) : k === COVER ? 'cover' : k === BUSH ? bushKey(x, y) : null;
+        if (!key) continue;
+        const img = addSprite(this, key, w.x, w.y, w.y + (k === BUSH ? 1 : 0));
+        if (k === WALL || k === TREE) this.occlusion.add(x, y, img, boxOf(key, w.x, w.y));
       }
     }
     for (const c of s.crates) {
       const w = tileToWorld(c.x, c.y, n);
-      this.crateSprites.set(c.id, this.add.image(w.x, w.y, 'crate').setOrigin(...anchorOf('crate')).setDepth(w.y));
+      this.crateSprites.set(c.id, addSprite(this, 'crate_closed', w.x, w.y, w.y));
     }
   }
+
 
   /** The roof: a grey box over the house footprint, gone for good once a survivor has entered (DESIGN §16). */
   private drawRoof(): void {
@@ -298,12 +399,21 @@ export class MissionScene extends Phaser.Scene {
     const B = tileToWorld(x1, y0, n);
     const C = tileToWorld(x1, y1, n);
     const D = tileToWorld(x0, y1, n);
-    const g = this.add.graphics().setDepth(C.y + 2);
-    g.fillStyle(0x3c3c38, 1).fillPoints([B, C, up(C), up(B)], true); // right face
-    g.fillStyle(0x4a4a46, 1).fillPoints([D, C, up(C), up(D)], true); // left face
-    g.fillStyle(0x62625c, 1).fillPoints([up(A), up(B), up(C), up(D)], true); // top
-    g.lineStyle(2, 0x2a2a27, 1).strokePoints([up(A), up(B), up(C), up(D)], true);
-    this.roofGfx = g;
+    // The roof fascia follows the edge of the tile art. The cabin walls show below it.
+    const fascia = (p: { x: number; y: number }) => ({ x: p.x, y: p.y - ROOF_H + 5 });
+    const g = this.add.graphics();
+    g.fillStyle(0x363b3f, 1).fillPoints([fascia(B), fascia(C), up(C), up(B)], true);
+    g.fillStyle(0x4b5358, 1).fillPoints([fascia(D), fascia(C), up(C), up(D)], true);
+    const tops: Phaser.GameObjects.Image[] = [];
+    for (let ty = r.y; ty < r.y + r.h; ty++) {
+      for (let tx = r.x; tx < r.x + r.w; tx++) {
+        const w = tileToWorld(tx, ty, n);
+        tops.push(addSprite(this, 'roof_top', w.x, w.y - ROOF_H));
+      }
+    }
+    const edge = this.add.graphics();
+    edge.lineStyle(2, 0x2a2a27, 1).strokePoints([up(A), up(B), up(C), up(D)], true);
+    this.roofGfx = this.add.container(0, 0, [g, ...tops, edge]).setDepth(C.y + 2);
   }
 
   /** Under a closed roof: units, crates and bodies are not drawn and cannot be picked. */
@@ -321,7 +431,13 @@ export class MissionScene extends Phaser.Scene {
     const s = this.state;
     const n = this.n;
     for (const u of [...s.survivors, ...s.enemies]) {
-      const sp = this.units.get(u.id)!;
+      let sp = this.units.get(u.id);
+      if (!sp) {
+        // a survivor who joined mid-scene (the Z82 rescue; the `join` debug hook)
+        const ring = u.side === 'survivor' ? this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5).setTint(0xe8e6de) : undefined;
+        sp = new UnitSprite(this, u, ring);
+        this.units.set(u.id, sp);
+      }
       const [x, y] = this.at(u, frac);
       const drawn = sp.update(u, s.tick, frac, this.hidden(u.x, u.y));
       sp.ring?.setVisible(false);
@@ -345,7 +461,7 @@ export class MissionScene extends Phaser.Scene {
     for (const b of s.bodies) {
       let img = this.bodySprites.get(b.id);
       if (!img) {
-        img = this.add.image(0, 0, 'body').setOrigin(...anchorOf('body'));
+        img = addSprite(this, 'body', 0, 0);
         this.bodySprites.set(b.id, img);
       }
       const carrier = b.carriedBy ? s.survivors.find((u) => u.id === b.carriedBy) : undefined;
@@ -356,17 +472,37 @@ export class MissionScene extends Phaser.Scene {
     for (; this.decalCount < s.decals.length; this.decalCount++) {
       const d = s.decals[this.decalCount]!;
       const w = tileToWorld(d.x, d.y, n);
-      this.add.image(w.x, w.y, 'blood').setOrigin(...anchorOf('blood')).setDepth(0.2);
+      addSprite(this, bloodKey(d.x, d.y), w.x, w.y, 0.2);
     }
-    for (const c of s.crates) this.crateSprites.get(c.id)!.setAlpha(c.opened ? 0.45 : 1).setVisible(!this.hidden(c.x, c.y));
+    for (const c of s.crates) this.crateSprites.get(c.id)!.setTexture(c.opened ? 'crate_open' : 'crate_closed').setVisible(!this.hidden(c.x, c.y));
   }
 
   private tickOnce(): void {
     for (const u of [...this.state.survivors, ...this.state.enemies]) this.prev.set(u.id, [u.x, u.y]);
     stepMission(this.state);
+    observeStats(this.state);
   }
 
   // ---- Drawing the cones, rings and health bars each frame ----
+
+  /** While Hold is being aimed, the pointer in tile space (the live cone follows it, DESIGN §13); else null. */
+  private aimPoint(): P | null {
+    if (!(this.pending === 'hold' && this.canOrder)) return null;
+    const p = this.input.activePointer;
+    if (this.onBar(p)) return null;
+    const w = this.worldOf(p);
+    const f = worldToTileF(w.x, w.y, this.n);
+    return [f.x, f.y];
+  }
+
+  /** While the bond move is being aimed, the pointer in tile space (the circle follows it, DESIGN §23); else null. */
+  private bondPoint(): P | null {
+    if (!(this.pending === 'bond' && this.canOrder)) return null;
+    const p = this.input.activePointer;
+    if (this.onBar(p)) return null;
+    const f = worldToTileF(this.worldOf(p).x, this.worldOf(p).y, this.n);
+    return [f.x, f.y];
+  }
 
   private fill(pts: P[], color: number, alpha: number, outline = 0): void {
     const w = pts.map(([x, y]) => tileToWorld(x, y, this.n));
@@ -381,19 +517,22 @@ export class MissionScene extends Phaser.Scene {
     for (const e of s.enemies) {
       if (e.hp <= 0 || this.hidden(e.x, e.y)) continue;
       const [x, y] = this.at(e, frac);
-      const v = { ...enemyViewer(e), x, y };
+      const v = { ...enemyViewer(e, undefined, s.difficulty), x, y };
       if (e.kind === 'human') {
         this.fill(conePolygon(s.grid, v), 0xe0c040, 0.14, 0.4); // far half: sees standing survivors
         this.fill(conePolygon(s.grid, v, v.range / 2), 0xd04030, 0.22, 0.5); // near half: sees anyone
       } else this.fill(sightPolygon(s.grid, x, y, v.range), 0x9a9a92, 0.1, 0.3); // zombie: faint grey sight circle
     }
+    const aim = this.aimPoint();
     for (const u of s.survivors) {
       if (u.hp <= 0) continue;
       const [x, y] = this.at(u, frac);
       const v = { ...survivorViewer(u), x, y };
-      if (u.order?.type === 'hold') this.fill(conePolygon(s.grid, v), 0x58c070, 0.24, 0.8);
-      else if (this.selected.has(u.id)) this.fill(conePolygon(s.grid, v), 0x58c070, 0.08, 0.3);
+      const cone = survivorCone(s.grid, v, u.order?.type === 'hold', aim && this.selected.has(u.id) ? aim : null);
+      if (cone) this.fill(cone, 0x58c070, u.order?.type === 'hold' && !aim ? 0.24 : 0.16, u.order?.type === 'hold' && !aim ? 0.8 : 0.6);
     }
+    const bondAt = this.bondPoint();
+    if (bondAt) drawBondAim(this.fx, s, this.n, bondAt);
     for (const r of s.rings) {
       const look = ringLook(r.radius, r.age);
       const w = circlePoints(r.x, r.y, look.r).map(([px, py]) => tileToWorld(px, py, this.n));
@@ -401,13 +540,13 @@ export class MissionScene extends Phaser.Scene {
       const dash = options().cues ? NOISE_DASH[r.kind] : NOISE_DASH.step; // DESIGN §19: each noise kind has its own line style
       for (const run of dashSegments(w.map((q): [number, number] => [q.x, q.y]), dash.on, dash.off)) this.fx.strokePoints(run.map(([px, py]) => ({ x: px, y: py })));
     }
-    for (const u of [...s.survivors, ...s.enemies]) {
-      if (u.hp <= 0 || (u.side !== 'survivor' && u.hp >= u.maxHp) || this.hidden(u.x, u.y)) continue;
+    for (const u of s.enemies) {
+      if (u.hp <= 0 || u.hp >= u.maxHp || this.hidden(u.x, u.y)) continue; // no life bar over a survivor (DESIGN §17)
       const [x, y] = this.at(u, frac);
       const w = tileToWorld(x, y, this.n);
       const top = w.y - 52;
       this.bars.fillStyle(0x1a1c19, 0.8).fillRect(w.x - 14, top, 28, 4);
-      this.bars.fillStyle(u.side === 'survivor' ? 0x9bc79b : 0xc77b6b, 1).fillRect(w.x - 14, top, (28 * u.hp) / u.maxHp, 4);
+      this.bars.fillStyle(0xc77b6b, 1).fillRect(w.x - 14, top, (28 * u.hp) / u.maxHp, 4);
     }
   }
 
@@ -464,7 +603,7 @@ export class MissionScene extends Phaser.Scene {
   }
 
   private get canOrder(): boolean {
-    return !this.paused && this.state.status === 'playing';
+    return !this.paused && this.state.status === 'playing' && !bondPlaying(this.state);
   }
 
   private toast(msg: string): void {
@@ -472,11 +611,18 @@ export class MissionScene extends Phaser.Scene {
     this.toastUntil = this.time.now + 1800;
   }
 
-  private arm(mode: 'hold' | 'takedown' | 'lure'): void {
+  private arm(mode: 'hold' | 'takedown' | 'lure' | 'bond'): void {
     if (!this.canOrder) return;
     const who = this.chosen();
+    if (mode === 'bond') {
+      const why = bondAim(this.state, [0, 0]).refusal;
+      if (why !== null && why !== 'far' && why !== 'empty') return this.toast(BOND_REFUSAL_TEXT[why]);
+      if (who.length === 0) return this.toast('Select Cass or Eli first');
+      this.pending = this.pending === mode ? null : mode;
+      return;
+    }
     const ok = mode === 'hold' ? who.length > 0 : mode === 'takedown' ? who.some(canTakedown) : who.some(canLure);
-    if (!ok) return this.toast(mode === 'hold' ? 'Select a survivor first' : mode === 'takedown' ? 'Select the Fighter first' : 'Select the Scout first');
+    if (!ok) return this.toast(mode === 'hold' ? 'Select a survivor first' : mode === 'takedown' ? 'Select Cass first' : 'Select Eli first');
     this.pending = this.pending === mode ? null : mode;
   }
 
@@ -491,7 +637,7 @@ export class MissionScene extends Phaser.Scene {
   private carry(): void {
     if (!this.canOrder) return;
     const who = this.chosen().filter(canCarry);
-    if (who.length === 0) return this.toast('Select the Fighter to carry');
+    if (who.length === 0) return this.toast('Select Cass to carry');
     for (const u of who) if (toggleCarry(this.state, u.id)) return;
     this.toast('No body within reach');
   }
@@ -503,7 +649,7 @@ export class MissionScene extends Phaser.Scene {
       const who = this.chosen();
       const wid = id.slice('weapon:'.length);
       if (who.length === 0 || !who.some((u) => selectWeapon(this.state, u.id, wid))) this.toast(this.state.ammo <= 0 && wid === 'pistol' ? 'Out of ammo' : 'That survivor does not carry it');
-    } else if (id === 'takedown' || id === 'hold' || id === 'lure') this.arm(id);
+    } else if (id === 'takedown' || id === 'hold' || id === 'lure' || id === 'bond') this.arm(id);
     else if (id === 'carry') this.carry();
     else if (id === 'freefire') {
       const who = this.chosen().filter(canFreeFire);
@@ -600,6 +746,10 @@ export class MissionScene extends Phaser.Scene {
       const scout = who.find(canLure);
       if (!scout) return;
       if (!useLure(this.state, scout.id, [t.x, t.y])) return this.toast(scout.lureCd > 0 ? `Lure ready in ${Math.ceil(scout.lureCd / TICK_HZ)} s` : 'Out of throwing range');
+    } else if (mode === 'bond') {
+      const why = bondAim(this.state, [f.x, f.y]).refusal;
+      if (why !== null) return this.toast(BOND_REFUSAL_TEXT[why]);
+      startBond(this.state, [f.x, f.y]);
     }
     this.pending = null;
   }
@@ -625,6 +775,16 @@ export class MissionScene extends Phaser.Scene {
 
   // ---- Frame ----
 
+  /** Walls and trees in front of a survivor fade; a selected survivor behind one shows through, outlined (art/STYLE.md *Occlusion*). */
+  private seeThrough(dt: number): void {
+    const alive = this.state.survivors.filter((u) => u.hp > 0 && !this.hidden(u.x, u.y));
+    const covered = this.occlusion.update(alive.map((u) => ({ x: u.x, y: u.y })), dt);
+    for (const u of this.state.survivors) {
+      const i = alive.indexOf(u);
+      this.ghosts.show(u.id, i >= 0 && covered[i] && this.selected.has(u.id) ? this.units.get(u.id)!.body : null);
+    }
+  }
+
   private publish(): void {
     const s = this.state;
     const lines = this.chosen().map((u) => {
@@ -641,21 +801,23 @@ export class MissionScene extends Phaser.Scene {
     const zombies = s.enemies.filter((e) => e.kind === 'zombie' && e.hp > 0).length;
     this.registry.set('m_counters', lootCounters({ ammo: s.ammo, food: s.loot.food, scrap: s.loot.scrap, crates: { opened, total: s.crates.length }, zombies }));
     const first = this.chosen()[0];
-    const bar: BarModel | null = first ? { name: name(first), hp: first.hp, buttons: barButtons(s, first) } : null;
+    const buttons = first ? barButtons(s, first).map((b) => (b.id === 'bond' && this.pending === 'bond' ? { ...b, active: true } : b)) : [];
+    const bar: BarModel | null = first ? { name: name(first), hp: first.hp, buttons } : null;
     this.registry.set('m_bar', bar);
     this.squad.publish();
     this.registry.set('m_sel', lines.length ? lines.join('\n') : 'Nobody selected');
-    const hint = this.pending === 'hold' ? 'Click where to hold (right-click cancels)' : this.pending === 'takedown' ? 'Click an enemy to take down' : this.pending === 'lure' ? 'Click where to throw the lure' : this.entryHint();
-    this.registry.set('m_hint', this.time.now < this.toastUntil ? this.toastText : hint);
+    const hint = this.pending === 'hold' ? 'Click where to hold (right-click cancels)' : this.pending === 'takedown' ? 'Click an enemy to take down' : this.pending === 'lure' ? 'Click where to throw the lure' : this.pending === 'bond' ? 'Click to mark up to 3 zombies for the bond move (right-click cancels)' : this.entryHint();
+    this.registry.set('m_hint', this.rescue ? '' : this.time.now < this.toastUntil ? this.toastText : hint); // the rescue is a cutscene: no hints
     let banner = '';
     if (s.status === 'failed') banner = `${failText(s)}\nPress any key to try again.`;
-    else if (s.status === 'success') banner = 'All clear!';
+    else if (s.status === 'success') banner = this.rescue?.beat === 'ambush' ? 'All clear!' : '';
     else if (this.paused) banner = 'PAUSED  (Space to resume; no orders while paused)';
     this.registry.set('m_banner', banner);
   }
 
   update(_t: number, dt: number): void {
     if (this.leaving) return;
+    this.seeThrough(dt);
     this.view.update(dt);
     const p = this.input.activePointer;
 
@@ -666,10 +828,21 @@ export class MissionScene extends Phaser.Scene {
         this.acc -= STEP_MS;
       }
       this.acc = Math.min(this.acc, STEP_MS);
+    } else if (this.rescueMoving) {
+      this.acc += Math.min(dt, 250);
+      for (let i = 0; i < 5 && this.acc >= STEP_MS && this.rescueMoving; i++) {
+        for (const u of [...this.state.survivors, ...this.state.enemies]) this.prev.set(u.id, [u.x, u.y]);
+        stepRescue(this.state, this.rescue!);
+        this.acc -= STEP_MS;
+      }
+      this.acc = Math.min(this.acc, STEP_MS);
     } else this.acc = 0;
-    const frac = this.state.status === 'playing' && !this.paused ? this.acc / STEP_MS : 1;
+    const frac = (this.state.status === 'playing' && !this.paused) || this.rescueMoving ? this.acc / STEP_MS : 1;
     this.sync(frac);
+    this.bow.sync(this.state, (u) => this.at(u, frac));
+    followBond(this.view, this.state, this.n);
     this.feel.frame(this.state);
+    publishAtmos(this, this.view, { dusk: 0, rain: 0, fog: FOG_LEVEL, lights: [] });
     this.drawFx(frac);
     if (this.state.roofOpen && this.roofGfx && !this.roofFading) {
       this.roofFading = true;
@@ -679,15 +852,18 @@ export class MissionScene extends Phaser.Scene {
 
     if (this.state.status === 'failed') {
       this.endedAt += dt;
-      if (this.endedAt >= RESTART_MS) this.scene.restart();
+      if (this.endedAt >= RESTART_MS) this.scene.restart({ restart: true });
     }
     if (this.state.status === 'success' && !this.won) this.win();
+    if (this.rescue) this.playRescue(this.rescue);
 
 
     const t = this.tileOf(p);
     const inside = t.x >= 0 && t.y >= 0 && t.x < this.n && t.y < this.n;
     this.hover.setVisible(inside).setTint(this.pending ? 0xe8c46a : 0xffffff);
-    this.view.setCursor(this.onBar(p) ? 'default' : cursorFor(resolveClick(this.targetAt(this.worldOf(p)).kind, this.canOrder && this.chosen().length > 0), this.pending !== null && this.canOrder));
+    const under = this.onBar(p) ? null : this.targetAt(this.worldOf(p));
+    this.view.setCursor(under ? cursorFor(resolveClick(under.kind, this.canOrder && this.chosen().length > 0), this.pending !== null && this.canOrder) : 'default');
+    this.outline.set(under?.kind === 'object' && under.id ? (this.crateSprites.get(under.id) ?? null) : null);
     if (inside) {
       const w = tileToWorld(t.x, t.y, this.n);
       this.hover.setPosition(w.x, w.y);
@@ -716,7 +892,7 @@ export class MissionHudScene extends Phaser.Scene {
     this.hint = this.add.text(width / 2, height - barH() - 12, '', { fontFamily: FONT, fontSize: '20px', color: '#f0dc8a', wordWrap: { width: HINT_WRAP }, align: 'center', ...box }).setOrigin(0.5, 1);
     this.banner = this.add.text(width / 2, height * 0.35, '', { fontFamily: FONT, fontSize: '34px', color: '#ffffff', backgroundColor: '#141614d0', padding: { x: 24, y: 14 }, align: 'center' }).setOrigin(0.5);
     this.help = this.add.text(width - 16, 14, fillHelp(HELP), {
-      fontFamily: FONT, fontSize: '13px', color: '#a8a69e', align: 'right',
+      fontFamily: FONT, fontSize: '14px', color: '#a8a69e', align: 'right',
     }).setOrigin(1, 0);
   }
 

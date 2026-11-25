@@ -1,5 +1,7 @@
+import { GAME_FONT } from '../render/font';
 import Phaser from 'phaser';
 import {
+  ARROW_FLIGHT_MS,
   type Alert,
   FLASH_MS,
   type FxEvent,
@@ -27,6 +29,8 @@ import { moodOf } from '../audio/mood';
 import { REACH, newSoundWatch, soundEvents } from '../audio/events';
 import { spatial } from '../audio/space';
 import { tileToWorld } from '../render/iso';
+import { addSprite } from '../render/placeholders';
+import { type BarkWatch, barkEvents, newBarkWatch } from '../sim/barks';
 import type { UnitSprite } from '../render/units';
 import type { Trap } from '../sim/traps';
 import { options } from '../sim/options';
@@ -34,10 +38,14 @@ import { barH } from './ActionBar';
 import type { ViewInput } from './input';
 import { ui } from './uiScale';
 
-const FONT = 'Georgia, "Times New Roman", serif';
+const FONT = GAME_FONT;
 const FLASH_TINT = 0xffffff;
 const ARROW_LIFT = 24; // world px above the feet: where an alert points on a figure
 const OFFSCREEN_PAD = 32; // a shake or pop this near the screen counts as seen
+const BARK_FONT = GAME_FONT;
+const BARK_MS = 3000; // a bark stays this long above the speaker (DESIGN §22)
+const BARK_FADE = 400; // and fades over its last part
+const BARK_LIFT = 88; // world px above the feet: over the head
 
 /** What the overlay draws, published each frame (registry `fx_alerts`, `fx_flash`). */
 export interface ArrowModel {
@@ -68,10 +76,12 @@ export class Feel {
   private alerts: Alert[] = [];
   private jumpIdx = 0;
   private pops = 0;
+  private readonly barkWatch: BarkWatch = newBarkWatch();
+  private barks: { id: string; text: Phaser.GameObjects.Text; until: number }[] = [];
 
   constructor(
     private readonly scene: Phaser.Scene,
-    private readonly hooks: { n: () => number; view: () => ViewInput; sprites: () => Map<string, UnitSprite> },
+    private readonly hooks: { n: () => number; view: () => ViewInput; sprites: () => Map<string, UnitSprite>; hearth?: () => { x: number; y: number } | null },
   ) {
     scene.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       scene.registry.set('fx_alerts', []);
@@ -79,15 +89,16 @@ export class Feel {
     });
   }
 
-  /** Reads the sim, reacts to what changed, and publishes the arrows. Call after the scene's `sync`. */
-  frame(s: Watched & { traps?: Trap[]; herd?: { warned: boolean } }): void {
+  /** Reads the sim, reacts to what changed, and publishes the arrows. Call after the scene's `sync`. `rain` (0..1) is the rain layer's level (Base 1, DESIGN §20). */
+  frame(s: Watched & { traps?: Trap[]; herd?: { warned: boolean } }, rain = 0): void {
     const now = this.scene.time.now;
     this.alerts = liveAlerts(this.alerts, now);
     for (const e of observe(this.watch, s)) this.react(e, now);
     this.applyFlashes(now);
     this.publishArrows(now);
     this.playSounds(s);
-    ambience.update(moodOf(s)); // the adaptive layers follow the chase, the alarm and the herd (DESIGN §6)
+    this.speak(s);
+    ambience.update(moodOf(s), rain); // the adaptive layers follow the chase, the alarm and the herd (DESIGN §6)
   }
 
   /** Starts the sounds the sim just made, each placed from the camera centre (DESIGN §6 *Audio*): panned, and fading about one screen out. */
@@ -123,10 +134,45 @@ export class Feel {
     if (e.kind === 'flash') this.flashes.set(e.id, now + FLASH_MS);
     else if (e.kind === 'shake') this.shake(e);
     else if (e.kind === 'pop') this.pop(e.text, e.x, e.y);
+    else if (e.kind === 'arrow') this.flyArrow(e);
     else {
       if (!this.alerts.some((a) => a.key === e.key && now - a.at < 1000)) this.jumpIdx = 0; // a new attack: the key starts from it
       this.alerts = touchAlert(this.alerts, { key: e.key, label: e.label, x: e.x, y: e.y, at: now });
     }
+  }
+
+  /** A bow shot (DESIGN §5): the `arrow_fly` sprite crosses from the archer's chest to the target in about 0.2 s. */
+  private flyArrow(e: Extract<FxEvent, { kind: 'arrow' }>): void {
+    const n = this.hooks.n();
+    const a = tileToWorld(e.x, e.y, n);
+    const b = tileToWorld(e.tx, e.ty, n);
+    const lift = ARROW_LIFT; // chest height, both ends
+    const img = addSprite(this.scene, 'arrow_fly', a.x, a.y - lift, 905).setRotation(Math.atan2(b.y - a.y, b.x - a.x));
+    this.scene.tweens.add({ targets: img, x: b.x, y: b.y - lift, duration: ARROW_FLIGHT_MS, ease: 'Linear', onComplete: () => img.destroy() });
+  }
+
+  /** Barks (DESIGN §22): a new one floats above its speaker for a few seconds and follows them; the game never pauses for it. */
+  private speak(s: Parameters<typeof barkEvents>[1]): void {
+    const now = this.scene.time.now;
+    const b = barkEvents(this.barkWatch, s, this.hooks.hearth?.() ?? null);
+    if (b) {
+      const text = this.scene.add
+        .text(0, 0, b.text, { fontFamily: BARK_FONT, fontSize: `${ui(16)}px`, color: '#f4efe0', stroke: '#141614', strokeThickness: 4, align: 'center', wordWrap: { width: ui(260) } })
+        .setOrigin(0.5, 1)
+        .setDepth(910);
+      this.barks.push({ id: b.id, text, until: now + BARK_MS });
+      audio.play('blip', { gain: 0.5, variant: Math.random() });
+    }
+    this.barks = this.barks.filter((k) => {
+      const u = s.survivors.find((v) => v.id === k.id);
+      if (!u || now >= k.until) {
+        k.text.destroy();
+        return false;
+      }
+      const w = tileToWorld(u.x, u.y, this.hooks.n());
+      k.text.setPosition(w.x, w.y - BARK_LIFT).setAlpha(Math.min(1, (k.until - now) / BARK_FADE));
+      return true;
+    });
   }
 
   private onScreen(wx: number, wy: number): boolean {

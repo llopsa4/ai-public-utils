@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import manifest from '../../art/manifest.json';
+import { ENV_KEYS } from './placeholders';
 import { UI_NAMES, UI_TEXTURE, uiOf } from './ui';
 
 // The packed figure atlases (art/atlas/<group>.png + .json, art/STYLE.md Atlas contract). Vite bundles
@@ -8,6 +9,10 @@ const PNGS = import.meta.glob('../../art/atlas/*.png', { query: '?url', import: 
 const JSONS = import.meta.glob('../../art/atlas/*.json', { import: 'default', eager: true }) as Record<string, object>;
 // The UI art that is not in the `ui` atlas: cursors (used as CSS cursors) and the title images.
 const UI_FILES = import.meta.glob('../../art/frames/ui/*.png', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
+
+// The environment art (art/STYLE.md *Environment art*): one PNG per kit key, art/frames/env/<key>.png. A key with no
+// file keeps its grey code stand-in (placeholders.ts).
+const ENV_FILES = import.meta.glob('../../art/frames/env/*.png', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
 
 export const ATLAS_GROUPS = Object.keys(manifest.atlases);
 
@@ -28,12 +33,17 @@ export function loadAtlases(scene: Phaser.Scene): void {
     const url = uiImageUrl(name);
     if (url) scene.load.image(name, url);
   }
+  for (const key of ENV_KEYS) {
+    const url = ENV_FILES[`../../art/frames/env/${key}.png`];
+    if (url) scene.load.image(key, url);
+  }
 }
 
 /** Pixel art: nearest-neighbour sampling for the figure atlases and the UI art (the rest of the game stays smooth). */
 export function crispAtlases(scene: Phaser.Scene): void {
   for (const group of [...ATLAS_GROUPS, UI_TEXTURE]) if (scene.textures.exists(group)) scene.textures.get(group).setFilter(Phaser.Textures.FilterMode.NEAREST);
   for (const name of UI_NAMES) if (uiOf(name).group === 'title' && scene.textures.exists(name)) scene.textures.get(name).setFilter(Phaser.Textures.FilterMode.NEAREST);
+  for (const key of ENV_KEYS) if (ENV_FILES[`../../art/frames/env/${key}.png`] && scene.textures.exists(key)) scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
 }
 
 /** True when the figure's atlas is loaded and holds its idle frame. */

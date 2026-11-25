@@ -1,3 +1,4 @@
+import { GAME_FONT } from '../render/font';
 import Phaser from 'phaser';
 import { hungerLabel, barMetrics, uiFactor, type BarMetrics } from '../render/cues';
 import { ammoCount, barIcon, tooltipText } from '../render/uiview';
@@ -13,7 +14,7 @@ import { scaleText, ui } from './uiScale';
 // one, the name on a tooltip; the portrait stays grey until Z56. It reads the registry key `m_bar` and
 // reports a click or a hotkey-less press as the game event `dw-action` with the button id.
 
-const FONT = 'Georgia, "Times New Roman", serif';
+const FONT = GAME_FONT;
 export const BAR_H = 68;
 const BAR_HALF_W = 330; // the bar never reaches farther than this from the screen centre
 
@@ -82,8 +83,8 @@ export class ActionBarScene extends Phaser.Scene {
     this.m = barMetrics(options().textSize, 0, this.scale.width);
     this.panel = kitSlice(this, 'kit_panel', 0, 0, 40, 40);
     this.portrait = this.add.rectangle(0, 0, this.m.portrait, this.m.portrait, 0x5a5d58).setOrigin(0, 0).setStrokeStyle(2, 0x8a8d86);
-    this.caption = this.add.text(0, 0, '', { fontFamily: FONT, fontSize: '12px', color: '#e8e6de', align: 'center' }).setOrigin(0.5, 0);
-    this.hungerWord = this.add.text(0, 0, '', { fontFamily: FONT, fontSize: '12px', color: '#e8c46a', align: 'right' }).setOrigin(1, 0.5);
+    this.caption = this.add.text(0, 0, '', { fontFamily: FONT, fontSize: '14px', color: '#e8e6de', align: 'center' }).setOrigin(0.5, 0);
+    this.hungerWord = this.add.text(0, 0, '', { fontFamily: FONT, fontSize: '14px', color: '#e8c46a', align: 'right' }).setOrigin(1, 0.5);
     this.meter = this.add.graphics();
     this.tip = new Tooltip(this, FONT);
     this.group.add([this.panel, this.portrait, this.caption, this.hungerWord, this.meter, ...this.tip.parts()]);
@@ -177,7 +178,7 @@ export class ActionBarScene extends Phaser.Scene {
       this.signature = sig;
       this.rebuild(model);
     }
-    this.caption.setText(`${model.name}\n${model.hp} HP${model.meal ? '\nmeal' : ''}`);
+    this.caption.setText(model.meal ? 'meal' : ''); // DESIGN §17: no name or HP here, the squad card holds them
     this.portrait.setStrokeStyle(2, model.meal ? 0xe8c46a : 0x8a8d86);
     this.drawMeter(model);
     this.drawHungerWord(model);
