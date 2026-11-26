@@ -37,7 +37,7 @@ Per-unit history lives in git log and the PLAN.md rows, not here.
 - E4 installation matches the 12 approved hashes. Typecheck, art tests and Chromium in Mission 1 and Base 1 passed. The full suite during Z81 work had 381 passes and seven gameplay failures. A focused simulation rerun had six failures as Z81 work continued. See the Codex handoff for logs.
 - A14 installation matches the reviewed 149 assets and all six atlas files. Typecheck, 393 unit tests and Chromium checks in Base 1 and the Mission 1 rescue passed.
 - Local playtest preview opened at http://127.0.0.1:5175/. Typecheck and both Chromium e2e specs passed again. Mission 1 balance and the rescue still await hand play.
-- Git: everything from Bios (Z83) through Z106, with the E5–E7, A15, A16 and A18 art, is committed locally on `main` (2026-11-26) and not pushed; this supersedes older "uncommitted" notes below and in the handoffs. Published output was not rebuilt.
+- Git: everything from Bios (Z83) through Z106, with the E5–E7, A15, A16 and A18 art, and the rebuilt published output are committed and pushed to `main` (2026-11-26, user request); this supersedes older "uncommitted" notes below and in the handoffs.
 
 ## Pending decisions
 - The 7-character roster: Cass, Eli, Ray and June are settled (Ray and June grilled 2026-11-25,
