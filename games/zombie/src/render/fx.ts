@@ -1,3 +1,4 @@
+import { FOOD_SHOWN } from '../sim/food';
 import type { Barricade, Opening } from '../sim/base';
 import { SURVIVOR_NAME, type MissionState } from '../sim/mission';
 
@@ -49,9 +50,9 @@ export const newWatch = (): FxWatch => ({ hp: new Map(), acts: new Map(), opened
 
 const title = (s: string): string => s[0]!.toUpperCase() + s.slice(1);
 
-/** The loot of a crate as one pop: "+3 ammo  +2 food". Empty when the crate held nothing. */
-export function lootText(c: { food: number; scrap: number; ammo: number }): string {
-  return [c.ammo > 0 ? `+${c.ammo} ammo` : '', c.food > 0 ? `+${c.food} food` : '', c.scrap > 0 ? `+${c.scrap} scrap` : ''].filter(Boolean).join('  ');
+/** The loot of a crate as one pop: "+3 ammo  +2 scrap", food only where it is shown. Empty when there is nothing to name. */
+export function lootText(c: { food: number; scrap: number; ammo: number }, foodShown = FOOD_SHOWN): string {
+  return [c.ammo > 0 ? `+${c.ammo} ammo` : '', foodShown && c.food > 0 ? `+${c.food} food` : '', c.scrap > 0 ? `+${c.scrap} scrap` : ''].filter(Boolean).join('  ');
 }
 
 /** Pop colour: gains green, trouble red, the rest cream. */

@@ -88,6 +88,7 @@ export class ActionBarScene extends Phaser.Scene {
     this.meter = this.add.graphics();
     this.tip = new Tooltip(this, FONT);
     this.group.add([this.panel, this.portrait, this.caption, this.hungerWord, this.meter, ...this.tip.parts()]);
+    this.group.setVisible(false); // Z101: `update` shows the bar once it has a model; a dialogue pauses this scene before its first update, which left the grey portrait square at the top-left corner
   }
 
   private rebuild(model: BarModel): void {

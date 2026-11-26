@@ -275,3 +275,36 @@ test('pack installs environment art at its 2x source size and rejects a wrong si
   assert.match(bad.err, /env\/dragon\.png: not an environment key/);
   assert.ok(!existsSync(join(root, 'art', 'frames', 'env', 'tree_b.png')), 'nothing from a failed batch is installed');
 });
+
+// The claim guard (WORKFLOW.md *Shared-checkout coordination*): a generator stops while the other agent's
+// *Working on* names the manifest, the stand-in list or the atlases.
+test('art:standins stops while the other agent claims the shared art files', async () => {
+  const lib = '../scripts/art/lib.mjs'; // a variable path: the script has no type declarations
+  const { otherClaims } = (await import(lib)) as { otherClaims: (root: string, env: Record<string, string>) => string[] };
+  const root = mkdtempSync(join(tmpdir(), 'dw-claims-'));
+  temps.push(root);
+  mkdirSync(join(root, 'handoff'));
+  const codex = (working: string) => writeFileSync(join(root, 'handoff', 'from-codex.md'), `# Codex
+
+## Working on
+${working}
+## Awaiting the user
+- the UI atlas pair waits
+`);
+  const claude = { CLAUDECODE: '1' };
+  codex('- A18: installing the UI atlas pair and the manifest entry.');
+  assert.equal(otherClaims(root, claude).length, 1);
+  assert.equal(otherClaims(root, {}).length, 0); // Codex is not checked against its own claims
+  codex('- None. A18 installation claims released.');
+  assert.equal(otherClaims(root, claude).length, 0);
+  codex('- E6 done; manifest updated, no claims held.\n- Drawing portraits in art/inbox/A16/.');
+  assert.equal(otherClaims(root, claude).length, 0); // only lines naming the shared files count; a later section never does
+  codex('- Z85 done: biosPage.ts and a manifest key, uncommitted.');
+  assert.equal(otherClaims(root, claude).length, 0); // a done note is not a claim
+  codex('- Claimed: art/frames/standins.json.');
+  const run = (...extra: string[]) => spawnSync(process.execPath, [join(project, 'scripts', 'art', 'standins.mjs'), '--root', root, ...extra], { env: { ...process.env, CLAUDECODE: '1' }, encoding: 'utf8' });
+  const stopped = run();
+  assert.equal(stopped.status, 2, stopped.stderr);
+  assert.match(stopped.stderr, /standins.json/);
+  assert.ok(!existsSync(join(root, 'art', 'atlas')), 'nothing written');
+});

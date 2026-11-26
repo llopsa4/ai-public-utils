@@ -42,7 +42,7 @@ test('build: the survivor walks up, works 2 s, then the scrap is spent and the t
 });
 
 test('build is refused on a gap, wall, tree, barricade or trap tile, and when scrap is short', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   assert.equal(orderTrap(s, 'fighter', 'spike', 28, 35), 'blocked', 'the broken door gap');
   assert.equal(orderTrap(s, 'fighter', 'spike', 25, 26), 'blocked', 'a wall');
   assert.equal(orderTrap(s, 'fighter', 'spike', 0, 0), 'blocked', 'a tree');

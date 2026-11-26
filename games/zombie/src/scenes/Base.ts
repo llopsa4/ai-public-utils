@@ -8,10 +8,12 @@ import { NOISE_DASH, dashSegments, hungerLabel } from '../render/cues';
 import { tileToWorld, worldBounds, worldToTile, worldToTileF } from '../render/iso';
 import m01 from '../data/missions/m01.json';
 import { type Fadable, Occlusion } from '../render/occlude';
+import { EnemyHighlight } from '../render/highlight';
 import { Ghosts, HoverOutline } from '../render/outline';
 import { addSprite, anchorOf, boxOf, isFinalKey } from '../render/placeholders';
-import { type WallRun, bloodKey, bushKey, groundKey, openingKey, pathTiles, treeKey, wallKey, wallRun } from '../render/terrain';
-import { bakeGround } from './ground';
+import { BORDER, type WallRun, bloodKey, bushKey, groundKey, openingKey, pathTiles, wallRun, wallVariantKey, mapTreeKey } from '../render/terrain';
+import { addForestFront, addHousePieces, bakeGround } from './ground';
+import { houseClearing, houseDressing, housePieces } from '../render/dressing';
 import { changeScene } from './Card';
 import { UnitSprite } from '../render/units';
 import { canFreeFire, selectWeapon, setFreeFire, unlockGun } from '../sim/abilities';
@@ -32,6 +34,7 @@ import {
   checkpointOf,
   cloneBase,
   createBase,
+  baseHints,
   edgePoint,
   herdArrow,
   rollBase,
@@ -69,8 +72,10 @@ import { DIALOGUE_SCENE, openDialogue } from './Dialogue';
 import { openDebrief } from './Debrief';
 import { recordRun } from '../sim/records';
 import { baseResult, observeStats } from '../sim/stats';
+import { progressOfBase } from '../sim/bios';
 import { bindPause } from './Pause';
 import { bindActionKeys, fillHelp } from './actionKeys';
+import { highlightAvailable, highlighted } from '../sim/highlight';
 import { bindSquad, overSquad } from './Squad';
 import { CounterRow } from './counters';
 import { uiImage } from './kit';
@@ -87,8 +92,8 @@ const FONT = GAME_FONT;
 const STOVE_GLOW = 150; // world px: half the width of the stove's light pool (DESIGN §20)
 
 /** The key lines in the HUD corner and on the pause menu's Controls page. */
-// `{action}` is filled with the live key (rebindable, `fillHelp`).
-const HELP = 'Drag: box select    Left-click: select / move / attack / cook / fix (double-click: run)    Right-click: cancel\n{crouch}: stance    {hold}: hold    {freefire}: free fire    {bond}: bond move    {build}: barricade    {fix}: fix window or door    {weapon1} / {weapon2} / {weapon3}: weapon\n{cook}: cook    {eat}: eat    {give}: give meal    {trap}: trap (spike pit / noise can)    {freeze}: pause    {alert}: jump to attack    R: restart    Esc: menu\n{select1} / {select2} / {cycle}: select survivor    Shift-click: add to selection    Double-click a squad card: centre';
+// `{action}` is filled with the live key (rebindable, `fillHelp`). The cooking keys show only with food on.
+const HELP = `Drag: box select    Left-click: select / move / attack${base.food ? ' / cook' : ''} / fix (double-click: run)    Right-click: cancel\n{crouch}: stance    {hold}: hold    {freefire}: free fire    {bond}: bond move    {build}: barricade    {fix}: fix window or door    {weapon1} / {weapon2} / {weapon3}: weapon\n${base.food ? '{cook}: cook    {eat}: eat    {give}: give meal    ' : ''}{trap}: trap (spike pit / noise can)    {freeze}: pause    {alert}: jump to attack    R: restart    Esc: menu\n{select1} / {select2} / {cycle}: select survivor    Shift-click: add to selection    Double-click a squad card: centre`;
 const NOISE_COLOR: Record<string, number> = { step: 0xd8d8d0, shot: 0xe0a45a, lure: 0x8fb4d8, alarm: 0xd85a4a, can: 0xc8a0e0 };
 const TRAP_REFUSED: Record<Exclude<TrapResult, 'ok'>, string> = {
   invalid: 'Nothing to do there',
@@ -130,7 +135,7 @@ const clock = (sec: number): string => `${Math.floor(sec / 60)}:${String(sec % 6
  * Base 1 scene (DESIGN §12, §13, §17): the house from Mission 1 as a home. Left-click selects a survivor,
  * attacks a zombie, cooks at the stove, fixes a broken opening or walks (double-click runs), drag
  * box-selects, right-click only cancels, V hold, B barricade, X fix a
- * broken window or door, K cook, E eat, Q give. All rules live in `src/sim/base.ts`.
+ * broken window or door; with food on also K cook, E eat, Q give. All rules live in `src/sim/base.ts`.
  */
 export class BaseScene extends Phaser.Scene {
   private n = 32;
@@ -148,13 +153,15 @@ export class BaseScene extends Phaser.Scene {
   private openSprites = new Map<string, Phaser.GameObjects.Image>();
   private openRuns = new Map<string, WallRun>();
   private trapSprites = new Map<string, Phaser.GameObjects.Image>();
-  private stoveSprite!: Phaser.GameObjects.Image;
+  private stoveSprite: Phaser.GameObjects.Image | null = null; // drawn only with food on
   private occlusion!: Occlusion<Fadable>;
   private openFade = new Map<string, number>(); // the wall fade of a fixed door or window, by opening id
   private outline!: HoverOutline;
   private ghosts!: Ghosts;
+  private marks!: EnemyHighlight; // Theo's enemy highlight (DESIGN §5)
+  private highlight = false; // its toggle; off at every scene start
   private openLabels = new Map<string, Phaser.GameObjects.Text>();
-  private stoveLabel!: Phaser.GameObjects.Text;
+  private stoveLabel: Phaser.GameObjects.Text | null = null;
   private decalCount = 0;
   private saidSeen = 0;
   private eventsSeen = 0;
@@ -209,6 +216,8 @@ export class BaseScene extends Phaser.Scene {
     this.drawWorld();
     this.outline = new HoverOutline(this);
     this.ghosts = new Ghosts(this);
+    this.marks = new EnemyHighlight(this);
+    this.highlight = false;
     this.fx = this.add.graphics().setDepth(0.3);
     this.hover = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5);
     this.ping = this.add.image(0, 0, 'tile_hover').setOrigin(...anchorOf('tile_hover')).setVisible(false).setDepth(0.5).setTint(0xe8e6de);
@@ -230,7 +239,7 @@ export class BaseScene extends Phaser.Scene {
     this.squad = bindSquad(this, {
       units: () => this.state.survivors,
       nameOf: (id) => name(this.state.survivors.find((u) => u.id === id)!),
-      hungerOf: (id) => ({ frac: (this.state.hunger[id]?.left ?? 0) / hungerTicks(this.state), level: hungerLevel(this.state, id) }),
+      hungerOf: !this.state.foodOn ? undefined : (id) => ({ frac: (this.state.hunger[id]?.left ?? 0) / hungerTicks(this.state), level: hungerLevel(this.state, id) }),
       selection: () => this.selected,
       select: (ids) => {
         this.selected = ids;
@@ -267,6 +276,7 @@ export class BaseScene extends Phaser.Scene {
       eat: () => this.onAction('eat'),
       give: () => this.onAction('give'),
       freefire: () => this.onAction('freefire'),
+      highlight: () => this.onAction('highlight'),
       weapon1: () => this.chooseWeapon(0),
       weapon2: () => this.chooseWeapon(1),
       weapon3: () => this.chooseWeapon(2),
@@ -287,8 +297,9 @@ export class BaseScene extends Phaser.Scene {
       restart: () => this.restartFresh(),
       quit: () => this.leave(),
       quitNote: () => (this.retryable() ? 'Continue resumes at the herd warning.' : 'Progress in this scene is lost; Continue starts it again from its beginning.'),
-      controls: () => fillHelp(HELP).split('\n'),
-      hints: () => base.hints.map(fillHelp),
+      controls: () => fillHelp(highlightAvailable(this.state) ? `${HELP}\n{highlight}: enemy highlight` : HELP).split('\n'),
+      hints: () => baseHints(this.state.foodOn).map(fillHelp),
+      progress: () => progressOfBase(this.state),
     });
 
     startAtmos(this);
@@ -342,28 +353,34 @@ export class BaseScene extends Phaser.Scene {
     }
   }
 
-  /** Ground, walls, trees, bushes, the stove and the labels over the openings. Upright things sort by foot y. */
+  /** Ground, walls, trees, bushes, the stove (food on) and the labels over the openings. Upright things sort by foot y. */
   private drawWorld(): void {
     const s = this.state;
     const n = this.n;
     const path = pathTiles(m01.map);
     const house = m01.roof; // the wood floor of the house (the Base has no roof drawn)
     const floor = (x: number, y: number) => house && x >= house.x && y >= house.y && x < house.x + house.w && y < house.y + house.h && s.grid.tiles[y * n + x] !== WALL;
-    bakeGround(this, n, (x, y) => (floor(x, y) ? 'floor_wood' : groundKey(x, y, n, path)));
-    this.occlusion = new Occlusion(n);
+    bakeGround(this, n, (x, y) => (floor(x, y) ? 'floor_wood' : groundKey(x, y, n, path)), houseDressing(s.grid));
+    this.occlusion = new Occlusion(n, BORDER);
+    addForestFront(this, n, this.occlusion);
     for (let y = 0; y < n; y++) {
       for (let x = 0; x < n; x++) {
         const w = tileToWorld(x, y, n);
         const k = s.grid.tiles[y * n + x];
-        const key = k === WALL ? wallKey(wallRun(s.grid, x, y)) : k === TREE ? treeKey(x, y) : k === BUSH ? bushKey(x, y) : null;
+        const key = k === WALL ? wallVariantKey(wallRun(s.grid, x, y), x, y) : k === TREE ? mapTreeKey(s.grid, x, y, houseClearing) : k === BUSH ? bushKey(x, y) : null;
         if (!key) continue;
         const img = addSprite(this, key, w.x, w.y, w.y + (k === BUSH ? 1 : 0));
         if (k === WALL || k === TREE) this.occlusion.add(x, y, img, boxOf(key, w.x, w.y));
       }
     }
-    const sw = tileToWorld(s.stove.x, s.stove.y, n);
-    this.stoveSprite = addSprite(this, 'stove', sw.x, sw.y, sw.y);
-    this.stoveLabel = this.add.text(sw.x, sw.y - 40, 'Stove', { fontFamily: FONT, fontSize: '14px', color: '#d8d6ce' }).setOrigin(0.5).setDepth(880).setVisible(!isFinalKey('stove'));
+    addHousePieces(this, n, housePieces(), this.occlusion);
+    this.stoveSprite = null;
+    this.stoveLabel = null;
+    if (s.foodOn) {
+      const sw = tileToWorld(s.stove.x, s.stove.y, n);
+      this.stoveSprite = addSprite(this, 'stove', sw.x, sw.y, sw.y);
+      this.stoveLabel = this.add.text(sw.x, sw.y - 40, 'Stove', { fontFamily: FONT, fontSize: '14px', color: '#d8d6ce' }).setOrigin(0.5).setDepth(880).setVisible(!isFinalKey('stove'));
+    }
     const [lx, ly] = edgePoint(s.herd.from, n, 4.2); // the label sits just inside the arrow
     const aw = tileToWorld(lx, ly, n);
     this.herdLabel = this.add.text(aw.x, aw.y, '', { fontFamily: FONT, fontSize: '16px', color: '#ff8a78', backgroundColor: '#1d201cb0', padding: { x: 6, y: 3 } }).setOrigin(0.5).setDepth(880).setVisible(false);
@@ -431,6 +448,7 @@ export class BaseScene extends Phaser.Scene {
       addSprite(this, bloodKey(d.x, d.y), w.x, w.y, 0.2);
     }
     this.syncBlockers();
+    this.syncHighlight(frac);
   }
 
   /** One sprite per barricade segment and per fixed opening; damage fades it; a broken one disappears. */
@@ -499,9 +517,14 @@ export class BaseScene extends Phaser.Scene {
 
   /** The world labels (stove, herd countdown, broken openings) follow the text size option too. */
   private scaleLabels(): void {
-    scaleText(this.stoveLabel, 12);
+    if (this.stoveLabel) scaleText(this.stoveLabel, 12);
     scaleText(this.herdLabel, 16, 6, 3);
     for (const l of this.openLabels.values()) scaleText(l, 12);
+  }
+
+  /** Every living enemy marked while the highlight is on, under a roof too (DESIGN §5). */
+  private syncHighlight(frac: number): void {
+    this.marks.sync(this.highlight ? highlighted(this.state) : [], (e) => this.units.get(e.id)!.body, (e) => tileToWorld(...this.at(e, frac), this.n));
   }
 
   private tickOnce(): void {
@@ -702,6 +725,10 @@ export class BaseScene extends Phaser.Scene {
 
   /** Bar button or its hotkey. Orders are refused while paused or ended. */
   private onAction(id: string): void {
+    if (id === 'highlight') {
+      if (highlightAvailable(this.state)) this.highlight = !this.highlight; // only a view: free, also while paused
+      return;
+    }
     if (!this.canOrder) return;
     const who = this.chosen();
     if (id.startsWith('weapon:')) {
@@ -724,6 +751,8 @@ export class BaseScene extends Phaser.Scene {
       if (who.length === 0) return;
       const next = nextStance(who[0]!.stance);
       for (const u of who) setStance(this.state, u.id, next);
+    } else if (!this.state.foodOn) {
+      return; // Cook, Eat and Give do nothing with food off
     } else if (id === 'cook') {
       const cook = this.nearest(who, this.state.stove.x, this.state.stove.y);
       if (!cook) return this.toast('Select a survivor first');
@@ -755,7 +784,7 @@ export class BaseScene extends Phaser.Scene {
     const z = this.unitAt(wp, this.state.enemies);
     if (z) return { kind: 'enemy', id: z };
     const st = this.state.stove;
-    if (this.onSpot(wp, st.x, st.y)) return { kind: 'object', id: 'stove' };
+    if (this.state.foodOn && this.onSpot(wp, st.x, st.y)) return { kind: 'object', id: 'stove' };
     const t = worldToTile(wp.x, wp.y, this.n);
     const o = this.state.openings.find((o) => !o.fixed && ((o.x === t.x && o.y === t.y) || this.onSpot(wp, o.x, o.y)));
     if (o) return { kind: 'object', id: o.id };
@@ -864,16 +893,16 @@ export class BaseScene extends Phaser.Scene {
       const bits = [`${name(u)}  HP ${u.hp}`, u.stance];
       if (u.order?.type === 'hold') bits.push('holding');
       if (u.order?.type === 'work') bits.push(u.order.job === 'fix' ? 'fixing' : u.order.job === 'cook' ? 'cooking' : 'setting a trap');
-      if (s.hunger[u.id]?.meal) bits.push('holding a meal');
+      if (s.foodOn && s.hunger[u.id]?.meal) bits.push('holding a meal');
       return bits.join('  ·  ');
     });
     const herdLeft = herdSeconds(s);
     const herdText = !s.herd.warned || s.status === 'success' ? '' : herdLeft > 0 ? `Herd in ${clock(herdLeft)}` : s.herd.spawned < herdCount(s) ? 'The herd is coming in!' : 'Kill the herd';
     this.herdLabel.setText(herdText).setVisible(herdText !== '' && s.status === 'playing');
-    this.registry.set('b_counters', lootCounters({ ammo: s.ammo, food: s.food, scrap: s.scrap, herd: herdText }));
+    this.registry.set('b_counters', lootCounters({ ammo: s.ammo, food: s.foodOn ? s.food : undefined, scrap: s.scrap, herd: herdText }));
     const word = (id: string): string => (options().cues ? hungerLabel(hungerLevel(s, id)).toLowerCase() : ''); // DESIGN §19: colour is not the only signal
     // The hunger icon names the line, so each entry is just the name and the clock: four fit beside the key help (Z82).
-    this.registry.set('b_hunger', s.survivors.map((u) => `${name(u)} ${u.hp > 0 ? clock(hungerSeconds(s, u.id)) : 'dead'}${u.hp > 0 && word(u.id) ? ` (${word(u.id)})` : ''}`).join('    '));
+    this.registry.set('b_hunger', !s.foodOn ? '' : s.survivors.map((u) => `${name(u)} ${u.hp > 0 ? clock(hungerSeconds(s, u.id)) : 'dead'}${u.hp > 0 && word(u.id) ? ` (${word(u.id)})` : ''}`).join('    '));
     const worst = s.survivors.some((u) => hungerLevel(s, u.id) === 'starving' || hungerLevel(s, u.id) === 'critical') ? '#e0806a' : s.survivors.some((u) => hungerLevel(s, u.id) === 'low') ? '#f0dc8a' : '#a8a69e';
     this.registry.set('b_hunger_color', worst);
 
@@ -882,9 +911,9 @@ export class BaseScene extends Phaser.Scene {
       ? {
           name: name(first),
           hp: first.hp,
-          buttons: baseButtons(s, first, this.pending),
-          hunger: { frac: (s.hunger[first.id]?.left ?? 0) / hungerTicks(s), level: hungerLevel(s, first.id) },
-          meal: s.hunger[first.id]?.meal ?? false,
+          buttons: baseButtons(s, first, this.pending).map((b) => (b.id === 'highlight' && this.highlight ? { ...b, active: true } : b)),
+          hunger: s.foodOn ? { frac: (s.hunger[first.id]?.left ?? 0) / hungerTicks(s), level: hungerLevel(s, first.id) } : undefined,
+          meal: s.foodOn && (s.hunger[first.id]?.meal ?? false),
         }
       : null;
     this.registry.set('m_bar', bar);
@@ -910,7 +939,7 @@ export class BaseScene extends Phaser.Scene {
   /** The start hints (data/base1.json) one after another, each for HINT_MS of running time; none after the herd warning (DESIGN §12). */
   private startHint(): string {
     if (this.state.herd.warned || this.state.status !== 'playing') return '';
-    const hints = base.hints;
+    const hints = baseHints(this.state.foodOn);
     return hints[Math.floor(this.hintMs / HINT_MS)] ?? '';
   }
 
@@ -974,7 +1003,7 @@ export class BaseScene extends Phaser.Scene {
     const rain = rainLevel(this.state.tick, HERD_WARN_TICK, HERD_ARRIVE_TICK, this.state.herd.spawned, herdCount(this.state));
     this.feel.frame(this.state, rain);
     const sw = tileToWorld(this.state.stove.x, this.state.stove.y, this.n);
-    publishAtmos(this, this.view, { dusk: duskLevel(this.state.tick, HERD_WARN_TICK, HERD_ARRIVE_TICK), rain, fog: 0, lights: [{ x: sw.x, y: sw.y - 8, r: STOVE_GLOW, phase: 0 }] });
+    publishAtmos(this, this.view, { dusk: duskLevel(this.state.tick, HERD_WARN_TICK, HERD_ARRIVE_TICK), rain, fog: 0, lights: this.state.foodOn ? [{ x: sw.x, y: sw.y - 8, r: STOVE_GLOW, phase: 0 }] : [] });
     this.scaleLabels();
     this.drawFx(frac);
     this.barks();
@@ -1019,12 +1048,13 @@ export class BaseHudScene extends Phaser.Scene {
     const { width, height } = this.scale;
     const box = { backgroundColor: '#1d201cb0', padding: { x: 10, y: 6 } };
     this.counters = new CounterRow(this, FONT);
-    this.hungerIcon = uiImage(this, 'icon_hud_hunger', 16, 52, 24);
-    this.hunger =this.add.text(16, 52, '', { fontFamily: FONT, fontSize: '16px', color: '#a8a69e', ...box });
-    this.objective = this.add.text(16, 88, '', { fontFamily: FONT, fontSize: '18px', color: '#f0dc8a', ...box });
-    this.sel = this.add.text(16, height - barH() - 12, '', { fontFamily: FONT, fontSize: '18px', color: '#e8e6de', ...box }).setOrigin(0, 1);
-    this.hint = this.add.text(width / 2, height - barH() - 12, '', { fontFamily: FONT, fontSize: '20px', color: '#f0dc8a', wordWrap: { width: HINT_WRAP }, align: 'center', ...box }).setOrigin(0.5, 1);
-    this.banner = this.add.text(width / 2, height * 0.35, '', { fontFamily: FONT, fontSize: '34px', color: '#ffffff', backgroundColor: '#141614d0', padding: { x: 24, y: 14 }, align: 'center' }).setOrigin(0.5);
+    // Z101: padded boxes start hidden; `update` shows each once it has text (an empty one is a dark rectangle while a dialogue pauses this HUD before its first update).
+    this.hungerIcon = uiImage(this, 'icon_hud_hunger', 16, 52, 24).setVisible(false);
+    this.hunger = this.add.text(16, 52, '', { fontFamily: FONT, fontSize: '16px', color: '#a8a69e', ...box }).setVisible(false);
+    this.objective = this.add.text(16, 88, '', { fontFamily: FONT, fontSize: '18px', color: '#f0dc8a', ...box }).setVisible(false);
+    this.sel = this.add.text(16, height - barH() - 12, '', { fontFamily: FONT, fontSize: '18px', color: '#e8e6de', ...box }).setOrigin(0, 1).setVisible(false);
+    this.hint = this.add.text(width / 2, height - barH() - 12, '', { fontFamily: FONT, fontSize: '20px', color: '#f0dc8a', wordWrap: { width: HINT_WRAP }, align: 'center', ...box }).setOrigin(0.5, 1).setVisible(false);
+    this.banner = this.add.text(width / 2, height * 0.35, '', { fontFamily: FONT, fontSize: '34px', color: '#ffffff', backgroundColor: '#141614d0', padding: { x: 24, y: 14 }, align: 'center' }).setOrigin(0.5).setVisible(false);
     this.help = this.add.text(width - 16, 14, fillHelp(HELP), {
       fontFamily: FONT, fontSize: '14px', color: '#a8a69e', align: 'right',
     }).setOrigin(1, 0);
@@ -1043,7 +1073,7 @@ export class BaseHudScene extends Phaser.Scene {
     const icon = ui(24); // the hunger line starts after its icon (DESIGN §19 UI art)
     this.hungerIcon.setDisplaySize(icon, icon).setPosition(16, ui(52) + Math.round((this.hunger.height - icon) / 2));
     placeText(this.hunger, 16 + icon + 4, 52);
-    placeText(this.objective, 16, 88);
+    placeText(this.objective, 16, this.hunger.text === '' ? 52 : 88); // moves up when there is no hunger line
     this.sel.setPosition(16, height - barH() - 12);
   }
 
@@ -1051,10 +1081,13 @@ export class BaseHudScene extends Phaser.Scene {
     this.layout();
     const r = this.registry;
     this.counters.update((r.get('b_counters') as Counter[] | undefined) ?? [], 16, 12);
-    this.hunger.setText((r.get('b_hunger') as string | undefined) ?? '').setColor((r.get('b_hunger_color') as string | undefined) ?? '#a8a69e');
+    const hunger = (r.get('b_hunger') as string | undefined) ?? '';
+    this.hunger.setText(hunger).setColor((r.get('b_hunger_color') as string | undefined) ?? '#a8a69e').setVisible(hunger !== '');
+    this.hungerIcon.setVisible(hunger !== '');
     const objective = (r.get('b_objective') as string | undefined) ?? '';
     this.objective.setText(objective).setVisible(objective !== '');
-    this.sel.setText((r.get('b_sel') as string | undefined) ?? '');
+    const sel = (r.get('b_sel') as string | undefined) ?? '';
+    this.sel.setText(sel).setVisible(sel !== '');
     const hint = (r.get('b_hint') as string | undefined) ?? '';
     this.hint.setText(fillHelp(hint)).setVisible(hint !== '');
     placeHint(this.hint, this.sel, this.scale.width);

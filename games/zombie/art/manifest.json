@@ -52,6 +52,16 @@
         "color": "#bdbdb4"
       }
     },
+    "survivor_tinkerer": {
+      "size": [22, 48],
+      "anchor": [0.5, 0.92],
+      "frames": 1,
+      "status": "placeholder",
+      "placeholder": {
+        "shape": "capsule",
+        "color": "#aeb0a6"
+      }
+    },
     "zombie": {
       "size": [20, 40],
       "anchor": [0.5, 0.92],
@@ -86,15 +96,201 @@
     "ground_dirt": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#57534b" } },
     "ground_leaves": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#4f4c42" } },
     "ground_path": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#6a675e" } },
+    "patch_dirt_a": {
+      "group": "env",
+      "scale": 2,
+      "size": [256, 128],
+      "anchor": [0.5, 0.5],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#57534b"
+      }
+    },
+    "patch_dirt_b": {
+      "group": "env",
+      "scale": 2,
+      "size": [192, 112],
+      "anchor": [0.5, 0.5],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#57534b"
+      }
+    },
+    "patch_dirt_c": {
+      "group": "env",
+      "scale": 2,
+      "size": [320, 144],
+      "anchor": [0.5, 0.5],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#57534b"
+      }
+    },
+    "patch_leaves_a": {
+      "group": "env",
+      "scale": 2,
+      "size": [256, 128],
+      "anchor": [0.5, 0.5],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#454238"
+      }
+    },
+    "patch_leaves_b": {
+      "group": "env",
+      "scale": 2,
+      "size": [192, 112],
+      "anchor": [0.5, 0.5],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#454238"
+      }
+    },
+    "patch_leaves_c": {
+      "group": "env",
+      "scale": 2,
+      "size": [320, 144],
+      "anchor": [0.5, 0.5],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#454238"
+      }
+    },
+    "scatter_tuft_a": {
+      "group": "env",
+      "scale": 2,
+      "size": [40, 32],
+      "anchor": [0.5, 0.8],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#6d7268"
+      }
+    },
+    "scatter_tuft_b": {
+      "group": "env",
+      "scale": 2,
+      "size": [48, 36],
+      "anchor": [0.5, 0.8],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#666b61"
+      }
+    },
+    "scatter_fern_a": {
+      "group": "env",
+      "scale": 2,
+      "size": [64, 44],
+      "anchor": [0.5, 0.75],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#5e6459"
+      }
+    },
+    "scatter_fern_b": {
+      "group": "env",
+      "scale": 2,
+      "size": [56, 40],
+      "anchor": [0.5, 0.75],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#6a7064"
+      }
+    },
+    "scatter_rocks": {
+      "group": "env",
+      "scale": 2,
+      "size": [56, 36],
+      "anchor": [0.5, 0.7],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "ellipse",
+        "color": "#85857f"
+      }
+    },
+    "scatter_branch": {
+      "group": "env",
+      "scale": 2,
+      "size": [80, 32],
+      "anchor": [0.5, 0.5],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "box",
+        "color": "#6e6a62"
+      }
+    },
+    "scatter_mushrooms": {
+      "group": "env",
+      "scale": 2,
+      "size": [32, 28],
+      "anchor": [0.5, 0.75],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "capsule",
+        "color": "#9a978d"
+      }
+    },
+    "scatter_stump": {
+      "group": "env",
+      "scale": 2,
+      "size": [48, 36],
+      "anchor": [0.5, 0.7],
+      "frames": 1,
+      "status": "final",
+      "placeholder": {
+        "shape": "box",
+        "color": "#77736a"
+      }
+    },
     "floor_wood": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#5f5a50" } },
     "roof_top": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#62625c" } },
     "tree_a": { "group": "env", "scale": 2, "size": [56, 144], "anchor": [0.5, 0.92], "frames": 1, "status": "final", "placeholder": { "shape": "capsule", "color": "#2c302b" } },
     "tree_b": { "group": "env", "scale": 2, "size": [56, 144], "anchor": [0.5, 0.92], "frames": 1, "status": "final", "placeholder": { "shape": "capsule", "color": "#2f332e" } },
     "tree_c": { "group": "env", "scale": 2, "size": [56, 144], "anchor": [0.5, 0.92], "frames": 1, "status": "final", "placeholder": { "shape": "capsule", "color": "#292d28" } },
+    "tree_pine_a": { "group": "env", "scale": 2, "size": [128, 352], "anchor": [0.5, 0.93], "frames": 1, "status": "final", "placeholder": { "shape": "spire", "color": "#262a25" } },
+    "tree_pine_b": { "group": "env", "scale": 2, "size": [128, 352], "anchor": [0.5, 0.93], "frames": 1, "status": "final", "placeholder": { "shape": "spire", "color": "#2a2f29" } },
+    "tree_birch": { "group": "env", "scale": 2, "size": [112, 336], "anchor": [0.5, 0.93], "frames": 1, "status": "final", "placeholder": { "shape": "spire", "color": "#4a4e44" } },
+    "tree_snag": { "group": "env", "scale": 2, "size": [80, 320], "anchor": [0.5, 0.93], "frames": 1, "status": "final", "placeholder": { "shape": "post", "color": "#55534c" } },
     "bush_a": { "group": "env", "scale": 2, "size": [80, 52], "anchor": [0.5, 0.75], "frames": 1, "status": "final", "placeholder": { "shape": "ellipse", "color": "#3b4238" } },
     "bush_b": { "group": "env", "scale": 2, "size": [80, 52], "anchor": [0.5, 0.75], "frames": 1, "status": "final", "placeholder": { "shape": "ellipse", "color": "#363d34" } },
     "wall_se": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#7b7a72" } },
     "wall_sw": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#75746c" } },
+    "wall_se_beam": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#7b7a72", "mark": "beam", "face": "left" } },
+    "wall_se_boarded": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#7b7a72", "mark": "board", "face": "left" } },
+    "wall_sw_beam": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#75746c", "mark": "beam", "face": "right" } },
+    "wall_sw_boarded": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#75746c", "mark": "board", "face": "right" } },
+    "roof_ridge": { "group": "env", "scale": 2, "size": [96, 64], "anchor": [0.5, 0.75], "frames": 1, "status": "final", "placeholder": { "shape": "strip", "color": "#4f5459", "h": 16 } },
+    "roof_trim": { "group": "env", "scale": 2, "size": [80, 48], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "strip", "color": "#3a3e41", "h": 8 } },
+    "roof_chimney": { "group": "env", "scale": 2, "size": [48, 128], "anchor": [0.5, 0.9], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#5d5650" } },
+    "house_steps": { "group": "env", "scale": 2, "size": [96, 64], "anchor": [0.5, 0.62], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#6a645a", "h": 16 } },
+    "furn_bed": { "group": "env", "scale": 2, "size": [128, 88], "anchor": [0.5, 0.64], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#6b6258", "h": 24 } },
+    "furn_table": { "group": "env", "scale": 2, "size": [112, 88], "anchor": [0.5, 0.68], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#655d52", "h": 32 } },
+    "furn_shelves": { "group": "env", "scale": 2, "size": [80, 160], "anchor": [0.5, 0.88], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#5f584e", "h": 120 } },
+    "furn_cupboard": { "group": "env", "scale": 2, "size": [96, 160], "anchor": [0.5, 0.85], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#625a50", "h": 112 } },
+    "furn_woodpile": { "group": "env", "scale": 2, "size": [96, 80], "anchor": [0.5, 0.7], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#5a5247", "h": 32 } },
+    "furn_rug": { "group": "env", "scale": 2, "size": [160, 80], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#5c4f47" } },
     "door_se_fixed": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#6c6a62", "mark": "door", "face": "left" } },
     "door_se_broken": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#55534c", "h": 22, "mark": "door", "face": "left" } },
     "window_se_fixed": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "cube", "color": "#7b7a72", "mark": "window", "face": "left" } },
@@ -106,6 +302,14 @@
     "cover": { "group": "env", "scale": 2, "size": [88, 48], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#65635b" } },
     "stove": { "group": "env", "scale": 2, "size": [96, 112], "anchor": [0.5, 0.85], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#8a8a82" } },
     "campfire": { "group": "env", "scale": 2, "size": [64, 48], "anchor": [0.5, 0.7], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#b9b9b0" } },
+    "floor_concrete": { "group": "env", "scale": 2, "size": [128, 64], "anchor": [0.5, 0.5], "frames": 1, "status": "placeholder", "placeholder": { "shape": "diamond", "color": "#6e6e6a" } },
+    "fence": { "group": "env", "scale": 2, "size": [128, 112], "anchor": [0.5, 0.714], "frames": 1, "status": "placeholder", "placeholder": { "shape": "cube", "color": "#6a655c", "h": 48 } },
+    "gate": { "group": "env", "scale": 2, "size": [48, 144], "anchor": [0.5, 0.95], "frames": 1, "status": "placeholder", "placeholder": { "shape": "post", "color": "#5c5a55" } },
+    "solar_panel": { "group": "env", "scale": 2, "size": [128, 96], "anchor": [0.5, 0.667], "frames": 1, "status": "placeholder", "placeholder": { "shape": "cube", "color": "#4d5560", "h": 20 } },
+    "inverter": { "group": "env", "scale": 2, "size": [56, 80], "anchor": [0.5, 0.9], "frames": 1, "status": "placeholder", "placeholder": { "shape": "box", "color": "#7a7c78" } },
+    "generator": { "group": "env", "scale": 2, "size": [128, 112], "anchor": [0.5, 0.714], "frames": 1, "status": "placeholder", "placeholder": { "shape": "cube", "color": "#6b6e64", "h": 40 } },
+    "intercom": { "group": "env", "scale": 2, "size": [40, 112], "anchor": [0.5, 0.95], "frames": 1, "status": "placeholder", "placeholder": { "shape": "post", "color": "#8a8a80" } },
+    "bunker_door": { "group": "env", "scale": 2, "size": [128, 160], "anchor": [0.5, 0.8], "frames": 1, "status": "placeholder", "placeholder": { "shape": "cube", "color": "#5e6062", "mark": "door", "face": "left" } },
     "crate_closed": { "group": "env", "scale": 2, "size": [64, 56], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#6f6b62" } },
     "crate_open": { "group": "env", "scale": 2, "size": [64, 56], "anchor": [0.5, 0.8], "frames": 1, "status": "final", "placeholder": { "shape": "box", "color": "#5a574f" } },
     "spike_armed": { "group": "env", "scale": 2, "size": [96, 48], "anchor": [0.5, 0.5], "frames": 1, "status": "final", "placeholder": { "shape": "diamond", "color": "#a8a590" } },
@@ -152,6 +356,12 @@
         "legacyKey": "survivor_archer",
         "status": "final",
         "anims": { "idle": 1, "walk": 4, "run": 4, "crouch": 4, "crawl": 4, "hold": 1, "work": 2, "death": 4, "pistol_shot": 3, "bow_shot": 3, "club": 3 }
+      },
+      "tinkerer": {
+        "atlas": "tinkerer",
+        "legacyKey": "survivor_tinkerer",
+        "status": "final",
+        "anims": { "idle": 1, "walk": 4, "run": 4, "crouch": 4, "crawl": 4, "hold": 1, "work": 2, "death": 4, "pistol_shot": 3, "shovel": 3 }
       },
       "zombie_fresh_a": {
         "atlas": "zombies_fresh",
@@ -214,6 +424,7 @@
     "scout": { "scale": 2, "png": "art/atlas/scout.png", "json": "art/atlas/scout.json", "format": "phaser-json-hash", "keys": ["scout"] },
     "hunter": { "scale": 2, "png": "art/atlas/hunter.png", "json": "art/atlas/hunter.json", "format": "phaser-json-hash", "keys": ["hunter"] },
     "archer": { "scale": 2, "png": "art/atlas/archer.png", "json": "art/atlas/archer.json", "format": "phaser-json-hash", "keys": ["archer"] },
+    "tinkerer": { "scale": 2, "png": "art/atlas/tinkerer.png", "json": "art/atlas/tinkerer.json", "format": "phaser-json-hash", "keys": ["tinkerer"] },
     "zombies_fresh": {
       "scale": 2,
       "png": "art/atlas/zombies_fresh.png",
@@ -247,7 +458,8 @@
       "portrait": { "scale": 2, "packed": true },
       "portrait_small": { "scale": 2, "packed": true },
       "cursor": { "scale": 1, "packed": false },
-      "title": { "scale": 1, "packed": false }
+      "title": { "scale": 1, "packed": false },
+      "bio": { "scale": 1, "packed": false }
     },
     "items": {
       "kit_panel": { "group": "kit", "size": [96,96], "inset": [12,12,12,12], "status": "final" },
@@ -268,11 +480,14 @@
       "icon_bar_bow": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_hatchet": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_warclub": { "group": "icon_bar", "size": [96,96], "status": "final" },
+      "icon_bar_shovel": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_takedown": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_carry": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_lure": { "group": "icon_bar", "size": [96,96], "status": "final" },
+      "icon_bar_finish": { "group": "icon_bar", "size": [96,96], "status": "placeholder" },
       "icon_bar_hold": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_bond": { "group": "icon_bar", "size": [96,96], "status": "final" },
+      "icon_bar_highlight": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_freefire": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_crouch": { "group": "icon_bar", "size": [96,96], "status": "final" },
       "icon_bar_eat": { "group": "icon_bar", "size": [96,96], "status": "final" },
@@ -295,6 +510,7 @@
       "cursor_use": { "group": "cursor", "size": [32,32], "hotspot": [16,16], "status": "final" },
       "cursor_move": { "group": "cursor", "size": [32,32], "hotspot": [16,16], "status": "final" },
       "cursor_run": { "group": "cursor", "size": [32,32], "hotspot": [16,16], "status": "final" },
+      "cursor_finish_no": { "group": "cursor", "size": [32,32], "hotspot": [16,16], "status": "placeholder" },
       "portrait_fighter_neutral": { "group": "portrait", "size": [256,256], "status": "final" },
       "portrait_fighter_afraid": { "group": "portrait", "size": [256,256], "status": "final" },
       "portrait_fighter_determined": { "group": "portrait", "size": [256,256], "status": "final" },
@@ -311,6 +527,10 @@
       "portrait_archer_afraid": { "group": "portrait", "size": [256,256], "status": "final" },
       "portrait_archer_determined": { "group": "portrait", "size": [256,256], "status": "final" },
       "portrait_archer_hurt": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_tinkerer_neutral": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_tinkerer_afraid": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_tinkerer_determined": { "group": "portrait", "size": [256,256], "status": "final" },
+      "portrait_tinkerer_hurt": { "group": "portrait", "size": [256,256], "status": "final" },
       "portrait_small_fighter_neutral": { "group": "portrait_small", "size": [72,72], "status": "final" },
       "portrait_small_fighter_hurt": { "group": "portrait_small", "size": [72,72], "status": "final" },
       "portrait_small_scout_neutral": { "group": "portrait_small", "size": [72,72], "status": "final" },
@@ -319,8 +539,15 @@
       "portrait_small_hunter_hurt": { "group": "portrait_small", "size": [72,72], "status": "final" },
       "portrait_small_archer_neutral": { "group": "portrait_small", "size": [72,72], "status": "final" },
       "portrait_small_archer_hurt": { "group": "portrait_small", "size": [72,72], "status": "final" },
+      "portrait_small_tinkerer_neutral": { "group": "portrait_small", "size": [72,72], "status": "final" },
+      "portrait_small_tinkerer_hurt": { "group": "portrait_small", "size": [72,72], "status": "final" },
       "title_bg": { "group": "title", "size": [640,360], "status": "final" },
-      "title_logo": { "group": "title", "size": [400,120], "status": "final" }
+      "title_logo": { "group": "title", "size": [400,120], "status": "final" },
+      "bio_fighter": { "group": "bio", "size": [384,512], "status": "final" },
+      "bio_scout": { "group": "bio", "size": [384,512], "status": "final" },
+      "bio_hunter": { "group": "bio", "size": [384,512], "status": "final" },
+      "bio_archer": { "group": "bio", "size": [384,512], "status": "final" },
+      "bio_tinkerer": { "group": "bio", "size": [384,512], "status": "final" }
     }
   }
 }

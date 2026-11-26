@@ -4,10 +4,11 @@ import chars from '../data/characters.json';
 import { REPATH, enemySees, route } from './ai';
 import { TICK_HZ } from './time';
 import { bondAvailable } from './bond';
-import { activeWeapon, damage, face, hasAmmo, weapon } from './combat';
+import { activeWeapon, damage, discharge, face, hasAmmo, weapon } from './combat';
+import { highlightAvailable } from './highlight';
 import { emitNoise } from './noise';
-import { ADJACENT, dist } from './vision';
-import type { MissionState, Order, Survivor } from './mission';
+import { ADJACENT, dist, lineOfSight } from './vision';
+import type { Body, MissionState, Order, Survivor } from './mission';
 
 function living(s: MissionState, id: string): Survivor | undefined {
   return s.survivors.find((u) => u.id === id && u.hp > 0);
@@ -141,9 +142,62 @@ export function stepOpen(s: MissionState, u: Survivor, o: Extract<Order, { type:
   }
 }
 
+// ---- Finish (N, click a body; DESIGN §26): a squatter's body that would rise stays a body. Ray and June spend one
+// arrow from range; everyone else, and an archer out of arrows, holds 2 s next to it, crouched. ----
+
+/** The scene has squatters, so its action bars offer Finish. */
+export const finishAvailable = (s: MissionState): boolean => s.enemies.some((e) => e.side === 'human');
+
+/** The only valid target: a body that is still going to rise. */
+export const finishTarget = (s: MissionState, id: string): Body | undefined => s.bodies.find((b) => b.id === id && b.riseAt !== undefined);
+
+export const finishesByArrow = (u: Survivor): boolean => u.weapons.includes('bow') && (u.arrows ?? 0) > 0;
+
+/** Who of the selected survivors does it: the nearest with an arrow to spend, else the nearest. */
+export function finisherFor(s: MissionState, who: readonly Survivor[], body: string): Survivor | undefined {
+  const b = finishTarget(s, body);
+  if (!b) return undefined;
+  const far = (u: Survivor): number => dist(u.x, u.y, b.x, b.y);
+  return who.filter((u) => u.hp > 0).sort((p, q) => Number(finishesByArrow(q)) - Number(finishesByArrow(p)) || far(p) - far(q))[0];
+}
+
+export function orderFinish(s: MissionState, id: string, body: string): boolean {
+  const u = living(s, id);
+  if (!u || !finishTarget(s, body)) return false;
+  u.order = { type: 'finish', target: body, left: -1 };
+  u.running = false;
+  u.path = [];
+  return true;
+}
+
+export function stepFinish(s: MissionState, u: Survivor, o: Extract<Order, { type: 'finish' }>): void {
+  const b = finishTarget(s, o.target);
+  if (!b) return end(u); // already finished, or it rose first
+  if (finishesByArrow(u)) {
+    o.left = -1;
+    const bow = weapon('bow');
+    if (dist(u.x, u.y, b.x, b.y) > bow.range || !lineOfSight(s.grid, u.x, u.y, b.x, b.y)) return approach(s, u, b.x, b.y);
+    u.path = [];
+    face(u, b.x, b.y);
+    if (u.cooldown > 0) return;
+    discharge(s, u, bow, b.x, b.y);
+  } else {
+    if (dist(u.x, u.y, b.x, b.y) > ADJACENT) {
+      o.left = -1; // the body moved off (carried): the 2 s start again
+      return approach(s, u, b.x, b.y);
+    }
+    u.path = [];
+    face(u, b.x, b.y);
+    if (o.left < 0) o.left = Math.round(chars.finishTime * TICK_HZ);
+    if (--o.left > 0) return;
+  }
+  delete b.riseAt;
+  end(u);
+}
+
 // ---- Weapons (action bar buttons, keys 1 to 3): choose the weapon a left-click attack uses. ----
 
-export const WEAPON_LABEL: Record<string, string> = { knife: 'Knife', pistol: 'Gun', club: 'Club', hatchet: 'Hatchet', warclub: 'War club', bow: 'Bow' };
+export const WEAPON_LABEL: Record<string, string> = { knife: 'Knife', pistol: 'Gun', club: 'Club', hatchet: 'Hatchet', warclub: 'War club', shovel: 'Shovel', bow: 'Bow' };
 
 /** Chooses one of the survivor's own weapons. A weapon that needs ammo cannot be chosen with none left. */
 export function selectWeapon(s: MissionState, id: string, weaponId: string): boolean {
@@ -179,7 +233,7 @@ export function setFreeFire(s: MissionState, id: string, on: boolean): boolean {
 // ---- Action bar (DESIGN §17): the buttons for one survivor. Pure data; the scene draws and clicks them. ----
 
 export interface BarButton {
-  id: string; // `weapon:<id>`, `takedown`, `carry`, `hold`, `crouch`, `lure`, `bond`
+  id: string; // `weapon:<id>`, `takedown`, `carry`, `lure`, `finish`, `hold`, `crouch`, `bond`, `highlight`
   label: string;
   key: string;
   enabled: boolean; // greyed when false
@@ -198,6 +252,7 @@ export function barButtons(s: MissionState, u: Survivor): BarButton[] {
   if (canTakedown(u)) out.push({ id: 'takedown', label: 'Takedown', key: 'F', enabled: true, active: u.order?.type === 'takedown' });
   if (canCarry(u)) out.push({ id: 'carry', label: 'Carry', key: 'G', enabled: true, active: u.carrying !== null });
   if (canLure(u)) out.push({ id: 'lure', label: 'Lure', key: 'L', enabled: u.lureCd <= 0, active: false });
+  if (finishAvailable(s)) out.push({ id: 'finish', label: 'Finish', key: 'N', enabled: true, active: u.order?.type === 'finish' });
   out.push({ id: 'hold', label: 'Hold', key: 'V', enabled: true, active: u.order?.type === 'hold' });
   if (canFreeFire(u)) out.push({ id: 'freefire', label: 'Free fire', key: 'Z', enabled: true, active: u.freeFire === true });
   out.push({ id: 'crouch', label: 'Crouch', key: 'C', enabled: true, active: u.stance !== 'walk' });
@@ -206,5 +261,7 @@ export function barButtons(s: MissionState, u: Survivor): BarButton[] {
     const both = s.survivors.filter((v) => v.hp > 0 && (v.kind === 'fighter' || v.kind === 'scout')).length >= 2;
     out.push({ id: 'bond', label: s.bond.used ? 'Bond (used)' : 'Bond', key: 'J', enabled: bondAvailable(s) && both, active: s.bond.run !== null });
   }
+  // Theo's enemy highlight (DESIGN §5), on every bar while he is in the scene; the scene marks it active.
+  if (highlightAvailable(s)) out.push({ id: 'highlight', label: 'Highlight', key: 'M', enabled: true, active: false });
   return out;
 }

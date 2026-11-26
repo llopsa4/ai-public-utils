@@ -3,14 +3,15 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { PNG } from 'pngjs';
-import { buildAtlases, cellOf, envItems, framesDir, listDir, loadManifest, loadPalette, paletteProblem, parseArgs, parseFrameFile, readStandins, uiItems, writeStandinFrames, writeStandins } from './lib.mjs';
+import { buildAtlases, cellOf, envItems, exitIfClaimed, framesDir, listDir, loadManifest, loadPalette, paletteProblem, parseArgs, parseFrameFile, readStandins, uiItems, writeStandinFrames, writeStandins } from './lib.mjs';
 
-const { root, rest } = parseArgs(process.argv.slice(2));
+const { root, rest, force } = parseArgs(process.argv.slice(2));
 const batch = rest[0];
 if (!batch || !/^[\w.-]+$/.test(batch)) {
   console.error('Usage: npm run art:pack -- <batch>   (a folder name in art/inbox/, for example A1)');
   process.exit(1);
 }
+exitIfClaimed(root, force);
 const manifest = loadManifest(root);
 const inbox = join(root, 'art', 'inbox', batch);
 if (!existsSync(inbox)) {

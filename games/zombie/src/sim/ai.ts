@@ -7,14 +7,14 @@ import { type Grid, isBlocked } from './grid';
 import { type Noise, emitNoise, pickNoise } from './noise';
 import { type Pt, findPath, nearestFree } from './path';
 import { rngInt } from './rng';
-import { type Mode, type Viewer, ADJACENT, dist, isLow, moveMode, seeSurvivor, seesPoint } from './vision';
-import type { Enemy, MissionState, Survivor } from './mission';
+import { type Mode, type Viewer, ADJACENT, dist, isLow, lineOfSight, moveMode, seeSurvivor, seesPoint } from './vision';
+import type { Enemy, MissionState, Survivor, Unit } from './mission';
 
 export type AiMode = 'wander' | 'investigate' | 'chase' | 'patrol' | 'alert' | 'search' | 'body';
 
 export interface AiState {
   mode: AiMode;
-  target: string | null; // survivor id while chasing / alert
+  target: string | null; // the unit id chased (a zombie: a survivor or a squatter, DESIGN §26) or a guard's survivor while alert
   goal: Pt | null; // investigate or body destination
   lastSeen: [number, number] | null;
   lastSeenTick: number;
@@ -24,6 +24,10 @@ export interface AiState {
   alarmed: boolean; // human raised the alarm in this alert
   /** Zombie only, looks only: walking within `reachRadius` of what it goes for, so it reaches out (DESIGN §7). */
   near: boolean;
+  /** Human only: a base-wave raider (DESIGN §25) that advances on the survivors instead of guarding a post. */
+  assault?: boolean;
+  /** Zombie only: its last sighting was a squatter, not a survivor (DESIGN §26); the music ignores such a chase. */
+  prey?: 'human';
 }
 
 const Z = enemies.zombie;
@@ -33,9 +37,11 @@ export const REPATH = 5;
 const BITE: Weapon = { id: 'bite', range: ADJACENT, damage: Z.bite.damage, noise: 0, cooldown: Z.bite.cooldown, act: 'bite' };
 const GUN: Weapon = { id: 'gun', ...H.gun, act: 'shot' };
 
-export function newAi(kind: 'zombie' | 'human'): AiState {
+/** A fresh AI; `assault` (humans only) makes a base-wave raider, always alert (DESIGN §25). */
+export function newAi(kind: 'zombie' | 'human', assault = false): AiState {
+  const raider = assault && kind === 'human';
   return {
-    mode: kind === 'zombie' ? 'wander' : 'patrol',
+    mode: kind === 'zombie' ? 'wander' : raider ? 'alert' : 'patrol',
     target: null,
     goal: null,
     lastSeen: null,
@@ -45,6 +51,7 @@ export function newAi(kind: 'zombie' | 'human'): AiState {
     spot: {},
     alarmed: false,
     near: false,
+    ...(raider ? { assault: true } : {}),
   };
 }
 
@@ -172,30 +179,78 @@ function survivorById(s: MissionState, id: string | null): Survivor | undefined 
   return s.survivors.find((u) => u.id === id);
 }
 
+/** A survivor, or else an enemy, by id. */
+function unitById(s: MissionState, id: string | null): Unit | undefined {
+  return survivorById(s, id) ?? s.enemies.find((e) => e.id === id);
+}
+
+/** Living human enemies (squatters, DESIGN §26): zombies hunt them as they hunt survivors. */
+function livingHumans(s: MissionState): Enemy[] {
+  return s.enemies.filter((e) => e.side === 'human' && e.hp > 0);
+}
+
+/**
+ * What a zombie goes for this tick (DESIGN §7, §26): the nearest survivor or squatter it senses. A squatter has no
+ * stance, so it is seen as a standing survivor would be.
+ */
+function perceivePrey(s: MissionState, e: Enemy): Unit | null {
+  let best: Unit | null = perceive(s, e);
+  let bd = best ? dist(e.x, e.y, best.x, best.y) : Infinity;
+  const v = enemyViewer(e, 'walk', s.difficulty);
+  for (const h of livingHumans(s)) {
+    const d = dist(e.x, e.y, h.x, h.y);
+    if (d >= bd || seeSurvivor(s.grid, v, { x: h.x, y: h.y, mode: 'walk' }) === 'none') continue;
+    bd = d;
+    best = h;
+  }
+  return best;
+}
+
+/**
+ * The zombie a guard shoots (DESIGN §26): the nearest living one in its cone and gun range with a clear line, or one
+ * close enough to bite it from any side.
+ */
+export function zombieInSights(s: MissionState, e: Enemy): Enemy | null {
+  const v = enemyViewer(e);
+  let best: Enemy | null = null;
+  let bd = Infinity;
+  for (const z of s.enemies) {
+    if (z.side !== 'zombie' || z.hp <= 0) continue;
+    const d = dist(e.x, e.y, z.x, z.y);
+    if (d >= bd || d > GUN.range + 1e-9) continue;
+    if (d <= ADJACENT ? !lineOfSight(s.grid, e.x, e.y, z.x, z.y) : !seesPoint(s.grid, v, z.x, z.y)) continue;
+    bd = d;
+    best = z;
+  }
+  return best;
+}
+
 export function stepEnemy(s: MissionState, e: Enemy, heard: readonly Noise[]): void {
   if (e.hp <= 0) return;
   if (e.cooldown > 0) e.cooldown--;
   if (e.side === 'zombie') {
     stepZombie(s, e, heard);
-    const points: (readonly [number, number])[] = s.survivors.filter((u) => u.hp > 0).map((u) => [u.x, u.y]);
+    const points: (readonly [number, number])[] = [...s.survivors.filter((u) => u.hp > 0), ...livingHumans(s)].map((u) => [u.x, u.y]);
     if (e.ai.goal) points.push(e.ai.goal);
     e.ai.near = nearTarget(e, points);
   } else stepHuman(s, e, heard);
 }
 
-// Zombie: wanders; walks to any noise it hears; chases a survivor it sees; bites when adjacent;
-// loses track after `loseTrack` seconds out of sight. Ignores bodies.
+// Zombie: wanders; walks to any noise it hears; chases a survivor or squatter it sees (DESIGN §26); bites when
+// adjacent; loses track after `loseTrack` seconds out of sight. Ignores bodies.
 function stepZombie(s: MissionState, e: Enemy, heard: readonly Noise[]): void {
   const ai = e.ai;
-  const seen = perceive(s, e);
+  const seen = perceivePrey(s, e);
   if (seen) {
     ai.mode = 'chase';
     ai.target = seen.id;
+    if (seen.side === 'human') ai.prey = 'human';
+    else delete ai.prey;
     ai.lastSeen = [seen.x, seen.y];
     ai.lastSeenTick = s.tick;
   }
   if (ai.mode === 'chase') {
-    const t = survivorById(s, ai.target);
+    const t = unitById(s, ai.target);
     if (!t || t.hp <= 0 || s.tick - ai.lastSeenTick > Z.loseTrack * TICK_HZ) {
       ai.mode = 'wander';
       ai.target = null;
@@ -246,10 +301,20 @@ function startSearch(e: Enemy): void {
 
 // Human guard: patrols; near half of the cone sees anyone, far half only standing survivors after
 // `farSpot` s. Seeing a survivor → alert: raise the alarm once and shoot. Hears shots and alarms →
-// goes to look. Sees a dead human → walks to the body and searches.
+// goes to look. Sees a dead human → walks to the body and searches. With no survivor in view, a zombie in its
+// sights (DESIGN §26) is shot: it stands, keeps its route and alarm state, and goes on once the zombie is down.
 function stepHuman(s: MissionState, e: Enemy, heard: readonly Noise[]): void {
+  if (e.ai.assault) return stepAssault(s, e);
   const ai = e.ai;
   const seen = perceive(s, e);
+  if (!seen) {
+    const z = zombieInSights(s, e);
+    if (z) {
+      face(e, z.x, z.y);
+      fire(s, e, GUN, z);
+      return;
+    }
+  }
   if (seen) {
     ai.mode = 'alert';
     ai.target = seen.id;
@@ -308,6 +373,96 @@ function stepHuman(s: MissionState, e: Enemy, heard: readonly Noise[]): void {
     default:
       patrol(s, e);
   }
+}
+
+/**
+ * The reachable tile nearest to `to` (straight-line distance), by a flood from the unit's tile with the
+ * pathfinder's moves (8 directions, no cutting a blocked corner); ties go to the tile reached first.
+ */
+export function nearestReachable(g: Grid, from: readonly [number, number], to: readonly [number, number]): Pt | null {
+  const n = g.size;
+  const sx = Math.round(from[0]);
+  const sy = Math.round(from[1]);
+  if (sx < 0 || sy < 0 || sx >= n || sy >= n) return null;
+  const seen = new Uint8Array(n * n);
+  const queue: number[] = [sy * n + sx];
+  seen[sy * n + sx] = 1;
+  let best: Pt = [sx, sy];
+  let bd = Math.hypot(sx - to[0], sy - to[1]);
+  for (let i = 0; i < queue.length; i++) {
+    const k = queue[i]!;
+    const x = k % n;
+    const y = (k - x) / n;
+    const d = Math.hypot(x - to[0], y - to[1]);
+    if (d < bd - 1e-9) {
+      bd = d;
+      best = [x, y];
+    }
+    for (let dy = -1; dy <= 1; dy++) {
+      for (let dx = -1; dx <= 1; dx++) {
+        if (dx === 0 && dy === 0) continue;
+        const nx = x + dx;
+        const ny = y + dy;
+        if (nx < 0 || ny < 0 || nx >= n || ny >= n || seen[ny * n + nx] || isBlocked(g, nx, ny)) continue;
+        if (dx !== 0 && dy !== 0 && (isBlocked(g, x + dx, y) || isBlocked(g, x, y + dy))) continue;
+        seen[ny * n + nx] = 1;
+        queue.push(ny * n + nx);
+      }
+    }
+  }
+  return best;
+}
+
+/** The nearest living survivor to an enemy, or undefined when none is left. */
+function nearestSurvivor(s: MissionState, e: Enemy): Survivor | undefined {
+  let best: Survivor | undefined;
+  let bd = Infinity;
+  for (const u of s.survivors) {
+    if (u.hp <= 0) continue;
+    const d = dist(e.x, e.y, u.x, u.y);
+    if (d < bd) {
+      bd = d;
+      best = u;
+    }
+  }
+  return best;
+}
+
+// Base-wave raider (DESIGN §25): knows where the camp is. Shoots a survivor it sees in gun range,
+// standing still to fire; otherwise advances on the nearest survivor. Barricades and fixed openings
+// stop it (it never chews): sealed out, it walks to the reachable tile nearest that survivor and waits
+// there facing them, firing over a barricade at anyone standing in view.
+function stepAssault(s: MissionState, e: Enemy): void {
+  const ai = e.ai;
+  ai.mode = 'alert';
+  const seen = perceive(s, e);
+  if (seen) {
+    ai.target = seen.id;
+    ai.lastSeen = [seen.x, seen.y];
+    ai.lastSeenTick = s.tick;
+    if (dist(e.x, e.y, seen.x, seen.y) <= GUN.range) {
+      e.path = [];
+      face(e, seen.x, seen.y);
+      fire(s, e, GUN, seen);
+      return;
+    }
+  }
+  const t = seen ?? nearestSurvivor(s, e);
+  if (!t) {
+    e.path = [];
+    return;
+  }
+  ai.target = t.id;
+  if (e.path.length === 0 || s.tick % REPATH === 0) {
+    const p = route(s.grid, e, [t.x, t.y]);
+    if (p.length > 0) e.path = p;
+    else {
+      const stand = nearestReachable(s.grid, [e.x, e.y], [t.x, t.y]);
+      const here: Pt = [Math.round(e.x), Math.round(e.y)];
+      e.path = stand && !sameTile(here, stand) ? (findPath(s.grid, here, stand) ?? []) : [];
+    }
+  }
+  if (walkPath(s.grid, e, H.speed.assault) === 0) face(e, t.x, t.y);
 }
 
 function patrol(s: MissionState, e: Enemy): void {

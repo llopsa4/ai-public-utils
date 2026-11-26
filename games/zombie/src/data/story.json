@@ -9,7 +9,8 @@
   "cards": {
     "Intro": "The woods — day 30",
     "Mission": "The house in the woods — day 30, afternoon",
-    "Base": "The house — day 30, evening"
+    "Base": "The house — day 30, evening",
+    "Mission2": "Theo's house — day 31"
   },
   "barks": {
     "Cass": {
@@ -83,7 +84,22 @@
       ]
     }
   },
+  "speaker": {
+    "call": ["Theo (speaker): (placeholder) Hello? Is someone out there? Please, I'm sealed in the bunker. I can show you where they are.", "Ray: (placeholder) That voice... that's Theo. June's maths tutor."],
+    "guards": ["Theo (speaker): (placeholder) Two at the gate, one walking the fence, one at the garage, one at the solar field. Six more inside."],
+    "inside": ["Theo (speaker): (placeholder) You're in the house. One is hammering at my door; the rest are in the rooms around the hall."],
+    "half": ["Theo (speaker): (placeholder) Half of them are down. Keep going."]
+  },
   "dialogue": {
+    "m02Power": [
+      { "speaker": "Theo", "mood": "neutral", "text": "(placeholder) That was the last of them. Give me a moment: the backup battery should hold the door motor." },
+      { "speaker": "Theo", "mood": "determined", "text": "(placeholder) There. Stand back from the door." }
+    ],
+    "m02Meet": [
+      { "speaker": "Ray", "mood": "neutral", "text": "(placeholder) Theo. Good to meet you off a screen." },
+      { "speaker": "June", "mood": "neutral", "text": "(placeholder) Hi, Theo." },
+      { "speaker": "Theo", "mood": "neutral", "text": "(placeholder) I'm out of food. If you'll have me, I'm coming with you. The cache is yours: ammo and scrap." }
+    ],
     "intro": {
       "start": [
         {

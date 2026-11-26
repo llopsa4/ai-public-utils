@@ -360,7 +360,7 @@
         "h": 96
       }
     },
-    "icon_bar_takedown": {
+    "icon_bar_shovel": {
       "frame": {
         "x": 1552,
         "y": 0,
@@ -380,7 +380,7 @@
         "h": 96
       }
     },
-    "icon_bar_carry": {
+    "icon_bar_takedown": {
       "frame": {
         "x": 1648,
         "y": 0,
@@ -400,7 +400,7 @@
         "h": 96
       }
     },
-    "icon_bar_lure": {
+    "icon_bar_carry": {
       "frame": {
         "x": 1744,
         "y": 0,
@@ -420,7 +420,7 @@
         "h": 96
       }
     },
-    "icon_bar_hold": {
+    "icon_bar_lure": {
       "frame": {
         "x": 1840,
         "y": 0,
@@ -440,7 +440,7 @@
         "h": 96
       }
     },
-    "icon_bar_bond": {
+    "icon_bar_finish": {
       "frame": {
         "x": 1936,
         "y": 0,
@@ -460,7 +460,7 @@
         "h": 96
       }
     },
-    "icon_bar_freefire": {
+    "icon_bar_hold": {
       "frame": {
         "x": 0,
         "y": 96,
@@ -480,7 +480,7 @@
         "h": 96
       }
     },
-    "icon_bar_crouch": {
+    "icon_bar_bond": {
       "frame": {
         "x": 96,
         "y": 96,
@@ -500,7 +500,7 @@
         "h": 96
       }
     },
-    "icon_bar_eat": {
+    "icon_bar_highlight": {
       "frame": {
         "x": 192,
         "y": 96,
@@ -520,7 +520,7 @@
         "h": 96
       }
     },
-    "icon_bar_give": {
+    "icon_bar_freefire": {
       "frame": {
         "x": 288,
         "y": 96,
@@ -540,7 +540,7 @@
         "h": 96
       }
     },
-    "icon_bar_fix": {
+    "icon_bar_crouch": {
       "frame": {
         "x": 384,
         "y": 96,
@@ -560,7 +560,7 @@
         "h": 96
       }
     },
-    "icon_bar_cook": {
+    "icon_bar_eat": {
       "frame": {
         "x": 480,
         "y": 96,
@@ -580,7 +580,7 @@
         "h": 96
       }
     },
-    "icon_bar_barricade": {
+    "icon_bar_give": {
       "frame": {
         "x": 576,
         "y": 96,
@@ -600,7 +600,7 @@
         "h": 96
       }
     },
-    "icon_bar_spike": {
+    "icon_bar_fix": {
       "frame": {
         "x": 672,
         "y": 96,
@@ -620,9 +620,69 @@
         "h": 96
       }
     },
-    "icon_bar_can": {
+    "icon_bar_cook": {
       "frame": {
         "x": 768,
+        "y": 96,
+        "w": 96,
+        "h": 96
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 96,
+        "h": 96
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      }
+    },
+    "icon_bar_barricade": {
+      "frame": {
+        "x": 864,
+        "y": 96,
+        "w": 96,
+        "h": 96
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 96,
+        "h": 96
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      }
+    },
+    "icon_bar_spike": {
+      "frame": {
+        "x": 960,
+        "y": 96,
+        "w": 96,
+        "h": 96
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 96,
+        "h": 96
+      },
+      "sourceSize": {
+        "w": 96,
+        "h": 96
+      }
+    },
+    "icon_bar_can": {
+      "frame": {
+        "x": 1056,
         "y": 96,
         "w": 96,
         "h": 96
@@ -642,7 +702,7 @@
     },
     "icon_hud_food": {
       "frame": {
-        "x": 864,
+        "x": 1152,
         "y": 96,
         "w": 48,
         "h": 48
@@ -662,7 +722,7 @@
     },
     "icon_hud_scrap": {
       "frame": {
-        "x": 912,
+        "x": 1200,
         "y": 96,
         "w": 48,
         "h": 48
@@ -682,7 +742,7 @@
     },
     "icon_hud_ammo": {
       "frame": {
-        "x": 960,
+        "x": 1248,
         "y": 96,
         "w": 48,
         "h": 48
@@ -702,7 +762,7 @@
     },
     "icon_hud_hunger": {
       "frame": {
-        "x": 1008,
+        "x": 1296,
         "y": 96,
         "w": 48,
         "h": 48
@@ -722,7 +782,7 @@
     },
     "icon_hud_zombie": {
       "frame": {
-        "x": 1056,
+        "x": 1344,
         "y": 96,
         "w": 48,
         "h": 48
@@ -742,7 +802,7 @@
     },
     "icon_hud_herd": {
       "frame": {
-        "x": 1104,
+        "x": 1392,
         "y": 96,
         "w": 48,
         "h": 48
@@ -762,7 +822,7 @@
     },
     "icon_hud_crate": {
       "frame": {
-        "x": 1152,
+        "x": 1440,
         "y": 96,
         "w": 48,
         "h": 48
@@ -782,7 +842,7 @@
     },
     "icon_hud_hp": {
       "frame": {
-        "x": 1200,
+        "x": 1488,
         "y": 96,
         "w": 48,
         "h": 48
@@ -802,7 +862,7 @@
     },
     "portrait_fighter_neutral": {
       "frame": {
-        "x": 1248,
+        "x": 1536,
         "y": 96,
         "w": 256,
         "h": 256
@@ -822,7 +882,7 @@
     },
     "portrait_fighter_afraid": {
       "frame": {
-        "x": 1504,
+        "x": 1792,
         "y": 96,
         "w": 256,
         "h": 256
@@ -842,8 +902,8 @@
     },
     "portrait_fighter_determined": {
       "frame": {
-        "x": 1760,
-        "y": 96,
+        "x": 0,
+        "y": 352,
         "w": 256,
         "h": 256
       },
@@ -862,7 +922,7 @@
     },
     "portrait_fighter_hurt": {
       "frame": {
-        "x": 0,
+        "x": 256,
         "y": 352,
         "w": 256,
         "h": 256
@@ -882,7 +942,7 @@
     },
     "portrait_scout_neutral": {
       "frame": {
-        "x": 256,
+        "x": 512,
         "y": 352,
         "w": 256,
         "h": 256
@@ -902,7 +962,7 @@
     },
     "portrait_scout_afraid": {
       "frame": {
-        "x": 512,
+        "x": 768,
         "y": 352,
         "w": 256,
         "h": 256
@@ -922,7 +982,7 @@
     },
     "portrait_scout_determined": {
       "frame": {
-        "x": 768,
+        "x": 1024,
         "y": 352,
         "w": 256,
         "h": 256
@@ -942,7 +1002,7 @@
     },
     "portrait_scout_hurt": {
       "frame": {
-        "x": 1024,
+        "x": 1280,
         "y": 352,
         "w": 256,
         "h": 256
@@ -962,7 +1022,7 @@
     },
     "portrait_hunter_neutral": {
       "frame": {
-        "x": 1280,
+        "x": 1536,
         "y": 352,
         "w": 256,
         "h": 256
@@ -982,7 +1042,7 @@
     },
     "portrait_hunter_afraid": {
       "frame": {
-        "x": 1536,
+        "x": 1792,
         "y": 352,
         "w": 256,
         "h": 256
@@ -1002,26 +1062,6 @@
     },
     "portrait_hunter_determined": {
       "frame": {
-        "x": 1792,
-        "y": 352,
-        "w": 256,
-        "h": 256
-      },
-      "rotated": false,
-      "trimmed": false,
-      "spriteSourceSize": {
-        "x": 0,
-        "y": 0,
-        "w": 256,
-        "h": 256
-      },
-      "sourceSize": {
-        "w": 256,
-        "h": 256
-      }
-    },
-    "portrait_hunter_hurt": {
-      "frame": {
         "x": 0,
         "y": 608,
         "w": 256,
@@ -1040,7 +1080,7 @@
         "h": 256
       }
     },
-    "portrait_archer_neutral": {
+    "portrait_hunter_hurt": {
       "frame": {
         "x": 256,
         "y": 608,
@@ -1060,7 +1100,7 @@
         "h": 256
       }
     },
-    "portrait_archer_afraid": {
+    "portrait_archer_neutral": {
       "frame": {
         "x": 512,
         "y": 608,
@@ -1080,7 +1120,7 @@
         "h": 256
       }
     },
-    "portrait_archer_determined": {
+    "portrait_archer_afraid": {
       "frame": {
         "x": 768,
         "y": 608,
@@ -1100,7 +1140,7 @@
         "h": 256
       }
     },
-    "portrait_archer_hurt": {
+    "portrait_archer_determined": {
       "frame": {
         "x": 1024,
         "y": 608,
@@ -1120,10 +1160,110 @@
         "h": 256
       }
     },
-    "portrait_small_fighter_neutral": {
+    "portrait_archer_hurt": {
       "frame": {
         "x": 1280,
         "y": 608,
+        "w": 256,
+        "h": 256
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 256
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      }
+    },
+    "portrait_tinkerer_neutral": {
+      "frame": {
+        "x": 1536,
+        "y": 608,
+        "w": 256,
+        "h": 256
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 256
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      }
+    },
+    "portrait_tinkerer_afraid": {
+      "frame": {
+        "x": 1792,
+        "y": 608,
+        "w": 256,
+        "h": 256
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 256
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      }
+    },
+    "portrait_tinkerer_determined": {
+      "frame": {
+        "x": 0,
+        "y": 864,
+        "w": 256,
+        "h": 256
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 256
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      }
+    },
+    "portrait_tinkerer_hurt": {
+      "frame": {
+        "x": 256,
+        "y": 864,
+        "w": 256,
+        "h": 256
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 256,
+        "h": 256
+      },
+      "sourceSize": {
+        "w": 256,
+        "h": 256
+      }
+    },
+    "portrait_small_fighter_neutral": {
+      "frame": {
+        "x": 512,
+        "y": 864,
         "w": 72,
         "h": 72
       },
@@ -1142,8 +1282,8 @@
     },
     "portrait_small_fighter_hurt": {
       "frame": {
-        "x": 1352,
-        "y": 608,
+        "x": 584,
+        "y": 864,
         "w": 72,
         "h": 72
       },
@@ -1162,8 +1302,8 @@
     },
     "portrait_small_scout_neutral": {
       "frame": {
-        "x": 1424,
-        "y": 608,
+        "x": 656,
+        "y": 864,
         "w": 72,
         "h": 72
       },
@@ -1182,8 +1322,8 @@
     },
     "portrait_small_scout_hurt": {
       "frame": {
-        "x": 1496,
-        "y": 608,
+        "x": 728,
+        "y": 864,
         "w": 72,
         "h": 72
       },
@@ -1202,8 +1342,8 @@
     },
     "portrait_small_hunter_neutral": {
       "frame": {
-        "x": 1568,
-        "y": 608,
+        "x": 800,
+        "y": 864,
         "w": 72,
         "h": 72
       },
@@ -1222,8 +1362,8 @@
     },
     "portrait_small_hunter_hurt": {
       "frame": {
-        "x": 1640,
-        "y": 608,
+        "x": 872,
+        "y": 864,
         "w": 72,
         "h": 72
       },
@@ -1242,8 +1382,8 @@
     },
     "portrait_small_archer_neutral": {
       "frame": {
-        "x": 1712,
-        "y": 608,
+        "x": 944,
+        "y": 864,
         "w": 72,
         "h": 72
       },
@@ -1262,8 +1402,48 @@
     },
     "portrait_small_archer_hurt": {
       "frame": {
-        "x": 1784,
-        "y": 608,
+        "x": 1016,
+        "y": 864,
+        "w": 72,
+        "h": 72
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 72,
+        "h": 72
+      },
+      "sourceSize": {
+        "w": 72,
+        "h": 72
+      }
+    },
+    "portrait_small_tinkerer_neutral": {
+      "frame": {
+        "x": 1088,
+        "y": 864,
+        "w": 72,
+        "h": 72
+      },
+      "rotated": false,
+      "trimmed": false,
+      "spriteSourceSize": {
+        "x": 0,
+        "y": 0,
+        "w": 72,
+        "h": 72
+      },
+      "sourceSize": {
+        "w": 72,
+        "h": 72
+      }
+    },
+    "portrait_small_tinkerer_hurt": {
+      "frame": {
+        "x": 1160,
+        "y": 864,
         "w": 72,
         "h": 72
       },
@@ -1288,7 +1468,7 @@
     "format": "RGBA8888",
     "size": {
       "w": 2048,
-      "h": 864
+      "h": 1120
     },
     "scale": "2"
   }

@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import keyData from '../src/data/keys.json';
 import type { StorageLike } from '../src/sim/campaign';
-import { ACTIONS, ACTION_IDS, BINDABLE, RESERVED, actionFor, bindKey, buttonAction, defaultBindings, keyLabel, keyNameOf, keysOf, refusal, resolveKeys } from '../src/sim/keymap';
+import { ACTIONS, ACTION_IDS, BINDABLE, RESERVED, actionFor, bindKey, buttonAction, defaultBindings, keyLabel, keyNameOf, keysOf, shownActions, refusal, resolveKeys } from '../src/sim/keymap';
 import {
   DEFAULT_OPTIONS,
   OPTIONS_KEY,
@@ -169,6 +169,17 @@ test('a key that serves another action is refused and nothing changes', () => {
   assert.ok(!bindKey({}, 'crouch', 'ENTER').ok);
   assert.ok(!bindKey({}, 'crouch', 'F5').ok); // the browser's reload
   assert.ok(bindKey({}, 'crouch', 'C').ok); // its own key is fine
+});
+
+test('food actions are neither listed nor named before the main camp, and keep their keys', () => {
+  const food = ['cook', 'eat', 'give'];
+  assert.deepEqual(shownActions(false).filter((a) => food.includes(a.id)), []);
+  assert.equal(shownActions(false).length, ACTIONS.length - food.length);
+  assert.equal(shownActions(true).length, ACTIONS.length);
+  const r = bindKey({}, 'crouch', 'E'); // E is Eat
+  assert.ok(!r.ok);
+  assert.equal(refusal(r as Extract<typeof r, { ok: false }>, false), 'That key is kept for later and cannot be used.');
+  assert.match(refusal(r as Extract<typeof r, { ok: false }>, true), /Eat/);
 });
 
 test('binding an action back to its default drops the override', () => {

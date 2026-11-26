@@ -1,3 +1,4 @@
+import base from '../data/base1.json';
 import { type BaseState, hungerLevel } from './base';
 import type { MissionState } from './mission';
 import { TICK_HZ } from './time';
@@ -7,13 +8,14 @@ import { TICK_HZ } from './time';
 // (`stats`, plain JSON), so the Base 1 herd checkpoint carries them and a retry keeps counting where it was.
 // `missionGrade`, `baseGrade` and the badge lists read the counters at the end of a scene.
 
-export type Scene = 'mission1' | 'base1';
+export type Scene = 'mission1' | 'base1' | 'mission2';
 export { type Difficulty, DIFFICULTIES } from './difficulty';
 
 /** Worst to best, so a grade's index is its rank. */
 export const GRADES: Readonly<Record<Scene, readonly string[]>> = {
   mission1: ['loud', 'quiet', 'ghost'],
   base1: ['scraped', 'held', 'fortress'],
+  mission2: ['loud', 'quiet', 'ghost'],
 };
 export const GRADE_NAME: Readonly<Record<string, string>> = {
   ghost: 'Ghost',
@@ -29,7 +31,7 @@ export const GRADE_NOTE: Readonly<Record<string, string>> = {
   loud: 'the guns spoke',
   fortress: 'nothing broke through, nobody badly hurt',
   held: 'the house held',
-  scraped: 'won with someone starving or nearly dead',
+  scraped: base.food ? 'won with someone starving or nearly dead' : 'won with someone nearly dead',
 };
 
 /** Badges per scene, in display order (DESIGN §21). */
@@ -43,6 +45,12 @@ export const BADGES: Readonly<Record<Scene, readonly { id: string; name: string;
     { id: 'noBreach', name: 'No breach', note: 'no opening or barricade destroyed' },
     { id: 'wellFed', name: 'Well fed', note: 'nobody ever starved' },
     { id: 'trapper', name: 'Trapper', note: '5 or more trap kills' },
+  ],
+  // Mission 2 grades and badges as Mission 1 (placeholders; the user judges by playing)
+  mission2: [
+    { id: 'silent', name: 'Silent', note: 'no shots' },
+    { id: 'untouched', name: 'Untouched', note: 'no damage taken' },
+    { id: 'swift', name: 'Swift', note: 'under 6 minutes' },
   ],
 };
 
@@ -152,9 +160,9 @@ export function missionBadges(st: Pick<RunStats, 'shots' | 'damage'>, seconds: n
   return [st.shots === 0 ? 'silent' : '', st.damage === 0 ? 'untouched' : '', seconds < SWIFT_SECONDS ? 'swift' : ''].filter(Boolean);
 }
 
-/** Badge ids earned in Base 1. */
-export function baseBadges(st: Pick<RunStats, 'breaches' | 'starved' | 'trapKills'>): string[] {
-  return [st.breaches === 0 ? 'noBreach' : '', !st.starved ? 'wellFed' : '', st.trapKills >= TRAPPER_KILLS ? 'trapper' : ''].filter(Boolean);
+/** Badge ids earned in Base 1. Well fed needs food to be on (DESIGN §12). */
+export function baseBadges(st: Pick<RunStats, 'breaches' | 'starved' | 'trapKills'>, foodOn: boolean): string[] {
+  return [st.breaches === 0 ? 'noBreach' : '', foodOn && !st.starved ? 'wellFed' : '', st.trapKills >= TRAPPER_KILLS ? 'trapper' : ''].filter(Boolean);
 }
 
 /** What the debrief shows and the records file. */
@@ -172,8 +180,11 @@ export function missionResult(s: StatState): Result {
   const st = statsOf(s);
   const seconds = secondsOf(s);
   const opened = s.crates.filter((c) => c.opened).length;
+  const humans = s.enemies.filter((e) => e.kind === 'human');
+  const last: [string, string] =
+    s.mission === 'm02' ? ['Squatters down', `${humans.filter((e) => e.hp <= 0).length} of ${humans.length}`] : ['Crates', `${opened} of ${s.crates.length}`];
   return {
-    scene: 'mission1',
+    scene: s.mission === 'm02' ? 'mission2' : 'mission1',
     seconds,
     grade: missionGrade(st),
     badges: missionBadges(st, seconds),
@@ -182,7 +193,7 @@ export function missionResult(s: StatState): Result {
       ['Silent kills', String(st.silentKills)],
       ['Shots', String(st.shots)],
       ['Damage taken', String(Math.round(st.damage))],
-      ['Crates', `${opened} of ${s.crates.length}`],
+      last,
     ],
   };
 }
@@ -200,7 +211,7 @@ export function baseResult(s: BaseState & { stats?: RunStats }): Result {
     scene: 'base1',
     seconds,
     grade,
-    badges: baseBadges(st),
+    badges: baseBadges(st, s.foodOn),
     rows: [
       ['Time', clock(seconds)],
       ['Shots', String(st.shots)],

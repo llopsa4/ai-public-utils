@@ -100,8 +100,9 @@ no retroactive approval. The game's art guide defines delivery contents and inst
   changing their work. Use a separate worktree only when the user asks for one.
 - A handed-off delivery revision is immutable while integration is underway; make changes in a new
   revision folder. Pause edits to the revision being installed.
-- Whole-tree generators need exclusive access to all affected outputs. Prefer scoped commands and
-  temporary outputs; the game's testing guide defines preview and validation commands.
+- Whole-tree generators need exclusive access to all affected outputs. Re-read the other agent's
+  *Working on* right before running one (not only at session start), and claim its outputs while it
+  runs. Prefer scoped commands and temporary outputs; the game's testing guide defines preview and validation commands.
 - Do not use destructive Git (`reset`, `checkout --`, `stash`, `clean` or branch switches) while
   another agent may have work. For a requested commit, stage only your explicit paths (never
   `git add -A` or `.`) and inspect the staged diff.

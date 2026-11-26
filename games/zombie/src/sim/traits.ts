@@ -1,12 +1,13 @@
 // Survivor traits (DESIGN §5, §14): one passive, always-on trait each. Cass runs silently (her run noise
 // radius is 0); Eli runs at 6.5 tiles/s, the fastest survivor; Ray tracks zombies within 6 tiles and June draws her bow
-// in 0.75 s (`trackedEnemies` below; Quick draw is `cooldownOf` in combat.ts). The numbers live in data/characters.json
+// in 0.75 s (`trackedEnemies` below; Quick draw is `cooldownOf` in combat.ts). Theo is Resourceful
+// (only the line so far: its effect is PLAN Z91). The numbers live in data/characters.json
 // (`moveNoise` per survivor overrides the shared one; `speed.run`); this file only reads them.
 import chars from '../data/characters.json';
-import type { Enemy, MissionState } from './mission';
+import type { Enemy, MissionState, SurvivorKind } from './mission';
 import type { Mode } from './vision';
 
-export type TraitKind = 'fighter' | 'scout' | 'hunter' | 'archer';
+export type TraitKind = SurvivorKind;
 
 /** The noise radius of a step: the survivor's own `moveNoise` for that mode when it has one, else the shared one. */
 export function moveNoiseOf(kind: TraitKind, mode: Mode): number {
@@ -28,5 +29,6 @@ export function traitLine(name: string): string {
   if (name === 'Eli') return `Eli is the fastest runner: ${chars.scout.speed.run} tiles/s.`;
   if (name === 'Ray') return `Ray is a Tracker: zombies within ${chars.hunter.tracker.radius} tiles of him always show, even behind walls.`;
   if (name === 'June') return `June has a quick draw: her bow is ready again in ${chars.archer.quickDraw.bowCooldown} s.`;
+  if (name === 'Theo') return 'Theo is Resourceful: crates give him more, and he can break junk down into parts.';
   return '';
 }

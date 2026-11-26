@@ -1,4 +1,5 @@
 import keyData from '../data/keys.json';
+import { FOOD_SHOWN } from './food';
 
 // The key map (DESIGN §19 *Options*): every game key is an action with one default key (`data/keys.json`)
 // that the player can rebind. Pure (no Phaser, no storage), so rebinding is testable; `sim/options.ts` keeps
@@ -9,7 +10,7 @@ export type ActionId =
   | 'panUp' | 'panDown' | 'panLeft' | 'panRight'
   | 'select1' | 'select2' | 'cycle' | 'freeze' | 'alert'
   | 'weapon1' | 'weapon2' | 'weapon3'
-  | 'crouch' | 'hold' | 'freefire' | 'takedown' | 'carry' | 'lure' | 'bond'
+  | 'crouch' | 'hold' | 'freefire' | 'takedown' | 'carry' | 'lure' | 'finish' | 'bond' | 'highlight'
   | 'fix' | 'cook' | 'eat' | 'give' | 'build' | 'trap';
 
 export interface KeyAction {
@@ -23,6 +24,12 @@ export interface KeyAction {
 
 export const ACTIONS: readonly KeyAction[] = keyData.actions as KeyAction[];
 export const ACTION_IDS: readonly ActionId[] = ACTIONS.map((a) => a.id);
+
+const FOOD_ACTIONS: readonly ActionId[] = ['cook', 'eat', 'give'];
+/** The actions the Keys page lists: the food ones only where food is shown. Their keys stay kept for them. */
+export function shownActions(foodShown = FOOD_SHOWN): readonly KeyAction[] {
+  return foodShown ? ACTIONS : ACTIONS.filter((a) => !FOOD_ACTIONS.includes(a.id));
+}
 
 /** Keys the game keeps for itself (menus, restart, the pan arrows): they cannot be bound to an action. */
 export const RESERVED: readonly string[] = keyData.reserved;
@@ -126,7 +133,8 @@ export function buttonAction(id: string, slotKey: string): ActionId | null {
 }
 
 /** Why a bind was refused, in words for the Keys page. */
-export function refusal(r: Extract<BindResult, { ok: false }>): string {
+export function refusal(r: Extract<BindResult, { ok: false }>, foodShown = FOOD_SHOWN): string {
+  if (r.by && !shownActions(foodShown).some((a) => a.id === r.by)) return 'That key is kept for later and cannot be used.'; // never names a hidden action
   if (r.reason === 'reserved') return 'That key is kept for menus and cannot be used.';
   if (r.reason === 'unusable') return 'That key cannot be bound. Use a letter, a digit, F1-F4, F6-F10, Tab or Space.';
   return `Already used by ${ACTIONS.find((a) => a.id === r.by)?.label ?? 'another action'}. Rebind that first.`;

@@ -1,5 +1,5 @@
 // Base 1 rules (DESIGN §12, §17): the cleared house from Mission 1 as a home. Fixable windows and
-// door, barricades for the yard, a stove, and hunger. A mission-style state (same units, orders, AI
+// door and barricades for the yard; the stove and hunger are off until Ray's hut (the `food` setting). A mission-style state (same units, orders, AI
 // and combat from mission.ts) plus resources, traps, roamers and the herd (warning 5:00, herd 7:00).
 // Pure TypeScript, fixed 10 Hz tick, JSON-serialisable state.
 import base from '../data/base1.json';
@@ -71,6 +71,7 @@ export interface HerdState {
 }
 
 export interface BaseState extends MissionState {
+  foodOn: boolean; // the base's `food` setting: hunger, the stove, Cook, Eat and Give (off before Ray's hut, DESIGN §12)
   food: number;
   scrap: number;
   barricades: Barricade[];
@@ -99,12 +100,17 @@ export function hungerTicks(s: Pick<BaseState, 'difficulty'>): number {
 export const FIX_TICKS = secs(base.fix.time);
 export const COOK_TICKS = secs(base.cook.time);
 
-/** The m01 map with the back door walled up, the window gaps opened and the stove set. */
-function baseMap(spec: MissionSpec): string[] {
+/** The start hints; the food ones only where food is on (DESIGN §12). */
+export function baseHints(foodOn: boolean): string[] {
+  return foodOn ? [...base.hints, ...base.foodHints] : [...base.hints];
+}
+
+/** The m01 map with the back door walled up, the window gaps opened and, with food on, the stove set. */
+function baseMap(spec: MissionSpec, foodOn: boolean): string[] {
   const rows = spec.map.map((r) => r.split(''));
   for (const [x, y] of base.sealed) rows[y!]![x!] = '#';
   for (const o of base.openings) rows[o.y]![o.x] = '.';
-  rows[base.stove.y]![base.stove.x] = 'c';
+  if (foodOn) rows[base.stove.y]![base.stove.x] = 'c';
   return rows.map((r) => r.join(''));
 }
 
@@ -123,14 +129,15 @@ export function rollBase(rand: () => number = Math.random): { layout: number; he
  * `cassGun` gives the Fighter her pistol back (already unlocked in the save); `start` puts each survivor on the tile and
  * facing where Mission 1 was won (DESIGN §12); `difficulty` (default Normal) sets the herd, hunger, roamers, zombie
  * sight and the ammo bonus (DESIGN §21); `layout` (default 0) picks the roamer spawns and `herdFrom` (default north)
- * the herd's edge, both rolled by the scene with `rollBase`.
+ * the herd's edge, both rolled by the scene with `rollBase`; `foodOn` overrides the base's `food` setting.
  */
-export function createBase(from?: { food?: number; scrap?: number; ammo?: number; calm?: boolean; cassGun?: boolean; start?: readonly StartPose[] | null; difficulty?: Difficulty; layout?: number; herdFrom?: HerdEdge }): BaseState {
+export function createBase(from?: { food?: number; scrap?: number; ammo?: number; calm?: boolean; cassGun?: boolean; start?: readonly StartPose[] | null; difficulty?: Difficulty; layout?: number; herdFrom?: HerdEdge; foodOn?: boolean }): BaseState {
   const spec = m01 as unknown as MissionSpec;
   const difficulty = from?.difficulty ?? 'normal';
+  const foodOn = from?.foodOn ?? base.food;
   const mission = createMission({
     seed: base.seed,
-    map: baseMap(spec),
+    map: baseMap(spec, foodOn),
     survivors: [...spec.survivors, ...(base.extraSurvivors as MissionSpec['survivors'])],
     enemies: [],
     ammo: (from?.ammo ?? base.start.ammo) + tuning(difficulty).ammoBonus,
@@ -141,6 +148,7 @@ export function createBase(from?: { food?: number; scrap?: number; ammo?: number
   for (const u of mission.survivors) hunger[u.id] = { left: hungerTicks(mission), meal: false, warned: false, starveIn: secs(base.hunger.starveEvery) };
   const s: BaseState = {
     ...mission,
+    foodOn,
     food: from?.food ?? base.start.food,
     scrap: from?.scrap ?? base.start.scrap,
     barricades: [],
@@ -214,6 +222,20 @@ function addMissingSurvivors(r: Record<string, unknown>, fresh: BaseState): void
   }
 }
 
+/** A checkpoint from when Base 1 had food takes the current setting; with food off the stove and hunger's effects go. */
+function dropFood(r: Record<string, unknown>): void {
+  r.foodOn = base.food;
+  if (base.food) return;
+  const grid = r.grid as BaseState['grid'] | null | undefined;
+  if (grid && Array.isArray(grid.tiles)) setTile(grid, base.stove.x, base.stove.y, FLOOR);
+  if (!Array.isArray(r.survivors)) return;
+  for (const u of r.survivors as (Survivor | null)[]) {
+    if (!u) continue;
+    u.speedMul = 1; // a starving survivor walks normally again
+    if (u.order?.type === 'work' && u.order.job === 'cook') u.order = null;
+  }
+}
+
 /**
  * A saved checkpoint back into a state, or null when it is missing or does not fit this build's Base 1
  * (damage, an edited slot, changed data). A bad checkpoint is only ignored: the save itself stays usable.
@@ -227,6 +249,7 @@ export function restoreBase(raw: unknown): BaseState | null {
   if (r.layout === undefined) r.layout = 0; // saved before the run shuffles (Z65): the one layout there was
   const rh = r.herd as Record<string, unknown> | null | undefined;
   if (rh && typeof rh === 'object' && rh.from === undefined) rh.from = 'north'; // ... and the herd always came from the north
+  if (r.foodOn === undefined) dropFood(r); // saved before food was switched off (Z97)
   const t = createBase({ calm: true }) as unknown as Record<string, unknown>;
   addMissingSurvivors(r, t as unknown as BaseState); // a checkpoint saved with two survivors (before Ray and June, Z81)
   for (const k of Object.keys(t)) {
@@ -361,19 +384,31 @@ function stepHerd(s: BaseState): void {
 
 /** A zombie at (x, y) facing `toward`; roamers (`r…`) and herd zombies (`h…`) pass their own id. */
 export function addZombie(s: BaseState, x: number, y: number, toward: readonly [number, number] = [0, 1], id = `z${s.enemies.length + 1}`): string {
+  return addEnemy(s, 'zombie', x, y, toward, id, false);
+}
+
+/**
+ * A base-wave raider (DESIGN §25) at (x, y) facing `toward`: a human who advances on the survivors, shoots those in
+ * view and is stopped by barricades (sim/ai.ts `stepAssault`). Ids must not start with `r` or `h` (roamers, herd).
+ */
+export function addRaider(s: BaseState, x: number, y: number, toward: readonly [number, number] = [0, 1], id = `g${s.enemies.length + 1}`): string {
+  return addEnemy(s, 'human', x, y, toward, id, true);
+}
+
+function addEnemy(s: BaseState, kind: 'zombie' | 'human', x: number, y: number, toward: readonly [number, number], id: string, assault: boolean): string {
   s.enemies.push({
     id,
-    side: 'zombie',
-    kind: 'zombie',
+    side: kind,
+    kind,
     x,
     y,
-    hp: enemies.zombie.hp,
-    maxHp: enemies.zombie.hp,
+    hp: enemies[kind].hp,
+    maxHp: enemies[kind].hp,
     facing: [toward[0], toward[1]],
     path: [],
     cooldown: 0,
     act: null,
-    ai: newAi('zombie'),
+    ai: newAi(kind, assault),
     patrol: [],
     post: { x, y, facing: [toward[0], toward[1]] },
   });
@@ -417,10 +452,10 @@ export function orderFix(s: BaseState, id: string, openingId: string): WorkResul
   return 'ok';
 }
 
-/** Left-click the stove: work 5 s, then 1 food makes a meal the cook holds (one meal at most). */
+/** Left-click the stove (food on only): work 5 s, then 1 food makes a meal the cook holds (one meal at most). */
 export function orderCook(s: BaseState, id: string): WorkResult {
   const u = alive(s, id);
-  if (!u) return 'invalid';
+  if (!u || !s.foodOn) return 'invalid';
   if (s.hunger[id]?.meal) return 'meal';
   if (s.food < base.cook.food) return 'food';
   u.order = { type: 'work', job: 'cook', target: 'stove', left: -1 };
@@ -477,7 +512,7 @@ function stepWork(s: BaseState, u: Survivor, w: Extract<Order, { type: 'work' }>
 export function eat(s: BaseState, id: string): boolean {
   const u = alive(s, id);
   const h = s.hunger[id];
-  if (!u || !h?.meal) return false;
+  if (!s.foodOn || !u || !h?.meal) return false;
   h.meal = false;
   h.left = hungerTicks(s);
   h.warned = false;
@@ -496,7 +531,7 @@ function mealless(s: BaseState, u: Survivor): Survivor | undefined {
 /** Hand the meal to an adjacent survivor who has none. */
 export function give(s: BaseState, id: string): boolean {
   const u = alive(s, id);
-  if (!u || !s.hunger[id]?.meal) return false;
+  if (!s.foodOn || !u || !s.hunger[id]?.meal) return false;
   const to = mealless(s, u);
   if (!to) return false;
   s.hunger[id]!.meal = false;
@@ -505,6 +540,7 @@ export function give(s: BaseState, id: string): boolean {
 }
 
 export function hungerLevel(s: BaseState, id: string): HungerLevel {
+  if (!s.foodOn) return 'ok';
   const left = s.hunger[id]?.left ?? hungerTicks(s);
   return left <= 0 ? 'starving' : left <= secs(base.hunger.critical) ? 'critical' : left <= secs(base.hunger.warn) ? 'low' : 'ok';
 }
@@ -610,7 +646,7 @@ function chew(s: BaseState): void {
 
 /**
  * One 0.1 s tick: work orders, the spawn schedule, herd marching, the mission tick (orders, AI, combat),
- * hunger, traps, then chewing. Base 1 is won when the whole herd is dead (DESIGN §12; the mission rules'
+ * hunger (food on), traps, then chewing. Base 1 is won when the whole herd is dead (DESIGN §12; the mission rules'
  * own "success" is ignored) and failed when any survivor dies. Frozen after either.
  */
 export function stepBase(s: BaseState): void {
@@ -621,7 +657,7 @@ export function stepBase(s: BaseState): void {
   stepHerd(s);
   stepMission(s);
   if ((s.status as MissionState['status']) === 'success') s.status = 'playing';
-  stepHunger(s);
+  if (s.foodOn) stepHunger(s);
   stepTraps(s);
   chew(s);
   reachBlockers(s);
@@ -636,11 +672,12 @@ export function stepBase(s: BaseState): void {
 
 /**
  * The bar for one survivor in Base 1: weapons, Hold and Crouch (Takedown, Carry and Lure are mission
- * tools and are not offered), then Eat, Give, Fix, Cook, Barricade, Spike pit and Noise can (T picks the type). `armed` is the pending click mode.
+ * tools and are not offered), then Eat, Give, Fix, Cook, Barricade, Spike pit and Noise can (T picks the type);
+ * Eat, Give and Cook only with food on. `armed` is the pending click mode.
  */
 export function baseButtons(s: BaseState, u: Survivor, armed: 'fix' | 'build' | 'hold' | 'spike' | 'can' | 'bond' | null = null): BarButton[] {
   const out = barButtons(s, u)
-    .filter((b) => b.id !== 'takedown' && b.id !== 'carry' && b.id !== 'lure')
+    .filter((b) => b.id !== 'takedown' && b.id !== 'carry' && b.id !== 'lure' && b.id !== 'finish')
     .map((b) => ((b.id === 'hold' && armed === 'hold') || (b.id === 'bond' && armed === 'bond') ? { ...b, active: true } : b));
   const meal = s.hunger[u.id]?.meal ?? false;
   const work = u.order?.type === 'work' ? u.order.job : null;
@@ -653,5 +690,5 @@ export function baseButtons(s: BaseState, u: Survivor, armed: 'fix' | 'build' | 
     { id: 'spike', label: 'Spike pit', key: 'T', enabled: s.scrap >= base.traps.spike.cost, active: armed === 'spike' || work === 'trap' },
     { id: 'can', label: 'Noise can', key: 'T', enabled: s.scrap >= base.traps.can.cost, active: armed === 'can' },
   );
-  return out;
+  return s.foodOn ? out : out.filter((b) => b.id !== 'eat' && b.id !== 'give' && b.id !== 'cook');
 }

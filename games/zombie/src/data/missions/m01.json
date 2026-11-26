@@ -2,12 +2,23 @@
   "seed": 7,
   "crateTime": 2,
   "win": "clear",
+  "shed": { "x": 50, "y": 44, "w": 6, "h": 5 },
   "roof": {
     "x": 25,
     "y": 25,
     "w": 14,
     "h": 11
   },
+  "frontDoor": { "x": 28, "y": 35 },
+  "chimney": { "x": 37, "y": 33 },
+  "furniture": [
+    { "key": "furn_bed", "x": 26, "y": 27 },
+    { "key": "furn_shelves", "x": 29, "y": 26 },
+    { "key": "furn_rug", "x": 28, "y": 31 },
+    { "key": "furn_cupboard", "x": 32, "y": 33 },
+    { "key": "furn_table", "x": 33, "y": 26 },
+    { "key": "furn_woodpile", "x": 36, "y": 26 }
+  ],
   "bond": true,
   "hints": [
     "Cass runs silently. Eli runs fastest (6.5 tiles/s).",

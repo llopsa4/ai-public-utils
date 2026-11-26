@@ -152,8 +152,42 @@ reviews; **Claude never draws** (DESIGN §9). The art spec for batch 1 is below 
   | `portrait_small` (2x) | `portrait_small_<fighter\|scout\|hunter\|archer>_<neutral\|hurt>` 72 |
   | `cursor` (1x) | `cursor_select/attack/use/move/run` 32, hot spots in the manifest (select (6,3), the rest centre (16,16)): Codex may move them to fit its drawing |
   | `title` (1x) | `title_bg` 640x360, `title_logo` 400x120 |
+  | `bio` (1x, standalone) | `bio_<fighter\|scout\|hunter\|archer>` 384x512: the Bios page figure (DESIGN §24), head to boots, feet at the bottom centre; until final the page shows the idle frame scaled up |
 
   Code reads it through `src/render/ui.ts` (key lookup, `isFinal`, `nineSlice` geometry, cursor CSS).
+
+## Bio figures (user, 2026-11-25; DESIGN §24)
+
+Rules for every `bio_<kind>` image, present and future. Codex generates them; the user approves.
+
+- **Canvas:** 384 x 512 source px, shown 1:1 on the Bios page (manifest group `bio`, standalone image,
+  not in the atlas); transparent background, alpha 0 or 255, project palette. Soles on row 504,
+  figure centred horizontally. Generate large, then downscale and normalise like the A14 idles
+  (`art/inbox/A14-idles-r1/source/prepare-idles.py`).
+- **One shared scale from the character cards:** crown to sole = 2.76 px per cm, so 180 cm = 496 px,
+  170 cm = 469 px, 165 cm = 455 px. A younger character looks slighter and younger, not just a
+  shorter adult. Work out a new character's height from their card, never by eye.
+- **Same quality and detail for all** (the style of the A14 Ray and June sources, front figure):
+  readable face, fabric folds, worn and muddy. A new figure is generated with a finished bio figure
+  and its A14-style reference attached, so the set stays matching.
+- **Pose:** three-quarter front, facing down-right like `idle_se`, neutral stand, arms relaxed, both
+  hands empty. **No pistol, holster or gun anywhere on the body**; the card and the in-game sprites
+  keep it, only the bios leave it out. Bows, packs or quivers only when worn on the back.
+- **Identity** comes from the `DESIGN-characters.md` *Physical descriptions* entry and the in-game
+  `art/frames/<kind>/idle_se_0.png`, so each figure still reads as the approved character; add that
+  physical description before requesting the figure. Respect rules on the card apply here too.
+- **Prompt:** one imagegen call per figure: the person (name, age, height, build, face, hair,
+  clothes in the card's colours) followed by this closing: "Single full-body character, head to
+  boots, standing in a relaxed neutral pose, three-quarter front view facing down-right, arms
+  hanging naturally at the sides, both hands empty. Detailed hand-crafted pixel art in exactly the
+  style, detail and rendering of the attached reference (readable face, fabric folds, worn and
+  muddy), even soft overcast light, serious muted survival game. No pistol, no holster and no gun
+  anywhere on the chest or body. No weapon in the hands. No cast shadow, ground, text, outline halo
+  or scene. One figure fully inside the canvas with margin, true transparent background."
+- **Paths and approval:** `art/inbox/<batch>/bio/<key>.png`, prompts in `prompt.txt`, review shots
+  in `review/`; approval authority is the user, on the Bios page in game, the sample first. After
+  approval: `npm run art:pack -- <batch>`, set the manifest `status` to `final`, add a PROVENANCE
+  line, then typecheck, tests and a Chromium check of every tab.
 
 ## Environment art (user, 2026-11-24)
 
@@ -199,10 +233,36 @@ reviews; **Claude never draws** (DESIGN §9). The art spec for batch 1 is below 
   `art/inbox/<batch>/env/<key>.png` at the exact size above; `npm run art:pack -- <batch>` checks the
   size and the palette and installs `art/frames/env/<key>.png`; Codex sets the key's manifest `status`
   to `final` in the same change (its world label then goes).
+- **Visual pass (user, 2026-11-26; batches E5–E7, all looks only):**
+  - **Ground:** the base ground is all `ground_moss`. Dirt and leaf litter become irregular,
+    flat **patch decals** (3 dirt, 3 leaves, larger than a tile, no diamond outline), scattered on
+    the moss by a stable hash; `ground_dirt` and `ground_leaves` stay in the manifest, unused unless
+    a later map needs them. `ground_path` is redrawn as one seamless worn-earth tile (faint ruts and
+    bootprints) that joins itself in every direction; no star or centre motif.
+  - **Scatter:** 8 small decorative pieces (2 grass tufts, 2 ferns, a rock cluster, a fallen branch
+    with twigs, a mushroom cluster, an old stump at most knee-high). They block nothing and hide no
+    one, so they stay low and must never read as cover; no full logs or boulders. Never on paths or
+    interactable tiles; thinner in the house yard.
+  - **Trees:** 3 tall trees (2 pines, 1 full birch) and a dead snag, about 3.5× a survivor's height
+    (about 160 world px). The E2 `tree_a/b/c` stay as undergrowth and young trees. Which sprite a `T`
+    tile shows is visual only (gameplay unchanged): tall mostly at woods edges and the treeline,
+    small inside clearings. Tall trees fade to 40% in front of a figure like every tree.
+  - **Forest border:** code draws tall trees and undergrowth outside the map edge (not walkable),
+    fading into code fog; Codex draws nothing extra for it.
+  - **House outside:** a roof ridge piece and eave/edge trim (the roof reads as a gable), a chimney
+    on one roof tile, two wall variants per direction (log wall with a vertical beam; weathered with
+    a boarded patch) mixed in by hash, and porch steps outside the front door. Faces line up exactly
+    with the approved `wall_se/sw` and `roof_top`.
+  - **House inside:** 6 wall-side decorative pieces (bed, shelves, table with chairs, cupboard, rug
+    as a flat decal); they block nothing and sit only on tiles that are never paths, trap or
+    barricade spots.
+  - Exact keys, sizes and anchors are set in `art/manifest.json` by the code units (Z102–Z104),
+    which install grey stand-ins first; the manifest wins.
 - **Batches**, each with an in-game first-sample gate: **E1** probe (one ground tile, one tree, one
   bush, beside the approved figures), **E2** woods (all ground, trees, bushes, tent, campfire),
   **E3** house (walls, openings, floor, roof), **E4** props (stove, crates, traps, barricade, body,
-  blood).
+  blood), then the visual pass: **E5** ground (path, patch decals, scatter), **E6** tall trees,
+  **E7** house (roof, walls, steps, furniture).
 
 ## Atlas contract (batch 1 figures; Z22, 2026-11-23)
 

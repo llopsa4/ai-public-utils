@@ -1,5 +1,6 @@
 {
   "seed": 11,
+  "food": false,
   "start": { "food": 5, "scrap": 4, "ammo": 5 },
   "sealed": [[35, 25]],
   "extraSurvivors": [
@@ -34,10 +35,12 @@
   "herd": { "warnAt": 300, "arriveAt": 420, "count": 18, "over": 60, "inset": 1 },
   "hints": [
     "{fix}, then click a broken window or door: fix it (3 s, 1 scrap)",
-    "{cook} or click the stove: cook a meal (1 food). {eat}: eat. {give}: give it to a friend",
     "{trap}, then click a tile: spike pit or noise can. {build}: barricade a gap",
-    "Watch the hunger bars: hungry survivors move slower, then starve",
     "{hold}: hold a spot with the knife or club. {freefire}: free fire lets Hold use the gun"
+  ],
+  "foodHints": [
+    "{cook} or click the stove: cook a meal (1 food). {eat}: eat. {give}: give it to a friend",
+    "Watch the hunger bars: hungry survivors move slower, then starve"
   ],
   "objective": { "prepare": "Prepare the house", "herd": "Survive the herd: {n} left" },
   "say": { "hungry": "I need to eat something." }

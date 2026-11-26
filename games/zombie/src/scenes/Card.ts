@@ -19,7 +19,7 @@ type Phase = 'idle' | 'covering' | 'holding' | 'revealing';
  * Changes from `from` to the scene `key`. Without the Card scene running (only in tests or before Boot
  * has launched it), the change is immediate.
  */
-export function changeScene(from: Phaser.Scene, key: string, data?: object): void {
+export function changeScene(from: Phaser.Scene, key: string, data?: object, card: string = key): void {
   if (!from.scene.isActive(CARD_SCENE)) {
     from.scene.start(key, data);
     return;
@@ -27,7 +27,7 @@ export function changeScene(from: Phaser.Scene, key: string, data?: object): voi
   const veil = from.scene.get(CARD_SCENE) as CardScene;
   veil.cover(() => {
     // The target's create (its first frame under the black) starts the reveal with its card text.
-    from.scene.get(key).events.once(Phaser.Scenes.Events.CREATE, () => veil.reveal(CARDS[key]));
+    from.scene.get(key).events.once(Phaser.Scenes.Events.CREATE, () => veil.reveal(CARDS[card]));
     from.scene.start(key, data);
   });
 }

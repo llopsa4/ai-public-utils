@@ -72,16 +72,16 @@ test('zombie sight follows the scene level: Easy sees 2 tiles standing, 1 crouch
 test('Base 1: each level sets its ammo bonus, starting roamers and hunger', () => {
   for (const d of DIFFICULTIES) {
     const t = tuning(d);
-    const s = createBase({ ammo: 4, difficulty: d });
+    const s = createBase({ foodOn: true, ammo: 4, difficulty: d });
     assert.equal(s.difficulty, d);
     assert.equal(s.ammo, 4 + t.ammoBonus);
     assert.equal(roamers(s), t.roamers.start);
     assert.equal(hungerTicks(s), t.hungerSeconds * TICK_HZ);
     for (const u of s.survivors) assert.equal(s.hunger[u.id]!.left, hungerTicks(s));
   }
-  assert.equal(hungerTicks(createBase()), HUNGER_TICKS);
-  const easy = createBase({ calm: true, difficulty: 'easy' });
-  const normal = createBase({ calm: true });
+  assert.equal(hungerTicks(createBase({ foodOn: true })), HUNGER_TICKS);
+  const easy = createBase({ foodOn: true, calm: true, difficulty: 'easy' });
+  const normal = createBase({ foodOn: true, calm: true });
   for (let i = 0; i < HUNGER_TICKS; i++) {
     stepBase(easy);
     stepBase(normal);

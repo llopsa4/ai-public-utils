@@ -23,14 +23,18 @@ export function resolveClick(target: ClickTarget, canOrder: boolean): ClickActio
 }
 
 /** The cursor a click would earn: CSS cursors until Codex's cursor art (A6) replaces them. */
-export const CURSORS: Readonly<Record<ClickAction | 'target', string>> = {
+export const CURSORS: Readonly<Record<ClickAction | 'target' | 'invalid', string>> = {
   select: 'pointer',
   attack: 'crosshair',
   use: 'grab',
   walk: 'move',
   nothing: 'default',
   target: 'crosshair', // a pending V / L / B / T / X is waiting for a click
+  invalid: 'not-allowed', // Finish aimed at anything but a squatter about to turn (the red-cross pointer)
 };
+
+/** The pointer while Finish waits for its click (DESIGN §26). */
+export const finishCursor = (valid: boolean): string => (valid ? CURSORS.target : CURSORS.invalid);
 
 export function cursorFor(action: ClickAction, pending: boolean): string {
   return pending ? CURSORS.target : CURSORS[action];

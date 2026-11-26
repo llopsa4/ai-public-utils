@@ -1,12 +1,14 @@
 import Phaser from 'phaser';
-import { ACTIONS, type ActionId, keyLabel, keyNameOf, refusal } from '../sim/keymap';
+import { type ActionId, keyLabel, keyNameOf, refusal, shownActions } from '../sim/keymap';
 import { liveKeys, rebindKey, resetKeys } from '../sim/options';
 import { keyOf } from './actionKeys';
 import { DEBRIEF_SCENE } from './Debrief';
 import { DIALOGUE_SCENE } from './Dialogue';
 import { CARD_SCENE } from './Card';
 import { KitButton, kitSlice, menuButton, titleBackdrop } from './kit';
+import { type BiosPage, drawBiosPage } from './biosPage';
 import { UI_FONT, drawOptionsPage } from './optionsPage';
+import type { Progress } from '../sim/bios';
 
 // Pause menu (DESIGN §19): Esc in Intro, Mission 1 and Base 1 (R goes straight to its Restart question;
 // losing window focus opens it too). Like the dialogue box it freezes every other running scene while
@@ -14,7 +16,7 @@ import { UI_FONT, drawOptionsPage } from './optionsPage';
 
 export const PAUSE_SCENE = 'Pause';
 
-type Page = 'main' | 'restart' | 'quit' | 'options' | 'controls' | 'keys';
+type Page = 'main' | 'restart' | 'quit' | 'options' | 'controls' | 'keys' | 'bios';
 
 /** What a playable scene tells the pause menu. */
 export interface PauseHooks {
@@ -30,6 +32,8 @@ export interface PauseHooks {
   hints: () => readonly string[];
   /** Replaces the Quit page's note when Continue would not start the scene from its beginning (Base 1's herd checkpoint). */
   quitNote?: () => string;
+  /** How far the story has got in this scene, for the Bios page (DESIGN §24). */
+  progress: () => Progress;
 }
 
 interface PauseData {
@@ -90,6 +94,8 @@ export class PauseScene extends Phaser.Scene {
   private keyNote = '';
   /** The key event the Keys page just took, so the menu's own handlers (Esc, Enter, R) ignore it. */
   private captured: KeyboardEvent | null = null;
+  /** The Bios page while it is showing (its arrow keys and wheel go here). */
+  private bios: BiosPage | null = null;
 
   constructor() {
     super(PAUSE_SCENE);
@@ -129,6 +135,11 @@ export class PauseScene extends Phaser.Scene {
       if (this.page === 'main') this.show('restart');
     }));
     kb.on('keydown', (e: KeyboardEvent) => this.capture(e));
+    kb.on('keydown-LEFT', () => this.page === 'bios' && this.bios?.step(-1));
+    kb.on('keydown-RIGHT', () => this.page === 'bios' && this.bios?.step(1));
+    kb.on('keydown-UP', () => this.page === 'bios' && this.bios?.scroll(-48));
+    kb.on('keydown-DOWN', () => this.page === 'bios' && this.bios?.scroll(48));
+    this.input.on('wheel', (_p: Phaser.Input.Pointer, _o: unknown, _dx: number, dy: number) => this.page === 'bios' && this.bios?.scroll(dy));
     this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
       open = false;
       if (this.resumeOnClose) for (const k of this.paused) if (this.scene.isPaused(k)) this.scene.resume(k);
@@ -203,10 +214,11 @@ export class PauseScene extends Phaser.Scene {
     this.add
       .text(cx, 104, 'Click a key, then press the new one.  Esc cancels.', { fontFamily: UI_FONT, fontSize: '18px', color: '#a8a69e' })
       .setOrigin(0.5);
-    const perColumn = Math.ceil(ACTIONS.length / KEY_COLUMNS);
+    const actions = shownActions();
+    const perColumn = Math.ceil(actions.length / KEY_COLUMNS);
     const ROW = 38; // the rows, the refusal note and the buttons all fit inside the panel
     const bound = liveKeys();
-    ACTIONS.forEach((a, i) => {
+    actions.forEach((a, i) => {
       const col = Math.floor(i / perColumn);
       const x = cx - 580 + col * 600;
       const y = 150 + (i % perColumn) * ROW;
@@ -250,6 +262,7 @@ export class PauseScene extends Phaser.Scene {
       this.keyNote = '';
     }
     this.children.removeAll(true);
+    this.bios = null;
     const { width, height } = this.scale;
     const cx = width / 2;
     // The title art dimmed behind the panel once it is final (Z57), else plain black; either way it blocks the world below.
@@ -271,6 +284,8 @@ export class PauseScene extends Phaser.Scene {
       y += 70;
       this.button(cx, y, 'Controls', 26, () => this.show('controls'), '#c8c6be');
       y += 70;
+      this.button(cx, y, 'Bios', 26, () => this.show('bios'), '#c8c6be');
+      y += 70;
       this.button(cx, y, 'Quit to menu', 26, () => this.show('quit'), '#c8c6be');
       note(height - 60, 'Esc: resume', '#a8a69e', 16);
     } else if (page === 'restart' || page === 'quit') {
@@ -286,6 +301,8 @@ export class PauseScene extends Phaser.Scene {
       this.button(cx + 110, height - 70, 'Keys', 26, () => this.show('keys'), '#c8c6be');
     } else if (page === 'keys') {
       this.drawKeys(cx, height);
+    } else if (page === 'bios') {
+      this.bios = drawBiosPage(this, cx, this.hooks.progress(), () => this.show('main'));
     } else {
       title('Controls', 70);
       const style = { fontFamily: UI_FONT, fontSize: '17px', color: '#d6d4cc', lineSpacing: 3, wordWrap: { width: 640 } };

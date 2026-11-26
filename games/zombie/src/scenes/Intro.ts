@@ -8,8 +8,9 @@ import { TILE_H, tileToWorld, worldBounds, worldToTile, worldToTileF } from '../
 import { Occlusion } from '../render/occlude';
 import { Ghosts } from '../render/outline';
 import { addSprite, anchorOf, boxOf } from '../render/placeholders';
-import { bloodKey, groundKey, pathTilesOf, treeKey } from '../render/terrain';
-import { bakeGround } from './ground';
+import { BORDER, bloodKey, groundKey, pathTilesOf, mapTreeKey } from '../render/terrain';
+import { addForestFront, bakeGround } from './ground';
+import { introClearing, introDressing } from '../render/dressing';
 import { changeScene } from './Card';
 import { UnitSprite } from '../render/units';
 import { barButtons, selectWeapon } from '../sim/abilities';
@@ -31,6 +32,7 @@ import { Feel } from './feelFx';
 import { ViewInput } from './input';
 import { bindSquad, overSquad } from './Squad';
 import { openDialogue } from './Dialogue';
+import { progressOfIntro } from '../sim/bios';
 import { bindPause } from './Pause';
 import { bindActionKeys, fillHelp } from './actionKeys';
 
@@ -162,6 +164,7 @@ export class IntroScene extends Phaser.Scene {
       quit: () => this.leave(),
       controls: () => fillHelp(HELP).split('\n'),
       hints: () => [],
+      progress: () => progressOfIntro(this.state),
     });
 
     startAtmos(this);
@@ -237,13 +240,14 @@ export class IntroScene extends Phaser.Scene {
   private drawWorld(): void {
     const g = this.state.grid;
     const path = pathTilesOf(intro.path, N);
-    bakeGround(this, N, (x, y) => groundKey(x, y, N, path));
-    this.occlusion = new Occlusion(N);
+    bakeGround(this, N, (x, y) => groundKey(x, y, N, path), introDressing(g));
+    this.occlusion = new Occlusion(N, BORDER);
+    addForestFront(this, N, this.occlusion);
     for (let y = 0; y < N; y++) {
       for (let x = 0; x < N; x++) {
         const w = tileToWorld(x, y, N);
         if (g.tiles[y * N + x] !== TREE) continue;
-        const key = treeKey(x, y);
+        const key = mapTreeKey(g, x, y, introClearing);
         const img = addSprite(this, key, w.x, w.y, w.y);
         this.occlusion.add(x, y, img, boxOf(key, w.x, w.y));
       }
@@ -602,12 +606,14 @@ export class IntroHudScene extends Phaser.Scene {
     this.counters = new CounterRow(this, FONT);
     this.goal = this.add
       .text(width / 2, 46, '', { fontFamily: FONT, fontSize: '20px', color: '#f0dc8a', wordWrap: { width: 720 }, align: 'center', ...box })
-      .setOrigin(0.5, 0);
-    this.sel = this.add.text(16, height - barH() - 12, '', { fontFamily: FONT, fontSize: '18px', color: '#e8e6de', ...box }).setOrigin(0, 1);
-    this.hint = this.add.text(width / 2, height - barH() - 12, '', { fontFamily: FONT, fontSize: '20px', color: '#f0dc8a', wordWrap: { width: HINT_WRAP }, align: 'center', ...box }).setOrigin(0.5, 1);
+      .setOrigin(0.5, 0)
+      .setVisible(false); // Z101: padded boxes start hidden; `update` shows each once it has text (an empty one is a dark rectangle while a dialogue pauses this HUD before its first update)
+    this.sel = this.add.text(16, height - barH() - 12, '', { fontFamily: FONT, fontSize: '18px', color: '#e8e6de', ...box }).setOrigin(0, 1).setVisible(false);
+    this.hint = this.add.text(width / 2, height - barH() - 12, '', { fontFamily: FONT, fontSize: '20px', color: '#f0dc8a', wordWrap: { width: HINT_WRAP }, align: 'center', ...box }).setOrigin(0.5, 1).setVisible(false);
     this.banner = this.add
       .text(width / 2, height * 0.35, '', { fontFamily: FONT, fontSize: '34px', color: '#ffffff', backgroundColor: '#141614d0', padding: { x: 24, y: 14 }, align: 'center' })
-      .setOrigin(0.5);
+      .setOrigin(0.5)
+      .setVisible(false);
     this.help = this.add
       .text(width - 16, 14, fillHelp(HELP), {
         fontFamily: FONT,
@@ -634,8 +640,10 @@ export class IntroHudScene extends Phaser.Scene {
     this.layout();
     const r = this.registry;
     this.counters.update((r.get('i_counters') as Counter[] | undefined) ?? [], 16, 12);
-    this.goal.setText(fillHelp((r.get('i_goal') as string | undefined) ?? ''));
-    this.sel.setText((r.get('i_sel') as string | undefined) ?? '');
+    const goal = fillHelp((r.get('i_goal') as string | undefined) ?? '');
+    this.goal.setText(goal).setVisible(goal !== '');
+    const sel = (r.get('i_sel') as string | undefined) ?? '';
+    this.sel.setText(sel).setVisible(sel !== '');
     const hint = (r.get('i_hint') as string | undefined) ?? '';
     this.hint.setText(fillHelp(hint)).setVisible(hint !== '');
     placeHint(this.hint, this.sel, this.scale.width);

@@ -7,7 +7,7 @@ import manifest from '../../art/manifest.json';
  * stand-in) until Codex's art is installed and the manifest says `final`.
  */
 
-export type UiGroup = 'kit' | 'icon_bar' | 'icon_hud' | 'portrait' | 'portrait_small' | 'cursor' | 'title';
+export type UiGroup = 'kit' | 'icon_bar' | 'icon_hud' | 'portrait' | 'portrait_small' | 'cursor' | 'title' | 'bio';
 export type UiStatus = 'placeholder' | 'final';
 
 export interface UiItem {
@@ -102,7 +102,7 @@ export function hudIconKey(id: string): string | null {
   return ITEMS.has(name) ? name : null;
 }
 
-export type Who = 'fighter' | 'scout' | 'hunter' | 'archer';
+export type Who = 'fighter' | 'scout' | 'hunter' | 'archer' | 'tinkerer';
 export type PortraitMood = 'neutral' | 'afraid' | 'determined' | 'hurt';
 
 /** The 128 px portrait for a survivor in a mood. */
@@ -118,10 +118,10 @@ export function smallPortraitKey(who: Who, hurt: boolean): string {
 /** A survivor below this share of their HP shows the hurt portrait, whatever the line's mood (DESIGN §6). */
 export const HURT_BELOW = 0.35;
 
-/** Which survivor a speaker or card name is ("Cass", "Eli", "Ray", "June"), or null for anyone else. */
+/** Which survivor a speaker or card name is ("Cass", "Eli", "Ray", "June", "Theo"), or null for anyone else. */
 export function speakerWho(name: string): Who | null {
   const n = name.trim().toLowerCase();
-  return n === 'cass' ? 'fighter' : n === 'eli' ? 'scout' : n === 'ray' ? 'hunter' : n === 'june' ? 'archer' : null;
+  return n === 'cass' ? 'fighter' : n === 'eli' ? 'scout' : n === 'ray' ? 'hunter' : n === 'june' ? 'archer' : n === 'theo' ? 'tinkerer' : null;
 }
 
 /** True when a survivor is under 35% HP (a dead one, at 0, counts). Unknown HP is not hurt. */
@@ -212,7 +212,11 @@ const CURSOR_ART: Readonly<Record<string, string>> = {
   crosshair: 'cursor_attack',
   grab: 'cursor_use',
   move: 'cursor_move',
+  'not-allowed': 'cursor_finish_no',
 };
+
+/** Cursors whose stand-in shows too: no CSS cursor says what they say (the red-cross pointer, DESIGN §26). */
+const STANDIN_CURSORS: ReadonlySet<string> = new Set(['cursor_finish_no']);
 
 /** The cursor art item standing in for a CSS cursor name, or null (`default` over the HUD stays the system arrow). */
 export function cursorArtFor(css: string): string | null {
@@ -225,7 +229,7 @@ export function cursorArtFor(css: string): string | null {
  */
 export function cursorCss(css: string, urlOf: (name: string) => string | undefined): string {
   const name = cursorArtFor(css);
-  if (!name || !isFinal(name)) return css;
+  if (!name || (!isFinal(name) && !STANDIN_CURSORS.has(name))) return css;
   const url = urlOf(name);
   const spot = uiOf(name).hotspot;
   return url && spot ? `url("${url}") ${spot[0]} ${spot[1]}, ${css}` : css;

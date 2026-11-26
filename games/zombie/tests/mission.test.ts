@@ -123,7 +123,7 @@ test('a survivor killed by a zombie is named with that cause on the fail screen'
 });
 
 test('a survivor who starves is named with hunger as the cause', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   const u = s.survivors[1]!;
   u.hp = 1;
   s.hunger[u.id]!.left = 0;

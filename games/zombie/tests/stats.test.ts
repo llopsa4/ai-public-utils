@@ -52,8 +52,9 @@ test('base grades: Fortress, Held, Scraped by (starving or under 25% at the end 
 test('badges: Silent, Untouched, Swift under 6 minutes; No breach, Well fed, Trapper at 5 trap kills', () => {
   assert.deepEqual(missionBadges({ shots: 0, damage: 0 }, 359), ['silent', 'untouched', 'swift']);
   assert.deepEqual(missionBadges({ shots: 3, damage: 4 }, 360), []);
-  assert.deepEqual(baseBadges({ breaches: 0, starved: false, trapKills: TRAPPER_KILLS }), ['noBreach', 'wellFed', 'trapper']);
-  assert.deepEqual(baseBadges({ breaches: 2, starved: true, trapKills: TRAPPER_KILLS - 1 }), []);
+  assert.deepEqual(baseBadges({ breaches: 0, starved: false, trapKills: TRAPPER_KILLS }, true), ['noBreach', 'wellFed', 'trapper']);
+  assert.deepEqual(baseBadges({ breaches: 0, starved: false, trapKills: TRAPPER_KILLS }, false), ['noBreach', 'trapper']);
+  assert.deepEqual(baseBadges({ breaches: 2, starved: true, trapKills: TRAPPER_KILLS - 1 }, true), []);
 });
 
 test('clock formats m:ss', () => {
@@ -114,7 +115,7 @@ test('mission result reads the crates and time into rows', () => {
 });
 
 test('Base 1: a fixed opening chewed through is a breach; a trap kill and starving are counted', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   const o = s.openings[0]!;
   o.fixed = true;
   s.traps.push({ id: 't1', kind: 'spike', x: 5, y: 5, armed: true, cooldown: 0 });

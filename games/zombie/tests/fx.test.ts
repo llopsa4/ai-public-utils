@@ -88,7 +88,7 @@ test('opening a crate pops its loot once, and an empty crate pops nothing', () =
   observe(w, s);
   s.crates[0]!.opened = true;
   s.crates[1]!.opened = true;
-  assert.deepEqual(observe(w, s), [{ kind: 'pop', text: '+3 ammo  +2 food', x: 2, y: 2 }]);
+  assert.deepEqual(observe(w, s), [{ kind: 'pop', text: '+3 ammo', x: 2, y: 2 }]); // the crate's food is not named before the main camp
   assert.deepEqual(observe(w, s), []);
 });
 
@@ -150,7 +150,9 @@ test('fixing an opening or placing a barricade is not an attack', () => {
 });
 
 test('loot text and pop colours', () => {
-  assert.equal(lootText({ ammo: 0, food: 1, scrap: 4 }), '+1 food  +4 scrap');
+  assert.equal(lootText({ ammo: 0, food: 1, scrap: 4 }), '+4 scrap');
+  assert.equal(lootText({ ammo: 0, food: 1, scrap: 4 }, true), '+1 food  +4 scrap');
+  assert.equal(lootText({ ammo: 0, food: 3, scrap: 0 }), '');
   assert.equal(lootText({ ammo: 0, food: 0, scrap: 0 }), '');
   assert.equal(popColor('+3 ammo'), '#9bc79b');
   assert.equal(popColor('Out of ammo'), '#e0806a');

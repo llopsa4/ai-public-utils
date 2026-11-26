@@ -4,7 +4,9 @@ import { type Rect, spriteRect } from './occlude';
 
 // Grey code stand-ins for every manifest key with a `placeholder` block (DEVELOPMENT.md
 // *Art placeholders*). Claude never draws real art; Codex replaces keys with final art.
-export type Shape = 'diamond' | 'capsule' | 'box' | 'ring' | 'ellipse' | 'cube';
+export type Shape = 'diamond' | 'capsule' | 'box' | 'ring' | 'ellipse' | 'cube' | 'spire' | 'post' | 'strip';
+/** A mark on a cube's long face: an opening, or a wall variant's vertical beam or boarded patch. */
+export type Mark = 'door' | 'window' | 'beam' | 'board';
 
 export interface ManifestEntry {
   /** Source px: for a `scale: 2` key this is the double-size art, shown at half. */
@@ -16,8 +18,11 @@ export interface ManifestEntry {
   group?: string;
   /** Resolution of the art: 2 = authored at double size and drawn at 1/2. Default 1. */
   scale?: number;
-  /** `cube` is an isometric block: `h` its height in source px (default: fills the sprite), `mark` a door or window on its `face`. */
-  placeholder?: { shape: Shape; color: string; h?: number; mark?: 'door' | 'window'; face?: 'left' | 'right' };
+  /**
+   * `cube` is an isometric block: `h` its height in source px (default: fills the sprite), `mark` drawn on its `face`.
+   * `strip` is a band running down-right across the sprite (a roof ridge or trim): `h` its thickness.
+   */
+  placeholder?: { shape: Shape; color: string; h?: number; mark?: Mark; face?: 'left' | 'right' };
 }
 
 export const MANIFEST = manifest.keys as unknown as Record<string, ManifestEntry>;
@@ -67,7 +72,7 @@ function shade(color: number, k: number): number {
 type Pt = { x: number; y: number };
 
 /** An isometric block standing on the bottom diamond of its w x h sprite: lit top, mid left face, dark right face. */
-function drawCube(g: Phaser.GameObjects.Graphics, w: number, h: number, color: number, height: number, mark?: 'door' | 'window', face?: 'left' | 'right'): void {
+function drawCube(g: Phaser.GameObjects.Graphics, w: number, h: number, color: number, height: number, mark?: Mark, face?: 'left' | 'right'): void {
   const d = w / 2; // the diamond's height
   const t0 = h - d - height; // y of the top diamond's upper corner
   const top: Pt[] = [{ x: w / 2, y: t0 }, { x: w, y: t0 + d / 2 }, { x: w / 2, y: t0 + d }, { x: 0, y: t0 + d / 2 }];
@@ -80,13 +85,19 @@ function drawCube(g: Phaser.GameObjects.Graphics, w: number, h: number, color: n
   g.lineStyle(1, edge, 0.9);
   for (const poly of [top, left, right]) g.strokePoints(poly, true);
   if (!mark) return;
-  // A door or window set into the long face: a quad between u0..u1 across the face and v0..v1 down it.
+  // A mark set into the long face: a quad between u0..u1 across the face and v0..v1 down it.
   const onLeft = face !== 'right';
   const p = (u: number, v: number): Pt =>
     onLeft ? { x: u * (w / 2), y: t0 + d / 2 + u * (d / 2) + v * height } : { x: w / 2 + u * (w / 2), y: t0 + d - u * (d / 2) + v * height };
-  const [v0, v1] = mark === 'door' ? [0.22, 1] : [0.2, 0.55];
-  const quad = [p(0.28, v0), p(0.72, v0), p(0.72, v1), p(0.28, v1)];
-  g.fillStyle(mark === 'door' ? 0x22241f : 0xb8b8ae, 1).fillPoints(quad, true);
+  const marks: Record<Mark, [number, number, number, number, number]> = {
+    door: [0.28, 0.72, 0.22, 1, 0x22241f],
+    window: [0.28, 0.72, 0.2, 0.55, 0xb8b8ae],
+    beam: [0.44, 0.56, 0, 1, shade(color, 0.6)],
+    board: [0.12, 0.88, 0.42, 0.62, shade(color, 0.8)],
+  };
+  const [u0, u1, v0, v1, fill] = marks[mark];
+  const quad = [p(u0, v0), p(u1, v0), p(u1, v1), p(u0, v1)];
+  g.fillStyle(fill, 1).fillPoints(quad, true);
   g.lineStyle(1, edge, 0.9).strokePoints(quad, true);
 }
 
@@ -117,6 +128,22 @@ export function ensureTextures(scene: Phaser.Scene): void {
       case 'ellipse':
         g.fillStyle(color, 0.85).fillEllipse(w / 2, h / 2, w, h);
         break;
+      case 'spire': // a tall tree: a narrow triangle on a thin trunk, so the ground between trees stays visible
+        g.fillStyle(shade(color, 0.8)).fillRect(w * 0.45, h * 0.6, w * 0.1, h * 0.4);
+        g.fillStyle(color).fillTriangle(w / 2, 0, w * 0.85, h * 0.72, w * 0.15, h * 0.72);
+        g.lineStyle(1, edge).strokeTriangle(w / 2, 0, w * 0.85, h * 0.72, w * 0.15, h * 0.72);
+        break;
+      case 'post': // a dead snag: a bare trunk
+        g.fillStyle(color).fillRect(w * 0.4, h * 0.05, w * 0.2, h * 0.95);
+        g.lineStyle(1, edge).strokeRect(w * 0.4, h * 0.05, w * 0.2, h * 0.95);
+        break;
+      case 'strip': { // a band running down-right, its top edge from the top-left corner: a roof ridge or trim
+        const t = e.placeholder.h ?? h - w / 2;
+        const band = [{ x: 0, y: 0 }, { x: w, y: w / 2 }, { x: w, y: w / 2 + t }, { x: 0, y: t }];
+        g.fillStyle(color).fillPoints(band, true);
+        g.lineStyle(1, edge).strokePoints(band, true);
+        break;
+      }
       case 'cube':
         drawCube(g, w, h, color, e.placeholder.h ?? h - w / 2, e.placeholder.mark, e.placeholder.face);
         break;

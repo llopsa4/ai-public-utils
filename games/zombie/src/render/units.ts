@@ -14,6 +14,12 @@ import { anchorOf } from './placeholders';
 // a figure whose atlas is missing) stays the old grey capsule, squashed for crouch and crawl.
 const STANCE_SCALE: Record<Stance, number> = { walk: 1, crouch: 0.72, crawl: 0.4 };
 const [AX, AY] = manifest.figures.anchor;
+// Contact shadow: a 2:1 ellipse (the iso foreshortening) in world px. Depth 0.55 sits above the ground (0), decals
+// (0.2) and the selection ring (0.5), under the tile markers (0.6) and every figure (depth = its y).
+const SHADOW_W = 34;
+const SHADOW_H = 17;
+const SHADOW_ALPHA = 0.32;
+const SHADOW_DEPTH = 0.55;
 
 const figureKey = (u: Survivor | Enemy): string | null => (u.side === 'survivor' ? u.kind : u.kind === 'zombie' ? zombieVariant(u.id) : null);
 
@@ -22,6 +28,8 @@ const legacyKeyOf = (u: Survivor | Enemy): string => (u.side === 'survivor' ? `s
 export class UnitSprite {
   readonly body: Phaser.GameObjects.Image;
   readonly ring?: Phaser.GameObjects.Image;
+  /** Soft contact shadow (DESIGN §20 *Visual pass*): drawn in code, never painted into the art. */
+  private readonly shadow: Phaser.GameObjects.Ellipse;
   /** `!` over a chasing enemy, `?` over an investigating one (shape cues, DESIGN §19); hidden otherwise. */
   private readonly cue: Phaser.GameObjects.Text;
   /** True while a dead unit's death anim plays: its body sprite stays hidden until it ends. */
@@ -49,11 +57,16 @@ export class UnitSprite {
     this.body = scene.add.image(0, 0, first.tex, first.frame);
     this.body.setOrigin(...(this.key ? [AX, AY] : anchorOf(this.legacy)));
     if (this.key) this.body.setScale(this.scale);
+    this.shadow = scene.add.ellipse(0, 0, SHADOW_W, SHADOW_H, 0x000000, SHADOW_ALPHA).setDepth(SHADOW_DEPTH).setVisible(false);
     this.cue = scene.add.text(0, 0, '', { fontFamily: GAME_FONT, fontSize: '22px', fontStyle: 'bold', color: '#ffffff', stroke: '#141614', strokeThickness: 4 }).setOrigin(0.5, 1).setDepth(900).setVisible(false);
   }
 
-  /** Shows or hides the state cue above the figure's feet at (x, y) world px; call after `update`. */
+  /**
+   * Shows or hides the contact shadow under the figure's feet and the state cue above them, at (x, y)
+   * world px; call after `update`.
+   */
   showCue(u: Survivor | Enemy, drawn: boolean, x: number, y: number): void {
+    this.shadow.setVisible(drawn).setPosition(x, y); // Z101: flat dark ellipse at the feet, above the ground and decals, under every figure
     const glyph = drawn && u.side !== 'survivor' && u.hp > 0 && options().cues ? stateCue(u.ai.mode) : null;
     this.cue.setVisible(glyph !== null);
     if (!glyph) return;
@@ -82,13 +95,14 @@ export class UnitSprite {
     this.dying = u.hp <= 0 && !pick.finished;
     const on = (u.hp > 0 || this.dying) && !hidden;
     this.body.setVisible(on);
-    if (!on) return false;
+    if (!on && !(hidden && u.hp > 0)) return false;
+    // A living figure hidden by a roof still takes its frame: Theo's highlight copies it (DESIGN §5).
     const name = frameName(key, pick.anim, facing, pick.frame);
     if (name !== this.shown) {
       this.body.setFrame(name);
       this.shown = name;
     }
     this.body.setFlipX(flip);
-    return true;
+    return on;
   }
 }

@@ -11,7 +11,7 @@ import { KitButton, kitSlice } from './kit';
 // and calls `onDone` once when Enter, Space, a click or the button closes it.
 
 export const DEBRIEF_SCENE = 'Debrief';
-const TITLE: Readonly<Record<Result['scene'], string>> = { mission1: 'Mission 1: the house in the woods', base1: 'Base 1: the house' };
+const TITLE: Readonly<Record<Result['scene'], string>> = { mission1: 'Mission 1: the house in the woods', base1: 'Base 1: the house', mission2: "Mission 2: Theo's house" };
 const W = 560;
 const PAD = 28;
 const ROW_H = 30;

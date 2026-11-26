@@ -112,6 +112,7 @@ function stateAnim(u: Subject, counts: Counts): { anim: string; moving: boolean;
   if (u.side === 'survivor') {
     const o = u.order;
     if (o && (o.type === 'work' || o.type === 'open') && (o.left ?? -1) >= 0 && !moving) return { anim: 'work', moving: true, fast: false }; // the work loop plays while standing
+    if (o?.type === 'finish' && (o.left ?? -1) >= 0 && u.stance !== 'crawl') return { anim: 'crouch', moving: false, fast: false }; // crouched over the body (DESIGN §26)
     if (u.carrying && counts.carry) return { anim: 'carry', moving, fast: false };
     if (!moving && o?.type === 'hold') return { anim: 'hold', moving: false, fast: false };
     const stance = u.stance ?? 'walk';

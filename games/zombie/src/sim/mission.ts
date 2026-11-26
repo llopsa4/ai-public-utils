@@ -2,7 +2,7 @@
 // Pure TypeScript, JSON-serialisable state. Abilities (takedown, carry, lure, crates) are in abilities.ts.
 import chars from '../data/characters.json';
 import enemiesData from '../data/enemies.json';
-import { carryFollow, stepOpen, stepTakedown } from './abilities';
+import { carryFollow, stepFinish, stepOpen, stepTakedown } from './abilities';
 import { type BondState, newBond, stepBond } from './bond';
 import { type Difficulty, tuning } from './difficulty';
 import { type AiState, REPATH, newAi, route, stepEnemy, walkPath } from './ai';
@@ -11,13 +11,15 @@ import { BUSH, COVER, FLOOR, type Grid, type Kind, TREE, WALL, makeGrid, setTile
 import { type NoiseHolder, ageRings, emitNoise } from './noise';
 import { type Pt, nearestFree } from './path';
 import { type RngState, makeRng } from './rng';
+import { type Speaker, type SpeakerSpec, newSpeaker, stepSpeaker } from './speaker';
+import { TICK_HZ } from './time';
 import { moveNoiseOf } from './traits';
 import { type Viewer, dist, moveMode, seesPoint } from './vision';
 
 export type Stance = 'walk' | 'crouch' | 'crawl';
-export type SurvivorKind = 'fighter' | 'scout' | 'hunter' | 'archer';
-/** The name the player sees for each survivor (DESIGN §5). Ids stay `fighter` / `scout` / `hunter` / `archer`. */
-export const SURVIVOR_NAME: Record<SurvivorKind, string> = { fighter: 'Cass', scout: 'Eli', hunter: 'Ray', archer: 'June' };
+export type SurvivorKind = 'fighter' | 'scout' | 'hunter' | 'archer' | 'tinkerer';
+/** The name the player sees for each survivor (DESIGN §5). Ids stay `fighter` / `scout` / `hunter` / `archer` / `tinkerer`. */
+export const SURVIVOR_NAME: Record<SurvivorKind, string> = { fighter: 'Cass', scout: 'Eli', hunter: 'Ray', archer: 'June', tinkerer: 'Theo' };
 export type EnemyKind = 'zombie' | 'human';
 
 export type Order =
@@ -26,10 +28,11 @@ export type Order =
   | { type: 'attack'; target: string }
   | { type: 'takedown'; target: string; left: number } // left: ticks, -1 until adjacent
   | { type: 'open'; crate: string; left: number }
+  | { type: 'finish'; target: string; left: number } // a squatter's body before it rises (DESIGN §26); left: as takedown, by hand only
   | { type: 'work'; job: 'fix' | 'cook' | 'trap' | 'rearm'; target: string; left: number }; // Base 1 (sim/base.ts); left: ticks, -1 until adjacent
 
-/** What a unit is doing as a one-shot animation (art spec: stab, shot, club, hatchet, bow shot, throw, takedown, bite). */
-export type ActKind = 'stab' | 'shot' | 'club' | 'hatchet' | 'bow_shot' | 'throw' | 'takedown' | 'bite';
+/** What a unit is doing as a one-shot animation (art spec: stab, shot, club, hatchet, shovel, bow shot, throw, takedown, bite). */
+export type ActKind = 'stab' | 'shot' | 'club' | 'hatchet' | 'shovel' | 'bow_shot' | 'throw' | 'takedown' | 'bite';
 
 /** Set at the start of an action; the renderer plays the one-shot from `tick` (the sim never clears it). */
 export interface Act {
@@ -80,6 +83,7 @@ export interface Enemy extends UnitBase {
   ai: AiState;
   patrol: Pt[];
   post: { x: number; y: number; facing: [number, number] };
+  turned?: boolean; // a zombie risen from a squatter's body (DESIGN §26): looks only, the A19 sheet
 }
 
 export type Unit = Survivor | Enemy;
@@ -92,6 +96,7 @@ export interface Body {
   y: number;
   found: boolean; // a human guard has seen it
   carriedBy: string | null;
+  riseAt?: number; // the tick it rises as a zombie (a squatter killed by a zombie, DESIGN §26); absent: it never rises
 }
 
 export interface Crate {
@@ -125,16 +130,25 @@ export interface MissionState extends NoiseHolder {
   crateTime: number; // seconds to open a crate
   loot: { food: number; scrap: number; ammo: number }; // from opened crates
   ammo: number; // shared by every survivor (DESIGN §5)
-  win: 'extract' | 'clear';
+  win: 'extract' | 'clear' | 'squatters';
   extract: Zone; // empty (w = 0) when there is none
   roof: Zone | null; // hides everything inside until a survivor enters (DESIGN §16)
   roofOpen: boolean; // a survivor has entered: the roof is gone for good
   bond: BondState | null; // the Cass + Eli move (DESIGN §23); null where the scene has none (the Intro)
+  theoOnAir?: boolean; // Theo has spoken on the speaker (Mission 2, DESIGN §25): the enemy highlight works before he joins
+  mission?: string; // which mission this is (`m01` when absent, `m02`): the debrief and the Bios read it
+  speaker?: Speaker; // Theo's speaker beats (Mission 2, DESIGN §26; sim/speaker.ts); absent elsewhere
   difficulty: Difficulty; // the level this scene started on (DESIGN §21); zombie sight reads it
 }
 
-/** Map rows: `.` floor, `,` path (floor drawn as a worn track, art/STYLE.md *Placement*), `#` wall, `T` tree, `c` cover, `b` bush. The map must be square. */
+/**
+ * Map rows: `.` floor, `,` path (floor drawn as a worn track, art/STYLE.md *Placement*), `#` wall, `T` tree, `c` cover,
+ * `b` bush. Mission 2's estate (DESIGN §26) adds `q` concrete floor, `D` the bunker door (a wall until it opens), and
+ * props that block like cover: `f` fence, `G` gate post, `s` solar panel, `i` inverter, `g` generator, `p` intercom.
+ * The map must be square.
+ */
 export interface MissionSpec {
+  id?: string; // `m01` when absent
   seed?: number;
   map: string[];
   survivors: { id: string; kind: SurvivorKind; x: number; y: number }[];
@@ -143,16 +157,21 @@ export interface MissionSpec {
   ammo?: number; // default `startAmmo`
   difficulty?: Difficulty; // default 'normal'; `withDifficulty` also applies the level's ammo
   crateTime?: number; // seconds, default 2
-  /** `extract` (default): every survivor in `extract` and one crate opened. `clear`: every enemy dead and every crate opened. */
-  win?: 'extract' | 'clear';
+  /**
+   * `extract` (default): every survivor in `extract` and one crate opened. `clear`: every enemy dead and every crate
+   * opened. `squatters`: every human enemy down; zombies may still walk (Mission 2, DESIGN §26).
+   */
+  win?: 'extract' | 'clear' | 'squatters';
   extract?: Zone;
   roof?: Zone; // the house footprint, walls included
   bond?: boolean; // the scene offers the bond move (DESIGN §23)
+  fence?: Zone; // the estate fence, outer edge (Mission 2): Theo calls when a survivor first comes near it
+  speaker?: SpeakerSpec; // Theo's speaker beats (Mission 2, DESIGN §26)
   /** Run shuffles (DESIGN §21): other zombie start spots and crates; `enemies` and `crates` above are layout 0. */
   layouts?: Pick<MissionSpec, 'enemies' | 'crates'>[];
 }
 
-const TILE_CHARS: Record<string, Kind> = { '.': FLOOR, ',': FLOOR, '#': WALL, T: TREE, c: COVER, b: BUSH };
+const TILE_CHARS: Record<string, Kind> = { '.': FLOOR, ',': FLOOR, q: FLOOR, '#': WALL, D: WALL, T: TREE, c: COVER, b: BUSH, f: COVER, G: COVER, s: COVER, i: COVER, g: COVER, p: COVER };
 
 function unit(v: [number, number]): [number, number] {
   const d = Math.hypot(v[0], v[1]);
@@ -265,6 +284,8 @@ export function createMission(spec: MissionSpec): MissionState {
     roofOpen: !spec.roof,
     bond: spec.bond ? newBond() : null,
     difficulty: spec.difficulty ?? 'normal',
+    ...(spec.id ? { mission: spec.id } : {}),
+    ...(spec.speaker && spec.fence ? { speaker: newSpeaker(spec.speaker, spec.fence) } : {}),
     noises: [],
     rings: [],
   };
@@ -395,6 +416,7 @@ function stepSurvivor(s: MissionState, u: Survivor): void {
   else if (o?.type === 'attack') attack(s, u, o.target);
   else if (o?.type === 'takedown') stepTakedown(s, u, o);
   else if (o?.type === 'open') stepOpen(s, u, o);
+  else if (o?.type === 'finish') stepFinish(s, u, o);
   const mode = moveMode(u);
   const c = chars[u.kind];
   const speed = c.speed[mode] * (u.carrying && 'carrySpeed' in c ? c.carrySpeed : 1) * (u.speedMul ?? 1);
@@ -424,10 +446,54 @@ export function failText(s: Pick<MissionState, 'survivors'>): string {
     .join('  ');
 }
 
+/** The id of the zombie a body rises as. */
+export const risenId = (bodyId: string): string => `${bodyId}-z`;
+
+/**
+ * Seconds until a body rises (rounded up; DESIGN §26 the faint countdown), or null for a body that never will.
+ */
+export function riseIn(s: Pick<MissionState, 'tick'>, b: Body): number | null {
+  return b.riseAt === undefined ? null : Math.max(0, Math.ceil((b.riseAt - s.tick) / TICK_HZ));
+}
+
+/**
+ * Bodies whose time has come rise as ordinary zombies where they lie (or at their carrier's feet, who drops them):
+ * the body is gone, the blood decal stays. A risen zombie is not needed for a `squatters` win (DESIGN §26).
+ */
+function riseBodies(s: MissionState): void {
+  if (!s.bodies.some((b) => b.riseAt !== undefined && b.riseAt <= s.tick)) return;
+  s.bodies = s.bodies.filter((b) => {
+    if (b.riseAt === undefined || b.riseAt > s.tick) return true;
+    const carrier = b.carriedBy ? s.survivors.find((u) => u.id === b.carriedBy) : undefined;
+    if (carrier) carrier.carrying = null;
+    const [x, y] = carrier ? [Math.round(carrier.x), Math.round(carrier.y)] : [b.x, b.y];
+    s.enemies.push({
+      id: risenId(b.id),
+      side: 'zombie',
+      kind: 'zombie',
+      x,
+      y,
+      hp: enemiesData.zombie.hp,
+      maxHp: enemiesData.zombie.hp,
+      facing: [0, 1],
+      path: [],
+      cooldown: 0,
+      act: null,
+      ai: newAi('zombie'),
+      patrol: [],
+      post: { x, y, facing: [0, 1] },
+      turned: true,
+    });
+    return false;
+  });
+}
+
 function updateStatus(s: MissionState): void {
   if (s.survivors.some((u) => u.hp <= 0)) s.status = 'failed';
   else if (s.win === 'clear') {
     if (s.enemies.every((e) => e.hp <= 0) && s.crates.every((c) => c.opened)) s.status = 'success';
+  } else if (s.win === 'squatters') {
+    if (s.enemies.every((e) => e.kind !== 'human' || e.hp <= 0)) s.status = 'success';
   } else if (
     s.survivors.every((u) => inZone(s.extract, u.x, u.y)) &&
     (s.crates.length === 0 || s.crates.some((c) => c.opened))
@@ -455,6 +521,8 @@ export function stepMission(s: MissionState): void {
   ageRings(s);
   for (const u of s.survivors) if (u.hp > 0) stepSurvivor(s, u);
   for (const e of s.enemies) stepEnemy(s, e, heard);
+  riseBodies(s);
   updateRoof(s);
+  if (s.speaker) stepSpeaker(s, s.speaker);
   updateStatus(s);
 }

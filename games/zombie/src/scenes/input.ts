@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import view from '../data/view.json';
+import { FOREST_FOG } from '../render/terrain';
 import { type Bounds, clampCenter, edgeDirection, panVector, pointerInside, snapZoom, stepZoom, wheelSteps, zoomAtCursor } from '../render/camera';
 import { uiImageUrl } from '../render/atlas';
 import { cursorCss } from '../render/ui';
@@ -73,7 +74,7 @@ export class ViewInput {
   /** Puts the camera at the start zoom, centred on a world point. Call at the end of the scene's `create`. */
   start(cx: number, cy: number): void {
     const cam = this.scene.cameras.main;
-    cam.setBackgroundColor('#141614');
+    cam.setBackgroundColor(FOREST_FOG); // past the forest border there is only mist, never black
     cam.roundPixels = true;
     cam.setZoom(snapZoom(CAM.zoomStart, CAM.zoomSteps));
     this.centreOn(cx, cy);

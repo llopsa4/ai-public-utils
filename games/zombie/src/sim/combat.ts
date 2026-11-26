@@ -1,5 +1,6 @@
 // Combat (DESIGN §7, §8): weapons, damage, death into a body and a blood decal.
 import chars from '../data/characters.json';
+import enemies from '../data/enemies.json';
 import { TICK_HZ } from './time';
 import { emitNoise } from './noise';
 import { dist, lineOfSight } from './vision';
@@ -16,8 +17,8 @@ export interface Weapon {
   act?: ActKind; // the animation cue a use sets on the attacker
 }
 
-/** The cue each weapon id plays (art spec: knife stab, pistol shot, club swing, hatchet swing, bow shot; the war club plays the club swing). */
-const WEAPON_ACT: Record<string, ActKind> = { knife: 'stab', pistol: 'shot', club: 'club', hatchet: 'hatchet', warclub: 'club', bow: 'bow_shot' };
+/** The cue each weapon id plays (art spec: knife stab, pistol shot, club swing, hatchet swing, shovel swing, bow shot; the war club plays the club swing). */
+const WEAPON_ACT: Record<string, ActKind> = { knife: 'stab', pistol: 'shot', club: 'club', hatchet: 'hatchet', warclub: 'club', shovel: 'shovel', bow: 'bow_shot' };
 
 export function weapon(id: string): Weapon {
   const w = (chars.weapons as Record<string, Omit<Weapon, 'id'>>)[id];
@@ -61,7 +62,10 @@ export function inReach(s: MissionState, a: Unit, t: Unit, w: Weapon): boolean {
   return dist(a.x, a.y, t.x, t.y) <= w.range + 1e-9 && lineOfSight(s.grid, a.x, a.y, t.x, t.y);
 }
 
-/** Damage that may kill: a dead unit stops, and leaves a body and a blood decal for the scene. */
+/**
+ * Damage that may kill: a dead unit stops, and leaves a body and a blood decal for the scene. A human killed by a
+ * zombie leaves a body that rises as a zombie `zombie.rise` seconds later (DESIGN §26).
+ */
 export function damage(s: MissionState, u: Unit, amount: number, by?: string): void {
   if (u.hp <= 0) return;
   u.hp = Math.max(0, u.hp - amount);
@@ -70,23 +74,29 @@ export function damage(s: MissionState, u: Unit, amount: number, by?: string): v
   u.path = [];
   const x = Math.round(u.x);
   const y = Math.round(u.y);
-  s.bodies.push({ id: u.id, side: u.side, kind: u.kind, x, y, found: false, carriedBy: null });
+  const turns = u.side === 'human' && by === 'zombie';
+  s.bodies.push({ id: u.id, side: u.side, kind: u.kind, x, y, found: false, carriedBy: null, ...(turns ? { riseAt: s.tick + Math.round(enemies.zombie.rise * TICK_HZ) } : {}) });
   s.decals.push({ x, y });
 }
 
 /** Uses a weapon if it is ready and the target is in reach. Does not turn the attacker. */
 export function fire(s: MissionState, a: Unit, w: Weapon, t: Unit): boolean {
   if (a.hp <= 0 || t.hp <= 0 || a.cooldown > 0 || !hasAmmo(s, w, a) || !inReach(s, a, t, w)) return false;
+  damage(s, t, w.damage, a.kind);
+  discharge(s, a, w, t.x, t.y);
+  return true;
+}
+
+/** What one use of a weapon aimed at (x, y) costs and shows: ammo or an arrow, the noise, the cooldown, the cue. */
+export function discharge(s: MissionState, a: Unit, w: Weapon, x: number, y: number): void {
   if (w.ammo) s.ammo--;
   if (w.arrows && a.side === 'survivor') {
     a.arrows = (a.arrows ?? 0) - 1;
-    s.looseArrows.push({ x: Math.round(t.x), y: Math.round(t.y), owner: a.id, tick: s.tick }); // it lies where it hit
+    s.looseArrows.push({ x: Math.round(x), y: Math.round(y), owner: a.id, tick: s.tick }); // it lies where it hit
   }
-  damage(s, t, w.damage, a.kind);
   emitNoise(s, a.x, a.y, w.noise, 'shot', a.id);
   a.cooldown = Math.round(cooldownOf(a, w) * TICK_HZ);
-  if (w.act) a.act = w.arrows ? { kind: w.act, tick: s.tick, at: [t.x, t.y] } : { kind: w.act, tick: s.tick };
-  return true;
+  if (w.act) a.act = w.arrows ? { kind: w.act, tick: s.tick, at: [x, y] } : { kind: w.act, tick: s.tick };
 }
 
 export function face(a: Unit, tx: number, ty: number): void {

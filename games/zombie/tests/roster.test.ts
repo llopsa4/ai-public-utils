@@ -7,6 +7,9 @@ import { weapon } from '../src/sim/combat';
 import { SURVIVOR_NAME, createMission, newSurvivor, orderAttack, stepMission } from '../src/sim/mission';
 import { traitLine } from '../src/sim/traits';
 import manifest from '../art/manifest.json';
+import base1 from '../src/data/base1.json';
+import intro from '../src/data/intro.json';
+import m01 from '../src/data/missions/m01.json';
 
 // Z79: Ray (`hunter`) and June (`archer`) are wired in as survivor kinds (DESIGN §5).
 
@@ -89,4 +92,41 @@ test('the manifest registers final figures and arrows for Ray and June', () => {
     assert.equal(manifest.keys[key].group, 'env');
     assert.equal(manifest.keys[key].status, 'final');
   }
+});
+
+// Z90: Theo (`tinkerer`) is wired in, but no scene puts him in the squad yet: he joins at Mission 2's bunker door (DESIGN §25).
+
+test('Theo is named, speaks with his own portrait and has a trait line', () => {
+  assert.equal(SURVIVOR_NAME.tinkerer, 'Theo');
+  assert.equal(speakerWho('Theo'), 'tinkerer');
+  assert.match(traitLine('Theo'), /Resourceful/);
+  for (const mood of ['neutral', 'afraid', 'determined', 'hurt'] as const) assert.ok(uiItem(portraitKey('tinkerer', mood)), mood);
+  for (const hurt of [false, true]) assert.ok(uiItem(smallPortraitKey('tinkerer', hurt)));
+});
+
+test('Theo carries the pistol and the shovel, and is the most fragile and slowest survivor (DESIGN §5)', () => {
+  const theo = newSurvivor('t', 'tinkerer', 3, 3);
+  assert.deepEqual(theo.weapons, ['pistol', 'shovel']);
+  assert.equal(theo.weapon, 'pistol');
+  assert.equal(theo.arrows, undefined);
+  assert.equal(theo.hp, 70);
+  for (const other of ['fighter', 'scout', 'hunter', 'archer'] as const) {
+    assert.ok(chars.tinkerer.hp < chars[other].hp, `${other} hp`);
+    assert.ok(chars.tinkerer.speed.walk < chars[other].speed.walk, `${other} walk`);
+    assert.ok(chars.tinkerer.speed.run < chars[other].speed.run, `${other} run`);
+  }
+  assert.equal(weapon('shovel').act, 'shovel');
+  assert.equal(weapon('shovel').noise, 0);
+  assert.ok(uiItem('icon_bar_shovel'));
+});
+
+test('no scene puts Theo in the squad yet', () => {
+  for (const spec of [m01, base1, intro]) assert.ok(!JSON.stringify(spec).includes('tinkerer'));
+});
+
+test('the manifest registers Theo’s figure with the A16 anims', () => {
+  const f = (manifest.figures.keys as Record<string, { atlas: string; legacyKey: string; anims: Record<string, number> }>).tinkerer!;
+  assert.equal(f.atlas, 'tinkerer');
+  assert.ok((manifest.keys as Record<string, unknown>)[f.legacyKey]);
+  for (const a of ['idle', 'walk', 'run', 'crouch', 'crawl', 'hold', 'work', 'death', 'pistol_shot', 'shovel']) assert.ok(f.anims[a], a);
 });

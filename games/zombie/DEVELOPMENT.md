@@ -17,6 +17,8 @@ Needs Node >= 22.12.
 | `npm run art:standins` | writes a grey numbered stand-in for every figure frame still missing in `art/frames/`, (and every UI item in the manifest `ui`) then rebuilds `art/atlas/` (never overwrites real art) |
 | `npm run art:pack -- <batch>` | validates `art/inbox/<batch>/` (git-ignored, local only), installs it into `art/frames/` (a `ui/` folder inside the batch holds UI items, an `env/` folder the environment kit: `<key>.png` at the key's 2x source size, installed as `art/frames/env/<key>.png`), rebuilds the atlases incl. `ui`; any bad file fails the whole batch with its name; palette checked against `art/palette.json` once Codex delivers it |
 
+Both art commands rewrite shared files (`art/frames/standins.json`, `art/atlas/*`). They stop with exit code 2 while the other agent's *Working on* (handoff file) names the manifest, the stand-in list or the atlases, when the line claims them or says it is installing, packing or rebuilding them (and does not say "no claims held", "released" or "done"). Write such claims as `Claimed: <files>`. Claude is detected by `CLAUDECODE`; anyone else is checked against Claude's claims. Claim these files in your own handoff while you run them; `--force` only for a claim confirmed stale.
+
 Run `npm run typecheck && npm test` before finishing a task.
 
 ## Layout
@@ -80,13 +82,17 @@ texture of that key at Boot. Only grey tones, plus functional colours for vision
 / green) and blood (dark red). Codex replaces keys with final art; scenes use the key and
 `anchorOf(key)`, never hard-coded sizes.
 
-**Environment kit (Z63).** Manifest keys with `group: env` and `scale: 2` are the 35 environment keys
+**Environment kit (Z63).** Manifest keys with `group: env` and `scale: 2` are the environment keys
 (ground, trees, bushes, walls, doors, windows, floor, roof top, props, blood). Their `size` is the
 double-size source px and the game draws them at half (`drawScale`); scenes add them with
 `addSprite(scene, key, x, y, depth)`, never `add.image` + `setOrigin`. The `cube` shape is an
 isometric block (`h` = block height, `mark` = door or window on its `face`). Final art is one PNG per key
 in `art/frames/env/`; a key with a file there uses it, otherwise the stand-in shows. When Codex sets a key's
 `status` to `final`, the world text label for it goes (`isFinalKey`). Which key a tile gets is
-`src/render/terrain.ts` (hashed moss, dirt and leaves; `,` in a `m01.json` map row, or `path` in
-`intro.json`, marks a path tile); `src/render/occlude.ts` fades walls and trees in front of survivors and
-`src/render/outline.ts` draws the hover outline and the see-through survivor.
+`src/render/terrain.ts` (moss or path; `,` in a `m01.json` map row, or `path` in
+`intro.json`, marks a path tile). The same file hashes the patch decals and scatter pieces (`patch_*`, `scatter_*`),
+`src/render/dressing.ts` says where each map keeps them clear, and `bakeGround` draws them into the ground texture; `mapTreeKey` picks a tall or small tree for a `T` tile (looks only)
+and `forestBorder` lays out the forest outside the map: `bakeGround` bakes its ground, mist and far-side trees, and
+`addForestFront` adds the near-side trees as sprites. `src/render/occlude.ts` fades walls and trees in front of survivors and
+`src/render/outline.ts` draws the hover outline and the see-through survivor. `src/render/highlight.ts` draws Theo's
+enemy highlight (`src/sim/highlight.ts` says when it exists).

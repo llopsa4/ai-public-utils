@@ -1,4 +1,4 @@
 {
   "campSize": 32,
-  "camera": { "panPxPerSec": 700, "edgePx": 16, "zoomSteps": [1, 1.5, 2, 3], "zoomStart": 1, "wheelPx": 100, "wheelResetMs": 300 }
+  "camera": { "panPxPerSec": 700, "edgePx": 16, "zoomSteps": [1, 1.5, 2, 3], "zoomStart": 1.5, "wheelPx": 100, "wheelResetMs": 300 }
 }

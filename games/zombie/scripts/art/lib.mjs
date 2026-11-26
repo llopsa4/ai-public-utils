@@ -11,12 +11,45 @@ const FRAME_FILE = /^(.+)_(se|sw|ne|nw)_(\d+)\.png$/;
 
 /** `--root <dir>` overrides the project folder (the tests use a temp copy). */
 export function parseArgs(argv) {
-  const args = { root: defaultRoot, rest: [] };
+  const args = { root: defaultRoot, rest: [], force: false };
   for (let i = 0; i < argv.length; i++) {
     if (argv[i] === '--root') args.root = resolve(argv[++i] ?? '');
+    else if (argv[i] === '--force') args.force = true;
     else args.rest.push(argv[i]);
   }
   return args;
+}
+
+/** The shared art files a generator rewrites: a claim on any of them blocks `art:standins` and `art:pack` (WORKFLOW.md *Shared-checkout coordination*). */
+const SHARED_ART = /\bart\/atlas\b|\batlas(es)?\b|manifest|standins\.json/i;
+
+/**
+ * The other agent's claims on the shared art files: the lines of its handoff file's *Working on* section that
+ * name them and claim them or say they are being installed, packed or rebuilt, unless the line says "no claims
+ * held", "released" or "done" (an old done note never blocks). The caller is Claude when
+ * `CLAUDECODE` is set (Claude Code sets it), else Codex or the user, who answer to Claude's claims. A root with
+ * no handoff folder (a temp copy or an isolated staging root) has no claims.
+ */
+export function otherClaims(root, env = process.env) {
+  const other = env.CLAUDECODE ? 'from-codex.md' : 'from-claude.md';
+  const file = join(root, 'handoff', other);
+  if (!existsSync(file)) return [];
+  const text = readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
+  const section = /^## Working on\n([\s\S]*?)(?=^## |(?![\s\S]))/m.exec(text)?.[1] ?? '';
+  return section
+    .split('\n')
+    .filter((l) => /^\s*- /.test(l) && SHARED_ART.test(l) && /claim|install|pack|rebuild/i.test(l) && !/no claims held|released|\bdone\b|^\s*- none\b/i.test(l))
+    .map((l) => `handoff/${other}: ${l.trim().slice(0, 200)}`);
+}
+
+/** Stops a generator while the other agent claims the shared art files, unless `--force` was given. */
+export function exitIfClaimed(root, force) {
+  const claims = otherClaims(root);
+  if (!claims.length || force) return;
+  console.error('Stopped: the other agent claims shared art files (manifest, stand-in list or atlases):');
+  for (const c of claims) console.error(`  ${c}`);
+  console.error('Wait until the claim is released, or rerun with --force if the claim is stale.');
+  process.exit(2);
 }
 
 export function loadManifest(root) {
@@ -293,7 +326,7 @@ function uiStandin(item) {
   const [w, h] = item.size;
   const png = new PNG({ width: w, height: h });
   const k = item.scale;
-  let shade = { kit: 72, icon_bar: 130, icon_hud: 150, portrait: 90, portrait_small: 100, cursor: 140, title: 70 }[item.group] ?? 120;
+  let shade = { kit: 72, icon_bar: 130, icon_hud: 150, portrait: 90, portrait_small: 100, cursor: 140, title: 70, bio: 110 }[item.group] ?? 120;
   if (item.group === 'cursor') {
     const [cx, cy] = [w / 2, h / 2];
     for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
@@ -301,6 +334,8 @@ function uiStandin(item) {
       if (d <= 12) fill(png, x, y, 1, 1, d > 10 ? 40 : shade);
     }
     fill(png, item.hotspot[0] - 1, item.hotspot[1] - 1, 3, 3, 20);
+    // the Finish refusal pointer (DESIGN §26): a cross over the disc until the red one is drawn
+    if (item.name === 'cursor_finish_no') for (let i = -8; i <= 8; i++) for (const d of [i, -i]) fill(png, cx + i - 1, cy + d - 1, 3, 3, 20);
   } else {
     fill(png, 0, 0, w, h, 40);
     const [l, t, r, b] = (item.inset ?? [0, 0, 0, 0]).map((v) => v * k);

@@ -1,4 +1,5 @@
 {
+  "finishTime": 2,
   "adjacent": 1.5,
   "moveNoise": { "run": 6, "walk": 2, "crouch": 0, "crawl": 0 },
   "weapons": {
@@ -7,7 +8,8 @@
     "club": { "range": 1.5, "damage": 15, "noise": 0, "cooldown": 1 },
     "hatchet": { "range": 1.5, "damage": 30, "noise": 0, "cooldown": 1.5 },
     "warclub": { "range": 1.5, "damage": 25, "noise": 0, "cooldown": 1 },
-    "bow": { "range": 8, "damage": 30, "noise": 0, "cooldown": 1.5, "arrows": true }
+    "bow": { "range": 8, "damage": 30, "noise": 0, "cooldown": 1.5, "arrows": true },
+    "shovel": { "range": 1.5, "damage": 15, "noise": 0, "cooldown": 1.2 }
   },
   "startAmmo": 3,
   "quiver": 8,
@@ -45,5 +47,12 @@
     "primary": "bow",
     "weapons": ["bow", "pistol", "warclub"],
     "quickDraw": { "bowCooldown": 0.75 }
+  },
+  "tinkerer": {
+    "hp": 70,
+    "vision": { "range": 6, "angle": 90 },
+    "speed": { "run": 4.5, "walk": 2.5, "crouch": 1.4, "crawl": 0.7 },
+    "primary": "pistol",
+    "weapons": ["pistol", "shovel"]
   }
 }

@@ -1,4 +1,8 @@
 {
+  "ui": [
+    "cursor_finish_no.png",
+    "icon_bar_finish.png"
+  ],
   "zombie_decayed": [
     "bite_ne_0.png",
     "bite_ne_1.png",

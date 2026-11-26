@@ -17,8 +17,8 @@ export interface Fadable {
 export const FADE_ALPHA = 0.4;
 /** A full fade (1 -> 0.4 or back) takes this long. */
 export const FADE_MS = 160;
-/** Tiles in front of a figure that can hold something tall enough to cover it (a tree is ~2 tiles high on screen). */
-const REACH = 4;
+/** Tiles in front of a figure, per axis, that can hold something tall enough to cover it (a tall tree is ~164 px above its foot). */
+const REACH = 5;
 /** A figure's feet-anchored screen box in world px, a little smaller than the sprite so a graze does not fade a wall. */
 const FIG = { halfW: 10, up: 50, down: 4 };
 
@@ -56,12 +56,21 @@ export class Occlusion<T extends Fadable> {
   private readonly entries = new Map<number, Entry<T>>();
   private readonly active = new Set<Entry<T>>();
 
-  constructor(private readonly n: number) {}
+  /** `pad` is how far outside the `n` x `n` map something may stand (the forest border). */
+  constructor(
+    private readonly n: number,
+    private readonly pad = 0,
+  ) {}
+
+  private index(tx: number, ty: number): number {
+    const p = this.pad;
+    return tx < -p || ty < -p || tx >= this.n + p || ty >= this.n + p ? -1 : (ty + p) * (this.n + 2 * p) + tx + p;
+  }
 
   /** Registers the sprite standing on tile (tx, ty); `rect` is its world-px box. */
   add(tx: number, ty: number, obj: T, rect: Rect): void {
     const foot = tileToWorld(tx, ty, this.n);
-    this.entries.set(ty * this.n + tx, { obj, rect, footY: foot.y, alpha: 1, want: false });
+    this.entries.set(this.index(tx, ty), { obj, rect, footY: foot.y, alpha: 1, want: false });
   }
 
   /**
@@ -86,11 +95,8 @@ export class Occlusion<T extends Fadable> {
     const by = Math.round(fy);
     let any = false;
     for (let a = 0; a <= REACH; a++) {
-      for (let b = 0; a + b <= REACH + 1 && b <= REACH; b++) {
-        const tx = bx + a;
-        const ty = by + b;
-        if (tx < 0 || ty < 0 || tx >= this.n || ty >= this.n) continue;
-        const e = this.entries.get(ty * this.n + tx);
+      for (let b = 0; b <= REACH; b++) {
+        const e = this.entries.get(this.index(bx + a, by + b));
         if (!e || e.footY <= feet.y || !overlaps(e.rect, fig)) continue;
         e.want = true;
         this.active.add(e);

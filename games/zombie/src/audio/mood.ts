@@ -42,10 +42,13 @@ const TENSION_ALARM = 0.5;
 
 type Watched = Pick<MissionState, 'status' | 'enemies' | 'rings' | 'tick'> & { herd?: Pick<BaseState['herd'], 'warned'> };
 
+/** Whether an enemy's last sighting was of a survivor (a zombie after a squatter's is not, DESIGN §26). */
+const afterSquad = (e: MissionState['enemies'][number]): boolean => e.ai.prey !== 'human';
+
 /** How many living enemies are after a survivor: a zombie chasing, or a guard that has seen one. */
 export function chasers(s: Pick<MissionState, 'enemies'>): number {
   let n = 0;
-  for (const e of s.enemies) if (e.hp > 0 && (e.ai.mode === 'chase' || e.ai.mode === 'alert')) n++;
+  for (const e of s.enemies) if (e.hp > 0 && (e.ai.mode === 'chase' || e.ai.mode === 'alert') && afterSquad(e)) n++;
   return n;
 }
 
@@ -53,7 +56,7 @@ export function chasers(s: Pick<MissionState, 'enemies'>): number {
 export function sinceSeen(s: Pick<MissionState, 'enemies' | 'tick'>): number {
   let best = Infinity;
   for (const e of s.enemies) {
-    if (e.hp <= 0 || !e.ai.lastSeen) continue;
+    if (e.hp <= 0 || !e.ai.lastSeen || !afterSquad(e)) continue;
     best = Math.min(best, Math.max(0, s.tick - e.ai.lastSeenTick) / TICK_HZ); // the AI marks a sight with the tick it runs in
   }
   return best;

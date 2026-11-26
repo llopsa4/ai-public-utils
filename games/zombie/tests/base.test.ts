@@ -14,6 +14,7 @@ import {
   herdSeconds,
   objectiveText,
   baseButtons,
+  baseHints,
   createBase,
   eat,
   give,
@@ -45,7 +46,7 @@ function sealAll(s: BaseState): void {
 }
 
 test('the base: the m01 house with 3 broken openings, the back door walled up, a stove, no zombies yet', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   assert.equal(s.grid.size, 64);
   assert.equal(s.enemies.length, 0);
   assert.deepEqual([s.food, s.scrap, s.ammo], [5, 4, 5]);
@@ -127,7 +128,7 @@ test('a worker standing in the gap is moved off it so nobody is walled into a ti
 });
 
 test('barricades stay for the yard: refused on a window or door gap and on the stove', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   assert.equal(placeBarricade(s, 28, 35), 'blocked');
   assert.equal(placeBarricade(s, 25, 32), 'blocked');
   assert.equal(placeBarricade(s, s.stove.x, s.stove.y), 'blocked');
@@ -174,7 +175,7 @@ test('a broken opening can be fixed again', () => {
 });
 
 test('cook: walk to the stove, 5 s, then 1 food becomes 1 meal in the cook\'s hands; a second one is refused', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   put(fighter(s), 36, 32);
   assert.equal(orderCook(s, 'fighter'), 'ok');
   run(s, 40);
@@ -189,13 +190,13 @@ test('cook: walk to the stove, 5 s, then 1 food becomes 1 meal in the cook\'s ha
 });
 
 test('cook is refused with no food', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   s.food = 0;
   assert.equal(orderCook(s, 'fighter'), 'food');
 });
 
 test('eat: hunger back to 8 min and the meal heal (base1.json) for the eater only, capped at max', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   assert.equal(eat(s, 'fighter'), false, 'no meal, no eating');
   s.hunger.fighter!.meal = true;
   s.hunger.fighter!.left = 100;
@@ -213,7 +214,7 @@ test('eat: hunger back to 8 min and the meal heal (base1.json) for the eater onl
 });
 
 test('give: a meal goes to an adjacent survivor who has none, not to a far one or one who has a meal', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   put(fighter(s), 30, 45);
   put(scout(s), 36, 45);
   s.hunger.fighter!.meal = true;
@@ -228,7 +229,7 @@ test('give: a meal goes to an adjacent survivor who has none, not to a far one o
 });
 
 test('hunger: 8 min, warns once at 2 min, critical at 30 s, no damage before 0', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   run(s, HUNGER_TICKS - 1201);
   assert.equal(s.said.length, 0);
   assert.equal(hungerLevel(s, 'fighter'), 'ok');
@@ -248,7 +249,7 @@ test('hunger: 8 min, warns once at 2 min, critical at 30 s, no damage before 0',
 });
 
 test('starving: -1 HP every 3 s and speed x0.7 until fed; eating ends it and the warning can come again', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   s.hunger.fighter!.left = 1;
   run(s, 30);
   assert.equal(hungerLevel(s, 'fighter'), 'starving');
@@ -270,8 +271,8 @@ test('starving: -1 HP every 3 s and speed x0.7 until fed; eating ends it and the
 const secs2 = (n: number): number => n * 10;
 
 test('a starving survivor is slower: the same walk covers 30% less ground', () => {
-  const a = createBase({ calm: true });
-  const b = createBase({ calm: true });
+  const a = createBase({ foodOn: true, calm: true });
+  const b = createBase({ foodOn: true, calm: true });
   b.hunger.fighter!.left = 0;
   orderMove(a, ['fighter'], [30, 36]);
   orderMove(b, ['fighter'], [30, 36]);
@@ -283,7 +284,7 @@ test('a starving survivor is slower: the same walk covers 30% less ground', () =
 });
 
 test('starving to death fails the base: the state freezes', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   s.hunger.scout!.left = 0;
   scout(s).hp = 1;
   run(s, 31);
@@ -301,7 +302,7 @@ test('a calm base (no roamers, no herd) neither wins nor fails by itself', () =>
 });
 
 test('action bar: weapons, Hold, Free fire (with a gun), Crouch, Bond, Eat, Give, Fix, Cook, Barricade, Spike pit, Noise can; no mission tools', () => {
-  const s = createBase({ calm: true });
+  const s = createBase({ foodOn: true, calm: true });
   const ids = (u: BaseState['survivors'][number]) => baseButtons(s, u).map((b) => b.id);
   assert.deepEqual(ids(fighter(s)), ['weapon:knife', 'hold', 'crouch', 'bond', 'eat', 'give', 'fix', 'cook', 'build', 'spike', 'can']);
   assert.deepEqual(ids(scout(s)), ['weapon:pistol', 'weapon:club', 'hold', 'freefire', 'crouch', 'bond', 'eat', 'give', 'fix', 'cook', 'build', 'spike', 'can']);
@@ -623,4 +624,46 @@ test('a two-survivor checkpoint from before Ray and June still loads, with the t
   assert.ok(back.hunger.hunter && back.hunger.archer);
   run(back, 100); // and it plays
   assert.equal(back.status, 'playing');
+});
+
+// ---- Food off (DESIGN §12, Z97): what Base 1 ships with ----
+
+test('food off: no stove tile, no hunger, no Eat, Give or Cook, and no food hints', () => {
+  const s = createBase({ calm: true });
+  assert.equal(s.foodOn, false);
+  assert.ok(!isBlocked(s.grid, s.stove.x, s.stove.y), 'the stove tile is open floor');
+  run(s, HUNGER_TICKS + 100);
+  for (const u of s.survivors) {
+    assert.equal(s.hunger[u.id]!.left, HUNGER_TICKS, 'the hunger clock does not run');
+    assert.equal(hungerLevel(s, u.id), 'ok');
+    assert.equal(u.hp, u.maxHp);
+  }
+  assert.equal(s.said.length, 0);
+  assert.equal(orderCook(s, 'fighter'), 'invalid');
+  s.hunger.fighter!.meal = true;
+  assert.equal(eat(s, 'fighter'), false);
+  put(scout(s), fighter(s).x + 1, fighter(s).y);
+  assert.equal(give(s, 'fighter'), false);
+  for (const u of s.survivors) assert.deepEqual(baseButtons(s, u).filter((b) => ['eat', 'give', 'cook'].includes(b.id)), []);
+  assert.deepEqual(baseHints(false), base.hints);
+  assert.ok(baseHints(false).every((h) => !/cook|eat|hung/i.test(h)));
+  assert.equal(baseHints(true).length, base.hints.length + base.foodHints.length);
+});
+
+test('food off: a checkpoint saved with food loses the stove, the slow walk and the cooking order', () => {
+  const old = createBase({ foodOn: true, cassGun: true });
+  while (!old.herd.warned) {
+    for (const u of old.survivors) u.hp = u.maxHp;
+    stepBase(old);
+  }
+  fighter(old).speedMul = base.hunger.starveSpeed;
+  fighter(old).order = { type: 'work', job: 'cook', target: 'stove', left: -1 };
+  const raw = JSON.parse(JSON.stringify(old)) as Record<string, unknown>;
+  delete raw.foodOn;
+  const back = restoreBase(raw)!;
+  assert.ok(back);
+  assert.equal(back.foodOn, false);
+  assert.ok(!isBlocked(back.grid, back.stove.x, back.stove.y));
+  assert.equal(fighter(back).speedMul, 1);
+  assert.equal(fighter(back).order, null);
 });

@@ -14,7 +14,10 @@ const UI_FILES = import.meta.glob('../../art/frames/ui/*.png', { query: '?url', 
 // file keeps its grey code stand-in (placeholders.ts).
 const ENV_FILES = import.meta.glob('../../art/frames/env/*.png', { query: '?url', import: 'default', eager: true }) as Record<string, string>;
 
-export const ATLAS_GROUPS = Object.keys(manifest.atlases);
+/** The UI groups loaded as separate images: the title art and the Bios figures (cursors are CSS cursors). */
+const STANDALONE: ReadonlySet<string> = new Set(['title', 'bio']);
+
+export const ATLAS_GROUPS =Object.keys(manifest.atlases);
 
 /** The bundled URL of a standalone UI image (a cursor or title item), or undefined. */
 export function uiImageUrl(name: string): string | undefined {
@@ -29,7 +32,7 @@ export function loadAtlases(scene: Phaser.Scene): void {
     if (png && json) scene.load.atlas(group, png, json);
   }
   for (const name of UI_NAMES) {
-    if (uiOf(name).group !== 'title') continue;
+    if (!STANDALONE.has(uiOf(name).group)) continue;
     const url = uiImageUrl(name);
     if (url) scene.load.image(name, url);
   }
@@ -42,7 +45,7 @@ export function loadAtlases(scene: Phaser.Scene): void {
 /** Pixel art: nearest-neighbour sampling for the figure atlases and the UI art (the rest of the game stays smooth). */
 export function crispAtlases(scene: Phaser.Scene): void {
   for (const group of [...ATLAS_GROUPS, UI_TEXTURE]) if (scene.textures.exists(group)) scene.textures.get(group).setFilter(Phaser.Textures.FilterMode.NEAREST);
-  for (const name of UI_NAMES) if (uiOf(name).group === 'title' && scene.textures.exists(name)) scene.textures.get(name).setFilter(Phaser.Textures.FilterMode.NEAREST);
+  for (const name of UI_NAMES) if (STANDALONE.has(uiOf(name).group) && scene.textures.exists(name)) scene.textures.get(name).setFilter(Phaser.Textures.FilterMode.NEAREST);
   for (const key of ENV_KEYS) if (ENV_FILES[`../../art/frames/env/${key}.png`] && scene.textures.exists(key)) scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
 }
 

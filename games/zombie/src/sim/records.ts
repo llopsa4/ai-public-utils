@@ -6,8 +6,8 @@ import type { StorageLike } from './campaign';
 
 export const RECORDS_KEY = 'deadwoods.records';
 const VERSION = 1;
-export const SCENES: readonly Scene[] = ['mission1', 'base1'];
-export const SCENE_NAME: Readonly<Record<Scene, string>> = { mission1: 'Mission 1', base1: 'Base 1' };
+export const SCENES: readonly Scene[] = ['mission1', 'base1', 'mission2'];
+export const SCENE_NAME: Readonly<Record<Scene, string>> = { mission1: 'Mission 1', base1: 'Base 1', mission2: 'Mission 2' };
 export { DIFFICULTY_NAME } from './difficulty';
 
 /** The best of one scene on one difficulty. */
@@ -23,7 +23,7 @@ export interface Records {
   badges: Record<Scene, Record<string, Difficulty[]>>;
 }
 
-export const newRecords = (): Records => ({ version: VERSION, best: { mission1: {}, base1: {} }, badges: { mission1: {}, base1: {} } });
+export const newRecords = (): Records => ({ version: VERSION, best: { mission1: {}, base1: {}, mission2: {} }, badges: { mission1: {}, base1: {}, mission2: {} } });
 
 /** What filing a run changed, for the debrief's "new best" marks. */
 export interface Filed {

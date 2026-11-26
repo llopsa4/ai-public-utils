@@ -23,8 +23,12 @@ export function isLow(mode: Mode): boolean {
   return mode === 'crouch' || mode === 'crawl';
 }
 
-/** A survivor's current mode: running only while it has a route; otherwise its stance. */
-export function moveMode(u: { stance: 'walk' | 'crouch' | 'crawl'; running: boolean; path: readonly unknown[] }): Mode {
+/**
+ * A survivor's current mode: running only while it has a route; otherwise its stance. One finishing a body by hand
+ * is crouched over it (DESIGN §26).
+ */
+export function moveMode(u: { stance: 'walk' | 'crouch' | 'crawl'; running: boolean; path: readonly unknown[]; order?: { type: string; left?: number } | null }): Mode {
+  if (u.order?.type === 'finish' && (u.order.left ?? -1) >= 0 && u.stance === 'walk') return 'crouch';
   return u.running && u.path.length > 0 ? 'run' : u.stance;
 }
 

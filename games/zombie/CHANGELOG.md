@@ -1,5 +1,23 @@
 # Dead Woods changelog
 
+- 2026-11-26: New in Mission 2: **Finish** (`N`) stops a fallen squatter from rising. Ray and June use one arrow from range; the others crouch beside the body for two seconds.
+
+- 2026-11-26: Theo's Bios tab has a finished full-body portrait.
+
+- 2026-11-26: The enemy-highlight button shows glasses with a red enemy outline in one lens.
+
+- 2026-11-26: Mission 1 and Base 1 now show finished art for the house walls, porch steps and furnishings. Mission 1 also has a slate ridge, roof trim and a stone chimney.
+
+- 2026-11-26: Food is out of sight until the main camp at Ray's hut. Base 1 is purely about defence (no hunger, stove, Cook, Eat or Give), and Mission 1 no longer shows a food counter or food in crate pops. The cooking keys and the Well fed badge are not listed.
+
+- 2026-11-26: The house has more detail: a ridge, edge trim and a chimney on the roof, walls with posts and boarded patches, steps at the front door, and a bed, shelves, a table, a cupboard, a woodpile and a rug inside. None of it blocks movement. For now they are flat grey shapes until their art arrives.
+
+- 2026-11-26: Two tall pines, a leafy birch and a dead snag appear along the far treeline and in thick woods. Beyond each map edge, the forest fades into mist.
+
+- 2026-11-26: Mossy ground now shows irregular dirt and leaf-litter patches, grass tufts, ferns, rocks, fallen branches, mushrooms and low stumps. The path uses a seamless worn-earth tile.
+
+- 2026-11-25: The Bios page shows full-body artwork for Cass, Eli, Ray and June.
+
 - 2026-11-25: Ray and June have finished character animations and portraits in Mission 1 and Base 1. Bows, hatchets and war clubs have action-bar icons, and arrows have their own art in flight and on the ground.
 
 - 2026-11-25: After Mission 1 is cleared, a short cutscene plays: six zombies come out of the trees, arrows from off-screen bring them down, and two new survivors, Ray and June, walk in and introduce themselves. Base 1 then starts with all four, each where the cutscene left them. Esc skips a line, not the action. The Base 1 hunger line now shows only names and times, so four survivors fit on it.
@@ -138,3 +156,4 @@
 - 2026-11-24: Installed the approved full Eli (Scout) pixel-art animation set: 66 frames at 2× source resolution, rendered at the same game size, covering movement, stealth, work, Hold, pistol, club, lure and death.
 - 2026-11-25: Added the first forest sprites for moss, spruce trees and low bushes.
 - 2026-11-25: Added dirt, leaf litter, footpaths, Scots pines, dying birches and fern thickets to the woods, plus a tent and stone fire pit in the Intro camp.
+- 2026-11-26: Added Theo's gameplay sprites with his overstuffed backpack and solar panel, six portraits and a shovel action-bar icon.

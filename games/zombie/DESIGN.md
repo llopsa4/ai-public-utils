@@ -73,6 +73,24 @@ other they use their Dakota names, *Tahca Wanyaka* and *Wakpa Win*, only inside 
 - **Starting numbers** (placeholders; the user judges balance by playing): Ray 110 HP, vision 7; June 90 HP, vision 7; both walk 3, Ray runs 5 and June 5.5 (Eli stays the fastest at 6.5). They live in `src/data/characters.json`.
 - The bond technique (§23) stays Cass + Eli only.
 
+**Theo Nakamura** (user, 2026-11-25): survivor 5 of 7, the prepper. Card in `DESIGN-characters.md`; id
+`tinkerer`; everything the player sees says **Theo**. A really smart, skinny, glasses-wearing
+IT worker who is anxious and over-prepared, and rich. Ray hired him as June's maths tutor over video.
+He is sealed in the bunker of his own prepped house, which hostile human squatters hold, and **joins the
+squad when the bunker door opens at the end of Mission 2** (§25; this replaces "one base visit first").
+Placeholders, numbers set in Z91:
+- **Weapons:** the shared pistol + an **entrenching shovel** (weak melee, not a knife).
+- **Trait Resourceful:** crates give him more; he can break junk down into parts.
+- **Ability Rig:** places a tin-can tripwire or a noise lure from carried junk in a few seconds.
+- **Fragile and slow:** about 70 HP, slowest walk and run on the roster, a short sprint.
+- Glasses are a look only. The bond technique stays Cass + Eli only.
+- **Enemy highlight** (user, 2026-11-25): whenever Theo is in the scene, an action-bar button (and a
+  key) toggles it: every zombie and every human is drawn as a coloured outline glow through walls,
+  **red for zombies, orange for humans**, in code with no new art. Free toggle, no cooldown or limit.
+  Human cones and noise rings are unchanged, and so is Ray's Tracker. In Mission 2 it works from
+  Theo's first speaker line (he is a voice, not playable, §25); afterwards, in every scene while he is
+  in the squad.
+
 ## §6 Tone
 Mature, **visible gore**: blood decals, bodies stay on the map. Serious survival tone.
 
@@ -175,6 +193,18 @@ Resources are what the player carries over from Mission 1.
   and June (§5), each with hunger and a start tile from the end of Mission 1. The herd is **18**;
   starting food stays 5. Easy and Hard scale with it: herd 12 and 24 (Z81, Claude's choice: keep Easy < Normal < Hard; tell me if wrong). Ray and June start at (31, 47) and (32, 47) until Mission 1 hands them poses (Z82). Older saves with two survivors still load. The rain promised in the
   Mission 1 talk is Base 1's existing drizzle-to-rain (§20); no weather change.
+
+- **Food is switched off** (user, 2026-11-25, supersedes **Hunger** and **Cook** above for the bases
+  before Ray's hut): Base 1 and Base 2 are purely about defending against enemies. No hunger timers or
+  meter, no stove, Cook, Eat or Give, and no hunger hint. The code stays in place, off by a base
+  setting, for the hut, where food management first happens (§25). Fixing, barricades and traps stay.
+  The "Prepare the house" objective, the herd and the win are unchanged. This also takes the hunger
+  parts out of the Base 1 *Guidance* hints, the hunger meter on the action-bar portrait (§17) and the
+  squad panel, the hunger option label (§19) and the hunger times per difficulty (§21), for these bases.
+- **Food is hidden until the main camp** (user, 2026-11-26): no food mechanic shows anywhere before
+  Ray's hut (§25), missions included: no food counter, no food in crate pops, no cooking keys in help
+  or rebinding, no Well fed badge. Mission 1 crates still hold food, counted and saved unseen for the
+  hut (Claude's reading of "hidden"; tell me if wrong).
 
 ## §13 Hold order (Commandos 2 ambush; renamed from "Watch" 2026-11-23, "Cover" clashed with cover tiles)
 A survivor holds position facing a chosen direction with a visible view cone; any enemy that enters
@@ -282,7 +312,7 @@ and facing (§12), and each scene's state holds whether the bond technique was u
 
 ## §19 Pause, options and feedback (2026-11-23)
 - **Pause menu:** Esc opens it in Intro, Mission 1 and Base 1 (Esc first cancels a pending order;
-  it does not open over a dialogue, §6): Resume, Restart, Options, Controls, Quit to menu. Restart
+  it does not open over a dialogue, §6): Resume, Restart, Options, Controls, Bios (§24), Quit to menu. Restart
   (also `R`) and Quit ask for confirmation. The game pauses when the window loses focus.
 - **Options** (stored in `localStorage` key `deadwoods.options`): master, effects and ambience
   volume plus mute; edge scroll on/off; text size 100 / 125 / 150%; shape cues on/off (default on:
@@ -321,6 +351,11 @@ code-drawn overlays that never change gameplay (cones, sight and noise stay as t
 - **Rain:** Base 1 only: drizzle from the 5:00 warning, building to steady rain with the herd; a rain
   layer in the code ambience (§6 *Audio*).
 - The **Weather and fog** option (§19) turns off the rain and fog particles; dusk and light pools stay.
+- **Visual pass (user, 2026-11-26; looks only, no map or balance change):** the camera starts at
+  1.5× (the wheel still zooms out to 1×); every figure gets a code-drawn soft contact shadow (a flat
+  dark ellipse at the feet, not a painted cast shadow); outside every 64 × 64 map a decorative
+  forest border (tall trees and undergrowth, not walkable) fades into code fog, so there is no
+  black void. Art rules: art/STYLE.md *Environment art* → *Visual pass*.
 
 ## §21 Debrief, records, difficulty, variety (user, 2026-11-24)
 - **Debrief:** after Mission 1 and Base 1 (not the Intro), a kit panel after the win dialogue and
@@ -368,3 +403,111 @@ be alive.
   body and Eli 3 tiles further on, both walking.
 - The button then shows a "used" state until the next scene or restart. It is taught by a hint and a
   short Cass/Eli exchange at the start of Mission 1. Icon (Codex): two figures back to back.
+
+## §24 Bios (user, 2026-11-25)
+A **Bios** page: one tab per survivor met so far, with a full-body figure and their story up to now.
+- **Where:** a Bios button in the pause menu (story up to that moment) and on the title screen (story
+  up to the save's progress; hidden when there is no save).
+- **Who:** survivors only (no zombies, no people only mentioned in dialogue). A tab appears when the
+  survivor **joins the squad**: Cass at the Intro start, Eli at his Intro arrival, Ray and June when
+  Base 1 starts. Survivors not met yet are not shown at all (no "???" tabs). Tabs in join order.
+- **Story:** a **background** paragraph (third person, a neutral squad file: age, past job, home, how
+  the outbreak found them), then one **entry per story beat reached**, first person in the
+  character's own voice: Intro, Mission 1 start, the rescue, Base 1, the herd checkpoint (herd
+  warning), surviving the herd. Fixed authored text, no live stats. A character has entries only
+  for beats they lived through.
+- **Dakota names (user, 2026-11-25):** Ray's and June's Dakota names and their English meanings are
+  shown in the header of their bios, on a line under the name and age (*Tahca Wanyaka*, "Sees the
+  Deer"; *Wakpa Win*, "River Woman"), not in the background text. They stay unverified placeholders until a Dakota speaker checks them. Everywhere else the
+  UI keeps "Ray" and "June".
+- **Secrets stay out** (Cass's brother, Eli's mum), in the background and the entries alike, until a
+  future scene reveals them; then that scene's beat gets an entry that says it.
+- **Image (user, 2026-11-25, replaces the crop plan):** until final, the in-game `idle_se_0` frame
+  scaled up with nearest-neighbour. Codex **generates new** `bio_<kind>` figures, all four in the
+  same detailed style as the A14 Ray and June sources, with the same quality and detail.
+  Three-quarter front (the `idle_se` facing), neutral stand, hands empty, on a transparent
+  background. **No pistol or holster on the chest in the bio images**: the character design and the
+  in-game sprites keep it. Heights follow one shared scale from the character cards (Ray and Eli
+  180 cm, Cass 170, June 165 and visibly younger), shown at 1:1 on a shared baseline.
+- **Layout:** tabs across the top (small portrait + name), the figure card on the left half, on the
+  right name and age, past role, trait line, then the scrolling story (mouse wheel). Click or ←/→
+  switches tabs; Esc or the X closes. Field-kit panels and Special Elite (§19).
+- **Text approval:** Claude drafts all text under each card in `DESIGN-characters.md`; the user
+  approves it before it goes into the game.
+- **Future survivors** get a bio to the same standard: the checklist *Adding a character with a bio* in
+  `DESIGN-characters.md` and *Bio figures* in `art/STYLE.md`.
+- **Theo** (2026-11-25): his tab appears when the bunker door opens (§25), not at his first speaker line.
+  His entries are `bunker` (the door opens), `base2` (Base 2 starts) and `hut` (arrival at Ray's hut).
+
+## §25 Mission 2, Base 2 and Ray's hut (user, 2026-11-25)
+The story after Base 1 (§12). Base 1's "To be continued..." ending (§15, §18) is replaced by this flow
+when it is built (PLAN Z100): Base 1 → **Mission 2** → **Base 2** → **Ray's hut**.
+- **Why they go:** after Base 1 the group is short on food and ammo. Ray remembers that Theo, his
+  daughter's maths tutor, mentioned a prepped house in the woods during the video lessons. Cass agrees
+  a prepper's house should have supplies. They find squatters in it.
+- **Theo and Ray** (card in `DESIGN-characters.md`): Ray hired Theo to teach June maths over video. Ray
+  and June know his voice and face on a screen and have never met him in person. Ray recognises the
+  voice on the speaker and vouches for him; the first meeting in person is at the bunker door.
+- **Mission 2: Theo's house** (stealth): **8 or more** hostile human squatters, in and around a rich
+  man's prepped house; no talking and no sparing. The number of zombies outside is open (PLAN Z92).
+  Theo is sealed in the bunker with the power off, because the squatters broke his **solar device**. He
+  is a **voice on a speaker, not playable**: the squad stays Cass, Eli, Ray and June. He asks for help
+  and tells them where the guards are, and the enemy highlight (§5) works from his first line.
+  **Complete when every squatter is down.** The bunker door then opens and Theo walks out, ready to go
+  because he is out of food, and joins the squad. The bunker holds his weapons cache and building
+  materials: a batch of **ammo and scrap**, **no food**, added to the shared pools.
+- **Base 2: Theo's house** (defence only, no food, §12): **3 waves** from different sides, each larger
+  than the last, with about a minute to repair and set traps between waves. A checkpoint before each
+  wave; fail → **Retry from the wave** or **Restart Base 2**, as Base 1. The waves are **human
+  scavengers**, the squatters' gang returning: they advance on the house and shoot, and are stopped by
+  barricades (they do not chew). Their gunfire draws a few zombies. When wave 3 is cleared, a dialogue:
+  the house attracts too much attention, and Ray offers his hut. Then **straight to the hut**, with no
+  journey scene.
+- **Ray's hut:** a hand-built hunting shack, far from everything. Ray kept it secret because he did
+  not know Cass and Eli, and offers it only now that the group has proved itself. A practical shelter;
+  nothing sacred in it. It is the **main camp for the rest of the game, and every base scene from then
+  on happens there.** **All food management happens for the first time there** (the code kept dormant
+  in §12). Its map and all camp mechanics are detailed later, in their own grilled unit (PLAN *Hut
+  grill*); nothing is built before it.
+- **Open:** how Rig works with Base 2 traps (Z91). Mission 2's detail is §26.
+
+## §26 Mission 2 detail (user, 2026-11-26, Z92)
+Fills in §25's Mission 2. Win, fail and checkpoint rules are as §25 and §8.
+- **Map:** **80 × 80** woods. In the centre a **fenced estate** with a gate: a large single-storey
+  house (about 22 × 16, 5–6 rooms under one roof that hides the inside until a survivor enters, as
+  §16), with the **bunker door** in a concrete room inside; a **garage** and a **generator shed** in
+  the yard; the **solar field** (the broken solar device: panels and an inverter box) beside the house.
+  Woods, bushes and cover all round for the approach. Base 2 (§25) uses the same map.
+- **Start:** Cass, Eli, Ray and June together at the **south edge**, out of every guard's sight. The
+  "why they go" talk (§25) plays at the end of Base 1; Mission 2 opens straight into play with
+  one-line hints for Ray and June's moves.
+- **Squatters: 12,** the existing human enemy (§7): **6 outside** on posts and patrols (the gate, the
+  fence line, the garage, the solar field), **6 inside** the house (one hammering at the bunker door).
+  Patrol routes cross so the squad must time them.
+- **Zombies: 6** wandering the woods outside the fence, none inside the estate. Noise draws them as usual.
+- **Zombies and squatters fight.** A zombie treats a squatter as it treats a survivor (sight §7,
+  chase, attack). A squatter shoots a zombie in its cone. Shots make noise as usual, and anything that
+  hears it goes to check. A squatter killed by a zombie counts as down for the win and **rises as a
+  zombie 30 s later** (an ordinary zombie, not needed for the win) unless finished. The body shows a
+  faint countdown so the player can tell which bodies will rise.
+- **Finish** (new action): stops such a body from rising. **Ray and June** finish from range with one
+  arrow (spent as a normal shot). **Everyone else** holds 2 s adjacent to the body in the crouch pose
+  (no new figure art). Aiming Finish at anything that is not a dead squatter yet to turn shows the
+  mouse pointer with a **red cross** on top. A finished body stays a body (guards still notice it).
+- **Theo on the speaker** (a battery intercom by the gate and inside the house): bark-style subtitles
+  that do not pause the game, each once: (1) a survivor first comes within about 12 tiles of the
+  fence: he calls for help, Ray knows the voice, and the enemy highlight (§5) turns on; (2) a tip
+  naming where the guards are (gate, fence, garage, solar field, inside); (3) a survivor enters the
+  house: where the inside squatters stand; (4) half the squatters are down; (5) the last one down →
+  the door scene. Exact lines are written later and need the user's approval (§6).
+- **Solar device:** story only. Seen on the map and mentioned by Theo; nothing to do in play.
+- **Door scene** (after the last squatter is down; Esc skips a dialogue beat, as §16): the camera goes
+  to the bunker door; Theo talks them through the backup power on the speaker; the door opens and he
+  walks out. Talk: Ray and Theo meet in person for the first time, June greets her tutor, Theo is out
+  of food and comes along. Then the Debrief, then Base 2.
+- **Loot:** **no crates.** The bunker cache adds **ammo 12 and scrap 12** (placeholders; the user
+  judges by playing) to the shared pools, shown on the Debrief. No food (§25).
+- **Art needed** (Codex): squatter figure sheets (the human enemy is a grey stand-in today), a
+  turned-squatter zombie sheet, the Finish red-cross pointer, and the estate props (fence, gate,
+  garage, generator shed, solar panels and inverter, intercom, bunker door, concrete room, the rich
+  house's walls, roof and furniture).

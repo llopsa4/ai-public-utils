@@ -21,6 +21,9 @@ Codex/Claude [workflow](../WORKFLOW.md) (modes, ownership, handoff files, approv
 - **Requests:** [PROMPTING.md](PROMPTING.md) (stages, standing rules, usage-saving rules, templates).
 - **Plan:** [PLAN.md](PLAN.md) lists task units in order, each with a model, exact reads, writes and
   a "done when". One unit per session.
+- **New characters and bios:** follow the checklist *Adding a character with a bio* in
+  [DESIGN-characters.md](DESIGN-characters.md) (text, data, rules, tests) and *Bio figures* in
+  [art/STYLE.md](art/STYLE.md) (image standards); one standard for every survivor.
 - **Art:** [art/STYLE.md](art/STYLE.md). **Codex draws, Claude never does:** Claude adds only flat
   grey geometric stand-ins (diamonds, capsules, boxes, text labels) drawn in code; Codex generates
   and installs all art, keyed by `art/manifest.json`.

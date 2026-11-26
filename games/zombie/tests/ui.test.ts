@@ -6,11 +6,11 @@ import { barIconKey, cursorArtFor, cursorCss, hudIconKey, isFinal, nineSlice, po
 
 test('the manifest holds every UI item the plan names', () => {
   assert.equal(uiGroup('kit').length, 12);
-  assert.equal(uiGroup('icon_bar').length, 20);
+  assert.equal(uiGroup('icon_bar').length, 23);
   assert.equal(uiGroup('icon_hud').length, 8);
-  assert.equal(uiGroup('cursor').length, 5);
-  assert.equal(uiGroup('portrait').length, 16);
-  assert.equal(uiGroup('portrait_small').length, 8);
+  assert.equal(uiGroup('cursor').length, 6);
+  assert.equal(uiGroup('portrait').length, 20);
+  assert.equal(uiGroup('portrait_small').length, 10);
   assert.equal(uiGroup('title').length, 2);
   assert.equal(new Set(UI_NAMES).size, UI_NAMES.length);
 });
@@ -99,5 +99,7 @@ test('painted cursors use their hotspot and fall back if there is no image URL',
   assert.equal(cursorCss('pointer', url), 'url("/img/cursor_select.png") 6 3, pointer');
   assert.equal(cursorCss('pointer', () => undefined), 'pointer');
   assert.equal(cursorCss('default', url), 'default');
+  // Z106: the red-cross pointer shows its stand-in too; CSS has no cursor that says the same.
+  assert.equal(cursorCss('not-allowed', url), 'url("/img/cursor_finish_no.png") 16 16, not-allowed');
   assert.equal(isFinal('icon_bar_knife'), true);
 });

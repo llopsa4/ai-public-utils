@@ -91,7 +91,7 @@ function everyLine(): { speaker: string; mood?: string; text: string }[] {
 
 test('every story line has a speaker with a portrait and a mood that gives a manifest item', () => {
   const lines = everyLine();
-  assert.equal(lines.length, 77); // the herd warning has 4 edge variants of 5 lines (Z65); + m01Ambush 4, m01Rescue 15 (Z78); m01Win (4) gone since Z82
+  assert.equal(lines.length, 82); // the herd warning has 4 edge variants of 5 lines (Z65); + m01Ambush 4, m01Rescue 15 (Z78); m01Win (4) gone since Z82; + m02Power 2, m02Meet 3 (Z93)
   for (const l of lines) {
     assert.ok(speakerWho(l.speaker), l.speaker);
     assert.ok(['neutral', 'afraid', 'determined'].includes(l.mood ?? ''), `${l.text} mood ${l.mood}`);

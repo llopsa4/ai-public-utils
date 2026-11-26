@@ -7,14 +7,17 @@ import { isFinal, uiOf } from '../render/ui';
 import { type Campaign, ENDING, SCENES, TITLES, browserStorage, hasSlot, loadCampaign, newCampaign, replayBase1, saveCampaign } from '../sim/campaign';
 import { TITLE_BG, TITLE_LOGO, kitSlice, menuButton, titleBackdrop } from './kit';
 import { changeScene } from './Card';
+import { type BiosPage, BIOS_PANEL_W, drawBiosPage } from './biosPage';
+import { progressOfSave } from '../sim/bios';
 import { drawOptionsPage } from './optionsPage';
 import { DIFFICULTY_NAME, SCENES as RECORD_SCENES, SCENE_NAME, loadRecords } from '../sim/records';
 import { BADGES, DIFFICULTIES, GRADE_NAME, clock } from '../sim/stats';
+import { FOOD_SHOWN } from '../sim/food';
 
 const FONT = GAME_FONT;
 
 /** The menu's pages: the title, the "replace your save?" question, the end screen (stage `done`) and Options. */
-type Page = 'main' | 'confirm' | 'done' | 'options' | 'records';
+type Page = 'main' | 'confirm' | 'done' | 'options' | 'records' | 'bios';
 
 /**
  * Title screen: Continue (when a readable save exists) resumes the saved scene's start; New Game starts
@@ -25,14 +28,16 @@ export class MenuScene extends Phaser.Scene {
   private page: Page = 'main';
   private save: Campaign | null = null;
   private slotUsed = false;
+  /** The Bios page while it is showing (its arrow keys and wheel go here). */
+  private bios: BiosPage | null = null;
 
   constructor() {
     super('Menu');
   }
 
   /** A kit button (Z57); the secondary buttons use a dimmer label colour. */
-  private button(x: number, y: number, label: string, size: number, color: string, onClick: () => void): void {
-    menuButton(this, x, y, label, FONT, size, onClick, color, 240);
+  private button(x: number, y: number, label: string, size: number, color: string, onClick: () => void, minW = 240): void {
+    menuButton(this, x, y, label, FONT, size, onClick, color, minW);
   }
 
   /** The logo image once it is final, else the plain title text; returns the y of its bottom edge. */
@@ -71,6 +76,7 @@ export class MenuScene extends Phaser.Scene {
 
   /** What Enter does on the current page. */
   private enter(): void {
+    if (this.page === 'bios') return; // Enter reads nothing on the Bios page
     if (this.page === 'confirm') this.begin(newCampaign());
     else if (this.page === 'done') this.begin(replayBase1(this.save!));
     else if (this.save) this.play(this.save);
@@ -80,10 +86,11 @@ export class MenuScene extends Phaser.Scene {
   private show(page: Page): void {
     this.page = page;
     this.children.removeAll(true);
+    this.bios = null;
     const { width, height } = this.scale;
     const cx = width / 2;
     const art = titleBackdrop(this, page === 'main' ? 0.1 : 0.55); // the options and question pages need a darker veil under their text
-    const bottom = page === 'options' ? 0 : this.drawLogo(cx); // Options has ten rows: a plain title instead, as in Pause
+    const bottom = page === 'options' || page === 'bios' ? 0 : this.drawLogo(cx); // Options has ten rows: a plain title instead, as in Pause
     /** A line of text on a small paper label (kit_tooltip), so it reads over the art. */
     const note = (y: number, text: string, color = '#d6d4cc', size = 18): void => {
       const t = this.add.text(cx, y, text, { fontFamily: FONT, fontSize: `${size}px`, color, align: 'center' }).setOrigin(0.5);
@@ -102,6 +109,12 @@ export class MenuScene extends Phaser.Scene {
       this.button(cx, height - 50, 'Back', 26, secondary, () => this.show('main'));
       return; // no footer note: the rows use the space
     }
+    if (page === 'bios') {
+      // The Bios page (DESIGN §24) on a panel of its own, like the Pause menu's: the story up to the save's progress.
+      kitSlice(this, 'kit_panel', Math.round(cx - BIOS_PANEL_W / 2), 24, BIOS_PANEL_W, height - 48);
+      this.bios = drawBiosPage(this, cx, progressOfSave(this.save!), () => this.show('main'));
+      return; // no footer note: the page has its own hint line
+    }
     if (page === 'records') {
       this.drawRecords(cx, bottom + 30);
       this.button(cx, height - 50, 'Back', 26, secondary, () => this.show('main'));
@@ -111,7 +124,12 @@ export class MenuScene extends Phaser.Scene {
       const replayY = Math.max(height * 0.5, bottom + 96);
       note(bottom + 30, ENDING, primary, 28);
       this.button(cx, replayY, 'Replay Base 1', 32, primary, () => this.begin(replayBase1(this.save!)));
-      this.button(cx, replayY + 76, 'Menu', 26, secondary, () => this.show('main'));
+      // Z93: Mission 2 is playable before the story reaches it (Z100 wires Base 1 -> Mission 2 -> Base 2 and the save)
+      this.button(cx, replayY + 76, 'Mission 2 (preview)', 26, primary, () => {
+        this.registry.set('campaign', this.save);
+        changeScene(this, 'Mission', { mission: 'm02' }, 'Mission2');
+      });
+      this.button(cx, replayY + 140, 'Menu', 26, secondary, () => this.show('main'));
     } else if (page === 'confirm') {
       const confirmY = Math.max(height * 0.5 + 20, bottom + 132);
       note(bottom + 30, 'Start a new game?', primary, 28);
@@ -129,8 +147,15 @@ export class MenuScene extends Phaser.Scene {
         note(y - 62, 'The saved game cannot be read. It is kept; New Game will ask before replacing it.', '#b0a07a', 16);
       }
       this.button(cx, y, 'New Game', this.save ? 26 : 36, this.save ? secondary : primary, () => this.newGame());
-      this.button(cx - 130, y + 76, 'Options', 26, secondary, () => this.show('options'));
-      this.button(cx + 130, y + 76, 'Records', 26, secondary, () => this.show('records'));
+      if (this.save) {
+        // Bios only with a save: it tells the story up to where the save is.
+        this.button(cx - 250, y + 76, 'Options', 26, secondary, () => this.show('options'), 200);
+        this.button(cx, y + 76, 'Records', 26, secondary, () => this.show('records'), 200);
+        this.button(cx + 250, y + 76, 'Bios', 26, secondary, () => this.show('bios'), 200);
+      } else {
+        this.button(cx - 130, y + 76, 'Options', 26, secondary, () => this.show('options'));
+        this.button(cx + 130, y + 76, 'Records', 26, secondary, () => this.show('records'));
+      }
     }
     note(height * 0.93, 'Mature content: visible gore.  Desktop: mouse + keyboard.', '#a8a69e', 16);
   }
@@ -146,6 +171,7 @@ export class MenuScene extends Phaser.Scene {
       for (const { d, b } of bests) lines.push({ text: `${DIFFICULTY_NAME[d]}:  ${GRADE_NAME[b.grade] ?? b.grade}  in  ${clock(b.seconds)}`, color: '#e8e6de', size: 18 });
       for (const badge of BADGES[scene]) {
         const earned = records.badges[scene][badge.id];
+        if (badge.id === 'wellFed' && !FOOD_SHOWN) continue; // food is hidden until the main camp; an earned one stays stored
         const where = earned ? earned.map((d) => DIFFICULTY_NAME[d]).join(', ') : 'not yet';
         lines.push({ text: `${badge.name} (${badge.note}): ${where}`, color: earned ? '#9bc79b' : '#8a8d86', size: 16 });
       }
@@ -176,5 +202,10 @@ export class MenuScene extends Phaser.Scene {
     kb?.on('keydown-ESC', () => {
       if (this.page !== 'main') this.show('main');
     });
+    kb?.on('keydown-LEFT', () => this.page === 'bios' && this.bios?.step(-1));
+    kb?.on('keydown-RIGHT', () => this.page === 'bios' && this.bios?.step(1));
+    kb?.on('keydown-UP', () => this.page === 'bios' && this.bios?.scroll(-48));
+    kb?.on('keydown-DOWN', () => this.page === 'bios' && this.bios?.scroll(48));
+    this.input.on('wheel', (_p: Phaser.Input.Pointer, _o: unknown, _dx: number, dy: number) => this.page === 'bios' && this.bios?.scroll(dy));
   }
 }

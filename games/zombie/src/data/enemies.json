@@ -8,13 +8,14 @@
     "wanderRadius": 4,
     "wanderPause": 2,
     "reachRadius": 2,
+    "rise": 30,
     "hears": ["step", "shot", "lure", "alarm", "can"]
   },
   "human": {
     "hp": 80,
     "vision": { "range": 9, "angle": 70 },
     "farSpot": 0.5,
-    "speed": { "patrol": 1.5, "alert": 3 },
+    "speed": { "patrol": 1.5, "alert": 3, "assault": 2 },
     "gun": { "range": 8, "damage": 20, "cooldown": 1, "noise": 12 },
     "alarm": 15,
     "loseTrack": 5,
